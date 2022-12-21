@@ -56,6 +56,10 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
         {
             return new MoveTemplateToOtherCategoryOutputData(MoveTemplateToOtherCategoryStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+        }
     }
 
     private MoveTemplateToOtherCategoryStatus ValidateInput(MoveTemplateToOtherCategoryInputData inputData, string oldFile, string newFile)

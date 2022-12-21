@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.Ka;
+﻿using Domain.Common;
 
-public interface IKaRepository
+namespace Domain.Models.Ka;
+
+public interface IKaRepository : IRepositoryBase
 {
     KaMstModel GetByKaId(int kaId);
 

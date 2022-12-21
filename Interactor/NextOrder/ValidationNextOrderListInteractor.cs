@@ -139,6 +139,15 @@ namespace Interactor.NextOrder
             {
                 return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.Failed, new(), new(), new(), new());
             }
+            finally
+            {
+                _insuranceRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _nextOrderRepository.ReleaseResource();
+                _patientInfRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+            }
         }
     }
 }

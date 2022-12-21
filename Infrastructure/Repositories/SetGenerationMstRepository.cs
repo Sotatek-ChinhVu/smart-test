@@ -47,5 +47,10 @@ namespace Infrastructure.Repositories
             }
             return generationId;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

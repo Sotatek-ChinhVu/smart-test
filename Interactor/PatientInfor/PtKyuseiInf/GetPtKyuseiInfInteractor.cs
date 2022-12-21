@@ -33,6 +33,10 @@ namespace Interactor.PatientInfor.PtKyuseiInf
             {
                 return new GetPtKyuseiInfOutputData(new List<PtKyuseiInfModel>(), GetPtKyuseiInfStatus.Failed);
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
         }
     }
 }

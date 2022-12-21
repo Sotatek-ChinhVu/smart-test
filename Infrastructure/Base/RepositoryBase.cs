@@ -11,12 +11,6 @@ namespace Infrastructure.Base
             _tenantProvider = tenantProvider;
         }
 
-        ~RepositoryBase()
-        {
-            _trackingDataContext?.Dispose();
-            _noTrackingDataContext?.Dispose();
-        }
-
         private TenantDataContext? _trackingDataContext;
         public TenantDataContext TrackingDataContext
         {
@@ -41,6 +35,12 @@ namespace Infrastructure.Base
                 }
                 return _noTrackingDataContext;
             }
+        }
+
+        public void DisposeDataContext()
+        {
+            _trackingDataContext?.Dispose();
+            _noTrackingDataContext?.Dispose();
         }
     }
 }

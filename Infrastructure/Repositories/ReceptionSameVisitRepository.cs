@@ -333,6 +333,11 @@ namespace Infrastructure.Repositories
             return listSameVisitModel;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         private string GetYoyaku(List<RaiinInf> listDoraiModel, long yoyakuNo, string kaName)
         {
             string ConvertTimeToString(string uketsukeTime)

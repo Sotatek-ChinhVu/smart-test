@@ -47,7 +47,10 @@ public class GetApprovalInfListInteractor : IGetApprovalInfListInputPort
         {
             return new GetApprovalInfListOutputData(GetApprovalInfListStatus.Failed);
         }
-        
+        finally
+        {
+            _approvalInfRepository.ReleaseResource();
+        }
     }
 
 }

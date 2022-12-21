@@ -21,20 +21,27 @@ namespace Interactor.CalculationInf
         }
         public CalculationInfOutputData Handle(CalculationInfInputData inputData)
         {
-            if(inputData.HpId < 0)
+            try
             {
-                return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.InvalidHpId);
+                if (inputData.HpId < 0)
+                {
+                    return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.InvalidHpId);
+                }
+                if (inputData.PtId < 0)
+                {
+                    return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.InvalidPtId);
+                }
+                var listData = _calculationInfRepository.GetListDataCalculationInf(inputData.HpId, inputData.PtId);
+                if (!listData.Any())
+                {
+                    return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.DataNotExist);
+                }
+                return new CalculationInfOutputData(listData.ToList(), CalculationInfStatus.Successed);
             }
-            if (inputData.PtId < 0)
+            finally
             {
-                return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.InvalidPtId);
+                _calculationInfRepository.ReleaseResource();
             }
-            var listData = _calculationInfRepository.GetListDataCalculationInf(inputData.HpId, inputData.PtId);
-            if (!listData.Any())
-            {
-                return new CalculationInfOutputData(new List<CalculationInfModel>(), CalculationInfStatus.DataNotExist);
-            }
-            return new CalculationInfOutputData(listData.ToList(), CalculationInfStatus.Successed);
         }
     }
 }

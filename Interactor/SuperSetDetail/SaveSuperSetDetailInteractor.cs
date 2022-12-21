@@ -73,6 +73,12 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         {
             return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
         }
+        finally
+        {
+            _mstItemRepository.ReleaseResource();
+            _setMstRepository.ReleaseResource();
+            _superSetDetailRepository.ReleaseResource();
+        }
     }
 
     private void SaveSetFile(int hpId, int setCd, List<string> listFileName, bool saveSuccess)

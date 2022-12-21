@@ -212,6 +212,11 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
         {
             var byomeis = new List<PtByomei>();

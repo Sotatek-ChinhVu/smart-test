@@ -105,4 +105,9 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
             return false;
         }
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -13,19 +13,26 @@ namespace Interactor.DrugDetailData
 
         public GetDrugDetailDataOutputData Handle(GetDrugDetailDataInputData inputData)
         {
-            if (string.IsNullOrEmpty(inputData.ItemCd))
+            try
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
-            }
+                if (string.IsNullOrEmpty(inputData.ItemCd))
+                {
+                    return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
+                }
 
-            if (string.IsNullOrEmpty(inputData.YJCode))
+                if (string.IsNullOrEmpty(inputData.YJCode))
+                {
+                    return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
+                }
+
+                var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+
+                return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
+            }
+            finally
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
+                _drugInforRepository.ReleaseResource();
             }
-
-            var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
-
-            return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
         }
     }
 }

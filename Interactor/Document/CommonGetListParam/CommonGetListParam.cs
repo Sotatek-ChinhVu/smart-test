@@ -38,6 +38,8 @@ public class CommonGetListParam : ICommonGetListParam
         _insuranceMstRepository = insuranceMstRepository;
     }
 
+
+
     public List<ItemGroupParamModel> GetListParam(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId)
     {
         // HpInf and PtInf
@@ -623,5 +625,17 @@ public class CommonGetListParam : ICommonGetListParam
         listParam.Add(new ItemDisplayParamModel("自賠/初診日(和暦K)", model.JibaiSinDateJapanK));
 
         return listParam;
+    }
+
+    public void ReleaseResources()
+    {
+        _insuranceMstRepository.ReleaseResource();
+        _hpInfRepository.ReleaseResource();
+        _patientInfoRepository.ReleaseResource();
+        _userRepository.ReleaseResource();
+        _raiinFilterMstRepository.ReleaseResource();
+        _summaryInfRepository.ReleaseResource();
+        _patientInfoRepository.ReleaseResource();
+        _insuranceMstRepository.ReleaseResource();
     }
 }

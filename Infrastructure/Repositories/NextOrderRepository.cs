@@ -913,5 +913,10 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

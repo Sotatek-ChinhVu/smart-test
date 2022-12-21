@@ -13,6 +13,11 @@ public class RaiinCmtInfRepository : RepositoryBase, IRaiinCmtInfRepository
     {
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text, int userId)
     {
         var raiinCmt = TrackingDataContext.RaiinCmtInfs.FirstOrDefault(r =>

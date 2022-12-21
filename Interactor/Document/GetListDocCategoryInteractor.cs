@@ -52,6 +52,12 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         {
             return new GetListDocCategoryOutputData(GetListDocCategoryStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 
     private DocCategoryItem ConvertToDocCategoryMstOutputItem(DocCategoryModel model)

@@ -1277,4 +1277,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         TrackingDataContext.SetKarteImgInf.RemoveRange(listDeletes);
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

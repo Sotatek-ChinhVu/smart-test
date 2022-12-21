@@ -184,33 +184,40 @@ public class DocumentController : AuthorizeControllerBase
     [HttpGet(ApiPath.DowloadDocumentTemplate)]
     public IActionResult ExportEmployee([FromQuery] ReplaceParamTemplateRequest inputData)
     {
-        using (var client = new WebClient())
+        try
         {
-            var content = client.DownloadData(inputData.LinkFile);
-            using (var stream = new MemoryStream(content))
+            using (var client = new WebClient())
             {
-                using (var word = WordprocessingDocument.Open(stream, true))
+                var content = client.DownloadData(inputData.LinkFile);
+                using (var stream = new MemoryStream(content))
                 {
-                    if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
+                    using (var word = WordprocessingDocument.Open(stream, true))
                     {
-                        var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
-                        foreach (var group in listGroups)
+                        if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
                         {
-                            foreach (var param in group.ListParamModel)
+                            var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
+                            foreach (var group in listGroups)
                             {
-                                var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
-                                                 .FirstOrDefault(sdt => sdt.SdtProperties != null && sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<" + param.Parameter + ">>");
-                                if (element != null)
+                                foreach (var param in group.ListParamModel)
                                 {
-                                    element.Descendants<Text>().First().Text = param.Value;
-                                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
+                                    var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
+                                                     .FirstOrDefault(sdt => sdt.SdtProperties != null && sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<" + param.Parameter + ">>");
+                                    if (element != null)
+                                    {
+                                        element.Descendants<Text>().First().Text = param.Value;
+                                        element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
+                                    }
                                 }
                             }
                         }
                     }
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
                 }
-                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
             }
+        }
+        finally
+        {
+            _commonGetListParam.ReleaseResources();
         }
     }
 

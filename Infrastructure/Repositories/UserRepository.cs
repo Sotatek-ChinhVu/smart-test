@@ -275,5 +275,10 @@ namespace Infrastructure.Repositories
                 return false;
             }
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

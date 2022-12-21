@@ -374,5 +374,10 @@ namespace Infrastructure.Repositories
 
             return order;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

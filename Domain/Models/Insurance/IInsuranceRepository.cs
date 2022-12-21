@@ -1,8 +1,9 @@
-﻿using Domain.Models.InsuranceInfor;
+﻿using Domain.Common;
+using Domain.Models.InsuranceInfor;
 
 namespace Domain.Models.Insurance
 {
-    public interface IInsuranceRepository
+    public interface IInsuranceRepository : IRepositoryBase
     {
         InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate);
 

@@ -247,5 +247,10 @@ namespace Infrastructure.Repositories
             TrackingDataContext.KarteImgInfs.RemoveRange(listDeletes);
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

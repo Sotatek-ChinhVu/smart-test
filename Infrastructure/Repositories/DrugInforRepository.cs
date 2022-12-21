@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.DrugInfor;
 using Helper.Common;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
@@ -12,27 +13,25 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class DrugInforRepository : IDrugInforRepository
+    public class DrugInforRepository : RepositoryBase, IDrugInforRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
         private readonly IConfiguration _configuration;
 
-        public DrugInforRepository(ITenantProvider tenantProvider, IConfiguration configuration)
+        public DrugInforRepository(ITenantProvider tenantProvider, IConfiguration configuration) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
             _configuration = configuration;
         }
 
         public DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd)
         {
-            var queryItems = _tenantDataContext.TenMsts.Where(
+            var queryItems = NoTrackingDataContext.TenMsts.Where(
                      item => item.HpId == hpId && new[] { 20, 30 }.Contains(item.SinKouiKbn)
                      && item.StartDate <= sinDate && item.EndDate >= sinDate
                      );
 
-            var queryDrugInfs = _tenantDataContext.PiProductInfs.AsQueryable();
-            var queryM28DrugMsts = _tenantDataContext.M28DrugMst.AsQueryable();
-            var queryM34DrugInfoMains = _tenantDataContext.M34DrugInfoMains.AsQueryable();
+            var queryDrugInfs = NoTrackingDataContext.PiProductInfs.AsQueryable();
+            var queryM28DrugMsts = NoTrackingDataContext.M28DrugMst.AsQueryable();
+            var queryM34DrugInfoMains = NoTrackingDataContext.M34DrugInfoMains.AsQueryable();
 
             ////Join
             var joinQuery = from m28DrugMst in queryM28DrugMsts
@@ -59,7 +58,7 @@ namespace Infrastructure.Repositories
 
             // piczai pichou
             string pathServerDefault = _configuration["PathImageDrugFolder"];
-            var pathConf = _tenantDataContext.PathConfs
+            var pathConf = NoTrackingDataContext.PathConfs
                 .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
             // PicZai
@@ -80,7 +79,7 @@ namespace Infrastructure.Repositories
             }
             var customPathPicZai = "";
             var customPathPicHou = "";
-            var customPathConf = _tenantDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeCustomDefault);
+            var customPathConf = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeCustomDefault);
             if (customPathConf != null)
             {
                 customPathPicZai = customPathConf.Path + @"/zaikei/";
@@ -92,7 +91,7 @@ namespace Infrastructure.Repositories
                 customPathPicHou = pathServerDefault + @"/housou/";
             }
 
-            var otherImagePic = _tenantDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
+            var otherImagePic = NoTrackingDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
             if (otherImagePic != null)
             {
                 otherPicZai = defaultPicZai + otherImagePic.FileName ?? string.Empty;
@@ -129,6 +128,11 @@ namespace Infrastructure.Repositories
             {
                 return new DrugInforModel();
             }
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

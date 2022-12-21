@@ -58,6 +58,10 @@ namespace Interactor.MedicalExamination
             {
                 return new SearchHistoryOutputData(new(), defaultIndex, SearchHistoryStatus.Failed);
             }
+            finally
+            {
+                _historyRepository.ReleaseResource();
+            }
         }
     }
 }

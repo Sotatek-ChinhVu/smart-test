@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SystemConf;
+﻿using Domain.Common;
 
-public interface ISystemConfRepository
+namespace Domain.Models.SystemConf;
+
+public interface ISystemConfRepository : IRepositoryBase
 {
     List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
 

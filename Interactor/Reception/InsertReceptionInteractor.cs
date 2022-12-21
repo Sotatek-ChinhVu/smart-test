@@ -18,19 +18,27 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
 
     public InsertReceptionOutputData Handle(InsertReceptionInputData input)
     {
-        ReceptionSaveDto dto = input.Dto;
-
-        if (dto!.Insurances.Any(i => !i.IsValidData()))
+        try
         {
-            return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
+            ReceptionSaveDto dto = input.Dto;
+
+            if (dto!.Insurances.Any(i => !i.IsValidData()))
+            {
+                return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
+            }
+
+            // check end set uketukeNo
+            int uketukeNo = GetUketukeNo(input.HpId, dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, dto.Reception.UketukeNo);
+            dto.ChangeUketukeNo(uketukeNo);
+
+            var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
+            return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
         }
-
-        // check end set uketukeNo
-        int uketukeNo = GetUketukeNo(input.HpId, dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, dto.Reception.UketukeNo);
-        dto.ChangeUketukeNo(uketukeNo);
-
-        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
-        return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
+        finally
+        {
+            _receptionRepository.ReleaseResource();
+            _systemConfRepository.ReleaseResource();
+        }
     }
     private int GetUketukeNo(int hpId, int sindate, int uketukeSbt, int kaId, int inputUketukeNo)
     {

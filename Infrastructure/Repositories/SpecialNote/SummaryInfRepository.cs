@@ -9,6 +9,7 @@ namespace Infrastructure.Repositories.SpecialNote
     {
         public SummaryInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
+
         }
 
         public SummaryInfModel Get(int hpId, long ptId)
@@ -23,6 +24,11 @@ namespace Infrastructure.Repositories.SpecialNote
                    x.CreateDate
                 )).ToList();
             return summaryInfs.Any() ? summaryInfs.First() : new SummaryInfModel();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

@@ -16,12 +16,19 @@ namespace Interactor.RaiinKubunMst
 
         public SaveDataKubunSettingOutputData Handle(SaveDataKubunSettingInputData inputData)
         {
-            if (inputData.RaiinKubunMstModels != null && inputData.RaiinKubunMstModels.Any())
+            try
             {
-                var result = _raiinKubunMstRepository.SaveDataKubunSetting(inputData.RaiinKubunMstModels, inputData.UserId);
-                return new SaveDataKubunSettingOutputData(result);
+                if (inputData.RaiinKubunMstModels != null && inputData.RaiinKubunMstModels.Any())
+                {
+                    var result = _raiinKubunMstRepository.SaveDataKubunSetting(inputData.RaiinKubunMstModels, inputData.UserId);
+                    return new SaveDataKubunSettingOutputData(result);
+                }
+                return new SaveDataKubunSettingOutputData(new List<string>() { KubunSettingConstant.Nodata });
             }
-            return new SaveDataKubunSettingOutputData(new List<string>() { KubunSettingConstant.Nodata });
+            finally
+            {
+                _raiinKubunMstRepository.ReleaseResource();
+            }
         }
     }
 }
