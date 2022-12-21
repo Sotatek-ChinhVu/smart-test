@@ -6,5 +6,7 @@ public enum GetDefaultSelectedTimeStatus : byte
     Failed = 2,
     InvalidHpId = 3,
     InvalidSinDate = 4,
-    InvalidBirthDay = 5
+    InvalidBirthDay = 5,
+    InvalidUketukeTime = 6,
+    ValidateSuccess = 7,
 }

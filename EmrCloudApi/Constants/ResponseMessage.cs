@@ -315,7 +315,7 @@
         public static readonly string InvalidBirthDay = "Invalid BirthDay";
         public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn > 0";
         public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
-        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime";
         public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
 
         //SetMst
