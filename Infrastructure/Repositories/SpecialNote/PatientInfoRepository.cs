@@ -133,5 +133,10 @@ namespace Infrastructure.Repositories.SpecialNote
             ));
             return seikaturekiInfs.ToList();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

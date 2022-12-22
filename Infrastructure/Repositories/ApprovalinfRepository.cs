@@ -90,5 +90,10 @@ namespace Infrastructure.Repositories
             .OrderBy(x => x.SinDate)
             .ToList();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

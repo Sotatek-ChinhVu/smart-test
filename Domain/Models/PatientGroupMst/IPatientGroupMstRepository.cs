@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.PatientGroupMst
+﻿using Domain.Common;
+
+namespace Domain.Models.PatientGroupMst
 {
-    public interface IPatientGroupMstRepository
+    public interface IPatientGroupMstRepository : IRepositoryBase
     {
         List<PatientGroupMstModel> GetAll();
 

@@ -41,21 +41,40 @@ namespace Interactor.SpecialNote
 
         public GetSpecialNoteOutputData Handle(GetSpecialNoteInputData inputData)
         {
-            if (inputData.HpId <= 0)
+            try
             {
-                return new GetSpecialNoteOutputData(GetSpecialNoteStatus.InvalidHpId);
+                if (inputData.HpId <= 0)
+                {
+                    return new GetSpecialNoteOutputData(GetSpecialNoteStatus.InvalidHpId);
+                }
+                if (inputData.PtId <= 0)
+                {
+                    return new GetSpecialNoteOutputData(GetSpecialNoteStatus.InvalidPtId);
+                }
+
+                var taskSummaryTab = Task<SummaryInfModel>.Factory.StartNew(() => GetSummaryTab(inputData.HpId, inputData.PtId));
+                var taskImportantNoteTab = Task<ImportantNoteModel>.Factory.StartNew(() => GetImportantNoteTab(inputData.PtId));
+                var taskPatientInfoTab = Task<PatientInfoModel>.Factory.StartNew(() => GetPatientInfoTab(inputData.PtId, inputData.HpId));
+                Task.WaitAll(taskSummaryTab, taskImportantNoteTab, taskPatientInfoTab);
+
+                return new GetSpecialNoteOutputData(taskSummaryTab.Result, taskImportantNoteTab.Result, taskPatientInfoTab.Result, GetSpecialNoteStatus.Successed);
             }
-            if (inputData.PtId <= 0)
+            finally
             {
-                return new GetSpecialNoteOutputData(GetSpecialNoteStatus.InvalidPtId);
+                _importantAlrgyDrugRepository.ReleaseResource();
+                _importantAlrgyFoodRepository.ReleaseResource();
+                _importantInfectionRepository.ReleaseResource();
+                _importantKioRekiRepository.ReleaseResource();
+                _importantNoteAlrgyElseRepository.ReleaseResource();
+                _importantOtcDrugRepository.ReleaseResource();
+                _importantOtherDrugRepository.ReleaseResource();
+                _importantSuppleRepository.ReleaseResource();
+                _patientInfoPhysicalRepository.ReleaseResource();
+                _patientInfoPregnancyRepository.ReleaseResource();
+                _patientInfoSeikaturekiRepository.ReleaseResource();
+                _ptCmtInfRepository.ReleaseResource();
+                _summaryInfRepository.ReleaseResource();
             }
-
-            var taskSummaryTab = Task<SummaryInfModel>.Factory.StartNew(() => GetSummaryTab(inputData.HpId, inputData.PtId));
-            var taskImportantNoteTab = Task<ImportantNoteModel>.Factory.StartNew(() => GetImportantNoteTab(inputData.PtId));
-            var taskPatientInfoTab = Task<PatientInfoModel>.Factory.StartNew(() => GetPatientInfoTab(inputData.PtId, inputData.HpId));
-            Task.WaitAll(taskSummaryTab, taskImportantNoteTab, taskPatientInfoTab);
-
-            return new GetSpecialNoteOutputData(taskSummaryTab.Result, taskImportantNoteTab.Result, taskPatientInfoTab.Result, GetSpecialNoteStatus.Successed);
         }
 
         #region Get data for tab

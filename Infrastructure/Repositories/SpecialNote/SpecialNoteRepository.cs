@@ -567,6 +567,11 @@ namespace Infrastructure.Repositories.SpecialNote
             }
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         #endregion
     }
 }

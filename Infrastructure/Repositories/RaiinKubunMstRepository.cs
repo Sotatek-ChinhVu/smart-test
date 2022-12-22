@@ -798,5 +798,10 @@ namespace Infrastructure.Repositories
         }
         #endregion
         #endregion
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

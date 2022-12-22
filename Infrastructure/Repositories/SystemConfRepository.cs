@@ -50,4 +50,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s?.Param ?? string.Empty, s?.Biko ?? string.Empty);
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

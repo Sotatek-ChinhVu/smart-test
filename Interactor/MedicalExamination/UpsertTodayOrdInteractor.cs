@@ -13,6 +13,7 @@ using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
@@ -115,19 +116,36 @@ namespace Interactor.MedicalExamination
                 }
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId);
-                if (check)
+                if (inputDatas.FileItem.IsUpdateFile)
                 {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, true);
-                }
-                else
-                {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, false);
+                    if (check)
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    }
                 }
                 return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
             catch
             {
                 return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
+            }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+                _kaRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _todayOdrRepository.ReleaseResource();
+                _karteInfRepository.ReleaseResource();
             }
         }
 

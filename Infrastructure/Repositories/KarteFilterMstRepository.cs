@@ -272,4 +272,9 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
             TrackingDataContext.KarteFilterDetails.RemoveRange(listOldKarteFilterDetails);
         }
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

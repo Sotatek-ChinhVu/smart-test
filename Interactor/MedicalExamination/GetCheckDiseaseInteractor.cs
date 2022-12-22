@@ -131,6 +131,10 @@ namespace Interactor.MedicalExamination
             {
                 return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.Failed);
             }
+            finally
+            {
+                _todayOdrRepository.ReleaseResource();
+            }
         }
     }
 }

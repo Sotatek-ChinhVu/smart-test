@@ -16,6 +16,33 @@ namespace Domain.Models.User
             JobCd = jobCd;
             ManagerKbn = managerKbn;
             KaId = kaId;
+            KaSName = string.Empty;
+            KanaName = kanaName;
+            Name = name;
+            Sname = sname;
+            LoginId = loginId;
+            LoginPass = loginPass;
+            MayakuLicenseNo = mayakuLicenseNo;
+            StartDate = startDate;
+            EndDate = endDate;
+            SortNo = sortNo;
+            IsDeleted = isDeleted;
+            RenkeiCd1 = renkeiCd1;
+            DrName = drName;
+            Id = id;
+            HpId = hpId;
+        }
+
+        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
+            string kaSName, string kanaName, string name, string sname, string drName, string loginId,
+            string loginPass, string mayakuLicenseNo, int startDate, int endDate,
+            int sortNo, string renkeiCd1, int isDeleted)
+        {
+            UserId = userId;
+            JobCd = jobCd;
+            ManagerKbn = managerKbn;
+            KaId = kaId;
+            KaSName = kaSName;
             KanaName = kanaName;
             Name = name;
             Sname = sname;
@@ -51,6 +78,7 @@ namespace Domain.Models.User
             DrName = string.Empty;
             Id = 0;
             HpId = 0;
+            KaSName = string.Empty;
         }
 
         public long Id { get; private set; }
@@ -62,6 +90,8 @@ namespace Domain.Models.User
         public int ManagerKbn { get; private set; }
 
         public int KaId { get; private set; }
+
+        public string KaSName { get; private set; }
 
         public string KanaName { get; private set; }
 

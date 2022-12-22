@@ -60,6 +60,12 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
         {
             return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 
     private List<FileDocumentModel> GetListDocumentTemplate(int categoryId)

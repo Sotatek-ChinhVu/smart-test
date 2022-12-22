@@ -121,4 +121,9 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
                                                 .FirstOrDefault();
         return result ?? new StickyNoteModel();
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

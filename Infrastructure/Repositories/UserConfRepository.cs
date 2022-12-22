@@ -261,4 +261,9 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         }
         return 0;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

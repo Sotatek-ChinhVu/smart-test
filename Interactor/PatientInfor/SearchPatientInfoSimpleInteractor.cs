@@ -21,68 +21,76 @@ namespace Interactor.PatientInfor
 
         public SearchPatientInfoSimpleOutputData Handle(SearchPatientInfoSimpleInputData inputData)
         {
-            if (string.IsNullOrWhiteSpace(inputData.Keyword))
+            try
             {
-                return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.InvalidKeyword);
-            }
-
-            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
-            bool isContainMode = inputData.ContainMode;
-            bool isNum = int.TryParse(keyword, out int ptNum);
-
-            if (!inputData.ContainMode)
-            {
-                if (!isNum)
+                if (string.IsNullOrWhiteSpace(inputData.Keyword))
                 {
-                    return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                    return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.InvalidKeyword);
                 }
 
-                (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum, inputData.HpId);
-                if (!isFound)
+                string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+                bool isContainMode = inputData.ContainMode;
+                bool isNum = int.TryParse(keyword, out int ptNum);
+
+                if (!inputData.ContainMode)
                 {
-                    return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                    if (!isNum)
+                    {
+                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                    }
+
+                    (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum, inputData.HpId);
+                    if (!isFound)
+                    {
+                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                    }
+                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(new List<PatientInforModel> { ptInfModel }), SearchPatientInfoSimpleStatus.Success);
                 }
-                return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(new List<PatientInforModel> { ptInfModel }), SearchPatientInfoSimpleStatus.Success);
-            }
 
-            int searchType = DetectSearchType(inputData.Keyword);
-            List<PatientInforModel> patientInfoList;
-            switch (searchType)
+                int searchType = DetectSearchType(inputData.Keyword);
+                List<PatientInforModel> patientInfoList;
+                switch (searchType)
+                {
+                    case 0:
+                        patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        if (patientInfoList.Count == 0)
+                        {
+                            return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                        }
+
+                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                    case 1:
+                        int sindate = keyword.AsInteger();
+                        patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        if (patientInfoList.Count == 0)
+                        {
+                            return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                        }
+
+                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                    case 2:
+                        patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        if (patientInfoList.Count == 0)
+                        {
+                            return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                        }
+                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                    case 3:
+                        patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        if (patientInfoList.Count == 0)
+                        {
+                            return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+                        }
+                        return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                }
+
+                return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
+            }
+            finally
             {
-                case 0:
-                    patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
-                    if (patientInfoList.Count == 0)
-                    {
-                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
-                    }
-
-                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
-                case 1:
-                    int sindate = keyword.AsInteger();
-                    patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize);
-                    if (patientInfoList.Count == 0)
-                    {
-                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
-                    }
-
-                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
-                case 2:
-                    patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
-                    if (patientInfoList.Count == 0)
-                    {
-                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
-                    }
-                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
-                case 3:
-                    patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
-                    if (patientInfoList.Count == 0)
-                    {
-                        return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
-                    }
-                    return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
+                _patientInforRepository.ReleaseResource();
+                _groupInfRepository.ReleaseResource();
             }
-
-            return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
         }
 
         public List<PatientInfoWithGroup> AppendGroupInfo(List<PatientInforModel> patientInfList)

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.MonshinInf
+﻿using Domain.Common;
+
+namespace Domain.Models.MonshinInf
 {
-    public interface IMonshinInforRepository
+    public interface IMonshinInforRepository : IRepositoryBase
     {
         bool SaveList(List<MonshinInforModel> monshinInforModels, int userId);
 

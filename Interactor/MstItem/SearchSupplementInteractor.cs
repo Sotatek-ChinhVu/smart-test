@@ -27,6 +27,10 @@ namespace Interactor.MstItem
             {
                 return new SearchSupplementOutputData(new List<SearchSupplementModel>(), 0, SearchSupplementStatus.Fail);
             }
+            finally
+            {
+                _inputItemRepository.ReleaseResource();
+            }
         }
     }
 }

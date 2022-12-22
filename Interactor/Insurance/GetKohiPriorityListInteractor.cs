@@ -25,6 +25,10 @@ namespace Interactor.Insurance
             {
                 return new GetKohiPriorityListOutputData(new List<KohiPriorityModel>(), GetKohiPriorityListStatus.Exception);
             }
+            finally
+            {
+                _insuranceResponsitory.ReleaseResource();
+            }
         }
     }
 }

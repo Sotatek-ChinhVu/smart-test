@@ -13,7 +13,14 @@ namespace Interactor.PatientGroupMst
 
         public GetListPatientGroupMstOutputData Handle(GetListPatientGroupMstInputData inputData)
         {
-            return new GetListPatientGroupMstOutputData(_patientGroupMstRepository.GetAll());
+            try
+            {
+                return new GetListPatientGroupMstOutputData(_patientGroupMstRepository.GetAll());
+            }
+            finally
+            {
+                _patientGroupMstRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -55,6 +55,12 @@ namespace Interactor.OrdInfs
             {
                 return new GetHeaderInfOutputData(GetHeaderInfStatus.Failed);
             }
+            finally
+            {
+                _receptionRepository.ReleaseResource();
+                _ordInfRepository.ReleaseResource();
+                _raiinListTagRepository.ReleaseResource();
+            }
         }
     }
 }

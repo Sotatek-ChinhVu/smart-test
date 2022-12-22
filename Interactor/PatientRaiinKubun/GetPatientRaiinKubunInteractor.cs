@@ -18,29 +18,36 @@ namespace Interactor.PatientRaiinKubun
 
         public GetPatientRaiinKubunOutputData Handle(GetPatientRaiinKubunInputData inputData)
         {
-            if (inputData.HpId < 0)
+            try
             {
-                return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidPtId);
-            }
+                if (inputData.HpId < 0)
+                {
+                    return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidPtId);
+                }
 
-            if (inputData.PtId < 0)
+                if (inputData.PtId < 0)
+                {
+                    return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidPtId);
+                }
+
+                if (inputData.RaiinNo < 0)
+                {
+                    return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidRaiinNo);
+                }
+
+                if (inputData.SinDate < 0)
+                {
+                    return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidSinDate);
+                }
+
+                var data = _patientRaiinKubunReponsitory.GetPatientRaiinKubun(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+
+                return new GetPatientRaiinKubunOutputData(data.ToList(), GetPatientRaiinKubunStatus.Successed);
+            }
+            finally
             {
-                return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidPtId);
+                _patientRaiinKubunReponsitory.ReleaseResource();
             }
-
-            if (inputData.RaiinNo < 0)
-            {
-                return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidRaiinNo);
-            }
-
-            if (inputData.SinDate < 0)
-            {
-                return new GetPatientRaiinKubunOutputData(new List<PatientRaiinKubunModel>(), GetPatientRaiinKubunStatus.InvalidSinDate);
-            }
-
-            var data = _patientRaiinKubunReponsitory.GetPatientRaiinKubun(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
-
-            return new GetPatientRaiinKubunOutputData(data.ToList(), GetPatientRaiinKubunStatus.Successed);
         }
     }
 }

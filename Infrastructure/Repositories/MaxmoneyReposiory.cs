@@ -125,5 +125,10 @@ namespace Infrastructure.Repositories
 
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

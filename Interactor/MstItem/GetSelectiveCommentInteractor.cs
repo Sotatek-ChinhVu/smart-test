@@ -61,6 +61,10 @@ namespace Interactor.MstItem
             {
                 return new GetSelectiveCommentOutputData(new(), GetSelectiveCommentStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

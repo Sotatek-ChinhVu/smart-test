@@ -856,7 +856,8 @@ namespace Infrastructure.Repositories
                                                && item.SeqNo != 0
                                                && item.FileName != null
                                                && listFileName.Contains(item.FileName)
-                                               ).ToList();
+                                               ).OrderBy(item => item.Position)
+                                               .ToList();
 
             var listUpdateFiles = TrackingDataContext.RsvkrtKarteImgInfs.Where(item =>
                                                item.HpId == hpId
@@ -911,6 +912,11 @@ namespace Infrastructure.Repositories
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)
         {
             throw new NotImplementedException();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

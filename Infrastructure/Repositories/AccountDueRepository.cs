@@ -297,4 +297,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                                              )).ToList();
         return result;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -19,6 +19,11 @@ public class UketukeSbtDayInfRepository : RepositoryBase, IUketukeSbtDayInfRepos
             .Select(u => ToModel(u)).ToList();
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Upsert(int sinDate, int uketukeSbt, int seqNo, int userId)
     {
         var dayInf = TrackingDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.SinDate == sinDate).FirstOrDefault();

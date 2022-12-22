@@ -79,7 +79,12 @@ namespace Interactor.Diseases
             {
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess, new());
             }
-
+            finally
+            {
+                _diseaseRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
         }
 
         private static UpsertPtDiseaseListStatus ConvertStatus(ValidationStatus status)

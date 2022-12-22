@@ -14,34 +14,41 @@ namespace Interactor.SwapHoken
 
         public SaveSwapHokenOutputData Handle(SaveSwapHokenInputData inputData)
         {
-            if (inputData.HokenIdBefore <= 0)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.SourceInsuranceHasNotSelected);
-
-            if (inputData.HokenIdAfter <= 0)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.DesInsuranceHasNotSelected);
-
-            if (inputData.StartDate > inputData.EndDate && inputData.StartDate > 0 && inputData.EndDate > 0)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.StartDateGreaterThanEndDate);
-
-            long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
-            if (count == 0)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate);
-
-            var seikyuYms = _swapHokenRepository.GetListSeikyuYms(inputData.HpId,inputData.PtId,inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
-            var seiKyuPendingYms = _swapHokenRepository.GetSeikyuYmsInPendingSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore);
-
-            bool swapHokenResult = _swapHokenRepository.SwapHokenParttern(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.HokenPidAfter, inputData.StartDate, inputData.EndDate, inputData.UserId);
-
-            if(!swapHokenResult)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Failed);
-
-            if (seiKyuPendingYms.Count > 0)
+            try
             {
-                if (!_swapHokenRepository.ExistRaiinInfUsedOldHokenId(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenPidBefore))
-                    _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seiKyuPendingYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
-            }
+                if (inputData.HokenIdBefore <= 0)
+                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.SourceInsuranceHasNotSelected);
 
-            return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful);
+                if (inputData.HokenIdAfter <= 0)
+                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.DesInsuranceHasNotSelected);
+
+                if (inputData.StartDate > inputData.EndDate && inputData.StartDate > 0 && inputData.EndDate > 0)
+                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.StartDateGreaterThanEndDate);
+
+                long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
+                if (count == 0)
+                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate);
+
+                var seikyuYms = _swapHokenRepository.GetListSeikyuYms(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
+                var seiKyuPendingYms = _swapHokenRepository.GetSeikyuYmsInPendingSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore);
+
+                bool swapHokenResult = _swapHokenRepository.SwapHokenParttern(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.HokenPidAfter, inputData.StartDate, inputData.EndDate, inputData.UserId);
+
+                if (!swapHokenResult)
+                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Failed);
+
+                if (seiKyuPendingYms.Count > 0)
+                {
+                    if (!_swapHokenRepository.ExistRaiinInfUsedOldHokenId(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenPidBefore))
+                        _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seiKyuPendingYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
+                }
+
+                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful);
+            }
+            finally
+            {
+                _swapHokenRepository.ReleaseResource();
+            }
         }
     }
 }

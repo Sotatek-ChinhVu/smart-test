@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.RainListTag
+﻿using Domain.Common;
+
+namespace Domain.Models.RainListTag
 {
-    public interface IRaiinListTagRepository
+    public interface IRaiinListTagRepository : IRepositoryBase
     {
         IEnumerable<RaiinListTagModel> GetList(int hpId, long ptId, bool isNoWithWhiteStar, List<int> sinDates, List<long> raiinNos);
 

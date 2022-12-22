@@ -72,6 +72,13 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
         {
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
+        finally
+        {
+            _karteInfRepository.ReleaseResource();
+            _nextOrderRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+            _superSetDetailRepository.ReleaseResource();
+        }
     }
 
     private bool SaveFileToDB(SaveListFileTodayOrderInputData input, string path, List<string> listFileNames)

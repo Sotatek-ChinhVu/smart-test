@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.RaiinKubunMst
+﻿using Domain.Common;
+
+namespace Domain.Models.RaiinKubunMst
 {
-    public interface IRaiinKubunMstRepository
+    public interface IRaiinKubunMstRepository : IRepositoryBase
     {
         List<RaiinKubunMstModel> GetList(bool isDeleted);
 

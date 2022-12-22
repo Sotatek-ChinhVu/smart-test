@@ -37,5 +37,10 @@ namespace Infrastructure.Repositories
                 .ToList();
             return listData;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

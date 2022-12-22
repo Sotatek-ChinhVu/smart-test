@@ -23,5 +23,10 @@ namespace Infrastructure.Repositories
 
             return yohoMsts.Select(x => new YohoSetMstModel(tenMst.Name ?? string.Empty, tenMst.YohoKbn, x.SetId, x.UserId, x.ItemCd ?? string.Empty));
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

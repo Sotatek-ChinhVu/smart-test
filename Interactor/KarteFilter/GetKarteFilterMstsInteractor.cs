@@ -31,5 +31,9 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
         {
             return new GetKarteFilterOutputData(GetKarteFilterStatus.Error);
         }
+        finally
+        {
+            _karteFilterMstRepository.ReleaseResource();
+        }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SetMst;
+﻿using Domain.Common;
 
-public interface ISetMstRepository
+namespace Domain.Models.SetMst;
+
+public interface ISetMstRepository : IRepositoryBase
 {
     IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch);
 

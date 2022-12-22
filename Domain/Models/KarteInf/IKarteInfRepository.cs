@@ -1,8 +1,9 @@
-﻿using Domain.Models.KarteInf;
+﻿using Domain.Common;
+using Domain.Models.KarteInf;
 
 namespace Domain.Models.KarteInfs
 {
-    public interface IKarteInfRepository
+    public interface IKarteInfRepository : IRepositoryBase
     {
         List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted);
 

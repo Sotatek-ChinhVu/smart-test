@@ -37,6 +37,12 @@ public class SortDocCategoryInteractor : ISortDocCategoryInputPort
         {
             return new SortDocCategoryOutputData(SortDocCategoryStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+        }
     }
 
     private SortDocCategoryStatus ValidateInputData(SortDocCategoryInputData inputData)
