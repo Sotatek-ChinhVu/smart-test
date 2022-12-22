@@ -308,7 +308,7 @@ namespace Interactor.MedicalExamination
 
         private bool CheckAge(string tenMstAgeCheck, int iDays, int sinDate, int iBirthDay, int iYear)
         {
-            bool subResult = false;
+            bool subResult;
 
             if (tenMstAgeCheck == "AA")
             {
@@ -545,7 +545,7 @@ namespace Interactor.MedicalExamination
             return true;
         }
 
-        private List<CheckedSpecialItem> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
+        public List<CheckedSpecialItem> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
             var checkSpecialItemList = new List<CheckedSpecialItem>();
             int endDate = sinDate;
@@ -592,9 +592,9 @@ namespace Interactor.MedicalExamination
                     suryo += (item.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(odrDetail.ItemCd)) ? 1 : item.Suryo;
                 }
 
-                densiSanteiKaisuModels = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
+                var densiSanteiKaisuModelFilters = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
 
-                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModels, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
+                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModelFilters, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
                 // チェック期間と表記を取得する
                 checkedItem.Add(odrDetail.ItemCd);
             }
@@ -755,7 +755,7 @@ namespace Interactor.MedicalExamination
                 var checkSanteiKbnTmp = new List<int>();
                 checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
 
-                CommonDensiSantei(hpId, densiSanteiKaisu, odrDetail, allOdrInfDetail, startDate, endDate, sTerm, sinDate, syosinDate);
+                CommonDensiSantei(hpId, densiSanteiKaisu, odrDetail, allOdrInfDetail, ref startDate, ref endDate, ref sTerm, sinDate, syosinDate);
 
                 if (densiSanteiKaisu.UnitCd == 997 || densiSanteiKaisu.UnitCd == 998)
                 {
@@ -817,7 +817,7 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private void CommonDensiSantei(int hpId, DensiSanteiKaisuModel densiSanteiKaisu, OrdInfDetailModel odrDetail, List<OrdInfDetailModel> allOdrInfDetail, int startDate, int endDate, string sTerm, int sinDate, int syosinDate)
+        private void CommonDensiSantei(int hpId, DensiSanteiKaisuModel densiSanteiKaisu, OrdInfDetailModel odrDetail, List<OrdInfDetailModel> allOdrInfDetail, ref int startDate, ref int endDate, ref string sTerm, int sinDate, int syosinDate)
         {
             switch (densiSanteiKaisu.UnitCd)
             {

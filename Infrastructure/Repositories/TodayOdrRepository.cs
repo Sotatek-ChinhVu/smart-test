@@ -121,7 +121,7 @@ namespace Infrastructure.Repositories
             return checkedDiseases;
         }
 
-      
+
 
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
         {
@@ -873,7 +873,7 @@ namespace Infrastructure.Repositories
                 o.SinYm <= endYm &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 checkSanteiKbn.Contains(o.SanteiKbn)
-            );
+            ).AsQueryable();
             var sinKouiCounts = _tenantNoTrackingDataContext.SinKouiCounts.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
