@@ -162,7 +162,7 @@ namespace Interactor.MedicalExamination
             var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, listUpdates.Select(item => new SaveFileInfModel(false, item)).ToList(), false);
+                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new SaveFileInfModel(false, item)).ToList(), false);
             }
             else
             {
