@@ -113,10 +113,6 @@ namespace Interactor.MedicalExamination
                 else
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
             }
-            catch
-            {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.Failed, 0);
-            }
             finally
             {
                 _historyOrderRepository.ReleaseResource();

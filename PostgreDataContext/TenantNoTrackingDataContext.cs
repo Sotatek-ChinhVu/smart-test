@@ -4,7 +4,7 @@ namespace PostgreDataContext
 {
     public class TenantNoTrackingDataContext : TenantDataContext
     {
-        public TenantNoTrackingDataContext(string connectionString) : base(connectionString)
+        public TenantNoTrackingDataContext(DbContextOptions options) : base(options)
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }

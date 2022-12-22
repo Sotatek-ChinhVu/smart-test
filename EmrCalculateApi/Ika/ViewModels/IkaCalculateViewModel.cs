@@ -73,6 +73,20 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         private readonly ITenantProvider _tenantProvider;
         private TenantDataContext _tenantDataContext;
+        private TenantDataContext TenantDataContext
+        {
+            get => _tenantDataContext;
+            set
+            {
+                _tenantDataContext = value;
+                _ikaCalculateFinder = new IkaCalculateFinder(_tenantDataContext);
+                _odrInfFinder = new OdrInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
+                _raiinInfFinder = new RaiinInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
+                _masterFinder = new MasterFinder(_tenantDataContext);
+                _saveIkaCalculateCommandHandler = new SaveIkaCalculateCommandHandler(_tenantProvider, _tenantDataContext, _emrLogger);
+                _clearIkaCalculateCommandHandler = new ClearIkaCalculateCommandHandler(_tenantDataContext, _emrLogger);
+            }
+        }
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
@@ -83,19 +97,14 @@ namespace EmrCalculateApi.Ika.ViewModels
             _ptId = 0;
             _sinDate = 0;
 
+            _emrLogger = emrLogger;
             _tenantProvider = tenantProvider;
             _systemConfigProvider = systemConfigProvider;
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
-            _emrLogger = emrLogger;
+            TenantDataContext = tenantProvider.GetTrackingTenantDataContext();
 
             // オブジェクトの生成
             // 来院情報
             _raiinInfModels = new List<RaiinInfModel>();
-
-            _ikaCalculateFinder = new IkaCalculateFinder(_tenantDataContext);
-            _odrInfFinder = new OdrInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
-            _raiinInfFinder = new RaiinInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
-            _masterFinder = new MasterFinder(_tenantDataContext);
 
             // 点数マスタのキャッシュ
             //_cacheTenMst = new List<TenMstModel>();
@@ -103,9 +112,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 電子算定回数マスタのキャッシュ
             //_cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
             //FutanCalcVM = new FutancalcViewModel();
-            _saveIkaCalculateCommandHandler = new SaveIkaCalculateCommandHandler(_tenantProvider, _tenantDataContext, _emrLogger);
-            _clearIkaCalculateCommandHandler = new ClearIkaCalculateCommandHandler(_tenantDataContext, _emrLogger);
         }
+
         /// <summary>
         /// 計算準備ロジック
         /// 必要なデータを取得
@@ -324,8 +332,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                         }
                     }
 
-                    _tenantDataContext?.Dispose();
-                    _tenantDataContext = _tenantProvider.GetTrackingTenantDataContext();
+                    TenantDataContext?.Dispose();
+                    TenantDataContext = _tenantProvider.ReloadTrackingDataContext();
 
                     // 要求ロック
                     List<CalcStatusModel> calcStatusies = new List<CalcStatusModel>();
@@ -869,7 +877,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 _common.ClearKeisanData();
 
                 _clearIkaCalculateCommandHandler.ClearSinData(_hpId, _ptId, _sinDate);
-                _tenantDataContext.SaveChanges();
+                TenantDataContext.SaveChanges();
 
             }
             catch (Exception e)
@@ -1367,7 +1375,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         public void Dispose()
         {
-            _tenantDataContext?.Dispose();
+            TenantDataContext?.Dispose();
         }
     }
 }
