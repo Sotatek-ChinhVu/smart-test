@@ -45,6 +45,10 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
         {
             return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.Failed);
         }
+        finally
+        {
+            _superSetDetailRepository.ReleaseResource();
+        }
     }
 
     private List<SetByomeiItem> ConvertSetByomeiToItem(List<SetByomeiModel> setByomeiModels)

@@ -30,6 +30,10 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         {
             return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.Failed);
         }
+        finally
+        {
+            _timeZoneRepository.ReleaseResource();
+        }
     }
 
     private GetDefaultSelectedTimeStatus ValidateInput(GetDefaultSelectedTimeInputData inputData)

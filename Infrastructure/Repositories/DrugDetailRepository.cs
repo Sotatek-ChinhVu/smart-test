@@ -497,5 +497,10 @@ namespace Infrastructure.Repositories
                 rootItem.Children.Add(menuItemChildren);
             }
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

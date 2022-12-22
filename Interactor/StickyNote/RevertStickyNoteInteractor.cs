@@ -14,18 +14,25 @@ namespace Interactor.StickyNote
 
         public RevertStickyNoteOutputData Handle(RevertStickyNoteInputData inputData)
         {
-            if (inputData.HpId <= 0)
-                return new RevertStickyNoteOutputData(false,UpdateStickyNoteStatus.InvalidHpId);
+            try
+            {
+                if (inputData.HpId <= 0)
+                    return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidHpId);
 
-            if (inputData.PtId <= 0)
-                return new RevertStickyNoteOutputData(false,UpdateStickyNoteStatus.InvalidPtId);
+                if (inputData.PtId <= 0)
+                    return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidPtId);
 
-            if (inputData.SeqNo <= 0)
-                return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidSeqNo);
+                if (inputData.SeqNo <= 0)
+                    return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidSeqNo);
 
-            var result = _ptTagRepository.UpdateIsDeleted(inputData.HpId, inputData.PtId, inputData.SeqNo, 0, inputData.UserId);
+                var result = _ptTagRepository.UpdateIsDeleted(inputData.HpId, inputData.PtId, inputData.SeqNo, 0, inputData.UserId);
 
-            return new RevertStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
+                return new RevertStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
+            }
+            finally
+            {
+                _ptTagRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -33,5 +33,10 @@ namespace Infrastructure.Repositories
             }
             return systemConf != null ? (systemConf.Val, systemConf.Param ?? string.Empty) : (defaultValue, defaultParam);
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

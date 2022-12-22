@@ -164,5 +164,10 @@ namespace Infrastructure.Repositories
             entity.UpdateId = userId;
             return entity;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

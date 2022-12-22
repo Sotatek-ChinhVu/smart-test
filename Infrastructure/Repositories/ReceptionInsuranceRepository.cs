@@ -347,6 +347,10 @@ namespace Infrastructure.Repositories
         {
             return !(startDate <= sinDate && endDate >= sinDate);
         }
-      
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

@@ -63,5 +63,10 @@ namespace Infrastructure.Repositories
                                         groupDetail?.GrpCodeName ?? string.Empty
                                     );
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

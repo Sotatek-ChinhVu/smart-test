@@ -64,6 +64,12 @@ namespace Interactor.OrdInfs
             {
                 return new ValidationInputItemOutputData(new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), ValidationInputItemStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _ordInfRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+            }
         }
 
         private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<ValidationInputItemItem> inputDataList)

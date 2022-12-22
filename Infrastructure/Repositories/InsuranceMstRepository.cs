@@ -551,6 +551,11 @@ namespace Infrastructure.Repositories
                                         ,entity.Tel1 ?? string.Empty
                                         ,entity.IsKigoNa); ;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
 

@@ -25,49 +25,55 @@ namespace Interactor.DrugInfor
 
         public GetDrugInforOutputData Handle(GetDrugInforInputData inputData)
         {
-
-            if (inputData.HpId <= 0)
+            try
             {
-                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidHpId);
+                if (inputData.HpId <= 0)
+                {
+                    return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidHpId);
+                }
+
+                if (inputData.SinDate <= 0)
+                {
+                    return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidSindate);
+                }
+
+                if (String.IsNullOrEmpty(inputData.ItemCd))
+                {
+                    return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidItemCd);
+                }
+
+                var data = _drugInforRepository.GetDrugInfor(inputData.HpId, inputData.SinDate, inputData.ItemCd);
+                var listPicHou = new List<string>();
+                var listPicZai = new List<string>();
+
+                if (!String.IsNullOrEmpty(data.OtherPicZai))
+                {
+                    data.PathPicZai = data.OtherPicZai;
+                }
+                else
+                {
+                    data.PathPicZai = GetPathImagePic(data.YjCode, data.DefaultPathPicZai, data.CustomPathPicZai, listPicZai);
+                }
+
+                if (!String.IsNullOrEmpty(data.OtherPicHou))
+                {
+                    data.PathPicHou = data.OtherPicHou;
+                }
+                else
+                {
+                    data.PathPicHou = GetPathImagePic(data.YjCode, data.DefaultPathPicHou, data.CustomPathPicHou, listPicHou);
+                }
+
+                //set list image
+                data.ListPicHou = listPicHou;
+                data.ListPicZai = listPicZai;
+
+                return new GetDrugInforOutputData(data, GetDrugInforStatus.Successed);
             }
-
-            if (inputData.SinDate <= 0)
+            finally
             {
-                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidSindate);
+                _drugInforRepository.ReleaseResource();
             }
-
-            if (String.IsNullOrEmpty(inputData.ItemCd))
-            {
-                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidItemCd);
-            }
-
-            var data = _drugInforRepository.GetDrugInfor(inputData.HpId, inputData.SinDate, inputData.ItemCd);
-            var listPicHou = new List<string>();
-            var listPicZai = new List<string>();
-
-            if (!String.IsNullOrEmpty(data.OtherPicZai))
-            {
-                data.PathPicZai = data.OtherPicZai;
-            }
-            else
-            {
-                data.PathPicZai = GetPathImagePic(data.YjCode, data.DefaultPathPicZai, data.CustomPathPicZai, listPicZai);
-            }
-            
-            if(!String.IsNullOrEmpty(data.OtherPicHou))
-            {
-                data.PathPicHou = data.OtherPicHou;
-            }  
-            else
-            {
-                data.PathPicHou = GetPathImagePic(data.YjCode, data.DefaultPathPicHou, data.CustomPathPicHou, listPicHou);
-            }
-
-            //set list image
-            data.ListPicHou = listPicHou;
-            data.ListPicZai = listPicZai;
-
-            return new GetDrugInforOutputData(data, GetDrugInforStatus.Successed);
         }
 
         private string GetPathImagePic(string yjCode, string defaultPath, string customPath, List<string> listPic)

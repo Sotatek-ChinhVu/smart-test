@@ -32,7 +32,9 @@ namespace Interactor.OrdInfs
             {
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
-            var allOdrInfs = _ordInfRepository
+            try
+            {
+                var allOdrInfs = _ordInfRepository
                     .GetList(inputData.HpId, inputData.PtId, inputData.UserId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
                     .Select(o => new OdrInfItem(
                         o.HpId,
@@ -120,68 +122,64 @@ namespace Interactor.OrdInfs
                     .ThenBy(odr => odr.SortNo)
                     .ToList();
 
-            var hokenOdrInfs = allOdrInfs
-                .GroupBy(odr => odr.HokenPid)
-                .Select(grp => grp.FirstOrDefault())
-                .ToList();
-            var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
-
-            if (hokenOdrInfs == null || hokenOdrInfs.Count == 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.NoData);
-            }
-
-            var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
-
-            var obj = new object();
-            Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
-            {
-
-                var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
-                var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
-                // Find By Group
-                var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
-                    .GroupBy(odr => new
-                    {
-                        odr.HokenPid,
-                        odr.GroupOdrKouiKbn,
-                        odr.InoutKbn,
-                        odr.SyohoSbt,
-                        odr.SikyuKbn,
-                        odr.TosekiKbn,
-                        odr.SanteiKbn
-                    })
+                var hokenOdrInfs = allOdrInfs
+                    .GroupBy(odr => odr.HokenPid)
                     .Select(grp => grp.FirstOrDefault())
                     .ToList();
-                if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
-                {
-                    var objGroupOdrInf = new object();
-                    Parallel.ForEach(groupOdrInfs, groupOdrInf =>
-                    {
-                        var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
-                                                && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
-                                                && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                            .ToList();
+                var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
 
-                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
-                        lock (objGroupOdrInf)
+                if (hokenOdrInfs == null || hokenOdrInfs.Count == 0)
+                {
+                    return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.NoData);
+                }
+
+                var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
+                foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
+                {
+                    var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
+                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
+                    // Find By Group
+                    var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
+                        .GroupBy(odr => new
                         {
+                            odr.HokenPid,
+                            odr.GroupOdrKouiKbn,
+                            odr.InoutKbn,
+                            odr.SyohoSbt,
+                            odr.SikyuKbn,
+                            odr.TosekiKbn,
+                            odr.SanteiKbn
+                        })
+                        .Select(grp => grp.FirstOrDefault())
+                        .ToList();
+                    if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
+                    {
+                        foreach (var groupOdrInf in groupOdrInfs)
+                        {
+                            var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
+                                                    && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
+                                                    && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                    && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                    && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                    && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                    && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
+                                                .ToList();
+
+                            var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
                             group.OdrInfs.AddRange(rpOdrInfs);
                             groupHoken.GroupOdrItems.Add(group);
                         }
-                    });
-                }
-                lock (obj)
-                {
+                    }
                     tree.GroupHokens.Add(groupHoken);
                 }
-            });
 
-            return tree;
+                return tree;
+            }
+            finally
+            {
+                _insuranceRepository.ReleaseResource();
+                _ordInfRepository.ReleaseResource();
+            }
         }
     }
 }

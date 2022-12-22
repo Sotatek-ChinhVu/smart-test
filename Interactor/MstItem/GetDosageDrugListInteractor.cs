@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Infrastructure.Repositories;
 using UseCase.MstItem.GetDosageDrugList;
 
 namespace Interactor.MstItem
@@ -32,6 +33,10 @@ namespace Interactor.MstItem
             catch
             {
                 return new GetDosageDrugListOutputData(new List<DosageDrugModel>(), GetDosageDrugListStatus.Fail);
+            }
+            finally
+            {
+                _inputItemRepository.ReleaseResource();
             }
         }
     }

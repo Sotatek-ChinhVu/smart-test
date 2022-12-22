@@ -68,6 +68,11 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
         return raiinInf != null ? raiinInf.TantoId : 0;
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void SaveList(List<RaiinFilterMstModel> mstModels, int hpId, int userId)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();

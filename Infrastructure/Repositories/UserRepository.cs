@@ -7,6 +7,7 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
@@ -274,6 +275,11 @@ namespace Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

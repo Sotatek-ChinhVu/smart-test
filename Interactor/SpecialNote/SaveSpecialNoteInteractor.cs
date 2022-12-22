@@ -15,19 +15,26 @@ namespace Interactor.SpecialNote
 
         public SaveSpecialNoteOutputData Handle(SaveSpecialNoteInputData inputData)
         {
-            if (inputData.HpId <= 0)
+            try
             {
-                return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidHpId);
+                if (inputData.HpId <= 0)
+                {
+                    return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidHpId);
+                }
+                if (inputData.PtId <= 0)
+                {
+                    return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidPtId);
+                }
+                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, inputData.PatientInfoTab, inputData.UserId);
+
+                if (!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
+
+                return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Successed);
             }
-            if (inputData.PtId <= 0)
+            finally
             {
-                return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidPtId);
+                _specialNoteRepository.ReleaseResource();
             }
-            var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, inputData.PatientInfoTab, inputData.UserId);
-           
-            if(!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
-           
-            return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Successed);
         }
     }
 }

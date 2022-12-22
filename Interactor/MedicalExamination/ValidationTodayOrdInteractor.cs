@@ -10,6 +10,7 @@ using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Repositories;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
@@ -117,6 +118,18 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new ValidationTodayOrdOutputData(ValidationTodayOrdStatus.Failed, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, KarteValidationStatus.Valid);
+            }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _kaRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
             }
         }
 

@@ -49,6 +49,10 @@ namespace Interactor.MstItem
             {
                 return new UpdateAdoptedItemListOutputData(UpdateAdoptedItemListStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.NextOrder
+﻿using Domain.Common;
+
+namespace Domain.Models.NextOrder
 {
-    public interface INextOrderRepository
+    public interface INextOrderRepository : IRepositoryBase
     {
         List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type);
 

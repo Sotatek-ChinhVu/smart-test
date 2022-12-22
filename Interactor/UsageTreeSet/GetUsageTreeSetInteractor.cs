@@ -21,44 +21,51 @@ namespace Interactor.UsageTreeSet
 
         public GetUsageTreeSetOutputData Handle(GetUsageTreeSetInputData inputData)
         {
-            if (inputData.HpId < 0)
-                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidHpId);
-
-            if (inputData.SinDate < 0)
-                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidSinDate);
-
-            if (inputData.KouiKbn < 0)
-                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidKouiKbn);
-
-            int setUsageKbn = 0;
-            int setDrugKbn = 0;
-
-            if (_listDug.Contains(inputData.KouiKbn))
+            try
             {
-                setDrugKbn = 20;
-                setUsageKbn = 21;
+                if (inputData.HpId < 0)
+                    return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidHpId);
+
+                if (inputData.SinDate < 0)
+                    return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidSinDate);
+
+                if (inputData.KouiKbn < 0)
+                    return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidKouiKbn);
+
+                int setUsageKbn = 0;
+                int setDrugKbn = 0;
+
+                if (_listDug.Contains(inputData.KouiKbn))
+                {
+                    setDrugKbn = 20;
+                    setUsageKbn = 21;
+                }
+                else if (_listInject.Contains(inputData.KouiKbn))
+                {
+                    setDrugKbn = 31;
+                    setUsageKbn = 30;
+                }
+                else
+                    setDrugKbn = OdrUtil.GetGroupKoui(inputData.KouiKbn);
+
+                int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
+
+                List<ListSetMstModel> result = new List<ListSetMstModel>();
+                if (setDrugKbn != 0)
+                    result.AddRange(GetListTreeSet(setDrugKbn, generationId, inputData));
+
+                if (setUsageKbn != 0)
+                    result.AddRange(GetListUsageTreeSet(setUsageKbn, generationId, inputData));
+
+                if (!result.Any())
+                    return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.DataNotFound);
+
+                return new GetUsageTreeSetOutputData(result, GetUsageTreeStatus.Successed);
             }
-            else if (_listInject.Contains(inputData.KouiKbn))
+            finally
             {
-                setDrugKbn = 31;
-                setUsageKbn = 30;
+                _usageTreeSetRepository.ReleaseResource();
             }
-            else
-                setDrugKbn = OdrUtil.GetGroupKoui(inputData.KouiKbn);
-
-            int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
-
-            List<ListSetMstModel> result = new List<ListSetMstModel>();
-            if (setDrugKbn != 0)
-                result.AddRange(GetListTreeSet(setDrugKbn, generationId, inputData));
-
-            if (setUsageKbn != 0)
-                result.AddRange(GetListUsageTreeSet(setUsageKbn, generationId, inputData));
-
-            if (!result.Any())
-                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.DataNotFound);
-
-            return new GetUsageTreeSetOutputData(result, GetUsageTreeStatus.Successed);
         }
 
         private List<ListSetMstModel> GetListTreeSet(int setDrugKbn, int generationId, GetUsageTreeSetInputData inputData)

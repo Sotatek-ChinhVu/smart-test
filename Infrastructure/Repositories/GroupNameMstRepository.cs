@@ -16,6 +16,11 @@ namespace Infrastructure.Repositories
         {
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         /// <summary>
         /// FE logic
         /// GrpName : filter & only pass record want save to db
