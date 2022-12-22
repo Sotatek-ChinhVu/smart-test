@@ -121,7 +121,12 @@ namespace Interactor.MedicalExamination
                 {
                     if (check)
                     {
-                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, true);
+                        var listFileItems = inputDatas.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
                     }
                     else
                     {

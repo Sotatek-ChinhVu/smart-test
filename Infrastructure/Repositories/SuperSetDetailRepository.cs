@@ -250,7 +250,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var result = NoTrackingDataContext.SetKarteImgInf.Where(item =>
                                                                     item.HpId == hpId
                                                                     && item.SetCd == setCd
-                                                                    && item.SeqNo == lastSeqNo)
+                                                                    && item.SeqNo == lastSeqNo
+                                                                    && item.FileName != string.Empty)
                                                                 .OrderBy(item => item.Position)
                                                                 .Select(item => new SetKarteFileModel(
                                                                    item.Id,
@@ -1243,6 +1244,19 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             item.SetCd = setCd;
             item.Position = position;
             position++;
+        }
+
+        if (listFileName.Any(item => item == string.Empty))
+        {
+            SetKarteImgInf newFile = new();
+            newFile.FileName = string.Empty;
+            newFile.Id = 0;
+            newFile.HpId = hpId;
+            newFile.SeqNo = lastSeqNo + 1;
+            newFile.Position = 1;
+            newFile.SetCd = setCd;
+            newFile.KarteKbn = 0;
+            TrackingDataContext.SetKarteImgInf.Add(newFile);
         }
     }
 

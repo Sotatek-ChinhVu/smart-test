@@ -179,6 +179,20 @@ namespace Infrastructure.Repositories
                 item.Position = position;
                 position++;
             }
+
+            if (listFileName.Any(item => item == string.Empty))
+            {
+                KarteImgInf newFile = new();
+                newFile.FileName = string.Empty;
+                newFile.Id = 0;
+                newFile.HpId = hpId;
+                newFile.RaiinNo = raiinNo;
+                newFile.PtId = ptId;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = 1;
+                newFile.KarteKbn = 0;
+                TrackingDataContext.KarteImgInfs.Add(newFile);
+            }
         }
 
         public List<FileInfModel> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile)
@@ -186,30 +200,31 @@ namespace Infrastructure.Repositories
             var lastSeqNo = searchTempFile ? 0 : GetLastSeqNo(hpId, ptId, raiinNo);
             raiinNo = searchTempFile ? 0 : raiinNo;
             var result = NoTrackingDataContext.KarteImgInfs.Where(item =>
-                                                                                item.HpId == hpId
-                                                                                && item.PtId == ptId
-                                                                                && item.RaiinNo == raiinNo
-                                                                                && item.SeqNo == lastSeqNo
-                                                                                )
-                                                                    .OrderBy(item => item.Position)
-                                                                    .Select(item =>
-                                                                            new FileInfModel(
-                                                                                    item.RaiinNo,
-                                                                                    item.SeqNo,
-                                                                                    item.KarteKbn > 0,
-                                                                                    item.FileName ?? string.Empty,
-                                                                                    false
-                                                                                )
-                                                                    ).ToList();
+                                                                        item.HpId == hpId
+                                                                        && item.PtId == ptId
+                                                                        && item.RaiinNo == raiinNo
+                                                                        && item.SeqNo == lastSeqNo
+                                                                        && item.FileName != string.Empty
+                                                                        )
+                                                            .OrderBy(item => item.Position)
+                                                            .Select(item =>
+                                                                    new FileInfModel(
+                                                                            item.RaiinNo,
+                                                                            item.SeqNo,
+                                                                            item.KarteKbn > 0,
+                                                                            item.FileName ?? string.Empty,
+                                                                            false
+                                                                        )
+                                                            ).ToList();
             return result;
         }
 
         public List<FileInfModel> GetListKarteFile(int hpId, long ptId, List<long> listRaiinNo, bool isGetAll)
         {
-
             var listFileKarte = NoTrackingDataContext.KarteImgInfs.Where(item =>
                                                                                 item.HpId == hpId
                                                                                 && item.PtId == ptId
+                                                                                && item.FileName != string.Empty
                                                                                 && listRaiinNo.Contains(item.RaiinNo)
                                                                                 )
                                                                     .OrderBy(item => item.Position)
