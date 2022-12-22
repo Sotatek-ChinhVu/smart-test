@@ -182,6 +182,11 @@ namespace Infrastructure.Repositories.SpecialNote
             ));
             return ptSupples.ToList();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
 

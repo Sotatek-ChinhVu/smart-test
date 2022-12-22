@@ -34,8 +34,15 @@ namespace Interactor.KohiHokenMst
                 return new GetKohiHokenMstOutputData(new HokenMstModel(), GetKohiHokenMstStatus.InvalidFutansyaNo);
             }
 
-            var data = _insuranceMstResponsitory.GetHokenMstByFutansyaNo(inputData.HpId, inputData.SinDate, inputData.FutansyaNo);
-            return new GetKohiHokenMstOutputData(data, GetKohiHokenMstStatus.Successed);
+            try
+            {
+                var data = _insuranceMstResponsitory.GetHokenMstByFutansyaNo(inputData.HpId, inputData.SinDate, inputData.FutansyaNo);
+                return new GetKohiHokenMstOutputData(data, GetKohiHokenMstStatus.Successed);
+            }
+            finally
+            {
+                _insuranceMstResponsitory.ReleaseResource();
+            }
         }
     }
 }

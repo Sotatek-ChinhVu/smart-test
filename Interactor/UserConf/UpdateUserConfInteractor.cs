@@ -40,5 +40,9 @@ public class UpdateUserConfInteractor : IUpdateUserConfInputPort
         {
             return new UpdateUserConfOutputData(UpdateUserConfStatus.Failed);
         }
+        finally
+        {
+            _userConfRepository.ReleaseResource();
+        }
     }
 }

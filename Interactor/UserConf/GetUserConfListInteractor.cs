@@ -32,5 +32,9 @@ public class GetUserConfListInteractor : IGetUserConfListInputPort
         {
             return new GetUserConfListOutputData(GetUserConfListStatus.Failed, new());
         }
+        finally
+        {
+            _userConfRepository.ReleaseResource();
+        }
     }
 }

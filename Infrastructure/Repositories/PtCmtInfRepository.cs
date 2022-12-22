@@ -27,6 +27,11 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
         return ptCmts.ToList();
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Upsert(long ptId, string text, int userId)
     {
         var ptCmtList = TrackingDataContext.PtCmtInfs.AsTracking()

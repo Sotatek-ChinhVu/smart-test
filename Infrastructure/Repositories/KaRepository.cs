@@ -120,4 +120,9 @@ public class KaRepository : RepositoryBase, IKaRepository
             k.KaSname ?? string.Empty,
             k.KaName ?? string.Empty);
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

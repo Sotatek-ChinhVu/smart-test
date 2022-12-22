@@ -14,16 +14,22 @@ public class UpdateReceptionInteractor : IUpdateReceptionInputPort
 
     public UpdateReceptionOutputData Handle(UpdateReceptionInputData input)
     {
-
-        ReceptionSaveDto dto = input.Dto;
-
-        if (dto!.Insurances.Any(i => !i.IsValidData()))
+        try
         {
-            return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList);
-        }
+            ReceptionSaveDto dto = input.Dto;
 
-        var success = _receptionRepository.Update(input.Dto, input.HpId, input.UserId);
-        var status = success ? UpdateReceptionStatus.Success : UpdateReceptionStatus.NotFound;
-        return new UpdateReceptionOutputData(status);
+            if (dto!.Insurances.Any(i => !i.IsValidData()))
+            {
+                return new UpdateReceptionOutputData(UpdateReceptionStatus.InvalidInsuranceList);
+            }
+
+            var success = _receptionRepository.Update(input.Dto, input.HpId, input.UserId);
+            var status = success ? UpdateReceptionStatus.Success : UpdateReceptionStatus.NotFound;
+            return new UpdateReceptionOutputData(status);
+        }
+        finally
+        {
+            _receptionRepository.ReleaseResource();
+        }
     }
 }

@@ -36,8 +36,15 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidGrpId);
         }
 
-        UpdateDynamicCell(input);
-        return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+        try
+        {
+            UpdateDynamicCell(input);
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+        }
+        finally
+        {
+            _raiinKbnInfRepository.ReleaseResource();
+        }
     }
 
     private void UpdateDynamicCell(UpdateReceptionDynamicCellInputData input)

@@ -73,6 +73,14 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         {
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _receptionRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 
     private DocInfModel ConvertToDocInfModel(SaveDocInfInputData inputData)

@@ -31,6 +31,10 @@ namespace Interactor.DrugDetailData
             {
                 return new ShowMdbByomeiOutputData(string.Empty, ShowMdbByomeiStatus.Failed);
             }
+            finally
+            {
+                _drugInforRepository.ReleaseResource();
+            }
         }
 
         private string ShowMdbByomei(DrugDetailModel drugDetailModel)

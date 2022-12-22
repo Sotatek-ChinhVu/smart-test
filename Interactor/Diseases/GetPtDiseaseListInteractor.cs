@@ -17,12 +17,19 @@ namespace Interactor.Diseases
         }
         public GetPtDiseaseListOutputData Handle(GetPtDiseaseListInputData inputData)
         {
-            var ptDiseaseListModel = _diseaseRepository.GetPatientDiseaseList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HokenId, inputData.RequestFrom).ToList();
-            if (!ptDiseaseListModel.Any())
+            try
             {
-                return new GetPtDiseaseListOutputData(new List<PtDiseaseModel>(), GetPtDiseaseListStatus.PtDiseaseListNotExisted);
+                var ptDiseaseListModel = _diseaseRepository.GetPatientDiseaseList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HokenId, inputData.RequestFrom).ToList();
+                if (!ptDiseaseListModel.Any())
+                {
+                    return new GetPtDiseaseListOutputData(new List<PtDiseaseModel>(), GetPtDiseaseListStatus.PtDiseaseListNotExisted);
+                }
+                return new GetPtDiseaseListOutputData(ptDiseaseListModel, GetPtDiseaseListStatus.Success);
             }
-            return new GetPtDiseaseListOutputData(ptDiseaseListModel, GetPtDiseaseListStatus.Success);
+            finally
+            {
+                _diseaseRepository.ReleaseResource();
+            }
         }
     }
 }

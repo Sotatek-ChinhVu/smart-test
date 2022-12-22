@@ -13,9 +13,16 @@ namespace Interactor.RaiinKubunMst
 
         public GetRaiinKubunMstListOutputData Handle(GetRaiinKubunMstListInputData inputData)
         {
-            List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.GetList(inputData.IsDeleted);
+            try
+            {
+                List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.GetList(inputData.IsDeleted);
 
-            return new GetRaiinKubunMstListOutputData(raiinKubunList);
+                return new GetRaiinKubunMstListOutputData(raiinKubunList);
+            }
+            finally
+            {
+                _raiinKubunMstRepository.ReleaseResource();
+            }
         }
     }
 }

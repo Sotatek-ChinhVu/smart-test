@@ -30,6 +30,10 @@ namespace Interactor.DrugDetailData
             {
                 return new ShowKanjaMukeOutputData(string.Empty, ShowKanjaMukeStatus.Failed);
             }
+            finally
+            {
+                _drugInforRepository.ReleaseResource();
+            }
         }
 
         private string ShowKanjaMuke(DrugDetailModel drugDetailModel)

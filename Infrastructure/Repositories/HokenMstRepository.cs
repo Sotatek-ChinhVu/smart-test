@@ -99,5 +99,10 @@ namespace Infrastructure.Repositories
 
             return existHokenEdaNo;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

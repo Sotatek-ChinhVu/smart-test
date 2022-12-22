@@ -124,6 +124,11 @@ namespace Interactor.User
             {
                 return new UpsertUserListOutputData(UpsertUserListStatus.Failed);
             }
+            finally
+            {
+                _kaRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+            }
         }
         private static UpsertUserListStatus ConvertStatusUser(ValidationStatus status)
         {

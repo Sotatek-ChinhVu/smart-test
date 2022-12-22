@@ -42,6 +42,10 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
             return new ValidKohiOutputData(validateDetails);
         }
 

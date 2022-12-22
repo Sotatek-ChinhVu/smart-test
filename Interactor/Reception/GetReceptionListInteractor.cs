@@ -14,16 +14,23 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
 
     public GetReceptionListOutputData Handle(GetReceptionListInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        try
         {
-            return new GetReceptionListOutputData(GetReceptionListStatus.InvalidHpId);
-        }
-        if (inputData.SinDate <= 0)
-        {
-            return new GetReceptionListOutputData(GetReceptionListStatus.InvalidSinDate);
-        }
+            if (inputData.HpId <= 0)
+            {
+                return new GetReceptionListOutputData(GetReceptionListStatus.InvalidHpId);
+            }
+            if (inputData.SinDate <= 0)
+            {
+                return new GetReceptionListOutputData(GetReceptionListStatus.InvalidSinDate);
+            }
 
-        var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
-        return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
+            var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
+            return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
+        }
+        finally
+        {
+            _receptionRepository.ReleaseResource();
+        }
     }
 }

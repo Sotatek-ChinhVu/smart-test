@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SwapHoken
+﻿using Domain.Common;
+
+namespace Domain.Models.SwapHoken
 {
-    public interface ISwapHokenRepository
+    public interface ISwapHokenRepository : IRepositoryBase
     {
         long CountOdrInf(int hpId, long ptId, int hokenPid, int startDate, int endDate);
 

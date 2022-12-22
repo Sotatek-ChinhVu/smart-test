@@ -35,7 +35,10 @@ namespace Interactor.PatientInfor
             {
                 return new DeletePatientInfoOutputData(DeletePatientInfoStatus.Failed);
             }
-            
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
         }
     }
 }

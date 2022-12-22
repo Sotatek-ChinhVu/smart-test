@@ -27,6 +27,11 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             .Select(u => ToModel(u)).ToList();
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     private UketukeSbtMstModel ToModel(UketukeSbtMst u)
     {
         return new UketukeSbtMstModel(

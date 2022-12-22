@@ -14,7 +14,14 @@ public class SaveRaiinFilterMstListInteractor : ISaveRaiinFilterMstListInputPort
 
     public SaveRaiinFilterMstListOutputData Handle(SaveRaiinFilterMstListInputData input)
     {
-        _raiinFilterMstRepository.SaveList(input.FilterMsts, input.HpId, input.UserId);
-        return new SaveRaiinFilterMstListOutputData(SaveRaiinFilterMstListStatus.Success);
+        try
+        {
+            _raiinFilterMstRepository.SaveList(input.FilterMsts, input.HpId, input.UserId);
+            return new SaveRaiinFilterMstListOutputData(SaveRaiinFilterMstListStatus.Success);
+        }
+        finally
+        {
+            _raiinFilterMstRepository.ReleaseResource();
+        }
     }
 }
