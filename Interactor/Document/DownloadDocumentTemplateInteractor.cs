@@ -4,20 +4,20 @@ using FindAndReplace;
 using Interactor.Document.CommonGetListParam;
 using System.Net;
 using UseCase.Document;
-using UseCase.Document.DowloadDocumentTemplate;
+using UseCase.Document.DownloadDocumentTemplate;
 
 namespace Interactor.Document;
 
-public class DowloadDocumentTemplateInteractor : IDowloadDocumentTemplateInputPort
+public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInputPort
 {
     private readonly ICommonGetListParam _commonGetListParam;
 
-    public DowloadDocumentTemplateInteractor(ICommonGetListParam commonGetListParam)
+    public DownloadDocumentTemplateInteractor(ICommonGetListParam commonGetListParam)
     {
         _commonGetListParam = commonGetListParam;
     }
 
-    public DowloadDocumentTemplateOutputData Handle(DowloadDocumentTemplateInputData inputData)
+    public DownloadDocumentTemplateOutputData Handle(DownloadDocumentTemplateInputData inputData)
     {
         try
         {
@@ -33,16 +33,16 @@ public class DowloadDocumentTemplateInteractor : IDowloadDocumentTemplateInputPo
                         var listGroupParams = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
                         if (extension.Equals(".docx"))
                         {
-                            return new DowloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams), DowloadDocumentTemplateStatus.Successed);
+                            return new DownloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams), DownloadDocumentTemplateStatus.Successed);
                         }
                     }
-                    return new DowloadDocumentTemplateOutputData(DowloadDocumentTemplateStatus.Failed);
+                    return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
                 }
             }
         }
         catch (Exception)
         {
-            return new DowloadDocumentTemplateOutputData(DowloadDocumentTemplateStatus.Failed);
+            return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
         }
     }
 
@@ -53,7 +53,7 @@ public class DowloadDocumentTemplateInteractor : IDowloadDocumentTemplateInputPo
         {
             foreach (var param in group.ListParamModel)
             {
-                flatDocument.FindAndReplace("<<" + param.Parameter + ">>", param.Value);
+                flatDocument.FindAndReplace("《" + param.Parameter + "》", param.Value);
             }
         }
         flatDocument.Close();

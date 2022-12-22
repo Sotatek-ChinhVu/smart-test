@@ -278,7 +278,7 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Document.DowloadDocumentTemplate;
+using UseCase.Document.DownloadDocumentTemplate;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -663,7 +663,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
-            busBuilder.RegisterUseCase<DowloadDocumentTemplateInputData, DowloadDocumentTemplateInteractor>();
+            busBuilder.RegisterUseCase<DownloadDocumentTemplateInputData, DownloadDocumentTemplateInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

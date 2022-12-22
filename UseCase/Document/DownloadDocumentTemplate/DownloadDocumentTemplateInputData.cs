@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Document.DowloadDocumentTemplate;
+namespace UseCase.Document.DownloadDocumentTemplate;
 
-public class DowloadDocumentTemplateInputData : IInputData<DowloadDocumentTemplateOutputData>
+public class DownloadDocumentTemplateInputData : IInputData<DownloadDocumentTemplateOutputData>
 {
-    public DowloadDocumentTemplateInputData(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId, string linkFile)
+    public DownloadDocumentTemplateInputData(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId, string linkFile)
     {
         HpId = hpId;
         UserId = userId;

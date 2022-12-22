@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Document;
 
-public class DowloadDocumentTemplateRequest
+public class DownloadDocumentTemplateRequest
 {
     public long PtId { get; set; }
 

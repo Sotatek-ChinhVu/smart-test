@@ -19,7 +19,7 @@ using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
 using UseCase.Document.GetListParamTemplate;
 using Interactor.Document.CommonGetListParam;
-using UseCase.Document.DowloadDocumentTemplate;
+using UseCase.Document.DownloadDocumentTemplate;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Net;
@@ -185,13 +185,13 @@ public class DocumentController : AuthorizeControllerBase
 
 
     [HttpPost(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportTemplate([FromBody] DowloadDocumentTemplateRequest request)
+    public IActionResult ExportTemplate([FromBody] DownloadDocumentTemplateRequest request)
     {
         var extension = Path.GetExtension(request.LinkFile).ToLower();
         var fileName = Path.GetFileName(request.LinkFile);
         if (extension.Equals(".docx"))
         {
-            var input = new DowloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
+            var input = new DownloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
             var output = _bus.Handle(input);
             return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
         }
@@ -213,7 +213,7 @@ public class DocumentController : AuthorizeControllerBase
                                               )).ToList();
     }
 
-    private MemoryStream ExportTemplateXlsx(int hpId, int userId, DowloadDocumentTemplateRequest request)
+    private MemoryStream ExportTemplateXlsx(int hpId, int userId, DownloadDocumentTemplateRequest request)
     {
         var listGroupParams = _commonGetListParam.GetListParam(hpId, userId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
         using (var httpClient = new HttpClient())

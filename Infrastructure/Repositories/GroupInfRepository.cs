@@ -1,4 +1,5 @@
 ﻿using Domain.Models.GroupInf;
+using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -43,17 +44,24 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
-                                .Select(x => new GroupInfModel(
-                                    hpId,
-                                    ptId,
-                                    x.GroupId,
-                                    x.GroupCode ?? string.Empty,
-                                    ""
-                                    )).ToList();
+            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).ToList();
+            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
+            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId).ToList();
+            return dataPtGrpInfs.Select(x => ConvertToGroupInfModel(hpId, ptId, x, groupMstList, groupDetailList)).ToList();
+        }
 
-
-            return dataPtGrpInfs;
+        private GroupInfModel ConvertToGroupInfModel(int hpId, long ptId, PtGrpInf mst, List<PtGrpNameMst> groupMstList, List<PtGrpItem> groupDetailList)
+        {
+            var groupMst = groupMstList.FirstOrDefault(item => item.GrpId == mst.GroupId);
+            var groupDetail = groupDetailList.FirstOrDefault(item => item.GrpCode == mst.GroupCode);
+            return new GroupInfModel(
+                                        hpId,
+                                        ptId,
+                                        mst.GroupId,
+                                        mst.GroupCode ?? string.Empty,
+                                        groupMst?.GrpName ?? string.Empty,
+                                        groupDetail?.GrpCodeName ?? string.Empty
+                                    );
         }
     }
 }
