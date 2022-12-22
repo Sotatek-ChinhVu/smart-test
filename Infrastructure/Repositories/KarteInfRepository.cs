@@ -224,7 +224,6 @@ namespace Infrastructure.Repositories
             var listFileKarte = NoTrackingDataContext.KarteImgInfs.Where(item =>
                                                                                 item.HpId == hpId
                                                                                 && item.PtId == ptId
-                                                                                && item.FileName != string.Empty
                                                                                 && listRaiinNo.Contains(item.RaiinNo)
                                                                                 )
                                                                     .OrderBy(item => item.Position)
