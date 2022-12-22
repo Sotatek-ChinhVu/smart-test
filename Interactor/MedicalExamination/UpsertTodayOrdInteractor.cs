@@ -1,6 +1,7 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -161,7 +162,7 @@ namespace Interactor.MedicalExamination
             var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, listUpdates, false);
+                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, listUpdates.Select(item => new SaveFileInfModel(false, item)).ToList(), false);
             }
             else
             {

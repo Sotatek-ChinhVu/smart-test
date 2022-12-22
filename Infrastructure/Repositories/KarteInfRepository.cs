@@ -74,13 +74,13 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public bool SaveListFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveTempFile)
+        public bool SaveListFileKarte(int hpId, long ptId, long raiinNo, List<SaveFileInfModel> listFiles, bool saveTempFile)
         {
             try
             {
                 if (saveTempFile)
                 {
-                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, ptId, listFileName);
+                    var listFileInsert = ConvertListInsertTempKarteFile(hpId, ptId, listFiles);
                     if (listFileInsert.Any())
                     {
                         TrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
@@ -88,7 +88,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFileName);
+                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => item.FileName).ToList());
                 }
                 return TrackingDataContext.SaveChanges() > 0;
             }
@@ -112,13 +112,13 @@ namespace Infrastructure.Repositories
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 
-        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, long ptId, List<string> listFileNames)
+        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, long ptId, List<SaveFileInfModel> listFileNames)
         {
             List<KarteImgInf> result = new();
             int position = 1;
 
             // insert new entity
-            foreach (var name in listFileNames)
+            foreach (var item in listFileNames)
             {
                 KarteImgInf entity = new();
                 entity.HpId = hpId;
@@ -126,7 +126,12 @@ namespace Infrastructure.Repositories
                 entity.RaiinNo = 0;
                 entity.Position = position;
                 entity.SeqNo = 0;
-                entity.FileName = name;
+                entity.KarteKbn = 0;
+                if (item.IsSchema)
+                {
+                    entity.KarteKbn = 1;
+                }
+                entity.FileName = item.FileName;
                 result.Add(entity);
                 position += 1;
             }
@@ -162,6 +167,7 @@ namespace Infrastructure.Repositories
                 newFile.Id = 0;
                 newFile.SeqNo = lastSeqNo + 1;
                 newFile.Position = position;
+                newFile.KarteKbn = item.KarteKbn;
                 TrackingDataContext.KarteImgInfs.Add(newFile);
                 position++;
             }
@@ -175,7 +181,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<string> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile)
+        public List<FileInfModel> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile)
         {
             var lastSeqNo = searchTempFile ? 0 : GetLastSeqNo(hpId, ptId, raiinNo);
             raiinNo = searchTempFile ? 0 : raiinNo;
@@ -187,7 +193,13 @@ namespace Infrastructure.Repositories
                                                                                 )
                                                                     .OrderBy(item => item.Position)
                                                                     .Select(item =>
-                                                                            item.FileName ?? string.Empty
+                                                                            new FileInfModel(
+                                                                                    item.RaiinNo,
+                                                                                    item.SeqNo,
+                                                                                    item.KarteKbn > 0,
+                                                                                    item.FileName ?? string.Empty,
+                                                                                    false
+                                                                                )
                                                                     ).ToList();
             return result;
         }
@@ -215,6 +227,7 @@ namespace Infrastructure.Repositories
                             result.Add(new FileInfModel(
                                         karte.RaiinNo,
                                         karte.SeqNo,
+                                        karte.KarteKbn > 0,
                                         karte.FileName ?? string.Empty,
                                         karte.SeqNo != lastSeqNo
                                     ));
@@ -225,6 +238,7 @@ namespace Infrastructure.Repositories
                         result.Add(new FileInfModel(
                                         karte.RaiinNo,
                                         karte.SeqNo,
+                                        karte.KarteKbn > 0,
                                         karte.FileName ?? string.Empty,
                                         karte.SeqNo != lastSeqNo
                                     ));
