@@ -69,7 +69,7 @@ namespace Interactor.CommonChecker
 
         public GetOrderCheckerOutputData Handle(GetOrderCheckerInputData inputData)
         {
-            var checkedResult = CheckListOrder(inputData.CurrentListOdr, new List<OrdInfoModel>() { inputData.ListCheckingOrder });
+            var checkedResult = CheckListOrder(inputData.CurrentListOdr,  inputData.ListCheckingOrder);
             if (checkedResult == null || checkedResult.Count == 0)
             {
                 return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);

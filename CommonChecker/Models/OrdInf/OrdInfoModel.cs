@@ -5,30 +5,30 @@ namespace CommonChecker.Models.OrdInf
 {
     public class OrdInfoModel : IOdrInfoModel<OrdInfoDetailModel>
     {
-        public int HpId { get; private set; }
-        public long RaiinNo { get; private set; }
-        public long RpNo { get; private set; }
-        public long RpEdaNo { get; private set; }
+        public int HpId { get; set; }
+        public long RaiinNo { get; set; }
+        public long RpNo { get; set; }
+        public long RpEdaNo { get; set; }
         public long PtId { get; set; }
-        public int SinDate { get; private set; }
-        public int HokenPid { get; private set; }
-        public int OdrKouiKbn { get; private set; }
-        public string RpName { get; private set; }
-        public int InoutKbn { get; private set; }
-        public int SikyuKbn { get; private set; }
-        public int SyohoSbt { get; private set; }
-        public int SanteiKbn { get; private set; }
-        public int TosekiKbn { get; private set; }
-        public int DaysCnt { get; private set; }
-        public int SortNo { get; private set; }
-        public int IsDeleted { get; private set; }
-        public long Id { get; private set; }
-        public DateTime CreateDate { get; private set; }
-        public int CreateId { get; private set; }
-        public string CreateName { get; private set; }
+        public int SinDate { get; set; }
+        public int HokenPid { get; set; }
+        public int OdrKouiKbn { get; set; }
+        public string RpName { get; set; }
+        public int InoutKbn { get; set; }
+        public int SikyuKbn { get; set; }
+        public int SyohoSbt { get; set; }
+        public int SanteiKbn { get; set; }
+        public int TosekiKbn { get; set; }
+        public int DaysCnt { get; set; }
+        public int SortNo { get; set; }
+        public int IsDeleted { get; set; }
+        public long Id { get; set; }
+        public DateTime CreateDate { get; set; }
+        public int CreateId { get; set; }
+        public string CreateName { get; set; }
 
-        public List<OrdInfoDetailModel> OrdInfDetails { get; private set; }
-        public DateTime UpdateDate { get; private set; }
+        public List<OrdInfoDetailModel> OrdInfDetails { get; set; }
+        public DateTime UpdateDate { get; set; }
 
         public OrdInfoModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfoDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate)
         {
