@@ -23,5 +23,9 @@ public class GetListParamTemplateInteractor : IGetListParamTemplateInputPort
         {
             return new GetListParamTemplateOutputData(GetListParamTemplateStatus.Failed);
         }
+        finally
+        {
+            _commonGetListParam.ReleaseResources();
+        }
     }
 }

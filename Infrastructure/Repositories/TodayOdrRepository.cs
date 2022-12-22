@@ -8,6 +8,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -15,10 +16,8 @@ using System.Text;
 
 namespace Infrastructure.Repositories
 {
-    public class TodayOdrRepository : ITodayOdrRepository
+    public class TodayOdrRepository : RepositoryBase, ITodayOdrRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantTrackingDataContext;
         private readonly int headerOdrKouiKbn = 10;
         private readonly string jikanItemCd = "@JIKAN";
         private readonly string shinItemCd = "@SHIN";
@@ -32,21 +31,20 @@ namespace Infrastructure.Repositories
 
         private const string SUSPECT_FLAG = "の疑い";
 
-        public TodayOdrRepository(ITenantProvider tenantProvider)
+        public TodayOdrRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
+
         }
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId)
         {
 
-            var executionStrategy = _tenantTrackingDataContext.Database.CreateExecutionStrategy();
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
             return executionStrategy.Execute(
                 () =>
                 {
-                    using var transaction = _tenantTrackingDataContext.Database.BeginTransaction();
+                    using var transaction = TrackingDataContext.Database.BeginTransaction();
                     try
                     {
                         if (odrInfs.Count > 0)
@@ -125,7 +123,7 @@ namespace Infrastructure.Repositories
 
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
         {
-            var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
 
             if (raiinInf != null)
             {
@@ -141,16 +139,16 @@ namespace Infrastructure.Repositories
                 raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = DateTime.UtcNow;
-                _tenantTrackingDataContext.SaveChanges();
+                TrackingDataContext.SaveChanges();
             }
         }
 
         private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
         {
 
-            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
-            var oldoldSyosaiKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
-            var oldJikanKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
+            var oldHeaderInfModel = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
+            var oldoldSyosaiKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
+            var oldJikanKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
 
             if (oldHeaderInfModel != null)
             {
@@ -220,9 +218,9 @@ namespace Infrastructure.Repositories
                         Suryo = jikanKbn
                     };
 
-                    _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
-                    _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
-                    _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+                    TrackingDataContext.OdrInfs.Add(newHeaderInf);
+                    TrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                    TrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
                 }
             }
             else
@@ -275,12 +273,12 @@ namespace Infrastructure.Repositories
                     Suryo = jikanKbn
                 };
 
-                _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
-                _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
-                _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+                TrackingDataContext.OdrInfs.Add(newHeaderInf);
+                TrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                TrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
             }
 
-            _tenantTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
 
         private void SaveRaiinListInf(List<OrdInfModel> ordInfs, int userId)
@@ -297,19 +295,19 @@ namespace Infrastructure.Repositories
             int sinDate = ordInfs[0].SinDate;
 
             // Get Raiin List Inf
-            var raiinListInfs = _tenantNoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
+            var raiinListInfs = NoTrackingDataContext.RaiinListInfs.Where(item => item.HpId == hpId
                                                                 && item.RaiinNo == raiinNo
                                                                 && item.PtId == ptId
                                                                 && item.SinDate == sinDate).ToList();
 
             // Get KouiKbnMst
-            var kouiKbnMst = _tenantNoTrackingDataContext.KouiKbnMsts.ToList();
+            var kouiKbnMst = NoTrackingDataContext.KouiKbnMsts.ToList();
 
             // Get Raiin List
-            var raiinListMstList = _tenantNoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListDetailList = _tenantNoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListKouiList = _tenantNoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
-            var raiinListItemList = _tenantNoTrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListMstList = NoTrackingDataContext.RaiinListMsts.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListDetailList = NoTrackingDataContext.RaiinListDetails.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListKouiList = NoTrackingDataContext.RaiinListKouis.Where(item => item.IsDeleted == 0).ToList();
+            var raiinListItemList = NoTrackingDataContext.RaiinListItems.Where(item => item.IsDeleted == 0).ToList();
 
             // Filter GrpId
             // Get all raiin list master contain item and koui
@@ -387,7 +385,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf != null)
                             {
-                                _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
+                                TrackingDataContext.RaiinListInfs.Remove(raiinListInf);
                                 raiinListInfs?.Remove(raiinListInf);
                                 IsDeleteExecute = true;
                             }
@@ -409,7 +407,7 @@ namespace Infrastructure.Repositories
                                                                            && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf != null)
                             {
-                                _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
+                                TrackingDataContext.RaiinListInfs.Remove(raiinListInf);
                                 raiinListInfs?.Remove(raiinListInf);
                                 IsDeleteExecute = true;
                             }
@@ -515,8 +513,8 @@ namespace Infrastructure.Repositories
             }
             if (raiinListInfList.Count > 0 || IsDeleteExecute)
             {
-                _tenantTrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
-                _tenantTrackingDataContext.SaveChanges();
+                TrackingDataContext.RaiinListInfs.AddRange(raiinListInfList);
+                TrackingDataContext.SaveChanges();
             }
         }
 
@@ -528,7 +526,7 @@ namespace Infrastructure.Repositories
             {
                 if (item.IsDeleted == DeleteTypes.Deleted)
                 {
-                    var ordInfo = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
+                    var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
                         ordInfo.IsDeleted = DeleteTypes.Deleted;
@@ -536,7 +534,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var ordInf = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
+                    var ordInf = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
 
                     if (ordInf == null)
                     {
@@ -606,8 +604,8 @@ namespace Infrastructure.Repositories
                                     CommentNewline = od.CommentNewline
                                 }
                             ) ?? new List<OdrInfDetail>();
-                        _tenantTrackingDataContext.OdrInfs.Add(ordInfEntity);
-                        _tenantTrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
+                        TrackingDataContext.OdrInfs.Add(ordInfEntity);
+                        TrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
                     }
                     else
                     {
@@ -677,13 +675,13 @@ namespace Infrastructure.Repositories
                                     CommentNewline = od.CommentNewline
                                 }
                             ) ?? new List<OdrInfDetail>();
-                        _tenantTrackingDataContext.OdrInfs.Add(ordInfEntity);
-                        _tenantTrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
+                        TrackingDataContext.OdrInfs.Add(ordInfEntity);
+                        TrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
                     }
                 }
             }
 
-            _tenantTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpsertKarteInfs(KarteInfModel karte, int userId)
@@ -697,7 +695,7 @@ namespace Infrastructure.Repositories
 
             if (karte.IsDeleted == DeleteTypes.Deleted)
             {
-                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
                 if (karteMst != null)
                 {
                     karteMst.IsDeleted = DeleteTypes.Deleted;
@@ -705,7 +703,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var karteMst = _tenantTrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn && karte.IsDeleted == DeleteTypes.None);
+                var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn && karte.IsDeleted == DeleteTypes.None);
 
                 if (karteMst == null)
                 {
@@ -728,7 +726,7 @@ namespace Infrastructure.Repositories
                             UpdateId = userId
                         };
 
-                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
+                        TrackingDataContext.KarteInfs.Add(karteEntity);
                     }
                 }
                 else
@@ -754,30 +752,30 @@ namespace Infrastructure.Repositories
                             UpdateId = userId
                         };
 
-                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
+                        TrackingDataContext.KarteInfs.Add(karteEntity);
                     }
                 }
 
-                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName ?? string.Empty) && k.RaiinNo == 0);
+                var karteImgs = TrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName ?? string.Empty) && k.RaiinNo == 0);
                 foreach (var img in karteImgs)
                 {
                     img.RaiinNo = karte.RaiinNo;
                 }
             }
 
-            _tenantTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
 
         private long GetMaxSeqNo(long ptId, int hpId, long raiinNo, int karteKbn)
         {
-            var karteInf = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.RaiinNo == raiinNo && k.KarteKbn == karteKbn && k.PtId == ptId).OrderByDescending(k => k.SeqNo).FirstOrDefault();
+            var karteInf = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.RaiinNo == raiinNo && k.KarteKbn == karteKbn && k.PtId == ptId).OrderByDescending(k => k.SeqNo).FirstOrDefault();
 
             return karteInf != null ? karteInf.SeqNo : 0;
         }
 
         private long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var odrList = _tenantNoTrackingDataContext.OdrInfs
+            var odrList = NoTrackingDataContext.OdrInfs
             .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
 
             if (odrList.Any())
@@ -825,7 +823,7 @@ namespace Infrastructure.Repositories
 
         private bool IsHoliday(int hpId, int datetime)
         {
-            var holidayMst = _tenantNoTrackingDataContext.HolidayMsts
+            var holidayMst = NoTrackingDataContext.HolidayMsts
                 .Where(p =>
                     p.HpId == hpId &&
                     p.SinDate == datetime &&
@@ -866,7 +864,7 @@ namespace Infrastructure.Repositories
                 checkSanteiKbn = santeiKbns;
             }
 
-            var sinRpInfs = _tenantNoTrackingDataContext.SinRpInfs.Where(o =>
+            var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinYm >= startYm &&
@@ -874,13 +872,13 @@ namespace Infrastructure.Repositories
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 checkSanteiKbn.Contains(o.SanteiKbn)
             ).AsQueryable();
-            var sinKouiCounts = _tenantNoTrackingDataContext.SinKouiCounts.Where(o =>
+            var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
                 o.SinDate >= startDate &&
                 o.SinDate <= endDate &&
                 o.RaiinNo != raiinNo);
-            var sinKouiDetails = _tenantNoTrackingDataContext.SinKouiDetails.Where(p =>
+            var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
@@ -925,7 +923,7 @@ namespace Infrastructure.Repositories
         {
             List<int> unitCds = new List<int> { 53, 121, 131, 138, 141, 142, 143, 144, 145, 146, 147, 148, 997, 998, 999 };
 
-            var entities = _tenantNoTrackingDataContext.DensiSanteiKaisus.Where((x) =>
+            var entities = NoTrackingDataContext.DensiSanteiKaisus.Where((x) =>
                     x.HpId == hpId &&
                     itemCds.Contains(x.ItemCd) &&
                     x.StartDate <= minSinDate &&
@@ -945,7 +943,7 @@ namespace Infrastructure.Repositories
 
         private string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
         {
-            var tenMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(p => p.HpId == hpId &&
+            var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(p => p.HpId == hpId &&
                                                                                   p.ItemCd == itemCd &&
                                                                                   p.StartDate <= sinDate &&
                                                                                   p.EndDate >= sinDate);
@@ -958,8 +956,8 @@ namespace Infrastructure.Repositories
 
         public List<CheckedDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds)
         {
-            var tekiouByomeiMsts = _tenantNoTrackingDataContext.TekiouByomeiMsts.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd) && p.IsInvalid == 0);
-            var byomeiMsts = _tenantNoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+            var tekiouByomeiMsts = NoTrackingDataContext.TekiouByomeiMsts.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd) && p.IsInvalid == 0);
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
 
             var query = from tekiByomei in tekiouByomeiMsts
                         join byomeiMst in byomeiMsts
@@ -1033,7 +1031,7 @@ namespace Infrastructure.Repositories
                 return result;
             }
 
-            var itemMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+            var itemMst = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
@@ -1061,6 +1059,11 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

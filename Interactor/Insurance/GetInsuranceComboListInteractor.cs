@@ -39,6 +39,10 @@ namespace Interactor.Insurance
             {
                 return new GetInsuranceComboListOutputData(new(), GetInsuranceComboListStatus.Successed);
             }
+            finally
+            {
+                _insuranceResponsitory.ReleaseResource();
+            }
         }
     }
 }

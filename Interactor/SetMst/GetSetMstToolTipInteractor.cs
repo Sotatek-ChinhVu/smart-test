@@ -17,19 +17,27 @@ namespace Interactor.SetMst
 
         public GetSetMstToolTipOutputData Handle(GetSetMstToolTipInputData inputData)
         {
-
-            if (inputData.HpId < 0)
+            try
             {
-                return new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.InvalidHpId);
+                if (inputData.HpId < 0)
+                {
+                    return new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.InvalidHpId);
+                }
+                if (inputData.SetCd < 0)
+                {
+                    return new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.InvalidSetCd);
+                }
+
+                var tooltip = _setRepository.GetToolTip(inputData.HpId, inputData.SetCd);
+
+                return !(tooltip.ListOrders.Count > 0 && tooltip.ListByomeis.Count > 0 && tooltip.ListKarteNames.Count > 0) ? new GetSetMstToolTipOutputData(tooltip, GetSetMstToolTipStatus.Successed) : new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.NoData);
             }
-            if (inputData.SetCd < 0)
+            finally
             {
-                return new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.InvalidSetCd);
+                _setRepository.ReleaseResource();
+                _setGenerationRepository.ReleaseResource();
             }
-
-            var tooltip = _setRepository.GetToolTip(inputData.HpId, inputData.SetCd);
-
-            return !(tooltip.ListOrders.Count > 0 && tooltip.ListByomeis.Count > 0 && tooltip.ListKarteNames.Count > 0) ? new GetSetMstToolTipOutputData(tooltip, GetSetMstToolTipStatus.Successed) : new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.NoData);
+            
         }
     }
 }

@@ -1,13 +1,11 @@
 ﻿using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.CommonDB
 {
@@ -31,24 +29,71 @@ namespace Infrastructure.CommonDB
             return TempIdentity.ClinicID;
         }
 
+        private TenantNoTrackingDataContext? _noTrackingDataContext;
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
-            return new TenantNoTrackingDataContext(GetConnectionString());
+            if (_noTrackingDataContext == null)
+            {
+                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+                _noTrackingDataContext = factory.CreateDbContext();
+            }
+            return _noTrackingDataContext;
         }
 
-        private TenantDataContext? _trackingTenantDataContext;
+        private TenantDataContext? _trackingDataContext;
         public TenantDataContext GetTrackingTenantDataContext()
         {
-            if (_trackingTenantDataContext == null)
+            if (_trackingDataContext == null)
             {
-                _trackingTenantDataContext = new TenantDataContext(GetConnectionString());
+                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                _trackingDataContext = factory.CreateDbContext();
             }
-            return _trackingTenantDataContext;
+            return _trackingDataContext;
         }
 
         public string GetTenantInfo()
         {
             return "Tenant1";
+        }
+
+        public TenantNoTrackingDataContext ReloadNoTrackingDataContext()
+        {
+            _noTrackingDataContext?.Dispose();
+
+            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+            var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+            _noTrackingDataContext = factory.CreateDbContext();
+            return _noTrackingDataContext;
+        }
+
+        public TenantDataContext ReloadTrackingDataContext()
+        {
+            _trackingDataContext?.Dispose();
+
+            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+            var factory = new PooledDbContextFactory<TenantDataContext>(options);
+            _trackingDataContext = factory.CreateDbContext();
+            return _trackingDataContext;
+        }
+
+        public void DisposeDataContext()
+        {
+            _trackingDataContext?.Dispose();
+            _noTrackingDataContext?.Dispose();
         }
     }
 }

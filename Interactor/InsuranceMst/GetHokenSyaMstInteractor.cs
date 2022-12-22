@@ -41,6 +41,10 @@ namespace Interactor.InsuranceMst
             {
                 return new GetHokenSyaMstOutputData(new HokensyaMstModel(), GetHokenSyaMstStatus.Exception);
             }
+            finally
+            {
+                _insuranceMstReponsitory.ReleaseResource();
+            }
         }
     }
 }

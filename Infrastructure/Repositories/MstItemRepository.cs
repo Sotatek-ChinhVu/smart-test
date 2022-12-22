@@ -2,27 +2,24 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class MstItemRepository : IMstItemRepository
+    public class MstItemRepository : RepositoryBase, IMstItemRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        private readonly TenantDataContext _tenantDataContextTracking;
-        public MstItemRepository(ITenantProvider tenantProvider)
+        public MstItemRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<DosageDrugModel> GetDosages(List<string> yjCds)
         {
-            var listDosageDrugs = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
+            var listDosageDrugs = NoTrackingDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
             var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
-            var listDosageDosages = _tenantDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
+            var listDosageDosages = NoTrackingDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
             return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
                     r => new DosageDrugModel(
                             r.YjCd,
@@ -40,11 +37,11 @@ namespace Infrastructure.Repositories
         public (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize)
         {
             searchValue = searchValue.Trim();
-            var OtcFormCodes = _tenantDataContext.M38OtcFormCode.AsQueryable();
-            var OtcMakerCodes = _tenantDataContext.M38OtcMakerCode.AsQueryable();
-            var OtcMains = _tenantDataContext.M38OtcMain.AsQueryable();
-            var UsageCodes = _tenantDataContext.M56UsageCode.AsQueryable();
-            var OtcClassCodes = _tenantDataContext.M38ClassCode.AsQueryable();
+            var OtcFormCodes = NoTrackingDataContext.M38OtcFormCode.AsQueryable();
+            var OtcMakerCodes = NoTrackingDataContext.M38OtcMakerCode.AsQueryable();
+            var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
+            var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
+            var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
             var query = from main in OtcMains
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
@@ -82,7 +79,7 @@ namespace Infrastructure.Repositories
 
         public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {
-            var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.AsEnumerable()
+            var aleFoodKbns = NoTrackingDataContext.M12FoodAlrgyKbn.AsEnumerable()
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(
                  x.FoodKbn,
@@ -96,9 +93,9 @@ namespace Infrastructure.Repositories
             searchValue = searchValue.Trim();
             try
             {
-                var listSuppleIndexCode = _tenantDataContext.M41SuppleIndexcodes.AsQueryable();
-                var listSuppleIndexDef = _tenantDataContext.M41SuppleIndexdefs.AsQueryable();
-                var listSuppleIngre = _tenantDataContext.M41SuppleIngres.AsQueryable();
+                var listSuppleIndexCode = NoTrackingDataContext.M41SuppleIndexcodes.AsQueryable();
+                var listSuppleIndexDef = NoTrackingDataContext.M41SuppleIndexdefs.AsQueryable();
+                var listSuppleIngre = NoTrackingDataContext.M41SuppleIngres.AsQueryable();
 
                 var query = (from indexDef in listSuppleIndexDef
                              orderby indexDef.IndexWord
@@ -135,7 +132,7 @@ namespace Infrastructure.Repositories
 
         public TenItemModel GetTenMst(int hpId, int sinDate, string itemCd)
         {
-            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
 
             return new TenItemModel(
                 tenMst?.HpId ?? 0,
@@ -181,7 +178,7 @@ namespace Infrastructure.Repositories
 
         public List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds)
         {
-            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
 
             return tenMsts.Select(tenMst => new TenItemModel(
                 tenMst.HpId,
@@ -248,7 +245,7 @@ namespace Infrastructure.Repositories
                                         .Replace("ｮ", "ﾖ")
                                         .Replace("ｯ", "ﾂ");
 
-            var queryResult = _tenantDataContext.TenMsts.Where(t =>
+            var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
                                 || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
@@ -560,10 +557,10 @@ namespace Infrastructure.Repositories
             queryResult = queryResult.Where(t => t.IsNosearch == 0);
 
             // Query 点数 for KN% item
-            var tenMstQuery = _tenantDataContext.TenMsts.Where(item => item.HpId == hpId
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                                        && item.StartDate <= sinDate
                                                                                        && item.EndDate >= sinDate);
-            var kensaMstQuery = _tenantDataContext.KensaMsts.AsQueryable();
+            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
 
             var queryKNTensu = from tenKN in queryResult
                                join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
@@ -639,7 +636,7 @@ namespace Infrastructure.Repositories
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
-            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
+            var tenMst = TrackingDataContext.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
 
             if (tenMst == null) return false;
 
@@ -650,7 +647,7 @@ namespace Infrastructure.Repositories
             tenMst.UpdateDate = DateTime.UtcNow;
             tenMst.UpdateId = userId;
 
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
 
             return true;
         }
@@ -658,7 +655,7 @@ namespace Infrastructure.Repositories
         public bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
-            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate && t.IsDeleted == DeleteTypes.None).ToList();
+            var tenMsts = TrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate && t.IsDeleted == DeleteTypes.None).ToList();
 
             if (tenMsts.Count == 0) return false;
 
@@ -673,13 +670,13 @@ namespace Infrastructure.Repositories
                 tenMst.UpdateId = userId;
             }
 
-            return _tenantDataContextTracking.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId)
         {
             // Update IsAdopted Item TenMst
-            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
             var tenMstModels = new List<TenItemModel>();
             if (tenMsts != null && tenMsts.Any())
             {
@@ -731,7 +728,7 @@ namespace Infrastructure.Repositories
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
-            var query = _tenantDataContext.ByomeiMsts.Where(item =>
+            var query = NoTrackingDataContext.ByomeiMsts.Where(item =>
                                     (item.KanaName1 != null &&
                                     item.KanaName1.StartsWith(keywordHalfSize))
                                     ||
@@ -793,7 +790,7 @@ namespace Infrastructure.Repositories
         }
         public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
         {
-            var listDatas = _tenantDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
+            var listDatas = NoTrackingDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
             List<ByomeiMstModel> listByomeies = new();
 
             if (listDatas != null)
@@ -805,35 +802,35 @@ namespace Infrastructure.Repositories
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
-            var byomeiMst = _tenantDataContext.ByomeiMsts.Where(p => p.HpId == hpId && p.ByomeiCd == byomeiCd).FirstOrDefault();
+            var byomeiMst = TrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId && p.ByomeiCd == byomeiCd).FirstOrDefault();
             if (byomeiMst != null)
             {
                 byomeiMst.IsAdopted = 1;
                 byomeiMst.UpdateId = userId;
                 byomeiMst.UpdateDate = DateTime.UtcNow;
-                _tenantDataContextTracking.SaveChanges();
+                TrackingDataContext.SaveChanges();
             }
             return true;
         }
 
         public bool CheckItemCd(string itemCd)
         {
-            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+            return NoTrackingDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
         }
 
         public List<string> GetCheckItemCds(List<string> itemCds)
         {
-            return _tenantDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+            return NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
         }
 
         public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
         {
-            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName ?? string.Empty)).ToList();
+            return NoTrackingDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName ?? string.Empty)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
         {
-            var entity = _tenantDataContext.TenMsts.FirstOrDefault(p =>
+            var entity = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
@@ -883,7 +880,7 @@ namespace Infrastructure.Repositories
 
         public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
         {
-            var entities = _tenantDataContext.TenMsts.Where(p =>
+            var entities = NoTrackingDataContext.TenMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= minSinDate &&
                    p.EndDate >= maxSinDate &&
@@ -933,7 +930,7 @@ namespace Infrastructure.Repositories
 
         public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
-            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+            var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
@@ -977,7 +974,7 @@ namespace Infrastructure.Repositories
         public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
         {
             var result = new List<ItemCmtModel>();
-            var cmtCheckMsts = _tenantDataContext.CmtCheckMsts.Where(p => p.KarteKbn == KarteConst.KarteKbn && p.HpId == hpId &&
+            var cmtCheckMsts = NoTrackingDataContext.CmtCheckMsts.Where(p => p.KarteKbn == KarteConst.KarteKbn && p.HpId == hpId &&
                                                                                     p.IsDeleted == DeleteTypes.None &&
                                                                                     itemCds.Contains(p.ItemCd));
 
@@ -1005,7 +1002,7 @@ namespace Infrastructure.Repositories
             List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
 
             var query =
-                _tenantDataContext.itemGrpMsts.Where(p =>
+                NoTrackingDataContext.itemGrpMsts.Where(p =>
                     p.HpId == hpId &&
                     p.GrpSbt == grpSbt &&
                     itemGrpCds.Contains(p.ItemGrpCd) &&
@@ -1024,7 +1021,7 @@ namespace Infrastructure.Repositories
 
         public List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
         {
-            List<ItemCommentSuggestionModel> result = _tenantDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
+            List<ItemCommentSuggestionModel> result = NoTrackingDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
                                                                               item.StartDate <= sinDate &&
                                                                               sinDate <= item.EndDate)
                                                  .AsEnumerable()
@@ -1043,7 +1040,7 @@ namespace Infrastructure.Repositories
             listItemCdCmtSelect.AddRange(listItemCd);
             listItemCdCmtSelect = listItemCdCmtSelect.Distinct().ToList();
 
-            var listRecedenCmtSelectAll = _tenantDataContext.RecedenCmtSelects
+            var listRecedenCmtSelectAll = NoTrackingDataContext.RecedenCmtSelects
                 .Where(item => item.HpId == hpId &&
                                                listItemCdCmtSelect.Contains(item.ItemCd ?? string.Empty) &&
                                                item.StartDate <= sinDate &&
@@ -1062,7 +1059,7 @@ namespace Infrastructure.Repositories
 
             List<RecedenCmtSelect> listRecedenCmtMinEda = new List<RecedenCmtSelect>();
 
-            var listRecedenCmtSelect = _tenantDataContext.RecedenCmtSelects
+            var listRecedenCmtSelect = NoTrackingDataContext.RecedenCmtSelects
                .Where(item => item.HpId == hpId &&
                                               listItemCdCmtSelect.Contains(item.ItemCd) &&
                                               listItemNo.Contains(item.ItemNo) &&
@@ -1074,7 +1071,7 @@ namespace Infrastructure.Repositories
 
             if (!isRecalculation)
             {
-                var listRecedenCmtSelectShinryo = _tenantDataContext.RecedenCmtSelects
+                var listRecedenCmtSelectShinryo = NoTrackingDataContext.RecedenCmtSelects
                 .Where(item => item.HpId == hpId &&
                                       item.ItemCd == "199999999" &&
                                       listItemNo.Contains(item.ItemNo) &&
@@ -1086,7 +1083,7 @@ namespace Infrastructure.Repositories
 
             var listCommentCd = listRecedenCmtMinEda.Select(item => item.CommentCd).Distinct();
 
-            var listTenMst = _tenantDataContext.TenMsts
+            var listTenMst = NoTrackingDataContext.TenMsts
                 .Where(item => item.HpId == hpId &&
                                          listCommentCd.Contains(item.ItemCd) &&
                                          item.StartDate <= sinDate &&
@@ -1127,6 +1124,7 @@ namespace Infrastructure.Repositories
                     ConvertByomeiCdDisplay(mst.ByomeiCd),
                     mst.Sbyomei ?? String.Empty,
                     mst.KanaName1 ?? String.Empty,
+                    mst.SikkanCd,
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
@@ -1270,6 +1268,11 @@ namespace Infrastructure.Repositories
                         tenMst?.SanteiItemCd ?? string.Empty,
                         0,
                         0);
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

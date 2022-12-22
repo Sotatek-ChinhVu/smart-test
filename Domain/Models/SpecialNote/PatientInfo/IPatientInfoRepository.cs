@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SpecialNote.PatientInfo
+﻿using Domain.Common;
+
+namespace Domain.Models.SpecialNote.PatientInfo
 {
-    public interface IPatientInfoRepository
+    public interface IPatientInfoRepository : IRepositoryBase
     {
         List<PhysicalInfoModel> GetPhysicalList(int hpId, long ptId);
 

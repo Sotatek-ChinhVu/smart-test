@@ -9,6 +9,7 @@ using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -17,20 +18,16 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Repositories
 {
-    public class HistoryOrderRepository : IHistoryOrderRepository
+    public class HistoryOrderRepository : RepositoryBase, IHistoryOrderRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantDataContext;
         private readonly IUserInfoService _userInfoService;
         private readonly IKaService _kaService;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IRaiinListTagRepository _raiinListTagRepository;
         private readonly IKarteInfRepository _karteInfRepository;
 
-        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IKarteInfRepository karteInfRepository)
+        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IKarteInfRepository karteInfRepository) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _userInfoService = userInfoService;
             _insuranceRepository = insuranceRepository;
             _raiinListTagRepository = raiinListTagRepository;
@@ -40,13 +37,13 @@ namespace Infrastructure.Repositories
 
         public KarteFilterMstModel GetFilter(int hpId, int userId, int filterId)
         {
-            var filterMstData = _tenantNoTrackingDataContext.KarteFilterMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
+            var filterMstData = NoTrackingDataContext.KarteFilterMsts.FirstOrDefault(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
             if (filterMstData == null)
             {
                 return new KarteFilterMstModel(hpId, userId);
             }
 
-            var filterDetailList = _tenantNoTrackingDataContext.KarteFilterDetails
+            var filterDetailList = NoTrackingDataContext.KarteFilterDetails
             .Where(item => item.HpId == hpId && item.UserId == userId && item.FilterId == filterId)
             .ToList();
 
@@ -76,7 +73,7 @@ namespace Infrastructure.Repositories
             List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
 
             //Filter RaiinInf by condition.
-            IQueryable<RaiinInf> raiinInfListQueryable = _tenantNoTrackingDataContext.RaiinInfs
+            IQueryable<RaiinInf> raiinInfListQueryable = NoTrackingDataContext.RaiinInfs
                 .Where(r => r.HpId == hpId &&
                             r.PtId == ptId &&
                             r.Status >= 3 &&
@@ -89,7 +86,7 @@ namespace Infrastructure.Repositories
             if (karteFilter.OnlyBookmark)
             {
                 raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                     join raiinTag in _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
+                                     join raiinTag in NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
                                       on raiinInf.RaiinNo equals raiinTag.RaiinNo
                                      select raiinInf;
             }
@@ -141,7 +138,7 @@ namespace Infrastructure.Repositories
 
             (int, ReceptionModel) GenerateResult(long raiinNo)
             {
-                RaiinInf? raiinInf = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo);
+                RaiinInf? raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo);
 
                 if (raiinInf == null)
                 {
@@ -240,13 +237,13 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedFilter(int hpId, int userId, int filterId)
         {
-            return _tenantNoTrackingDataContext.KarteFilterMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
+            return NoTrackingDataContext.KarteFilterMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
         }
 
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
-            var karteInfEntities = _tenantNoTrackingDataContext.KarteInfs
+            var karteInfEntities = NoTrackingDataContext.KarteInfs
                 .Where(k => k.PtId == ptId && 
                             k.HpId == hpId &&
                             k.Text != null &&
@@ -275,7 +272,7 @@ namespace Infrastructure.Repositories
 
         private long SearchOrder(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
-            List<OdrInf> allOdrInfList = _tenantNoTrackingDataContext.OdrInfs
+            List<OdrInf> allOdrInfList = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
                             o.OdrKouiKbn != 10 &&
@@ -292,7 +289,7 @@ namespace Infrastructure.Repositories
             List<long> rpNoListByOrder = allOdrInfList.Select(o => o.RpNo).Distinct().ToList();
             List<long> rpEdaNoListByOrder = allOdrInfList.Select(o => o.RpEdaNo).Distinct().ToList();
 
-            var allOdrDetailInfList = _tenantNoTrackingDataContext.OdrInfDetails
+            var allOdrDetailInfList = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
                             raiinNoListByOrder.Contains(o.RaiinNo) &&
@@ -317,7 +314,7 @@ namespace Infrastructure.Repositories
 
         private List<KarteInfModel> GetKarteInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList)
         {
-            var karteInfEntities = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNoList.Contains(k.RaiinNo) && k.KarteKbn == 1).AsEnumerable();
+            var karteInfEntities = NoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNoList.Contains(k.RaiinNo) && k.KarteKbn == 1).AsEnumerable();
 
             if (isDeleted == 0)
             {
@@ -338,7 +335,7 @@ namespace Infrastructure.Repositories
             }
 
             var karteInfs = from karte in karteInfEntities
-                            join user in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
+                            join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
                           on karte.CreateId equals user.UserId into odrUsers
                             from odrUser in odrUsers.DefaultIfEmpty()
                             select Karte.FromKarte(karte, odrUser?.Sname ?? string.Empty);
@@ -348,7 +345,7 @@ namespace Infrastructure.Repositories
 
         private Dictionary<long, List<OrdInfModel>> GetOrderInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList)
         {
-            List<OdrInf> allOdrInfList = _tenantNoTrackingDataContext.OdrInfs
+            List<OdrInf> allOdrInfList = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
                             o.OdrKouiKbn != 10 &&
@@ -365,7 +362,7 @@ namespace Infrastructure.Repositories
             List<long> rpNoListByOrder = allOdrInfList.Select(o => o.RpNo).Distinct().ToList();
             List<long> rpEdaNoListByOrder = allOdrInfList.Select(o => o.RpEdaNo).Distinct().ToList();
 
-            List<OdrInfDetail> allOdrDetailInfList = _tenantNoTrackingDataContext.OdrInfDetails
+            List<OdrInfDetail> allOdrDetailInfList = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && raiinNoListByOrder.Contains(o.RaiinNo) && rpNoListByOrder.Contains(o.RpNo) && rpEdaNoListByOrder.Contains(o.RpEdaNo))
                 .ToList();
 
@@ -375,9 +372,9 @@ namespace Infrastructure.Repositories
             //Read config
             var itemCds = allOdrDetailInfList.Select(od => od.ItemCd).Distinct().ToList();
             var ipnCds = allOdrDetailInfList.Select(od => od.IpnCd).Distinct().ToList();
-            var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
-            var kensaMsts = _tenantNoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
-            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
+            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
 
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
@@ -411,7 +408,7 @@ namespace Infrastructure.Repositories
             bool isRosai = karteFilter.IsRosai;
             bool isJibai = karteFilter.IsJibai;
 
-            return _tenantDataContext.PtHokenPatterns
+            return NoTrackingDataContext.PtHokenPatterns
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             (p.IsDeleted == 0 || isDeleted > 0) &&
@@ -424,6 +421,11 @@ namespace Infrastructure.Repositories
                             ))
                 .Select(p => p.HokenPid)
                 .ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
 
         #endregion

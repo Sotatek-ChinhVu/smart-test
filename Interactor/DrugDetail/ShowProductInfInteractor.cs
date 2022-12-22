@@ -50,7 +50,9 @@ namespace Interactor.DrugDetailData
 
         private string ShowProductInf(DrugDetailModel drugDetailModel, List<DrugMenuItemModel> drugMenus)
         {
-            drugMenus = drugMenus[0].Children;
+
+            var straightDrugMenus = new List<DrugMenuItemModel>();
+            GetAllDrugMenus(ref straightDrugMenus, drugMenus[0].Children);
             StringBuilder stringBuilder = new StringBuilder();
             //First row of file to check this item is created
             stringBuilder.Append("<!--" + drugDetailModel.DrugInfName + "-->");
@@ -91,12 +93,12 @@ namespace Interactor.DrugDetailData
                 string kikakuText = kikakuItem.DrugMenuName;
                 if (level <= 0)
                 {
-                    int countMenuItem = drugMenus.Count;
+                    int countMenuItem = straightDrugMenus.Count;
 
                     for (int i = 0; i < countMenuItem; i++)
                     {
-                        string menuName = drugMenus[i].MenuName;
-                        if (level == drugMenus[i].DbLevel && kikakuText == drugMenus[i].RawDrugMenuName)
+                        string menuName = straightDrugMenus[i].MenuName;
+                        if (level == straightDrugMenus[i].DbLevel && kikakuText == straightDrugMenus[i].RawDrugMenuName)
                         {
                             kikakuText = "<a name='" + menuName + "'><p style='font-weight: bold; font-size:12pt; margin:10px 0 0 0'>" + kikakuText + "</p></a>";
                             break;
@@ -149,7 +151,6 @@ namespace Interactor.DrugDetailData
             {
                 int level = tenpuItem.DbLevel;
                 string tenpuText = tenpuItem.DrugMenuName;
-
                 if (level == 0)
                 {
                     if (bSiyoFlg)
@@ -165,14 +166,14 @@ namespace Interactor.DrugDetailData
 
                 if (level == 0 || (bSiyoFlg && level == 1))
                 {
-                    int countMenuItem = drugMenus.Count;
+                    int countMenuItem = straightDrugMenus.Count;
 
                     for (int i = 0; i < countMenuItem; i++)
                     {
 
-                        if (level == drugMenus[i].DbLevel && tenpuText == drugMenus[i].RawDrugMenuName)
+                        if (level == straightDrugMenus[i].DbLevel && tenpuText == straightDrugMenus[i].RawDrugMenuName)
                         {
-                            string menuName = drugMenus[i].MenuName;
+                            string menuName = straightDrugMenus[i].MenuName;
                             if (level == 0)
                             {
                                 tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;margin:20px 0 0 0'>" + tenpuText + "</p></a>";
@@ -250,6 +251,17 @@ namespace Interactor.DrugDetailData
             return stringBuilder.ToString();
         }
 
+        private void GetAllDrugMenus(ref List<DrugMenuItemModel> straightDrugMenus, List<DrugMenuItemModel> drugMenus)
+        {
+            if (drugMenus.Count > 0)
+            {
+                foreach (var item in drugMenus)
+                {
+                    straightDrugMenus.Add(item);
+                    GetAllDrugMenus(ref straightDrugMenus, item.Children);
+                }
+            }
+        }
         private bool CheckHyo(string stmp)
         {
             string CON_KAISI = "（表開始）";

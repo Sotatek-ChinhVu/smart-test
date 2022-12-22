@@ -37,5 +37,9 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.Failed);
         }
+        finally
+        {
+            _setMstRepository.ReleaseResource();
+        }
     }
 }

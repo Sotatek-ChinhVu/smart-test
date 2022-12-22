@@ -52,8 +52,20 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidPtId);
         }
 
-        var status = UpdateStaticCell(input);
-        return new UpdateReceptionStaticCellOutputData(status);
+        try
+        {
+            var status = UpdateStaticCell(input);
+            return new UpdateReceptionStaticCellOutputData(status);
+        }
+        finally
+        {
+            _receptionRepository.ReleaseResource();
+            _raiinCmtInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+            _uketukeSbtMstRepository.ReleaseResource();
+            _kaMstRepository.ReleaseResource();
+            _ptCmtInfRepository.ReleaseResource();
+        }
     }
 
     private UpdateReceptionStaticCellStatus UpdateStaticCell(UpdateReceptionStaticCellInputData input)

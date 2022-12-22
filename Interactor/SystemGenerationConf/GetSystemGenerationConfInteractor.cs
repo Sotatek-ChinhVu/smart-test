@@ -29,6 +29,10 @@ namespace Interactor.SystemGenerationConf
             {
                 return new GetSystemGenerationConfOutputData(0, string.Empty, GetSystemGenerationConfStatus.Failed);
             }
+            finally
+            {
+                _systemGenerationConfRepository.ReleaseResource();
+            }
         }
     }
 }

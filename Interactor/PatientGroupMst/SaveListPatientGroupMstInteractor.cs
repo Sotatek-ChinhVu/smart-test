@@ -81,6 +81,10 @@ public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPo
         {
             return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.Failed);
         }
+        finally
+        {
+            _patientGroupMstRepository.ReleaseResource();
+        }
     }
     private List<PatientGroupMstModel> ConvertToListModel(List<SaveListPatientGroupMstInputItem> inputItem)
     {

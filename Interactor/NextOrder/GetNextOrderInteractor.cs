@@ -129,6 +129,12 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
         {
             return new GetNextOrderOutputData(GetNextOrderStatus.Failed);
         }
+        finally
+        {
+            _insuranceRepository.ReleaseResource();
+            _nextOrderRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
     private List<string> GetListNextOrderFile(int hpId, long ptId, long rsvkrtNo)
     {

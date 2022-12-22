@@ -41,5 +41,9 @@ public class InitDoctorComboInteractor : IInitDoctorComboInputPort
         {
             return new InitDoctorComboOutputData(InitDoctorComboStatus.Failed, 0);
         }
+        finally
+        {
+            _receptionRepository.ReleaseResource();
+        }
     }
 }

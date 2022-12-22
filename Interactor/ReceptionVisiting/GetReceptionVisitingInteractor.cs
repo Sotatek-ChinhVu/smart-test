@@ -36,7 +36,10 @@ namespace Interactor.ReceptionVisiting
             {
                 return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.Failed);
             }
-
+            finally
+            {
+                _receptionVisitingRepository.ReleaseResource();
+            }
         }
     }
 }

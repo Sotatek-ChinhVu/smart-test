@@ -13,10 +13,17 @@ namespace Interactor.RaiinKubunMst
 
         public LoadDataKubunSettingOutputData Handle(LoadDataKubunSettingInputData inputData)
         {
-            if (inputData.HpId <= 0) return new LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus.InvalidHpId);
+            try
+            {
+                if (inputData.HpId <= 0) return new LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus.InvalidHpId);
 
-            List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.LoadDataKubunSetting(inputData.HpId, inputData.UserId);
-            return new LoadDataKubunSettingOutputData(raiinKubunList,LoadDataKubunSettingStatus.Successed);
+                List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.LoadDataKubunSetting(inputData.HpId, inputData.UserId);
+                return new LoadDataKubunSettingOutputData(raiinKubunList, LoadDataKubunSettingStatus.Successed);
+            }
+            finally
+            {
+                _raiinKubunMstRepository.ReleaseResource();
+            }
         }
     }
 }

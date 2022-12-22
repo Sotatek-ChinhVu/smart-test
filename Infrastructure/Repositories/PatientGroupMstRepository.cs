@@ -1,24 +1,21 @@
 ﻿using Domain.Models.PatientGroupMst;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class PatientGroupMstRepository : IPatientGroupMstRepository
+    public class PatientGroupMstRepository : RepositoryBase, IPatientGroupMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantDataContext;
-        public PatientGroupMstRepository(ITenantProvider tenantProvider)
+        public PatientGroupMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<PatientGroupMstModel> GetAll()
         {
-            var groupMstList = _tenantNoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
-            var groupDetailList = _tenantNoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+            var groupMstList = NoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+            var groupDetailList = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
 
             List<PatientGroupMstModel> result = new List<PatientGroupMstModel>();
             foreach (var groupMst in groupMstList)
@@ -49,8 +46,8 @@ namespace Infrastructure.Repositories
             try
             {
                 // list get in datatacontext
-                var groupMstLists = _tenantDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0 && mst.HpId == hpId).ToList();
-                var groupDetailLists = _tenantDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0 && detail.HpId == hpId).ToList();
+                var groupMstLists = TrackingDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0 && mst.HpId == hpId).ToList();
+                var groupDetailLists = TrackingDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0 && detail.HpId == hpId).ToList();
 
                 List<long> listDetailSeqNoModel = new();
                 List<PtGrpNameMst> listAddNewGroupMsts = new();
@@ -94,8 +91,8 @@ namespace Infrastructure.Repositories
                     listDetailSeqNoModel.AddRange(model.Details.Select(x => x.SeqNo).ToList());
                 }
 
-                _tenantDataContext.PtGrpNameMsts.AddRange(listAddNewGroupMsts);
-                _tenantDataContext.PtGrpItems.AddRange(listAddNewGroupItemMsts);
+                TrackingDataContext.PtGrpNameMsts.AddRange(listAddNewGroupMsts);
+                TrackingDataContext.PtGrpItems.AddRange(listAddNewGroupItemMsts);
 
                 // delete Group
                 var listGroupDeletes = groupMstLists.Where(mst => !patientGroupMstModels.Select(x => x.GroupId).ToList().Contains(mst.GrpId)).ToList();
@@ -121,7 +118,7 @@ namespace Infrastructure.Repositories
                     }
                 }
 
-                _tenantDataContext.SaveChanges();
+                TrackingDataContext.SaveChanges();
                 status = true;
                 return status;
             }
@@ -166,6 +163,11 @@ namespace Infrastructure.Repositories
             entity.UpdateDate = DateTime.UtcNow;
             entity.UpdateId = userId;
             return entity;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
-using Helper.Constants;
 
 namespace Infrastructure.Converter
 {
@@ -73,7 +72,7 @@ namespace Infrastructure.Converter
                                           detail.SyohoLimitKbn,
                                           detail.DrugKbn,
                                           detail.YohoKbn,
-                                          detail.Kokuji1 ?? string.Empty ,
+                                          detail.Kokuji1 ?? string.Empty,
                                           detail.Kokiji2 ?? string.Empty,
                                           detail.IsNodspRece,
                                           detail.IpnCd ?? string.Empty,
@@ -105,7 +104,10 @@ namespace Infrastructure.Converter
                                           0,
                                           0,
                                           string.Empty,
-                                          string.Empty);
+                                          string.Empty,
+                                          string.Empty,
+                                          string.Empty
+                                          );
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }
 
@@ -117,7 +119,7 @@ namespace Infrastructure.Converter
                 odrInf.PtId,
                 odrInf.SinDate,
                 odrInf.HokenPid,
-                odrInf.OdrKouiKbn, 
+                odrInf.OdrKouiKbn,
                 odrInf.RpName ?? string.Empty,
                 odrInf.InoutKbn,
                 odrInf.SikyuKbn,

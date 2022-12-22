@@ -103,6 +103,8 @@ namespace Interactor.MedicalExamination
                                     0,
                                     0,
                                     "",
+                                    "",
+                                    "",
                                     ""
                                    )
                              ).ToList(),
@@ -128,6 +130,10 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.Failed);
+            }
+            finally
+            {
+                _todayOdrRepository.ReleaseResource();
             }
         }
     }
