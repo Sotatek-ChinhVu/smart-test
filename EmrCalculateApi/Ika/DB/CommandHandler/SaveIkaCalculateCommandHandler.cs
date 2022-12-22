@@ -9,6 +9,7 @@ using EmrCalculateApi.Ika.Constants;
 using EmrCalculateApi.Ika.ViewModels;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmrCalculateApi.Ika.DB.CommandHandler
 {
@@ -338,38 +339,44 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             // 先に更新/削除分を反映
             _tenantDataContext.SaveChanges();
 
-            using (var new_tenantDataContext = _tenantProvider.GetTrackingTenantDataContext())
+            using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
             {
-                using (var transaction = new_tenantDataContext.Database.BeginTransaction())
-                {
-                    try
+                var executionStrategy = new_tenantDataContext.Database.CreateExecutionStrategy();
+                executionStrategy.Execute(
+                    () =>
                     {
-                        //_emrLogger.WriteLogMsg( this, conFncName, "AddWrkTalbes");
-                        //if (ICDebugConf.SaveWrk)
-                        //{
-                        //    AddWrkTalbes
-                        //        (newDbService, _common.Wrk.wrkSinRpInfs, _common.Wrk.wrkSinKouis, _common.Wrk.wrkSinKouiDetails, _common.Wrk.wrkSinKouiDetailDels);
-                        //}
-                        //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");  
-                        AddCalcLog(new_tenantDataContext, _common.calcLogs);
-                        //new_tenantDataContext.SaveChanged();
-                        //_emrLogger.WriteLogMsg( this, conFncName, "AddSin");
-                        AddSin(
-                            new_tenantDataContext, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts);
+                        using (var transaction = new_tenantDataContext.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                //_emrLogger.WriteLogMsg( this, conFncName, "AddWrkTalbes");
+                                //if (ICDebugConf.SaveWrk)
+                                //{
+                                //    AddWrkTalbes
+                                //        (newDbService, _common.Wrk.wrkSinRpInfs, _common.Wrk.wrkSinKouis, _common.Wrk.wrkSinKouiDetails, _common.Wrk.wrkSinKouiDetailDels);
+                                //}
+                                //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");  
+                                AddCalcLog(new_tenantDataContext, _common.calcLogs);
+                                //new_tenantDataContext.SaveChanged();
+                                //_emrLogger.WriteLogMsg( this, conFncName, "AddSin");
+                                AddSin(
+                                    new_tenantDataContext, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts);
 
-                        transaction.Commit();
+                                //DelSin(
+                                //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
 
-                        //DelSin(
-                        //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
-                    }
-                    catch (Exception e)
-                    {
-                        transaction.Rollback();
-                        _emrLogger.WriteLogError( this, nameof(UpdateData), e);
-                        throw;
-                    }
+                                new_tenantDataContext.SaveChanges();
 
-                }
+                                transaction.Commit();
+                            }
+                            catch (Exception e)
+                            {
+                                transaction.Rollback();
+                                _emrLogger.WriteLogError(this, nameof(UpdateData), e);
+                                throw;
+                            }
+                        }
+                    });
             }
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
