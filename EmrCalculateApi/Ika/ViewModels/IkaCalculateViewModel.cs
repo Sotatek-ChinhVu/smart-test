@@ -12,6 +12,7 @@ using EmrCalculateApi.Receipt.ViewModels;
 using EmrCalculateApi.Constants;
 using PostgreDataContext;
 using Domain.Constant;
+using System.Security.AccessControl;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -85,6 +86,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 _masterFinder = new MasterFinder(_tenantDataContext);
                 _saveIkaCalculateCommandHandler = new SaveIkaCalculateCommandHandler(_tenantProvider, _tenantDataContext, _emrLogger);
                 _clearIkaCalculateCommandHandler = new ClearIkaCalculateCommandHandler(_tenantDataContext, _emrLogger);
+                _santeiFinder = new SanteiFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
             }
         }
         private readonly ISystemConfigProvider _systemConfigProvider;
@@ -1033,7 +1035,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         //            addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
         //            addCalcLog.LogSbt = 2;
         //            addCalcLog.Text = "2018年3月以前の計算には対応していません。";
-        //            addCalcLog.CreateDate = DateTime.Now;
+        //            addCalcLog.CreateDate = DateTime.UtcNow;
         //            addCalcLog.CreateId = 0;
         //            retCalcLogModels.Add(addCalcLog);
 

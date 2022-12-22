@@ -68,7 +68,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 //wrkSinRpInfModels.ForEach(p =>
                 //    {
-                //        p.CreateDate = DateTime.Now;
+                //        p.CreateDate = DateTime.UtcNow;
                 //        p.CreateId = 1; // todo get user from session
                 //        p.CreateMachine = Hardcode.ComputerName;
                 //        _tenantDataContext.WrkSinRpInfs.Add(p.WrkSinRpInf);
@@ -77,7 +77,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
                     {
-                        p.CreateDate = DateTime.Now;
+                        p.CreateDate = DateTime.UtcNow;
                         p.CreateId = Hardcode.UserID;
                         p.CreateMachine = Hardcode.ComputerName;
 
@@ -87,7 +87,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 //wrkSinKouiModels.ForEach(p =>
                 //{
-                //    p.CreateDate = DateTime.Now;
+                //    p.CreateDate = DateTime.UtcNow;
                 //    p.CreateId = 1; // todo get user from session
                 //    p.CreateMachine = Hardcode.ComputerName;
                 //    _tenantDataContext.WrkSinKouis.Add(p.WrkSinKoui);
@@ -97,7 +97,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 List<WrkSinKoui> wrkSinKouis = wrkSinKouiModels.Select(p => p.WrkSinKoui).ToList();
                 wrkSinKouis.ForEach(p =>
                 {
-                    p.CreateDate = DateTime.Now;
+                    p.CreateDate = DateTime.UtcNow;
                     p.CreateId = Hardcode.UserID;
                 p.CreateMachine = Hardcode.ComputerName;
 
@@ -142,7 +142,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     string MachinName = Hardcode.ComputerName;
                     //calcLogModels.ForEach(p =>
                     //    {
-                    //        p.CreateDate = DateTime.Now;
+                    //        p.CreateDate = DateTime.UtcNow;
                     //        p.CreateId = 1; // todo get user from session
                     //        p.CreateMachine = Hardcode.ComputerName;
                     //        _tenantDataContext.CalcLogs.Add(p.CalcLog);
@@ -151,7 +151,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     List<CalcLog> calcLogs = calcLogModels.Select(p => p.CalcLog).ToList();
                     calcLogs.ForEach(p =>
                     {
-                        p.CreateDate = DateTime.Now;
+                        p.CreateDate = DateTime.UtcNow;
                         p.CreateId = Hardcode.UserID;
                         p.CreateMachine = MachinName;
 
@@ -211,10 +211,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             
             foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
             {
-                sinRpInf.CreateDate = DateTime.Now;
+                sinRpInf.CreateDate = DateTime.UtcNow;
                 sinRpInf.CreateId = Hardcode.UserID;
                 sinRpInf.CreateMachine = MachineName;
-                sinRpInf.UpdateDate = DateTime.Now;
+                sinRpInf.UpdateDate = DateTime.UtcNow;
                 sinRpInf.UpdateId = Hardcode.UserID;
                 sinRpInf.UpdateMachine = MachineName;
             }
@@ -227,10 +227,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 foreach (SinKouiModel sinKoui in sinKouiModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
                 {
                     sinKoui.RpNo = sinRpInf.SinRpInf.RpNo;
-                    sinKoui.CreateDate = DateTime.Now;
+                    sinKoui.CreateDate = DateTime.UtcNow;
                     sinKoui.CreateId = Hardcode.UserID;
                     sinKoui.CreateMachine = MachineName;
-                    sinKoui.UpdateDate = DateTime.Now;
+                    sinKoui.UpdateDate = DateTime.UtcNow;
                     sinKoui.UpdateId = Hardcode.UserID;
                     sinKoui.UpdateMachine = MachineName;
                 }
@@ -262,10 +262,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
             foreach(SinKouiCount sinKouiCount in sinKouiCounts)
             {
-                sinKouiCount.CreateDate = DateTime.Now;
+                sinKouiCount.CreateDate = DateTime.UtcNow;
                 sinKouiCount.CreateId = Hardcode.UserID;
                 sinKouiCount.CreateMachine = MachineName;
-                sinKouiCount.UpdateDate = DateTime.Now;
+                sinKouiCount.UpdateDate = DateTime.UtcNow;
                 sinKouiCount.UpdateId = Hardcode.UserID;
                 sinKouiCount.UpdateMachine = MachineName;
             }
@@ -274,10 +274,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //List<SinRpNoInf> sinRpNoInfs = sinRpNoInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpNoInf).ToList();
             //foreach(SinRpNoInf sinRpNoInf in sinRpNoInfs)
             //{
-            //    sinRpNoInf.CreateDate = DateTime.Now;
+            //    sinRpNoInf.CreateDate = DateTime.UtcNow;
             //    sinRpNoInf.CreateId = Session.UserID;
             //    sinRpNoInf.CreateMachine = MachineName;
-            //    sinRpNoInf.UpdateDate = DateTime.Now;
+            //    sinRpNoInf.UpdateDate = DateTime.UtcNow;
             //    sinRpNoInf.UpdateId = Session.UserID;
             //    sinRpNoInf.UpdateMachine = MachineName;
             //}
@@ -340,7 +340,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
             using (var new_tenantDataContext = _tenantProvider.GetTrackingTenantDataContext())
             {
-                using (var transaction = _tenantDataContext.Database.BeginTransaction())
+                using (var transaction = new_tenantDataContext.Database.BeginTransaction())
                 {
                     try
                     {
@@ -376,7 +376,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
         public void UpdateCalcStatus(CalcStatusModel calcStatus)
         {
-            calcStatus.UpdateDate = DateTime.Now;
+            calcStatus.UpdateDate = DateTime.UtcNow;
             calcStatus.UpdateId = Hardcode.UserID;
             calcStatus.UpdateMachine = Hardcode.ComputerName;
 
@@ -392,7 +392,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             {
                 foreach (CalcStatusModel calcStatus in calcStatusies)
                 {
-                    calcStatus.UpdateDate = DateTime.Now;
+                    calcStatus.UpdateDate = DateTime.UtcNow;
                     calcStatus.UpdateId = Hardcode.UserID;
                     calcStatus.UpdateMachine = Hardcode.ComputerName;
                 }
@@ -411,7 +411,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         {
             foreach (CalcStatusModel calcStatus in calcStatusies)
             {
-                calcStatus.UpdateDate = DateTime.Now;
+                calcStatus.UpdateDate = DateTime.UtcNow;
                 calcStatus.UpdateId = Hardcode.UserID;
                 calcStatus.UpdateMachine = Hardcode.ComputerName;
             }
@@ -428,7 +428,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             foreach (ReceStatusModel receStatus in receStatusies)
             {
                 receStatus.StatusKbn = 0;
-                receStatus.UpdateDate = DateTime.Now;
+                receStatus.UpdateDate = DateTime.UtcNow;
                 receStatus.UpdateId = Hardcode.UserID;
                 receStatus.UpdateMachine = Hardcode.ComputerName;
             }

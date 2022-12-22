@@ -543,12 +543,12 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 if (outputYM < 202005)
                 {
                     // 和暦
-                    rsRecord += "," + CIUtil.SDateToWDate(CIUtil.DateTimeToInt(DateTime.Now));
+                    rsRecord += "," + CIUtil.SDateToWDate(CIUtil.DateTimeToInt(DateTime.UtcNow));
                 }
                 else
                 {
                     // 西暦
-                    rsRecord += "," + (CIUtil.DateTimeToInt(DateTime.Now));
+                    rsRecord += "," + (CIUtil.DateTimeToInt(DateTime.UtcNow));
                 }
                 // 都道府県労働局コード
                 // 労働基準監督署コード
@@ -588,7 +588,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 // 病院・診療所の区分
                 rsRecord = "AS,3";
                 // 請求書提出年月日
-                rsRecord += "," + (CIUtil.DateTimeToInt(DateTime.Now));
+                rsRecord += "," + (CIUtil.DateTimeToInt(DateTime.UtcNow));
                 // 予備１
                 rsRecord += ",";
                 // 予備２

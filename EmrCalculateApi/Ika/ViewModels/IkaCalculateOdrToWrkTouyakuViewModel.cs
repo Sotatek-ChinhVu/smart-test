@@ -145,6 +145,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _common = common;
+            _systemConfigProvider = systemConfigProvider;
+            _emrLogger = emrLogger;
         }
 
         /// <summary>

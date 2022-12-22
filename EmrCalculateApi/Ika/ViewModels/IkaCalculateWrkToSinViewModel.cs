@@ -648,7 +648,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                                             .Sum(p =>
                                                 p.Count));
                                 }
-                                sinKouiUp.UpdateDate = DateTime.Now;
+                                sinKouiUp.UpdateDate = DateTime.UtcNow;
                                 sinKouiUp.UpdateId = 0;
                                 sinKouiUp.UpdateMachine = Hardcode.ComputerName;
                             }
