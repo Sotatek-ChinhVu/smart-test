@@ -22,6 +22,7 @@ using System.Net;
 using DocumentFormat.OpenXml.Packaging;
 using Interactor.Document.CommonGetListParam;
 using DocumentFormat.OpenXml.Wordprocessing;
+using UseCase.Document.GetListDocComment;
 
 namespace EmrCloudApi.Controller;
 
@@ -167,6 +168,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListDocComment)]
+    public ActionResult<Response<GetListDocCommentResponse>> GetListDocComment([FromBody] GetListDocCommentRequest request)
+    {
+        var input = new GetListDocCommentInputData(request.ListReplaceWord);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListDocCommentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListDocCommentResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetListParamTemplate)]

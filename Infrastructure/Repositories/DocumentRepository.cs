@@ -249,6 +249,29 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
+    public List<DocCommentModel> GetListDocComment(List<string> listReplaceWord)
+    {
+        var query = NoTrackingDataContext.DocComments.Where(item => item.IsDeleted == 0);
+        if (listReplaceWord.Any())
+        {
+            query = query.Where(item => item.ReplaceWord != null && listReplaceWord.Contains(item.ReplaceWord));
+        }
+        return query.OrderBy(item => item.SortNo)
+                    .Select(item => new DocCommentModel(item.CategoryId,
+                                                        item.CategoryName ?? string.Empty,
+                                                        item.ReplaceWord ?? string.Empty))
+                    .ToList();
+    }
+
+    public List<DocCommentDetailModel> GetListDocCommentDetail()
+    {
+        return NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0)
+                                                      .OrderBy(item => item.SortNo)
+                                                      .Select(item => new DocCommentDetailModel(item.CategoryId,
+                                                                                                item.Comment ?? string.Empty))
+                                                      .ToList();
+    }
+
     #region private function
     private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
     {

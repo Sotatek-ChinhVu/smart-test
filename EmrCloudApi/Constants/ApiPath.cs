@@ -137,6 +137,7 @@
         public const string DeleteDocCategory = "DeleteDocCategory";
         public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
         public const string GetListParamTemplate = "GetListParamTemplate";
+        public const string GetListDocComment = "GetListDocComment";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
