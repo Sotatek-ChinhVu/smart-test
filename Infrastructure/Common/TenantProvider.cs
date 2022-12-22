@@ -64,7 +64,7 @@ namespace Infrastructure.CommonDB
             return "Tenant1";
         }
 
-        public void ReloadNoTrackingDataContext()
+        public TenantNoTrackingDataContext ReloadNoTrackingDataContext()
         {
             _noTrackingDataContext?.Dispose();
 
@@ -74,9 +74,10 @@ namespace Infrastructure.CommonDB
             }).LogTo(Console.WriteLine, LogLevel.Information).Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             _noTrackingDataContext = factory.CreateDbContext();
+            return _noTrackingDataContext;
         }
 
-        public void ReloadTrackingDataContext()
+        public TenantDataContext ReloadTrackingDataContext()
         {
             _trackingDataContext?.Dispose();
 
@@ -86,6 +87,7 @@ namespace Infrastructure.CommonDB
             }).LogTo(Console.WriteLine, LogLevel.Information).Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
             _trackingDataContext = factory.CreateDbContext();
+            return _trackingDataContext;
         }
 
         public void DisposeDataContext()
