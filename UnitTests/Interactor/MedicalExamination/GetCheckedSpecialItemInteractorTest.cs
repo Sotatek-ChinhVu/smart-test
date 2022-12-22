@@ -425,6 +425,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetailAA);
@@ -480,6 +482,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -537,6 +541,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailB6);
@@ -592,6 +598,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -649,6 +657,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailBK);
@@ -704,6 +714,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -761,6 +773,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailMG);
@@ -816,6 +830,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -1242,6 +1258,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetailAA);
@@ -1297,6 +1315,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -1354,6 +1374,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailB6);
@@ -1409,6 +1431,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -1466,6 +1490,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailBK);
@@ -1521,6 +1547,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -1578,6 +1606,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailMG);
@@ -1633,6 +1663,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -2059,6 +2091,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetailAA);
@@ -2114,6 +2148,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -2171,6 +2207,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailB6);
@@ -2226,6 +2264,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -2283,6 +2323,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailBK);
@@ -2338,6 +2380,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -2395,6 +2439,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailMG);
@@ -2450,6 +2496,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -2876,6 +2924,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetailAA);
@@ -2931,6 +2981,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -2988,6 +3040,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailB6);
@@ -3043,6 +3097,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -3100,6 +3156,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailBK);
@@ -3155,6 +3213,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -3212,6 +3272,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailMG);
@@ -3267,6 +3329,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -3693,6 +3757,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetailAA);
@@ -3748,6 +3814,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -3805,6 +3873,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailB6);
@@ -3860,6 +3930,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -3917,6 +3989,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailBK);
@@ -3972,6 +4046,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -4029,6 +4105,8 @@ public class GetCheckedSpecialItemInteractorTest
            0,
            0,
            string.Empty,
+           string.Empty,
+           string.Empty,
            string.Empty
            );
         odrDetails.Add(odrDetailMG);
@@ -4084,6 +4162,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -4208,6 +4288,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail);
@@ -4328,6 +4410,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail);
@@ -4447,6 +4531,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -4570,6 +4656,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -4625,6 +4713,8 @@ public class GetCheckedSpecialItemInteractorTest
            new(),
            0,
            0,
+           string.Empty,
+           string.Empty,
            string.Empty,
            string.Empty
            );
@@ -4744,6 +4834,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -4980,6 +5072,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -5035,6 +5129,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -5271,6 +5367,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -5326,6 +5424,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -5562,6 +5662,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -5617,6 +5719,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -5853,6 +5957,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -5908,6 +6014,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
@@ -6144,6 +6252,8 @@ public class GetCheckedSpecialItemInteractorTest
             0,
             0,
             string.Empty,
+            string.Empty,
+            string.Empty,
             string.Empty
             );
         odrDetails.Add(odrDetail1);
@@ -6199,6 +6309,8 @@ public class GetCheckedSpecialItemInteractorTest
             new(),
             0,
             0,
+            string.Empty,
+            string.Empty,
             string.Empty,
             string.Empty
             );
