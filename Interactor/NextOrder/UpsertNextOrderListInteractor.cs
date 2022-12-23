@@ -180,6 +180,10 @@ namespace Interactor.NextOrder
             var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
+                if (!listUpdates.Any())
+                {
+                    listUpdates = new List<string> { string.Empty };
+                }
                 _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, listUpdates, false);
             }
             else
