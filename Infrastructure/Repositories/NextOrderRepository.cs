@@ -806,6 +806,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.PtId == ptId
                                                                                 && item.RsvkrtNo == rsvkrtNo
                                                                                 && item.SeqNo == lastSeqNo
+                                                                                && item.FileName != string.Empty
                                                                                 )
                                                                     .OrderBy(item => item.Position)
                                                                     .Select(item => new NextOrderFileModel(
@@ -885,6 +886,20 @@ namespace Infrastructure.Repositories
                 item.RsvkrtNo = rsvkrtNo;
                 item.Position = position;
                 position++;
+            }
+
+            if (listFileName.Any(item => item == string.Empty))
+            {
+                RsvkrtKarteImgInf newFile = new();
+                newFile.FileName = string.Empty;
+                newFile.Id = 0;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = 1;
+                newFile.KarteKbn = 0;
+                newFile.PtId = ptId;
+                newFile.HpId = hpId;
+                newFile.RsvkrtNo = rsvkrtNo;
+                TrackingDataContext.RsvkrtKarteImgInfs.Add(newFile);
             }
         }
 
