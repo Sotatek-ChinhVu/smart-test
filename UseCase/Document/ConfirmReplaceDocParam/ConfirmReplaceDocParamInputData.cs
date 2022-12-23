@@ -1,5 +1,13 @@
-﻿namespace UseCase.Document.ConfirmReplaceDocParam;
+﻿using UseCase.Core.Sync.Core;
 
-public class ConfirmReplaceDocParamInputData
+namespace UseCase.Document.ConfirmReplaceDocParam;
+
+public class ConfirmReplaceDocParamInputData : IInputData<ConfirmReplaceDocParamOutputData>
 {
+    public ConfirmReplaceDocParamInputData(string textFile)
+    {
+        TextFile = textFile;
+    }
+
+    public string TextFile { get; private set; }
 }

@@ -1,5 +1,7 @@
-﻿namespace UseCase.Document.ConfirmReplaceDocParam;
+﻿using UseCase.Core.Sync.Core;
 
-public class ConfirmReplaceDocParamOutputData
+namespace UseCase.Document.ConfirmReplaceDocParam;
+
+public class ConfirmReplaceDocParamOutputData : IOutputData
 {
 }
