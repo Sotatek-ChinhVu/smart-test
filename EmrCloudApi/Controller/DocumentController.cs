@@ -231,8 +231,13 @@ public class DocumentController : AuthorizeControllerBase
                 {
                     if (workbook.WorkbookPart != null)
                     {
-                        return workbook.WorkbookPart.Workbook.InnerText;
+                        var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                        if (sharedStringsPart != null)
+                        {
+                            return sharedStringsPart.SharedStringTable.InnerText;
+                        }
                     }
+
                 }
             }
         }
