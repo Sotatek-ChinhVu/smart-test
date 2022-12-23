@@ -43,7 +43,7 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
             }
             var listFileItems = validateResponse.Item2;
 
-            List<SaveFileInfModel> result = new();
+            List<FileInfModel> result = new();
             string path = string.Empty;
             if (listFileItems.Any())
             {
@@ -59,13 +59,13 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
                     var linkImage = responseUpload.Result;
                     if (linkImage.Length > 0)
                     {
-                        result.Add(new SaveFileInfModel(item.IsSchema, linkImage));
+                        result.Add(new FileInfModel(item.IsSchema, linkImage));
                     }
                 }
             }
             if (result.Any() && SaveFileToDB(input, path, result))
             {
-                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, result.Select(item => item.FileName).ToList());
+                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, result.Select(item => item.LinkFile).ToList());
             }
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
@@ -82,12 +82,12 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
         }
     }
 
-    private bool SaveFileToDB(SaveListFileTodayOrderInputData input, string path, List<SaveFileInfModel> listFiles)
+    private bool SaveFileToDB(SaveListFileTodayOrderInputData input, string path, List<FileInfModel> listFiles)
     {
         if (listFiles.Any())
         {
             string host = _options.BaseAccessUrl + "/" + path;
-            var listFileNames = listFiles.Select(item => item.FileName.Replace(host, string.Empty)).ToList();
+            var listFileNames = listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList();
             switch (input.TypeUpload)
             {
                 case TypeUploadConstant.UploadKarteFile:

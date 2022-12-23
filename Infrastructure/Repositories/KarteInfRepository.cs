@@ -74,7 +74,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public bool SaveListFileKarte(int hpId, long ptId, long raiinNo, string host, List<SaveFileInfModel> listFiles, bool saveTempFile)
+        public bool SaveListFileKarte(int hpId, long ptId, long raiinNo, string host, List<FileInfModel> listFiles, bool saveTempFile)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => item.FileName.Replace(host, string.Empty)).ToList());
+                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
                 }
                 return TrackingDataContext.SaveChanges() > 0;
             }
@@ -112,7 +112,7 @@ namespace Infrastructure.Repositories
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 
-        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, long ptId, string host, List<SaveFileInfModel> listFileNames)
+        private List<KarteImgInf> ConvertListInsertTempKarteFile(int hpId, long ptId, string host, List<FileInfModel> listFileNames)
         {
             List<KarteImgInf> result = new();
             int position = 1;
@@ -131,7 +131,7 @@ namespace Infrastructure.Repositories
                 {
                     entity.KarteKbn = 1;
                 }
-                entity.FileName = item.FileName.Replace(host, string.Empty);
+                entity.FileName = item.LinkFile.Replace(host, string.Empty);
                 result.Add(entity);
                 position += 1;
             }

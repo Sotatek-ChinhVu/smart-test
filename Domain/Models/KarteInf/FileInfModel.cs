@@ -10,6 +10,14 @@ public class FileInfModel
         LinkFile = linkFile;
         IsDelete = isDelete;
     }
+    public FileInfModel(bool isSchema, string linkFile)
+    {
+        RaiinNo = 0;
+        SeqNo = 0;
+        IsSchema = isSchema;
+        LinkFile = linkFile;
+        IsDelete = false;
+    }
 
     public long RaiinNo { get; private set; }
 
