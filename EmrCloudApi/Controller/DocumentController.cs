@@ -19,12 +19,13 @@ using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
 using UseCase.Document.GetListParamTemplate;
 using Interactor.Document.CommonGetListParam;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Net;
+using UseCase.Document;
 using UseCase.Document.DownloadDocumentTemplate;
 using UseCase.Document.GetListDocComment;
 using UseCase.Document.ConfirmReplaceDocParam;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Drawing;
-using UseCase.Document;
 
 namespace EmrCloudApi.Controller;
 
@@ -172,18 +173,6 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.GetListDocComment)]
-    public ActionResult<Response<GetListDocCommentResponse>> GetListDocComment([FromBody] GetListDocCommentRequest request)
-    {
-        var input = new GetListDocCommentInputData(request.ListReplaceWord);
-        var output = _bus.Handle(input);
-
-        var presenter = new GetListDocCommentPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<GetListDocCommentResponse>>(presenter.Result);
-    }
-
     [HttpGet(ApiPath.GetListParamTemplate)]
     public ActionResult<Response<GetListParamTemplateResponse>> GetListParamTemplate([FromQuery] GetListParamTemplateRequest request)
     {
@@ -194,6 +183,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListDocComment)]
+    public ActionResult<Response<GetListDocCommentResponse>> GetListDocComment([FromBody] GetListDocCommentRequest request)
+    {
+        var input = new GetListDocCommentInputData(request.ListReplaceWord);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListDocCommentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListDocCommentResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.ConfirmReplaceDocParam)]
@@ -208,43 +209,12 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<ConfirmReplaceDocParamResponse>>(presenter.Result);
     }
 
-    private string GetAllTextFile(string fileLink)
-    {
-        string extention = System.IO.Path.GetExtension(fileLink).ToLower();
-        using (var httpClient = new HttpClient())
-        {
-            var responseStream = httpClient.GetStreamAsync(fileLink).Result;
-            var streamOutput = new MemoryStream();
-            responseStream.CopyTo(streamOutput);
-            if (extention.Equals(".docx"))
-            {
-                using (var workbook = WordprocessingDocument.Open(streamOutput, true))
-                {
-                    if (workbook.MainDocumentPart != null)
-                    {
-                        return workbook.MainDocumentPart.Document.InnerText;
-                    }
-                }
-            }
-            else if (extention.Equals(".xlsx"))
-            {
-                using (var workbook = SpreadsheetDocument.Open(streamOutput, true))
-                {
-                    if (workbook.WorkbookPart != null)
-                    {
-                        return workbook.WorkbookPart.Workbook.InnerText;
-                    }
-                }
-            }
-        }
-        return string.Empty;
-    }
 
-    [HttpGet(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportEmployee([FromQuery] DownloadDocumentTemplateRequest request)
+    [HttpPost(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportTemplate([FromBody] DownloadDocumentTemplateRequest request)
     {
-        var extension = System.IO.Path.GetExtension(request.LinkFile).ToLower();
-        var fileName = System.IO.Path.GetFileName(request.LinkFile);
+        var extension = Path.GetExtension(request.LinkFile).ToLower();
+        var fileName = Path.GetFileName(request.LinkFile);
         if (extension.Equals(".docx"))
         {
             var input = new DownloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
@@ -312,6 +282,38 @@ public class DocumentController : AuthorizeControllerBase
                 listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
             }
         }
+    }
+
+    private string GetAllTextFile(string fileLink)
+    {
+        string extention = System.IO.Path.GetExtension(fileLink).ToLower();
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(fileLink).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            if (extention.Equals(".docx"))
+            {
+                using (var workbook = WordprocessingDocument.Open(streamOutput, true))
+                {
+                    if (workbook.MainDocumentPart != null)
+                    {
+                        return workbook.MainDocumentPart.Document.InnerText;
+                    }
+                }
+            }
+            else if (extention.Equals(".xlsx"))
+            {
+                using (var workbook = SpreadsheetDocument.Open(streamOutput, true))
+                {
+                    if (workbook.WorkbookPart != null)
+                    {
+                        return workbook.WorkbookPart.Workbook.InnerText;
+                    }
+                }
+            }
+        }
+        return string.Empty;
     }
     #endregion
 }
