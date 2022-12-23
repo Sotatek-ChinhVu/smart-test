@@ -10,7 +10,7 @@ public interface ISuperSetDetailRepository : IRepositoryBase
 
     int SaveSuperSetDetail(int setCd, int userId, int hpId, List<SetByomeiModel> SetByomeiList, SetKarteInfModel SetKarteInf, List<SetOrderInfModel> ListSetOrdInfModels);
 
-    bool SaveListSetKarteFileTemp(int hpId, int setCd, List<string> listFileName, bool saveTempFile);
+    bool SaveListSetKarteFile(int hpId, int setCd, string host, List<SetFileInfModel> listFiles, bool saveTempFile);
 
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
 

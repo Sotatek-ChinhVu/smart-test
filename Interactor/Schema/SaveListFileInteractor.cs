@@ -8,6 +8,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using UseCase.Schema.SaveListFileTodayOrder;
+using FileInfModel = Domain.Models.KarteInf.FileInfModel;
 
 namespace Interactor.Schema;
 
@@ -87,15 +88,16 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
         if (listFiles.Any())
         {
             string host = _options.BaseAccessUrl + "/" + path;
-            var listFileNames = listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList();
             switch (input.TypeUpload)
             {
                 case TypeUploadConstant.UploadKarteFile:
                     return _karteInfRepository.SaveListFileKarte(input.HpId, input.PtId, 0, host, listFiles, true);
                 case TypeUploadConstant.UploadSupperSetDetailFile:
-                    return _superSetDetailRepository.SaveListSetKarteFileTemp(input.HpId, 0, listFileNames, true);
+                    var listFileSaveSet = listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile)).ToList();
+                    return _superSetDetailRepository.SaveListSetKarteFile(input.HpId, 0, host, listFileSaveSet, true);
                 case TypeUploadConstant.UploadNextOrderFile:
-                    return _nextOrderRepository.SaveListFileNextOrder(input.HpId, input.PtId, 0, listFileNames, true);
+                    var listFileSaveNextOrder = listFiles.Select(item => new NextOrderFileInfModel(item.IsSchema, item.LinkFile)).ToList();
+                    return _nextOrderRepository.SaveListFileNextOrder(input.HpId, input.PtId, 0, host, listFileSaveNextOrder, true);
                 default:
                     return false;
             }
