@@ -286,7 +286,7 @@ public class DocumentController : AuthorizeControllerBase
 
     private string GetAllTextFile(string fileLink)
     {
-        string extention = System.IO.Path.GetExtension(fileLink).ToLower();
+        string extention = Path.GetExtension(fileLink).ToLower();
         using (var httpClient = new HttpClient())
         {
             var responseStream = httpClient.GetStreamAsync(fileLink).Result;
@@ -308,8 +308,19 @@ public class DocumentController : AuthorizeControllerBase
                 {
                     if (workbook.WorkbookPart != null)
                     {
-                        return workbook.WorkbookPart.Workbook.InnerText;
+                        var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                        if (sharedStringsPart != null)
+                        {
+                            var sharedStringTextElements = sharedStringsPart.SharedStringTable.Descendants<Text>().Select(item => item.Text).ToList();
+                            var stringResult = string.Empty;
+                            foreach (var item in sharedStringTextElements)
+                            {
+                                stringResult += item;
+                            }
+                            return stringResult;
+                        }
                     }
+
                 }
             }
         }
