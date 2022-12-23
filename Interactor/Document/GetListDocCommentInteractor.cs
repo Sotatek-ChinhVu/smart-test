@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Document;
+using UseCase.Document;
 using UseCase.Document.GetListDocComment;
 
 namespace Interactor.Document;

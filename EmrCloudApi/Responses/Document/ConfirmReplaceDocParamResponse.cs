@@ -3,9 +3,9 @@ using UseCase.Document;
 
 namespace EmrCloudApi.Responses.Document;
 
-public class GetListDocCommentResponse
+public class ConfirmReplaceDocParamResponse
 {
-    public GetListDocCommentResponse(List<DocCommentOutputItem> listDocCommnet)
+    public ConfirmReplaceDocParamResponse(List<DocCommentOutputItem> listDocCommnet)
     {
         ListDocCommnet = listDocCommnet.Select(item => new DocCommentDto(item)).ToList();
     }

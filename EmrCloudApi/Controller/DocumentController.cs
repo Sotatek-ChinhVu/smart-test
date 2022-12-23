@@ -23,6 +23,7 @@ using DocumentFormat.OpenXml.Packaging;
 using Interactor.Document.CommonGetListParam;
 using DocumentFormat.OpenXml.Wordprocessing;
 using UseCase.Document.GetListDocComment;
+using UseCase.Document.ConfirmReplaceDocParam;
 
 namespace EmrCloudApi.Controller;
 
@@ -192,6 +193,50 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.ConfirmReplaceDocParam)]
+    public ActionResult<Response<ConfirmReplaceDocParamResponse>> ConfirmReplaceDocParam([FromQuery] ConfirmReplaceDocParamRequest request)
+    {
+        var input = new ConfirmReplaceDocParamInputData(GetAllTextFile(request.LinkFile));
+        var output = _bus.Handle(input);
+
+        var presenter = new ConfirmReplaceDocParamPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ConfirmReplaceDocParamResponse>>(presenter.Result);
+    }
+
+    private string GetAllTextFile(string fileLink)
+    {
+        string extention = Path.GetExtension(fileLink).ToLower();
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(fileLink).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            if (extention.Equals(".docx"))
+            {
+                using (var workbook = WordprocessingDocument.Open(streamOutput, true))
+                {
+                    if (workbook.MainDocumentPart != null)
+                    {
+                        return workbook.MainDocumentPart.Document.InnerText;
+                    }
+                }
+            }
+            else if (extention.Equals(".xlsx"))
+            {
+                using (var workbook = SpreadsheetDocument.Open(streamOutput, true))
+                {
+                    if (workbook.WorkbookPart != null)
+                    {
+                        return workbook.WorkbookPart.Workbook.InnerText;
+                    }
+                }
+            }
+        }
+        return string.Empty;
     }
 
     [HttpGet(ApiPath.DowloadDocumentTemplate)]

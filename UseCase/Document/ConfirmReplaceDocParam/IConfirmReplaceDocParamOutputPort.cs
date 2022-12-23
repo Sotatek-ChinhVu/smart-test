@@ -1,5 +1,7 @@
-﻿namespace UseCase.Document.ConfirmReplaceDocParam;
+﻿using UseCase.Core.Sync.Core;
 
-public interface IConfirmReplaceDocParamOutputPort
+namespace UseCase.Document.ConfirmReplaceDocParam;
+
+public interface IConfirmReplaceDocParamOutputPort : IOutputPort<ConfirmReplaceDocParamOutputData>
 {
 }
