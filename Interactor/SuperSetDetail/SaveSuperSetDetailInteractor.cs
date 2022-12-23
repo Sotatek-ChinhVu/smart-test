@@ -94,6 +94,10 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
         if (saveSuccess)
         {
+            if (!listUpdates.Any())
+            {
+                listUpdates = new List<string> { string.Empty };
+            }
             _superSetDetailRepository.SaveListSetKarteFileTemp(hpId, setCd, listUpdates, false);
         }
         else
