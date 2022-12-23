@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Document;
 
-namespace EmrCloudApi.Responses.Document;
+namespace EmrCloudApi.Responses.Document.Dto;
 
 public class FileDocumentDto
 {

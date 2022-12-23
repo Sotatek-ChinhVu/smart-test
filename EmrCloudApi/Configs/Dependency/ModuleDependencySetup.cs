@@ -132,11 +132,13 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.ConfirmReplaceDocParam;
 using UseCase.Document.DeleteDocCategory;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListDocComment;
 using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
@@ -664,6 +666,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
             busBuilder.RegisterUseCase<DownloadDocumentTemplateInputData, DownloadDocumentTemplateInteractor>();
+            busBuilder.RegisterUseCase<GetListDocCommentInputData, GetListDocCommentInteractor>();
+            busBuilder.RegisterUseCase<ConfirmReplaceDocParamInputData, ConfirmReplaceDocParamInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

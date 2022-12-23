@@ -142,13 +142,22 @@ namespace Interactor.NextOrder
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
                 }
                 var rsvkrtNo = _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
-                if (rsvkrtNo > 0)
+
+                if (inputData.FileItem.IsUpdateFile)
                 {
-                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, true);
-                }
-                else
-                {
-                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, false);
+                    if (rsvkrtNo > 0)
+                    {
+                        var listFileItems = inputData.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, listFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.FileItem.ListFileItems, false);
+                    }
                 }
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
             }
@@ -180,7 +189,11 @@ namespace Interactor.NextOrder
             var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, listUpdates, false);
+                if (!listUpdates.Any())
+                {
+                    listUpdates = new List<string> { string.Empty };
+                }
+                _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, host, listUpdates.Select(item => new NextOrderFileInfModel(false, item)).ToList(), false);
             }
             else
             {

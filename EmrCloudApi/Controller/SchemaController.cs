@@ -52,9 +52,16 @@ namespace EmrCloudApi.Controller
             {
                 if (file.Length > 0)
                 {
+                    string fileName = file.FileName;
+                    bool isSchema = false;
+                    if (file.FileName.EndsWith(".schema"))
+                    {
+                        fileName = file.FileName.Replace(".schema", "." + file.ContentType.Replace("image/", string.Empty));
+                        isSchema = true;
+                    }
                     var streamImage = new MemoryStream();
                     file.CopyTo(streamImage);
-                    listFiles.Add(new FileItem(file.FileName, streamImage));
+                    listFiles.Add(new FileItem(fileName, isSchema, streamImage));
                 }
             }
             var input = new SaveListFileTodayOrderInputData(HpId, request.PtId, request.SetCd, request.TypeUpload, listFiles);
