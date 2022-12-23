@@ -243,6 +243,7 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
+using UseCase.PatientInfor.GetListPatient;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -410,6 +411,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 
             // PatientInfor
+            busBuilder.RegisterUseCase<GetPatientInfoInputData, GetListPatientInfoInteractor>();
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();

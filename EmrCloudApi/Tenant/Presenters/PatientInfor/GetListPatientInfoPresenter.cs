@@ -20,6 +20,7 @@ public class GetListPatientInfoPresenter : IGetPatientInfoOutputPort
     {
         GetPatientInfoStatus.Success => ResponseMessage.Success,
         GetPatientInfoStatus.Failed => ResponseMessage.Failed,
+        GetPatientInfoStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         _ => string.Empty
     };
 }

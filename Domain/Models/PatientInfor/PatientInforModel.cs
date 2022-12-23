@@ -1,4 +1,8 @@
-﻿namespace Domain.Models.PatientInfor
+﻿using Entity.Tenant;
+using Helper.Common;
+using Helper.Extension;
+
+namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
@@ -281,5 +285,31 @@
         public string Comment { get; private set; }
 
         public int SinDate { get; private set; }
+
+        public string KarteDaichoAge
+        {
+            get
+            {
+                if (Birthday <= 0)
+                {
+                    return "";
+                }
+                else
+                {
+                    return CIUtil.SDateToDecodeAge(Birthday.AsString(), DateTime.UtcNow.ToString("yyyyMMdd").AsInteger().AsString());
+                }
+            }
+        }
+
+        public string DisplayBirthday
+        {
+            get
+            {
+                int intDate = Birthday;
+                string tDate = CIUtil.SDateToShowSWDate(intDate);
+                return tDate;
+
+            }
+        }
     }
 }
