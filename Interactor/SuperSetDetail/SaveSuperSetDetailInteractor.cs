@@ -58,16 +58,26 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 case 3:
                     return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetOrderInfFailed);
             }
-            if (result == 0)
+
+            if (inputData.FileItem.IsUpdateFile)
             {
-                SaveSetFile(inputData.HpId, inputData.SetCd, inputData.ListFileItems, true);
-                return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+                if (result == 0)
+                {
+                    var listFileItems = inputData.FileItem.ListFileItems;
+                    if (!listFileItems.Any())
+                    {
+                        listFileItems = new List<string> { string.Empty };
+                    }
+                    SaveSetFile(inputData.HpId, inputData.SetCd, listFileItems, true);
+                    return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+                }
+                else
+                {
+                    SaveSetFile(inputData.HpId, inputData.SetCd, inputData.FileItem.ListFileItems, false);
+                    return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
+                }
             }
-            else
-            {
-                SaveSetFile(inputData.HpId, inputData.SetCd, inputData.ListFileItems, false);
-                return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
-            }
+            return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
         }
         catch
         {
@@ -98,7 +108,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             {
                 listUpdates = new List<string> { string.Empty };
             }
-            _superSetDetailRepository.SaveListSetKarteFileTemp(hpId, setCd, listUpdates, false);
+            _superSetDetailRepository.SaveListSetKarteFile(hpId, setCd, host, listUpdates.Select(item => new SetFileInfModel(false, item)).ToList(), false);
         }
         else
         {
