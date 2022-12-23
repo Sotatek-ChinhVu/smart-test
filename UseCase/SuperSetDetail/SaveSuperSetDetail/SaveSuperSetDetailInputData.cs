@@ -7,7 +7,7 @@ namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public class SaveSuperSetDetailInputData : IInputData<SaveSuperSetDetailOutputData>
 {
-    public SaveSuperSetDetailInputData(int setCd, int userId, int hpId, List<SaveSetByomeiInputItem> setByomeiModelInputs, SaveSetKarteInputItem saveSetKarteInputItem, List<SaveSetOrderInfInputItem> saveSetOrderInputItems, List<string> listFileItems)
+    public SaveSuperSetDetailInputData(int setCd, int userId, int hpId, List<SaveSetByomeiInputItem> setByomeiModelInputs, SaveSetKarteInputItem saveSetKarteInputItem, List<SaveSetOrderInfInputItem> saveSetOrderInputItems, FileItemInputItem fileItem)
     {
         SetCd = setCd;
         UserId = userId;
@@ -15,7 +15,7 @@ public class SaveSuperSetDetailInputData : IInputData<SaveSuperSetDetailOutputDa
         SetByomeiModelInputs = setByomeiModelInputs;
         SaveSetKarteInputItem = saveSetKarteInputItem;
         SaveSetOrderInputItems = saveSetOrderInputItems;
-        ListFileItems = listFileItems;
+        FileItem = fileItem;
     }
 
     public int SetCd { get; private set; }
@@ -30,5 +30,5 @@ public class SaveSuperSetDetailInputData : IInputData<SaveSuperSetDetailOutputDa
 
     public List<SaveSetOrderInfInputItem> SaveSetOrderInputItems { get; private set; }
 
-    public List<string> ListFileItems { get; private set; }
+    public FileItemInputItem FileItem { get; private set; }
 }
