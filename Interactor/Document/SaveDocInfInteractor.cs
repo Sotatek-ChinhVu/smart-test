@@ -101,7 +101,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX)$";
+        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX|doc|DOC)$";
         var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {
