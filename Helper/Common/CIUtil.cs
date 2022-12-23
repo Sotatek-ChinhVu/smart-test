@@ -1957,6 +1957,140 @@ namespace Helper.Common
 
             return Result;
         }
+
+        //----------------------------------------------------------------------------//
+        // 機能      ： ＪＩＳコードチェック
+        //              ※電子レセプトの文字規格（以下が使用可能）
+        //　　　　　　　　JISX0201-1976：(JISローマ字,JISカナ（半角カナ）
+        //                JISX0208-1983: (01区 ～ 08区 各種記号,英数字,かな）
+        //                               (16区 ～ 47区 JIS第１水準漢字)
+        //                               (48区 ～ 84区 JIS第２水準漢字)
+        //                上記以外はエラー文字とする。
+        //
+        // 引数      ： sIn   : チェックする文字列
+        //              sOut  : エラー文字以外の文字列
+        // 戻り値　　： エラー文字列
+        // 備考　　　： http://charset.7jp.net/jis0208.html
+        //          ： http://d.hatena.ne.jp/tekk/20120623/1340462114
+        //----------------------------------------------------------------------------//
+        public static string Chk_JISKj(string sIn, out string sOut)
+        {
+            string strErr = "";
+            sOut = "";
+
+            // タブ、改行コードは除去しておく
+            // Trim Tab & New-line character
+            sIn = sIn.Replace("\t", "");
+            sIn = sIn.Replace(Environment.NewLine, "");
+
+            TextElementEnumerator textEnum = null;
+            textEnum = StringInfo.GetTextElementEnumerator(sIn);
+
+            while (textEnum.MoveNext())
+            {
+                // サロゲートペア文字の存在チェック
+                if (textEnum.GetTextElement().Length > 1)
+                {
+                    strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+
+                }
+
+                //文字列にUnicodeでしか使用されていない文字の存在チェック
+                //.NET string is all UTF-16 string, therefore, no need to check
+                // whether string contains both ASCII and UTF characters
+
+                //end else if IsUnicodeOnly(sIn[1]) = true then begin
+                //strErrStr:= strErrStr + Copy(sIn, 1, 1);
+                //Delete(sIn, 1, 1);
+
+                else
+                {
+                    //チェック対象文字をunicode　→ Ansiに変換
+                    string strChkString = CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+                    byte[] asciiBytes = UTF16CharToBytes(strChkString[0]);
+
+                    if (asciiBytes.Length == 1)
+                    {
+                        // 1バイトコード
+                        // 半角: 記号，英数字
+                        // 半角カタカナは全角として返しますので、ここでのチェックが不要
+                        if ((asciiBytes[0] >= 0x20) && (asciiBytes[0] <= 0x7E))
+                        {
+                            if (asciiBytes[0] == 0x3F && strChkString != @"?")
+                            {
+                                // 0x3F = 63 = ? character
+                                // Check string is not "?"
+                                // Then can not convert to ISO 2022 JP = 第3水準，第4水準漢字等
+                                strErr += strChkString;
+
+                            }
+                            else
+                            {
+                                sOut += strChkString;
+                            }
+                        }
+                        {
+                            //制御文字
+                            //見えないので、追加は必要ない
+                        }
+
+                    }
+                    else if (asciiBytes.Length == 8)
+                    {
+                        //Convert from asciiBytes to 区点 in JIS
+
+                        int ku = asciiBytes[3] - 32;
+                        int ten = asciiBytes[4] - 32;
+                        //13区（環境依存文字）はエラーとする
+                        if (ku == 13)
+                        {
+                            strErr += strChkString;
+                        }
+                        else
+                        {
+                            //JISX0208 - 1983: (01区 ～ 08区 各種記号, 英数字, かな）
+                            //                           (16区 ～ 47区 JIS第１水準漢字)
+                            //                           (48区 ～ 84区 JIS第２水準漢字)
+                            if ((1 <= ku && ku <= 8) ||
+                                (16 <= ku && ku <= 84))
+                            {
+                                //全角ひらがな、かたかな、第1水準、第2水準漢字
+                                sOut += strChkString;
+                            }
+                            else
+                            {
+                                strErr += strChkString;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //外字??
+                    }
+                }
+
+            }
+
+            return strErr;
+        }
+
+        public static byte[] UTF16CharToBytes(char utf16Char)
+        {
+            byte[] asciiBytes = new byte[1];
+
+            try
+            {
+                //ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
+                Encoding ascii = Encoding.GetEncoding("iso-2022-jp");
+                asciiBytes = ascii.GetBytes(utf16Char.ToString());
+            }
+            catch
+            {
+                asciiBytes = new byte[1];
+            }
+
+            return asciiBytes;
+        }
     }
     public struct WarekiYmd
     {
