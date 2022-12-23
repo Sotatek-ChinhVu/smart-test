@@ -217,7 +217,14 @@ public class DocumentController : AuthorizeControllerBase
         var fileName = Path.GetFileName(request.LinkFile);
         if (extension.Equals(".docx"))
         {
-            var input = new DownloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
+            var input = new DownloadDocumentTemplateInputData(HpId,
+                                                              UserId,
+                                                              request.PtId,
+                                                              request.SinDate,
+                                                              request.RaiinNo,
+                                                              request.HokenPId,
+                                                              request.LinkFile,
+                                                              request.ListReplaceComment.Select(item => new ReplaceCommentInputItem(item.ReplaceKey, item.ReplaceValue)).ToList());
             var output = _bus.Handle(input);
             return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
         }
@@ -260,8 +267,12 @@ public class DocumentController : AuthorizeControllerBase
                         {
                             foreach (var param in group.ListParamModel)
                             {
-                                DoReplaceFileXlsx(sharedStringTextElements, param);
+                                DoReplaceFileXlsx("《", "》", sharedStringTextElements, param);
                             }
+                        }
+                        foreach (var comment in request.ListReplaceComment)
+                        {
+                            DoReplaceFileXlsx("@", "@", sharedStringTextElements, new ItemDisplayParamModel(comment.ReplaceKey, comment.ReplaceValue));
                         }
                     }
                 }
@@ -270,10 +281,8 @@ public class DocumentController : AuthorizeControllerBase
         }
     }
 
-    private static void DoReplaceFileXlsx(IEnumerable<Text> textElements, ItemDisplayParamModel param)
+    private static void DoReplaceFileXlsx(string preCharParam, string subCharParam, IEnumerable<Text> textElements, ItemDisplayParamModel param)
     {
-        string preCharParam = "《";
-        string subCharParam = "》";
         var listData = textElements.ToList();
         for (int i = 0; i < listData.Count; i++)
         {
@@ -311,16 +320,9 @@ public class DocumentController : AuthorizeControllerBase
                         var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
                         if (sharedStringsPart != null)
                         {
-                            var sharedStringTextElements = sharedStringsPart.SharedStringTable.Descendants<Text>().Select(item => item.Text).ToList();
-                            var stringResult = string.Empty;
-                            foreach (var item in sharedStringTextElements)
-                            {
-                                stringResult += item;
-                            }
-                            return stringResult;
+                            return sharedStringsPart.SharedStringTable.InnerText;
                         }
                     }
-
                 }
             }
         }

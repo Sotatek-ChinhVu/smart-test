@@ -11,4 +11,6 @@ public class DownloadDocumentTemplateRequest
     public int HokenPId { get; set; }
 
     public string LinkFile { get; set; } = string.Empty;
+
+    public List<ReplaceCommentRequestItem> ListReplaceComment { get; set; } = new();
 }

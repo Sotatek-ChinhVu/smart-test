@@ -4,7 +4,7 @@ namespace UseCase.Document.DownloadDocumentTemplate;
 
 public class DownloadDocumentTemplateInputData : IInputData<DownloadDocumentTemplateOutputData>
 {
-    public DownloadDocumentTemplateInputData(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId, string linkFile)
+    public DownloadDocumentTemplateInputData(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId, string linkFile, List<ReplaceCommentInputItem> listReplaceComments)
     {
         HpId = hpId;
         UserId = userId;
@@ -13,6 +13,7 @@ public class DownloadDocumentTemplateInputData : IInputData<DownloadDocumentTemp
         RaiinNo = raiinNo;
         HokenPId = hokenPId;
         LinkFile = linkFile;
+        ListReplaceComments = listReplaceComments;
     }
 
     public int HpId { get; private set; }
@@ -28,4 +29,6 @@ public class DownloadDocumentTemplateInputData : IInputData<DownloadDocumentTemp
     public int HokenPId { get; private set; }
 
     public string LinkFile { get; private set; }
+
+    public List<ReplaceCommentInputItem> ListReplaceComments { get; private set; }
 }

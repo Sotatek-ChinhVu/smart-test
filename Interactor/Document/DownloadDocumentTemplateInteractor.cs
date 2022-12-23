@@ -33,7 +33,7 @@ public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInput
                         var listGroupParams = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
                         if (extension.Equals(".docx"))
                         {
-                            return new DownloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams), DownloadDocumentTemplateStatus.Successed);
+                            return new DownloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams, inputData.ListReplaceComments), DownloadDocumentTemplateStatus.Successed);
                         }
                     }
                     return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
@@ -46,7 +46,7 @@ public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInput
         }
     }
 
-    private MemoryStream ReplaceParamsFileDocx(MemoryStream streamOutput, List<ItemGroupParamModel> listGroupParams)
+    private MemoryStream ReplaceParamsFileDocx(MemoryStream streamOutput, List<ItemGroupParamModel> listGroupParams, List<ReplaceCommentInputItem> listReplaceComments)
     {
         var flatDocument = new FlatDocument(streamOutput);
         foreach (var group in listGroupParams)
@@ -55,6 +55,10 @@ public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInput
             {
                 flatDocument.FindAndReplace("《" + param.Parameter + "》", param.Value);
             }
+        }
+        foreach (var comment in listReplaceComments)
+        {
+            flatDocument.FindAndReplace("@" + comment.ReplaceKey + "@", comment.ReplaceValue);
         }
         flatDocument.Close();
         return streamOutput;
