@@ -316,7 +316,7 @@ namespace Interactor.MedicalExamination
             return !string.IsNullOrEmpty(secondMessage) ? $"\"{name} ({firstMessage}、{secondMessage}) \"は下限年齢未満のため、算定できません。" : $"\"{name} ({firstMessage}) \"は下限年齢未満のため、算定できません。";
         }
 
-        private bool CheckAge(string tenMstAgeCheck, int iDays, int sinDate, int iBirthDay, int iYear)
+        public bool CheckAge(string tenMstAgeCheck, int iDays, int sinDate, int iBirthDay, int iYear)
         {
             bool subResult;
 
@@ -612,27 +612,27 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private int WeeksBefore(int baseDate, int term)
+        public int WeeksBefore(int baseDate, int term)
         {
             return CIUtil.WeeksBefore(baseDate, term);
         }
 
-        private int MonthsBefore(int baseDate, int term)
+        public int MonthsBefore(int baseDate, int term)
         {
             return CIUtil.MonthsBefore(baseDate, term);
         }
 
-        private int YearsBefore(int baseDate, int term)
+        public int YearsBefore(int baseDate, int term)
         {
             return CIUtil.YearsBefore(baseDate, term);
         }
 
-        private int DaysBefore(int baseDate, int term)
+        public int DaysBefore(int baseDate, int term)
         {
             return CIUtil.DaysBefore(baseDate, term);
         }
 
-        private int MonthsAfter(int baseDate, int term)
+        public int MonthsAfter(int baseDate, int term)
         {
             return CIUtil.MonthsAfter(baseDate, term);
         }
@@ -827,7 +827,7 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private void CommonDensiSantei(int hpId, DensiSanteiKaisuModel densiSanteiKaisu, OrdInfDetailModel odrDetail, List<OrdInfDetailModel> allOdrInfDetail, ref int startDate, ref int endDate, ref string sTerm, int sinDate, int syosinDate)
+        public void CommonDensiSantei(int hpId, DensiSanteiKaisuModel densiSanteiKaisu, OrdInfDetailModel odrDetail, List<OrdInfDetailModel> allOdrInfDetail, ref int startDate, ref int endDate, ref string sTerm, int sinDate, int syosinDate)
         {
             switch (densiSanteiKaisu.UnitCd)
             {
