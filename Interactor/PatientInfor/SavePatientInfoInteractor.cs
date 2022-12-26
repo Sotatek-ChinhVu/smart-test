@@ -23,11 +23,7 @@ namespace Interactor.PatientInfor
             var validations = Validation(inputData);
             if (validations.Any())
             {
-                string msgValidation = string.Empty;
-                foreach (var item in validations)
-                    msgValidation += string.IsNullOrEmpty(msgValidation) ? item : $",{item}";
-
-                return new SavePatientInfoOutputData(msgValidation, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(validations, SavePatientInfoStatus.Failed, 0);
             }
             try
             {
@@ -38,13 +34,13 @@ namespace Interactor.PatientInfor
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.UserId);
 
                 if (result.Item1)
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful, result.Item2);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.Item2);
                 else
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
             }
             catch
             {
-                return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
+                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
             }
             finally
             {
