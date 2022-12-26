@@ -1,6 +1,9 @@
 ﻿using Entity.Tenant;
+using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using PostgreDataContext;
 
 namespace CommonCheckers
@@ -11,18 +14,25 @@ namespace CommonCheckers
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private List<SystemConf> _systemConfigs = new List<SystemConf>();
         private static SystemConfig _instance;
+        private ITenantProvider tenantProvider;
 
         private static readonly object _threadsafelock = new object();
 
         public SystemConfig(ITenantProvider tenantProvider)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+
         }
 
         public SystemConfig()
         {
+            RefreshData();
         }
 
+        public void RefreshData()
+        {
+            _systemConfigs = (List<SystemConf>)_tenantNoTrackingDataContext.SystemConfs.Where(p => p.HpId == 1);
+        }
         public static SystemConfig Instance
         {
             get
