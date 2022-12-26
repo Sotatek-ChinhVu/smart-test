@@ -244,16 +244,17 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             );
     }
 
-    private List<SetKarteFileModel> GetListSetKarteFileModel(int hpId, int setCd)
+    private List<SetFileInfModel> GetListSetKarteFileModel(int hpId, int setCd)
     {
         long lastSeqNo = GetLastSeqNo(hpId, setCd);
         var result = NoTrackingDataContext.SetKarteImgInf.Where(item =>
                                                                     item.HpId == hpId
                                                                     && item.SetCd == setCd
-                                                                    && item.SeqNo == lastSeqNo)
+                                                                    && item.SeqNo == lastSeqNo
+                                                                    && item.FileName != string.Empty)
                                                                 .OrderBy(item => item.Position)
-                                                                .Select(item => new SetKarteFileModel(
-                                                                   item.Id,
+                                                                .Select(item => new SetFileInfModel(
+                                                                   item.KarteKbn > 0,
                                                                    item.FileName ?? string.Empty
                                                                  )).ToList();
         return result;
@@ -967,52 +968,6 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     }
     #endregion
 
-    public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)
-    {
-        bool status = false;
-        try
-        {
-            var hpId = listModel.FirstOrDefault()?.HpId;
-            var setCd = listModel.FirstOrDefault()?.SetCd;
-            var listPosition = listModel.Select(item => item.Position).ToList();
-            var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-            var listKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName ?? string.Empty)).ToList();
-
-            foreach (var model in listModel)
-            {
-                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName?.Equals(model.OldFileName) == true);
-                if (karteImgInf == null)
-                {
-                    karteImgInf = new SetKarteImgInf();
-                    karteImgInf.HpId = model.HpId;
-                    karteImgInf.SetCd = model.SetCd;
-                    karteImgInf.FileName = model.FileName;
-                    karteImgInf.Position = model.Position;
-                    TrackingDataContext.SetKarteImgInf.Add(karteImgInf);
-                }
-                else
-                {
-                    if (model.FileName != String.Empty)
-                    {
-                        karteImgInf.Position = model.Position;
-                        karteImgInf.FileName = model.FileName;
-                    }
-                    else
-                    {
-                        TrackingDataContext.SetKarteImgInf.Remove(karteImgInf);
-                    }
-                }
-            }
-            TrackingDataContext.SaveChanges();
-            status = true;
-            return status;
-        }
-        catch (Exception)
-        {
-            return status;
-        }
-    }
-
     public List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd)
     {
         var listOrder = NoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
@@ -1182,13 +1137,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return lastItem != null ? lastItem.SeqNo : 0;
     }
 
-    public bool SaveListSetKarteFileTemp(int hpId, int setCd, List<string> listFileName, bool saveTempFile)
+    public bool SaveListSetKarteFile(int hpId, int setCd, string host, List<SetFileInfModel> listFiles, bool saveTempFile)
     {
         try
         {
             if (saveTempFile)
             {
-                var listInsert = ConvertListAddNewFiles(hpId, listFileName);
+                var listInsert = ConvertListAddNewFiles(hpId, host, listFiles);
                 if (listInsert.Any())
                 {
                     TrackingDataContext.SetKarteImgInf.AddRange(listInsert);
@@ -1196,7 +1151,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             }
             else
             {
-                UpdateSeqNoSetFile(hpId, setCd, listFileName);
+                UpdateSeqNoSetFile(hpId, setCd, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
             }
             return TrackingDataContext.SaveChanges() > 0;
         }
@@ -1244,13 +1199,26 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             item.Position = position;
             position++;
         }
+
+        if (listFileName.Any(item => item == string.Empty))
+        {
+            SetKarteImgInf newFile = new();
+            newFile.FileName = string.Empty;
+            newFile.Id = 0;
+            newFile.HpId = hpId;
+            newFile.SeqNo = lastSeqNo + 1;
+            newFile.Position = 1;
+            newFile.SetCd = setCd;
+            newFile.KarteKbn = 0;
+            TrackingDataContext.SetKarteImgInf.Add(newFile);
+        }
     }
 
-    private List<SetKarteImgInf> ConvertListAddNewFiles(int hpId, List<string> listFileName)
+    private List<SetKarteImgInf> ConvertListAddNewFiles(int hpId, string host, List<SetFileInfModel> listFiles)
     {
         List<SetKarteImgInf> result = new();
         int position = 1;
-        foreach (var item in listFileName)
+        foreach (var item in listFiles)
         {
             result.Add(new SetKarteImgInf()
             {
@@ -1258,8 +1226,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 HpId = hpId,
                 SeqNo = 0,
                 SetCd = 0,
+                KarteKbn = item.IsSchema ? 1 : 0,
                 Position = position,
-                FileName = item
+                FileName = item.LinkFile.Replace(host, string.Empty)
             });
             position += 1;
         }
