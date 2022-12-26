@@ -8,6 +8,6 @@ namespace EmrCloudApi.Requests.NextOrder
 
         public List<NextOrderItem> NextOrderItems { get; set; } = new();
 
-        public List<string> ListFileItems { get; set; } = new();
+        public FileItemRequestItem FileItem { get; set; } = new();
     }
 }

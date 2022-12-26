@@ -112,7 +112,7 @@ public class SetController : AuthorizeControllerBase
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
                         new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
                         ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems),
-                        request.ListFileItems
+                        new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems)
                     );
         var output = _bus.Handle(input);
 
