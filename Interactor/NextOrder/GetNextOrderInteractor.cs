@@ -57,7 +57,9 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
             var byomeis = _nextOrderRepository.GetByomeis(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.Type);
             var orderInfs = _nextOrderRepository.GetOrderInfs(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.SinDate, inputData.UserId);
             var karteInf = _nextOrderRepository.GetKarteInf(inputData.HpId, inputData.PtId, inputData.RsvkrtNo);
-            var listNextOrderFiles = GetListNextOrderFile(inputData.HpId, inputData.PtId, inputData.RsvkrtNo);
+            var listNextOrderFiles = GetListNextOrderFile(inputData.HpId, inputData.PtId, inputData.RsvkrtNo)
+                                                            .Select(item => new NextOrderFileInfItem(item))
+                                                            .ToList();
 
             var orderInfItems = orderInfs.Select(o => new RsvKrtOrderInfItem(o));
 
@@ -136,10 +138,10 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
             _patientInforRepository.ReleaseResource();
         }
     }
-    private List<string> GetListNextOrderFile(int hpId, long ptId, long rsvkrtNo)
+    private List<NextOrderFileInfModel> GetListNextOrderFile(int hpId, long ptId, long rsvkrtNo)
     {
         var nextOrderFiles = _nextOrderRepository.GetNextOrderFiles(hpId, ptId, rsvkrtNo);
-        List<string> result = new();
+        List<NextOrderFileInfModel> result = new();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
         listFolders.Add(CommonConstants.Store);
@@ -152,8 +154,8 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
             fileName.Append(_options.BaseAccessUrl);
             fileName.Append("/");
             fileName.Append(path);
-            fileName.Append(file.FileName);
-            result.Add(fileName.ToString());
+            fileName.Append(file.LinkFile);
+            result.Add(new NextOrderFileInfModel(file.IsSchema, fileName.ToString()));
         }
         return result;
     }

@@ -14,7 +14,6 @@ using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
