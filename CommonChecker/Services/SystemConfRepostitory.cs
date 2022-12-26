@@ -5,11 +5,11 @@ using PostgreDataContext;
 
 namespace CommonChecker.Services
 {
-    public class SystemGenerationConfRepostitory : ISystemGenerationConfRepository
+    public class SystemConfRepostitory : ISystemConfRepository
     {
         private readonly TenantDataContext _tenantDataContext;
 
-        public SystemGenerationConfRepostitory(ITenantProvider tenantProvider)
+        public SystemConfRepostitory(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }

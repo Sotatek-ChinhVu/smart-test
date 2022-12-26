@@ -1,5 +1,4 @@
-﻿using CommonChecker.DB;
-using CommonChecker.Types;
+﻿using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;

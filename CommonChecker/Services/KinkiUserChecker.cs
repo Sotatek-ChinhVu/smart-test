@@ -7,15 +7,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        private readonly SystemConfig? _systemConf;
-        public KinkiUserChecker(SystemConfig systemConf)
-        {
-            _systemConf = systemConf;
-        }
-
-        public KinkiUserChecker()
-        {
-        }
 
         public List<TOdrInf> CurrentListOrder = new();
 
@@ -59,7 +50,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return _systemConf != null ? _systemConf.KinkiLevelSetting : 0;
+            return SystemConfig.Instance.KinkiLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)

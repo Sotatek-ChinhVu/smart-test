@@ -7,12 +7,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        private readonly SystemConfig? _systemConf;
-        public DosageChecker(SystemConfig systemConf)
-        {
-            _systemConf = systemConf;
-        }
-        public DosageChecker() { }
         public double CurrentHeight { get; set; }
 
         public double CurrentWeight { get; set; }
@@ -26,18 +20,18 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            bool isMinCheck = _systemConf?.DosageMinCheckSetting ?? default;
-            double ratioSetting = _systemConf?.DosageRatioSetting ?? default;
+            bool isMinCheck = SystemConfig.Instance.DosageMinCheckSetting;
+            double ratioSetting = SystemConfig.Instance.DosageRatioSetting;
             List<DosageResultModel> resultList = new List<DosageResultModel>();
             List<TOdrInf> errorOrderList = new List<TOdrInf>();
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting ||
-                checkingOrder.OdrKouiKbn == 22 && !_systemConf.DosageDrugAsOrderSetting ||
+                if (checkingOrder.OdrKouiKbn == 21 && SystemConfig.Instance.DosageDrinkingDrugSetting ||
+                checkingOrder.OdrKouiKbn == 22 && SystemConfig.Instance.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
                 checkingOrder.OdrKouiKbn == 28 ||
-                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !_systemConf.DosageOtherDrugSetting)
+                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && SystemConfig.Instance.DosageOtherDrugSetting)
                 {
                     continue;
                 }

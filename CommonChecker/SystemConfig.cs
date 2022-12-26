@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Helper.Extension;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace CommonCheckers
@@ -9,11 +10,41 @@ namespace CommonCheckers
         // private DBContextFactory dbService;
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private List<SystemConf> _systemConfigs = new List<SystemConf>();
+        private static SystemConfig _instance;
+
         private static readonly object _threadsafelock = new object();
 
-        public SystemConfig(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+        public SystemConfig(ITenantProvider tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+        }
+
+        public SystemConfig()
+        {
+        }
+
+        public static SystemConfig Instance
+        {
+            get
+            {
+                // Double-Checked Locking
+                // Check if instance needs to be created to avoid unnecessary lock
+                // everytime you request an instance of the service
+                if (_instance == null)
+                {
+                    // Lock thread so only one thread can create the first instance
+                    lock (_threadsafelock)
+                    {
+                        // Check if instance needs to be created
+                        // This is to avoid initial initialization by two threads.
+                        if (_instance == null)
+                        {
+                            _instance = new SystemConfig();
+                        }
+                    }
+                }
+                return _instance;
+            }
         }
 
         int HpId = 1;

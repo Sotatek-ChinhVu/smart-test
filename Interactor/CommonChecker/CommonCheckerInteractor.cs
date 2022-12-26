@@ -5,7 +5,6 @@ using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
-using System.Reflection.Metadata;
 using UseCase.CommonChecker;
 
 namespace Interactor.CommonChecker
@@ -22,6 +21,7 @@ namespace Interactor.CommonChecker
         private bool _termLimitCheckingOnly;
 
         private IRealtimeCheckerFinder _finder;
+        private IMasterFinder _masterFinder;
 
         private List<PtAlrgyDrugModel> _listPtAlrgyDrug;
         private List<PtAlrgyFoodModel> _listPtAlrgyFood;
@@ -35,9 +35,10 @@ namespace Interactor.CommonChecker
 
         private List<string> _listPtAlrgyDrugCode;
 
-        public CommonCheckerInteractor(IRealtimeCheckerFinder finder)
+        public CommonCheckerInteractor(IRealtimeCheckerFinder finder, IMasterFinder masterFinder)
         {
             _finder = finder;
+            _masterFinder = masterFinder;
         }
 
         public List<string> ListPtAlrgyDrugCode
@@ -60,8 +61,10 @@ namespace Interactor.CommonChecker
             }
         }
 
-        private void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
+        public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
         {
+            unitChecker.Finder = _finder;
+            unitChecker.MasterFinder = _masterFinder;
             unitChecker.HpID = _hpID;
             unitChecker.PtID = _ptID;
             unitChecker.Sinday = _sinday;
@@ -69,7 +72,11 @@ namespace Interactor.CommonChecker
 
         public GetOrderCheckerOutputData Handle(GetOrderCheckerInputData inputData)
         {
-            var checkedResult = CheckListOrder(inputData.CurrentListOdr,  inputData.ListCheckingOrder);
+            _hpID = inputData.HpId;
+            _ptID = inputData.PtId;
+            _sinday = inputData.SinDay;
+
+            var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
             if (checkedResult == null || checkedResult.Count == 0)
             {
                 return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
@@ -82,26 +89,13 @@ namespace Interactor.CommonChecker
 
         public List<OrdInfoModel> CheckListOrder(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
         {
-            List<OrdInfoModel> checkedResult = new List<OrdInfoModel>();
-
-            //foreach (OrdInfoModel checkingOrder in listCheckingOrder)
-            //{
-            //    OrdInfoModel tempResult = HandleValidDataOrder(checkingOrder);
-            //    if (tempResult == null)
-            //    {
-            //        return new List<OrdInfoModel>();
-            //    }
-
-            //    checkedResult.Add(tempResult);
-            //}
-
             while (true)
             {
                 List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
                 List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
                 List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
 
-                checkedResult.ForEach((order) =>
+                listCheckingOrder.ForEach((order) =>
                 {
                     List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> checkedOrderResult = GetErrorFromOrder(tempCurrentListOdr, order);
 
@@ -114,7 +108,7 @@ namespace Interactor.CommonChecker
                     tempCurrentListOdr.Add(order);
                 });
 
-                var checkListOrderResultList = GetErrorFromListOrder(checkedResult);
+                var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
 
                 foreach (var checkListOrderResult in checkListOrderResultList)
                 {
@@ -155,7 +149,7 @@ namespace Interactor.CommonChecker
 
 
 
-            return checkedResult;
+            return listCheckingOrder;
         }
 
         private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
@@ -425,52 +419,5 @@ namespace Interactor.CommonChecker
             return kinkiUserChecker.CheckOrder(checkingOrder);
         }
 
-        //private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckValidDataOrder(OrdInfoModel checkingOrder)
-        //{
-        //    UnitChecker<OrdInfoModel, OrdInfoDetailModel> validDataChecker =
-        //        new InvalidDataOrderChecker<OrdInfoModel, OrdInfoDetailModel>()
-        //        {
-        //            CheckType = RealtimeCheckerType.InvaliData,
-        //        };
-        //    InitUnitCheck(validDataChecker);
-
-        //    return validDataChecker.CheckOrder(checkingOrder);
-        //}
-
-        //private OrdInfoModel HandleValidDataOrder(OrdInfoModel checkingOrder)
-        //{
-        //    OrdInfoModel result = checkingOrder;
-        //    while (true)
-        //    {
-        //        if (CheckerCondition.IsCheckingInvalidData)
-        //        {
-        //            UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> invalidDataCheckResult = CheckValidDataOrder(result);
-
-        //            if (invalidDataCheckResult.IsError)
-        //            {
-        //                invalidDataCheckResult.ActionType = _handler.ShowOrderErrorInfo(invalidDataCheckResult);
-
-        //                if (invalidDataCheckResult.ActionType == ActionResultType.Edit)
-        //                {
-        //                    OrdInfoModel newData = _handler.EditOrder(invalidDataCheckResult.CheckingData);
-        //                    invalidDataCheckResult.NewData = newData;
-        //                }
-
-        //                if (invalidDataCheckResult.ActionType == ActionResultType.Abort ||
-        //                    (invalidDataCheckResult.ActionType == ActionResultType.Edit && invalidDataCheckResult.NewData == null))
-        //                {
-        //                    return null;
-        //                }
-        //                else if (invalidDataCheckResult.ActionType == ActionResultType.Edit)
-        //                {
-        //                    result = invalidDataCheckResult.NewData;
-        //                    continue;
-        //                }
-        //            }
-        //        }
-        //        break;
-        //    }
-        //    return result;
-        //}
     }
 }

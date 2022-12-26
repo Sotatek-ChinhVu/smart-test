@@ -3,17 +3,18 @@ using CommonChecker.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
-namespace CommonChecker.DB
+namespace CommonCheckers.OrderRealtimeChecker.DB
 {
     public class MasterFinder : IMasterFinder
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
-        public MasterFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+        public MasterFinder(ITenantProvider tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)

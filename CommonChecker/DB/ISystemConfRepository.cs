@@ -1,6 +1,6 @@
 ﻿namespace CommonChecker.DB
 {
-    public interface ISystemGenerationConfRepository
+    public interface ISystemConfRepository
     {
         public int RefillSetting(int presentDate);
     }

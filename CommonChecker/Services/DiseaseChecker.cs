@@ -8,12 +8,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        private readonly SystemConfig? _systemConf;
-        public DiseaseChecker(SystemConfig systemConf)
-        {
-            _systemConf = systemConf;
-        }
-        public DiseaseChecker() { }
         public List<string> ListDiseaseCode { get; set; } = new List<string>();
 
         public List<PtKioRekiModel> ListPtKioReki { get; set; } = new List<PtKioRekiModel>();
@@ -25,7 +19,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return _systemConf?.DiseaseLevelSetting ?? default;
+            return SystemConfig.Instance.DiseaseLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)

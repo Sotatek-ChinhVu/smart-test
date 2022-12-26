@@ -8,17 +8,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-
-        private readonly SystemConfig? _systemConf;
-        public KinkiOTCChecker(SystemConfig systemConf)
-        {
-            _systemConf = systemConf;
-        }
-
-        public KinkiOTCChecker()
-        {
-        }
-
         public List<PtOtcDrugModel> ListPtOtcDrug = new();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
@@ -28,7 +17,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return _systemConf?.KinkiLevelSetting ?? 0;
+            return SystemConfig.Instance.KinkiLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)

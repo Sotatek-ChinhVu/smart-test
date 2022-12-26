@@ -10,9 +10,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrDetail : class, IOdrInfoDetailModel
     {
 
-        private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
+        private readonly ISystemConfRepository _systemGenerationConfRepository;
 
-        public InvalidDataOrderChecker(ISystemGenerationConfRepository systemGenerationConfRepository)
+        public InvalidDataOrderChecker(ISystemConfRepository systemGenerationConfRepository)
         {
             _systemGenerationConfRepository = systemGenerationConfRepository;
         }

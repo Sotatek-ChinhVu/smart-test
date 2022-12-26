@@ -8,15 +8,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        private readonly SystemConfig? _systemConf;
-        public DuplicationChecker(SystemConfig systemConf)
-        {
-            _systemConf = systemConf;
-        }
-        public DuplicationChecker()
-        {
-
-        }
         public List<TOdrInf> CurrentListOrder = new();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
@@ -40,7 +31,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             #region Check duplicated item
-            int checkDuplicationSetting = _systemConf?.CheckDupicatedSetting ?? 0;
+            int checkDuplicationSetting = SystemConfig.Instance.CheckDupicatedSetting;
             bool allowCheckDuplicatedItemCode = checkDuplicationSetting != 2;
             bool allowCheckDuplicatedIppanCode = checkDuplicationSetting == 1;
 
@@ -71,12 +62,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<string> listCheckedCode = new List<string>();
 
             List<DrugAllergyResultModel> listDuplicatedComponentResult = new List<DrugAllergyResultModel>();
-            if (_systemConf?.IsDuplicatedComponentForDuplication ?? true && listItemCode.Count != 0)
+            if (SystemConfig.Instance.IsDuplicatedComponentForDuplication && listItemCode.Count != 0)
             {
-                List<DrugAllergyResultModel> checkedResultAsLevelIntoOrder = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, _systemConf?.GetHaigouSetting ?? 0);
+                List<DrugAllergyResultModel> checkedResultAsLevelIntoOrder = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.Instance.GetHaigouSetting);
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevelIntoOrder);
 
-                List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, _systemConf?.GetHaigouSetting ?? 0);
+                List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.Instance.GetHaigouSetting);
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevel);
 
                 listCheckedCode = new List<string>();
@@ -85,19 +76,19 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if (_systemConf?.IsProDrugForDuplication ?? true || _systemConf.IsSameComponentForDuplication)
+            if (SystemConfig.Instance.IsProDrugForDuplication || SystemConfig.Instance.IsSameComponentForDuplication)
             {
                 List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
-                if (_systemConf?.IsProDrugForDuplication ?? true && listItemCode.Count != 0)
+                if (SystemConfig.Instance.IsProDrugForDuplication && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, _systemConf?.GetHaigouSetting ?? 0));
-                    checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, _systemConf?.GetHaigouSetting ?? 0));
+                    checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.Instance.GetHaigouSetting));
+                    checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.Instance.GetHaigouSetting));
                 }
 
-                if (_systemConf?.IsSameComponentForDuplication ?? true && listItemCode.Count != 0)
+                if (SystemConfig.Instance.IsSameComponentForDuplication && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, _systemConf?.GetHaigouSetting ?? 0));
-                    checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, _systemConf?.GetHaigouSetting ?? 0));
+                    checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.Instance.GetHaigouSetting));
+                    checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.Instance.GetHaigouSetting));
                 }
 
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevel);
@@ -105,10 +96,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if (_systemConf?.IsDuplicatedClassForDuplication ?? true)
+            if (SystemConfig.Instance.IsDuplicatedClassForDuplication)
             {
-                listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, _systemConf?.GetHaigouSetting ?? 0));
-                listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, _systemConf?.GetHaigouSetting ?? 0));
+                listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.Instance.GetHaigouSetting));
+                listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.Instance.GetHaigouSetting));
             }
 
             listDuplicatedComponentResult.ForEach((duplicatedComponent) =>

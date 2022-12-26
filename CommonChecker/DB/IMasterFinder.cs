@@ -1,7 +1,7 @@
 ﻿using CommonChecker.Models.Futan;
 using CommonChecker.Models.MstItem;
 
-namespace CommonChecker.DB
+namespace CommonCheckers.OrderRealtimeChecker.DB
 {
     public interface IMasterFinder
     {

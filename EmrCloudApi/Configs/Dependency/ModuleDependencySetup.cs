@@ -398,6 +398,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
             services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
+            services.AddTransient<IMasterFinder, MasterFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
