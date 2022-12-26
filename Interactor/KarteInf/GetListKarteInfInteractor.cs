@@ -41,11 +41,6 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
         try
         {
             var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
-            if (karteInfModel == null || karteInfModel.Count == 0)
-            {
-                return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
-            }
-
             List<KarteFileOutputItem> listFile = new();
             var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
             if (listKarteFile.Any())

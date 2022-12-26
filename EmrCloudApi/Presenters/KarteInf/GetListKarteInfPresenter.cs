@@ -27,9 +27,6 @@ public class GetListKarteInfPresenter : IGetListKarteInfOutputPort
             case GetListKarteInfStatus.InvalidSinDate:
                 Result.Message = ResponseMessage.InvalidSinDate;
                 break;
-            case GetListKarteInfStatus.NoData:
-                Result.Message = ResponseMessage.NoData;
-                break;
             case GetListKarteInfStatus.Successed:
                 Result.Message = ResponseMessage.Success;
                 break;
