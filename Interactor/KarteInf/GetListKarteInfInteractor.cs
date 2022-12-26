@@ -41,12 +41,7 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
         try
         {
             var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
-            if (karteInfModel == null || karteInfModel.Count == 0)
-            {
-                return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
-            }
-
-            List<string> listFile = new();
+            List<KarteFileOutputItem> listFile = new();
             var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
             if (listKarteFile.Any())
             {
@@ -57,12 +52,12 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
                 string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
                 foreach (var file in listKarteFile)
                 {
-                    var fileName = new StringBuilder();
-                    fileName.Append(_options.BaseAccessUrl);
-                    fileName.Append("/");
-                    fileName.Append(path);
-                    fileName.Append(file);
-                    listFile.Add(fileName.ToString());
+                    var fileLink = new StringBuilder();
+                    fileLink.Append(_options.BaseAccessUrl);
+                    fileLink.Append("/");
+                    fileLink.Append(path);
+                    fileLink.Append(file.LinkFile);
+                    listFile.Add(new KarteFileOutputItem(file.IsSchema, fileLink.ToString()));
                 }
             }
 

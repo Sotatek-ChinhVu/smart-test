@@ -798,7 +798,7 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public List<NextOrderFileModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
+        public List<NextOrderFileInfModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
         {
             var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
             var result = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item =>
@@ -806,10 +806,11 @@ namespace Infrastructure.Repositories
                                                                                 && item.PtId == ptId
                                                                                 && item.RsvkrtNo == rsvkrtNo
                                                                                 && item.SeqNo == lastSeqNo
+                                                                                && item.FileName != string.Empty
                                                                                 )
                                                                     .OrderBy(item => item.Position)
-                                                                    .Select(item => new NextOrderFileModel(
-                                                                            item.Id,
+                                                                    .Select(item => new NextOrderFileInfModel(
+                                                                            item.KarteKbn > 0,
                                                                             item.FileName ?? string.Empty
                                                                     )).ToList();
             return result;
@@ -821,13 +822,13 @@ namespace Infrastructure.Repositories
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 
-        public bool SaveListFileNextOrder(int hpId, long ptId, long rsvkrtNo, List<string> listFileName, bool saveTempFile)
+        public bool SaveListFileNextOrder(int hpId, long ptId, long rsvkrtNo, string host, List<NextOrderFileInfModel> listFiles, bool saveTempFile)
         {
             try
             {
                 if (saveTempFile)
                 {
-                    var listFileInsert = ConvertListInsertTempNextOrderFile(hpId, ptId, listFileName);
+                    var listFileInsert = ConvertListInsertTempNextOrderFile(hpId, ptId, host, listFiles);
                     if (listFileInsert.Any())
                     {
                         TrackingDataContext.RsvkrtKarteImgInfs.AddRange(listFileInsert);
@@ -835,7 +836,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFileName);
+                    UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
                 }
                 return TrackingDataContext.SaveChanges() > 0;
             }
@@ -886,15 +887,29 @@ namespace Infrastructure.Repositories
                 item.Position = position;
                 position++;
             }
+
+            if (listFileName.Any(item => item == string.Empty))
+            {
+                RsvkrtKarteImgInf newFile = new();
+                newFile.FileName = string.Empty;
+                newFile.Id = 0;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = 1;
+                newFile.KarteKbn = 0;
+                newFile.PtId = ptId;
+                newFile.HpId = hpId;
+                newFile.RsvkrtNo = rsvkrtNo;
+                TrackingDataContext.RsvkrtKarteImgInfs.Add(newFile);
+            }
         }
 
-        private List<RsvkrtKarteImgInf> ConvertListInsertTempNextOrderFile(int hpId, long ptId, List<string> listFileNames)
+        private List<RsvkrtKarteImgInf> ConvertListInsertTempNextOrderFile(int hpId, long ptId, string host, List<NextOrderFileInfModel> listFiles)
         {
             List<RsvkrtKarteImgInf> result = new();
             int position = 1;
 
             // insert new entity
-            foreach (var name in listFileNames)
+            foreach (var item in listFiles)
             {
                 RsvkrtKarteImgInf entity = new();
                 entity.HpId = hpId;
@@ -902,7 +917,11 @@ namespace Infrastructure.Repositories
                 entity.RsvkrtNo = 0;
                 entity.Position = position;
                 entity.SeqNo = 0;
-                entity.FileName = name;
+                if (item.IsSchema)
+                {
+                    entity.KarteKbn = 1;
+                }
+                entity.FileName = item.LinkFile.Replace(host, string.Empty);
                 result.Add(entity);
                 position += 1;
             }
