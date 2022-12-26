@@ -263,13 +263,17 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
                     .ToList();
     }
 
-    public List<DocCommentDetailModel> GetListDocCommentDetail()
+    public List<DocCommentDetailModel> GetListDocCommentDetail(List<int> listCategoryId)
     {
-        return NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0)
-                                                      .OrderBy(item => item.SortNo)
-                                                      .Select(item => new DocCommentDetailModel(item.CategoryId,
-                                                                                                item.Comment ?? string.Empty))
-                                                      .ToList();
+        var query = NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0);
+        if (listCategoryId.Any())
+        {
+            query = query.Where(item => listCategoryId.Contains(item.CategoryId));
+        }
+        return query.OrderBy(item => item.SortNo)
+                    .Select(item => new DocCommentDetailModel(item.CategoryId,
+                                                              item.Comment ?? string.Empty))
+                    .ToList();
     }
 
     #region private function

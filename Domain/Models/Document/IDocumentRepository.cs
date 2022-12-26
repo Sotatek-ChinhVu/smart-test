@@ -34,5 +34,5 @@ public interface IDocumentRepository : IRepositoryBase
 
     List<DocCommentModel> GetListDocComment(List<string> listReplaceWord);
 
-    List<DocCommentDetailModel> GetListDocCommentDetail();
+    List<DocCommentDetailModel> GetListDocCommentDetail(List<int> listCategoryId);
 }

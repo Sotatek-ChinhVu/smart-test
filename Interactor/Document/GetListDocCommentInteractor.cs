@@ -17,7 +17,7 @@ public class GetListDocCommentInteractor : IGetListDocCommentInputPort
         try
         {
             var listComment = _documentRepository.GetListDocComment(inputData.ListReplaceWord);
-            var listCommentDetail = _documentRepository.GetListDocCommentDetail();
+            var listCommentDetail = _documentRepository.GetListDocCommentDetail(listComment.Select(item => item.CategoryId).ToList());
             var result = listComment.Select(detail => new DocCommentOutputItem(
                                                     detail.CategoryId,
                                                     detail.CategoryName,
