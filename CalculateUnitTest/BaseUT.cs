@@ -35,7 +35,7 @@ namespace CalculateUnitTest
                 }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantDataContext>(options);
                 mockTenantProvider.Setup(repo => repo.GetTrackingTenantDataContext()).Returns(factory.CreateDbContext());
-
+                
                 return mockTenantProvider.Object;
             }
         }

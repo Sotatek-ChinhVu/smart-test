@@ -1,6 +1,7 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -13,7 +14,6 @@ using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Infrastructure.Repositories;
 using Microsoft.Extensions.Options;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
@@ -120,7 +120,12 @@ namespace Interactor.MedicalExamination
                 {
                     if (check)
                     {
-                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, true);
+                        var listFileItems = inputDatas.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
                     }
                     else
                     {
@@ -161,7 +166,7 @@ namespace Interactor.MedicalExamination
             var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, listUpdates, false);
+                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
             }
             else
             {

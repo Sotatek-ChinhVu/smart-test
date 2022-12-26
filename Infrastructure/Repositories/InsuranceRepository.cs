@@ -455,8 +455,8 @@ namespace Infrastructure.Repositories
 
         public List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids)
         {
-            var result = NoTrackingDataContext.PtHokenInfs.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenId) && h.PtId == ptId && h.IsDeleted == 0);
-            return result.Select(r => new HokenInfModel(r.HokenId, r.PtId, r.HpId, r.StartDate, r.EndDate)).ToList();
+            var result = NoTrackingDataContext.PtHokenPatterns.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenPid) && h.PtId == ptId && h.IsDeleted == 0);
+            return result.Select(r => new HokenInfModel(r.HokenPid, r.PtId, r.HpId, r.StartDate, r.EndDate)).ToList();
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
