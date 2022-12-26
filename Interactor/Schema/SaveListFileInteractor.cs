@@ -1,4 +1,5 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.KarteInf;
+using Domain.Models.KarteInfs;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.SuperSetDetail;
@@ -7,6 +8,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using UseCase.Schema.SaveListFileTodayOrder;
+using FileInfModel = Domain.Models.KarteInf.FileInfModel;
 
 namespace Interactor.Schema;
 
@@ -42,7 +44,7 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
             }
             var listFileItems = validateResponse.Item2;
 
-            List<string> result = new();
+            List<FileInfModel> result = new();
             string path = string.Empty;
             if (listFileItems.Any())
             {
@@ -58,13 +60,13 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
                     var linkImage = responseUpload.Result;
                     if (linkImage.Length > 0)
                     {
-                        result.Add(linkImage);
+                        result.Add(new FileInfModel(item.IsSchema, linkImage));
                     }
                 }
             }
             if (result.Any() && SaveFileToDB(input, path, result))
             {
-                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, result);
+                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, result.Select(item => item.LinkFile).ToList());
             }
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
@@ -81,20 +83,21 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
         }
     }
 
-    private bool SaveFileToDB(SaveListFileTodayOrderInputData input, string path, List<string> listFileNames)
+    private bool SaveFileToDB(SaveListFileTodayOrderInputData input, string path, List<FileInfModel> listFiles)
     {
-        if (listFileNames.Any())
+        if (listFiles.Any())
         {
             string host = _options.BaseAccessUrl + "/" + path;
-            listFileNames = listFileNames.Select(item => item.Replace(host, string.Empty)).ToList();
             switch (input.TypeUpload)
             {
                 case TypeUploadConstant.UploadKarteFile:
-                    return _karteInfRepository.SaveListFileKarte(input.HpId, input.PtId, 0, listFileNames, true);
+                    return _karteInfRepository.SaveListFileKarte(input.HpId, input.PtId, 0, host, listFiles, true);
                 case TypeUploadConstant.UploadSupperSetDetailFile:
-                    return _superSetDetailRepository.SaveListSetKarteFileTemp(input.HpId, 0, listFileNames, true);
+                    var listFileSaveSet = listFiles.Select(item => new SetFileInfModel(item.IsSchema, item.LinkFile)).ToList();
+                    return _superSetDetailRepository.SaveListSetKarteFile(input.HpId, 0, host, listFileSaveSet, true);
                 case TypeUploadConstant.UploadNextOrderFile:
-                    return _nextOrderRepository.SaveListFileNextOrder(input.HpId, input.PtId, 0, listFileNames, true);
+                    var listFileSaveNextOrder = listFiles.Select(item => new NextOrderFileInfModel(item.IsSchema, item.LinkFile)).ToList();
+                    return _nextOrderRepository.SaveListFileNextOrder(input.HpId, input.PtId, 0, host, listFileSaveNextOrder, true);
                 default:
                     return false;
             }
@@ -159,7 +162,7 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
                         string extentFile = fileName.Substring(lastIndex);
                         fileName = fileName.Substring(0, 100 - extentFile.Length - 1) + extentFile;
                     }
-                    listFileItems.Add(new FileItem(fileName, image.StreamImage));
+                    listFileItems.Add(new FileItem(fileName, image.IsSchema, image.StreamImage));
                 }
                 else
                 {

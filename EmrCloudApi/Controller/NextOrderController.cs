@@ -49,7 +49,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpPost(ApiPath.Upsert)]
     public ActionResult<Response<UpsertNextOrderListResponse>> Upsert([FromBody] UpsertNextOrderListRequest request)
     {
-        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems, request.ListFileItems);
+        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems, new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems));
         var output = _bus.Handle(input);
 
         var presenter = new UpsertNextOrderListPresenter();

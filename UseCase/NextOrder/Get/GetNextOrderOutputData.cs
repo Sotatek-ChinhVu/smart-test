@@ -14,7 +14,7 @@ namespace UseCase.NextOrder.Get
             Status = status;
         }
 
-        public GetNextOrderOutputData(List<GroupHokenItem> groupHokenItems, RsvkrtKarteInfModel karteInf, List<RsvKrtByomeiItem> byomeiItems, List<string> nextOrderFiles, GetNextOrderStatus status)
+        public GetNextOrderOutputData(List<GroupHokenItem> groupHokenItems, RsvkrtKarteInfModel karteInf, List<RsvKrtByomeiItem> byomeiItems, List<NextOrderFileInfItem> nextOrderFiles, GetNextOrderStatus status)
         {
             GroupHokenItems = groupHokenItems;
             KarteInf = karteInf;
@@ -29,7 +29,7 @@ namespace UseCase.NextOrder.Get
 
         public List<RsvKrtByomeiItem> ByomeiItems { get; private set; }
 
-        public List<string> NextOrderFiles { get; private set; }
+        public List<NextOrderFileInfItem> NextOrderFiles { get; private set; }
 
         public GetNextOrderStatus Status { get; private set; }
 
