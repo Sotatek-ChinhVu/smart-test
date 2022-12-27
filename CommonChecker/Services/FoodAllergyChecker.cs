@@ -1,6 +1,6 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
+﻿using CommonChecker.Models;
 using CommonChecker.Types;
-using CommonChecker.Models;
+using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -56,7 +56,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return SystemConfig.Instance.FoodAllergyLevelSetting;
+            return SystemConfig.FoodAllergyLevelSetting;
         }
     }
 }

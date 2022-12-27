@@ -52,7 +52,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             #endregion
 
-            if (SystemConfig.Instance.IsDuplicatedComponentChecked && listItemCode.Count != 0)
+            if (SystemConfig.IsDuplicatedComponentChecked && listItemCode.Count != 0)
             {
                 List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode);
                 checkedResult.AddRange(checkedResultAsLevel);
@@ -60,15 +60,15 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if ((SystemConfig.Instance.IsProDrugChecked || SystemConfig.Instance.IsSameComponentChecked) && listItemCode.Count != 0)
+            if ((SystemConfig.IsProDrugChecked || SystemConfig.IsSameComponentChecked) && listItemCode.Count != 0)
             {
                 List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
-                if (SystemConfig.Instance.IsProDrugChecked && listItemCode.Count != 0)
+                if (SystemConfig.IsProDrugChecked && listItemCode.Count != 0)
                 {
                     checkedResultAsLevel.AddRange(Finder.CheckProDrug(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
                 }
 
-                if (SystemConfig.Instance.IsSameComponentChecked && listItemCode.Count != 0)
+                if (SystemConfig.IsSameComponentChecked && listItemCode.Count != 0)
                 {
                     checkedResultAsLevel.AddRange(Finder.CheckSameComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
                 }
@@ -78,7 +78,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if (SystemConfig.Instance.IsDuplicatedClassChecked && listItemCode.Count != 0)
+            if (SystemConfig.IsDuplicatedClassChecked && listItemCode.Count != 0)
             {
                 checkedResult.AddRange(Finder.CheckDuplicatedClass(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
             }

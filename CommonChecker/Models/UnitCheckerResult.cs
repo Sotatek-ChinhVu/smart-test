@@ -15,7 +15,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public RealtimeCheckerType CheckerType { get; private set; }
 
-        public bool IsError => ErrorOrderList != null && ErrorOrderList.Count > 0;
+        public bool IsError = false;
 
         public List<TOdrInf>? ErrorOrderList { get; set; }
 

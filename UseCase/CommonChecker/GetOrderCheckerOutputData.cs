@@ -1,18 +1,17 @@
-﻿using CommonChecker.Models.OrdInf;
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
 using UseCase.Core.Sync.Core;
-using UseCase.DrugDetailData.Get;
 
 namespace UseCase.CommonChecker
 {
     public class GetOrderCheckerOutputData : IOutputData
     {
-        public GetOrderCheckerOutputData(OrdInfoModel ordInfoModels, GetOrderCheckerStatus status)
+        public GetOrderCheckerOutputData(UnitCheckInfoModel unitCheckInfoModel, GetOrderCheckerStatus status)
         {
-            OrdInfoModels = ordInfoModels;
+            UnitCheckInfoModel = unitCheckInfoModel;
             Status = status;
         }
 
-        public OrdInfoModel OrdInfoModels { get; private set; }
+        public UnitCheckInfoModel UnitCheckInfoModel { get; private set; }
         public GetOrderCheckerStatus Status { get; private set; }
     }
 }

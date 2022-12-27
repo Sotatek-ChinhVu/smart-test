@@ -1,4 +1,5 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
@@ -16,6 +17,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         public int HpID;
         public long PtID;
         public int Sinday;
+        public ISystemConfig SystemConfig;
 
         public UnitCheckerResult<TOdrInf, TOdrDetail> CheckOrder(TOdrInf checkingOrder)
         {

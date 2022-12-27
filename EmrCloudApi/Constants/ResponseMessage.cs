@@ -47,6 +47,7 @@
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
+        public static readonly string Error = "Error";
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";

@@ -57,7 +57,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 return -1;
             }
-            return usingInfo?.Suryo  ?? 0;
+            return usingInfo?.Suryo ?? 0;
         }
     }
 }

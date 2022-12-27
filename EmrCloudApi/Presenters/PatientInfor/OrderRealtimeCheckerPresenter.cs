@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.PatientInfor
 
         public void Complete(GetOrderCheckerOutputData outputData)
         {
-            Result.Data = new OrderRealtimeCheckerResponse(outputData.OrdInfoModels, outputData.Status);
+            Result.Data = new OrderRealtimeCheckerResponse(outputData.UnitCheckInfoModel, outputData.Status);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
@@ -19,6 +19,8 @@ namespace EmrCloudApi.Presenters.PatientInfor
         private string GetMessage(GetOrderCheckerStatus status) => status switch
         {
             GetOrderCheckerStatus.Successed => ResponseMessage.Success,
+            GetOrderCheckerStatus.Error => ResponseMessage.Error,
+            GetOrderCheckerStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

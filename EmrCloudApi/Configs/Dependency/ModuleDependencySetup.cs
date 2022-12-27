@@ -1,4 +1,6 @@
-﻿using CommonCheckers.OrderRealtimeChecker.DB;
+﻿using CommonChecker;
+using CommonCheckers;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ApprovalInfo;
@@ -399,6 +401,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
             services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
             services.AddTransient<IMasterFinder, MasterFinder>();
+            services.AddTransient<ISystemConfig, SystemConfig>();
         }
 
         private void SetupUseCase(IServiceCollection services)
