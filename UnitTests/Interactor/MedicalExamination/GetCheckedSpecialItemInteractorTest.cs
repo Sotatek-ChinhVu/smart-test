@@ -10046,7 +10046,7 @@ public class GetCheckedSpecialItemInteractorTest
 
         string s = baseDate.ToString("D8");
         var dt1 = DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
-        dt1 = dt1.AddDays((int)dt1.DayOfWeek * -1 + (-7 * (term - 1)));
+        dt1 = dt1.AddDays((int)dt1.DayOfWeek * -1 + -7 * (term - 1));
         var retDate = int.Parse(dt1.ToString("yyyyMMdd"));
 
         var output = interactor.WeeksBefore(baseDate, term);
@@ -10285,7 +10285,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(-1, 1, 20221111, 1, 1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(-1, 1, 1, 20221111, 1, 1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10305,7 +10305,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 0, 20221111, 1, 1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 0, 20221111, 1, 1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10325,7 +10325,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 0, 1, 1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 0, 1, 1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10345,7 +10345,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20221111, 0, 1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20221111, 0, 1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10365,7 +10365,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20221111, 1, -1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20221111, 1, -1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10385,7 +10385,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20221111, 1, 1, -1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20221111, 1, 1, -1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10405,7 +10405,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20221111, 1, 1, 1, new(), new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20221111, 1, 1, 1, new(), new(), new(), true, true);
         var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         // Act
@@ -10419,12 +10419,54 @@ public class GetCheckedSpecialItemInteractorTest
     public void Handle_EnabledInputCheck_True()
     {
         // Arrange
-        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockMstItemRepo1 = new Mock<IMstItemRepository>();
+        var mockMstItemRepo2 = new Mock<IMstItemRepository>();
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
         var mockInsuranceRepo = new Mock<IInsuranceRepository>();
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
-        mockMstItemRepo.Setup(repo => repo.FindTenMst(1, new List<string>() { "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<TenItemModel>() { new TenItemModel(
+        mockMstItemRepo1.Setup(repo => repo.FindTenMst(1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<TenItemModel>() {
+            new TenItemModel(
+            1,
+            "1110001101",
+            0,
+            "IMV",
+            "ＩＭＶ（５時間超１５日目以降）",
+            0,
+            0,
+            0,
+            "",
+            99999999,
+            0,
+            "S",
+            0,
+            0,
+            815,
+            3,
+            "",
+            "",
+            0,
+            "",
+            40,
+            "",
+            "",
+            20210101,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            string.Empty,
+            "15",
+            "AA",
+            "1110001101",
+            0,
+            0
+            ),
+            new TenItemModel(
             1,
             "111000110",
             0,
@@ -10448,7 +10490,7 @@ public class GetCheckedSpecialItemInteractorTest
             40,
             "",
             "",
-            20220401,
+            20220101,
             0,
             0,
             0,
@@ -10584,7 +10626,49 @@ public class GetCheckedSpecialItemInteractorTest
            0
            )
         });
-        mockTodayRepo.Setup(repo => repo.FindDensiSanteiKaisuList(1, new List<string>() { "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<DensiSanteiKaisuModel> { new DensiSanteiKaisuModel(
+        mockMstItemRepo2.Setup(repo => repo.FindTenMst(1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<TenItemModel>() {
+            new TenItemModel(
+            1,
+            "1110001101",
+            0,
+            "IMV",
+            "ＩＭＶ（５時間超１５日目以降）",
+            0,
+            0,
+            0,
+            "",
+            99999999,
+            0,
+            "S",
+            0,
+            0,
+            815,
+            3,
+            "",
+            "",
+            0,
+            "",
+            40,
+            "",
+            "",
+            20221001,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            string.Empty,
+            "15",
+            "AA",
+            "1110001101",
+            0,
+            0
+            )
+        });
+        mockTodayRepo.Setup(repo => repo.FindDensiSanteiKaisuList(1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<DensiSanteiKaisuModel> { new DensiSanteiKaisuModel(
                 1,
                 1,
                 "111014210",
@@ -10619,7 +10703,26 @@ public class GetCheckedSpecialItemInteractorTest
                2
           )
         });
-        mockMstItemRepo.Setup(repo => repo.FindItemGrpMst(1, 20220101, 1, new List<long>() { 1, 2 })).Returns(new List<ItemGrpMstModel>() { new ItemGrpMstModel(
+        mockMstItemRepo1.Setup(repo => repo.FindItemGrpMst(1, 20220101, 1, new List<long>() { 1, 2 })).Returns(new List<ItemGrpMstModel>() { new ItemGrpMstModel(
+                    1,
+                    1,
+                    1,
+                    20220101,
+                    99999999,
+                    "111014210",
+                    1
+                ),
+                new ItemGrpMstModel(
+                    1,
+                    1,
+                    2,
+                    20220101,
+                    99999999,
+                    "113019710",
+                    1
+                )
+        });
+        mockMstItemRepo2.Setup(repo => repo.FindItemGrpMst(1, 20220101, 1, new List<long>() { 1, 2 })).Returns(new List<ItemGrpMstModel>() { new ItemGrpMstModel(
                     1,
                     1,
                     1,
@@ -10639,9 +10742,48 @@ public class GetCheckedSpecialItemInteractorTest
                 )
         });
 
-        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+        var interactor1 = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo1.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+        var interactor2 = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo2.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
 
         var odrDetails = new List<OdrInfDetailItemInputData>();
+        var odrDetail = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "1110001101",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetail);
+
         var odrDetailAgeLimitCheck = new OdrInfDetailItemInputData(
             1,
             200219890,
@@ -10797,15 +10939,520 @@ public class GetCheckedSpecialItemInteractorTest
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, true);
+        var checkedSpecialItemInputData1 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
+        var checkedSpecialItemInputData2 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
+        // Act
+        var output1 = interactor1.Handle(checkedSpecialItemInputData1);
+        var output2 = interactor2.Handle(checkedSpecialItemInputData2);
+
+        // Assert
+        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.AgeLimit);
+        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Duplicate);
+        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.CalculationCount);
+        Assert.Contains(output2.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Expiration);
+        Assert.True(output1.Status == CheckedSpecialItemStatus.Successed && output2.Status == CheckedSpecialItemStatus.Successed);
+    }
+
+    [Fact]
+    public void Handle_EnabledCommentCheck_True()
+    {
+        // Arrange
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        var mockTodayRepo = new Mock<ITodayOdrRepository>();
+        var mockInsuranceRepo = new Mock<IInsuranceRepository>();
+        var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
+        var mockReceptionRepo = new Mock<IReceptionRepository>();
+        mockMstItemRepo.Setup(repo => repo.FindTenMst(1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<TenItemModel>() {
+            new TenItemModel(
+            1,
+            "1110001101",
+            0,
+            "IMV",
+            "ＩＭＶ（５時間超１５日目以降）",
+            0,
+            0,
+            0,
+            "",
+            99999999,
+            0,
+            "S",
+            0,
+            0,
+            815,
+            3,
+            "",
+            "",
+            0,
+            "",
+            40,
+            "",
+            "",
+            20210101,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            string.Empty,
+            "15",
+            "AA",
+            "1110001101",
+            0,
+            0
+            ),
+            new TenItemModel(
+            1,
+            "111000110",
+            0,
+            "IMV",
+            "ＩＭＶ（５時間超１５日目以降）",
+            0,
+            0,
+            0,
+            "",
+            99999999,
+            0,
+            "S",
+            0,
+            0,
+            815,
+            3,
+            "",
+            "",
+            0,
+            "",
+            40,
+            "",
+            "",
+            20220101,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            string.Empty,
+            "15",
+            "AA",
+            "111000110",
+            0,
+            0
+            ),
+            new TenItemModel(
+            1,
+           "111013850",
+           0,
+           "IMV",
+           "ＩＭＶ（５時間超１５日目以降）",
+           0,
+           0,
+           0,
+           "",
+           99999999,
+           0,
+           "S",
+           0,
+           0,
+           815,
+           3,
+           "",
+           "",
+           0,
+           "",
+           40,
+           "",
+           "",
+           20220401,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           string.Empty,
+           "00",
+           "AA",
+           "111013850",
+           0,
+           0),
+           new TenItemModel(
+             1,
+            "111014210",
+            0,
+            "IMV",
+            "ＩＭＶ（５時間超１５日目以降）",
+            0,
+            0,
+            0,
+            "",
+            99999999,
+            0,
+            "S",
+            0,
+            0,
+            815,
+            3,
+            "",
+            "",
+            0,
+            "",
+            40,
+            "",
+            "",
+            20220401,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            string.Empty,
+            "0",
+            "AA",
+            "111014210",
+            0,
+            0
+           ),
+           new TenItemModel(
+               1,
+           "113019710",
+           0,
+           "IMV",
+           "ＩＭＶ（５時間超１５日目以降）",
+           0,
+           0,
+           0,
+           "",
+           99999999,
+           0,
+           "S",
+           0,
+           0,
+           815,
+           3,
+           "",
+           "",
+           0,
+           "",
+           40,
+           "",
+           "",
+           20220401,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           0,
+           string.Empty,
+           "00",
+           "AA",
+           "113019710",
+           0,
+           0
+           )
+        });
+        mockTodayRepo.Setup(repo => repo.FindDensiSanteiKaisuList(1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" }, 20220101, 20220101)).Returns(new List<DensiSanteiKaisuModel> { new DensiSanteiKaisuModel(
+                1,
+                1,
+                "111014210",
+                997,
+                10,
+                0,
+                20220101,
+                99999999,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+          ),
+          new DensiSanteiKaisuModel(
+               1,
+               1,
+               "113019710",
+               998,
+               10,
+               0,
+               20220101,
+               99999999,
+               1,
+               1,
+               1,
+               1,
+               1,
+               1,
+               2
+          )
+        });
+        mockMstItemRepo.Setup(repo => repo.FindItemGrpMst(1, 20220101, 1, new List<long>() { 1, 2 })).Returns(new List<ItemGrpMstModel>() { new ItemGrpMstModel(
+                    1,
+                    1,
+                    1,
+                    20220101,
+                    99999999,
+                    "111014210",
+                    1
+                ),
+                new ItemGrpMstModel(
+                    1,
+                    1,
+                    2,
+                    20220101,
+                    99999999,
+                    "113019710",
+                    1
+                )
+        });
+        mockMstItemRepo.Setup(repo => repo.FindItemGrpMst(1, 20220101, 1, new List<long>() { 1, 2 })).Returns(new List<ItemGrpMstModel>() { new ItemGrpMstModel(
+                    1,
+                    1,
+                    1,
+                    20220101,
+                    99999999,
+                    "111014210",
+                    1
+                ),
+                new ItemGrpMstModel(
+                    1,
+                    1,
+                    2,
+                    20220101,
+                    99999999,
+                    "113019710",
+                    1
+                )
+        });
+        mockMstItemRepo.Setup(repo => repo.GetCmtCheckMsts(1, 1, new List<string>() { "1110001101", "111000110", "111013850", "111014210", "113019710" })).Returns(new List<ItemCmtModel>() {
+            new ItemCmtModel(
+                   "111000110",
+                   "comment abc",
+                   0
+                ),
+            new ItemCmtModel(
+                   "111013850",
+                   "comment bcd",
+                    1
+                )
+        });
+
+        var interactor = new CheckedSpecialItemInteractor(mockTodayRepo.Object, mockMstItemRepo.Object, mockInsuranceRepo.Object, mockSystemConfigRepo.Object, mockReceptionRepo.Object);
+
+        var odrDetails = new List<OdrInfDetailItemInputData>();
+        var odrDetail = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "1110001101",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetail);
+
+        var odrDetailAgeLimitCheck = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "111000110",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetailAgeLimitCheck);
+
+        var odrDetailExpiredCheck = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "111013850",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetailExpiredCheck);
+
+        var odrDetailCalculationCheck = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "111014210",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetailCalculationCheck);
+
+        var odrDetailDuplicateCheck = new OdrInfDetailItemInputData(
+            1,
+            200219890,
+            1,
+            1,
+            1,
+            1,
+            20220101,
+            20,
+            "113019710",
+            "腎盂洗浄（両）",
+            120,
+            "",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            "",
+            "",
+            0,
+            "3122007F2",
+            "",
+            0,
+            DateTime.MinValue,
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            0
+            );
+        odrDetails.Add(odrDetailDuplicateCheck);
+        odrDetails.Add(odrDetailDuplicateCheck);
+
+        var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
+
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new KarteItemInputData(1, 901072057, 1, 20221111, "comment abc", 0, "abc"), false, true);
+
         // Act
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.AgeLimit);
-        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Duplicate);
-        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.CalculationCount);
-        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Expiration);
+        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.ItemComment);
+        Assert.True(output.Status == CheckedSpecialItemStatus.Successed);
     }
     #endregion
 }

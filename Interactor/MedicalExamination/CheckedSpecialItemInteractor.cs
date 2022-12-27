@@ -157,8 +157,8 @@ namespace Interactor.MedicalExamination
                 var tenMsts = _mstItemRepository.FindTenMst(inputData.HpId, itemCdCs, minSinDate, maxSinDate) ?? new();
                 var santeiItemCds = tenMsts?.Select(t => t.SanteiItemCd).ToList() ?? new();
                 var santeiTenMsts = _mstItemRepository.FindTenMst(inputData.HpId, santeiItemCds, minSinDate, maxSinDate) ?? new();
-                var densiSanteiKaisuModels = _todayOdrRepository.FindDensiSanteiKaisuList(inputData.HpId, itemCdCs, minSinDate, maxSinDate);
-                var itemGrpMsts = _mstItemRepository.FindItemGrpMst(inputData.HpId, inputData.SinDate, 1, densiSanteiKaisuModels.Select(d => d.ItemGrpCd).ToList());
+                var densiSanteiKaisuModels = _todayOdrRepository.FindDensiSanteiKaisuList(inputData.HpId, itemCdCs, minSinDate, maxSinDate) ?? new();
+                var itemGrpMsts = _mstItemRepository.FindItemGrpMst(inputData.HpId, inputData.SinDate, 1, densiSanteiKaisuModels?.Select(d => d.ItemGrpCd).ToList() ?? new());
 
                 //enable or disable Expired Check and SanteiCount Check
                 if (inputData.EnabledInputCheck)
@@ -538,8 +538,8 @@ namespace Interactor.MedicalExamination
 
         private bool IsShowCommentCheckMst(string itemCd, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
-            var itemCmtModels = allCmtCheckMst.FindAll(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo).ToList();
-            if (itemCmtModels.Count == 0) return false;
+            var itemCmtModels = allCmtCheckMst?.FindAll(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo)?.ToList();
+            if (!(itemCmtModels?.Count > 0)) return false;
 
             foreach (var itemCmtModel in itemCmtModels)
             {
