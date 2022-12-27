@@ -1649,6 +1649,448 @@ namespace Helper.Common
             result = dateTime.ToString(format);
             return result;
         }
+
+
+        //==================================================
+        //  Copy関数のスペースを0に変換			処理
+        //--------------------------------------------------
+        //【In】	S			：変換文字
+        //　　　　Index	：開始文字列番号
+        //　　　　Count	：文字数
+        //==================================================
+        public static String CDCopy(string S, int Index, int Count)
+        {
+            int i;
+            int WLen;
+
+            string Result = Copy(S, Index, Count);
+
+            WLen = Result.Length;
+            //長さが長くなった分
+            if (WLen < Count)
+            {
+                for (i = WLen; i < Count; i++)
+                {
+                    Result += "0";
+                }
+            }
+
+            //スペースの分
+            for (i = 0; i < Result.Length; i++)
+            {
+                if (Result[i].ToString() == " ")
+                {
+                    Result = Result.Substring(0, i) + "0" + Result.Substring(i + 1);
+                }
+            }
+            return Result;
+        }
+
+        //------------------------------------------------------------------------------
+        //  処理名  ：CiCopyStrWidth
+        //  引数    ：Src の Index 文字目から Count 個の文字の入った部分文字列を返します。
+        //
+        //  ※文字数（半角文字が1文字、全角文字が2文字）で計算
+        //------------------------------------------------------------------------------
+        public static string CiCopyStrWidth(string Src, int Index, int Count, int FmtFg = 0)
+        {
+            string Result = "";
+            string sSrcStr = Src;
+
+            if (Index == 1 && MecsStringWidth(sSrcStr) < Count)
+            {
+                //長さが指定文字数以下ならそのまま返す
+                Result = sSrcStr;
+                if (FmtFg == 1)
+                {
+                    Result = Result + StringOfChar(" ", Count - MecsStringWidth(Result));
+                }
+            }
+            else
+            {
+                if (Index > MecsStringWidth(sSrcStr))
+                {
+                    Result = "";
+                    return Result;
+                }
+                //開始位置を調べる
+                int iIndex = 0;
+                int iWidth = 0;
+                if (Index > 1)
+                {
+                    //for (int i = 1; i < sSrcStr.Length; i++)
+                    for (int i = 0; i < sSrcStr.Length; i++)
+                    {
+                        //１文字ずつ取得
+                        iIndex++;
+
+                        if (MecsIsFullWidth(sSrcStr[i]))
+                        {
+                            //全角文字
+                            iWidth += 2;
+                            if (iWidth == Index)
+                            {
+                                iIndex++;
+                                Count--;
+                            }
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //半角文字
+                            iWidth++;
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    iIndex++;
+                }
+
+                int iWord = 0;
+
+                //開始位置から文字列終了までループ
+                for (int i = iIndex; i <= sSrcStr.Length; i++)
+                {
+                    //１文字ずつ取得
+                    string sBuf = MecsCopy(sSrcStr, i, 1);
+                    iWord = iWord + MecsStringWidth(sBuf);
+
+                    if (iWord > Count)
+                    {
+                        //指定エレメント数を超えた場合
+                        break;
+                    }
+
+                    //切り取った文字列
+                    Result = Result + sBuf;
+                }
+            }
+            return Result;
+        }
+
+        public static int MecsStringWidth(string text)
+        {
+            int width = 0;
+            if (string.IsNullOrEmpty(text) == false)
+            {
+                foreach (char c in text)
+                {
+                    if (MecsIsFullWidth(c))
+                    {
+                        width += 2;
+                    }
+                    else
+                    {
+                        width++;
+                    }
+                }
+            }
+            return width;
+        }
+
+        public static string StringOfChar(string character, int count)
+        {
+            string result = String.Empty;
+            for (int i = 0; i < count; i++)
+            {
+                result = result + character;
+            }
+            return result;
+        }
+
+        public static bool MecsIsFullWidth(char cValue)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var sjis = System.Text.Encoding.GetEncoding("shift_jis");
+            int byteCount = sjis.GetByteCount(cValue.ToString());
+            return byteCount == 2;
+        }
+
+        public static string MecsCopy(string value, int index, int count)
+        {
+            string result = string.Empty;
+            try
+            {
+                result = Copy(value, index, count);
+            }
+            catch
+            {
+                result = string.Empty;
+
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Get Era from date
+        ///    "明治","大正","昭和","平成","令和"
+        /// </summary>
+        /// <param name="Ymd"> Date</param>
+        /// <returns></returns>
+        public static string GetEraFromDate(int Ymd)
+        {
+            if (Ymd < 18680908 || Ymd == 99999999)
+            {
+                return string.Empty;
+            }
+
+            //明治
+            if (Ymd < 19120730)
+            {
+                return "明治";
+            }
+
+            //大正
+            if (Ymd < 19261225)
+            {
+                return "大正";
+            }
+
+            //昭和
+            if (Ymd < 19890108)
+            {
+                return "昭和";
+            }
+
+            //平成
+            if (Ymd < 20190501)
+            {
+                return "平成";
+            }
+
+            //令和
+            return "令和";
+        }
+
+        /// <summary>
+        /// Get Era Reki from data
+        /// </summary>
+        /// <param name="Ymd">Date</param>
+        /// <param name="fmtReki"> Reki 1: 略K #1:略 </param>
+        /// <returns></returns>
+        public static string GetEraRekiFromDate(int Ymd, int fmtReki = 0)
+        {
+            string Result = "";
+
+            if (Ymd < 18680908 || Ymd == 99999999)
+            {
+                return Result;
+            }
+
+
+            //明治
+            if (Ymd < 19120730)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "明";
+                }
+                else
+                {
+                    Result = "M";
+                }
+
+                return Result;
+            }
+
+            //大正
+            if (Ymd < 19261225)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "大";
+                }
+                else
+                {
+                    Result = "T";
+                }
+                return Result;
+            }
+
+            //昭和
+            if (Ymd < 19890108)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "昭";
+                }
+                else
+                {
+                    Result = "S";
+                }
+
+                return Result;
+            }
+
+            //平成
+            if (Ymd < 20190501)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "平";
+                }
+                else
+                {
+                    Result = "H";
+                }
+
+                return Result;
+            }
+
+            //令和
+            if (fmtReki == 1)
+            {
+                Result = "令";
+            }
+            else
+            {
+                Result = "R";
+            }
+
+            return Result;
+        }
+
+        //----------------------------------------------------------------------------//
+        // 機能      ： ＪＩＳコードチェック
+        //              ※電子レセプトの文字規格（以下が使用可能）
+        //　　　　　　　　JISX0201-1976：(JISローマ字,JISカナ（半角カナ）
+        //                JISX0208-1983: (01区 ～ 08区 各種記号,英数字,かな）
+        //                               (16区 ～ 47区 JIS第１水準漢字)
+        //                               (48区 ～ 84区 JIS第２水準漢字)
+        //                上記以外はエラー文字とする。
+        //
+        // 引数      ： sIn   : チェックする文字列
+        //              sOut  : エラー文字以外の文字列
+        // 戻り値　　： エラー文字列
+        // 備考　　　： http://charset.7jp.net/jis0208.html
+        //          ： http://d.hatena.ne.jp/tekk/20120623/1340462114
+        //----------------------------------------------------------------------------//
+        public static string Chk_JISKj(string sIn, out string sOut)
+        {
+            string strErr = "";
+            sOut = "";
+
+            // タブ、改行コードは除去しておく
+            // Trim Tab & New-line character
+            sIn = sIn.Replace("\t", "");
+            sIn = sIn.Replace(Environment.NewLine, "");
+
+            TextElementEnumerator textEnum = null;
+            textEnum = StringInfo.GetTextElementEnumerator(sIn);
+
+            while (textEnum.MoveNext())
+            {
+                // サロゲートペア文字の存在チェック
+                if (textEnum.GetTextElement().Length > 1)
+                {
+                    strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+
+                }
+
+                //文字列にUnicodeでしか使用されていない文字の存在チェック
+                //.NET string is all UTF-16 string, therefore, no need to check
+                // whether string contains both ASCII and UTF characters
+
+                //end else if IsUnicodeOnly(sIn[1]) = true then begin
+                //strErrStr:= strErrStr + Copy(sIn, 1, 1);
+                //Delete(sIn, 1, 1);
+
+                else
+                {
+                    //チェック対象文字をunicode　→ Ansiに変換
+                    string strChkString = CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+                    byte[] asciiBytes = UTF16CharToBytes(strChkString[0]);
+
+                    if (asciiBytes.Length == 1)
+                    {
+                        // 1バイトコード
+                        // 半角: 記号，英数字
+                        // 半角カタカナは全角として返しますので、ここでのチェックが不要
+                        if ((asciiBytes[0] >= 0x20) && (asciiBytes[0] <= 0x7E))
+                        {
+                            if (asciiBytes[0] == 0x3F && strChkString != @"?")
+                            {
+                                // 0x3F = 63 = ? character
+                                // Check string is not "?"
+                                // Then can not convert to ISO 2022 JP = 第3水準，第4水準漢字等
+                                strErr += strChkString;
+
+                            }
+                            else
+                            {
+                                sOut += strChkString;
+                            }
+                        }
+                        {
+                            //制御文字
+                            //見えないので、追加は必要ない
+                        }
+
+                    }
+                    else if (asciiBytes.Length == 8)
+                    {
+                        //Convert from asciiBytes to 区点 in JIS
+
+                        int ku = asciiBytes[3] - 32;
+                        int ten = asciiBytes[4] - 32;
+                        //13区（環境依存文字）はエラーとする
+                        if (ku == 13)
+                        {
+                            strErr += strChkString;
+                        }
+                        else
+                        {
+                            //JISX0208 - 1983: (01区 ～ 08区 各種記号, 英数字, かな）
+                            //                           (16区 ～ 47区 JIS第１水準漢字)
+                            //                           (48区 ～ 84区 JIS第２水準漢字)
+                            if ((1 <= ku && ku <= 8) ||
+                                (16 <= ku && ku <= 84))
+                            {
+                                //全角ひらがな、かたかな、第1水準、第2水準漢字
+                                sOut += strChkString;
+                            }
+                            else
+                            {
+                                strErr += strChkString;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //外字??
+                    }
+                }
+
+            }
+
+            return strErr;
+        }
+
+        public static byte[] UTF16CharToBytes(char utf16Char)
+        {
+            byte[] asciiBytes = new byte[1];
+
+            try
+            {
+                //ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
+                Encoding ascii = Encoding.GetEncoding("iso-2022-jp");
+                asciiBytes = ascii.GetBytes(utf16Char.ToString());
+            }
+            catch
+            {
+                asciiBytes = new byte[1];
+            }
+
+            return asciiBytes;
+        }
     }
     public struct WarekiYmd
     {

@@ -50,6 +50,11 @@ namespace Interactor.PatientInfor
             {
                 return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.Failed);
             }
+            finally
+            {
+                _hokenMstRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
         }
     }
 }

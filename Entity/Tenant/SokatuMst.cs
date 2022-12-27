@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// 都道府県番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PREF_NO", Order = 2)]
         public int PrefNo { get; set; }
 
@@ -28,7 +27,7 @@ namespace Entity.Tenant
         /// 開始年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_YM", Order = 3)]
         public int StartYm { get; set; }
 
@@ -56,7 +55,7 @@ namespace Entity.Tenant
         ///                     105:福祉請求書          
         ///                     106:福祉電子媒体請求          
         /// </summary>
-        //[Key]
+        
         [Column("REPORT_ID", Order = 4)]
         public int ReportId { get; set; }
 
@@ -64,7 +63,7 @@ namespace Entity.Tenant
         /// 帳票枝番
         /// 帳票ID枝番(都道府県ごとに異なる)
         /// </summary>
-        //[Key]
+        
         [Column("REPORT_EDA_NO", Order = 5)]
         public int ReportEdaNo { get; set; }
 
@@ -82,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REPORT_NAME")]
         [MaxLength(30)]
-        public string ReportName { get; set; } = string.Empty;
+        public string? ReportName { get; set; } = string.Empty;
 
         /// <summary>
         /// 印刷タイプ
@@ -139,7 +138,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DISK_KIND")]
         [MaxLength(10)]
-        public string DiskKind { get; set; } = string.Empty;
+        public string? DiskKind { get; set; } = string.Empty;
 
         /// <summary>
         /// 媒体枚数
@@ -193,7 +192,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 印刷順指定
@@ -202,6 +201,5 @@ namespace Entity.Tenant
         [Column("IS_SORT")]
         [CustomAttribute.DefaultValue(0)]
         public int IsSort { get; set; }
-
     }
 }

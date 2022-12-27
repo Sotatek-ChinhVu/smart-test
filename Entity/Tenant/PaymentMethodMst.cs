@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// "1:現金 2:クレジット 3:振込 
         /// 4:電子マネー 5:デビット"
         /// </summary>
-        //[Key]
+        
         [Column("PAYMENT_METHOD_CD", Order = 2)]
         public int PaymentMethodCd { get; set; }
 

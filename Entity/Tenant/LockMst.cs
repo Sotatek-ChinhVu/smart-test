@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 機能コードA
         /// 開く画面
         /// </summary>
-        [Key]
+        
         [Column("FUNCTION_CD_A", Order = 1)]
         [MaxLength(8)]
         public string FunctionCdA { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 機能コードB
         /// 排他制御の対象となる画面
         /// </summary>
-        //[Key]
+        
         [Column("FUNCTION_CD_B", Order = 2)]
         [MaxLength(8)]
         public string FunctionCdB { get; set; } = string.Empty;

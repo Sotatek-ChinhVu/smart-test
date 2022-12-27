@@ -8,7 +8,7 @@ public class SearchPatientInfoAdvancedRequest
 
     public long ToPtNum { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public int Sex { get; set; }
 
@@ -20,13 +20,13 @@ public class SearchPatientInfoAdvancedRequest
 
     public int ToBirthDay { get; set; }
 
-    public string PostalCode1 { get; set; }
+    public string PostalCode1 { get; set; } = string.Empty;
 
-    public string PostalCode2 { get; set; }
+    public string PostalCode2 { get; set; } = string.Empty;
 
-    public string Address { get; set; }
+    public string Address { get; set; } = string.Empty;
 
-    public string PhoneNum { get; set; }
+    public string PhoneNum { get; set; } = string.Empty;
 
     public int FromVisitDate { get; set; }
 
@@ -46,9 +46,9 @@ public class SearchPatientInfoAdvancedRequest
 
     public long ToPublicExpensesNum { get; set; }
 
-    public string FromSpecialPublicExpensesNum { get; set; }
+    public string FromSpecialPublicExpensesNum { get; set; } = string.Empty;
 
-    public string ToSpecialPublicExpensesNum { get; set; }
+    public string ToSpecialPublicExpensesNum { get; set; } = string.Empty;
 
     public int HokenNum { get; set; }
 
@@ -70,14 +70,14 @@ public class SearchPatientInfoAdvancedRequest
 
 
     // グループ
-    public List<PatientGroupSearchInput> PatientGroups { get; set; }
+    public List<PatientGroupSearchInput> PatientGroups { get; set; } = new();
 
 
 
     // オーダー
     public LogicalOperator OrderLogicalOperator { get; set; }
 
-    public List<string> OrderItemCodes { get; set; }
+    public List<string> OrderItemCodes { get; set; } = new();
 
     public int DepartmentId { get; set; }
 
@@ -87,7 +87,7 @@ public class SearchPatientInfoAdvancedRequest
     // 傷病名
     public LogicalOperator ByomeiLogicalOperator { get; set; }
 
-    public List<ByomeiSearchInput> Byomeis { get; set; }
+    public List<ByomeiSearchInput> Byomeis { get; set; } = new();
 
     public int ByomeiStartDate { get; set; }
 

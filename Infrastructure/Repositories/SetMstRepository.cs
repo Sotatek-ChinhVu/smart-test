@@ -1,26 +1,23 @@
 ﻿using Domain.Models.SetMst;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class SetMstRepository : ISetMstRepository
+public class SetMstRepository : RepositoryBase, ISetMstRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
     private readonly string DefaultSetName = "新規セット";
     private readonly string DefaultGroupName = "新規グループ";
-    public SetMstRepository(ITenantProvider tenantProvider)
+    public SetMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch)
     {
-        var setEntities = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch))))
+        var setEntities = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch))))
           .OrderBy(s => s.Level1)
           .ThenBy(s => s.Level2)
           .ThenBy(s => s.Level3)
@@ -63,11 +60,9 @@ public class SetMstRepository : ISetMstRepository
 
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
     {
-        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
-        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Text != String.Empty).Select(item => item.Text ?? String.Empty).ToList();
-        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
-
-        var result = new List<SetMstModel>();
+        var listByomeis = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
+        var listKarteNames = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Text != String.Empty).Select(item => item.Text ?? String.Empty).ToList();
+        var listOrders = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
 
         return new SetMstTooltipModel(listKarteNames, listOrders, listByomeis);
     }
@@ -82,7 +77,7 @@ public class SetMstRepository : ISetMstRepository
             var setKbnEdaNo = (setMstModel.SetKbnEdaNo - 1) > 0 ? setMstModel.SetKbnEdaNo - 1 : 0;
 
             // Create SetMst to save
-            var oldSetMst = _tenantDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd
+            var oldSetMst = TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd
                                                                             && item.SetKbn == setMstModel.SetKbn
                                                                             && item.SetKbnEdaNo == setKbnEdaNo
                                                                             && item.GenerationId == setMstModel.GenerationId
@@ -104,7 +99,7 @@ public class SetMstRepository : ISetMstRepository
                 setMst.IsDeleted = 0;
 
                 // If SetMst is add new
-                if (setMstModel.SetCd == 0 || _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd) == null)
+                if (setMstModel.SetCd == 0 || TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd) == null)
                 {
                     setMst.IsGroup = setMstModel.IsGroup;
                     if (setMst.SetName == null || setMst.SetName.Length == 0)
@@ -118,7 +113,7 @@ public class SetMstRepository : ISetMstRepository
                     setMst.UpdateId = userId;
 
                     // Save SetMst 
-                    _tenantDataContext.SetMsts.Add(setMst);
+                    TrackingDataContext.SetMsts.Add(setMst);
                 }
             }
             // Delete SetMst
@@ -131,7 +126,7 @@ public class SetMstRepository : ISetMstRepository
                 // if SetMst is level 2 and have children element
                 if (setMst.Level2 > 0 && setMst.Level3 == 0)
                 {
-                    var listSetMstLevel3 = _tenantDataContext.SetMsts
+                    var listSetMstLevel3 = TrackingDataContext.SetMsts
                                             .Where(item => item.SetKbn == setMst.SetKbn
                                                           && item.SetKbnEdaNo == setKbnEdaNo
                                                           && item.GenerationId == setMst.GenerationId
@@ -152,7 +147,7 @@ public class SetMstRepository : ISetMstRepository
                 if (setMst.Level2 == 0 && setMst.Level3 == 0)
                 {
                     // get list SetMst level 2
-                    var listSetMstLevel2 = _tenantDataContext.SetMsts
+                    var listSetMstLevel2 = TrackingDataContext.SetMsts
                                             .Where(item => item.SetKbn == setMst.SetKbn
                                                           && item.SetKbnEdaNo == setKbnEdaNo
                                                           && item.GenerationId == setMst.GenerationId
@@ -163,7 +158,7 @@ public class SetMstRepository : ISetMstRepository
                                             ).ToList();
 
                     // get list SetMst level 3
-                    var listSetMstLevel3 = _tenantDataContext.SetMsts
+                    var listSetMstLevel3 = TrackingDataContext.SetMsts
                                             .Where(item => item.SetKbn == setMst.SetKbn
                                                           && item.SetKbnEdaNo == setKbnEdaNo
                                                           && item.GenerationId == setMst.GenerationId
@@ -188,7 +183,7 @@ public class SetMstRepository : ISetMstRepository
                     }
                 }
             }
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return new SetMstModel(
                     setMst.HpId,
                     setMst.SetCd,
@@ -215,7 +210,7 @@ public class SetMstRepository : ISetMstRepository
     private int GetGenerationId(int hpId, int sinDate)
     {
         int generationId = 0;
-        var generation = _tenantNoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0)
+        var generation = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0)
                                                                .OrderByDescending(x => x.StartDate)
                                                                .FirstOrDefault();
         if (generation != null)
@@ -248,8 +243,8 @@ public class SetMstRepository : ISetMstRepository
         bool status = false;
         try
         {
-            var dragItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
-            var dropItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
+            var dragItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
+            var dropItem = TrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
 
             // if dragItem is not exist
             if (dragItem == null)
@@ -263,7 +258,7 @@ public class SetMstRepository : ISetMstRepository
             }
 
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
-            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1 && mst.GenerationId == dragItem.GenerationId).ToList();
+            var listSetMsts = TrackingDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1 && mst.GenerationId == dragItem.GenerationId).ToList();
 
             if (dropItem != null)
             {
@@ -296,7 +291,7 @@ public class SetMstRepository : ISetMstRepository
                 status = DragItemWithDropItemIsLevel0(dragItem, userId, listSetMsts);
             }
 
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
         catch
         {
@@ -652,8 +647,8 @@ public class SetMstRepository : ISetMstRepository
         int setCd = -1;
         try
         {
-            var copyItem = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
-            var pasteItem = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdPasteItem && mst.HpId == hpId);
+            var copyItem = NoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
+            var pasteItem = NoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdPasteItem && mst.HpId == hpId);
 
             if (copyItem == null)
             {
@@ -665,7 +660,7 @@ public class SetMstRepository : ISetMstRepository
             }
 
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
-            var listSetMsts = _tenantNoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            var listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
             if (pasteItem != null)
             {
                 if (CountLevelItem(copyItem, listSetMsts) + GetLevelItem(pasteItem) > 3)
@@ -710,11 +705,11 @@ public class SetMstRepository : ISetMstRepository
     private int PasteAction(int indexPaste, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
     {
         int setCd = -1;
-        var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
             {
-                using (var transaction = _tenantDataContext.Database.BeginTransaction())
+                using (var transaction = TrackingDataContext.Database.BeginTransaction())
                 {
                     try
                     {
@@ -744,8 +739,8 @@ public class SetMstRepository : ISetMstRepository
                             rootSet.CreateId = userId;
                             rootSet.UpdateDate = DateTime.UtcNow;
                             rootSet.UpdateId = userId;
-                            _tenantDataContext.SetMsts.Add(rootSet);
-                            _tenantDataContext.SaveChanges();
+                            TrackingDataContext.SetMsts.Add(rootSet);
+                            TrackingDataContext.SaveChanges();
                             setCd = rootSet.SetCd;
                             // Convert SetMst copy to SetMst paste
                             foreach (var item in listCopyItems)
@@ -759,8 +754,8 @@ public class SetMstRepository : ISetMstRepository
                                 listPasteItems.Add(setMst);
                             }
 
-                            _tenantDataContext.SetMsts.AddRange(listPasteItems);
-                            _tenantDataContext.SaveChanges();
+                            TrackingDataContext.SetMsts.AddRange(listPasteItems);
+                            TrackingDataContext.SaveChanges();
                             listPasteItems.Add(rootSet);
                         }
 
@@ -778,7 +773,7 @@ public class SetMstRepository : ISetMstRepository
                         // Set level for item 
                         ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
 
-                        _tenantDataContext.SaveChanges();
+                        TrackingDataContext.SaveChanges();
                         transaction.Commit();
                     }
                     catch
@@ -931,7 +926,7 @@ public class SetMstRepository : ISetMstRepository
     private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
         // Order inf
-        var listCopySetOrderInfs = _tenantNoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();
         foreach (var item in listCopySetOrderInfs)
         {
@@ -944,10 +939,10 @@ public class SetMstRepository : ISetMstRepository
             order.UpdateId = userId;
             listPasteSetOrderInfs.Add(order);
         }
-        _tenantDataContext.SetOdrInf.AddRange(listPasteSetOrderInfs);
+        TrackingDataContext.SetOdrInf.AddRange(listPasteSetOrderInfs);
 
         // Order inf detail
-        var listCopySetOrderInfDetails = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
+        var listCopySetOrderInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
         var listPasteSetOrderInfDetails = new List<SetOdrInfDetail>();
         foreach (var item in listCopySetOrderInfDetails)
         {
@@ -955,10 +950,10 @@ public class SetMstRepository : ISetMstRepository
             detail.SetCd = dictionarySetMstMap[detail.SetCd].SetCd;
             listPasteSetOrderInfDetails.Add(detail);
         }
-        _tenantDataContext.SetOdrInfDetail.AddRange(listPasteSetOrderInfDetails);
+        TrackingDataContext.SetOdrInfDetail.AddRange(listPasteSetOrderInfDetails);
 
         // Karte inf
-        var listCopySetKarteInfs = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetKarteInfs = new List<SetKarteInf>();
         foreach (var item in listCopySetKarteInfs)
         {
@@ -970,10 +965,10 @@ public class SetMstRepository : ISetMstRepository
             karte.UpdateId = userId;
             listPasteSetKarteInfs.Add(karte);
         }
-        _tenantDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
+        TrackingDataContext.SetKarteInf.AddRange(listPasteSetKarteInfs);
 
         // Set byomei
-        var listCopySetByomeies = _tenantNoTrackingDataContext.SetByomei.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
+        var listCopySetByomeies = NoTrackingDataContext.SetByomei.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetByomeies = new List<SetByomei>();
         foreach (var item in listCopySetByomeies)
         {
@@ -985,12 +980,16 @@ public class SetMstRepository : ISetMstRepository
             karte.UpdateId = userId;
             listPasteSetByomeies.Add(karte);
         }
-        _tenantDataContext.SetByomei.AddRange(listPasteSetByomeies);
+        TrackingDataContext.SetByomei.AddRange(listPasteSetByomeies);
     }
 
     public bool CheckExistSetMstBySetCd(int setCd)
     {
-        return _tenantNoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
+        return NoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.UsageTreeSet
+﻿using Domain.Common;
+
+namespace Domain.Models.UsageTreeSet
 {
-    public interface IUsageTreeSetRepository
+    public interface IUsageTreeSetRepository : IRepositoryBase
     {
         int GetGenerationId(int sinDate);
 

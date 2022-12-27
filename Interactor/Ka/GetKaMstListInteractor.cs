@@ -24,5 +24,9 @@ public class GetKaMstListInteractor : IGetKaMstListInputPort
         {
             return new GetKaMstListOutputData(GetKaMstListStatus.Failed, new List<KaMstModel>());
         }
+        finally
+        {
+            _kaMstRepository.ReleaseResource();
+        }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.AccountDue;
+﻿using Domain.Common;
 
-public interface IAccountDueRepository
+namespace Domain.Models.AccountDue;
+
+public interface IAccountDueRepository : IRepositoryBase
 {
     List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize);
 

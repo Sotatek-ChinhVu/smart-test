@@ -209,7 +209,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDefaultSelectedTime)]
         public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
         {
-            var input = new GetDefaultSelectedTimeInputData(HpId, request.SinDate, request.BirthDay);
+            var input = new GetDefaultSelectedTimeInputData(HpId, request.UketukeTime, request.SinDate, request.BirthDay);
             var output = _bus.Handle(input);
 
             var presenter = new GetDefaultSelectedTimePresenter();

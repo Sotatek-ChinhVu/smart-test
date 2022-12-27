@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 大分類コード
         /// 数字1桁
         /// </summary>
-        [Key]
+        
         [Column("MAJOR_DIV_CD", Order = 1)]
         public string MajorDivCd { get; set; } = string.Empty;
 
@@ -21,6 +21,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAJOR_DIV_NAME")]
         [MaxLength(100)]
-        public string MajorDivName { get; set; } = string.Empty;
+        public string? MajorDivName { get; set; } = string.Empty;
     }
 }

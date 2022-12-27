@@ -1,26 +1,20 @@
 ﻿using Domain.Models.SpecialNote.SummaryInf;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
-    public class SummaryInfRepository : ISummaryInfRepository
+    public class SummaryInfRepository : RepositoryBase, ISummaryInfRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
-
-        public SummaryInfRepository(ITenantProvider tenantProvider)
+        public SummaryInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+
         }
 
-        public SummaryInfModel GetList(int hpId, long ptId)
+        public SummaryInfModel Get(int hpId, long ptId)
         {
-            var summaryInfs = _tenantDataContext.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(u => u.UpdateDate).Select(x => new SummaryInfModel(
+            var summaryInfs = NoTrackingDataContext.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(u => u.UpdateDate).Select(x => new SummaryInfModel(
                    x.Id,
                    x.HpId,
                    x.PtId,
@@ -30,6 +24,11 @@ namespace Infrastructure.Repositories.SpecialNote
                    x.CreateDate
                 )).ToList();
             return summaryInfs.Any() ? summaryInfs.First() : new SummaryInfModel();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

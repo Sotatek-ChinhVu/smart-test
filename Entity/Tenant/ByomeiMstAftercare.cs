@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 傷病名コード
         /// </summary>
-        [Key]
+        
         [Column(name: "BYOMEI_CD", Order = 1)]
         [MaxLength(2)]
         public string ByomeiCd { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 病名
         /// </summary>
-        [Key]
+        
         [Column(name: "BYOMEI", Order = 2)]
         [MaxLength(200)]
         public string Byomei { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 適用開始日
         /// </summary>
-        [Key]
+        
         [Column(name: "START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -81,6 +81,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

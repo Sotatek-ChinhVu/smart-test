@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using Domain.Common;
+using System.Runtime.InteropServices;
 
 namespace Domain.Models.Reception
 {
-    public interface IReceptionRepository
+    public interface IReceptionRepository : IRepositoryBase
     {
         long Insert(ReceptionSaveDto dto, int hpId, int userId);
 
@@ -45,5 +46,7 @@ namespace Domain.Models.Reception
         int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
 
         long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate);
+
+        bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
     }
 }

@@ -58,9 +58,13 @@ namespace Domain.Models.OrdInfDetails
         public List<YohoSetMstModel> YohoSets { get; private set; }
         public int Kasan1 { get; private set; }
         public int Kasan2 { get; private set; }
+        public string CnvUnitName { get; private set; }
+        public string OdrUnitName { get; private set; }
+        public string CenterItemCd1 { get; private set; }
+        public string CenterItemCd2 { get; private set; }
 
 
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -112,6 +116,10 @@ namespace Domain.Models.OrdInfDetails
             YohoSets = yohoSets;
             Kasan1 = kasan1;
             Kasan2 = kasan2;
+            CnvUnitName = cnvUnitName;
+            OdrUnitName = odrUnitName;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
         }
 
         public bool IsSpecialItem
@@ -222,10 +230,14 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return ItemName + TenUtils.GetBunkatu(BunkatuKoui, Bunkatu);
                 }
-                
+
                 return ItemName;
             }
         }
+
+        public bool HasCmtName => Is830Cmt || Is831Cmt || Is840Cmt || Is842Cmt || Is850Cmt || Is851Cmt || Is852Cmt || Is853Cmt || Is880Cmt;
+
+        public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
 
         public OrdInfValidationStatus Validation(int flag)
         {

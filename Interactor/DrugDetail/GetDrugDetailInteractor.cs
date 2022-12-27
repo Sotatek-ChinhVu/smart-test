@@ -19,24 +19,31 @@ namespace Interactor.DrugDetail
         public GetDrugDetailOutputData Handle(GetDrugDetailInputData inputData)
         {
 
-            if (inputData.HpId <= 0)
+            try
             {
-                return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidHpId);
-            }
+                if (inputData.HpId <= 0)
+                {
+                    return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidHpId);
+                }
 
-            if (inputData.SinDate <= 0)
+                if (inputData.SinDate <= 0)
+                {
+                    return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidSindate);
+                }
+
+                if (String.IsNullOrEmpty(inputData.ItemCd))
+                {
+                    return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidItemCd);
+                }
+
+                var data = _drugInforRepository.GetDrugMenu(inputData.HpId, inputData.SinDate, inputData.ItemCd);
+
+                return new GetDrugDetailOutputData(data.ToList(), GetDrugDetailStatus.Successed);
+            }
+            finally
             {
-                return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidSindate);
+                _drugInforRepository.ReleaseResource();
             }
-
-            if (String.IsNullOrEmpty(inputData.ItemCd))
-            {
-                return new GetDrugDetailOutputData(new List<DrugMenuItemModel>(), GetDrugDetailStatus.InValidItemCd);
-            }
-
-            var data = _drugInforRepository.GetDrugMenu(inputData.HpId, inputData.SinDate, inputData.ItemCd);
-
-            return new GetDrugDetailOutputData(data.ToList(), GetDrugDetailStatus.Successed);
         }
     }
 }

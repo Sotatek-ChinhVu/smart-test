@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.User;
 using UseCase.Document.SaveListDocCategory;
 
@@ -39,6 +39,12 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
         catch (Exception)
         {
             return new SaveListDocCategoryOutputData(SaveListDocCategoryStatus.Failed);
+        }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
     }
 

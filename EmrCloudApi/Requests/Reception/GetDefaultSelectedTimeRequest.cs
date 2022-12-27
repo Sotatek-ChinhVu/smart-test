@@ -2,7 +2,7 @@
 
 public class GetDefaultSelectedTimeRequest
 {
-    public int HpId { get; set; }
+    public int UketukeTime { get; set; }
 
     public int SinDate { get; set; }
 

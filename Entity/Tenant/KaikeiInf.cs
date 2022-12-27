@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -15,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -24,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -32,7 +27,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 3)]
         public int SinDate { get; set; }
 
@@ -40,7 +35,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 4)]
         public long RaiinNo { get; set; }
 
@@ -48,7 +43,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// PT_HOKEN_INF.HOKEN_ID
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_ID", Order = 5)]
         public int HokenId { get; set; }
 
@@ -129,7 +124,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_SBT")]
         [MaxLength(4)]
-        public string ReceSbt { get; set; } = string.Empty;
+        public string? ReceSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別番号
@@ -137,7 +132,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公１法別
@@ -145,7 +140,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI1_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi1Houbetu { get; set; } = string.Empty;
+        public string? Kohi1Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公２法別
@@ -153,7 +148,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI2_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi2Houbetu { get; set; } = string.Empty;
+        public string? Kohi2Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公３法別
@@ -161,7 +156,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi3Houbetu { get; set; } = string.Empty;
+        public string? Kohi3Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公４法別
@@ -169,7 +164,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI4_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi4Houbetu { get; set; } = string.Empty;
+        public string? Kohi4Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 本人家族区分

@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("GENERATION_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         /// セットID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SET_ID", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetId { get; set; }
@@ -204,6 +204,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

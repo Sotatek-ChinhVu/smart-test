@@ -77,5 +77,9 @@
         public bool SelectedHokenPatternIsEmptyHoken { get; set; }
 
         public bool SelectedHokenPatternIsAddNew { get; set; }
+
+        public bool HokenInfIsNoHoken { get; private set; }
+
+        public int SelectedHokenInfHokenChecksCount { get; private set; }
     }
 }

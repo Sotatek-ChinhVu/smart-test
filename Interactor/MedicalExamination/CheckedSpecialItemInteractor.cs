@@ -140,7 +140,11 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                "",
+                                "",
+                                ""
                             )).ToList() ?? new List<OrdInfDetailModel>();
 
                 var hokenPids = new List<(long rpno, long edano, int hokenPid)>();
@@ -219,6 +223,14 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.Failed);
+            }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
+                _todayOdrRepository.ReleaseResource();
             }
         }
 

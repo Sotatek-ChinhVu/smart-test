@@ -1,8 +1,9 @@
-﻿using Domain.Models.InsuranceInfor;
+﻿using Domain.Common;
+using Domain.Models.InsuranceInfor;
 
 namespace Domain.Models.Insurance
 {
-    public interface IInsuranceRepository
+    public interface IInsuranceRepository : IRepositoryBase
     {
         InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate);
 
@@ -18,6 +19,14 @@ namespace Domain.Models.Insurance
 
         int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid);
 
-        List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate);
+        List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false);
+
+        bool SaveInsuraneScan(InsuranceScanModel insuranceScan,int userId);
+
+        bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId);
+
+        bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid);
+
+        List<KohiPriorityModel> GetKohiPriorityList();
     }
 }

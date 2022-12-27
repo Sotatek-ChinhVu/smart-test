@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 using UseCase.ReceptionVisiting.Get;
 
 namespace Interactor.ReceptionVisiting
@@ -36,7 +36,10 @@ namespace Interactor.ReceptionVisiting
             {
                 return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.Failed);
             }
-
+            finally
+            {
+                _receptionVisitingRepository.ReleaseResource();
+            }
         }
     }
 }

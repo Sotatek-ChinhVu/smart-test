@@ -1,4 +1,4 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.TimeZone;
 using Domain.Models.User;
 using UseCase.Reception.UpdateTimeZoneDayInf;
@@ -20,38 +20,47 @@ public class UpdateTimeZoneDayInfInteractor : IUpdateTimeZoneDayInfInputPort
 
     public UpdateTimeZoneDayInfOutputData Handle(UpdateTimeZoneDayInfInputData inputData)
     {
-        if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
+        try
         {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidHpId);
+            if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidHpId);
+            }
+            else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUserId);
+            }
+            else if (inputData.CurrentTimeKbn < 0)
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidCurrentTimeKbn);
+            }
+            else if (inputData.BeforeTimeKbn < 0)
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidBeforeTimeKbn);
+            }
+            else if (inputData.UketukeTime < 0)
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUketukeTime);
+            }
+            else if (inputData.SinDate.ToString().Length != 8)
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidSinDate);
+            }
+            else if (inputData.CurrentTimeKbn == inputData.BeforeTimeKbn)
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.CanNotUpdateTimeZoneInf);
+            }
+            else if (_timeZoneRepository.UpdateTimeZoneDayInf(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.CurrentTimeKbn, inputData.UketukeTime))
+            {
+                return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.Successed);
+            }
+            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.Failed);
         }
-        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
+        finally
         {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUserId);
+            _hpInfRepository.ReleaseResource();
+            _timeZoneRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
-        else if (inputData.CurrentTimeKbn < 0)
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidCurrentTimeKbn);
-        }
-        else if (inputData.BeforeTimeKbn < 0)
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidBeforeTimeKbn);
-        }
-        else if (inputData.UketukeTime < 0)
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUketukeTime);
-        }
-        else if (inputData.SinDate.ToString().Length != 8)
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidSinDate);
-        }
-        else if (inputData.CurrentTimeKbn == inputData.BeforeTimeKbn)
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.CanNotUpdateTimeZoneInf);
-        }
-        else if (_timeZoneRepository.UpdateTimeZoneDayInf(inputData.HpId, inputData.UserId, inputData.SinDate, inputData.CurrentTimeKbn, inputData.UketukeTime))
-        {
-            return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.Successed);
-        }
-        return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.Failed);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -60,6 +60,12 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
         {
             return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 
     private List<FileDocumentModel> GetListDocumentTemplate(int categoryId)
@@ -107,7 +113,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             {
                 var listFiles = listOutputFiles
                                             .Where(file =>
-                                                        (path + model.File).Equals(file)
+                                                        (path + model.FileName).Equals(file)
                                                         && file.Length > path.Length)
                                             .ToList();
                 var fileItem = listFiles.FirstOrDefault();

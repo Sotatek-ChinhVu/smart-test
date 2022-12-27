@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// 請求年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEIKYU_YM", Order = 2)]
         public int SeikyuYm { get; set; }
 
@@ -28,7 +27,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 3)]
         public long PtId { get; set; }
 
@@ -36,7 +35,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 4)]
         public int SinYm { get; set; }
 
@@ -44,7 +43,7 @@ namespace Entity.Tenant
         /// 主保険保険ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_ID", Order = 5)]
         public int HokenId { get; set; }
 
@@ -52,7 +51,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 6)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
@@ -73,7 +72,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_SBT")]
         [MaxLength(4)]
-        public string ReceSbt { get; set; } = string.Empty;
+        public string? ReceSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別番号
@@ -81,7 +80,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公１法別
@@ -89,7 +88,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI1_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi1Houbetu { get; set; } = string.Empty;
+        public string? Kohi1Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公２法別
@@ -97,7 +96,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI2_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi2Houbetu { get; set; } = string.Empty;
+        public string? Kohi2Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公３法別
@@ -105,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi3Houbetu { get; set; } = string.Empty;
+        public string? Kohi3Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公４法別
@@ -113,7 +112,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI4_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi4Houbetu { get; set; } = string.Empty;
+        public string? Kohi4Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 保険レセ点数
@@ -254,7 +253,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI")]
         [MaxLength(10)]
-        public string Tokki { get; set; } = string.Empty;
+        public string? Tokki { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項１
@@ -262,7 +261,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI1")]
         [MaxLength(10)]
-        public string Tokki1 { get; set; } = string.Empty;
+        public string? Tokki1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項２
@@ -270,7 +269,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI2")]
         [MaxLength(10)]
-        public string Tokki2 { get; set; } = string.Empty;
+        public string? Tokki2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項３
@@ -278,7 +277,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI3")]
         [MaxLength(10)]
-        public string Tokki3 { get; set; } = string.Empty;
+        public string? Tokki3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項４
@@ -286,7 +285,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI4")]
         [MaxLength(10)]
-        public string Tokki4 { get; set; } = string.Empty;
+        public string? Tokki4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項５
@@ -294,7 +293,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI5")]
         [MaxLength(10)]
-        public string Tokki5 { get; set; } = string.Empty;
+        public string? Tokki5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -350,7 +349,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

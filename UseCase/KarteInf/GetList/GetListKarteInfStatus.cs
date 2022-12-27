@@ -1,4 +1,4 @@
-﻿namespace UseCase.KarteInfs.GetLists
+﻿namespace UseCase.KarteInf.GetList
 {
     public enum GetListKarteInfStatus : byte
     {
@@ -6,6 +6,5 @@
         Successed = 1,
         InvalidPtId = 2,
         InvalidSinDate = 3,
-        NoData = 4
     }
 }

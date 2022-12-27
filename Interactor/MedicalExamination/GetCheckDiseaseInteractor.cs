@@ -101,13 +101,19 @@ namespace Interactor.MedicalExamination
                                     string.Empty,
                                     new List<YohoSetMstModel>(),
                                     0,
-                                    0
+                                    0,
+                                    "",
+                                    "",
+                                    "",
+                                    ""
                                    )
                              ).ToList(),
                              DateTime.MinValue,
                              0,
-                             String.Empty,
-                             DateTime.MinValue
+                             string.Empty,
+                             DateTime.MinValue,
+                             0,
+                             string.Empty
                           )
                         ).ToList()
                     );
@@ -124,6 +130,10 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.Failed);
+            }
+            finally
+            {
+                _todayOdrRepository.ReleaseResource();
             }
         }
     }

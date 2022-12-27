@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -10,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +18,7 @@ namespace Entity.Tenant
         /// 付箋分類番号
         /// 0-分類なし、99-"チームカルテ"
         /// </summary>
-        //[Key]
+        
         [Column("TAG_GRP_NO", Order = 2)]
         public int TagGrpNo { get; set; }
 
@@ -30,14 +29,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TAG_GRP_NAME")]
         [MaxLength(20)]
-        public string TagGrpName { get; set; } = string.Empty;
+        public string? TagGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類色
         /// </summary>
         [Column("GRP_COLOR")]
         [MaxLength(8)]
-        public string GrpColor { get; set; } = string.Empty;
+        public string? GrpColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 順番
@@ -90,7 +89,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

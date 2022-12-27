@@ -32,7 +32,7 @@ public class Karte1Export : IKarte1Export
 
         PdfExportOptions pdfExportOptions = new PdfExportOptions()
         {
-            PdfACompatibility = PdfACompatibility.PdfA1b
+            PdfACompatibility = PdfACompatibility.PdfA3b
         };
 
         // Export the report.

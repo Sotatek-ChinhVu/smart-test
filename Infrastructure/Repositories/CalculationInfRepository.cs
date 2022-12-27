@@ -1,21 +1,20 @@
 ﻿using Domain.CalculationInf;
 using Domain.Models.CalculationInf;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class CalculationInfRepository : ICalculationInfRepository
+    public class CalculationInfRepository : RepositoryBase, ICalculationInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public CalculationInfRepository(ITenantProvider tenantProvider)
+        public CalculationInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<CalculationInfModel> GetListDataCalculationInf(int hpId, long ptId)
         {
-            var dataCalculation = _tenantDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
+            var dataCalculation = NoTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new CalculationInfModel(
                         x.HpId,
                         x.PtId,
@@ -30,6 +29,11 @@ namespace Infrastructure.Repositories
 
             return dataCalculation;
 
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

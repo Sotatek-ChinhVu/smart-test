@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -34,7 +33,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -42,7 +41,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SEQ_NO", Order = 3)]
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }

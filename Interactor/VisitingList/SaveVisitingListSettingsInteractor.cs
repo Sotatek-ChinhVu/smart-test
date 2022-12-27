@@ -16,13 +16,20 @@ public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInput
 
     public SaveVisitingListSettingsOutputData Handle(SaveVisitingListSettingsInputData input)
     {
-        var timeColorSystemConfs = input.Settings.ReceptionTimeColorConfigs
+        try
+        {
+            var timeColorSystemConfs = input.Settings.ReceptionTimeColorConfigs
             .Select(c => new SystemConfModel(SystemConfGroupCodes.ReceptionTimeColor, c.Duration, 0, c.Color, string.Empty));
-        var statusColorSystemConfs = input.Settings.ReceptionStatusColorConfigs
-            .Select(c => new SystemConfModel(SystemConfGroupCodes.ReceptionStatusColor, c.Status, 0, c.Color, string.Empty));
-        var systemConfs = timeColorSystemConfs.Concat(statusColorSystemConfs).ToList();
+            var statusColorSystemConfs = input.Settings.ReceptionStatusColorConfigs
+                .Select(c => new SystemConfModel(SystemConfGroupCodes.ReceptionStatusColor, c.Status, 0, c.Color, string.Empty));
+            var systemConfs = timeColorSystemConfs.Concat(statusColorSystemConfs).ToList();
 
-        _visitingListSettingRepository.Save(systemConfs, input.HpId, input.UserId);
-        return new SaveVisitingListSettingsOutputData(SaveVisitingListSettingsStatus.Success);
+            _visitingListSettingRepository.Save(systemConfs, input.HpId, input.UserId);
+            return new SaveVisitingListSettingsOutputData(SaveVisitingListSettingsStatus.Success);
+        }
+        finally
+        {
+            _visitingListSettingRepository.ReleaseResource();
+        }
     }
 }

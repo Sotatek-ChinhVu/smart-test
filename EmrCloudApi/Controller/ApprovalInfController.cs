@@ -24,10 +24,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetApprovalInfListResponse>>> GetList([FromQuery] GetApprovalInfListRequest req)
+        public ActionResult<Response<GetApprovalInfListResponse>> GetList([FromQuery] GetApprovalInfListRequest req)
         {
             var input = new GetApprovalInfListInputData(HpId, req.StartDate, req.EndDate, req.KaId, req.TantoId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetApprovalInfListPresenter();
             presenter.Complete(output);
@@ -35,7 +35,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Update)]
-        public async Task<ActionResult<Response<UpdateApprovalInfListResponse>>> Update([FromBody] UpdateApprovalInfRequest request)
+        public ActionResult<Response<UpdateApprovalInfListResponse>> Update([FromBody] UpdateApprovalInfRequest request)
         {
             var input = new UpdateApprovalInfListInputData(request.ApprovalIfnList.Select(x => new ApprovalInfModel(
                                                             x.Id,
@@ -47,7 +47,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                             )).ToList(),
                                                             UserId
                                                             );
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new UpdateApprovalInfListPresenter();
             presenter.Complete(output);

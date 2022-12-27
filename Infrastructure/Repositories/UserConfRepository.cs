@@ -1,27 +1,25 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Extension;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class UserConfRepository : IUserConfRepository
+public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
-    private readonly TenantDataContext _tenantTrackingDataContext;
-    private readonly TenantDataContext _tenantNoTrackingDataContext;
     private const int ADOPTED_CONFIRM_CD = 100005;
     public static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
 
-    public UserConfRepository(ITenantProvider tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+        InitConfigDefaultValue();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
     {
-        return _tenantNoTrackingDataContext.UserConfs
+        return NoTrackingDataContext.UserConfs
             .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
             .AsEnumerable().Select(u => ToModel(u)).ToList();
     }
@@ -30,23 +28,27 @@ public class UserConfRepository : IUserConfRepository
     {
         var result = new Dictionary<string, int>();
 
-        var displaySetName = _tenantNoTrackingDataContext.UserConfs
+        var displaySetName = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 2 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 2);
         result.Add("DisplaySetName", displaySetName);
-        var displayUserInput = _tenantNoTrackingDataContext.UserConfs
+        var displayUserInput = NoTrackingDataContext.UserConfs
           .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 3 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 3);
         result.Add("DisplayUserInput", displayUserInput);
-        var displayTimeInput = _tenantNoTrackingDataContext.UserConfs
+        var displayTimeInput = NoTrackingDataContext.UserConfs
     .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 4 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 4);
         result.Add("DisplayTimeInput", displayTimeInput);
-        var displayDrugPrice = _tenantNoTrackingDataContext.UserConfs
+        var displayDrugPrice = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 5 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 5);
         result.Add("DisplayDrugPrice", displayDrugPrice);
-        var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
+        var adoptedConfirmCD = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
+        var confirmEditByomei = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
+        result.Add("ConfirmEditByomei", confirmEditByomei);
+        var displayByomeiDateType = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
+        result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
-        string paramSaveMedical = _tenantNoTrackingDataContext.UserConfs
+        string paramSaveMedical = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
         var isByomeiCheckTempSave = paramSaveMedical[0].AsInteger();
         var isByomeiCheckKeisanSave = paramSaveMedical[1].AsInteger();
@@ -64,7 +66,7 @@ public class UserConfRepository : IUserConfRepository
 
     public void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue)
     {
-        var userConfig = _tenantTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == ADOPTED_CONFIRM_CD && p.UserId == userId);
+        var userConfig = TrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == ADOPTED_CONFIRM_CD && p.UserId == userId);
         if (userConfig == null)
         {
             userConfig = new UserConf()
@@ -75,13 +77,34 @@ public class UserConfRepository : IUserConfRepository
                 CreateId = userId,
                 CreateDate = DateTime.Now
             };
-            _tenantTrackingDataContext.UserConfs.Add(userConfig);
+            TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = DateTime.UtcNow;
         userConfig.Val = adoptedValue;
 
-        _tenantTrackingDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
+    }
+
+    public void UpdateUserConf(int hpId, int userId, int grpCd, int value)
+    {
+        var userConfig = TrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == grpCd);
+        if (userConfig == null)
+        {
+            userConfig = new UserConf()
+            {
+                HpId = hpId,
+                GrpCd = grpCd,
+                UserId = userId,
+                CreateId = userId,
+                CreateDate = DateTime.UtcNow
+            };
+            TrackingDataContext.UserConfs.Add(userConfig);
+        }
+        userConfig.UpdateId = userId;
+        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.Val = value;
+        TrackingDataContext.SaveChanges();
     }
 
     private UserConfModel ToModel(UserConf u)
@@ -237,5 +260,10 @@ public class UserConfRepository : IUserConfRepository
             return 0;
         }
         return 0;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

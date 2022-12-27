@@ -64,6 +64,12 @@ namespace Interactor.OrdInfs
             {
                 return new ValidationInputItemOutputData(new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), ValidationInputItemStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _ordInfRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+            }
         }
 
         private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<ValidationInputItemItem> inputDataList)
@@ -106,7 +112,9 @@ namespace Interactor.OrdInfs
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
                 if (item != null)
                 {
@@ -173,7 +181,11 @@ namespace Interactor.OrdInfs
                                     "",
                                     new List<YohoSetMstModel>(),
                                     0,
-                                    0
+                                    0,
+                                    string.Empty,
+                                    string.Empty,
+                                    string.Empty,
+                                    string.Empty
                                 );
                         ordInf.OrdInfDetails.Add(ordInfDetail);
                     }

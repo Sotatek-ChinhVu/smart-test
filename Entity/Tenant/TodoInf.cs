@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -10,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -18,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO番号 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("TODO_NO", Order = 2)]
         public int TodoNo { get; set; }
@@ -26,14 +25,14 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO枝番 
         /// </summary>
-        //[Key]
+        
         [Column("TODO_EDA_NO", Order = 3)]
         public int TodoEdaNo { get; set; }
 
         /// <summary>
         /// 患者ID 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 4)]
         public long PtId { get; set; }
 
@@ -78,13 +77,13 @@ namespace Entity.Tenant
         /// コメント１ 
         /// </summary>
         [Column("CMT1")]
-        public string Cmt1 { get; set; } = string.Empty;
+        public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
         [Column("CMT2")]
-        public string Cmt2 { get; set; } = string.Empty;
+        public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済
@@ -140,7 +139,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
