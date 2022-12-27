@@ -10797,7 +10797,7 @@ public class GetCheckedSpecialItemInteractorTest
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20221111, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, true);
         // Act
         var output = interactor.Handle(checkedSpecialItemInputData);
 
