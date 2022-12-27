@@ -70,10 +70,6 @@ namespace Interactor.MedicalExamination
                 {
                     return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidCheckAge);
                 }
-                if (inputData.CheckAge < 0)
-                {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidCheckAge);
-                }
                 if (inputData.RaiinNo <= 0)
                 {
                     return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidRaiinNo);
@@ -158,19 +154,19 @@ namespace Interactor.MedicalExamination
                 var itemCdCs = allOdrInfDetailModel.Select(x => x.ItemCd).Distinct().ToList();
                 var minSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Min(o => o.SinDate);
                 var maxSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Max(o => o.SinDate);
-                var tenMsts = _mstItemRepository.FindTenMst(inputData.HpId, itemCdCs, minSinDate, maxSinDate);
-                var santeiItemCds = tenMsts.Select(t => t.SanteiItemCd).ToList();
-                var santeiTenMsts = _mstItemRepository.FindTenMst(inputData.HpId, santeiItemCds, minSinDate, maxSinDate);
+                var tenMsts = _mstItemRepository.FindTenMst(inputData.HpId, itemCdCs, minSinDate, maxSinDate) ?? new();
+                var santeiItemCds = tenMsts?.Select(t => t.SanteiItemCd).ToList() ?? new();
+                var santeiTenMsts = _mstItemRepository.FindTenMst(inputData.HpId, santeiItemCds, minSinDate, maxSinDate) ?? new();
                 var densiSanteiKaisuModels = _todayOdrRepository.FindDensiSanteiKaisuList(inputData.HpId, itemCdCs, minSinDate, maxSinDate);
                 var itemGrpMsts = _mstItemRepository.FindItemGrpMst(inputData.HpId, inputData.SinDate, 1, densiSanteiKaisuModels.Select(d => d.ItemGrpCd).ToList());
 
                 //enable or disable Expired Check and SanteiCount Check
                 if (inputData.EnabledInputCheck)
                 {
-                    checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, tenMsts, allOdrInfDetailModel));
-                    checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, tenMsts, allOdrInfDetailModel));
-                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels, tenMsts, allOdrInfDetailModel, itemGrpMsts, hokenPids));
-                    checkSpecialItemList.AddRange(DuplicateCheck(tenMsts, allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, tenMsts ?? new(), allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, tenMsts ?? new(), allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels, tenMsts ?? new(), allOdrInfDetailModel, itemGrpMsts, hokenPids));
+                    checkSpecialItemList.AddRange(DuplicateCheck(tenMsts ?? new(), allOdrInfDetailModel));
                 }
 
                 //enable or disable Comment Check
@@ -637,7 +633,7 @@ namespace Interactor.MedicalExamination
             return CIUtil.MonthsAfter(baseDate, term);
         }
 
-        private int GetPtHokenKbn(int hpId, long ptId, int sinDate, long rpno, long edano, List<(long rpno, long edano, int hokenId)> hokenIds)
+        public int GetPtHokenKbn(int hpId, long ptId, int sinDate, long rpno, long edano, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
             int? ret = 0;
             if (hokenIds.Any(p => p.rpno == rpno && p.edano == edano))
@@ -648,7 +644,7 @@ namespace Interactor.MedicalExamination
             return ret == null ? 0 : ret.Value;
         }
 
-        private int GetHokenKbn(int odrHokenKbn)
+        public int GetHokenKbn(int odrHokenKbn)
         {
             int hokenKbn = 0;
 
@@ -676,7 +672,7 @@ namespace Interactor.MedicalExamination
             return hokenKbn;
         }
 
-        private List<int> GetCheckHokenKbns(int odrHokenKbn, int hokensyuHandling)
+        public List<int> GetCheckHokenKbns(int odrHokenKbn, int hokensyuHandling)
         {
             var results = new List<int>();
 
@@ -713,7 +709,7 @@ namespace Interactor.MedicalExamination
             return results;
         }
 
-        private List<int> GetCheckSanteiKbns(int odrHokenKbn, int hokensyuHandling)
+        public List<int> GetCheckSanteiKbns(int odrHokenKbn, int hokensyuHandling)
         {
             var results = new List<int> { 0 };
 
