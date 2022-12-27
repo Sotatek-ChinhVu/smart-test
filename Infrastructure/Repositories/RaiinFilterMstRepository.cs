@@ -70,14 +70,14 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                         UserMst = usermst
                     };*/
 
-        result = query.Select((x) => new RaiinFilterMstModel(
+        /*result = query.Select((x) => new RaiinFilterMstModel(
                         x.PtId,
                         x.SinDate,
                         x.UketukeNo,
                         x.Status,
                         x.UserMst.KaName,
                         x.UserMst.SName
-            ));
+            ));*/
         return result;
     }
 
