@@ -244,6 +244,7 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
 using UseCase.PatientInfor.GetListPatient;
+using UseCase.RaiinFilterMst.GetListRaiinInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -460,6 +461,7 @@ namespace EmrCloudApi.Configs.Dependency
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
             busBuilder.RegisterUseCase<SaveRaiinFilterMstListInputData, SaveRaiinFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfFilterInputData, GetListRaiinInfFilterInteractor>();
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();

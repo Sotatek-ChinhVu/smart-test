@@ -13,6 +13,23 @@ public class RaiinFilterMstModel
         ColumnSortInfos = columnSortInfos;
     }
 
+    public RaiinFilterMstModel(long ptId, int sinDate, int uketukeNo, int status, string kaName, string sName)
+    {
+        PtId = ptId;
+        SinDate = sinDate;
+        UketukeNo = uketukeNo;
+        Status = status;
+        KaName = kaName;
+        SName = sName;
+    }
+
+    public long PtId { get; private set; }
+    public int SinDate { get; private set; }
+    public int UketukeNo { get; private set; }
+    public int Status { get; private set; }
+    public string KaName { get; private set; }
+    public string SName { get; private set; }
+
     public int FilterId { get; private set; }
     public int SortNo { get; private set; }
     public string FilterName { get; private set; }

@@ -3,10 +3,12 @@ using EmrCloudApi.Tenant.Presenters.RaiinFilter;
 using EmrCloudApi.Tenant.Requests.RaiinFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinFilter;
+using EmrCloudApi.Tenant.Responses.RaiinKubun;
 using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinFilterMst.GetList;
+using UseCase.RaiinFilterMst.GetListRaiinInf;
 using UseCase.RaiinFilterMst.SaveList;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -37,6 +39,16 @@ public class RaiinFilterController : AuthorizeControllerBase
         var input = new SaveRaiinFilterMstListInputData(req.FilterMsts, HpId, UserId);
         var output = _bus.Handle(input);
         var presenter = new SaveRaiinFilterMstListPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public ActionResult<Response<GetListRaiinInfFilterResponse>> GetList([FromQuery] GetListRaiinInfFilterRequest req)
+    {
+        var input = new GetListRaiinInfFilterInputData(HpId, req.PtId);
+        var output = _bus.Handle(input);
+        var presenter = new GetListRaiinInfFilterPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

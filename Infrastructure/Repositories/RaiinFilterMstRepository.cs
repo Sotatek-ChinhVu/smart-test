@@ -48,6 +48,39 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         )).ToList();
     }
 
+    public List<RaiinFilterMstModel> GetListRaiinInf(int hpId, long ptId)
+    {
+        var result = new List<RaiinFilterMstModel>();
+        var usermsts = _tenantDataContext.UserMsts.Where(x => 
+                    x.HpId == hpId &&
+                    x.Id == ptId &&
+                    x.IsDeleted ==0
+                    );
+        var raiinInfs = _tenantDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0).OrderBy(x => x.SinDate);
+        /*var query = from usermst in usermsts.AsEnumerable()
+                    join raiinInf in raiinInfs on
+                        new { usermst.Id } equals
+                        new { raiinInf.PtId }
+                    select new
+                    {
+                        RaiinInf = raiinInf,
+                        UserMst = usermst
+                    };*/
+
+        result = query.Select((x) => new RaiinFilterMstModel(
+                        x.PtId,
+                        x.SinDate,
+                        x.UketukeNo,
+                        x.Status,
+                        x.UserMst.KaName,
+                        x.UserMst.SName
+            ));
+        return result;
+    }
+
     public void SaveList(List<RaiinFilterMstModel> mstModels, int hpId, int userId)
     {
         var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
