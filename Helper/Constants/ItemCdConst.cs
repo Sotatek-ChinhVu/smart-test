@@ -3061,6 +3061,16 @@
 
         public const string Comment853Pattern = "853";
         public const string Comment880Pattern = "880";
+
+        #region Jihi
+
+        /// <summary>
+        /// Jihi
+        /// </summary>
+        public const string ItemJihi = "J";
+
+        #endregion
+
         /// <summary>
         /// 単純撮影（撮影部位）胸部（肩を除く）
         /// </summary>
