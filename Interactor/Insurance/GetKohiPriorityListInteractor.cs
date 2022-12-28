@@ -21,7 +21,7 @@ namespace Interactor.Insurance
                 else
                     return new GetKohiPriorityListOutputData(datas, GetKohiPriorityListStatus.DataNotFound);
             }
-            catch
+            catch(Exception ex)
             {
                 return new GetKohiPriorityListOutputData(new List<KohiPriorityModel>(), GetKohiPriorityListStatus.Exception);
             }
