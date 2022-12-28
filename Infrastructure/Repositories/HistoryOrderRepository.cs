@@ -358,6 +358,11 @@ namespace Infrastructure.Repositories
                       )
                 .ToList();
 
+            if (!allOdrInfList.Any())
+            {
+                return new Dictionary<long, List<OrdInfModel>>();
+            }
+
             List<long> raiinNoListByOrder = allOdrInfList.Select(o => o.RaiinNo).Distinct().ToList();
             List<long> rpNoListByOrder = allOdrInfList.Select(o => o.RpNo).Distinct().ToList();
             List<long> rpEdaNoListByOrder = allOdrInfList.Select(o => o.RpEdaNo).Distinct().ToList();
@@ -365,6 +370,11 @@ namespace Infrastructure.Repositories
             List<OdrInfDetail> allOdrDetailInfList = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && raiinNoListByOrder.Contains(o.RaiinNo) && rpNoListByOrder.Contains(o.RpNo) && rpEdaNoListByOrder.Contains(o.RpEdaNo))
                 .ToList();
+
+            if (!allOdrDetailInfList.Any())
+            {
+                return new Dictionary<long, List<OrdInfModel>>();
+            }
 
             int minSinDate = allOdrDetailInfList.Min(o => o.SinDate);
             int maxSinDate = allOdrDetailInfList.Max(o => o.SinDate);
