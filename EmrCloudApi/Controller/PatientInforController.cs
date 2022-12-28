@@ -74,6 +74,7 @@ using EmrCloudApi.Responses.PtGroupMst;
 using EmrCloudApi.Requests.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using EmrCloudApi.Presenters.PtGroupMst;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -446,7 +447,8 @@ namespace EmrCloudApi.Controller
                        x.Kohi3Id,
                        x.Kohi4Id,
                        x.IsAddNew,
-                       x.IsDeleted)).ToList();
+                       x.IsDeleted,
+                       x.HokenPatternSelected)).ToList();
 
             List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(HpId,
                    x.PtId,
@@ -720,6 +722,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckHokenPatternUsedResponse>>(presenter.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiPath.GetKohiPriorityList)]
         public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
         {
