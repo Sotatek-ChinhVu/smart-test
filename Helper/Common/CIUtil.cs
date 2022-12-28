@@ -2091,6 +2091,81 @@ namespace Helper.Common
 
             return asciiBytes;
         }
+
+        public static int GetSanteInfDayCount(int sinDate, int lastOdrDate, int alertTerm)
+        {
+            int targetDateInt = lastOdrDate;
+            if (targetDateInt == 0)
+            {
+                return 0;
+            }
+
+            int dayCount = 0;
+            // Current Date
+            DateTime nowDate = IntToDate(sinDate);
+            int nowDateInt = sinDate;
+            // Target Date
+            DateTime targetDate = IntToDate(targetDateInt);
+            // Calculate base on AlertTerm
+            switch (alertTerm)
+            {
+                case 2:
+                    if (targetDateInt < nowDateInt)
+                        dayCount = DaysBetween(targetDate, nowDate) + 1;
+                    else
+                        dayCount = DaysBetween(nowDate, targetDate) + 1;
+                    break;
+                case 3:
+                    //曜日を取得
+                    DayOfWeek day = targetDate.DayOfWeek;
+                    if (day != System.DayOfWeek.Sunday)
+                    {
+                        //日曜始まりの週でカウント
+                        int incDay = (int)day * -1;
+                        targetDate = targetDate.AddDays(incDay);
+                    }
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+
+                    break;
+                case 4:
+                    //月初から月単位でカウント
+                    int startDateint = targetDate.Year * 10000 + targetDate.Month * 100 + 1;
+                    DateTime startDate = IntToDate(startDateint);
+                    dayCount = MonthsBetween(startDate, nowDate) + 1;
+                    break;
+                case 5:
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+                    break;
+                case 6:
+                    dayCount = MonthsBetween(targetDate, nowDate) + 1;
+                    break;
+            }
+            if (dayCount < 0)
+            {
+                dayCount *= (-1);
+            }
+            return dayCount;
+        }
+
+        public static int WeeksBetween(DateTime fromDate, DateTime endDate)
+        {
+            return DaysBetween(fromDate, endDate) / 7;
+        }
+
+        public static int MonthsBetween(DateTime startDate, DateTime now)
+        {
+            int monthDiff = ((now.Year - startDate.Year) * 12) + (now.Month - startDate.Month);
+
+            if (monthDiff > 0 && startDate.Day > now.Day)
+            {
+                monthDiff--;
+            }
+            else if (monthDiff < 0 && startDate.Day < now.Day)
+            {
+                monthDiff++;
+            }
+            return monthDiff;
+        }
     }
     public struct WarekiYmd
     {
