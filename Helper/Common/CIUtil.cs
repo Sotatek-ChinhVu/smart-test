@@ -1548,6 +1548,7 @@ namespace Helper.Common
             badText = "";
 
             // 文字エンコーディングに「iso-2022-jp」を指定
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Encoding encoding = Encoding.GetEncoding("iso-2022-jp");
             // 文字列長を取得
             int length = target.Length;

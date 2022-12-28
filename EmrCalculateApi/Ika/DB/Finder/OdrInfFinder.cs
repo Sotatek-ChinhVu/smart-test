@@ -199,11 +199,11 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 //    new { tenMst2.HpId, ItemCd = tenMst2.ItemCd } into oJoin2
                 //from oj2 in oJoin2.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on
-                    new { oj.HpId, oj.IpnNameCd } equals
+                    new { HpId = (oj == null ? 0 : oj.HpId), IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
                     new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
                 from oj3 in oJoin3.DefaultIfEmpty()
                 join ipnMinYakkaMst in ipnMinYakkaMsts on
-                    new { oj.HpId, oj.IpnNameCd } equals
+                    new { HpId = (oj == null ? 0 : oj.HpId), IpnNameCd = (oj == null ? string.Empty : oj.IpnNameCd) } equals
                     new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
                 from oj4 in oJoin4.DefaultIfEmpty()
                 //join yakkaSyusaiMst in yakkaSyusaiMsts on
@@ -489,12 +489,12 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 from oj2 in oJoin2.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on
                     //new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { oj.HpId, oj.IpnNameCd } equals
+                    new { HpId = oj?.HpId ?? 0, IpnNameCd = oj?.IpnNameCd ?? string.Empty } equals
                     new { ipnKasanMst.HpId, ipnKasanMst.IpnNameCd } into oJoin3
                 from oj3 in oJoin3.DefaultIfEmpty()
                 join ipnMinYakkaMst in ipnMinYakkaMsts on
                     //new { odrInfDetail.HpId, IpnNameCd=odrInfDetail.IpnCd } equals
-                    new { oj.HpId, oj.IpnNameCd } equals
+                    new { HpId = oj?.HpId ?? 0, IpnNameCd = oj?.IpnNameCd ?? string.Empty } equals
                     new { ipnMinYakkaMst.HpId, ipnMinYakkaMst.IpnNameCd } into oJoin4
                 from oj4 in oJoin4.DefaultIfEmpty()
                 join ipnKasanMst in ipnKasanMsts on

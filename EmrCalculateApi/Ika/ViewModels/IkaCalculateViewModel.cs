@@ -334,7 +334,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         }
                     }
 
-                    TenantDataContext?.Dispose();
+                    //TenantDataContext?.Dispose();
                     TenantDataContext = _tenantProvider.ReloadTrackingDataContext();
 
                     // 要求ロック

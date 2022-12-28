@@ -628,7 +628,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
             // ===================================================================================================
 
             // 診療日時点で有効な点数マスタを取得する
-            var tenMsts = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
+            //var tenMsts = _tenantDataContext.TenMsts.FindListQueryableNoTrack(t =>
+            var tenMsts = _tenantDataContext.TenMsts.FindListQueryable(t =>
                 t.HpId == hpId &&
                 t.StartDate <= sinDate &&
                 (t.EndDate >= sinDate));

@@ -155,7 +155,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         p.CreateDate = DateTime.UtcNow;
                         p.CreateId = Hardcode.UserID;
                         p.CreateMachine = MachinName;
-
+                        p.UpdateDate = DateTime.UtcNow;
+                        p.UpdateId = Hardcode.UserID;
+                        p.UpdateMachine = MachinName;
                     }
                     );
                     newDbContext.CalcLogs.AddRange(calcLogs);
@@ -209,22 +211,60 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
          List<SinKouiCountModel> sinKouiCountModels)
         {
             string MachineName = Hardcode.ComputerName;
-            
-            foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
-            {
-                sinRpInf.CreateDate = DateTime.UtcNow;
-                sinRpInf.CreateId = Hardcode.UserID;
-                sinRpInf.CreateMachine = MachineName;
-                sinRpInf.UpdateDate = DateTime.UtcNow;
-                sinRpInf.UpdateId = Hardcode.UserID;
-                sinRpInf.UpdateMachine = MachineName;
-            }
-            List<SinRpInf> sinRpInfs = sinRpInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
-            newDbContext.SinRpInfs.AddRange(sinRpInfs);
-            newDbContext.SaveChanges();
+
+            List<SinRpInfModel> addSinRpInfs = new List<SinRpInfModel>();
 
             foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
             {
+                addSinRpInfs.Add(
+                    new SinRpInfModel(
+                        new SinRpInf
+                        {
+                            HpId = sinRpInf.HpId,
+                            PtId = sinRpInf.PtId,
+                            SinYm = sinRpInf.SinYm,
+
+                            FirstDay = sinRpInf.FirstDay,
+                            HokenKbn = sinRpInf.HokenKbn,
+                            SinKouiKbn = sinRpInf.SinKouiKbn,
+                            SinId = sinRpInf.SinId,
+                            CdNo = sinRpInf.CdNo,
+                            SanteiKbn = sinRpInf.SanteiKbn,
+                            KouiData = sinRpInf.KouiData,
+                            IsDeleted = sinRpInf.IsDeleted,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = Hardcode.UserID,
+                            CreateMachine = MachineName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = Hardcode.UserID,
+                            UpdateMachine = MachineName,
+                        }
+                        )
+                    {
+                        UpdateState = sinRpInf.UpdateState,
+                        KeyNo = sinRpInf.KeyNo
+                    });
+                //sinRpInf.CreateDate = DateTime.UtcNow;
+                //sinRpInf.CreateId = Hardcode.UserID;
+                //sinRpInf.CreateMachine = MachineName;
+                //sinRpInf.UpdateDate = DateTime.UtcNow;
+                //sinRpInf.UpdateId = Hardcode.UserID;
+                //sinRpInf.UpdateMachine = MachineName;
+            }
+            //List<SinRpInf> sinRpInfs = sinRpInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
+            List<SinRpInf> sinRpInfs = addSinRpInfs.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
+
+            newDbContext.SinRpInfs.AddRange(sinRpInfs);
+            newDbContext.SaveChanges();
+
+            //foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
+            foreach (SinRpInfModel sinRpInf in addSinRpInfs.FindAll(q => q.UpdateState == UpdateStateConst.Add))
+            {
+                foreach (SinRpInfModel sinRpInfModel in sinRpInfModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                {
+                    sinRpInfModel.RpNo = sinRpInf.SinRpInf.RpNo;
+                }
+
                 foreach (SinKouiModel sinKoui in sinKouiModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
                 {
                     sinKoui.RpNo = sinRpInf.SinRpInf.RpNo;

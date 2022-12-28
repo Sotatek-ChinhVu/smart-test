@@ -483,7 +483,7 @@ namespace EmrCalculateApi.Futan.DB.Finder
             ).ToList();
 
             //来院情報取得
-            if (raiinInfs == null)
+            if (raiinInfs == null || raiinInfs.Any() == false)
             {
                 //var wrkList = _tenantDataContext.RaiinInfs.FindListNoTrack(r =>
                 //    r.HpId == hpId &&
