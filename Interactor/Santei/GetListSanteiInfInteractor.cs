@@ -1,6 +1,4 @@
-﻿using Domain.Enum;
-using Domain.Models.Diseases;
-using Domain.Models.Santei;
+﻿using Domain.Models.Santei;
 using Helper.Common;
 using UseCase.Santei.GetListSanteiInf;
 
@@ -9,12 +7,10 @@ namespace Interactor.Santei;
 public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
 {
     private readonly ISanteiInfRepository _santeiInfRepository;
-    private readonly IPtDiseaseRepository _ptDiseaseRepository;
 
-    public GetListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IPtDiseaseRepository ptDiseaseRepository)
+    public GetListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository)
     {
         _santeiInfRepository = santeiInfRepository;
-        _ptDiseaseRepository = ptDiseaseRepository;
     }
 
     public GetListSanteiInfOutputData Handle(GetListSanteiInfInputData input)
