@@ -123,10 +123,12 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                          Count = g.Count(),
                                          Sum = g.Sum(o => o.Suryo)
                                      };
-        var odrInfDetailCountList = odrInfDetailCountQuery.Select(item => new CountAndSumModel(
+        var odrInfDetailCountList = odrInfDetailCountQuery.Select(item => new SanteiInfModel(
                                                                                                 item.ItemCd,
                                                                                                 item.Count,
-                                                                                                item.Sum
+                                                                                                item.Sum,
+                                                                                                0,
+                                                                                                0
                                                             )).ToList();
 
         // Current Month Count query
@@ -146,8 +148,10 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                 Count = g.Count(),
                                                 Sum = g.Sum(o => o.Suryo)
                                             };
-        var currentMonthOdrInfDetailList = currentMonthOdrInfDetailQuery.Select(item => new CountAndSumModel(
+        var currentMonthOdrInfDetailList = currentMonthOdrInfDetailQuery.Select(item => new SanteiInfModel(
                                                                                                              item.ItemCd,
+                                                                                                             0,
+                                                                                                             0,
                                                                                                              item.Count,
                                                                                                              item.Sum
                                                                         )).ToList();
@@ -230,7 +234,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     }
 
     #region private function
-    private SanteiInfModel ConvertToSanteiInfModel(SanteiInf santeiInf, string itemName, Dictionary<string, int> dicLastOrderDate, List<CountAndSumModel> odrInfDetailCountList, List<CountAndSumModel> currentMonthOdrInfDetailList)
+    private SanteiInfModel ConvertToSanteiInfModel(SanteiInf santeiInf, string itemName, Dictionary<string, int> dicLastOrderDate, List<SanteiInfModel> odrInfDetailCountList, List<SanteiInfModel> currentMonthOdrInfDetailList)
     {
         int lastOdrDate = 0;
         int santeiItemCount = 0;
@@ -252,16 +256,16 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         var odrDetail = odrInfDetailCountList.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
         if (odrDetail != null)
         {
-            santeiItemCount = odrDetail.Count;
-            santeiItemSum = odrDetail.Sum;
+            santeiItemCount = odrDetail.SanteiItemCount;
+            santeiItemSum = odrDetail.SanteiItemSum;
         }
 
         // Count and sum item by month
         var currentMonthOdrDetail = currentMonthOdrInfDetailList.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
         if (currentMonthOdrDetail != null)
         {
-            currentMonthSanteiItemCount = currentMonthOdrDetail.Count;
-            currentMonthSanteiItemSum = currentMonthOdrDetail.Sum;
+            currentMonthSanteiItemCount = currentMonthOdrDetail.CurrentMonthSanteiItemCount;
+            currentMonthSanteiItemSum = currentMonthOdrDetail.CurrentMonthSanteiItemSum;
         }
 
         return new SanteiInfModel(

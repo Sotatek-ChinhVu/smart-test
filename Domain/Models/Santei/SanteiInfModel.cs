@@ -18,6 +18,22 @@ public class SanteiInfModel
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
     }
 
+    public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
+    {
+        Id = 0;
+        SeqNo = 0;
+        AlertDays = 0;
+        AlertTerm = 0;
+        ItemName = string.Empty;
+        LastOdrDate = 0;
+        PtId = 0;
+        ItemCd = itemCd;
+        SanteiItemCount = santeiItemCount;
+        SanteiItemSum = santeiItemSum;
+        CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
+        CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
+    }
+
     public long Id { get; private set; }
 
     public long PtId { get; private set; }
