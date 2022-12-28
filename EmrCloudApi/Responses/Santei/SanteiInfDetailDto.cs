@@ -6,6 +6,7 @@ public class SanteiInfDetailDto
 {
     public SanteiInfDetailDto(SanteiInfDetailOutputItem detailModel)
     {
+        Id = detailModel.Id;
         KisanSbt = detailModel.KisanSbt;
         KisanDate = detailModel.KisanDate;
         Byomei = detailModel.Byomei;
@@ -14,6 +15,8 @@ public class SanteiInfDetailDto
         Comment = detailModel.Comment;
         Comment = detailModel.Comment;
     }
+
+    public long Id { get; private set; }
 
     public int KisanSbt { get; private set; }
 

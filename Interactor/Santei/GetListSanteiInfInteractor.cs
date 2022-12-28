@@ -96,6 +96,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             dayCount = CIUtil.GetSanteInfDayCount(sinDate, targetDateInt, santeiInf.AlertTerm);
             listSanteiInfResult.Add(
                                     new SanteiInfOutputItem(
+                                        santeiInf.Id,
                                         santeiInf.PtId,
                                         santeiInf.ItemCd,
                                         santeiInf.SeqNo,
@@ -118,6 +119,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
     private SanteiInfDetailOutputItem ConvertToSanteiInfDetailOutputItem(SanteiInfDetailModel modelDetail)
     {
         return new SanteiInfDetailOutputItem(
+                                                modelDetail.Id,
                                                 modelDetail.PtId,
                                                 modelDetail.ItemCd,
                                                 modelDetail.SeqNo,

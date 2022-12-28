@@ -6,6 +6,7 @@ public class SanteiInfDto
 {
     public SanteiInfDto(SanteiInfOutputItem outputItem)
     {
+        Id = outputItem.Id;
         PtId = outputItem.PtId;
         ItemCd = outputItem.ItemCd;
         FixedItem = outputItem.FixedItem;
@@ -21,6 +22,8 @@ public class SanteiInfDto
         AlertTerm = outputItem.AlertTerm;
         ListSanteInfDetails = outputItem.ListSanteInfDetails.Select(item => new SanteiInfDetailDto(item)).ToList();
     }
+
+    public long Id { get; private set; }
 
     public long PtId { get; private set; }
 

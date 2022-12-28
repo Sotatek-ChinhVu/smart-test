@@ -2,8 +2,9 @@
 
 public class SanteiInfModel
 {
-    public SanteiInfModel(long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
+    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
     {
+        Id = id;
         PtId = ptId;
         ItemCd = itemCd;
         SeqNo = seqNo;
@@ -16,6 +17,8 @@ public class SanteiInfModel
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
     }
+
+    public long Id { get; private set; }
 
     public long PtId { get; private set; }
 

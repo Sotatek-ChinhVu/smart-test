@@ -4,8 +4,9 @@ namespace UseCase.Santei.GetListSanteiInf;
 
 public class SanteiInfOutputItem
 {
-    public SanteiInfOutputItem(long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int kisanDate, int dayCount, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, List<SanteiInfDetailOutputItem> listSanteInfDetails)
+    public SanteiInfOutputItem(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int kisanDate, int dayCount, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, List<SanteiInfDetailOutputItem> listSanteInfDetails)
     {
+        Id = id;
         PtId = ptId;
         ItemCd = itemCd;
         SeqNo = seqNo;
@@ -21,6 +22,8 @@ public class SanteiInfOutputItem
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
         ListSanteInfDetails = listSanteInfDetails;
     }
+
+    public long Id { get; private set; }
 
     public long PtId { get; private set; }
 

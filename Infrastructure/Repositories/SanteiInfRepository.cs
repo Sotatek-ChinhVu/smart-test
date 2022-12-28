@@ -182,6 +182,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                                  && item.IsDeleted == 0
                                                                  && item.PtId == ptId)
                                                      .Select(item => new SanteiInfDetailModel(
+                                                                                            item.Id,
                                                                                             item.PtId,
                                                                                             item.ItemCd ?? string.Empty,
                                                                                             item.SeqNo,
@@ -264,6 +265,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         }
 
         return new SanteiInfModel(
+                                     santeiInf.Id,
                                      santeiInf.PtId,
                                      santeiInf.ItemCd ?? string.Empty,
                                      santeiInf.SeqNo,

@@ -2,8 +2,9 @@
 
 public class SanteiInfDetailModel
 {
-    public SanteiInfDetailModel(long ptId, string itemCd, int seqNo, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment)
+    public SanteiInfDetailModel(long id, long ptId, string itemCd, int seqNo, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment)
     {
+        Id = id;
         PtId = ptId;
         ItemCd = itemCd;
         SeqNo = seqNo;
@@ -14,6 +15,8 @@ public class SanteiInfDetailModel
         HosokuComment = hosokuComment;
         Comment = comment;
     }
+
+    public long Id { get; private set; }
 
     public long PtId { get; private set; }
 
