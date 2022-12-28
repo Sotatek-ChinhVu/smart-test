@@ -22,7 +22,7 @@ public class SanteiController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetListSanteiInfResponse>> GetList([FromQuery] GetListSanteiInfRequest request)
     {
-        var input = new GetListSanteiInfInputData(HpId, request.PtId, request.SinDate);
+        var input = new GetListSanteiInfInputData(HpId, request.PtId, request.SinDate, request.HokenPid);
         var output = _bus.Handle(input);
 
         var presenter = new GetListSanteiInfPresenter();

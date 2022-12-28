@@ -4,11 +4,12 @@ namespace UseCase.Santei.GetListSanteiInf;
 
 public class GetListSanteiInfInputData : IInputData<GetListSanteiInfOutputData>
 {
-    public GetListSanteiInfInputData(int hpId, long ptId, int sinDate)
+    public GetListSanteiInfInputData(int hpId, long ptId, int sinDate, int hokenPid)
     {
         HpId = hpId;
         PtId = ptId;
         SinDate = sinDate;
+        HokenPid = hokenPid;
     }
 
     public int HpId { get; private set; }
@@ -16,4 +17,6 @@ public class GetListSanteiInfInputData : IInputData<GetListSanteiInfOutputData>
     public long PtId { get; private set; }
 
     public int SinDate { get; private set; }
+
+    public int HokenPid { get; private set; }
 }

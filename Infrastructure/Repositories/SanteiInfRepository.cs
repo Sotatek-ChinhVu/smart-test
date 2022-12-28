@@ -194,13 +194,14 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                      )).ToList();
     }
 
-    public List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate)
+    public List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid)
     {
         return NoTrackingDataContext.PtByomeis.Where(item => item.HpId == hpId
                                                                      && item.PtId == ptId
                                                                      && item.IsDeleted != 1
-                                                                     && item.TenkiKbn <= TenkiKbnConst.Continued
-                                                                     || (item.StartDate <= (sinDate / 100 * 100 + 31) && item.TenkiDate >= (sinDate / 100 * 100 + 1))
+                                                                     && (item.HokenPid == hokenPid || item.HokenPid == 0)
+                                                                     && item.IsNodspKarte == 0
+                                                                     && (item.TenkiKbn <= TenkiKbnConst.Continued || (item.StartDate <= (sinDate / 100 * 100 + 31) && item.TenkiDate >= (sinDate / 100 * 100 + 1)))
                                                                 ).OrderBy(p => p.TenkiKbn)
                                                                  .ThenByDescending(x => x.IsImportant)
                                                                  .ThenBy(p => p.SortNo)
@@ -209,6 +210,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                                  .ThenBy(p => p.Id)
                                                                  .Select(item => item.Byomei ?? string.Empty)
                                                                  .ToList();
+
     }
 
     public bool SaveListSanteiInf(int hpId, int userId, SanteiInfModel model)
