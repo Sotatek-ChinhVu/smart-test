@@ -34,7 +34,11 @@ namespace EmrCalculateApi.Implementation
             string messageType = "[INFO]";
             WriteLog(messageType, prefix, className.GetType().ToString(), functionName, message);
         }
-
+        public void WriteLogMsg(object className, string functionName, string message)
+        {
+            string messageType = "[INFO]";
+            WriteLog(messageType, "", className.GetType().ToString(), functionName, message);
+        }
         private void WriteLog(string messageType, string prefix, string className, string functionName, string message)
         {
             string dateTime = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss.fff");
