@@ -14,20 +14,17 @@ namespace PostgreDataContext
             _connectionString = string.Empty;
         }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!string.IsNullOrEmpty(_connectionString))
-        //    {
-        //        optionsBuilder.UseNpgsql(_connectionString, buider =>
-        //        {
-        //            buider.EnableRetryOnFailure(maxRetryCount: 3);
-        //        }).LogTo(Console.WriteLine, LogLevel.Information);
-        //    }
-        //    else
-        //    {
-        //        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-        //    }
-        //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!string.IsNullOrEmpty(_connectionString))
+            {
+                optionsBuilder.UsePostgreSql(_connectionString).LogTo(Console.WriteLine, LogLevel.Information);
+            }
+            else
+            {
+                optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
