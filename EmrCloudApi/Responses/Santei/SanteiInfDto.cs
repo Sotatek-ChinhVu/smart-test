@@ -20,6 +20,7 @@ public class SanteiInfDto
         SanteiItemSumDisplay = outputItem.SanteiItemSumDisplay;
         AlertDays = outputItem.AlertDays;
         AlertTerm = outputItem.AlertTerm;
+        IsKensaItem = outputItem.IsKensaItem;
         ListSanteInfDetails = outputItem.ListSanteInfDetails.Select(item => new SanteiInfDetailDto(item)).ToList();
     }
 
@@ -50,6 +51,8 @@ public class SanteiInfDto
     public int AlertDays { get; private set; }
 
     public int AlertTerm { get; private set; }
+
+    public bool IsKensaItem { get; private set; }
 
     public List<SanteiInfDetailDto> ListSanteInfDetails { get; private set; }
 }

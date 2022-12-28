@@ -146,5 +146,17 @@ public class SanteiInfOutputItem
         }
     }
 
+    public bool IsKensaItem
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(ItemCd) && (ItemCd.StartsWith("KN") || ItemCd.StartsWith("IGE")))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     #endregion
 }
