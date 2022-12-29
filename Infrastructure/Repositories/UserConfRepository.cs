@@ -57,8 +57,6 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var displayByomeiDateType = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
         result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
-        result.Add("DisplayByomeiDateType", displayByomeiDateType);
-
         string paramSaveMedical = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
         var isByomeiCheckTempSave = paramSaveMedical[0].AsInteger();
@@ -114,10 +112,11 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         string kubunCheckSaveParam = NoTrackingDataContext.UserConfs
         .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 3)?.Param ?? "10100";
         var isKubunCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isKubunCheckTempSave = inputCheckSaveParam[2].AsInteger();
         var isKubunCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
         result.Add("IsKubunCheckNormalSave", isKubunCheckNormalSave);
+        result.Add("IsKubunCheckTempSave", isKubunCheckTempSave);
         result.Add("IsKubunCheckKeisanSave", isKubunCheckKeisanSave);
-        result.Add("IsCmtCheckKeisanSave", isCmtCheckKeisanSave);
 
         return result;
     }
