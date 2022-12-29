@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.VariantTypes;
 using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -76,6 +77,8 @@ namespace Interactor.PatientInfor
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName, model.Patient.Name, model.Patient.HpId));
+            int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, model.Patient.PtId != 0, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.Birthday == 0)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Birthday`"), SavePatientInforValidationCode.InvalidBirthday, TypeMessage.TypeMessageError));
@@ -601,7 +604,8 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        public IEnumerable<SavePatientInfoValidationResult> IsValidHokenPatternAll(List<InsuranceModel> insurances,
+        public IEnumerable<SavePatientInfoValidationResult> IsValidHokenPatternAll(
+            List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             List<KohiInfModel> kohis,
             bool isUpdateMode, 

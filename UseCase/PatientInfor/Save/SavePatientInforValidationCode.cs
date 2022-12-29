@@ -39,6 +39,9 @@
         WarningInsuranceSameInsuranceNumber,
         WarningMultipleHokenSignedUpSameTime,
         WarningFundsWithSamePayerCode,
+        InvalidIncorrectinsuranceNumber,
+        InvalidIncorrectLaborinsuranceNumber,
+        InvalidIncorrectLaborinsuranceNumberMoreThan14,
         #region insurance
         ÍnuranceInvalidHokenId,
         ÍnuranceInvalidKohi1Id,

@@ -562,6 +562,7 @@ namespace EmrCloudApi.Controller
                  hokenInfs,
                  hokenKohis,
                  request.PtGrps,
+                 request.ReactSave,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
