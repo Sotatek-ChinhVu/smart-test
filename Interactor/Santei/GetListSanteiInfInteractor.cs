@@ -73,7 +73,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             var listSanteiInfDetails = listSanteiInfDetail.Where(item => item.ItemCd == santeiInf.ItemCd)
                                                           .Select(item => ConvertToSanteiInfDetailOutputItem(item))
                                                           .OrderBy(item => item.EndDate)
-                                                          .ThenBy(item => item.SeqNo)
+                                                          .ThenBy(item => item.Id)
                                                           .ToList();
 
             foreach (var item in listSanteiInfDetails)
@@ -122,7 +122,6 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                                                 modelDetail.Id,
                                                 modelDetail.PtId,
                                                 modelDetail.ItemCd,
-                                                modelDetail.SeqNo,
                                                 modelDetail.EndDate,
                                                 modelDetail.KisanSbt,
                                                 modelDetail.KisanDate,

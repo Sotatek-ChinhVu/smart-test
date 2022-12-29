@@ -4,11 +4,13 @@ namespace UseCase.Santei.SaveListSanteiInf;
 
 public class SaveListSanteiInfInputData : IInputData<SaveListSanteiInfOutputData>
 {
-    public SaveListSanteiInfInputData(int hpId, int userId, long ptId, List<SanteiInfInputItem> listSanteiInfs)
+    public SaveListSanteiInfInputData(int hpId, int userId, long ptId, int sinDate, int hokenPid, List<SanteiInfInputItem> listSanteiInfs)
     {
         HpId = hpId;
         UserId = userId;
         PtId = ptId;
+        SinDate = sinDate;
+        HokenPid = hokenPid;
         ListSanteiInfs = listSanteiInfs;
     }
 
@@ -18,5 +20,9 @@ public class SaveListSanteiInfInputData : IInputData<SaveListSanteiInfOutputData
 
     public long PtId { get; private set; }
 
-    public List<SanteiInfInputItem> ListSanteiInfs { get; set; }
+    public int SinDate { get; private set; }
+
+    public int HokenPid { get; private set; }
+
+    public List<SanteiInfInputItem> ListSanteiInfs { get; private set; }
 }

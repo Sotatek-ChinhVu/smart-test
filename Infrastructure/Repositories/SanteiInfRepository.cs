@@ -3,6 +3,7 @@ using Domain.Models.Santei;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -192,13 +193,11 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     {
         return NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
                                                                  && item.IsDeleted == 0
-                                                                 && (item.PtId == ptId || item.PtId == 0))
-                                                     .OrderBy(item => item.Id)
+                                                                 && item.PtId == ptId)
                                                      .Select(item => new SanteiInfDetailModel(
                                                                                             item.Id,
                                                                                             item.PtId,
                                                                                             item.ItemCd ?? string.Empty,
-                                                                                            item.SeqNo,
                                                                                             item.EndDate,
                                                                                             item.KisanSbt,
                                                                                             item.KisanDate,
@@ -227,74 +226,29 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
     }
 
-    public bool SaveListSanteiInf(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels)
+    public bool SaveSantei(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels, List<SanteiInfDetailModel> listSanteiInfDetailModels)
     {
-        var listIdSanteiInf = listSanteiInfModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
-        var listSanteiInfDb = TrackingDataContext.SanteiInfs.Where(item => listIdSanteiInf.Contains(item.Id)).ToList();
-        var lastSeqNoDic = GetLastSanteiInfSeqNoDic(hpId, listSanteiInfModels.Select(item => item.PtId).ToList());
-        foreach (var model in listSanteiInfModels)
-        {
-            if (model.Id <= 0)
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+        return executionStrategy.Execute(
+            () =>
             {
-                int lastSeqNo = lastSeqNoDic.FirstOrDefault(item => item.Key == model.PtId).Value;
-                TrackingDataContext.SanteiInfs.Add(ConvertToNewSanteiInfEntity(hpId, userId, lastSeqNo, model));
-            }
-            else
-            {
-                var santeiInf = listSanteiInfDb.FirstOrDefault(item => item.Id == model.Id);
-                if (santeiInf != null)
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
+                try
                 {
-                    if (model.IsDeleted)
+                    if (SaveListSanteiInf(hpId, userId, listSanteiInfModels) && SaveListSanteiInfDetail(hpId, userId, listSanteiInfDetailModels))
                     {
-                        TrackingDataContext.SanteiInfs.Remove(santeiInf);
+                        transaction.Commit();
+                        return true;
                     }
-                    else
-                    {
-                        santeiInf.AlertTerm = model.AlertTerm;
-                        santeiInf.AlertDays = model.AlertDays;
-                        santeiInf.UpdateDate = DateTime.UtcNow;
-                        santeiInf.UpdateId = userId;
-                    }
+                    transaction.Rollback();
+                    return false;
                 }
-            }
-        }
-        return TrackingDataContext.SaveChanges() > 0;
-    }
-
-    public bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
-    {
-        var listIdSanteiInf = listSanteiInfDetailModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
-        var listSanteiInfDb = TrackingDataContext.SanteiInfDetails.Where(item => listIdSanteiInf.Contains(item.Id)).ToList();
-        foreach (var model in listSanteiInfDetailModels)
-        {
-            if (model.Id <= 0)
-            {
-                TrackingDataContext.SanteiInfDetails.Add(ConvertToNewSanteiInfDetailEntity(hpId, userId, model));
-            }
-            else
-            {
-                var santeiInfDetail = listSanteiInfDb.FirstOrDefault(item => item.Id == model.Id);
-                if (santeiInfDetail != null)
+                catch (Exception)
                 {
-                    santeiInfDetail.UpdateDate = DateTime.UtcNow;
-                    santeiInfDetail.UpdateId = userId;
-                    if (model.IsDeleted)
-                    {
-                        santeiInfDetail.IsDeleted = 1;
-                    }
-                    else
-                    {
-                        santeiInfDetail.KisanSbt = model.KisanSbt;
-                        santeiInfDetail.KisanDate = model.KisanDate;
-                        santeiInfDetail.Byomei = model.Byomei;
-                        santeiInfDetail.HosokuComment = model.HosokuComment;
-                        santeiInfDetail.EndDate = model.EndDate;
-                        santeiInfDetail.Comment = model.Comment;
-                    }
+                    transaction.Rollback();
+                    return false;
                 }
-            }
-        }
-        return TrackingDataContext.SaveChanges() > 0;
+            });
     }
 
     public void ReleaseResource()
@@ -382,6 +336,76 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             }
         }
         return result;
+    }
+
+    private bool SaveListSanteiInf(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels)
+    {
+        var listIdSanteiInf = listSanteiInfModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
+        var listSanteiInfDb = TrackingDataContext.SanteiInfs.Where(item => listIdSanteiInf.Contains(item.Id)).ToList();
+        var lastSeqNoDic = GetLastSanteiInfSeqNoDic(hpId, listSanteiInfModels.Select(item => item.PtId).ToList());
+        foreach (var model in listSanteiInfModels)
+        {
+            if (model.Id <= 0)
+            {
+                int lastSeqNo = lastSeqNoDic.FirstOrDefault(item => item.Key == model.PtId).Value;
+                TrackingDataContext.SanteiInfs.Add(ConvertToNewSanteiInfEntity(hpId, userId, lastSeqNo, model));
+            }
+            else
+            {
+                var santeiInf = listSanteiInfDb.FirstOrDefault(item => item.Id == model.Id);
+                if (santeiInf != null)
+                {
+                    if (model.IsDeleted)
+                    {
+                        TrackingDataContext.SanteiInfs.Remove(santeiInf);
+                    }
+                    else
+                    {
+                        santeiInf.AlertTerm = model.AlertTerm;
+                        santeiInf.AlertDays = model.AlertDays;
+                        santeiInf.UpdateDate = DateTime.UtcNow;
+                        santeiInf.UpdateId = userId;
+                    }
+                }
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
+    {
+        var listIdSanteiInf = listSanteiInfDetailModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
+        var listSanteiInfDb = TrackingDataContext.SanteiInfDetails.Where(item => listIdSanteiInf.Contains(item.Id)).ToList();
+        foreach (var model in listSanteiInfDetailModels)
+        {
+            if (model.Id <= 0)
+            {
+                TrackingDataContext.SanteiInfDetails.Add(ConvertToNewSanteiInfDetailEntity(hpId, userId, model));
+            }
+            else
+            {
+                var santeiInfDetail = listSanteiInfDb.FirstOrDefault(item => item.Id == model.Id);
+                if (santeiInfDetail != null)
+                {
+                    santeiInfDetail.UpdateDate = DateTime.UtcNow;
+                    santeiInfDetail.UpdateId = userId;
+                    if (model.IsDeleted)
+                    {
+                        santeiInfDetail.IsDeleted = 1;
+                    }
+                    else
+                    {
+                        santeiInfDetail.KisanSbt = model.KisanSbt;
+                        santeiInfDetail.KisanDate = model.KisanDate;
+                        santeiInfDetail.Byomei = model.Byomei;
+                        santeiInfDetail.HosokuComment = model.HosokuComment;
+                        santeiInfDetail.EndDate = model.EndDate;
+                        santeiInfDetail.Comment = model.Comment;
+                    }
+                }
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private SanteiInf ConvertToNewSanteiInfEntity(int hpId, int userId, int lastSeqNo, SanteiInfModel model)

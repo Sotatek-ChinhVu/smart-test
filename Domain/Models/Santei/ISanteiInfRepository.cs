@@ -12,7 +12,5 @@ public interface ISanteiInfRepository : IRepositoryBase
 
     List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
 
-    bool SaveListSanteiInf(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels);
-
-    bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels);
+    bool SaveSantei(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels, List<SanteiInfDetailModel> listSanteiInfDetailModels);
 }
