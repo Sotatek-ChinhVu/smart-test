@@ -84,10 +84,10 @@ namespace EmrCloudApi.Presenters.OrdInfs
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, keyAndRefill?.Length > 0 ? keyAndRefill[0].ToString() : "-1", string.Format(ResponseMessage.MInp00070, ResponseMessage.MUsageQuantity, keyAndRefill?.Length > 1 ? keyAndRefill[1].ToString() : 0), ResponseMessage.TodayOdrSuryo));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmt840:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrSuryo));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputDataCmt, ResponseMessage.TodayOdrSuryo));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmt842:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrSuryo));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputDataCmt, ResponseMessage.TodayOdrSuryo));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmt842CmtOptMoreThan38:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MMaxLengthOfCmt), ResponseMessage.TodayOdrSuryo));
@@ -240,7 +240,7 @@ namespace EmrCloudApi.Presenters.OrdInfs
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSuryo));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmtOpt:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSuryo));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MMaxLengthOfCmt, ResponseMessage.TodayOdrSuryo));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidFontColor:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrFontColor));

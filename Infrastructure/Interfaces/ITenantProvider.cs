@@ -23,6 +23,8 @@ namespace Infrastructure.Interfaces
 
         TenantDataContext ReloadTrackingDataContext();
 
+        TenantDataContext CreateNewTrackingDataContext();
+
         void DisposeDataContext();
     }
 }
