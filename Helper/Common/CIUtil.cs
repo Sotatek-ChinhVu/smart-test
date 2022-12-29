@@ -2720,6 +2720,26 @@ namespace Helper.Common
         {
             return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
         }
+
+        /// <summary>
+        /// Add days to date
+        /// </summary>
+        /// <param name="ymd"></param>
+        /// <param name="addDay"></param>
+        /// <returns></returns>
+        public static int SDateInc(int ymd, int addDay)
+        {
+            DateTime workDate;
+            if (DateTime.TryParseExact(ymd.AsString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out workDate))
+            {
+                workDate = workDate.AddDays(addDay);
+                return workDate.ToString("yyyyMMdd").AsInteger();
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
     public struct WarekiYmd
     {

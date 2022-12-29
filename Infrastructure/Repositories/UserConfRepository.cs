@@ -3,7 +3,7 @@ using Entity.Tenant;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -22,6 +22,15 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return NoTrackingDataContext.UserConfs
             .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
             .AsEnumerable().Select(u => ToModel(u)).ToList();
+    }
+
+    public int Sagaku(bool fromRece)
+    {
+        if (fromRece)
+        {
+            return  NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+        }
+        return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
     }
 
     public Dictionary<string, int> GetList(int userId)
@@ -60,6 +69,54 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsByomeiCheckCheckPrint", isByomeiCheckCheckPrint);
         result.Add("IsByomeiCheckTrialCalc", isByomeiCheckTrialCalc);
         result.Add("IsByomeiCheckNormalSave", isByomeiCheckNormalSave);
+
+        string santeiCheckSaveParam = NoTrackingDataContext.UserConfs
+         .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 1)?.Param ?? "10100";
+        var isSanteiCheckNormalSave = santeiCheckSaveParam[0].AsInteger();
+        var isSanteiCheckTempSave = santeiCheckSaveParam[2].AsInteger();
+        var isSanteiCheckKeisanSave = santeiCheckSaveParam[1].AsInteger();
+        var isSanteiCheckTrialCalc = santeiCheckSaveParam[3].AsInteger();
+        var isSanteiCheckPrint = santeiCheckSaveParam[4].AsInteger();
+        result.Add("IsSanteiCheckNormalSave", isSanteiCheckNormalSave);
+        result.Add("IsSanteiCheckTempSave", isSanteiCheckTempSave);
+        result.Add("IsSanteiCheckKeisanSave", isSanteiCheckKeisanSave);
+        result.Add("IsSanteiCheckTrialCalc", isSanteiCheckTrialCalc);
+        result.Add("IsSanteiCheckPrint", isSanteiCheckPrint);
+
+        string inputCheckSaveParam = NoTrackingDataContext.UserConfs
+         .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 2)?.Param ?? "10100";
+        var isInputCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isInputCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isInputCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        var isInputCheckTrialCalc = inputCheckSaveParam[3].AsInteger();
+        var isInputCheckPrint = inputCheckSaveParam[4].AsInteger();
+        result.Add("IsInputCheckNormalSave", isInputCheckNormalSave);
+        result.Add("IsInputCheckTempSave", isInputCheckTempSave);
+        result.Add("IsInputCheckKeisanSave", isInputCheckKeisanSave);
+        result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
+        result.Add("IsInputCheckPrint", isInputCheckPrint);
+
+        string commentCheckSaveParam = NoTrackingDataContext.UserConfs
+        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 0)?.Param ?? "00000";
+        var isCmtCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isCmtCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isCmtCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        var isCmtCheckTrialCalc = inputCheckSaveParam[3].AsInteger();
+        var isCmtCheckPrint = inputCheckSaveParam[4].AsInteger();
+        result.Add("IsCmtCheckNormalSave", isCmtCheckNormalSave);
+        result.Add("IsCmtCheckTempSave", isCmtCheckTempSave);
+        result.Add("IsCmtCheckKeisanSave", isCmtCheckKeisanSave);
+        result.Add("IsCmtCheckTrialCalc", isCmtCheckTrialCalc);
+        result.Add("IsCmtCheckPrint", isCmtCheckPrint);
+
+        string kubunCheckSaveParam = NoTrackingDataContext.UserConfs
+        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 3)?.Param ?? "10100";
+        var isKubunCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isKubunCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isKubunCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        result.Add("IsKubunCheckNormalSave", isKubunCheckNormalSave);
+        result.Add("IsKubunCheckTempSave", isKubunCheckTempSave);
+        result.Add("IsKubunCheckKeisanSave", isKubunCheckKeisanSave);
 
         return result;
     }
