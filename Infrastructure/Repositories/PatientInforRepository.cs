@@ -633,13 +633,14 @@ namespace Infrastructure.Repositories
                 select new
                 {
                     ptInf,
-                    lastVisitDate = (
-                        from r in raiinInfQuery
-                        where r.PtId == ptInf.PtId
-                            && r.Status >= RaiinState.TempSave
-                        orderby r.SinDate descending
-                        select r.SinDate
-                    ).FirstOrDefault()
+                    lastVisitDate = 0
+                    //lastVisitDate = (
+                    //    from r in raiinInfQuery
+                    //    where r.PtId == ptInf.PtId
+                    //        && r.Status >= RaiinState.TempSave
+                    //    orderby r.SinDate descending
+                    //    select r.SinDate
+                    //).FirstOrDefault()
                 };
 
             return ptInfWithLastVisitDateQuery
