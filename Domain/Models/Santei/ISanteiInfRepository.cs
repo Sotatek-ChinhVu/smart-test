@@ -6,11 +6,13 @@ public interface ISanteiInfRepository : IRepositoryBase
 {
     List<SanteiInfModel> GetListSanteiInfModel(int hpId, long ptId, int sinDate);
 
-    List<SanteiInfDetailModel> GetListSanteiInfDetailModel(int hpId, long ptId, int sinDate);
+    List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId);
+
+    List<SanteiInfDetailModel> GetListSanteiInfDetailModel(int hpId, long ptId);
 
     List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
 
-    bool SaveListSanteiInf(int hpId, int userId, SanteiInfModel model);
+    bool SaveListSanteiInf(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels);
 
-    bool SaveListSanteiInfDetail(int hpId, int userId, SanteiInfDetailModel model);
+    bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels);
 }

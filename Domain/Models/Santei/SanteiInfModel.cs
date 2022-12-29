@@ -16,6 +16,7 @@ public class SanteiInfModel
         SanteiItemSum = santeiItemSum;
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
+        IsDeleted = false;
     }
 
     public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
@@ -27,11 +28,45 @@ public class SanteiInfModel
         ItemName = string.Empty;
         LastOdrDate = 0;
         PtId = 0;
+        IsDeleted = false;
         ItemCd = itemCd;
         SanteiItemCount = santeiItemCount;
         SanteiItemSum = santeiItemSum;
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
+    }
+
+    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm, bool isDeleted)
+    {
+        SeqNo = 0;
+        ItemName = string.Empty;
+        LastOdrDate = 0;
+        SanteiItemCount = 0;
+        SanteiItemSum = 0;
+        CurrentMonthSanteiItemCount = 0;
+        CurrentMonthSanteiItemSum = 0;
+        Id = id;
+        PtId = ptId;
+        ItemCd = itemCd;
+        AlertDays = alertDays;
+        AlertTerm = alertTerm;
+        IsDeleted = isDeleted;
+    }
+
+    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm)
+    {
+        Id = id;
+        PtId = ptId;
+        ItemCd = itemCd;
+        AlertDays = alertDays;
+        AlertTerm = alertTerm;
+        SeqNo = 0;
+        ItemName = string.Empty;
+        LastOdrDate = 0;
+        SanteiItemCount = 0;
+        SanteiItemSum = 0;
+        CurrentMonthSanteiItemCount = 0;
+        CurrentMonthSanteiItemSum = 0;
     }
 
     public long Id { get; private set; }
@@ -57,4 +92,6 @@ public class SanteiInfModel
     public int CurrentMonthSanteiItemCount { get; private set; }
 
     public double CurrentMonthSanteiItemSum { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 }

@@ -19,7 +19,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
         {
             var listByomeis = _santeiInfRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
             var listSanteiInf = _santeiInfRepository.GetListSanteiInfModel(input.HpId, input.PtId, input.SinDate);
-            var listSanteiInfDetail = _santeiInfRepository.GetListSanteiInfDetailModel(input.HpId, input.PtId, input.SinDate);
+            var listSanteiInfDetail = _santeiInfRepository.GetListSanteiInfDetailModel(input.HpId, input.PtId);
 
             var result = ConvertToResult(input.SinDate, listSanteiInf, listSanteiInfDetail, listByomeis);
 
