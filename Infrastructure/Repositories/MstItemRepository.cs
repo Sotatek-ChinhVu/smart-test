@@ -5,7 +5,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -1115,6 +1114,7 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
 
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
