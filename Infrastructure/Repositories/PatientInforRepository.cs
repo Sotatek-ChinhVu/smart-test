@@ -494,21 +494,21 @@ namespace Infrastructure.Repositories
             var validPatientGroups = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).ToList();
             if (validPatientGroups.Any())
             {
-                var ptGrpInfQuery = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteTypes.None);
-                var firstGrp = validPatientGroups.First();
-                var ptIdsByPtGroupsQuery = ptGrpInfQuery.Where(p => p.GroupId == firstGrp.GroupId && p.GroupCode == firstGrp.GroupCode).Select(p => p.PtId);
-                // Inner join with another groups
-                for (int i = 1; i < validPatientGroups.Count; i++)
-                {
-                    var anotherGrp = validPatientGroups[i];
-                    ptIdsByPtGroupsQuery =
-                        from ptId in ptIdsByPtGroupsQuery
-                        join anotherPtGrpInf in ptGrpInfQuery on ptId equals anotherPtGrpInf.PtId
-                        where anotherPtGrpInf.GroupId == anotherGrp.GroupId && anotherPtGrpInf.GroupCode == anotherGrp.GroupCode
-                        select ptId;
-                }
+                //var ptGrpInfQuery = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteTypes.None);
+                //var firstGrp = validPatientGroups.First();
+                //var ptIdsByPtGroupsQuery = ptGrpInfQuery.Where(p => p.GroupId == firstGrp.GroupId && p.GroupCode == firstGrp.GroupCode).Select(p => p.PtId);
+                //// Inner join with another groups
+                //for (int i = 1; i < validPatientGroups.Count; i++)
+                //{
+                //    var anotherGrp = validPatientGroups[i];
+                //    ptIdsByPtGroupsQuery =
+                //        from ptId in ptIdsByPtGroupsQuery
+                //        join anotherPtGrpInf in ptGrpInfQuery on ptId equals anotherPtGrpInf.PtId
+                //        where anotherPtGrpInf.GroupId == anotherGrp.GroupId && anotherPtGrpInf.GroupCode == anotherGrp.GroupCode
+                //        select ptId;
+                //}
 
-                var ptIds = ptIdsByPtGroupsQuery.ToList();
+                var ptIds = new List<long>();// ptIdsByPtGroupsQuery.ToList();
                 if (ptIds.Count == 0) return new();
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
             }
