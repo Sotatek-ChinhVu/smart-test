@@ -74,7 +74,6 @@ using EmrCloudApi.Responses.PtGroupMst;
 using EmrCloudApi.Requests.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using EmrCloudApi.Presenters.PtGroupMst;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -723,7 +722,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckHokenPatternUsedResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetKohiPriorityList)]
         public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
         {
