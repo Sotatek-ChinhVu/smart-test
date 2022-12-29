@@ -489,7 +489,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodayOrdInputData, UpsertTodayOrdInteractor>();
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
-            busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
+            busBuilder.RegisterUseCase<InitKbnSettingInputData, CheckedItemNameInteractor>();
             busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
 
             //SetKbn

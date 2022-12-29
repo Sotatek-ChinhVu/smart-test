@@ -1,6 +1,5 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
-using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
@@ -930,14 +929,22 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds)
+        public List<RaiinKbnModel> InitDefaultByNextOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<NextOrderModel> nextOdrs)
         {
-            foreach (var raiinKbn in raiinKbns)
+            var allNextOdr = GetNextOdrInfModels(_ptId, _sinDate);
+            var nextOdrs = allNextOdr.FindAll(p => p.RsvDate == _sinDate).ToList();
+            if (nextOdrs.Count == 0)
             {
-                int settingRaiinKbnCd = 0;
-                foreach (var kbnDetail in raiinKbn.RaiinKbnDetailModels)
+                nextOdrs = allNextOdr.FindAll(o => o.RsvDate == NextOdrConst.DefaultRsvDate);
+            }
+
+=            foreach (var raiinKbn in raiinKbns)
+            {
+                if (raiinKbn.RaiinKbnInfModel.KbnCd > 0) continue;
+
+                foreach (var kbnDetail in raiinKbn.RaiinKbnDetails)
                 {
-                    if (!kbnDetail.IsTodayOrderChecked) continue;
+                    if (!kbnDetail.IsNextOrderChecked) continue;
 
                     //grid raiinKbnItem
                     var kouiKbns = raiinKouiKbns.FindAll(k => k.grpId == kbnDetail.GrpCd && k.kbnCd == kbnDetail.KbnCd);
@@ -945,62 +952,53 @@ namespace Infrastructure.Repositories
                     //checkbox group raiinKouiKbn
                     var kbnItems = raiinKbnItemCds.FindAll(p => p.GrpCd == kbnDetail.GrpCd && p.KbnCd == kbnDetail.KbnCd && !string.IsNullOrEmpty(p.ItemCd));
                     var includeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
-                    var excludeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+                    var excludeItems = kbnItems.FindAll(p => p.IsExclude == 1);
 
-                    bool existItem = false;
-                    foreach (var todayOdr in todayOrds)
+                    bool isSet = false;
+                    foreach (var nextOdr in nextOdrs)
                     {
-                        foreach (var todayOrdDetail in todayOdr.OrdInfDetails)
+                        if (excludeItems.Exists(p => p.ItemCd == nextOdr.ItemCd)) continue;
+
+                        if (kouiKbns.Exists(p => p.kouiKbn1 == nextOdr.SinKouiKbn || p.kouiKbn2 == nextOdr.SinKouiKbn) ||
+                            includeItems.Exists(p => p.ItemCd == nextOdr.ItemCd))
                         {
-                            if (excludeItems.Exists(p => p.ItemCd == todayOrdDetail.ItemCd)) continue;
-
-                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOdr.OdrKouiKbn || p.kouiKbn2 == todayOdr.OdrKouiKbn) ||
-                                includeItems.Exists(p => p.ItemCd == todayOrdDetail.ItemCd))
-                            {
-                                existItem = true;
-                                break;
-                            }
-                        }
-
-                    }
-
-                    if (existItem)
-                    {
-                        if (kbnDetail.IsAutoDelete == DeleteTypes.Deleted && raiinKbn.RaiinKbnInfModel.KbnCd == kbnDetail.KbnCd)
-                        {
-                            raiinKbn.RaiinKbnInfModel.ChangeKbnCd(0);
+                            raiinKbn.RaiinKbnInfModel.KbnCd = kbnDetail.KbnCd;
+                            isSet = true;
+                            break;
                         }
                     }
-
-                    existItem = false;
-                    foreach (var todayOrd in todayOrds)
-                    {
-                        foreach (var todayOdr in todayOrd.OrdInfDetails)
-                        {
-                            if (excludeItems.Exists(p => p.ItemCd == todayOdr.ItemCd)) continue;
-
-                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOrd.OdrKouiKbn || p.kouiKbn2 == todayOrd.OdrKouiKbn) ||
-                                includeItems.Exists(p => p.ItemCd == todayOdr.ItemCd))
-                            {
-                                existItem = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (existItem)
-                    {
-                        settingRaiinKbnCd = kbnDetail.KbnCd;
-                    }
-                }
-
-                if (settingRaiinKbnCd != 0 && raiinKbn.RaiinKbnInfModel.KbnCd == 0)
-                {
-                    raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
+                    if (isSet) break;
                 }
             }
+        }
 
-            return raiinKbns;
+        private List<(int sinKouiKbn, int rsvDate, string itemCd)> GetNextOdrInfModels(int hpId, long ptId, int sinDate)
+        {
+            var result = new List<(int sinKouiKbn, int rsvDate, string itemCd)>();
+            var nextOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(p => p.HpId == hpId &&
+                                                                                             p.PtId == ptId &&
+                                                                                             p.IsDeleted == DeleteTypes.None &&
+                                                                                             (p.RsvDate == sinDate || p.RsvDate == NextOrderConst.DefaultRsvDate));
+            var nextOdrDetails = NoTrackingDataContext.RsvkrtOdrInfDetails.Where(p => p.HpId == hpId &&
+                                                                                                      p.PtId == ptId &&
+                                                                                                      (p.RsvDate == sinDate || p.RsvDate == NextOrderConst.DefaultRsvDate));
+            var odrInfJoinDetailQuery = from nextOdrInf in nextOdrInfs
+                                        join nextOdrDetail in nextOdrDetails
+                                        on new { nextOdrInf.HpId, nextOdrInf.PtId, nextOdrInf.RsvkrtNo, nextOdrInf.RpNo, nextOdrInf.RpEdaNo }
+                                        equals new { nextOdrDetail.HpId, nextOdrDetail.PtId, nextOdrDetail.RsvkrtNo, nextOdrDetail.RpNo, nextOdrDetail.RpEdaNo } into TempNextOdrDetails
+                                        select new
+                                        {
+                                            NextOdrDetails = TempNextOdrDetails
+                                        };
+            var enities = odrInfJoinDetailQuery.ToList();
+            foreach (var entity in enities)
+            {
+                foreach (var entityDetail in entity.NextOdrDetails)
+                {
+                    result.Add(new(entityDetail.SinKouiKbn, entityDetail.RsvDate, entityDetail?.ItemCd ?? string.Empty));
+                }
+            }
+            return result;
         }
 
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)

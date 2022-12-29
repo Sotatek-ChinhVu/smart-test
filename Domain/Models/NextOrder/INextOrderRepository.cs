@@ -27,6 +27,6 @@ namespace Domain.Models.NextOrder
 
         bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
 
-        List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds);
+        List<RaiinKbnModel> InitDefaultByNextOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds);
     }
 }
