@@ -10,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetSelectiveComment;
@@ -171,6 +172,16 @@ namespace EmrCloudApi.Controller
             var input = new GetSelectiveCommentInputData(HpId, request.ItemCds.Trim().Split(",").ToList(), request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new GetSelectiveCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetCmtCheckMstList)]
+        public ActionResult<Response<GetCmtCheckMstListResponse>> GetCmtCheckMstList([FromBody] GetCmtCheckMstListRequest request)
+        {
+            var input = new GetCmtCheckMstListInputData(HpId, UserId, request.ItemCds);
+            var output = _bus.Handle(input);
+            var presenter = new GetCmtCheckMstListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
