@@ -873,8 +873,14 @@ namespace Infrastructure.Repositories
             try
             {
                 int hokenNo = Int32.Parse(futansyaNo.Substring(0, 2));
+                string digit1 = futansyaNo.Substring(0, 1);
+                string digit2 = futansyaNo.Substring(1, 1);
                 var listDefHoken = NoTrackingDataContext.DefHokenNos
-                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
+                .Where(x => x.HpId == hpId
+                        && (x.HokenNo == hokenNo || x.HokenNo == 0)
+                        && x.Digit1.Equals(digit1)
+                        && x.Digit2.Equals(digit2)
+                        && x.IsDeleted == 0)
                 .OrderBy(x => x.SortNo)
                 .Select(x => new DefHokenNoModel(
                     x.Digit1,
