@@ -174,6 +174,11 @@ namespace Interactor.Insurance
             {
                 return new ValidateInsuranceOutputData(false, ValidateInsuranceStatus.InvalidFaild, new List<ValidateInsuranceListItem>());
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
+            }
         }
 
         private ValidateInsuranceOutputData CheckValidateInputData(ValidateInsuranceInputData inputData, List<ValidateInsuranceListItem> listValidate)

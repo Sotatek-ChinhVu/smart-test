@@ -43,6 +43,10 @@ namespace Interactor.NextOrder
             {
                 return new GetNextOrderListOutputData(new(), GetNextOrderListStatus.Failed);
             }
+            finally
+            {
+                _nextOrderRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using static Helper.Constants.UserConst;
+﻿using Domain.Common;
+
+using static Helper.Constants.UserConst;
 
 namespace Domain.Models.User
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase
     {
         void Create(UserMstModel user);
 

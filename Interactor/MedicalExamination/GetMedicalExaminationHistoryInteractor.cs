@@ -113,9 +113,11 @@ namespace Interactor.MedicalExamination
                 else
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
             }
-            catch
+            finally
             {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.Failed, 0);
+                _historyOrderRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
             }
         }
 
@@ -288,7 +290,9 @@ namespace Interactor.MedicalExamination
                                                                     od.Kasan2,
                                                                     od.CnvUnitName,
                                                                     od.OdrUnitName,
-                                                                    od.HasCmtName
+                                                                    od.HasCmtName,
+                                                                    od.CenterItemCd1,
+                                                                    od.CenterItemCd2
                                                             )
                                                             ).ToList(),
                                                             rpOdrInf.CreateDate,

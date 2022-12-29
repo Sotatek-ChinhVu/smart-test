@@ -40,6 +40,12 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
         {
             return new SaveListDocCategoryOutputData(SaveListDocCategoryStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+        }
     }
 
     private SaveListDocCategoryStatus ValidateInputItem(SaveListDocCategoryInputData inputData)

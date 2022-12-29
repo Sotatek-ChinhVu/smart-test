@@ -2,60 +2,57 @@
 using Entity.Tenant;
 using Helper.Constant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : RepositoryBase, IUserRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantTrackingDataContext;
-        public UserRepository(ITenantProvider tenantProvider)
+        public UserRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
+
         }
         public bool CheckExistedId(List<long> ids)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
+            var anyUsertMsts = NoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
             return ids.Count == anyUsertMsts;
         }
 
         public bool CheckExistedUserId(int userId)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            return NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
         public bool CheckExistedUserIdCreate(List<int> userIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
+            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => userIds.Contains(u.UserId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdCreate(List<string> loginIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
+            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            var anyUsertMsts = NoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedJobCd(List<int> jobCds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.JobMsts.Count(u => jobCds.Contains(u.JobCd));
+            var countUsertMsts = NoTrackingDataContext.JobMsts.Count(u => jobCds.Contains(u.JobCd));
             return jobCds.Count == countUsertMsts;
         }
 
@@ -71,12 +68,12 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetAll()
         {
-            return _tenantNoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
+            return NoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
         {
-            var query = _tenantNoTrackingDataContext.UserMsts.Where(u =>
+            var query = NoTrackingDataContext.UserMsts.Where(u =>
                 u.StartDate <= sinDate
                 && u.EndDate >= sinDate
                 && u.IsDeleted == DeleteTypes.None);
@@ -84,32 +81,37 @@ namespace Infrastructure.Repositories
             {
                 query = query.Where(u => u.JobCd == JobCodes.Doctor);
             }
+            var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
+                                                                    query.Select(item => item.KaId).ToList()
+                                                                    .Contains(item.KaId)
+                                                                    && item.IsDeleted == 0
+                                                              ).ToList();
 
-            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = _tenantNoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
+            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds)
         {
-            var result = _tenantNoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
+            var result = NoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public UserMstModel? GetByUserId(int userId)
         {
-            var entity = _tenantNoTrackingDataContext.UserMsts
+            var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
         }
 
         public UserMstModel GetByUserId(int userId, int sinDate)
         {
-            var entity = _tenantNoTrackingDataContext.UserMsts
+            var entity = NoTrackingDataContext.UserMsts
                 .FirstOrDefault(u => u.UserId == userId
                                     && u.IsDeleted == DeleteTypes.None
                                     && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
@@ -118,14 +120,14 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId)
         {
-            var entity = _tenantNoTrackingDataContext.UserMsts
+            var entity = NoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
         }
 
         public int MaxUserId()
         {
-            return _tenantNoTrackingDataContext.UserMsts.Max(u => u.UserId);
+            return NoTrackingDataContext.UserMsts.Max(u => u.UserId);
         }
 
         public UserMstModel Read(int userId)
@@ -143,7 +145,7 @@ namespace Infrastructure.Repositories
             {
                 if (inputData.IsDeleted == DeleteTypes.Deleted)
                 {
-                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
+                    var userMsts = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
                     if (userMsts != null)
                     {
                         userMsts.IsDeleted = DeleteTypes.Deleted;
@@ -151,7 +153,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var userMst = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMst = TrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if (userMst != null)
                     {
                         userMst.UserId = inputData.UserId;
@@ -175,11 +177,35 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        _tenantTrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
+                        TrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
                     }
                 }
             }
-            _tenantTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
+        }
+
+        private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
+        {
+            return new UserMstModel(
+                u.HpId,
+                u.Id,
+                u.UserId,
+                u.JobCd,
+                u.ManagerKbn,
+                u.KaId,
+                listKaMsts.FirstOrDefault(item => item.KaId == u.KaId)?.KaSname ?? string.Empty,
+                u.KanaName ?? string.Empty,
+                u.Name ?? string.Empty,
+                u.Sname ?? string.Empty,
+                u.DrName ?? string.Empty,
+                u.LoginId ?? string.Empty,
+                u.LoginPass ?? string.Empty,
+                u.MayakuLicenseNo ?? string.Empty,
+                u.StartDate,
+                u.EndDate,
+                u.SortNo,
+                u.RenkeiCd1 ?? string.Empty,
+                u.IsDeleted);
         }
 
         private static UserMstModel ToModel(UserMst u)
@@ -191,6 +217,7 @@ namespace Infrastructure.Repositories
                 u.JobCd,
                 u.ManagerKbn,
                 u.KaId,
+                string.Empty,
                 u.KanaName ?? string.Empty,
                 u.Name ?? string.Empty,
                 u.Sname ?? string.Empty,
@@ -231,14 +258,14 @@ namespace Infrastructure.Repositories
 
         public bool CheckLoginInfo(string userName, string password)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
+            return NoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
         }
 
         public bool MigrateDatabase()
         {
             try
             {
-                _tenantTrackingDataContext.Database.Migrate();
+                TrackingDataContext.Database.Migrate();
                 return true;
             }
             catch (Exception)
@@ -247,10 +274,15 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId)
         {
             // Check lockMedicalExamination
-            var raiinInfo = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDeleted == DeleteTypes.None);
+            var raiinInfo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDeleted == DeleteTypes.None);
             long oyaRaiinNo = raiinInfo != null ? raiinInfo.OyaRaiinNo : 0;
             var result = CheckLockInfo(hpId, ptId, FunctionCode.MedicalExaminationCode, raiinNo, oyaRaiinNo, sinDate, token, userId);
             return GetPermissionByScreenCode(hpId, userId, FunctionCode.MedicalExaminationCode) == PermissionType.Unlimited && !(result != null && result.Item2?.LockLevel == 0);
@@ -260,16 +292,16 @@ namespace Infrastructure.Repositories
         {
             var listCheckedResult =
                 (
-                    from lockInf in _tenantNoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.Machine != token)
-                    join raiinInf in _tenantNoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpID)
+                    from lockInf in NoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.Machine != token)
+                    join raiinInf in NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpID)
                     on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
                     from lockedRaiinInf in rfg.DefaultIfEmpty()
-                    join lockMst in _tenantNoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCD_B && m.IsInvalid == 0)
+                    join lockMst in NoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCD_B && m.IsInvalid == 0)
                     on lockInf.FunctionCd equals lockMst.FunctionCdA
-                    join userMst in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpID && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
+                    join userMst in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpID && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
                     on lockInf.UserId equals userMst.UserId into gj
                     from lockedUserInf in gj.DefaultIfEmpty()
-                    join functionMst in _tenantNoTrackingDataContext.FunctionMsts
+                    join functionMst in NoTrackingDataContext.FunctionMsts
                     on lockInf.FunctionCd equals functionMst.FunctionCd
                     where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && (lockInf.Machine != token || lockInf.UserId != currentUserID))
                     orderby lockMst.LockLevel, lockMst.LockRange
@@ -309,9 +341,9 @@ namespace Infrastructure.Repositories
 
         public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
         {
-            var listUserPermission = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
-            var listUserPermissionOfUserDefault = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
-            var isDoctor = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
+            var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+            var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
+            var isDoctor = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
             if (string.IsNullOrEmpty(permisionCode))
             {
                 return PermissionType.NotAvailable;

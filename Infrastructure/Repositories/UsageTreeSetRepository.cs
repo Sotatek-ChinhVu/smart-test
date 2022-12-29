@@ -1,23 +1,21 @@
 ﻿using Domain.Models.UsageTreeSet;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Data;
 
 namespace Infrastructure.Repositories
 {
-    public class UsageTreeSetRepository : IUsageTreeSetRepository
+    public class UsageTreeSetRepository : RepositoryBase, IUsageTreeSetRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
-
-        public UsageTreeSetRepository(ITenantProvider _tenantProvider)
+        public UsageTreeSetRepository(ITenantProvider _tenantProvider) : base(_tenantProvider)
         {
-            _tenantDataContext = _tenantProvider.GetTrackingTenantDataContext();
         }
 
         public int GetGenerationId(int sinDate)
         {
-            ListSetGenerationMst? generation = _tenantDataContext.ListSetGenerationMsts.Where
+            ListSetGenerationMst? generation = NoTrackingDataContext.ListSetGenerationMsts.Where
                             (item => item.StartDate < sinDate)
                             .OrderByDescending(item => item.StartDate)
                             .FirstOrDefault();
@@ -27,13 +25,13 @@ namespace Infrastructure.Repositories
 
         public List<ListSetMstModel> GetTanSetInfs(int hpId, int setUsageKbn, int generationId, int sinDate)
         {
-            var list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
+            var list = NoTrackingDataContext.ListSetMsts.Where(x => x.HpId == hpId
                                                         && x.GenerationId == generationId
                                                         && x.IsDeleted == 0
                                                         && x.SetKbn == setUsageKbn);
 
             var ItemCds = list.Select(x => x.ItemCd);
-            var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
@@ -71,13 +69,13 @@ namespace Infrastructure.Repositories
 
         public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int generationId, int sinDate)
         {
-            var list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
+            var list = NoTrackingDataContext.ListSetMsts.Where(x => x.HpId == hpId
                                                         && x.GenerationId == generationId
                                                         && x.IsDeleted == 0
                                                         && usageContains.Contains(x.SetKbn));
 
             var ItemCds = list.Select(x => x.ItemCd);
-            var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
@@ -115,12 +113,12 @@ namespace Infrastructure.Repositories
 
         public List<ListSetMstModel> GetAllTanSetInfs(int hpId, int generationId, int sinDate)
         {
-            var list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
+            var list = NoTrackingDataContext.ListSetMsts.Where(x => x.HpId == hpId
                                                         && x.GenerationId == generationId
                                                         && x.IsDeleted == 0);
 
             var ItemCds = list.Select(x => x.ItemCd);
-            var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x => new
                                         {
@@ -154,6 +152,11 @@ namespace Infrastructure.Repositories
                                                (int?)subpet.SinKouiKbn ?? 0,
                                                (int?)subpet.YohoKbn ?? 0,
                                                (int?)subpet.StartDate ?? 0)).ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

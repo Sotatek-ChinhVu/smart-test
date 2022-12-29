@@ -1,25 +1,20 @@
 ﻿using Domain.Models.MonshinInf;
 using Entity.Tenant;
-using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class MonshinInforRepository : IMonshinInforRepository
+    public class MonshinInforRepository : RepositoryBase, IMonshinInforRepository
     {
-        private readonly TenantDataContext _tenantDataContextTracking;
-        private readonly TenantDataContext _tenantDataContextNoTracking;
-
-        public MonshinInforRepository(ITenantProvider tenantProvider)
+        public MonshinInforRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
-            _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
         {
-            var monshinList = _tenantDataContextNoTracking.MonshinInfo
+            var monshinList = NoTrackingDataContext.MonshinInfo
                 .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0))
                 .OrderByDescending(x => x.SinDate)
                 .ThenByDescending(x => x.RaiinNo)
@@ -36,13 +31,18 @@ namespace Infrastructure.Repositories
             return monshinList;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public bool SaveList(List<MonshinInforModel> monshinInforModels, int userId)
         {
             try
             {
                 foreach (var model in monshinInforModels)
                 {
-                    var monshinInfor = _tenantDataContextNoTracking.MonshinInfo.
+                    var monshinInfor = NoTrackingDataContext.MonshinInfo.
                     FirstOrDefault(x => x.HpId == model.HpId
                         && x.PtId == model.PtId
                         && x.RaiinNo == model.RaiinNo
@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
                     //Update monshin when text change
                     if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
                     {
-                        _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
+                        TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
                         {
                             HpId = monshinInfor.HpId,
                             PtId = monshinInfor.PtId,
@@ -75,7 +75,7 @@ namespace Infrastructure.Repositories
                     //Delete Monshin when text is empty
                     else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
                     {
-                        _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
+                        TrackingDataContext.MonshinInfo.Update(new MonshinInfo()
                         {
                             HpId = monshinInfor.HpId,
                             PtId = monshinInfor.PtId,
@@ -97,7 +97,7 @@ namespace Infrastructure.Repositories
                     //Insert monshin when not found in monshininf
                     else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
                     {
-                        _tenantDataContextTracking.MonshinInfo.Add(new MonshinInfo()
+                        TrackingDataContext.MonshinInfo.Add(new MonshinInfo()
                         {
                             HpId = model.HpId,
                             PtId = model.PtId,
@@ -113,7 +113,7 @@ namespace Infrastructure.Repositories
                         });
                     }
                 }
-                _tenantDataContextTracking.SaveChanges();
+                TrackingDataContext.SaveChanges();
                 return true;
             }
             catch (Exception)

@@ -1,6 +1,7 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -115,19 +116,41 @@ namespace Interactor.MedicalExamination
                 }
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId);
-                if (check)
+                if (inputDatas.FileItem.IsUpdateFile)
                 {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, true);
-                }
-                else
-                {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, false);
+                    if (check)
+                    {
+                        var listFileItems = inputDatas.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    }
                 }
                 return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
             catch
             {
                 return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
+            }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+                _kaRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _todayOdrRepository.ReleaseResource();
+                _karteInfRepository.ReleaseResource();
             }
         }
 
@@ -143,7 +166,7 @@ namespace Interactor.MedicalExamination
             var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, listUpdates, false);
+                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
             }
             else
             {
@@ -272,6 +295,8 @@ namespace Interactor.MedicalExamination
                                 new List<YohoSetMstModel>(),
                                 0,
                                 0,
+                                "",
+                                "",
                                 "",
                                 ""
                             );

@@ -6,6 +6,5 @@
         Successed = 1,
         InvalidPtId = 2,
         InvalidSinDate = 3,
-        NoData = 4
     }
 }

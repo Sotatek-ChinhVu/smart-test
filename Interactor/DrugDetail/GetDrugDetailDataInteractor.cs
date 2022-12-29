@@ -1,10 +1,5 @@
 ﻿using Domain.Models.DrugDetail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.DrugDetailData;
+using UseCase.DrugDetailData.Get;
 
 namespace Interactor.DrugDetailData
 {
@@ -18,19 +13,26 @@ namespace Interactor.DrugDetailData
 
         public GetDrugDetailDataOutputData Handle(GetDrugDetailDataInputData inputData)
         {
-            if(string.IsNullOrEmpty(inputData.ItemCd))
+            try
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
-            }    
+                if (string.IsNullOrEmpty(inputData.ItemCd))
+                {
+                    return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
+                }
 
-            if(string.IsNullOrEmpty(inputData.YJCode))
+                if (string.IsNullOrEmpty(inputData.YJCode))
+                {
+                    return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
+                }
+
+                var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+
+                return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
+            }
+            finally
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
-            }    
-
-            var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
-
-            return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
+                _drugInforRepository.ReleaseResource();
+            }
         }
     }
 }

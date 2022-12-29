@@ -1,8 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
-using UseCase.DrugDetailData;
-
+using UseCase.DrugDetailData.Get;
 
 namespace EmrCloudApi.Presenters.DrugDetailData
 {

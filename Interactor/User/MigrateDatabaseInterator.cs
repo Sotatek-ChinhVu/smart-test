@@ -18,19 +18,26 @@ namespace Interactor.User
 
         public MigrateDatabaseOutputData Handle(MigrateDatabaseInputData inputData)
         {
-            string username = inputData.Username;
-            string password = inputData.Password;
-
-            if (!_userRepository.CheckLoginInfo(username, password))
+            try
             {
-                return new MigrateDatabaseOutputData(MigrateDatabaseStatus.LoginFailed);
-            }
-            if (!_userRepository.MigrateDatabase())
-            {
-                return new MigrateDatabaseOutputData(MigrateDatabaseStatus.MigrateDataFailed);
-            }
+                string username = inputData.Username;
+                string password = inputData.Password;
 
-            return new MigrateDatabaseOutputData(MigrateDatabaseStatus.Successed);
+                if (!_userRepository.CheckLoginInfo(username, password))
+                {
+                    return new MigrateDatabaseOutputData(MigrateDatabaseStatus.LoginFailed);
+                }
+                if (!_userRepository.MigrateDatabase())
+                {
+                    return new MigrateDatabaseOutputData(MigrateDatabaseStatus.MigrateDataFailed);
+                }
+
+                return new MigrateDatabaseOutputData(MigrateDatabaseStatus.Successed);
+            }
+            finally
+            {
+                _userRepository.ReleaseResource();
+            }
         }
     }
 }

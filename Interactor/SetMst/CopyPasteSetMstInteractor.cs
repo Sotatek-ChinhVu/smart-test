@@ -42,5 +42,9 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
         {
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.Failed);
         }
+        finally
+        {
+            _setMstRepository.ReleaseResource();
+        }
     }
 }

@@ -1,10 +1,11 @@
-﻿using Domain.Models.Diseases;
+﻿using Domain.Common;
+using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 
 namespace Domain.Models.TodayOdr
 {
-    public interface ITodayOdrRepository
+    public interface ITodayOdrRepository : IRepositoryBase
     {
         bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId);
 
@@ -17,5 +18,9 @@ namespace Domain.Models.TodayOdr
         List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs);
 
         Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList);
+
+        (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<OrdInfModel> allOdrInf);
+
+        (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<OrdInfModel> allOrder);
     }
 }

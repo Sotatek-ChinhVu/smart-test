@@ -70,6 +70,10 @@ using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.GetKohiPriorityList;
 using UseCase.InsuranceMst.GetHokenSyaMst;
+using EmrCloudApi.Responses.PtGroupMst;
+using EmrCloudApi.Requests.PtGroupMst;
+using UseCase.PtGroupMst.SaveGroupNameMst;
+using EmrCloudApi.Presenters.PtGroupMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -735,6 +739,17 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.SaveGroupNameMst)]
+        public ActionResult<Response<SaveGroupNameMstResponse>> SaveGroupNameMst([FromBody] SaveGroupNameMstRequest request)
+        {
+            var input = new SaveGroupNameMstInputData(UserId, HpId, request.GroupNameMsts);
+            var output = _bus.Handle(input);
+            var presenter = new SaveGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
     }
 }

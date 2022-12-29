@@ -34,6 +34,7 @@
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
         public static readonly string InvalidToken = "Invalid Token";
+        public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -315,7 +316,7 @@
         public static readonly string InvalidBirthDay = "Invalid BirthDay";
         public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn > 0";
         public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
-        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime";
         public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
 
         //SetMst
@@ -732,15 +733,15 @@
         public static readonly string MBunkatu = "分割調剤";
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
-        public static readonly string MProcedure = "・手技が入力されているか確認してください。";
-        public static readonly string MDisease = "薬剤";
+        public static readonly string MProcedure = "行為が未確定のため、入力が確定できません。\r\n・手技が入力されているか確認してください。";
+        public static readonly string MDisease = "病名";
         public static readonly string MTenkiContinue = "転帰区分";
         public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
         public static readonly string MTenkiDate = "転帰日";
         public static readonly string MTenkiStartDate = "開始日";
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
         public static readonly string MNoInputData = "数量を入力してください。";
-
+        public static readonly string MNoInputDataCmt = "数字情報を入力してください。";
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
@@ -857,5 +858,11 @@
         public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
+
+        //Drug Menu
+        public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
+
+        //PtGrpMaster
+        public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
     }
 }

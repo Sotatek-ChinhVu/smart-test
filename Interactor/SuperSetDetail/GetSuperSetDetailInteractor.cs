@@ -45,6 +45,10 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
         {
             return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.Failed);
         }
+        finally
+        {
+            _superSetDetailRepository.ReleaseResource();
+        }
     }
 
     private List<SetByomeiItem> ConvertSetByomeiToItem(List<SetByomeiModel> setByomeiModels)
@@ -187,9 +191,9 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
          )).ToList();
     }
 
-    private List<string> ConvertToListSetKarteFileItem(int setCd, List<SetKarteFileModel> listModel)
+    private List<SetFileInfModel> ConvertToListSetKarteFileItem(int setCd, List<SetFileInfModel> listModel)
     {
-        List<string> result = new();
+        List<SetFileInfModel> result = new();
         if (listModel.Any())
         {
             List<string> listFolders = new();
@@ -205,8 +209,8 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                 fileName.Append(_options.BaseAccessUrl);
                 fileName.Append("/");
                 fileName.Append(path);
-                fileName.Append(model.FileName);
-                result.Add(fileName.ToString());
+                fileName.Append(model.LinkFile);
+                result.Add(new SetFileInfModel(model.IsSchema, fileName.ToString()));
             }
         }
         return result;

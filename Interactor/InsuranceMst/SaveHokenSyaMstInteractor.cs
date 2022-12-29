@@ -55,6 +55,10 @@ namespace Interactor.InsuranceMst
             {
                 return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Failed, string.Empty);
             }
+            finally
+            {
+                _insuranceMstReponsitory.ReleaseResource();
+            }
         }
 
         private IEnumerable<SaveHokenSyaMstValidation> Validation(HokensyaMstModel model)
