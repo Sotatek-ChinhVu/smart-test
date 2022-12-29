@@ -182,6 +182,7 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
@@ -489,8 +490,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodayOrdInputData, UpsertTodayOrdInteractor>();
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
-            busBuilder.RegisterUseCase<InitKbnSettingInputData, CheckedItemNameInteractor>();
+            busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
             busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
+            busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

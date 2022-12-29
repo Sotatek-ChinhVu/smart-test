@@ -12,7 +12,7 @@ namespace Domain.Models.RaiinKubunMst
 
         List<(string, string)> GetListColumnName(int hpId);
 
-        List<Tuple<int, int, int, int>> GetRaiinKouiKbns(int hpId);
+        List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> GetRaiinKouiKbns(int hpId);
 
         public List<RaiinKbnItemModel> GetRaiinKbnItems(int hpId);
 

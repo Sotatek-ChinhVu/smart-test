@@ -929,20 +929,20 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<RaiinKbnModel> InitDefaultByNextOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<NextOrderModel> nextOdrs)
+        public List<RaiinKbnModel> InitDefaultByNextOrder(int hpId, long ptId, int sinDate, List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
         {
-            var allNextOdr = GetNextOdrInfModels(_ptId, _sinDate);
-            var nextOdrs = allNextOdr.FindAll(p => p.RsvDate == _sinDate).ToList();
+            var allNextOdr = GetNextOdrInfModels(hpId, ptId, sinDate);
+            var nextOdrs = allNextOdr.FindAll(p => p.rsvDate == sinDate).ToList();
             if (nextOdrs.Count == 0)
             {
-                nextOdrs = allNextOdr.FindAll(o => o.RsvDate == NextOdrConst.DefaultRsvDate);
+                nextOdrs = allNextOdr.FindAll(o => o.rsvDate == NextOrderConst.DefaultRsvDate);
             }
 
-=            foreach (var raiinKbn in raiinKbns)
+            foreach (var raiinKbn in raiinKbns)
             {
                 if (raiinKbn.RaiinKbnInfModel.KbnCd > 0) continue;
 
-                foreach (var kbnDetail in raiinKbn.RaiinKbnDetails)
+                foreach (var kbnDetail in raiinKbn.RaiinKbnDetailModels)
                 {
                     if (!kbnDetail.IsNextOrderChecked) continue;
 
@@ -957,12 +957,12 @@ namespace Infrastructure.Repositories
                     bool isSet = false;
                     foreach (var nextOdr in nextOdrs)
                     {
-                        if (excludeItems.Exists(p => p.ItemCd == nextOdr.ItemCd)) continue;
+                        if (excludeItems.Exists(p => p.ItemCd == nextOdr.itemCd)) continue;
 
-                        if (kouiKbns.Exists(p => p.kouiKbn1 == nextOdr.SinKouiKbn || p.kouiKbn2 == nextOdr.SinKouiKbn) ||
-                            includeItems.Exists(p => p.ItemCd == nextOdr.ItemCd))
+                        if (kouiKbns.Exists(p => p.kouiKbn1 == nextOdr.sinKouiKbn || p.kouiKbn2 == nextOdr.sinKouiKbn) ||
+                            includeItems.Exists(p => p.ItemCd == nextOdr.itemCd))
                         {
-                            raiinKbn.RaiinKbnInfModel.KbnCd = kbnDetail.KbnCd;
+                            raiinKbn.RaiinKbnInfModel.ChangeKbnCd(kbnDetail.KbnCd);
                             isSet = true;
                             break;
                         }
@@ -970,6 +970,8 @@ namespace Infrastructure.Repositories
                     if (isSet) break;
                 }
             }
+
+            return raiinKbns;
         }
 
         private List<(int sinKouiKbn, int rsvDate, string itemCd)> GetNextOdrInfModels(int hpId, long ptId, int sinDate)
@@ -982,7 +984,7 @@ namespace Infrastructure.Repositories
             var nextOdrDetails = NoTrackingDataContext.RsvkrtOdrInfDetails.Where(p => p.HpId == hpId &&
                                                                                                       p.PtId == ptId &&
                                                                                                       (p.RsvDate == sinDate || p.RsvDate == NextOrderConst.DefaultRsvDate));
-            var odrInfJoinDetailQuery = from nextOdrInf in nextOdrInfs
+            var odrInfJoinDetailQuery = from nextOdrInf in nextOdrInfs.AsEnumerable()
                                         join nextOdrDetail in nextOdrDetails
                                         on new { nextOdrInf.HpId, nextOdrInf.PtId, nextOdrInf.RsvkrtNo, nextOdrInf.RpNo, nextOdrInf.RpEdaNo }
                                         equals new { nextOdrDetail.HpId, nextOdrDetail.PtId, nextOdrDetail.RsvkrtNo, nextOdrDetail.RpNo, nextOdrDetail.RpEdaNo } into TempNextOdrDetails

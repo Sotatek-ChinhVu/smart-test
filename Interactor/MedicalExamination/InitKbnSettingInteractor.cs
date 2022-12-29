@@ -1,14 +1,10 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.MstItem;
-using Domain.Models.NextOrder;
+﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.TodayOdr;
-using Entity.Tenant;
 using Helper.Enum;
-using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.InitKbnSetting;
 
 namespace Interactor.MedicalExamination
@@ -16,15 +12,13 @@ namespace Interactor.MedicalExamination
     public class InitKbnSettingInteractor : IInitKbnSettingInputPort
     {
         private readonly ITodayOdrRepository _todayOdrRepository;
-        private readonly IMstItemRepository _mstItemRepository;
         private readonly IRaiinKubunMstRepository _raiinKubunMstRepository;
         private readonly IRaiinKbnRepository _raiinKbnRepository;
         private readonly INextOrderRepository _nextOrderRepository;
 
-        public InitKbnSettingInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, IRaiinKubunMstRepository raiinKubunMstRepository, IRaiinKbnRepository raiinKbnRepository, INextOrderRepository nextOrderRepository)
+        public InitKbnSettingInteractor(ITodayOdrRepository todayOdrRepository, IRaiinKubunMstRepository raiinKubunMstRepository, IRaiinKbnRepository raiinKbnRepository, INextOrderRepository nextOrderRepository)
         {
             _todayOdrRepository = todayOdrRepository;
-            _mstItemRepository = mstItemRepository;
             _raiinKubunMstRepository = raiinKubunMstRepository;
             _raiinKbnRepository = raiinKbnRepository;
             _nextOrderRepository = nextOrderRepository;
@@ -59,26 +53,7 @@ namespace Interactor.MedicalExamination
                     return new InitKbnSettingOutputData(InitKbnSettingStatus.InvalidSinDate, new());
                 }
 
-                var raiinKbnModels = _raiinKbnRepository.GetRaiinKbns(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
-                if (raiinKbnModels?.Count > 0)
-                {
-                    var raiinKouiKbns = _raiinKubunMstRepository.GetRaiinKouiKbns(inputData.HpId);
-                    var raiinKbnItemCds = _raiinKubunMstRepository.GetRaiinKbnItems(inputData.HpId);
-                    if (inputData.WindowType == WindowType.ReceptionInInsertMode)
-                    {
-                        if (inputData.IsEnableLoadDefaultVal) _nextOrderRepository.InitDefaultByNextOrder();
-                    }
-                    else if (inputData.WindowType == WindowType.MedicalExamination)
-                    {
-                        if (isEnableLoadDefaultVal) InitDefaultByTodayOrder();
-                    }
-                    else if (inputData.WindowType == WindowType.Booking)
-                    {
-                        if (isEnableLoadDefaultVal) InitDefaultByRsv(frameID);
-                    }
-                }
-
-                var checkedName = _todayOdrRepository.CheckNameChanged(inputData.OdrInfs.Select(item =>
+                var orderInfItems = inputData.OdrInfs.Select(item =>
                     new OrdInfModel(
                         item.HpId,
                         item.RaiinNo,
@@ -160,17 +135,38 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         0,
                         ""
-                    )).ToList());
+                    )).ToList();
+                var raiinKbnModels = _raiinKbnRepository.GetRaiinKbns(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+                if (raiinKbnModels?.Count > 0)
+                {
+                    var raiinKouiKbns = _raiinKubunMstRepository.GetRaiinKouiKbns(inputData.HpId);
+                    var raiinKbnItemCds = _raiinKubunMstRepository.GetRaiinKbnItems(inputData.HpId);
+                    if (inputData.WindowType == WindowType.ReceptionInInsertMode)
+                    {
+                        if (inputData.IsEnableLoadDefaultVal) _nextOrderRepository.InitDefaultByNextOrder(inputData.HpId, inputData.PtId, inputData.SinDate, raiinKbnModels, raiinKouiKbns, raiinKbnItemCds);
+                    }
+                    else if (inputData.WindowType == WindowType.MedicalExamination)
+                    {
+                        if (inputData.IsEnableLoadDefaultVal) _todayOdrRepository.InitDefaultByTodayOrder(raiinKbnModels, raiinKouiKbns, raiinKbnItemCds, orderInfItems);
+                    }
+                    else if (inputData.WindowType == WindowType.Booking)
+                    {
+                        if (inputData.IsEnableLoadDefaultVal) _raiinKbnRepository.InitDefaultByRsv(inputData.HpId, inputData.FrameId, raiinKbnModels);
+                    }
+                }
 
-                return new CheckedItemNameOutputData(CheckedItemNameStatus.Successed, checkedName);
+                return new InitKbnSettingOutputData(InitKbnSettingStatus.Successed, raiinKbnModels ?? new());
             }
             catch
             {
-                return new CheckedItemNameOutputData(CheckedItemNameStatus.Failed, new());
+                return new InitKbnSettingOutputData(InitKbnSettingStatus.Failed, new());
             }
             finally
             {
                 _todayOdrRepository.ReleaseResource();
+                _raiinKubunMstRepository.ReleaseResource();
+                _raiinKbnRepository.ReleaseResource();
+                _nextOrderRepository.ReleaseResource();
             }
         }
     }

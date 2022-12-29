@@ -76,7 +76,7 @@ public class RaiinKbnRepository : RepositoryBase, IRaiinKbnRepository
         var raiinKbnDetailRespo = NoTrackingDataContext.RaiinKbnDetails.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
         var raiinKbnInfRespo = NoTrackingDataContext.RaiinKbnInfs.Where(p => p.IsDelete == 0 && p.HpId == hpId && p.RaiinNo == raiinNo && p.PtId == ptId && p.SinDate == sinDate);
         var r = raiinKbnInfRespo.ToList();
-        var result = (from kbnMst in raiinKbnMstRespo
+        var result = (from kbnMst in raiinKbnMstRespo.AsEnumerable()
                       join kbnDetail in raiinKbnDetailRespo on
                       new { kbnMst.HpId, kbnMst.GrpCd } equals
                       new { kbnDetail.HpId, kbnDetail.GrpCd } into details
@@ -93,9 +93,9 @@ public class RaiinKbnRepository : RepositoryBase, IRaiinKbnRepository
                           KbnDetails = details.OrderBy(p => p.SortNo),
                           KbnInf = inf
                       })
-                      .AsEnumerable().OrderBy(p => p.KbnMst.SortNo)
-                      .Select(obj => new RaiinKbnModel(obj.KbnMst.HpId, obj.KbnMst.GrpCd, obj.KbnMst.SortNo, obj.KbnMst.GrpName ?? string.Empty, obj.KbnMst.IsDeleted,
-                                                             new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, obj.KbnInf.GrpId, obj.KbnInf.SeqNo, obj.KbnInf.KbnCd, obj.KbnInf.IsDelete), obj.KbnDetails.Select(p => new RaiinKbnDetailModel(p.HpId, p.GrpCd, p.KbnCd, p.SortNo, p.KbnName ?? string.Empty, p.ColorCd ?? string.Empty, p.IsConfirmed, p.IsAuto, p.IsAutoDelete, p.IsDeleted)).ToList())).ToList();
+                      ?.OrderBy(p => p.KbnMst.SortNo)
+                      ?.Select(obj => new RaiinKbnModel(obj.KbnMst.HpId, obj.KbnMst.GrpCd, obj.KbnMst.SortNo, obj.KbnMst?.GrpName ?? string.Empty, obj.KbnMst?.IsDeleted ?? 0,
+                                                             new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, obj.KbnInf?.GrpId ?? 0, obj.KbnInf?.SeqNo ?? 0, obj.KbnInf?.KbnCd ?? 0, obj.KbnInf?.IsDelete ?? 0), obj.KbnDetails?.Select(p => new RaiinKbnDetailModel(p.HpId, p.GrpCd, p.KbnCd, p.SortNo, p.KbnName ?? string.Empty, p.ColorCd ?? string.Empty, p.IsConfirmed, p.IsAuto, p.IsAutoDelete, p.IsDeleted)).ToList() ?? new()))?.ToList() ?? new();
         return result;
     }
 

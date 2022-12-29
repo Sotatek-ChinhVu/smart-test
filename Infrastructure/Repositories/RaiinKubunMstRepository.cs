@@ -323,9 +323,9 @@ namespace Infrastructure.Repositories
             return listColumnName;
         }
 
-        public List<Tuple<int, int, int, int>> GetRaiinKouiKbns(int hpId)
+        public List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> GetRaiinKouiKbns(int hpId)
         {
-            var result = new List<Tuple<int, int, int, int>>();
+            var result = new List<(int, int, int, int)>();
             var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == Session.HospitalID && r.IsDeleted == DeleteTypes.None);
             var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == Session.HospitalID);
             var query = from raiinKouiKbn in raiinKouiKbns
@@ -338,8 +338,7 @@ namespace Infrastructure.Repositories
                         };
             foreach (var entity in query)
             {
-                var raiinKouiKbnModel = new Tuple<int, int, int, int>(entity.RaiinKouiKbn.GrpId, entity.RaiinKouiKbn.KbnCd, entity.KouiKbnMst.KouiKbn1, entity.KouiKbnMst.KouiKbn2);
-                result.Add(raiinKouiKbnModel);
+                result.Add(new(entity.RaiinKouiKbn.GrpId, entity.RaiinKouiKbn.KbnCd, entity.KouiKbnMst.KouiKbn1, entity.KouiKbnMst.KouiKbn2));
             }
             return result;
         }
