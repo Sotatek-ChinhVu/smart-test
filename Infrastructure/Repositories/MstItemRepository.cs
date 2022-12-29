@@ -553,8 +553,6 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
-            queryResult = queryResult.Where(t => t.IsNosearch == 0);
-
             // Query 点数 for KN% item
             var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                                        && item.StartDate <= sinDate
