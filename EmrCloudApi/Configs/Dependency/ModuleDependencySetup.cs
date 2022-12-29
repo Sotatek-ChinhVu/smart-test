@@ -31,7 +31,7 @@ using Domain.Models.PtGroupMst;
 using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
-using Domain.Models.RaiinKbnInf;
+using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
@@ -338,7 +338,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
             services.AddTransient<IKaRepository, KaRepository>();
-            services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
+            services.AddTransient<IRaiinKbnRepository, RaiinKbnRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IKarteKbnMstRepository, KarteKbnMstRepository>();

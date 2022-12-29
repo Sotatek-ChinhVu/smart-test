@@ -1,11 +1,13 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
+using Domain.Models.RaiinKbn;
+using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -926,6 +928,79 @@ namespace Infrastructure.Repositories
                 position += 1;
             }
             return result;
+        }
+
+        public List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds)
+        {
+            foreach (var raiinKbn in raiinKbns)
+            {
+                int settingRaiinKbnCd = 0;
+                foreach (var kbnDetail in raiinKbn.RaiinKbnDetailModels)
+                {
+                    if (!kbnDetail.IsTodayOrderChecked) continue;
+
+                    //grid raiinKbnItem
+                    var kouiKbns = raiinKouiKbns.FindAll(k => k.grpId == kbnDetail.GrpCd && k.kbnCd == kbnDetail.KbnCd);
+
+                    //checkbox group raiinKouiKbn
+                    var kbnItems = raiinKbnItemCds.FindAll(p => p.GrpCd == kbnDetail.GrpCd && p.KbnCd == kbnDetail.KbnCd && !string.IsNullOrEmpty(p.ItemCd));
+                    var includeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+                    var excludeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+
+                    bool existItem = false;
+                    foreach (var todayOdr in todayOrds)
+                    {
+                        foreach (var todayOrdDetail in todayOdr.OrdInfDetails)
+                        {
+                            if (excludeItems.Exists(p => p.ItemCd == todayOrdDetail.ItemCd)) continue;
+
+                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOdr.OdrKouiKbn || p.kouiKbn2 == todayOdr.OdrKouiKbn) ||
+                                includeItems.Exists(p => p.ItemCd == todayOrdDetail.ItemCd))
+                            {
+                                existItem = true;
+                                break;
+                            }
+                        }
+
+                    }
+
+                    if (existItem)
+                    {
+                        if (kbnDetail.IsAutoDelete == DeleteTypes.Deleted && raiinKbn.RaiinKbnInfModel.KbnCd == kbnDetail.KbnCd)
+                        {
+                            raiinKbn.RaiinKbnInfModel.ChangeKbnCd(0);
+                        }
+                    }
+
+                    existItem = false;
+                    foreach (var todayOrd in todayOrds)
+                    {
+                        foreach (var todayOdr in todayOrd.OrdInfDetails)
+                        {
+                            if (excludeItems.Exists(p => p.ItemCd == todayOdr.ItemCd)) continue;
+
+                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOrd.OdrKouiKbn || p.kouiKbn2 == todayOrd.OdrKouiKbn) ||
+                                includeItems.Exists(p => p.ItemCd == todayOdr.ItemCd))
+                            {
+                                existItem = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (existItem)
+                    {
+                        settingRaiinKbnCd = kbnDetail.KbnCd;
+                    }
+                }
+
+                if (settingRaiinKbnCd != 0 && raiinKbn.RaiinKbnInfModel.KbnCd == 0)
+                {
+                    raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
+                }
+            }
+
+            return raiinKbns;
         }
 
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)

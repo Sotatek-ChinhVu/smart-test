@@ -4,7 +4,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Collections.Immutable;
 
 namespace Infrastructure.Repositories
@@ -322,6 +321,43 @@ namespace Infrastructure.Repositories
             }
 
             return listColumnName;
+        }
+
+        public List<Tuple<int, int, int, int>> GetRaiinKouiKbns(int hpId)
+        {
+            var result = new List<Tuple<int, int, int, int>>();
+            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == Session.HospitalID && r.IsDeleted == DeleteTypes.None);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == Session.HospitalID);
+            var query = from raiinKouiKbn in raiinKouiKbns
+                        join kouiKbnMst in kouiKbnMsts
+                        on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId
+                        select new
+                        {
+                            RaiinKouiKbn = raiinKouiKbn,
+                            KouiKbnMst = kouiKbnMst
+                        };
+            foreach (var entity in query)
+            {
+                var raiinKouiKbnModel = new Tuple<int, int, int, int>(entity.RaiinKouiKbn.GrpId, entity.RaiinKouiKbn.KbnCd, entity.KouiKbnMst.KouiKbn1, entity.KouiKbnMst.KouiKbn2);
+                result.Add(raiinKouiKbnModel);
+            }
+            return result;
+        }
+
+        public List<RaiinKbnItemModel> GetRaiinKbnItems(int hpId)
+        {
+            return NoTrackingDataContext.RaiinKbItems
+                            .Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None)
+                            .AsEnumerable().Select(p => new RaiinKbnItemModel(
+                                    p.HpId,
+                                    p.GrpCd,
+                                    p.KbnCd,
+                                    p.SeqNo,
+                                    p.ItemCd ?? string.Empty,
+                                    p.IsExclude,
+                                    p.IsExclude,
+                                    p.SortNo
+                                )).ToList();
         }
 
         #region RaiinKbn

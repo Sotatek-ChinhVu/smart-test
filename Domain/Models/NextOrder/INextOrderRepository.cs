@@ -1,4 +1,7 @@
 ﻿using Domain.Common;
+using Domain.Models.OrdInfs;
+using Domain.Models.RaiinKbn;
+using Domain.Models.RaiinKubunMst;
 
 namespace Domain.Models.NextOrder
 {
@@ -23,5 +26,7 @@ namespace Domain.Models.NextOrder
         bool SaveListFileNextOrder(int hpId, long ptId, long rsvkrtNo, string host, List<NextOrderFileInfModel> listFiles, bool saveTempFile);
 
         bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
+
+        List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds);
     }
 }
