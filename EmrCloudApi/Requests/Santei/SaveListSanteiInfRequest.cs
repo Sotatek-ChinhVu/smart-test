@@ -6,7 +6,7 @@ public class SaveListSanteiInfRequest
 
     public int SinDate { get; set; }
 
-    public int HokenPId { get; set; }
+    public int HokenPid { get; set; }
 
     public List<SanteiInfDto> ListSanteiInfs { get; set; } = new();
 }

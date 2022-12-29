@@ -21,16 +21,17 @@ public class SaveListSanteiInfPresenter : ISaveListSanteiInfOutputPort
         SaveListSanteiInfStatus.Successed => ResponseMessage.Success,
         SaveListSanteiInfStatus.Failed => ResponseMessage.Failed,
         SaveListSanteiInfStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-        SaveListSanteiInfStatus.InvalidItemCd => ResponseMessage.InvalidItemCd,
+        SaveListSanteiInfStatus.InvalidItemCd => ResponseMessage.InvalidSanteiItemCd,
         SaveListSanteiInfStatus.InvalidAlertDays => ResponseMessage.InvalidAlertDays,
         SaveListSanteiInfStatus.InvalidAlertTerm => ResponseMessage.InvalidAlertTerm,
-        SaveListSanteiInfStatus.InvalidAlertTerm => ResponseMessage.InvalidAlertTerm,
+        SaveListSanteiInfStatus.InvalidEndDate => ResponseMessage.InvalidEndDate,
         SaveListSanteiInfStatus.InvalidKisanSbt => ResponseMessage.InvalidKisanSbt,
         SaveListSanteiInfStatus.InvalidKisanDate => ResponseMessage.InvalidKisanDate,
         SaveListSanteiInfStatus.InvalidByomei => ResponseMessage.InvalidByomei,
         SaveListSanteiInfStatus.InvalidHosokuComment => ResponseMessage.InvalidHosokuComment,
         SaveListSanteiInfStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         SaveListSanteiInfStatus.InvalidUserId => ResponseMessage.InvalidUserId,
+        SaveListSanteiInfStatus.ThisSanteiInfDoesNotAllowSanteiInfDetail => ResponseMessage.ThisSanteiInfDoesNotAllowSanteiInfDetail,
         _ => string.Empty
     };
 }

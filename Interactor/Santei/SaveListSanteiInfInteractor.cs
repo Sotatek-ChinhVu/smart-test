@@ -66,6 +66,10 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         {
             return SaveListSanteiInfStatus.InvalidUserId;
         }
+        else if (!_santeiInfRepository.CheckExistItemCd(input.HpId, input.ListSanteiInfs.Select(item => item.ItemCd).ToList()))
+        {
+            return SaveListSanteiInfStatus.InvalidItemCd;
+        }
 
         // get list of SanteiInfs that doesn't contain deleted item in DB to validate SanteiInf
         var listSanteiInfs = _santeiInfRepository.GetOnlyListSanteiInf(input.HpId, input.PtId);
@@ -87,7 +91,11 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         foreach (var santeiInf in input.ListSanteiInfs)
         {
             // validate itemCd, itemCd is not duplicate
-            if (santeiInf.Id == 0 && listSanteiInfs.Any(item => item.ItemCd == santeiInf.ItemCd))
+            if (santeiInf.Id <= 0 && listSanteiInfs.Any(item => item.ItemCd == santeiInf.ItemCd))
+            {
+                return SaveListSanteiInfStatus.InvalidItemCd;
+            }
+            else if (santeiInf.Id > 0 && !listSanteiInfs.Any(item => item.Id == santeiInf.Id && item.ItemCd == santeiInf.ItemCd))
             {
                 return SaveListSanteiInfStatus.InvalidItemCd;
             }
@@ -109,6 +117,12 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                 return SaveListSanteiInfStatus.InvalidAlertDays;
             }
 
+            // if itemCd of santeiInf have any SanteiInfDetail, not allow
+            else if ((santeiInf.ItemCd.StartsWith("KN") || santeiInf.ItemCd.StartsWith("IGE")) && santeiInf.ListSanteInfDetails.Any())
+            {
+                return SaveListSanteiInfStatus.ThisSanteiInfDoesNotAllowSanteiInfDetail;
+            }
+
             // validate list SanteiInfDetails
             foreach (var santeiInfDetail in santeiInf.ListSanteInfDetails)
             {
@@ -120,7 +134,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                 //{ 4, "治療開始" },
                 //{ 5, "手術" },
                 //{ 6, "初回診断" }
-                if (santeiInfDetail.KisanSbt < 0 || santeiInfDetail.KisanSbt > 6)
+                if (santeiInfDetail.KisanSbt < 1 || santeiInfDetail.KisanSbt > 6)
                 {
                     return SaveListSanteiInfStatus.InvalidKisanSbt;
                 }
@@ -179,7 +193,8 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                                                                                                                 item.KisanDate,
                                                                                                                 item.Byomei,
                                                                                                                 item.HosokuComment,
-                                                                                                                item.Comment
+                                                                                                                item.Comment,
+                                                                                                                santaiInf.IsDeleted ? santaiInf.IsDeleted : item.IsDeleted
                                                                                                             )).ToList();
             result.AddRange(listSantaiIntDetails);
         }

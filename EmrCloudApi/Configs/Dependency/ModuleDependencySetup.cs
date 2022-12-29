@@ -248,6 +248,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Santei.GetListSanteiInf;
+using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
@@ -678,6 +679,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SanteiInf
             busBuilder.RegisterUseCase<GetListSanteiInfInputData, GetListSanteiInfInteractor>();
+            busBuilder.RegisterUseCase<SaveListSanteiInfInputData, SaveListSanteiInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
