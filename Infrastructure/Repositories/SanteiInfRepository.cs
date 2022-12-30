@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.Santei;
+﻿using Domain.Models.Santei;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -181,25 +180,6 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                     listCurrentMonthOdrInfDetails,
                                                     listSanteiInfDetails))
                      .ToList();
-    }
-
-    public List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid)
-    {
-        return NoTrackingDataContext.PtByomeis.Where(item => item.HpId == hpId
-                                                                     && item.PtId == ptId
-                                                                     && item.IsDeleted != 1
-                                                                     && (item.HokenPid == hokenPid || item.HokenPid == 0)
-                                                                     && item.IsNodspKarte == 0
-                                                                     && (item.TenkiKbn <= TenkiKbnConst.Continued || (item.StartDate <= (sinDate / 100 * 100 + 31) && item.TenkiDate >= (sinDate / 100 * 100 + 1)))
-                                                                ).OrderBy(p => p.TenkiKbn)
-                                                                 .ThenByDescending(x => x.IsImportant)
-                                                                 .ThenBy(p => p.SortNo)
-                                                                 .ThenByDescending(p => p.StartDate)
-                                                                 .ThenByDescending(p => p.TenkiDate)
-                                                                 .ThenBy(p => p.Id)
-                                                                 .Select(item => item.Byomei ?? string.Empty)
-                                                                 .ToList();
-
     }
 
     public bool SaveListSanteiInf(int hpId, int userId, SanteiInfModel model)

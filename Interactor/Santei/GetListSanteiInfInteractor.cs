@@ -1,4 +1,5 @@
-﻿using Domain.Models.Santei;
+﻿using Domain.Models.MstItem;
+using Domain.Models.Santei;
 using Helper.Common;
 using UseCase.Santei.GetListSanteiInf;
 
@@ -7,17 +8,19 @@ namespace Interactor.Santei;
 public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
 {
     private readonly ISanteiInfRepository _santeiInfRepository;
+    private readonly IMstItemRepository _mstItemRepository;
 
-    public GetListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository)
+    public GetListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IMstItemRepository mstItemRepository)
     {
         _santeiInfRepository = santeiInfRepository;
+        _mstItemRepository = mstItemRepository;
     }
 
     public GetListSanteiInfOutputData Handle(GetListSanteiInfInputData input)
     {
         try
         {
-            var listByomeis = _santeiInfRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
+            var listByomeis = _mstItemRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
             var listSanteiInf = _santeiInfRepository.GetListSanteiInf(input.HpId, input.PtId, input.SinDate);
 
             var result = ConvertToResult(input.SinDate, listSanteiInf, listByomeis);
