@@ -31,18 +31,16 @@ public class ConfirmReplaceDocParamInteractor : IConfirmReplaceDocParamInputPort
                     }
                 }
             }
-            var listCommentDetail = _documentRepository.GetListDocCommentDetail();
             var result = listComment.Select(detail => new DocCommentOutputItem(
                                                     detail.CategoryId,
                                                     detail.CategoryName,
                                                     detail.ReplaceWord,
-                                                    listCommentDetail
-                                                    .Where(item => item.CategoryId == detail.CategoryId)
+                                                    detail.ListDocCommentDetails
                                                     .Select(item => new DocCommentDetailOutputItem(
                                                             item.CategoryId,
                                                             item.Comment
-                                                        )).ToList()
-                                            )).ToList();
+                                                    )).ToList()
+                                    )).ToList();
             return new ConfirmReplaceDocParamOutputData(result, ConfirmReplaceDocParamStatus.Successed);
         }
         catch (Exception)
