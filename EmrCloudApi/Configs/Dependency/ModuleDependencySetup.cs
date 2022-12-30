@@ -127,6 +127,7 @@ using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.ApprovalInfo.GetApprovalInfList;
+using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -139,6 +140,7 @@ using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListDocComment;
 using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
@@ -418,6 +420,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<UpdateApprovalInfListInputData, UpdateApprovalInfListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -675,6 +678,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
+            busBuilder.RegisterUseCase<GetListDocCommentInputData, GetListDocCommentInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

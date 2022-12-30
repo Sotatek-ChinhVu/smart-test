@@ -10,8 +10,6 @@ public interface ISanteiInfRepository : IRepositoryBase
 
     List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId);
 
-    List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
-
     public bool CheckExistItemCd(int hpId, List<string> listItemCds);
 
     bool SaveSantei(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels);

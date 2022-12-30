@@ -332,7 +332,7 @@ namespace Domain.Common
 
             if (tokuzaiFirstCount > 0)
             {
-                if (odrInf.OdrKouiKbn == 0)
+                if (odrInf.OdrKouiKbn == 80)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidTokuzaiKouiKbn);
                 }

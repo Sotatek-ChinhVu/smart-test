@@ -4,6 +4,7 @@ using Domain.Models.Santei;
 using Domain.Models.User;
 using UseCase.Santei.SaveListSanteiInf;
 using Helper.Common;
+using Domain.Models.MstItem;
 
 namespace Interactor.Santei;
 
@@ -13,13 +14,15 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IMstItemRepository _mstItemRepository;
 
-    public SaveListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository)
+    public SaveListSanteiInfInteractor(ISanteiInfRepository santeiInfRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IMstItemRepository mstItemRepository)
     {
         _santeiInfRepository = santeiInfRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
         _userRepository = userRepository;
+        _mstItemRepository = mstItemRepository;
     }
 
     public SaveListSanteiInfOutputData Handle(SaveListSanteiInfInputData inputData)
@@ -82,7 +85,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         var listSanteiInfDetails = _santeiInfRepository.GetListSanteiInfDetails(input.HpId, input.PtId);
 
         // get list of Byomeis to validate 
-        var listByomeis = _santeiInfRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
+        var listByomeis = _mstItemRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
         if (listSanteiInfDetails.Any())
         {
             listByomeis.AddRange(from item in listSanteiInfDetails// Add byomei to byomei List
