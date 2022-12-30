@@ -18,10 +18,9 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
         try
         {
             var listByomeis = _santeiInfRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);
-            var listSanteiInf = _santeiInfRepository.GetListSanteiInfModel(input.HpId, input.PtId, input.SinDate);
-            var listSanteiInfDetail = _santeiInfRepository.GetListSanteiInfDetailModel(input.HpId, input.PtId);
+            var listSanteiInf = _santeiInfRepository.GetListSanteiInf(input.HpId, input.PtId, input.SinDate);
 
-            var result = ConvertToResult(input.SinDate, listSanteiInf, listSanteiInfDetail, listByomeis);
+            var result = ConvertToResult(input.SinDate, listSanteiInf, listByomeis);
 
             return new GetListSanteiInfOutputData(GetListSanteiInfStatus.Successed, result.Item1, DicAlertTermCombobox(), DicKisanKbnCombobox(), result.Item2);
         }
@@ -61,20 +60,19 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             };
     }
 
-    private Tuple<List<SanteiInfOutputItem>, List<string>> ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInf, List<SanteiInfDetailModel> listSanteiInfDetail, List<string> listByomeis)
+    private Tuple<List<SanteiInfOutputItem>, List<string>> ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInfs, List<string> listByomeis)
     {
         List<SanteiInfOutputItem> listSanteiInfResult = new();
-        foreach (var santeiInf in listSanteiInf)
+        foreach (var santeiInf in listSanteiInfs)
         {
             int kisanDate = 0;
             int dayCount = 0;
 
             // kisanDate
-            var listSanteiInfDetails = listSanteiInfDetail.Where(item => item.ItemCd == santeiInf.ItemCd)
-                                                          .Select(item => ConvertToSanteiInfDetailOutputItem(item))
-                                                          .OrderBy(item => item.EndDate)
-                                                          .ThenBy(item => item.Id)
-                                                          .ToList();
+            var listSanteiInfDetails = santeiInf.ListSanteiInfDetails.Select(item => ConvertToSanteiInfDetailOutputItem(item))
+                                                                     .OrderBy(item => item.EndDate)
+                                                                     .ThenBy(item => item.Id)
+                                                                     .ToList();
 
             foreach (var item in listSanteiInfDetails)
             {

@@ -77,7 +77,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         listSanteiInfs = listSanteiInfs.Where(item => !listSanteiIdDeletes.Contains(item.Id)).ToList();
 
         // get list of SanteiInfDetails to validate SanteiInfDetail
-        var listSanteiInfDetails = _santeiInfRepository.GetListSanteiInfDetailModel(input.HpId, input.PtId);
+        var listSanteiInfDetails = _santeiInfRepository.GetListSanteiInfDetails(input.HpId, input.PtId);
 
         // get list of Byomeis to validate 
         var listByomeis = _santeiInfRepository.GetListSanteiByomeis(input.HpId, input.PtId, input.SinDate, input.HokenPid);

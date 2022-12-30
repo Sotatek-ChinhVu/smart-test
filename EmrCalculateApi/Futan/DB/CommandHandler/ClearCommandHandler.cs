@@ -2,6 +2,7 @@
 using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Constants;
 using EmrCalculateApi.Interface;
+using Domain.Constant;
 
 namespace EmrCalculateApi.Futan.DB.CommandHandler
 {

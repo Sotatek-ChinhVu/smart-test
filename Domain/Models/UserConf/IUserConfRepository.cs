@@ -11,4 +11,6 @@ public interface IUserConfRepository : IRepositoryBase
     void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue);
 
     void UpdateUserConf(int hpId, int userId, int grpCd, int value);
+
+    int Sagaku(bool fromRece);
 }

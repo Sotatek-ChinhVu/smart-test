@@ -11,7 +11,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 {
     public SanteiInfRepository(ITenantProvider tenantProvider) : base(tenantProvider) { }
 
-    public List<SanteiInfModel> GetListSanteiInfModel(int hpId, long ptId, int sinDate)
+    public List<SanteiInfModel> GetListSanteiInf(int hpId, long ptId, int sinDate)
     {
         // Santei Inf
         var santeiInfQuery = NoTrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId
@@ -124,7 +124,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                          Count = g.Count(),
                                          Sum = g.Sum(o => o.Suryo)
                                      };
-        var odrInfDetailCountList = odrInfDetailCountQuery.Select(item => new SanteiInfModel(
+        var listOdrInfDetailCounts = odrInfDetailCountQuery.Select(item => new SanteiInfModel(
                                                                                                 item.ItemCd,
                                                                                                 item.Count,
                                                                                                 item.Sum,
@@ -149,7 +149,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                 Count = g.Count(),
                                                 Sum = g.Sum(o => o.Suryo)
                                             };
-        var currentMonthOdrInfDetailList = currentMonthOdrInfDetailQuery.Select(item => new SanteiInfModel(
+        var listCurrentMonthOdrInfDetails = currentMonthOdrInfDetailQuery.Select(item => new SanteiInfModel(
                                                                                                              item.ItemCd,
                                                                                                              0,
                                                                                                              0,
@@ -172,25 +172,19 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     .ThenBy(item => item.SanteiInf.SeqNo)
                     .ToList();
 
+        var listSanteiInfDetails = GetListSanteiInfDetails(hpId, ptId);
+
         return result.Select(item => ConvertToSanteiInfModel(
                                                     item.SanteiInf,
                                                     item.TenMst.Name,
                                                     dicLastOrderDate,
-                                                    odrInfDetailCountList,
-                                                    currentMonthOdrInfDetailList))
+                                                    listOdrInfDetailCounts,
+                                                    listCurrentMonthOdrInfDetails,
+                                                    listSanteiInfDetails))
                      .ToList();
     }
 
-    public List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId)
-    {
-        var listSanteiInfs = NoTrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId
-                                                                          && (item.PtId == ptId || item.PtId == 0))
-                                                              .ToList();
-        return listSanteiInfs.Select(item => ConvertToSanteiInfModel(item))
-                             .ToList();
-    }
-
-    public List<SanteiInfDetailModel> GetListSanteiInfDetailModel(int hpId, long ptId)
+    public List<SanteiInfDetailModel> GetListSanteiInfDetails(int hpId, long ptId)
     {
         return NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
                                                                  && item.IsDeleted == 0
@@ -206,6 +200,15 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                                                             item.HosokuComment ?? string.Empty,
                                                                                             item.Comment ?? string.Empty
                                                      )).ToList();
+    }
+
+    public List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId)
+    {
+        var listSanteiInfs = NoTrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId
+                                                                          && (item.PtId == ptId || item.PtId == 0))
+                                                              .ToList();
+        return listSanteiInfs.Select(item => ConvertToSanteiInfModel(item))
+                             .ToList();
     }
 
     public List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid)
@@ -281,7 +284,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     }
 
     #region private function
-    private SanteiInfModel ConvertToSanteiInfModel(SanteiInf santeiInf, string itemName, Dictionary<string, int> dicLastOrderDate, List<SanteiInfModel> odrInfDetailCountList, List<SanteiInfModel> currentMonthOdrInfDetailList)
+    private SanteiInfModel ConvertToSanteiInfModel(SanteiInf santeiInf, string itemName, Dictionary<string, int> dicLastOrderDate, List<SanteiInfModel> listOdrInfDetailCounts, List<SanteiInfModel> listCurrentMonthOdrInfDetails, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         int lastOdrDate = 0;
         int santeiItemCount = 0;
@@ -300,7 +303,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         }
 
         // Count and sum item
-        var odrDetail = odrInfDetailCountList.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
+        var odrDetail = listOdrInfDetailCounts.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
         if (odrDetail != null)
         {
             santeiItemCount = odrDetail.SanteiItemCount;
@@ -308,7 +311,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         }
 
         // Count and sum item by month
-        var currentMonthOdrDetail = currentMonthOdrInfDetailList.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
+        var currentMonthOdrDetail = listCurrentMonthOdrInfDetails.FirstOrDefault(item => item.ItemCd == santeiInf.ItemCd);
         if (currentMonthOdrDetail != null)
         {
             currentMonthSanteiItemCount = currentMonthOdrDetail.CurrentMonthSanteiItemCount;
@@ -327,7 +330,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                      santeiItemCount,
                                      santeiItemSum,
                                      currentMonthSanteiItemCount,
-                                     currentMonthSanteiItemSum
+                                     currentMonthSanteiItemSum,
+                                     listSanteiInfDetails.Where(item => item.ItemCd == santeiInf.ItemCd).ToList()
                                  );
     }
 
