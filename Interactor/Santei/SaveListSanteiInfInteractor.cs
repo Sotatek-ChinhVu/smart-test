@@ -100,7 +100,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             {
                 return SaveListSanteiInfStatus.InvalidItemCd;
             }
-            else if (santeiInf.Id > 0 && !listSanteiInfs.Any(item => item.Id == santeiInf.Id && item.ItemCd == santeiInf.ItemCd))
+            else if (santeiInf.Id > 0 && !santeiInf.IsDeleted && !listSanteiInfs.Any(item => item.Id == santeiInf.Id && item.ItemCd == santeiInf.ItemCd))
             {
                 return SaveListSanteiInfStatus.InvalidItemCd;
             }
