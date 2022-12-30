@@ -125,6 +125,7 @@ using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.ApprovalInfo.GetApprovalInfList;
+using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -413,6 +414,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<UpdateApprovalInfListInputData, UpdateApprovalInfListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
