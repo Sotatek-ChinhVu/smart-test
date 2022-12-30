@@ -249,6 +249,20 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
+    public List<DocCommentModel> GetListDocComment(List<string> listReplaceWord)
+    {
+        var query = NoTrackingDataContext.DocComments.Where(item => item.IsDeleted == 0);
+        if (listReplaceWord.Any())
+        {
+            query = query.Where(item => item.ReplaceWord != null && listReplaceWord.Contains(item.ReplaceWord));
+        }
+        var listDocComments = query.ToList();
+        var listDocCommentDetails = GetListDocCommentDetail(listDocComments.Select(item => item.CategoryId).ToList());
+        return listDocComments.OrderBy(item => item.SortNo)
+                    .Select(item => ConvertToDocCommentModel(item, listDocCommentDetails))
+                    .ToList();
+    }
+
     #region private function
     private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
     {
@@ -332,6 +346,28 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             item.SortNo = sortNo;
             sortNo++;
         }
+    }
+
+    private List<DocCommentDetailModel> GetListDocCommentDetail(List<int> listCategoryId)
+    {
+        var query = NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0);
+        if (listCategoryId.Any())
+        {
+            query = query.Where(item => listCategoryId.Contains(item.CategoryId));
+        }
+        return query.OrderBy(item => item.SortNo)
+                    .Select(item => new DocCommentDetailModel(item.CategoryId,
+                                                              item.Comment ?? string.Empty))
+                    .ToList();
+    }
+
+    private DocCommentModel ConvertToDocCommentModel(DocComment docComment, List<DocCommentDetailModel> listDocCommentDetails)
+    {
+        var listDocCommentModels = listDocCommentDetails.Where(detail => detail.CategoryId == docComment.CategoryId).ToList();
+        return new DocCommentModel(docComment.CategoryId,
+                                   docComment.CategoryName ?? string.Empty,
+                                   docComment.ReplaceWord ?? string.Empty,
+                                   listDocCommentModels);
     }
 
     public void ReleaseResource()
