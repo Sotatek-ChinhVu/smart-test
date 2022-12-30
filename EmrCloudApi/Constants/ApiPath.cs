@@ -160,5 +160,8 @@
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        // Karte
+        public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
 }
