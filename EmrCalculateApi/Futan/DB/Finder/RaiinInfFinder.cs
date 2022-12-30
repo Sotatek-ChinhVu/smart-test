@@ -1,8 +1,10 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Futan.Models;
 using EmrCalculateApi.Interface;
 using Helper.Common;
+using Helper.Constants;
 using PostgreDataContext;
 
 namespace EmrCalculateApi.Futan.DB.Finder
@@ -481,7 +483,7 @@ namespace EmrCalculateApi.Futan.DB.Finder
             ).ToList();
 
             //来院情報取得
-            if (raiinInfs == null)
+            if (raiinInfs == null || raiinInfs.Any() == false)
             {
                 //var wrkList = _tenantDataContext.RaiinInfs.FindListNoTrack(r =>
                 //    r.HpId == hpId &&

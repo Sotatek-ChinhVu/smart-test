@@ -5,7 +5,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -553,8 +552,6 @@ namespace Infrastructure.Repositories
             {
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
-
-            queryResult = queryResult.Where(t => t.IsNosearch == 0);
 
             // Query 点数 for KN% item
             var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
@@ -1115,6 +1112,7 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
 
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
