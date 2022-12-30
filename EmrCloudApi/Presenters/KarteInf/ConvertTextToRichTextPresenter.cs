@@ -19,7 +19,6 @@ public class ConvertTextToRichTextPresenter : IConvertTextToRichTextOutputPort
     private string GetMessage(ConvertTextToRichTextStatus status) => status switch
     {
         ConvertTextToRichTextStatus.Successed => ResponseMessage.Success,
-        ConvertTextToRichTextStatus.Failed => ResponseMessage.Failed,
         ConvertTextToRichTextStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         _ => string.Empty
     };

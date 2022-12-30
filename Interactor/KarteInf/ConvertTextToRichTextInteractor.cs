@@ -22,10 +22,6 @@ public class ConvertTextToRichTextInteractor : IConvertTextToRichTextInputPort
             }
             return new ConvertTextToRichTextOutputData(ConvertTextToRichTextStatus.InvalidPtId);
         }
-        catch (Exception)
-        {
-            return new ConvertTextToRichTextOutputData(ConvertTextToRichTextStatus.Failed);
-        }
         finally
         {
             _karteInfRepository.ReleaseResource();
