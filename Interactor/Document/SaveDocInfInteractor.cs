@@ -69,10 +69,6 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }
-        catch (Exception)
-        {
-            return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();

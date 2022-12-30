@@ -38,6 +38,7 @@ using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionLock;
 using Domain.Models.ReceptionSameVisit;
+using Domain.Models.Santei;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
 using Domain.Models.SetMst;
@@ -86,6 +87,7 @@ using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
 using Interactor.Ka;
 using Interactor.KarteFilter;
+using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.MaxMoney;
@@ -105,6 +107,7 @@ using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
 using Interactor.ReceptionVisiting;
+using Interactor.Santei;
 using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
@@ -178,6 +181,7 @@ using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
+using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
@@ -251,6 +255,7 @@ using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
+using UseCase.Santei.GetListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
@@ -402,6 +407,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
+            services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -457,6 +463,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
+            busBuilder.RegisterUseCase<ConvertTextToRichTextInputData, ConvertTextToRichTextInteractor>();
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
@@ -687,6 +694,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //PtGroupMaster
             busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
+
+            //SanteiInf
+            busBuilder.RegisterUseCase<GetListSanteiInfInputData, GetListSanteiInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

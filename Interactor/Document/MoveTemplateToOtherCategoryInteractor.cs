@@ -52,10 +52,6 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
             }
             return new MoveTemplateToOtherCategoryOutputData(MoveTemplateToOtherCategoryStatus.Failed);
         }
-        catch (Exception)
-        {
-            return new MoveTemplateToOtherCategoryOutputData(MoveTemplateToOtherCategoryStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();

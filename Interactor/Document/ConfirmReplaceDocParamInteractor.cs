@@ -43,10 +43,6 @@ public class ConfirmReplaceDocParamInteractor : IConfirmReplaceDocParamInputPort
                                     )).ToList();
             return new ConfirmReplaceDocParamOutputData(result, ConfirmReplaceDocParamStatus.Successed);
         }
-        catch (Exception)
-        {
-            return new ConfirmReplaceDocParamOutputData(ConfirmReplaceDocParamStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();
