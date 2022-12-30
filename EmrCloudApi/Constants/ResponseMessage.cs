@@ -860,5 +860,16 @@
 
         //PtGrpMaster
         public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
+
+        // SanteiInf
+        public static readonly string InvalidAlertDays = "Invalid AlertDays!";
+        public static readonly string InvalidAlertTerm = "Invalid AlertTerm!";
+        public static readonly string InvalidKisanSbt = "Invalid KisanSbt!";
+        public static readonly string InvalidKisanDate = "Invalid KisanDate!";
+        public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
+        public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
+        public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
+        public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
+
     }
 }

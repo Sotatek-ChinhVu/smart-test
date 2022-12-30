@@ -34,6 +34,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
         finally
         {
             _santeiInfRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
         }
     }
 
@@ -123,7 +124,6 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
                                                 modelDetail.Id,
                                                 modelDetail.PtId,
                                                 modelDetail.ItemCd,
-                                                modelDetail.SeqNo,
                                                 modelDetail.EndDate,
                                                 modelDetail.KisanSbt,
                                                 modelDetail.KisanDate,

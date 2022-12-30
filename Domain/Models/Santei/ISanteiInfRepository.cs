@@ -6,7 +6,11 @@ public interface ISanteiInfRepository : IRepositoryBase
 {
     List<SanteiInfModel> GetListSanteiInf(int hpId, long ptId, int sinDate);
 
-    bool SaveListSanteiInf(int hpId, int userId, SanteiInfModel model);
+    List<SanteiInfDetailModel> GetListSanteiInfDetails(int hpId, long ptId);
 
-    bool SaveListSanteiInfDetail(int hpId, int userId, SanteiInfDetailModel model);
+    List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId);
+
+    public bool CheckExistItemCd(int hpId, List<string> listItemCds);
+
+    bool SaveSantei(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels);
 }

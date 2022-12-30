@@ -17,6 +17,7 @@ public class SanteiInfModel
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
         ListSanteiInfDetails = listSanteiInfDetails;
+        IsDeleted = false;
     }
 
     public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
@@ -29,11 +30,48 @@ public class SanteiInfModel
         LastOdrDate = 0;
         PtId = 0;
         ListSanteiInfDetails = new();
+        IsDeleted = false;
         ItemCd = itemCd;
         SanteiItemCount = santeiItemCount;
         SanteiItemSum = santeiItemSum;
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
+    }
+
+    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm, List<SanteiInfDetailModel> listSanteiInfDetails, bool isDeleted)
+    {
+        Id = id;
+        PtId = ptId;
+        ItemCd = itemCd;
+        AlertDays = alertDays;
+        AlertTerm = alertTerm;
+        ListSanteiInfDetails = listSanteiInfDetails;
+        IsDeleted = isDeleted;
+        SeqNo = 0;
+        ItemName = string.Empty;
+        LastOdrDate = 0;
+        SanteiItemCount = 0;
+        SanteiItemSum = 0;
+        CurrentMonthSanteiItemCount = 0;
+        CurrentMonthSanteiItemSum = 0;
+    }
+
+    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm)
+    {
+        Id = id;
+        PtId = ptId;
+        ItemCd = itemCd;
+        AlertDays = alertDays;
+        AlertTerm = alertTerm;
+        SeqNo = 0;
+        ItemName = string.Empty;
+        LastOdrDate = 0;
+        SanteiItemCount = 0;
+        SanteiItemSum = 0;
+        CurrentMonthSanteiItemCount = 0;
+        CurrentMonthSanteiItemSum = 0;
+        ListSanteiInfDetails = new();
+        IsDeleted = false;
     }
 
     public long Id { get; private set; }
@@ -59,6 +97,8 @@ public class SanteiInfModel
     public int CurrentMonthSanteiItemCount { get; private set; }
 
     public double CurrentMonthSanteiItemSum { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 
     public List<SanteiInfDetailModel> ListSanteiInfDetails { get; private set; }
 }
