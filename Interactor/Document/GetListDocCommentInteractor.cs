@@ -17,13 +17,11 @@ public class GetListDocCommentInteractor : IGetListDocCommentInputPort
         try
         {
             var listComment = _documentRepository.GetListDocComment(inputData.ListReplaceWord);
-            var listCommentDetail = _documentRepository.GetListDocCommentDetail(listComment.Select(item => item.CategoryId).ToList());
             var result = listComment.Select(detail => new DocCommentOutputItem(
                                                     detail.CategoryId,
                                                     detail.CategoryName,
                                                     detail.ReplaceWord,
-                                                    listCommentDetail
-                                                    .Where(item => item.CategoryId == detail.CategoryId)
+                                                    detail.ListDocCommentDetails
                                                     .Select(item => new DocCommentDetailOutputItem(
                                                             item.CategoryId,
                                                             item.Comment

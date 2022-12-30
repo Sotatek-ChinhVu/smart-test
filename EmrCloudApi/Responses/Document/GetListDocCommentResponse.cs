@@ -4,10 +4,10 @@ namespace EmrCloudApi.Responses.Document;
 
 public class GetListDocCommentResponse
 {
-    public GetListDocCommentResponse(List<DocCommentOutputItem> listDocCommnet)
+    public GetListDocCommentResponse(List<DocCommentOutputItem> listDocComment)
     {
-        ListDocCommnet = listDocCommnet.Select(item => new DocCommentDto(item)).ToList();
+        ListDocComment = listDocComment.Select(item => new DocCommentDto(item)).ToList();
     }
 
-    public List<DocCommentDto> ListDocCommnet { get; private set; }
+    public List<DocCommentDto> ListDocComment { get; private set; }
 }
