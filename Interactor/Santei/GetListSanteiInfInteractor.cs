@@ -34,6 +34,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
         finally
         {
             _santeiInfRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
         }
     }
 

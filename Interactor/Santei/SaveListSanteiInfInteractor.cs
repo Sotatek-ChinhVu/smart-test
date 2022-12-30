@@ -41,16 +41,13 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             }
             return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Failed);
         }
-        catch (Exception)
-        {
-            return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Failed);
-        }
         finally
         {
             _santeiInfRepository.ReleaseResource();
             _hpInfRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
             _userRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
         }
     }
 
@@ -131,49 +128,59 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             // validate list SanteiInfDetails
             foreach (var santeiInfDetail in santeiInf.ListSanteInfDetails)
             {
-                // validate KisanSbt, KisanSbt must exist in dictionary
-                //{ 0, string.Empty },
-                //{ 1, "初回算定" },
-                //{ 2, "発症" },
-                //{ 3, "急性憎悪" },
-                //{ 4, "治療開始" },
-                //{ 5, "手術" },
-                //{ 6, "初回診断" }
-                if (santeiInfDetail.KisanSbt < 1 || santeiInfDetail.KisanSbt > 6)
+                var resultValidateDetail = ValidateSanteiInfDetail(santeiInf.ItemCd, santeiInfDetail, listSanteiInfDetails, listByomeis);
+                if (resultValidateDetail != SaveListSanteiInfStatus.ValidateSuccess)
                 {
-                    return SaveListSanteiInfStatus.InvalidKisanSbt;
-                }
-
-                // check santeiInfDetail is exist in SanteiInf
-                else if (santeiInfDetail.Id > 0 && listSanteiInfDetails.FirstOrDefault(item => item.Id == santeiInfDetail.Id)?.ItemCd != santeiInf.ItemCd)
-                {
-                    return SaveListSanteiInfStatus.InvalidSanteiInfDetail;
-                }
-
-                // validate EndDate
-                else if (CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
-                {
-                    return SaveListSanteiInfStatus.InvalidEndDate;
-                }
-
-                // validate KisanDate
-                else if (CIUtil.SDateToShowSDate(santeiInfDetail.KisanDate) == string.Empty)
-                {
-                    return SaveListSanteiInfStatus.InvalidKisanDate;
-                }
-
-                // validate Byomei
-                else if (!listByomeis.Contains(santeiInfDetail.Byomei))
-                {
-                    return SaveListSanteiInfStatus.InvalidByomei;
-                }
-
-                // validate HosokuComment
-                else if (santeiInfDetail.HosokuComment.Length > 80)
-                {
-                    return SaveListSanteiInfStatus.InvalidHosokuComment;
+                    return resultValidateDetail;
                 }
             }
+        }
+        return SaveListSanteiInfStatus.ValidateSuccess;
+    }
+
+    private SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails, List<string> listByomeis)
+    {
+        // validate KisanSbt, KisanSbt must exist in dictionary
+        //{ 0, string.Empty },
+        //{ 1, "初回算定" },
+        //{ 2, "発症" },
+        //{ 3, "急性憎悪" },
+        //{ 4, "治療開始" },
+        //{ 5, "手術" },
+        //{ 6, "初回診断" }
+        if (santeiInfDetail.KisanSbt < 1 || santeiInfDetail.KisanSbt > 6)
+        {
+            return SaveListSanteiInfStatus.InvalidKisanSbt;
+        }
+
+        // check santeiInfDetail is exist in SanteiInf
+        else if (santeiInfDetail.Id > 0 && listSanteiInfDetails.FirstOrDefault(item => item.Id == santeiInfDetail.Id)?.ItemCd != itemCd)
+        {
+            return SaveListSanteiInfStatus.InvalidSanteiInfDetail;
+        }
+
+        // validate EndDate
+        else if (CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
+        {
+            return SaveListSanteiInfStatus.InvalidEndDate;
+        }
+
+        // validate KisanDate
+        else if (CIUtil.SDateToShowSDate(santeiInfDetail.KisanDate) == string.Empty)
+        {
+            return SaveListSanteiInfStatus.InvalidKisanDate;
+        }
+
+        // validate Byomei
+        else if (!listByomeis.Contains(santeiInfDetail.Byomei))
+        {
+            return SaveListSanteiInfStatus.InvalidByomei;
+        }
+
+        // validate HosokuComment
+        else if (santeiInfDetail.HosokuComment.Length > 80)
+        {
+            return SaveListSanteiInfStatus.InvalidHosokuComment;
         }
         return SaveListSanteiInfStatus.ValidateSuccess;
     }
