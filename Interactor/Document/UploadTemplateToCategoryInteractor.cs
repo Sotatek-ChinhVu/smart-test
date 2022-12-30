@@ -5,6 +5,7 @@ using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 using UseCase.Document.UploadTemplateToCategory;
 
 namespace Interactor.Document;
@@ -26,7 +27,13 @@ public class UploadTemplateToCategoryInteractor : IUploadTemplateToCategoryInput
 
     public UploadTemplateToCategoryOutputData Handle(UploadTemplateToCategoryInputData inputData)
     {
-        if (!_hpInfRepository.CheckHpId(inputData.HpId))
+        var regxFile = @"^.*\.(docx|DOCX|xlsx|XLSX)$";
+        var rg = new Regex(regxFile);
+        if (rg.Matches(inputData.FileName).Count == 0)
+        {
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.InvalidExtentionFile);
+        }
+        else if (!_hpInfRepository.CheckHpId(inputData.HpId))
         {
             return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.InvalidHpId);
         }

@@ -24,6 +24,7 @@ public class UploadTemplateToCategoryPresenter
         UploadTemplateToCategoryStatus.InvalidCategoryCd => ResponseMessage.InvalidDocumentCategoryCd,
         UploadTemplateToCategoryStatus.InvalidFileInput => ResponseMessage.InvalidFileInput,
         UploadTemplateToCategoryStatus.ExistFileTemplateName => ResponseMessage.ExistFileTemplateName,
+        UploadTemplateToCategoryStatus.InvalidExtentionFile => ResponseMessage.InvalidExtentionFile,
         _ => string.Empty
     };
 }
