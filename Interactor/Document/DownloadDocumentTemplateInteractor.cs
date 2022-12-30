@@ -1,8 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using DocumentFormat.OpenXml.Packaging;
-using FindAndReplace;
+﻿using FindAndReplace;
 using Interactor.Document.CommonGetListParam;
-using System.Net;
 using UseCase.Document;
 using UseCase.Document.DownloadDocumentTemplate;
 
@@ -19,30 +16,23 @@ public class DownloadDocumentTemplateInteractor : IDownloadDocumentTemplateInput
 
     public DownloadDocumentTemplateOutputData Handle(DownloadDocumentTemplateInputData inputData)
     {
-        try
+        var extension = System.IO.Path.GetExtension(inputData.LinkFile).ToLower();
+        using (var httpClient = new HttpClient())
         {
-            var extension = System.IO.Path.GetExtension(inputData.LinkFile).ToLower();
-            using (var httpClient = new HttpClient())
+            var responseStream = httpClient.GetStreamAsync(inputData.LinkFile).Result;
+            using (var stream = new MemoryStream())
             {
-                var responseStream = httpClient.GetStreamAsync(inputData.LinkFile).Result;
-                using (var stream = new MemoryStream())
+                responseStream.CopyTo(stream);
+                if (stream.Length > 0)
                 {
-                    responseStream.CopyTo(stream);
-                    if (stream.Length > 0)
+                    var listGroupParams = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
+                    if (extension.Equals(".docx"))
                     {
-                        var listGroupParams = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
-                        if (extension.Equals(".docx"))
-                        {
-                            return new DownloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams, inputData.ListReplaceComments), DownloadDocumentTemplateStatus.Successed);
-                        }
+                        return new DownloadDocumentTemplateOutputData(ReplaceParamsFileDocx(stream, listGroupParams, inputData.ListReplaceComments), DownloadDocumentTemplateStatus.Successed);
                     }
-                    return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
                 }
+                return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
             }
-        }
-        catch (Exception)
-        {
-            return new DownloadDocumentTemplateOutputData(DownloadDocumentTemplateStatus.Failed);
         }
     }
 
