@@ -64,24 +64,15 @@ namespace Interactor.PatientInfor
             if (model.Patient.HpId <= 0)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HpId`"), SavePatientInforValidationCode.InvalidHpId, TypeMessage.TypeMessageError));
 
-            if (string.IsNullOrEmpty(model.Patient.Name))
-                resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Name`"), SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
-
-            if (model.Patient.Name.Length > 100)
+            if (model.Patient.Name != null && model.Patient.Name.Length > 100)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.Name`"), SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
 
-            if (string.IsNullOrEmpty(model.Patient.KanaName))
-                resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
-
-            if (model.Patient.KanaName.Length > 100)
+            if (model.Patient.KanaName != null && model.Patient.KanaName.Length > 100)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
-            resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName, model.Patient.Name, model.Patient.HpId));
+            resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId));
             int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, model.Patient.PtId != 0, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
-
-            if (model.Patient.Birthday == 0)
-                resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Birthday`"), SavePatientInforValidationCode.InvalidBirthday, TypeMessage.TypeMessageError));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
