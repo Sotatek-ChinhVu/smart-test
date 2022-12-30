@@ -13,5 +13,7 @@ namespace Domain.Models.InsuranceMst
         bool SaveHokenSyaMst(HokensyaMstModel model, int userId);
 
         HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch);
+
+        IEnumerable<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken);
     }
 }

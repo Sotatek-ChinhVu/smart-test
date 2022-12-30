@@ -1,10 +1,12 @@
-﻿using Domain.Models.InsuranceMst;
+﻿using Domain.Constant;
+using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -550,6 +552,144 @@ namespace Infrastructure.Repositories
                                         ,entity.Address2 ?? string.Empty
                                         ,entity.Tel1 ?? string.Empty
                                         ,entity.IsKigoNa); ;
+        }
+
+        public IEnumerable<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken)
+        {
+            var hospitalInfo = NoTrackingDataContext.HpInfs
+                .Where(p => p.HpId == hpId)
+                .OrderByDescending(p => p.StartDate)
+                .FirstOrDefault();
+
+            int prefCd = 0;
+            if (hospitalInfo != null)
+                prefCd = hospitalInfo.PrefNo;
+
+            var hokenMst = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId
+                                            && FHokenNo == 0 || x.HokenNo == FHokenNo
+                                            && FHokenSbtKbn == 0 || x.HokenSbtKbn == FHokenSbtKbn
+                                            && !IsJitan || x.PrefNo > 0
+                                            && !IsTaken || x.PrefNo == prefCd)
+                            .OrderByDescending(h => h.StartDate)
+                            .GroupBy(hk => new { hk.HpId, hk.PrefNo, hk.HokenNo })
+                            .Select(grp => grp.OrderByDescending(h => h.StartDate).FirstOrDefault());
+
+            var hokenDetail = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId)
+                            .OrderByDescending(h => h.StartDate)
+                            .GroupBy(hk => new { hk.HpId, hk.PrefNo, hk.HokenNo, hk.HokenEdaNo })
+                            .Select(grp => grp.OrderByDescending(h => h.StartDate).FirstOrDefault())
+                            .OrderBy(x => x.SortNo);
+
+            var query = from mst in hokenMst
+                        join detail in hokenDetail 
+                            on 
+                            new { mst.HpId, mst.HokenNo, mst.PrefNo } equals 
+                            new { detail.HpId, detail.HokenNo, detail.PrefNo }
+                        into details
+                        select new
+                        {
+                            Mst = mst,
+                            Details = details,
+                        };
+
+            var result = query.AsEnumerable()
+                .Select(data => new InsuranceMasterDetailModel(
+                                        new HokenMstModel(data.Mst.FutanKbn,
+                                                          data.Mst.FutanRate,
+                                                          data.Mst.StartDate,
+                                                          data.Mst.EndDate,
+                                                          data.Mst.HokenNo,
+                                                          data.Mst.HokenEdaNo,
+                                                          data.Mst.HokenSname ?? string.Empty,
+                                                          data.Mst.Houbetu ?? string.Empty,
+                                                          data.Mst.HokenSbtKbn,
+                                                          data.Mst.CheckDigit,
+                                                          data.Mst.AgeStart,
+                                                          data.Mst.AgeEnd,
+                                                          data.Mst.IsFutansyaNoCheck,
+                                                          data.Mst.IsJyukyusyaNoCheck,
+                                                          data.Mst.JyukyuCheckDigit,
+                                                          data.Mst.IsTokusyuNoCheck,
+                                                          data.Mst.HokenName ?? string.Empty,
+                                                          data.Mst.HokenNameCd ?? string.Empty,
+                                                          data.Mst.HokenKohiKbn,
+                                                          data.Mst.IsOtherPrefValid,
+                                                          data.Mst.ReceKisai,
+                                                          data.Mst.IsLimitList,
+                                                          data.Mst.IsLimitListSum,
+                                                          data.Mst.EnTen,
+                                                          data.Mst.KaiLimitFutan,
+                                                          data.Mst.DayLimitFutan,
+                                                          data.Mst.MonthLimitFutan,
+                                                          data.Mst.MonthLimitCount,
+                                                          data.Mst.LimitKbn,
+                                                          data.Mst.CountKbn,
+                                                          data.Mst.FutanYusen,
+                                                          data.Mst.CalcSpKbn,
+                                                          data.Mst.MonthSpLimit,
+                                                          data.Mst.KogakuTekiyo,
+                                                          data.Mst.KogakuTotalKbn,
+                                                          data.Mst.KogakuHairyoKbn,
+                                                          data.Mst.ReceSeikyuKbn,
+                                                          data.Mst.ReceKisaiKokho,
+                                                          data.Mst.ReceKisai2,
+                                                          data.Mst.ReceTenKisai,
+                                                          data.Mst.ReceFutanRound,
+                                                          data.Mst.ReceZeroKisai,
+                                                          data.Mst.ReceSpKbn,
+                                                          string.Empty,
+                                                          data.Mst.PrefNo),
+                                        data.Details.Select(x=> new HokenMstModel(x.FutanKbn,
+                                                          x.FutanRate,
+                                                          x.StartDate,
+                                                          x.EndDate,
+                                                          x.HokenNo,
+                                                          x.HokenEdaNo,
+                                                          x.HokenSname ?? string.Empty,
+                                                          x.Houbetu ?? string.Empty,
+                                                          x.HokenSbtKbn,
+                                                          x.CheckDigit,
+                                                          x.AgeStart,
+                                                          x.AgeEnd,
+                                                          x.IsFutansyaNoCheck,
+                                                          x.IsJyukyusyaNoCheck,
+                                                          x.JyukyuCheckDigit,
+                                                          x.IsTokusyuNoCheck,
+                                                          x.HokenName ?? string.Empty,
+                                                          x.HokenNameCd ?? string.Empty,
+                                                          x.HokenKohiKbn,
+                                                          x.IsOtherPrefValid,
+                                                          x.ReceKisai,
+                                                          x.IsLimitList,
+                                                          x.IsLimitListSum,
+                                                          x.EnTen,
+                                                          x.KaiLimitFutan,
+                                                          x.DayLimitFutan,
+                                                          x.MonthLimitFutan,
+                                                          x.MonthLimitCount,
+                                                          x.LimitKbn,
+                                                          x.CountKbn,
+                                                          x.FutanYusen,
+                                                          x.CalcSpKbn,
+                                                          x.MonthSpLimit,
+                                                          x.KogakuTekiyo,
+                                                          x.KogakuTotalKbn,
+                                                          x.KogakuHairyoKbn,
+                                                          x.ReceSeikyuKbn,
+                                                          x.ReceKisaiKokho,
+                                                          x.ReceKisai2,
+                                                          x.ReceTenKisai,
+                                                          x.ReceFutanRound,
+                                                          x.ReceZeroKisai,
+                                                          x.ReceSpKbn,
+                                                          string.Empty,
+                                                          x.PrefNo))
+                                        ))
+                                        .OrderBy(h => h.Master.HokenNo)
+                                        .ToList();
+
+            List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+            return result;
         }
 
         public void ReleaseResource()
