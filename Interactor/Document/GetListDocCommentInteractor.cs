@@ -30,10 +30,6 @@ public class GetListDocCommentInteractor : IGetListDocCommentInputPort
                                             )).ToList();
             return new GetListDocCommentOutputData(result, GetListDocCommentStatus.Successed);
         }
-        catch (Exception)
-        {
-            return new GetListDocCommentOutputData(GetListDocCommentStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();

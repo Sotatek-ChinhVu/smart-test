@@ -61,10 +61,6 @@ public class UploadTemplateToCategoryInteractor : IUploadTemplateToCategoryInput
             }
             return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.Failed);
         }
-        catch
-        {
-            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();
