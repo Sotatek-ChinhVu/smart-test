@@ -253,13 +253,13 @@ namespace Interactor.PatientInfor
             if (string.IsNullOrEmpty(firstNameKana))
             {
                 message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
-                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKana, TypeMessage.TypeMessageError));
             }
 
             if (string.IsNullOrEmpty(firstNameKanji))
             {
                 message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "氏名" });
-                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKanji, TypeMessage.TypeMessageError));
             }
 
             // validate full name if setting
@@ -268,13 +268,13 @@ namespace Interactor.PatientInfor
                 if (string.IsNullOrEmpty(lastNameKana))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanaName, TypeMessage.TypeMessageError));
                 }
 
                 if (string.IsNullOrEmpty(lastNameKanji))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "氏名" });
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanjiName, TypeMessage.TypeMessageError));
                 }
             }
 
@@ -288,10 +288,15 @@ namespace Interactor.PatientInfor
                 string sBuf = CIUtil.Chk_JISKj(firstNameKanji, out sBuf2);
                 if (!string.IsNullOrEmpty(sBuf))
                 {
-                    if (FKanNmChkJIS == 2)
+                    if (FKanNmChkJIS == 1)
+                    {
+                        message = "漢字名に '" + sBuf + "' の文字が入力されています。" + "\n\r" + "登録しますか？";
+                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidJiscodeCheck, TypeMessage.TypeMessageWarning));
+                    }
+                    else if (FKanNmChkJIS == 2)
                     {
                         message = string.Format(ErrorMessage.MessageType_mInp00140, new string[] { "漢字名", "'" + sBuf + "'" + " の文字" });
-                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                        resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidChineseCharacterName, TypeMessage.TypeMessageError));
                     }
                 }
                 if (isValidateFullName)
@@ -301,10 +306,15 @@ namespace Interactor.PatientInfor
                     sBuf = CIUtil.Chk_JISKj(lastNameKanji, out sBuf2);
                     if (!string.IsNullOrEmpty(sBuf))
                     {
-                        if (FKanNmChkJIS == 2)
+                        if (FKanNmChkJIS == 1)
+                        {
+                            message = "漢字姓に '" + sBuf + "' の文字が入力されています。" + "\n\r" + "登録しますか？";
+                            resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidJiscodeCheck, TypeMessage.TypeMessageWarning));
+                        }
+                        else if (FKanNmChkJIS == 2)
                         {
                             message = string.Format(ErrorMessage.MessageType_mInp00140, new string[] { "漢字姓", "'" + sBuf + "'" + " の文字" });
-                            resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                            resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidChineseCharacterName, TypeMessage.TypeMessageError));
                         }
                     }
                 }
@@ -313,13 +323,13 @@ namespace Interactor.PatientInfor
             if (firstNameKana.Length > 20)
             {
                 message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者名（カナ）は２０文字以下を入力してください。" });
-                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKanaLength, TypeMessage.TypeMessageError));
             }
 
             if (firstNameKanji.Length > 30)
             {
                 message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者名は３０文字以下を入力してください。" });
-                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKanjiLength, TypeMessage.TypeMessageError));
             }
 
             if (isValidateFullName)
@@ -327,13 +337,13 @@ namespace Interactor.PatientInfor
                 if (lastNameKana.Length > 20)
                 {
                     message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者姓（カナ）は２０文字以下を入力してください。" });
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanaNameLength, TypeMessage.TypeMessageError));
                 }
 
                 if (lastNameKanji.Length > 30)
                 {
                     message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者姓は３０文字以下を入力してください。" });
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidName, TypeMessage.TypeMessageError));
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanjiNameLength, TypeMessage.TypeMessageError));
                 }
             }
             return resultMessages;
