@@ -1,4 +1,4 @@
-﻿namespace UseCase.Document.GetListDocComment;
+﻿namespace UseCase.Document;
 
 public class DocCommentDetailOutputItem
 {

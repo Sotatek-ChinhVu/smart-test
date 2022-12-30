@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.ConfirmDate
+﻿namespace EmrCloudApi.Responses.Document.Dto
 {
     public class ConfirmDateDto
     {

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Document;
+using UseCase.Document;
 using UseCase.Document.GetListDocComment;
 
 namespace Interactor.Document;
@@ -28,10 +29,6 @@ public class GetListDocCommentInteractor : IGetListDocCommentInputPort
                                                         )).ToList()
                                             )).ToList();
             return new GetListDocCommentOutputData(result, GetListDocCommentStatus.Successed);
-        }
-        catch (Exception)
-        {
-            return new GetListDocCommentOutputData(GetListDocCommentStatus.Failed);
         }
         finally
         {

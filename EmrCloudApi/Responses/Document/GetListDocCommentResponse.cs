@@ -1,4 +1,5 @@
-﻿using UseCase.Document.GetListDocComment;
+﻿using EmrCloudApi.Responses.Document.Dto;
+using UseCase.Document;
 
 namespace EmrCloudApi.Responses.Document;
 
