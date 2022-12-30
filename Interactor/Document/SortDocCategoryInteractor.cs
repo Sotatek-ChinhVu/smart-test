@@ -33,10 +33,6 @@ public class SortDocCategoryInteractor : ISortDocCategoryInputPort
             }
             return new SortDocCategoryOutputData(SortDocCategoryStatus.Failed);
         }
-        catch (Exception)
-        {
-            return new SortDocCategoryOutputData(SortDocCategoryStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();

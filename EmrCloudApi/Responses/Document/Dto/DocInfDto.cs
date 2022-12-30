@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Document;
 using Helper.Common;
 
-namespace EmrCloudApi.Responses.Document;
+namespace EmrCloudApi.Responses.Document.Dto;
 
 public class DocInfDto
 {
