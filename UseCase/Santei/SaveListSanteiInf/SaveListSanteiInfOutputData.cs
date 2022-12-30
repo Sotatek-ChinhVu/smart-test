@@ -9,5 +9,5 @@ public class SaveListSanteiInfOutputData : IOutputData
         Status = status;
     }
 
-    public SaveListSanteiInfStatus Status { get; set; }
+    public SaveListSanteiInfStatus Status { get; private set; }
 }
