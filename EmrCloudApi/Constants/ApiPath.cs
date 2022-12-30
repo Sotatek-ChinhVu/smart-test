@@ -35,6 +35,7 @@
         public const string FindTenMst = "FindTenMst";
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
+        public const string GetCmtCheckMstList = "GetCmtCheckMstList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -50,6 +51,8 @@
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
         public const string GetInsuranceComboList = "GetInsuranceComboList";
+        public const string GetValidGairaiRiha = "GetValidGairaiRiha";
+        public const string GetValidJihiYobo = "GetValidJihiYobo";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -148,6 +151,7 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+        public const string Sagaku = "Sagaku";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";

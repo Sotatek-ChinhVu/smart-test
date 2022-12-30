@@ -33,6 +33,4 @@ public interface IDocumentRepository : IRepositoryBase
     bool MoveDocInf(int hpId, int userId, int categoryCd, int moveCategoryCd);
 
     List<DocCommentModel> GetListDocComment(List<string> listReplaceWord);
-
-    List<DocCommentDetailModel> GetListDocCommentDetail();
 }

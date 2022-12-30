@@ -256,20 +256,11 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         {
             query = query.Where(item => item.ReplaceWord != null && listReplaceWord.Contains(item.ReplaceWord));
         }
-        return query.OrderBy(item => item.SortNo)
-                    .Select(item => new DocCommentModel(item.CategoryId,
-                                                        item.CategoryName ?? string.Empty,
-                                                        item.ReplaceWord ?? string.Empty))
+        var listDocComments = query.ToList();
+        var listDocCommentDetails = GetListDocCommentDetail(listDocComments.Select(item => item.CategoryId).ToList());
+        return listDocComments.OrderBy(item => item.SortNo)
+                    .Select(item => ConvertToDocCommentModel(item, listDocCommentDetails))
                     .ToList();
-    }
-
-    public List<DocCommentDetailModel> GetListDocCommentDetail()
-    {
-        return NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0)
-                                                      .OrderBy(item => item.SortNo)
-                                                      .Select(item => new DocCommentDetailModel(item.CategoryId,
-                                                                                                item.Comment ?? string.Empty))
-                                                      .ToList();
     }
 
     #region private function
@@ -355,6 +346,28 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             item.SortNo = sortNo;
             sortNo++;
         }
+    }
+
+    private List<DocCommentDetailModel> GetListDocCommentDetail(List<int> listCategoryId)
+    {
+        var query = NoTrackingDataContext.DocCommentDetails.Where(item => item.IsDeleted == 0);
+        if (listCategoryId.Any())
+        {
+            query = query.Where(item => listCategoryId.Contains(item.CategoryId));
+        }
+        return query.OrderBy(item => item.SortNo)
+                    .Select(item => new DocCommentDetailModel(item.CategoryId,
+                                                              item.Comment ?? string.Empty))
+                    .ToList();
+    }
+
+    private DocCommentModel ConvertToDocCommentModel(DocComment docComment, List<DocCommentDetailModel> listDocCommentDetails)
+    {
+        var listDocCommentModels = listDocCommentDetails.Where(detail => detail.CategoryId == docComment.CategoryId).ToList();
+        return new DocCommentModel(docComment.CategoryId,
+                                   docComment.CategoryName ?? string.Empty,
+                                   docComment.ReplaceWord ?? string.Empty,
+                                   listDocCommentModels);
     }
 
     public void ReleaseResource()
