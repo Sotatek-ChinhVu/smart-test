@@ -21,7 +21,7 @@ public class SaveListSanteiInfPresenter : ISaveListSanteiInfOutputPort
         SaveListSanteiInfStatus.Successed => ResponseMessage.Success,
         SaveListSanteiInfStatus.Failed => ResponseMessage.Failed,
         SaveListSanteiInfStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-        SaveListSanteiInfStatus.InvalidItemCd => ResponseMessage.InvalidSanteiItemCd,
+        SaveListSanteiInfStatus.InvalidItemCd => ResponseMessage.InvalidItemCd,
         SaveListSanteiInfStatus.InvalidAlertDays => ResponseMessage.InvalidAlertDays,
         SaveListSanteiInfStatus.InvalidAlertTerm => ResponseMessage.InvalidAlertTerm,
         SaveListSanteiInfStatus.InvalidEndDate => ResponseMessage.InvalidEndDate,
@@ -32,6 +32,7 @@ public class SaveListSanteiInfPresenter : ISaveListSanteiInfOutputPort
         SaveListSanteiInfStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         SaveListSanteiInfStatus.InvalidUserId => ResponseMessage.InvalidUserId,
         SaveListSanteiInfStatus.ThisSanteiInfDoesNotAllowSanteiInfDetail => ResponseMessage.ThisSanteiInfDoesNotAllowSanteiInfDetail,
+        SaveListSanteiInfStatus.InvalidSanteiInfDetail => ResponseMessage.InvalidSanteiInfDetail,
         _ => string.Empty
     };
 }

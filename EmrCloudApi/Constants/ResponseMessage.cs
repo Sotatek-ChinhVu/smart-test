@@ -872,7 +872,7 @@
         public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
         public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
-        public static readonly string InvalidSanteiItemCd = "Invalid ItemCd, ItemCd is not exist in Database or exist in list SanteiInf!";
+        public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain this SanteiInfDetail!";
 
     }
 }

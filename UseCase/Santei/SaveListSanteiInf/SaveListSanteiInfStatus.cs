@@ -17,4 +17,5 @@ public enum SaveListSanteiInfStatus : byte
     InvalidHpId = 12,
     InvalidUserId = 13,
     ThisSanteiInfDoesNotAllowSanteiInfDetail = 14,
+    InvalidSanteiInfDetail = 15,
 }

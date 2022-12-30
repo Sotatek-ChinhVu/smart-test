@@ -32,8 +32,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                 return new SaveListSanteiInfOutputData(resultValidate);
             }
             var listSanteiInfs = ConvertToSanteiInfModel(inputData.PtId, inputData.ListSanteiInfs);
-            var listSanteiInfDetails = ConvertToSanteiInfDetailModel(inputData.PtId, inputData.ListSanteiInfs);
-            if (_santeiInfRepository.SaveSantei(inputData.HpId, inputData.UserId, listSanteiInfs, listSanteiInfDetails))
+            if (_santeiInfRepository.SaveSantei(inputData.HpId, inputData.UserId, listSanteiInfs))
             {
                 return new SaveListSanteiInfOutputData(SaveListSanteiInfStatus.Successed);
             }
@@ -54,6 +53,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
 
     private SaveListSanteiInfStatus ValidateInput(SaveListSanteiInfInputData input)
     {
+        // validate simple param
         if (input.HpId <= 0 || !_hpInfRepository.CheckHpId(input.HpId))
         {
             return SaveListSanteiInfStatus.InvalidHpId;
@@ -66,6 +66,8 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         {
             return SaveListSanteiInfStatus.InvalidUserId;
         }
+
+        // Check itemCd is exist in TenMst
         else if (!_santeiInfRepository.CheckExistItemCd(input.HpId, input.ListSanteiInfs.Select(item => item.ItemCd).ToList()))
         {
             return SaveListSanteiInfStatus.InvalidItemCd;
@@ -139,6 +141,12 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
                     return SaveListSanteiInfStatus.InvalidKisanSbt;
                 }
 
+                // check santeiInfDetail is exist in SanteiInf
+                else if (santeiInfDetail.Id > 0 && listSanteiInfDetails.FirstOrDefault(item => item.Id == santeiInfDetail.Id)?.ItemCd != santeiInf.ItemCd)
+                {
+                    return SaveListSanteiInfStatus.InvalidSanteiInfDetail;
+                }
+
                 // validate EndDate
                 else if (CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
                 {
@@ -169,35 +177,25 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
 
     private List<SanteiInfModel> ConvertToSanteiInfModel(long ptId, List<SanteiInfInputItem> listSanteiInfInputs)
     {
-        return listSanteiInfInputs.Select(item => new SanteiInfModel(
-                                                                        item.Id,
+        return listSanteiInfInputs.Select(santaiInf => new SanteiInfModel(
+                                                                        santaiInf.Id,
                                                                         ptId,
-                                                                        item.ItemCd,
-                                                                        item.AlertDays,
-                                                                        item.AlertTerm,
-                                                                        item.IsDeleted
-                                                                    )).ToList();
-    }
-
-    private List<SanteiInfDetailModel> ConvertToSanteiInfDetailModel(long ptId, List<SanteiInfInputItem> listSanteiInfInputs)
-    {
-        List<SanteiInfDetailModel> result = new();
-        foreach (var santaiInf in listSanteiInfInputs)
-        {
-            var listSantaiIntDetails = santaiInf.ListSanteInfDetails.Select(item => new SanteiInfDetailModel(
-                                                                                                                item.Id,
+                                                                        santaiInf.ItemCd,
+                                                                        santaiInf.AlertDays,
+                                                                        santaiInf.AlertTerm,
+                                                                        santaiInf.ListSanteInfDetails.Select(santaiInfDetail => new SanteiInfDetailModel(
+                                                                                                                santaiInfDetail.Id,
                                                                                                                 ptId,
                                                                                                                 santaiInf.ItemCd,
-                                                                                                                item.EndDate,
-                                                                                                                item.KisanSbt,
-                                                                                                                item.KisanDate,
-                                                                                                                item.Byomei,
-                                                                                                                item.HosokuComment,
-                                                                                                                item.Comment,
-                                                                                                                santaiInf.IsDeleted ? santaiInf.IsDeleted : item.IsDeleted
-                                                                                                            )).ToList();
-            result.AddRange(listSantaiIntDetails);
-        }
-        return result;
+                                                                                                                santaiInfDetail.EndDate,
+                                                                                                                santaiInfDetail.KisanSbt,
+                                                                                                                santaiInfDetail.KisanDate,
+                                                                                                                santaiInfDetail.Byomei,
+                                                                                                                santaiInfDetail.HosokuComment,
+                                                                                                                santaiInfDetail.Comment,
+                                                                                                                santaiInf.IsDeleted ? santaiInf.IsDeleted : santaiInfDetail.IsDeleted
+                                                                                                            )).ToList(),
+                                                                        santaiInf.IsDeleted
+                                                                    )).ToList();
     }
 }
