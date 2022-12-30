@@ -1324,6 +1324,7 @@ namespace Infrastructure.Repositories
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
+                    kyuseiUpdate.UpdateId = userId;
                 }
             }
             #endregion
@@ -1453,8 +1454,9 @@ namespace Infrastructure.Repositories
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateId = userId;
+                    destR.UpdateId = userId;
                     destR.CreateDate = DateTime.UtcNow;
+                    destR.UpdateDate = DateTime.UtcNow;
                     return destR;
                 }));
                 #endregion
@@ -1463,7 +1465,9 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
                     destCf.CreateId = userId;
+                    destCf.UpdateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
+                    destCf.UpdateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
@@ -1544,6 +1548,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1552,6 +1558,8 @@ namespace Infrastructure.Repositories
                 {
                     destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
+                    destCf.UpdateDate = DateTime.UtcNow;
+                    destCf.UpdateId = userId;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
