@@ -2,7 +2,7 @@
 
 public class SanteiInfModel
 {
-    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
+    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         Id = id;
         PtId = ptId;
@@ -16,6 +16,7 @@ public class SanteiInfModel
         SanteiItemSum = santeiItemSum;
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
+        ListSanteiInfDetails = listSanteiInfDetails;
     }
 
     public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
@@ -27,6 +28,7 @@ public class SanteiInfModel
         ItemName = string.Empty;
         LastOdrDate = 0;
         PtId = 0;
+        ListSanteiInfDetails = new();
         ItemCd = itemCd;
         SanteiItemCount = santeiItemCount;
         SanteiItemSum = santeiItemSum;
@@ -57,4 +59,6 @@ public class SanteiInfModel
     public int CurrentMonthSanteiItemCount { get; private set; }
 
     public double CurrentMonthSanteiItemSum { get; private set; }
+
+    public List<SanteiInfDetailModel> ListSanteiInfDetails { get; private set; }
 }

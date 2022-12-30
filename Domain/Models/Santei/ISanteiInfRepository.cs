@@ -4,9 +4,7 @@ namespace Domain.Models.Santei;
 
 public interface ISanteiInfRepository : IRepositoryBase
 {
-    List<SanteiInfModel> GetListSanteiInfModel(int hpId, long ptId, int sinDate);
-
-    List<SanteiInfDetailModel> GetListSanteiInfDetailModel(int hpId, long ptId, int sinDate);
+    List<SanteiInfModel> GetListSanteiInf(int hpId, long ptId, int sinDate);
 
     List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
 
