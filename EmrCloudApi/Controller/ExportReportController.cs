@@ -4,7 +4,6 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Reporting;
 using Reporting.Model.ExportKarte1;
-using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller;
 
