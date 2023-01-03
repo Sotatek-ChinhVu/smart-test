@@ -1,4 +1,5 @@
-﻿using Domain.Models.RaiinKubunMst;
+﻿using Domain.Constant;
+using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
@@ -322,6 +323,186 @@ namespace Infrastructure.Repositories
             }
 
             return listColumnName;
+        }
+
+        public List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> GetRaiinKouiKbns(int hpId)
+        {
+            var result = new List<(int, int, int, int)>();
+            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == Session.HospitalID && r.IsDeleted == DeleteTypes.None);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == Session.HospitalID);
+            var query = from raiinKouiKbn in raiinKouiKbns
+                        join kouiKbnMst in kouiKbnMsts
+                        on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId
+                        select new
+                        {
+                            RaiinKouiKbn = raiinKouiKbn,
+                            KouiKbnMst = kouiKbnMst
+                        };
+            foreach (var entity in query)
+            {
+                result.Add(new(entity.RaiinKouiKbn.GrpId, entity.RaiinKouiKbn.KbnCd, entity.KouiKbnMst.KouiKbn1, entity.KouiKbnMst.KouiKbn2));
+            }
+            return result;
+        }
+
+        public List<RaiinKbnItemModel> GetRaiinKbnItems(int hpId)
+        {
+            return NoTrackingDataContext.RaiinKbItems
+                            .Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None)
+                            .AsEnumerable().Select(p => new RaiinKbnItemModel(
+                                    p.HpId,
+                                    p.GrpCd,
+                                    p.KbnCd,
+                                    p.SeqNo,
+                                    p.ItemCd ?? string.Empty,
+                                    p.IsExclude,
+                                    p.IsExclude,
+                                    p.SortNo
+                                )).ToList();
+        }
+
+        public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd, int userId)
+        {
+            // Use Index (HpId, PtId, SinDate, RaiinNo, GrpId, IsDelete) to find the record faster
+            var raiinKbnInf = TrackingDataContext.RaiinKbnInfs.FirstOrDefault(r =>
+                r.HpId == hpId
+                && r.PtId == ptId
+                && r.SinDate == sinDate
+                && r.RaiinNo == raiinNo
+                && r.GrpId == grpId
+                && r.IsDelete == DeleteTypes.None);
+            if (raiinKbnInf is null)
+            {
+                // Insert
+                TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                {
+                    HpId = hpId,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    RaiinNo = raiinNo,
+                    GrpId = grpId,
+                    KbnCd = kbnCd,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
+                });
+            }
+            else
+            {
+                // Update
+                raiinKbnInf.KbnCd = kbnCd;
+                raiinKbnInf.UpdateDate = DateTime.UtcNow;
+                raiinKbnInf.UpdateId = userId;
+            }
+
+            TrackingDataContext.SaveChanges();
+        }
+
+        public bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId)
+        {
+            var raiinKbnInf = TrackingDataContext.RaiinKbnInfs.FirstOrDefault(r =>
+                r.HpId == hpId
+                && r.PtId == ptId
+                && r.SinDate == sinDate
+                && r.RaiinNo == raiinNo
+                && r.GrpId == grpId
+                && r.IsDelete == DeleteTypes.None);
+            if (raiinKbnInf is null)
+            {
+                return false;
+            }
+
+            raiinKbnInf.IsDelete = DeleteTypes.Deleted;
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+
+
+        public List<RaiinKbnModel> GetRaiinKbns(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var raiinKbnMstRespo = NoTrackingDataContext.RaiinKbnMsts.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
+            var raiinKbnDetailRespo = NoTrackingDataContext.RaiinKbnDetails.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
+            var raiinKbnInfRespo = NoTrackingDataContext.RaiinKbnInfs.Where(p => p.IsDelete == 0 && p.HpId == hpId && p.RaiinNo == raiinNo && p.PtId == ptId && p.SinDate == sinDate);
+            var r = raiinKbnInfRespo.ToList();
+            var result = (from kbnMst in raiinKbnMstRespo.AsEnumerable()
+                          join kbnDetail in raiinKbnDetailRespo on
+                          new { kbnMst.HpId, kbnMst.GrpCd } equals
+                          new { kbnDetail.HpId, kbnDetail.GrpCd } into details
+                          join kbnInf in raiinKbnInfRespo on
+                          new { kbnMst.HpId, kbnMst.GrpCd } equals
+                          new { kbnInf.HpId, GrpCd = kbnInf.GrpId } into infs
+                          from inf in infs.OrderByDescending(p => p.SeqNo).Take(1).DefaultIfEmpty()
+                          where
+                          kbnMst.IsDeleted == 0 &&
+                          kbnMst.HpId == hpId
+                          select new
+                          {
+                              KbnMst = kbnMst,
+                              KbnDetails = details.OrderBy(p => p.SortNo),
+                              KbnInf = inf
+                          })
+                          ?.OrderBy(p => p.KbnMst.SortNo)
+                          ?.Select(obj => new RaiinKbnModel(obj.KbnMst.HpId, obj.KbnMst.GrpCd, obj.KbnMst.SortNo, obj.KbnMst?.GrpName ?? string.Empty, obj.KbnMst?.IsDeleted ?? 0,
+                                                                 new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, obj.KbnInf?.GrpId ?? 0, obj.KbnInf?.SeqNo ?? 0, obj.KbnInf?.KbnCd ?? 0, obj.KbnInf?.IsDelete ?? 0), obj.KbnDetails?.Select(p => new RaiinKbnDetailModel(p.HpId, p.GrpCd, p.KbnCd, p.SortNo, p.KbnName ?? string.Empty, p.ColorCd ?? string.Empty, p.IsConfirmed, p.IsAuto, p.IsAutoDelete, p.IsDeleted)).ToList() ?? new()))?.ToList() ?? new();
+            return result;
+        }
+
+        public List<RaiinKbnModel> InitDefaultByRsv(int hpId, int frameID, List<RaiinKbnModel> raiinKbns)
+        {
+            var raiinKbnYoyakus = NoTrackingDataContext.RaiinKbnYayokus
+                    .Where(x => x.IsDeleted == 0 && x.YoyakuCd == frameID && x.HpId == hpId)
+                    .ToList();
+            foreach (var raiinKbnMst in raiinKbns)
+            {
+                if (raiinKbnMst.RaiinKbnInfModel.KbnCd != 0) continue;
+
+                foreach (var detail in raiinKbnMst.RaiinKbnDetailModels)
+                {
+                    var raiinKbnRsvs = raiinKbnYoyakus.Where(x => x.GrpId == detail.GrpCd && x.KbnCd == detail.KbnCd).FirstOrDefault();
+                    if (raiinKbnRsvs != null)
+                    {
+                        raiinKbnMst.RaiinKbnInfModel.ChangeKbnCd(detail.KbnCd);
+                        break;
+                    }
+                }
+            }
+
+            return raiinKbns;
+        }
+
+        public IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate)
+        {
+            var raiinKbnMst = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == DeleteStatus.None && x.HpId == hpId).ToList();
+
+            var raiinKbnInf = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.SinDate == sinDate && x.IsDelete == DeleteStatus.None).ToList();
+
+            var joinQuery = from rkbInf in raiinKbnInf
+                            join rknMst in raiinKbnMst on rkbInf.GrpId equals rknMst.GrpCd
+                            select new
+                            {
+                                RkbInf = rkbInf,
+                                RknMst = rknMst
+                            };
+            var dataListItem = joinQuery.AsEnumerable().Select(x => new RaiinKbnModel(
+                                                         x.RknMst.HpId,
+                                                         x.RknMst.GrpCd,
+                                                         x.RknMst.SortNo,
+                                                         x.RknMst.GrpName ?? string.Empty,
+                                                         x.RknMst.IsDeleted,
+                                                         new RaiinKbnInfModel(
+                                                             x.RkbInf.HpId,
+                                                             x.RkbInf.PtId,
+                                                             x.RkbInf.SinDate,
+                                                             x.RkbInf.RaiinNo,
+                                                             x.RkbInf.GrpId,
+                                                             x.RkbInf.SeqNo,
+                                                             x.RkbInf.KbnCd,
+                                                             x.RkbInf.IsDelete
+                                                         ),
+                                                         new()
+                                                         ));
+            return dataListItem;
         }
 
         public bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
