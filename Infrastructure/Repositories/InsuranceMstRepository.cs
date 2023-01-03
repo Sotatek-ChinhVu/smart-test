@@ -687,8 +687,6 @@ namespace Infrastructure.Repositories
                                         ))
                                         .OrderBy(h => h.Master.HokenNo)
                                         .ToList();
-
-            List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
             return result;
         }
 
