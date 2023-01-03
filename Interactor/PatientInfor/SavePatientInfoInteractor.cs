@@ -587,7 +587,7 @@ namespace Interactor.PatientInfor
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             string message = string.Empty;
-            if (ptInfMainHokenPid == 0 && NeedCheckMainHoken(insurances, hokenInfs , ptInfMainHokenPid)) //if patient info not set PatientInf.MainHokenPid
+            if (ptInfMainHokenPid == 0 && NeedCheckMainHoken(insurances, hokenInfs , ptInfMainHokenPid) && !reactFromUI.ConfirmHokenPatternSelectedIsInfMainHokenPid) //if patient info not set PatientInf.MainHokenPid
             {
                 //In UI user set yes this message will set PatientInf.MainHokenPid = value;
                 message = "'" + insurances.FirstOrDefault(x=>x.HokenPatternSelected)?.HokenName + "'" + "の保険組合せを主保険に設定しますか？";

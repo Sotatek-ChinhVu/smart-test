@@ -19,5 +19,7 @@
         public bool ConfirmFundsWithSamePayerCode { get; set; }
 
         public bool ConfirmInvalidJiscodeCheck { get; set; }
+
+        public bool ConfirmHokenPatternSelectedIsInfMainHokenPid { get; set; }
     }
 }
