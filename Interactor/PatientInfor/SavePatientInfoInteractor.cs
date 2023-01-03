@@ -70,7 +70,7 @@ namespace Interactor.PatientInfor
             if (model.Patient.KanaName != null && model.Patient.KanaName.Length > 100)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
-            resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId));
+            resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
             int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
             resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, model.Patient.PtId != 0, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
 
@@ -241,7 +241,7 @@ namespace Interactor.PatientInfor
         /// <param name="kanjiName">Name</param>
         /// <param name="hpId"></param>
         /// <returns></returns>
-        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName , string kanjiName, int hpId)
+        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName , string kanjiName, int hpId , ReactSavePatientInfo react)
         {
 
             var resultMessages = new List<SavePatientInfoValidationResult>();
@@ -288,7 +288,7 @@ namespace Interactor.PatientInfor
                 string sBuf = CIUtil.Chk_JISKj(firstNameKanji, out sBuf2);
                 if (!string.IsNullOrEmpty(sBuf))
                 {
-                    if (FKanNmChkJIS == 1)
+                    if (FKanNmChkJIS == 1 && !react.ConfirmInvalidJiscodeCheck)
                     {
                         message = "漢字名に '" + sBuf + "' の文字が入力されています。" + "\n\r" + "登録しますか？";
                         resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidJiscodeCheck, TypeMessage.TypeMessageWarning));
@@ -306,7 +306,7 @@ namespace Interactor.PatientInfor
                     sBuf = CIUtil.Chk_JISKj(lastNameKanji, out sBuf2);
                     if (!string.IsNullOrEmpty(sBuf))
                     {
-                        if (FKanNmChkJIS == 1)
+                        if (FKanNmChkJIS == 1 && !react.ConfirmInvalidJiscodeCheck)
                         {
                             message = "漢字姓に '" + sBuf + "' の文字が入力されています。" + "\n\r" + "登録しますか？";
                             resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidJiscodeCheck, TypeMessage.TypeMessageWarning));

@@ -17,5 +17,7 @@
         public bool ConfirmMultipleHokenSignedUpSameTime { get; set; }
 
         public bool ConfirmFundsWithSamePayerCode { get; set; }
+
+        public bool ConfirmInvalidJiscodeCheck { get; set; }
     }
 }
