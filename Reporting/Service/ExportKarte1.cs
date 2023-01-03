@@ -26,13 +26,14 @@ public class ExportKarte1 : IExportKarte1
     public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, sinDate, 0);
+        if (ptInf == null)
+        {
+            return new Karte1ExportModel();
+        }
         var hoken = _insuranceRepository.GetPtHokenInf(hpId, hokenPid, ptId, sinDate);
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
-        if (ptInf != null)
-        {
-            return ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis);
-        }
-        return new Karte1ExportModel();
+        return ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis);
+
     }
 
     private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel ptInf, InsuranceModel hoken, List<PtDiseaseModel> ptByomeis)
@@ -174,60 +175,61 @@ public class ExportKarte1 : IExportKarte1
 
     private List<Karte1ByomeiModel> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis)
     {
+        if (ptByomeis == null)
+        {
+            return new List<Karte1ByomeiModel>();
+        }
+
         List<Karte1ByomeiModel> listByomeiModels = new();
 
-        if (ptByomeis != null && ptByomeis.Any())
+        foreach (var byomei in ptByomeis)
         {
-            foreach (var byomei in ptByomeis)
-            {
-                string byomeiDisplay = string.Empty;
-                StringBuilder prefixList = new();
-                StringBuilder suffixList = new();
+            string byomeiDisplay = string.Empty;
+            StringBuilder prefixList = new();
+            StringBuilder suffixList = new();
 
-                if (byomei.PrefixSuffixList.Any())
+            if (byomei.PrefixSuffixList.Any())
+            {
+                foreach (var item in byomei.PrefixSuffixList)
                 {
-                    foreach (var item in byomei.PrefixSuffixList)
+                    if (item.Code.StartsWith("8"))
                     {
-                        if (item.Code.StartsWith("8"))
-                        {
-                            suffixList.Append(item.Name);
-                        }
-                        else
-                        {
-                            prefixList.Append(item.Name);
-                        }
+                        suffixList.Append(item.Name);
+                    }
+                    else
+                    {
+                        prefixList.Append(item.Name);
                     }
                 }
-                byomeiDisplay = prefixList + byomei.Byomei + suffixList;
-
-                if (byomei.SyubyoKbn == 1)
-                {
-                    byomeiDisplay = "（主）" + byomeiDisplay;
-                }
-                if (byomeiDisplay.Length >= 64)
-                {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 64);
-                }
-                var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
-                var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
-                var tenkiChusiMaru = byomei.TenkiKbn == TenkiKbnConst.Canceled;
-                var tenkiSiboMaru = byomei.TenkiKbn == TenkiKbnConst.Dead;
-                var tenkiSonota = byomei.TenkiKbn == TenkiKbnConst.Other;
-                var tenkiTiyuMaru = byomei.TenkiKbn == TenkiKbnConst.Cured;
-                var byomeiModel = new Karte1ByomeiModel(
-                                            byomeiDisplay,
-                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
-                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
-                                            tenkiChusiMaru,
-                                            tenkiSiboMaru,
-                                            tenkiSonota,
-                                            tenkiTiyuMaru
-                                        );
-
-                listByomeiModels.Add(byomeiModel);
             }
+            byomeiDisplay = prefixList + byomei.Byomei + suffixList;
+
+            if (byomei.SyubyoKbn == 1)
+            {
+                byomeiDisplay = "（主）" + byomeiDisplay;
+            }
+            if (byomeiDisplay.Length >= 64)
+            {
+                byomeiDisplay = byomeiDisplay.Substring(0, 64);
+            }
+            var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
+            var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
+            var tenkiChusiMaru = byomei.TenkiKbn == TenkiKbnConst.Canceled;
+            var tenkiSiboMaru = byomei.TenkiKbn == TenkiKbnConst.Dead;
+            var tenkiSonota = byomei.TenkiKbn == TenkiKbnConst.Other;
+            var tenkiTiyuMaru = byomei.TenkiKbn == TenkiKbnConst.Cured;
+            var byomeiModel = new Karte1ByomeiModel(
+                                        byomeiDisplay,
+                                        byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
+                                        byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
+                                        tenkiChusiMaru,
+                                        tenkiSiboMaru,
+                                        tenkiSonota,
+                                        tenkiTiyuMaru
+                                    );
+
+            listByomeiModels.Add(byomeiModel);
         }
         return listByomeiModels;
     }
-
 }
