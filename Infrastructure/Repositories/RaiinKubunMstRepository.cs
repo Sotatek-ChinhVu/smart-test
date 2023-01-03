@@ -1,10 +1,10 @@
 ﻿using Domain.Models.RaiinKubunMst;
+using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Collections.Immutable;
 
 namespace Infrastructure.Repositories
@@ -322,6 +322,75 @@ namespace Infrastructure.Repositories
             }
 
             return listColumnName;
+        }
+
+        public bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var raiinInf = TrackingDataContext.RaiinInfs
+                 .FirstOrDefault(r => r.HpId == hpId
+                     && r.PtId == ptId
+                     && r.SinDate == sinDate
+                     && r.RaiinNo == raiinNo
+                     && r.IsDeleted == DeleteTypes.None);
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            SaveRaiinKbnInfs(hpId, userId, raiinInf, kbnInfDtos);
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        private void SaveRaiinKbnInfs(int hpId, int userId, RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var existingEntities = TrackingDataContext.RaiinKbnInfs
+                .Where(x => x.HpId == hpId
+                    && x.PtId == raiinInf.PtId
+                    && x.SinDate == raiinInf.SinDate
+                    && x.RaiinNo == raiinInf.RaiinNo
+                    && x.IsDelete == DeleteTypes.None)
+                .ToList();
+
+            foreach (var kbnInfDto in kbnInfDtos)
+            {
+                var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
+                if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
+                {
+                    if (existingEntity is not null)
+                    {
+                        // Soft-delete
+                        existingEntity.IsDelete = DeleteTypes.Deleted;
+                    }
+                }
+                else
+                {
+                    if (existingEntity is null)
+                    {
+                        // Insert
+                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                        {
+                            HpId = hpId,
+                            PtId = raiinInf.PtId,
+                            SinDate = raiinInf.SinDate,
+                            RaiinNo = raiinInf.RaiinNo,
+                            GrpId = kbnInfDto.GrpId,
+                            KbnCd = kbnInfDto.KbnCd,
+                            CreateDate = DateTime.UtcNow,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = userId,
+                            CreateId = userId
+                        });
+                    }
+                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                    {
+                        // Update
+                        existingEntity.KbnCd = kbnInfDto.KbnCd;
+                        existingEntity.UpdateDate = DateTime.UtcNow;
+                        existingEntity.UpdateId = userId;
+                    }
+                }
+            }
         }
 
         #region RaiinKbn
