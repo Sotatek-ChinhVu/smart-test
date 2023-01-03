@@ -931,7 +931,7 @@ namespace Infrastructure.Repositories
                 int sortNo = 1;
                 foreach (var item in defHokenNoModels)
                 {
-                    var checkExistDefHoken = TrackingDataContext.DefHokenNos
+                    var checkExistDefHoken = NoTrackingDataContext.DefHokenNos
                         .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
 
                     //Add new if data does not exist
