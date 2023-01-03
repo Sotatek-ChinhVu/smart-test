@@ -19,6 +19,10 @@ public class SyunoSeikyuModel
         NewSeikyuDetail = newSeikyuDetail;
     }
 
+    public SyunoSeikyuModel()
+    {
+    }
+
     public int HpId { get; private set; }
 
     public long PtId { get; private set; }
