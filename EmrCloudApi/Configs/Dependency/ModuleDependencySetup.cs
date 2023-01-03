@@ -290,6 +290,8 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.Document.DownloadDocumentTemplate;
+using Reporting.Service;
+using Reporting.Interface;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -313,6 +315,7 @@ namespace EmrCloudApi.Configs.Dependency
             SetupInterfaces(services);
             SetupUseCase(services);
             SetupLogger(services);
+            SetupReporting(services);
         }
 
         private void SetupLogger(IServiceCollection services)
@@ -334,6 +337,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
+            services.AddTransient<IReportingService, ReportingService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -699,6 +703,11 @@ namespace EmrCloudApi.Configs.Dependency
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
+        }
+
+        private void SetupReporting(IServiceCollection services)
+        {
+            services.AddTransient<IExportKarte1, ExportKarte1>();
         }
     }
 }
