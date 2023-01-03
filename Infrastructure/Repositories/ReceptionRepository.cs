@@ -193,7 +193,7 @@ namespace Infrastructure.Repositories
 
             UpdateRaiinInfIfChanged(raiinInf, dto.Reception);
             UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
-            SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
+            SaveRaiinKbnInfs(hpId, userId, raiinInf, dto.KubunInfs);
             // Update insurances and diseases
             SaveInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId, hpId, userId);
             UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId, hpId, userId);
@@ -260,60 +260,76 @@ namespace Infrastructure.Repositories
                     raiinCmtInf.UpdateId = userId;
                 }
             }
-
-            void SaveRaiinKbnInfs(RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+            #endregion
+        }
+        public bool SaveRaiinKbnInfs(int hpId, long ptId,int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var raiinInf = TrackingDataContext.RaiinInfs
+                 .FirstOrDefault(r => r.HpId == hpId
+                     && r.PtId == ptId
+                     && r.SinDate == sinDate
+                     && r.RaiinNo == raiinNo
+                     && r.IsDeleted == DeleteTypes.None);
+            if (raiinInf is null)
             {
-                var existingEntities = TrackingDataContext.RaiinKbnInfs
-                    .Where(x => x.HpId == hpId
-                        && x.PtId == raiinInf.PtId
-                        && x.SinDate == raiinInf.SinDate
-                        && x.RaiinNo == raiinInf.RaiinNo
-                        && x.IsDelete == DeleteTypes.None)
-                    .ToList();
+                return false;
+            }
 
-                foreach (var kbnInfDto in kbnInfDtos)
+            SaveRaiinKbnInfs(hpId, userId, raiinInf, kbnInfDtos);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        private void SaveRaiinKbnInfs(int hpId, int userId, RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var existingEntities = TrackingDataContext.RaiinKbnInfs
+                .Where(x => x.HpId == hpId
+                    && x.PtId == raiinInf.PtId
+                    && x.SinDate == raiinInf.SinDate
+                    && x.RaiinNo == raiinInf.RaiinNo
+                    && x.IsDelete == DeleteTypes.None)
+                .ToList();
+
+            foreach (var kbnInfDto in kbnInfDtos)
+            {
+                var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
+                if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
                 {
-                    var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
-                    if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
+                    if (existingEntity is not null)
                     {
-                        if (existingEntity is not null)
-                        {
-                            // Soft-delete
-                            existingEntity.IsDelete = DeleteTypes.Deleted;
-                        }
+                        // Soft-delete
+                        existingEntity.IsDelete = DeleteTypes.Deleted;
                     }
-                    else
+                }
+                else
+                {
+                    if (existingEntity is null)
                     {
-                        if (existingEntity is null)
+                        // Insert
+                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
                         {
-                            // Insert
-                            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
-                            {
-                                HpId = hpId,
-                                PtId = raiinInf.PtId,
-                                SinDate = raiinInf.SinDate,
-                                RaiinNo = raiinInf.RaiinNo,
-                                GrpId = kbnInfDto.GrpId,
-                                KbnCd = kbnInfDto.KbnCd,
-                                CreateDate = DateTime.UtcNow,
-                                UpdateDate = DateTime.UtcNow,
-                                UpdateId = userId,
-                                CreateId = userId
-                            });
-                        }
-                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
-                        {
-                            // Update
-                            existingEntity.KbnCd = kbnInfDto.KbnCd;
-                            existingEntity.UpdateDate = DateTime.UtcNow;
-                            existingEntity.UpdateId = userId;
-                        }
+                            HpId = hpId,
+                            PtId = raiinInf.PtId,
+                            SinDate = raiinInf.SinDate,
+                            RaiinNo = raiinInf.RaiinNo,
+                            GrpId = kbnInfDto.GrpId,
+                            KbnCd = kbnInfDto.KbnCd,
+                            CreateDate = DateTime.UtcNow,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = userId,
+                            CreateId = userId
+                        });
+                    }
+                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                    {
+                        // Update
+                        existingEntity.KbnCd = kbnInfDto.KbnCd;
+                        existingEntity.UpdateDate = DateTime.UtcNow;
+                        existingEntity.UpdateId = userId;
                     }
                 }
             }
-
-            #endregion
         }
+
 
         private void SaveInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId, int hpId, int userId)
         {
