@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Document;
 
-public class ReplaceParamTemplateRequest
+public class DownloadDocumentTemplateRequest
 {
     public long PtId { get; set; }
 
@@ -11,4 +11,6 @@ public class ReplaceParamTemplateRequest
     public int HokenPId { get; set; }
 
     public string LinkFile { get; set; } = string.Empty;
+
+    public List<ReplaceCommentRequestItem> ListReplaceComment { get; set; } = new();
 }

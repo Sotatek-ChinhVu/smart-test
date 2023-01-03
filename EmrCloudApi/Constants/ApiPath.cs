@@ -140,6 +140,8 @@
         public const string DeleteDocCategory = "DeleteDocCategory";
         public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
         public const string GetListParamTemplate = "GetListParamTemplate";
+        public const string GetListDocComment = "GetListDocComment";
+        public const string ConfirmReplaceDocParam = "ConfirmReplaceDocParam";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
@@ -159,5 +161,8 @@
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        // Karte
+        public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
 }

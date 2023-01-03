@@ -1,6 +1,6 @@
 ﻿using UseCase.Document;
 
-namespace EmrCloudApi.Responses.Document;
+namespace EmrCloudApi.Responses.Document.Dto;
 
 public class ItemGroupParamDto
 {

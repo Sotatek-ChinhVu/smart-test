@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ApprovalInfo;
+using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -14,14 +15,16 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedId(List<int> ids)
         {
-            var anyId = NoTrackingDataContext.ApprovalInfs.Any(u => ids.Contains(u.Id));
-            return anyId;
+            var countIds = NoTrackingDataContext.ApprovalInfs.Count(u => ids.Contains(u.Id));
+            return ids.Count == countIds;
         }
-        public bool CheckExistedRaiinNo(List<long> raiinNo)
+
+        public bool CheckExistedRaiinNo(List<long> raiinNos)
         {
-            var anyRaiinNo = NoTrackingDataContext.ApprovalInfs.Any(u => raiinNo.Contains(u.RaiinNo));
-            return anyRaiinNo;
+            var countRaiinNos = NoTrackingDataContext.ApprovalInfs.Count(u => raiinNos.Contains(u.RaiinNo));
+            return raiinNos.Count == countRaiinNos;
         }
+
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
             var approvalInfs = NoTrackingDataContext.ApprovalInfs.Where((x) =>
@@ -94,6 +97,48 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public void UpdateApprovalInfs(List<ApprovalInfModel> approvalInfs, int userId)
+        {
+            foreach (var inputData in approvalInfs)
+            {
+                var approvalInfo = TrackingDataContext.ApprovalInfs.FirstOrDefault(x => x.HpId == 1 && x.IsDeleted == 0);
+                if (inputData.Id == approvalInfo?.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate)
+                {
+                    approvalInfo.CreateId = userId;
+                    approvalInfo.CreateDate = DateTime.UtcNow;
+                    approvalInfo.UpdateId = userId;
+                    approvalInfo.UpdateDate = DateTime.UtcNow;
+                    approvalInfo.SeqNo = approvalInfo.SeqNo + 1;
+                }
+
+                if (inputData.Id != approvalInfo?.Id)
+                {
+                    TrackingDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
+                    
+                }
+
+                if (inputData.Id == approvalInfo?.Id && inputData.RaiinNo == approvalInfo?.RaiinNo && inputData.IsDeleted != approvalInfo?.IsDeleted)
+                {
+                    approvalInfo.IsDeleted = inputData.IsDeleted;
+                }
+            }
+            TrackingDataContext.SaveChanges();
+        }
+
+        private static ApprovalInf ConvertApprovalInfList(ApprovalInfModel u)
+        {
+            return new ApprovalInf
+            {
+                Id = u.Id,
+                HpId = u.HpId,
+                PtId = u.PtId,
+                SinDate = u.SinDate,
+                RaiinNo = u.RaiinNo,
+                SeqNo = 1,
+                IsDeleted = u.IsDeleted
+            };
         }
     }
 }
