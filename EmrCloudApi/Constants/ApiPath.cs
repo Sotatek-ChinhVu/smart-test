@@ -163,6 +163,9 @@
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
 
+        //Order RealtimeChecker
+        public const string OrderRealtimeChecker = "OrderRealtimeChecker";
+        
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
     }

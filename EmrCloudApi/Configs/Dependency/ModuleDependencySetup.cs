@@ -1,4 +1,7 @@
-﻿using Domain.CalculationInf;
+﻿using CommonChecker;
+using CommonCheckers;
+using CommonCheckers.OrderRealtimeChecker.DB;
+using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ApprovalInfo;
 using Domain.Models.ColumnSetting;
@@ -71,6 +74,7 @@ using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
+using Interactor.CommonChecker;
 using Interactor.Diseases;
 using Interactor.Document;
 using Interactor.Document.CommonGetListParam;
@@ -129,6 +133,7 @@ using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
+using UseCase.CommonChecker;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
@@ -408,6 +413,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
+            services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
+            services.AddTransient<IMasterFinder, MasterFinder>();
+            services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
         }
 
@@ -481,6 +489,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
             busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
+            busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
