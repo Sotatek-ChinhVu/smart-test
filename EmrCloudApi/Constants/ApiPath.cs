@@ -148,6 +148,7 @@
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
         public const string GetInfCheckedItemName = "GetInfCheckedItemName";
         public const string Search = "Search";
+        public const string InitKbnSetting = "InitKbnSetting";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
