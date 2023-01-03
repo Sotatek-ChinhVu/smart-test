@@ -3,6 +3,8 @@
     public enum GetInsuranceMasterDetailStatus
     {
         InvalidHpId,
+        InvalidFHokenNo,
+        InvalidFFHokenSbtKbn,
         Successful,
         DataNotFound
     }
