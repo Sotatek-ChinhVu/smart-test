@@ -41,7 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventProcessor", "EventProc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculateUnitTest", "CalculateUnitTest\CalculateUnitTest.csproj", "{33B2CBD6-EDB2-4B5A-8F41-6CD49F237125}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TenantMigration", "TenantMigration\TenantMigration.csproj", "{7E997E16-DDCC-425E-983F-6B004C567529}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TenantMigration", "TenantMigration\TenantMigration.csproj", "{7E997E16-DDCC-425E-983F-6B004C567529}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudUnitTest", "CloudTest\CloudUnitTest.csproj", "{C4536CC1-02D1-406E-961B-DA1D6B1F595B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,10 @@ Global
 		{7E997E16-DDCC-425E-983F-6B004C567529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E997E16-DDCC-425E-983F-6B004C567529}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E997E16-DDCC-425E-983F-6B004C567529}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4536CC1-02D1-406E-961B-DA1D6B1F595B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4536CC1-02D1-406E-961B-DA1D6B1F595B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4536CC1-02D1-406E-961B-DA1D6B1F595B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4536CC1-02D1-406E-961B-DA1D6B1F595B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +125,7 @@ Global
 		{9F8AD91F-ABD6-4F68-B12A-4C6C13EB34B8} = {B0E35762-2F9C-42DE-921C-176D26441839}
 		{33B2CBD6-EDB2-4B5A-8F41-6CD49F237125} = {74CAD361-E7A8-4576-BD33-051573027C62}
 		{7E997E16-DDCC-425E-983F-6B004C567529} = {78182681-6E91-47BB-A39A-574D6DBB7280}
+		{C4536CC1-02D1-406E-961B-DA1D6B1F595B} = {74CAD361-E7A8-4576-BD33-051573027C62}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6799D435-7362-4058-B7C2-FEE57B476887}
