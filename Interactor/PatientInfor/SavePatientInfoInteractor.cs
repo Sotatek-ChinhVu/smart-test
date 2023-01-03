@@ -1,11 +1,8 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.VariantTypes;
-using Domain.Constant;
+﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
-using Entity.Tenant;
 using Helper;
 using Helper.Common;
 using Helper.Constants;
@@ -461,8 +458,7 @@ namespace Interactor.PatientInfor
                         cardName = "保険証";
                     }
 
-                    string message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { $"{invalidAgeCheck}歳となりました。", cardName },
-                        new string[] { "無視する", "戻る" });
+                    string message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { $"{invalidAgeCheck}歳となりました。", cardName });
                     resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningAgeCheck, TypeMessage.TypeMessageWarning));
                 }
             }
@@ -498,14 +494,12 @@ namespace Interactor.PatientInfor
                     {
                         if (age >= 75 && elderHokenQuery.Count() == 0 && !reactFromUI.ConfirmInsuranceElderlyLaterNotYetCovered)
                         {
-                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険が入力されていません。", "保険者証" },
-                                    new string[] { "無視する", "戻る" });
+                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険が入力されていません。", "保険者証" });
                             resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningInsuranceElderlyLaterNotYetCovered, TypeMessage.TypeMessageWarning));
                         }
                         else if (age < 65 && elderHokenQuery.Count() > 0 && !reactFromUI.ConfirmLaterInsuranceRegisteredPatientsElderInsurance)
                         {
-                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" },
-                                    new string[] { "無視する", "戻る" });
+                            message = string.Format(ErrorMessage.MessageType_mChk00080, new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" });
                             resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningLaterInsuranceRegisteredPatientsElderInsurance, TypeMessage.TypeMessageWarning));
                         }
                     }
