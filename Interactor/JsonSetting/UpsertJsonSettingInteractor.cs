@@ -15,10 +15,17 @@ public class UpsertJsonSettingInteractor : IUpsertJsonSettingInputPort
 
     public UpsertJsonSettingOutputData Handle(UpsertJsonSettingInputData input)
     {
-        string jsonString = JsonSerializer.Serialize(input.Setting.Value);
-        var setting = new JsonSettingModel(input.Setting.UserId, input.Setting.Key, jsonString);
-        _jsonSettingRepository.Upsert(setting);
+        try
+        {
+            string jsonString = JsonSerializer.Serialize(input.Setting.Value);
+            var setting = new JsonSettingModel(input.Setting.UserId, input.Setting.Key, jsonString);
+            _jsonSettingRepository.Upsert(setting);
 
-        return new UpsertJsonSettingOutputData(UpsertJsonSettingStatus.Success);
+            return new UpsertJsonSettingOutputData(UpsertJsonSettingStatus.Success);
+        }
+        finally
+        {
+            _jsonSettingRepository.ReleaseResource();
+        }
     }
 }

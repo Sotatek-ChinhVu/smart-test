@@ -1,9 +1,10 @@
-﻿using Domain.Models.KarteFilterMst;
+﻿using Domain.Common;
+using Domain.Models.KarteFilterMst;
 using Domain.Models.Reception;
 
 namespace Domain.Models.HistoryOrder
 {
-    public interface IHistoryOrderRepository
+    public interface IHistoryOrderRepository : IRepositoryBase
     {
         (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted);
 

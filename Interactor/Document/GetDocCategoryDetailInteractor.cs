@@ -56,9 +56,11 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
                                                         GetDocCategoryDetailStatus.Successed
                                                     );
         }
-        catch
+        finally
         {
-            return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 

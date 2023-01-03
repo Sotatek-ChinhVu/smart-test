@@ -2,6 +2,7 @@ using Helper.Constants;
 using Helper.Extension;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Helper.Common
 {
@@ -1504,6 +1505,429 @@ namespace Helper.Common
         }
 
         /// <summary>
+        /// 全角文字に変換
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="dakuten">全角の濁点結合を行うかどうか</param>
+        /// <returns></returns>
+        public static string ToWide(string s, bool dakuten = true)
+        {
+            string ret = "";
+            string dummy1 = "";
+            string dummy2 = "";
+            string val = "";
+
+            Dictionary<string, string> replaceChar;
+
+            if (dakuten == false)
+            {
+                replaceChar
+                   = new Dictionary<string, string>()
+                {
+                    {"ｶﾞ", "ガ"}, {"ｷﾞ", "ギ"}, {"ｸﾞ", "グ"}, {"ｹﾞ", "ゲ"}, {"ｺﾞ", "ゴ"},
+                    {"ｻﾞ", "ザ"}, {"ｼﾞ", "ジ"}, {"ｽﾞ", "ズ"}, {"ｾﾞ", "ゼ"}, {"ｿﾞ", "ゾ"},
+                    {"ﾀﾞ", "ダ"}, {"ﾁﾞ", "ヂ"}, {"ﾂﾞ", "ヅ"}, {"ﾃﾞ", "デ"}, {"ﾄﾞ", "ド"},
+                    {"ﾊﾞ", "バ"}, {"ﾋﾞ", "ビ"}, {"ﾌﾞ", "ブ"}, {"ﾍﾞ", "ベ"}, {"ﾎﾞ", "ボ"},
+                    {"ﾊﾟ", "パ"}, {"ﾋﾟ", "ピ"}, {"ﾌﾟ", "プ"}, {"ﾍﾟ", "ペ"}, {"ﾎﾟ", "ポ"},
+                    {"ｳﾞ", "ヴ"},
+
+                };
+            }
+            else
+            {
+                replaceChar
+                    = new Dictionary<string, string>()
+                {
+                    {"ｶﾞ", "ガ"}, {"ｷﾞ", "ギ"}, {"ｸﾞ", "グ"}, {"ｹﾞ", "ゲ"}, {"ｺﾞ", "ゴ"},
+                    {"ｻﾞ", "ザ"}, {"ｼﾞ", "ジ"}, {"ｽﾞ", "ズ"}, {"ｾﾞ", "ゼ"}, {"ｿﾞ", "ゾ"},
+                    {"ﾀﾞ", "ダ"}, {"ﾁﾞ", "ヂ"}, {"ﾂﾞ", "ヅ"}, {"ﾃﾞ", "デ"}, {"ﾄﾞ", "ド"},
+                    {"ﾊﾞ", "バ"}, {"ﾋﾞ", "ビ"}, {"ﾌﾞ", "ブ"}, {"ﾍﾞ", "ベ"}, {"ﾎﾞ", "ボ"},
+                    {"ﾊﾟ", "パ"}, {"ﾋﾟ", "ピ"}, {"ﾌﾟ", "プ"}, {"ﾍﾟ", "ペ"}, {"ﾎﾟ", "ポ"},
+                    {"ｳﾞ", "ヴ"},
+                    {"ｶ゛", "ガ"}, {"ｷ゛", "ギ"}, {"ｸ゛", "グ"}, {"ｹ゛", "ゲ"}, {"ｺ゛", "ゴ"},
+                    {"ｻ゛", "ザ"}, {"ｼ゛", "ジ"}, {"ｽ゛", "ズ"}, {"ｾ゛", "ゼ"}, {"ｿ゛", "ゾ"},
+                    {"ﾀ゛", "ダ"}, {"ﾁ゛", "ヂ"}, {"ﾂ゛", "ヅ"}, {"ﾃ゛", "デ"}, {"ﾄ゛", "ド"},
+                    {"ﾊ゛", "バ"}, {"ﾋ゛", "ビ"}, {"ﾌ゛", "ブ"}, {"ﾍ゛", "ベ"}, {"ﾎ゛", "ボ"},
+                    {"ﾊ゜", "パ"}, {"ﾋ゜", "ピ"}, {"ﾌ゜", "プ"}, {"ﾍ゜", "ペ"}, {"ﾎ゜", "ポ"},
+                    {"ｳ゛", "ヴ"},
+                    {"カ゛", "ガ"}, {"キ゛", "ギ"}, {"ク゛", "グ"}, {"ケ゛", "ゲ"}, {"コ゛", "ゴ"},
+                    {"サ゛", "ザ"}, {"シ゛", "ジ"}, {"ス゛", "ズ"}, {"セ゛", "ゼ"}, {"ソ゛", "ゾ"},
+                    {"タ゛", "ダ"}, {"チ゛", "ヂ"}, {"ツ゛", "ヅ"}, {"テ゛", "デ"}, {"ト゛", "ド"},
+                    {"ハ゛", "バ"}, {"ヒ゛", "ビ"}, {"フ゛", "ブ"}, {"ヘ゛", "ベ"}, {"ホ゛", "ボ"},
+                    {"ハ゜", "パ"}, {"ヒ゜", "ピ"}, {"フ゜", "プ"}, {"ヘ゜", "ペ"}, {"ホ゜", "ポ"},
+                    {"ウ゛", "ヴ"},
+                    {"カﾞ", "ガ"}, {"キﾞ", "ギ"}, {"クﾞ", "グ"}, {"ケﾞ", "ゲ"}, {"コﾞ", "ゴ"},
+                    {"サﾞ", "ザ"}, {"シﾞ", "ジ"}, {"スﾞ", "ズ"}, {"セﾞ", "ゼ"}, {"ソﾞ", "ゾ"},
+                    {"タﾞ", "ダ"}, {"チﾞ", "ヂ"}, {"ツﾞ", "ヅ"}, {"テﾞ", "デ"}, {"トﾞ", "ド"},
+                    {"ハﾞ", "バ"}, {"ヒﾞ", "ビ"}, {"フﾞ", "ブ"}, {"ヘﾞ", "ベ"}, {"ホﾞ", "ボ"},
+                    {"ハﾟ", "パ"}, {"ヒﾟ", "ピ"}, {"フﾟ", "プ"}, {"ヘﾟ", "ペ"}, {"ホﾟ", "ポ"},
+                    {"ウﾞ", "ヴ"},
+               };
+            }
+
+            CultureInfo jaJP = new CultureInfo("ja-JP");
+            int i = 0;
+            if (s != null)
+            {
+                while (i < s.Length)
+                {
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    {
+                        ret += val;
+                        i = i + 2;
+                        continue;
+                    }
+                    else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
+                    {
+                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
+                    }
+                    else
+                    {
+                        ret += s.Substring(i, 1);
+                    }
+                    i++;
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 文字列が半角英数字記号かどうかを判定します
+        /// </summary>
+        /// <param name="target">対象の文字列</param>
+        /// <returns>文字列が半角英数字記号の場合はtrue、それ以外はfalse</returns>
+        public static bool IsASCII(string target)
+        {
+            return new Regex("^[\x20-\x7E]+$").IsMatch(target);
+        }
+        /// <summary>
+        /// 文字列が半角カタカナ（句読点～半濁点）かどうかを判定します
+        /// </summary>
+        /// <param name="target">対象の文字列</param>
+        /// <returns>文字列が半角カタカナ（句読点～半濁点）の場合はtrue、それ以外はfalse</returns>
+        public static bool IsHalfKatakanaPunctuation(string target)
+        {
+            return new Regex("^[\uFF61-\uFF9F]+$").IsMatch(target);
+        }
+        /// <summary>
+        /// 文字列がJIS X 0208 漢字第二水準までで構成されているかを判定します
+        /// </summary>
+        /// <param name="target">対象の文字列</param>
+        /// <param name="containsHalfKatakana">漢字第二水準までに半角カタカナを含む場合はtrue、それ以外はfalse</param>
+        /// <returns>文字列がJIS X 0208 漢字第二水準までで構成されている場合はtrue、それ以外はfalse</returns>
+        public static bool IsUntilJISKanjiLevel2(string target, bool containsHalfKatakana, ref string retText, ref string badText)
+        {
+            bool retHantei = true;
+
+            retText = "";
+            badText = "";
+
+            // 文字エンコーディングに「iso-2022-jp」を指定
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding encoding = Encoding.GetEncoding("iso-2022-jp");
+            // 文字列長を取得
+            int length = target.Length;
+            for (int i = 0; i < length; i++)
+            {
+                bool hantei = true;
+
+                // 対象の部分文字列を取得
+                string targetSubString = target.Substring(i, 1);
+
+                // 改行コードの場合
+                if (targetSubString == "\r" || targetSubString == "\n")
+                {
+
+                }
+                // 半角英数字記号の場合
+                else if (IsASCII(targetSubString) == true)
+                {
+                    //continue;
+                }
+                // 漢字第二水準までに半角カタカナを含まずかつ対象の部分文字列が半角カタカナの場合
+                else if (containsHalfKatakana == false &&
+                    IsHalfKatakanaPunctuation(targetSubString) == true)
+                {
+                    hantei = false;
+                }
+                else
+                {
+                    // 対象部分文字列の文字コードバイト配列を取得
+                    byte[] targetBytes = encoding.GetBytes(targetSubString);
+                    // 要素数が「1」の場合は漢字第三水準以降の漢字が「?」に変換された
+                    if (targetBytes.Length == 1)
+                    {
+                        hantei = false;
+                    }
+                    // 文字コードバイト配列がJIS X 0208 漢字第二水準外の場合
+                    if (IsUntilJISKanjiLevel2(targetBytes) == false)
+                    {
+                        hantei = false;
+                    }
+                }
+
+                if (hantei)
+                {
+                    retText += targetSubString;
+                }
+                else
+                {
+                    badText += targetSubString;
+                    retHantei = false;
+                }
+            }
+            return retHantei;
+        }
+        /// <summary>
+        /// 文字列がJIS X 0208 漢字第二水準までで構成されているかを判定します
+        /// </summary>
+        /// <param name="target">対象の文字列</param>
+        /// <returns>文字列がJIS X 0208 漢字第二水準までで構成されている場合はtrue、それ以外はfalse</returns>
+        /// <remarks>句読点～半濁点の半角カタカナはJIS X 0208 漢字第二水準外と判定します</remarks>
+        public static bool IsUntilJISKanjiLevel2(string target, ref string retText, ref string badText)
+        {
+            return IsUntilJISKanjiLevel2(target, false, ref retText, ref badText);
+        }
+        public static bool IsUntilJISKanjiLevel2InKana(string target, ref string retText, ref string badText)
+        {
+            return IsUntilJISKanjiLevel2(target, true, ref retText, ref badText);
+        }
+        /// <summary>
+        /// 文字コードバイト配列がJIS X 0208 漢字第二水準までであるかを判定します
+        /// </summary>
+        /// <param name="targetBytes">文字コードバイト配列</param>
+        /// <returns>文字コードバイト配列がJIS X 0208 漢字第二水準までである場合はtrue、それ以外はfalse</returns>
+        private static bool IsUntilJISKanjiLevel2(byte[] targetBytes)
+        {
+            // 文字コードバイト配列の要素数が8ではない場合
+            if (targetBytes.Length != 8)
+            {
+                return false;
+            }
+            // 区を取得
+            int row = targetBytes[3] - 0x20;
+            // 点を取得
+            int cell = targetBytes[4] - 0x20;
+            switch (row)
+            {
+                case 1: // 1区の場合
+                    if (1 <= cell && cell <= 94)
+                    {
+                        // 1点～94点の場合
+                        return true;
+                    }
+                    break;
+                case 2: // 2区の場合
+                    if (1 <= cell && cell <= 14)
+                    {
+                        // 1点～14点の場合
+                        return true;
+                    }
+                    else if (26 <= cell && cell <= 33)
+                    {
+                        // 26点～33点の場合
+                        return true;
+                    }
+                    else if (42 <= cell && cell <= 48)
+                    {
+                        // 42点～48点の場合
+                        return true;
+                    }
+                    else if (60 <= cell && cell <= 74)
+                    {
+                        // 60点～74点の場合
+                        return true;
+                    }
+                    else if (82 <= cell && cell <= 89)
+                    {
+                        // 82点～89点の場合
+                        return true;
+                    }
+                    else if (cell == 94)
+                    {
+                        // 94点の場合
+                        return true;
+                    }
+                    break;
+                case 3: // 3区の場合
+                    if (16 <= cell && cell <= 25)
+                    {
+                        // 16点～25点の場合
+                        return true;
+                    }
+                    else if (33 <= cell && cell <= 58)
+                    {
+                        // 33点～58点の場合
+                        return true;
+                    }
+                    else if (65 <= cell && cell <= 90)
+                    {
+                        // 65点～90点の場合
+                        return true;
+                    }
+                    break;
+                case 4: // 4区の場合
+                    if (1 <= cell && cell <= 83)
+                    {
+                        // 1点～83点の場合
+                        return true;
+                    }
+                    break;
+                case 5: // 5区の場合
+                    if (1 <= cell && cell <= 86)
+                    {
+                        // 1点～86点の場合
+                        return true;
+                    }
+                    break;
+                case 6: // 6区の場合
+                    if (1 <= cell && cell <= 24)
+                    {
+                        // 1点～24点の場合
+                        return true;
+                    }
+                    else if (33 <= cell && cell <= 56)
+                    {
+                        // 33点～56点の場合
+                        return true;
+                    }
+                    break;
+                case 7: // 7区の場合
+                    if (1 <= cell && cell <= 33)
+                    {
+                        // 1点～33点の場合
+                        return true;
+                    }
+                    else if (49 <= cell && cell <= 81)
+                    {
+                        // 49点～81点の場合
+                        return true;
+                    }
+                    break;
+                case 8: // 8区の場合
+                    if (1 <= cell && cell <= 32)
+                    {
+                        // 1点～32点の場合
+                        return true;
+                    }
+                    break;
+                default:
+                    if (16 <= row && row <= 46) // 16区～46区の場合
+                    {
+                        if (1 <= cell && cell <= 94)
+                        {
+                            // 1点～94点の場合
+                            return true;
+                        }
+                    }
+                    else if (row == 47) // 47区の場合
+                    {
+                        if (1 <= cell && cell <= 51)
+                        {
+                            // 1点～51点の場合
+                            return true;
+                        }
+                    }
+                    else if (48 <= row && row <= 83) // 48区～83区の場合
+                    {
+                        if (1 <= cell && cell <= 94)
+                        {
+                            // 1点～94点の場合
+                            return true;
+                        }
+                    }
+                    else if (row == 84) // 84区の場合
+                    {
+                        if (1 <= cell && cell <= 6)
+                        {
+                            // 1点～6点の場合
+                            return true;
+                        }
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 指定日が属する月の最終日を取得する
+        /// </summary>
+        /// <param name="baseDate">基準日</param>
+        /// <returns></returns>
+        public static int GetLastDateOfMonth(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                retDate = baseDate / 100 * 100 + DateTime.DaysInMonth(dt1.Year, dt1.Month);
+            }
+
+            return retDate;
+        }
+        /// <summary>
+        /// 指定日が属する週の日曜日の日付を取得する
+        /// </summary>
+        /// <param name="baseDate">基準日</param>
+        /// <returns>指定日が属する週の日曜日の日付</returns>
+        public static int GetFirstDateOfWeek(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddDays((int)dt1.DayOfWeek * -1);
+                retDate = DateTimeToInt(dt1);
+            }
+
+            return retDate;
+        }
+        /// <summary>
+        /// 指定日が属する週の土曜日の日付を取得する
+        /// </summary>
+        /// <param name="baseDate">基準日</param>
+        /// <returns>指定日が属する週の土曜日の日付</returns>
+        public static int GetLastDateOfWeek(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddDays(6 - (int)dt1.DayOfWeek);
+                retDate = DateTimeToInt(dt1);
+            }
+
+            return retDate;
+        }
+        public static string MinuteToShowHour(int minute)
+        {
+            string ret = "";
+
+            if (minute >= 60)
+            {
+                ret += (minute / 60).ToString() + "時間";
+            }
+
+            if (minute % 60 > 0)
+            {
+                ret += (minute % 60).ToString() + "分";
+            }
+
+            return ret;
+        }
+        /// <summary>
         /// 文字列をint型に変換する
         /// 変換に失敗した場合、defaultValを返す
         /// </summary>
@@ -2067,6 +2491,440 @@ namespace Helper.Common
             }
 
             return Result;
+        }
+        
+
+        //----------------------------------------------------------------------------//
+        // 機能      ： ＪＩＳコードチェック
+        //              ※電子レセプトの文字規格（以下が使用可能）
+        //　　　　　　　　JISX0201-1976：(JISローマ字,JISカナ（半角カナ）
+        //                JISX0208-1983: (01区 ～ 08区 各種記号,英数字,かな）
+        //                               (16区 ～ 47区 JIS第１水準漢字)
+        //                               (48区 ～ 84区 JIS第２水準漢字)
+        //                上記以外はエラー文字とする。
+        //
+        // 引数      ： sIn   : チェックする文字列
+        //              sOut  : エラー文字以外の文字列
+        // 戻り値　　： エラー文字列
+        // 備考　　　： http://charset.7jp.net/jis0208.html
+        //          ： http://d.hatena.ne.jp/tekk/20120623/1340462114
+        //----------------------------------------------------------------------------//
+        public static string Chk_JISKj(string sIn, out string sOut)
+        {
+            string strErr = "";
+            sOut = "";
+
+            // タブ、改行コードは除去しておく
+            // Trim Tab & New-line character
+            sIn = sIn.Replace("\t", "");
+            sIn = sIn.Replace(Environment.NewLine, "");
+
+            TextElementEnumerator textEnum = null;
+            textEnum = StringInfo.GetTextElementEnumerator(sIn);
+
+            while (textEnum.MoveNext())
+            {
+                // サロゲートペア文字の存在チェック
+                if (textEnum.GetTextElement().Length > 1)
+                {
+                    strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+
+                }
+
+                //文字列にUnicodeでしか使用されていない文字の存在チェック
+                //.NET string is all UTF-16 string, therefore, no need to check
+                // whether string contains both ASCII and UTF characters
+
+                //end else if IsUnicodeOnly(sIn[1]) = true then begin
+                //strErrStr:= strErrStr + Copy(sIn, 1, 1);
+                //Delete(sIn, 1, 1);
+
+                else
+                {
+                    //チェック対象文字をunicode　→ Ansiに変換
+                    string strChkString = CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
+                    byte[] asciiBytes = UTF16CharToBytes(strChkString[0]);
+
+                    if (asciiBytes.Length == 1)
+                    {
+                        // 1バイトコード
+                        // 半角: 記号，英数字
+                        // 半角カタカナは全角として返しますので、ここでのチェックが不要
+                        if ((asciiBytes[0] >= 0x20) && (asciiBytes[0] <= 0x7E))
+                        {
+                            if (asciiBytes[0] == 0x3F && strChkString != @"?")
+                            {
+                                // 0x3F = 63 = ? character
+                                // Check string is not "?"
+                                // Then can not convert to ISO 2022 JP = 第3水準，第4水準漢字等
+                                strErr += strChkString;
+
+                            }
+                            else
+                            {
+                                sOut += strChkString;
+                            }
+                        }
+                        {
+                            //制御文字
+                            //見えないので、追加は必要ない
+                        }
+
+                    }
+                    else if (asciiBytes.Length == 8)
+                    {
+                        //Convert from asciiBytes to 区点 in JIS
+
+                        int ku = asciiBytes[3] - 32;
+                        int ten = asciiBytes[4] - 32;
+                        //13区（環境依存文字）はエラーとする
+                        if (ku == 13)
+                        {
+                            strErr += strChkString;
+                        }
+                        else
+                        {
+                            //JISX0208 - 1983: (01区 ～ 08区 各種記号, 英数字, かな）
+                            //                           (16区 ～ 47区 JIS第１水準漢字)
+                            //                           (48区 ～ 84区 JIS第２水準漢字)
+                            if ((1 <= ku && ku <= 8) ||
+                                (16 <= ku && ku <= 84))
+                            {
+                                //全角ひらがな、かたかな、第1水準、第2水準漢字
+                                sOut += strChkString;
+                            }
+                            else
+                            {
+                                strErr += strChkString;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //外字??
+                    }
+                }
+
+            }
+
+            return strErr;
+        }
+
+        public static byte[] UTF16CharToBytes(char utf16Char)
+        {
+            byte[] asciiBytes = new byte[1];
+
+            try
+            {
+                //ISO 2022 Japanese JIS X 0201-1989; Japanese (JIS-Allow 1 byte Kana - SO/SI)
+                Encoding ascii = Encoding.GetEncoding("iso-2022-jp");
+                asciiBytes = ascii.GetBytes(utf16Char.ToString());
+            }
+            catch
+            {
+                asciiBytes = new byte[1];
+            }
+
+            return asciiBytes;
+        }
+
+        /// <summary>
+        /// 文字列が全角カタカナかどうかを判定します
+        /// </summary>
+        /// <param name="target">対象の文字列
+        /// <returns>文字列が全角カタカナの場合はtrue、それ以外はfalse</returns>
+        public static bool IsFullKatakana(string target)
+        {
+            return new Regex("^\\p{IsKatakana}+$").IsMatch(target);
+        }
+
+        /// <summary>
+        /// 半角カタカナ以外を除去する
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static string GetKatakana(string target)
+        {
+            string ret = "";
+
+            for (int i = 0; i < target.Length; i++)
+            {
+                if ((IsHalfKatakanaPunctuation(target.Substring(i, 1))) ||
+                    (IsFullKatakana(target.Substring(i, 1))) ||
+                   (target.Substring(i, 1) == " ") ||
+                   (target.Substring(i, 1) == "　") ||
+                   (target.Substring(i, 1) == "゛"))
+                {
+                    if (target.Substring(i, 1) != "･" &&
+                       target.Substring(i, 1) != "・")
+                    {
+                        ret += target.Substring(i, 1);
+                    }
+                }
+            }
+
+            return ret;
+        }
+        
+        /// <summary>
+        /// ひらがなの濁点を結合
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string ReplaceHiraDakuten(string s)
+        {
+            string ret = "";
+            string val = "";
+
+            Dictionary<string, string> replaceChar
+                   = new Dictionary<string, string>()
+                {
+                    {"か゛", "が"}, {"き゛", "ぎ"}, {"く゛", "ぐ"}, {"け゛", "げ"}, {"こ゛", "ご"},
+                    {"さ゛", "ざ"}, {"し゛", "じ"}, {"す゛", "ず"}, {"せ゛", "ぜ"}, {"そ゛", "ぞ"},
+                    {"た゛", "だ"}, {"ち゛", "ぢ"}, {"つ゛", "づ"}, {"て゛", "で"}, {"と゛", "ど"},
+                    {"は゛", "ば"}, {"ひ゛", "び"}, {"ふ゛", "ぶ"}, {"へ゛", "べ"}, {"ほ゛", "ぼ"},
+                    {"は゜", "ぱ"}, {"ひ゜", "ぴ"}, {"ふ゜", "ぷ"}, {"へ゜", "ぺ"}, {"ほ゜", "ぽ"},
+                    {"う゛", "ヴ"},
+                };
+
+            int i = 0;
+            if (s != null)
+            {
+                while (i < s.Length)
+                {
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    {
+                        ret += val;
+                        i = i + 2;
+                        continue;
+                    }
+                    else
+                    {
+                        ret += s.Substring(i, 1);
+                    }
+                    i++;
+                }
+            }
+
+            return ret;
+        }
+        public static string ToRecedenString(string value)
+        {
+            string ret = value;
+
+            List<(string oldstr, string newstr)> replaceStrings = new List<(string, string)>()
+            {
+                {("¹", "１")}, {("²", "２")}, {("³", "３")}, {("⁴", "４")}, {("⁵", "５")}, {("⁶", "６")}, {("⁷", "７")}, {("⁸", "８")}, {("⁹", "９")}, {("⁰", "０")},
+                {("₁", "１")}, {("₂", "２")}, {("₃", "３")}, {("₄", "４")}, {("₅", "５")}, {("₆", "６")}, {("₇", "７")}, {("₈", "８")}, {("₉", "９")}, {("₀", "０")},
+                {("〜","～")}
+            };
+
+            foreach ((string oldstr, string newstr) in replaceStrings)
+            {
+                ret = ret.Replace(oldstr, newstr);
+            }
+
+            return ToWide(ret);
+        }
+        /// <summary>
+        /// 0の場合は空文字、>0の場合は数値を文字列に変換した値を返す
+        /// </summary>
+        /// <param name="val">変換したい数値</param>
+        /// <param name="format">
+        ///     ToStringの引数に渡す書式
+        ///     ※3桁カンマ区切りの場合、"#,0"を渡す
+        /// </param>
+        /// <returns>0, nullの場合は空文字、>0の場合は数値を文字列に変換した値を返す</returns>
+        public static string ToStringIgnoreZero(int val, string format = "")
+        {
+            string ret = "";
+
+            if (val > 0)
+            {
+                ret = val.ToString(format);
+            }
+
+            return ret;
+        }
+        public static string ToStringIgnoreZero(int? val)
+        {
+            string ret = "";
+
+            if (val == null)
+            {
+                ret = "";
+            }
+            else if (val > 0)
+            {
+                ret = val.ToString();
+            }
+
+            return ret;
+        }
+        public static string ToStringIgnoreZero(long val, string format = "")
+        {
+            string ret = "";
+
+            if (val > 0)
+            {
+                ret = val.ToString(format);
+            }
+
+            return ret;
+        }
+        public static string ToStringIgnoreZero(double val, string format = "")
+        {
+            string ret = "";
+
+            if (val != 0)
+            {
+                ret = val.ToString(format);
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// nullの場合は空文字、>0の場合は数値を文字列に変換した値を返す
+        /// </summary>
+        /// <param name="val">変換したい数値</param>
+        /// <returns>nullの場合は空文字、>=0の場合は数値を文字列に変換した値を返す</returns>
+        public static string ToStringIgnoreNull(int? val)
+        {
+            string ret = "";
+
+            if (val != null)
+            {
+                ret = val.ToString();
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 半角カタカナの小文字を大文字に変換する
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string KanaUpper(string s)
+        {
+            string ret = s;
+
+            ret = ret.Replace("ｧ", "ｱ");
+            ret = ret.Replace("ｨ", "ｲ");
+            ret = ret.Replace("ｩ", "ｳ");
+            ret = ret.Replace("ｪ", "ｴ");
+            ret = ret.Replace("ｫ", "ｵ");
+            ret = ret.Replace("ｬ", "ﾔ");
+            ret = ret.Replace("ｭ", "ﾕ");
+            ret = ret.Replace("ｮ", "ﾖ");
+            ret = ret.Replace("ｯ", "ﾂ");
+
+            return ret;
+        }
+        /// <summary>
+        /// 半角文字に変換
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string ToNarrow(string s)
+        {
+            return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
+        }
+
+        /// <summary>
+        /// Add days to date
+        /// </summary>
+        /// <param name="ymd"></param>
+        /// <param name="addDay"></param>
+        /// <returns></returns>
+        public static int SDateInc(int ymd, int addDay)
+        {
+            DateTime workDate;
+            if (DateTime.TryParseExact(ymd.AsString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out workDate))
+            {
+                workDate = workDate.AddDays(addDay);
+                return workDate.ToString("yyyyMMdd").AsInteger();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static int GetSanteInfDayCount(int sinDate, int lastOdrDate, int alertTerm)
+        {
+            int targetDateInt = lastOdrDate;
+            if (targetDateInt == 0)
+            {
+                return 0;
+            }
+
+            int dayCount = 0;
+            // Current Date
+            DateTime nowDate = IntToDate(sinDate);
+            int nowDateInt = sinDate;
+            // Target Date
+            DateTime targetDate = IntToDate(targetDateInt);
+            // Calculate base on AlertTerm
+            switch (alertTerm)
+            {
+                case 2:
+                    if (targetDateInt < nowDateInt)
+                        dayCount = DaysBetween(targetDate, nowDate) + 1;
+                    else
+                        dayCount = DaysBetween(nowDate, targetDate) + 1;
+                    break;
+                case 3:
+                    //曜日を取得
+                    DayOfWeek day = targetDate.DayOfWeek;
+                    if (day != System.DayOfWeek.Sunday)
+                    {
+                        //日曜始まりの週でカウント
+                        int incDay = (int)day * -1;
+                        targetDate = targetDate.AddDays(incDay);
+                    }
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+
+                    break;
+                case 4:
+                    //月初から月単位でカウント
+                    int startDateint = targetDate.Year * 10000 + targetDate.Month * 100 + 1;
+                    DateTime startDate = IntToDate(startDateint);
+                    dayCount = MonthsBetween(startDate, nowDate) + 1;
+                    break;
+                case 5:
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+                    break;
+                case 6:
+                    dayCount = MonthsBetween(targetDate, nowDate) + 1;
+                    break;
+            }
+            if (dayCount < 0)
+            {
+                dayCount *= (-1);
+            }
+            return dayCount;
+        }
+
+        public static int WeeksBetween(DateTime fromDate, DateTime endDate)
+        {
+            return DaysBetween(fromDate, endDate) / 7;
+        }
+
+        public static int MonthsBetween(DateTime startDate, DateTime now)
+        {
+            int monthDiff = ((now.Year - startDate.Year) * 12) + (now.Month - startDate.Month);
+
+            if (monthDiff > 0 && startDate.Day > now.Day)
+            {
+                monthDiff--;
+            }
+            else if (monthDiff < 0 && startDate.Day < now.Day)
+            {
+                monthDiff++;
+            }
+            return monthDiff;
         }
     }
     public struct WarekiYmd

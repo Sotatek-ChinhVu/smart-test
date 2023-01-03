@@ -43,6 +43,11 @@ namespace Interactor.MonshinInf
             {
                 return new SaveMonshinOutputData(SaveMonshinStatus.Failed);
             }
+            finally
+            {
+                _monshinInforRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+            }
         }
 
         private SaveMonshinStatus ConvertStatus(ValidationStatus status)

@@ -24,5 +24,9 @@ public class GetKaCodeMstInteractor : IGetKaCodeMstListInputPort
         {
             return new GetKaCodeMstListOutputData(GetKaCodeMstListStatus.Failed, new List<KaCodeMstModel>());
         }
+        finally
+        {
+            _kaMstRepository.ReleaseResource();
+        }
     }
 }

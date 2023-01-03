@@ -24,6 +24,8 @@ namespace Helper.Constants
             ApprovalInfListInvalidNoExistedId,
             ApprovalInfListExistedInputData,
             ApprovalInfListInvalidNoExistedRaiinNo,
+            Success,
+            Failed,
             Valid
         }
     }

@@ -7,7 +7,7 @@ public class FileInfOutputItem
     public FileInfOutputItem(FileInfModel model, string host)
     {
         SeqNo = model.SeqNo;
-        LinkFile = host + model.LinkFile;
+        LinkFile = model.LinkFile != string.Empty ? host + model.LinkFile : string.Empty;
         IsDeleted = model.IsDelete;
     }
 

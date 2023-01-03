@@ -5,13 +5,19 @@ namespace UseCase.KarteFilter.GetListKarteFilter;
 
 public class GetKarteFilterOutputData : IOutputData
 {
-    public List<KarteFilterMstModel> ListData { get; private set; }
+    public List<KarteFilterMstOutputItem> ListData { get; private set; }
 
     public GetKarteFilterStatus Status { get; private set; }
 
-    public GetKarteFilterOutputData(List<KarteFilterMstModel> listData, GetKarteFilterStatus status)
+    public GetKarteFilterOutputData(List<KarteFilterMstOutputItem> listData, GetKarteFilterStatus status)
     {
         ListData = listData;
+        Status = status;
+    }
+
+    public GetKarteFilterOutputData(GetKarteFilterStatus status)
+    {
+        ListData = new();
         Status = status;
     }
 }

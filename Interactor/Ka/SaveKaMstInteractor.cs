@@ -71,6 +71,9 @@ public class SaveKaMstInteractor : ISaveKaMstInputPort
         {
             return new SaveKaMstOutputData(SaveKaMstStatus.Failed);
         }
-
+        finally
+        {
+            _kaMstRepository.ReleaseResource();
+        }
     }
 }

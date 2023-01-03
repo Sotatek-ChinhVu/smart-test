@@ -1,55 +1,63 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Extension;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
-public class UserConfRepository : IUserConfRepository
+public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
-    private readonly TenantDataContext _tenantTrackingDataContext;
-    private readonly TenantDataContext _tenantNoTrackingDataContext;
     private const int ADOPTED_CONFIRM_CD = 100005;
     public static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
 
-    public UserConfRepository(ITenantProvider tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         InitConfigDefaultValue();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
     {
-        return _tenantNoTrackingDataContext.UserConfs
+        return NoTrackingDataContext.UserConfs
             .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
             .AsEnumerable().Select(u => ToModel(u)).ToList();
+    }
+
+    public int Sagaku(bool fromRece)
+    {
+        if (fromRece)
+        {
+            return  NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+        }
+        return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
     }
 
     public Dictionary<string, int> GetList(int userId)
     {
         var result = new Dictionary<string, int>();
 
-        var displaySetName = _tenantNoTrackingDataContext.UserConfs
+        var displaySetName = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 2 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 2);
         result.Add("DisplaySetName", displaySetName);
-        var displayUserInput = _tenantNoTrackingDataContext.UserConfs
+        var displayUserInput = NoTrackingDataContext.UserConfs
           .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 3 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 3);
         result.Add("DisplayUserInput", displayUserInput);
-        var displayTimeInput = _tenantNoTrackingDataContext.UserConfs
+        var displayTimeInput = NoTrackingDataContext.UserConfs
     .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 4 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 4);
         result.Add("DisplayTimeInput", displayTimeInput);
-        var displayDrugPrice = _tenantNoTrackingDataContext.UserConfs
+        var displayDrugPrice = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 5 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 5);
         result.Add("DisplayDrugPrice", displayDrugPrice);
-        var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
+        var adoptedConfirmCD = NoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
-        var confirmEditByomei = _tenantNoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
+        var confirmEditByomei = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
         result.Add("ConfirmEditByomei", confirmEditByomei);
+        var displayByomeiDateType = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
+        result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
-        string paramSaveMedical = _tenantNoTrackingDataContext.UserConfs
+        string paramSaveMedical = NoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
         var isByomeiCheckTempSave = paramSaveMedical[0].AsInteger();
         var isByomeiCheckKeisanSave = paramSaveMedical[1].AsInteger();
@@ -62,12 +70,60 @@ public class UserConfRepository : IUserConfRepository
         result.Add("IsByomeiCheckTrialCalc", isByomeiCheckTrialCalc);
         result.Add("IsByomeiCheckNormalSave", isByomeiCheckNormalSave);
 
+        string santeiCheckSaveParam = NoTrackingDataContext.UserConfs
+         .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 1)?.Param ?? "10100";
+        var isSanteiCheckNormalSave = santeiCheckSaveParam[0].AsInteger();
+        var isSanteiCheckTempSave = santeiCheckSaveParam[2].AsInteger();
+        var isSanteiCheckKeisanSave = santeiCheckSaveParam[1].AsInteger();
+        var isSanteiCheckTrialCalc = santeiCheckSaveParam[3].AsInteger();
+        var isSanteiCheckPrint = santeiCheckSaveParam[4].AsInteger();
+        result.Add("IsSanteiCheckNormalSave", isSanteiCheckNormalSave);
+        result.Add("IsSanteiCheckTempSave", isSanteiCheckTempSave);
+        result.Add("IsSanteiCheckKeisanSave", isSanteiCheckKeisanSave);
+        result.Add("IsSanteiCheckTrialCalc", isSanteiCheckTrialCalc);
+        result.Add("IsSanteiCheckPrint", isSanteiCheckPrint);
+
+        string inputCheckSaveParam = NoTrackingDataContext.UserConfs
+         .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 2)?.Param ?? "10100";
+        var isInputCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isInputCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isInputCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        var isInputCheckTrialCalc = inputCheckSaveParam[3].AsInteger();
+        var isInputCheckPrint = inputCheckSaveParam[4].AsInteger();
+        result.Add("IsInputCheckNormalSave", isInputCheckNormalSave);
+        result.Add("IsInputCheckTempSave", isInputCheckTempSave);
+        result.Add("IsInputCheckKeisanSave", isInputCheckKeisanSave);
+        result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
+        result.Add("IsInputCheckPrint", isInputCheckPrint);
+
+        string commentCheckSaveParam = NoTrackingDataContext.UserConfs
+        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 0)?.Param ?? "00000";
+        var isCmtCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isCmtCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isCmtCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        var isCmtCheckTrialCalc = inputCheckSaveParam[3].AsInteger();
+        var isCmtCheckPrint = inputCheckSaveParam[4].AsInteger();
+        result.Add("IsCmtCheckNormalSave", isCmtCheckNormalSave);
+        result.Add("IsCmtCheckTempSave", isCmtCheckTempSave);
+        result.Add("IsCmtCheckKeisanSave", isCmtCheckKeisanSave);
+        result.Add("IsCmtCheckTrialCalc", isCmtCheckTrialCalc);
+        result.Add("IsCmtCheckPrint", isCmtCheckPrint);
+
+        string kubunCheckSaveParam = NoTrackingDataContext.UserConfs
+        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 3)?.Param ?? "10100";
+        var isKubunCheckNormalSave = inputCheckSaveParam[0].AsInteger();
+        var isKubunCheckTempSave = inputCheckSaveParam[2].AsInteger();
+        var isKubunCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
+        result.Add("IsKubunCheckNormalSave", isKubunCheckNormalSave);
+        result.Add("IsKubunCheckTempSave", isKubunCheckTempSave);
+        result.Add("IsKubunCheckKeisanSave", isKubunCheckKeisanSave);
+
         return result;
     }
 
     public void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue)
     {
-        var userConfig = _tenantTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == ADOPTED_CONFIRM_CD && p.UserId == userId);
+        var userConfig = TrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == ADOPTED_CONFIRM_CD && p.UserId == userId);
         if (userConfig == null)
         {
             userConfig = new UserConf()
@@ -78,18 +134,18 @@ public class UserConfRepository : IUserConfRepository
                 CreateId = userId,
                 CreateDate = DateTime.Now
             };
-            _tenantTrackingDataContext.UserConfs.Add(userConfig);
+            TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = DateTime.UtcNow;
         userConfig.Val = adoptedValue;
 
-        _tenantTrackingDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     public void UpdateUserConf(int hpId, int userId, int grpCd, int value)
     {
-        var userConfig = _tenantTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == grpCd);
+        var userConfig = TrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == grpCd);
         if (userConfig == null)
         {
             userConfig = new UserConf()
@@ -100,12 +156,12 @@ public class UserConfRepository : IUserConfRepository
                 CreateId = userId,
                 CreateDate = DateTime.UtcNow
             };
-            _tenantNoTrackingDataContext.UserConfs.Add(userConfig);
+            TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
         userConfig.UpdateDate = DateTime.UtcNow;
         userConfig.Val = value;
-        _tenantTrackingDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     private UserConfModel ToModel(UserConf u)
@@ -261,5 +317,10 @@ public class UserConfRepository : IUserConfRepository
             return 0;
         }
         return 0;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

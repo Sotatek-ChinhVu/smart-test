@@ -38,6 +38,10 @@ namespace Interactor.MstItem
             {
                 return new FindTenMstOutputData(new TenItemModel(), FindTenMstStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

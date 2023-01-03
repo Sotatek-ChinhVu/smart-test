@@ -1,49 +1,46 @@
 ﻿using Domain.Models.Ka;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class KaRepository : IKaRepository
+public class KaRepository : RepositoryBase, IKaRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
-    public KaRepository(ITenantProvider tenantProvider)
+    public KaRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public bool CheckKaId(int kaId)
     {
-        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        var check = NoTrackingDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
     public bool CheckKaId(List<int> kaIds)
     {
-        var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
+        var countKaMsts = NoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
 
     public KaMstModel GetByKaId(int kaId)
     {
-        var entity = _tenantNoTrackingDataContext.KaMsts
+        var entity = NoTrackingDataContext.KaMsts
             .Where(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None).FirstOrDefault();
         return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
     public List<KaMstModel> GetByKaIds(List<int> kaIds)
     {
-        var entities = _tenantNoTrackingDataContext.KaMsts
+        var entities = NoTrackingDataContext.KaMsts
            .Where(k => kaIds.Contains(k.KaId) && k.IsDeleted == DeleteTypes.None).AsEnumerable();
         return entities is null ? new List<KaMstModel>() : entities.Select(e => ConvertToKaMstModel(e)).ToList();
     }
 
     public List<KaMstModel> GetList()
     {
-        return _tenantNoTrackingDataContext.KaMsts
+        return NoTrackingDataContext.KaMsts
             .Where(k => k.IsDeleted == DeleteTypes.None)
             .OrderBy(k => k.SortNo).AsEnumerable()
             .Select(k => ConvertToKaMstModel(k)).ToList();
@@ -51,7 +48,7 @@ public class KaRepository : IKaRepository
 
     public List<KaCodeMstModel> GetListKacode()
     {
-        return _tenantNoTrackingDataContext.KacodeMsts
+        return NoTrackingDataContext.KacodeMsts
                                             .OrderBy(u => u.ReceKaCd)
                                             .Select(ka => new KaCodeMstModel(
                                                         ka.ReceKaCd,
@@ -65,7 +62,7 @@ public class KaRepository : IKaRepository
         bool status = false;
         try
         {
-            var listKaMsts = _tenantDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+            var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
             int sortNo = 1;
             List<KaMst> listAddNews = new();
             foreach (var model in kaMstModels)
@@ -93,7 +90,7 @@ public class KaRepository : IKaRepository
                 }
                 sortNo++;
             }
-            _tenantDataContext.KaMsts.AddRange(listAddNews);
+            TrackingDataContext.KaMsts.AddRange(listAddNews);
 
             var listKaIdModel = kaMstModels.Select(model => model.Id).ToList();
             var listKaDeletes = listKaMsts.Where(model => !listKaIdModel.Contains(model.Id)).ToList();
@@ -103,7 +100,7 @@ public class KaRepository : IKaRepository
                 mst.UpdateDate = DateTime.UtcNow;
                 mst.UpdateId = userId;
             }
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             status = true;
             return status;
         }
@@ -122,5 +119,10 @@ public class KaRepository : IKaRepository
             k.ReceKaCd ?? string.Empty,
             k.KaSname ?? string.Empty,
             k.KaName ?? string.Empty);
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

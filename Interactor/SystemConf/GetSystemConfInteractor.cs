@@ -27,6 +27,10 @@ namespace Interactor.SystemConf
             {
                 return new GetSystemConfOutputData(GetSystemConfStatus.Failed);
             }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+            }
         }
     }
 }

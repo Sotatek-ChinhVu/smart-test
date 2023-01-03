@@ -54,9 +54,11 @@ public class DeleteDocCategoryInteractor : IDeleteDocCategoryInputPort
             }
             return new DeleteDocCategoryOutputData(DeleteDocCategoryStatus.Failed);
         }
-        catch (Exception)
+        finally
         {
-            return new DeleteDocCategoryOutputData(DeleteDocCategoryStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
     }
 

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿using Domain.Common;
 
-public interface ISuperSetDetailRepository
+namespace Domain.Models.SuperSetDetail;
+
+public interface ISuperSetDetailRepository : IRepositoryBase
 {
     SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate);
 
@@ -8,7 +10,7 @@ public interface ISuperSetDetailRepository
 
     int SaveSuperSetDetail(int setCd, int userId, int hpId, List<SetByomeiModel> SetByomeiList, SetKarteInfModel SetKarteInf, List<SetOrderInfModel> ListSetOrdInfModels);
 
-    bool SaveListSetKarteFileTemp(int hpId, int setCd, List<string> listFileName, bool saveTempFile);
+    bool SaveListSetKarteFile(int hpId, int setCd, string host, List<SetFileInfModel> listFiles, bool saveTempFile);
 
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
 

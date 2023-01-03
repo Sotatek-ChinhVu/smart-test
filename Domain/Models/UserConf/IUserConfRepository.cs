@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.UserConf;
+﻿using Domain.Common;
 
-public interface IUserConfRepository
+namespace Domain.Models.UserConf;
+
+public interface IUserConfRepository : IRepositoryBase
 {
     List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd);
 
@@ -9,4 +11,6 @@ public interface IUserConfRepository
     void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue);
 
     void UpdateUserConf(int hpId, int userId, int grpCd, int value);
+
+    int Sagaku(bool fromRece);
 }

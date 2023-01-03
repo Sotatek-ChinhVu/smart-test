@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
+﻿using Domain.Common;
+using System.Linq.Expressions;
 
 namespace Domain.Models.PtTag
 {
-    public interface IPtTagRepository
+    public interface IPtTagRepository : IRepositoryBase
     {
         List<StickyNoteModel> SearchByPtId(int hpId, int ptId);
         bool UpdateIsDeleted(int hpId, int ptId, int seqNo,int isDeleted, int userId);

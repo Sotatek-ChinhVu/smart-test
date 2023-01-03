@@ -37,18 +37,26 @@ namespace Interactor.SetKbnMst
             {
                 return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.InvalidSetKbn);
             }
-
-            var lowerSetGenarationMsts = _setGenerationRepository.GetList(inputData.HpId, inputData.SinDate);
-            var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
-            if (setGenarationMst == null)
+            try
             {
-                return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+                var lowerSetGenarationMsts = _setGenerationRepository.GetList(inputData.HpId, inputData.SinDate);
+                var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
+                if (setGenarationMst == null)
+                {
+                    return new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+                }
+                var setKbnMsts = _setKbnMstRepository.GetList(inputData.HpId, inputData.SetKbnFrom, inputData.SetKbnTo);
+
+                var result = setKbnMsts.Where(r => r.GenerationId == setGenarationMst.GenerationId).OrderBy(r => r.SetKbn).ToList();
+
+                return result?.Count > 0 ? new GetSetKbnMstListOutputData(result.Select(r => new GetSetKbnMstListOutputItem(r)).ToList(), GetSetKbnMstListStatus.Successed) : new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+
             }
-            var setKbnMsts = _setKbnMstRepository.GetList(inputData.HpId, inputData.SetKbnFrom, inputData.SetKbnTo);
-
-            var result = setKbnMsts.Where(r => r.GenerationId == setGenarationMst.GenerationId).OrderBy(r => r.SetKbn).ToList();
-
-            return result?.Count > 0 ? new GetSetKbnMstListOutputData(result.Select(r => new GetSetKbnMstListOutputItem(r)).ToList(), GetSetKbnMstListStatus.Successed) : new GetSetKbnMstListOutputData(null, GetSetKbnMstListStatus.NoData);
+            finally
+            {
+                _setGenerationRepository.ReleaseResource();
+                _setKbnMstRepository.ReleaseResource();
+            }
         }
     }
 }
