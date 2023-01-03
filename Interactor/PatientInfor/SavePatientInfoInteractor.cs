@@ -262,13 +262,13 @@ namespace Interactor.PatientInfor
             // validate full name if setting
             if (isValidateFullName)
             {
-                if (string.IsNullOrEmpty(lastNameKana))
+                if (string.IsNullOrEmpty(lastNameKana) && !resultMessages.Any(x=>x.Code == SavePatientInforValidationCode.InvalidFirstNameKana))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
                     resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanaName, TypeMessage.TypeMessageError));
                 }
 
-                if (string.IsNullOrEmpty(lastNameKanji))
+                if (string.IsNullOrEmpty(lastNameKanji) && !resultMessages.Any(x => x.Code == SavePatientInforValidationCode.InvalidFirstNameKanji))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "氏名" });
                     resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanjiName, TypeMessage.TypeMessageError));
