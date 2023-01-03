@@ -1,11 +1,11 @@
 ﻿using Domain.Models.Reception;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.RaiinKubunMst.SaveRaiinKbn
+namespace UseCase.RaiinKubunMst.SaveRaiinKbnInfList
 {
-    public class SaveRaiinKbnInputData : IInputData<SaveRaiinKbnOutputData>
+    public class SaveRaiinKbnInfListInputData : IInputData<SaveRaiinKbnInfListOutputData>
     {
-        public SaveRaiinKbnInputData(int hpId, long ptId, int sinDate, long raiinNo, int userId, List<RaiinKbnInfDto> kbnInfDtos)
+        public SaveRaiinKbnInfListInputData(int hpId, long ptId, int sinDate, long raiinNo, int userId, List<RaiinKbnInfDto> kbnInfDtos)
         {
             HpId = hpId;
             PtId = ptId;

@@ -339,7 +339,7 @@ namespace Infrastructure.Repositories
 
             SaveRaiinKbnInfs(hpId, userId, raiinInf, kbnInfDtos);
 
-            return TrackingDataContext.SaveChanges() > 0;
+            return true;
         }
 
         private void SaveRaiinKbnInfs(int hpId, int userId, RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
