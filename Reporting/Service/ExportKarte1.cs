@@ -28,12 +28,14 @@ public class ExportKarte1 : IExportKarte1
         var ptInf = _patientInforRepository.GetById(hpId, ptId, sinDate, 0);
         var hoken = _insuranceRepository.GetPtHokenInf(hpId, hokenPid, ptId, sinDate);
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
-
-        var result = ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis);
-        return result;
+        if (ptInf != null)
+        {
+            return ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis);
+        }
+        return new Karte1ExportModel();
     }
 
-    private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel? ptInf, InsuranceModel hoken, List<PtDiseaseModel> ptByomeis)
+    private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel ptInf, InsuranceModel hoken, List<PtDiseaseModel> ptByomeis)
     {
         var printoutDateTime = DateTime.UtcNow;
         var ptNum = string.Empty;

@@ -36,6 +36,40 @@ public class Karte1ExportModel
         ListByomeis = listByomeis;
     }
 
+    public Karte1ExportModel()
+    {
+        SysDateTimeS = string.Empty;
+        PtNum = string.Empty;
+        FutansyaNo_K1 = string.Empty;
+        HokensyaNo = string.Empty;
+        JyukyusyaNo_K1 = string.Empty;
+        KigoBango = string.Empty;
+        PtKanaName = string.Empty;
+        PtName = string.Empty;
+        HokenKigenW = string.Empty;
+        Setainusi = string.Empty;
+        BirthDateW = string.Empty;
+        Age = string.Empty;
+        Sex = string.Empty;
+        HokenSyutokuW = string.Empty;
+        PtPostCode = string.Empty;
+        PtAddress1 = string.Empty;
+        PtAddress2 = string.Empty;
+        OfficeAddress = string.Empty;
+        OfficeTel = string.Empty;
+        PtTel = string.Empty;
+        Office = string.Empty;
+        PtRenrakuTel = string.Empty;
+        HokensyaAddress = string.Empty;
+        Zokugara = string.Empty;
+        HokensyaTel = string.Empty;
+        Job = string.Empty;
+        HokensyaName = string.Empty;
+        FutansyaNo_K2 = string.Empty;
+        JyukyusyaNo_K2 = string.Empty;
+        ListByomeis = new();
+    }
+
     public string SysDateTimeS { get; private set; }
 
     public string PtNum { get; private set; }
