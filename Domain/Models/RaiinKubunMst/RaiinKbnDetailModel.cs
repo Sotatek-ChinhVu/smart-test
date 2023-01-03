@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.RaiinKbn
+﻿namespace Domain.Models.RaiinKubunMst
 {
     public class RaiinKbnDetailModel
     {

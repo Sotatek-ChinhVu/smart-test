@@ -1,6 +1,5 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
-using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Constants;

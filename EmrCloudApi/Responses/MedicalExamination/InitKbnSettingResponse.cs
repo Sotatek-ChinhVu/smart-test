@@ -1,4 +1,4 @@
-﻿using Domain.Models.RaiinKbn;
+﻿using Domain.Models.RaiinKubunMst;
 
 namespace EmrCloudApi.Responses.MedicalExamination
 {

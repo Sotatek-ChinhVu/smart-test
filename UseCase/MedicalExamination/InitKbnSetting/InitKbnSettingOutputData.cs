@@ -1,4 +1,4 @@
-﻿using Domain.Models.RaiinKbn;
+﻿using Domain.Models.RaiinKubunMst;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.InitKbnSetting

@@ -1,6 +1,6 @@
-﻿namespace EmrCloudApi.Requests.PatientRaiinKubun
+﻿namespace EmrCloudApi.Requests.RaiinKubun
 {
-    public class PatientRaiinKubunRequest
+    public class GetPatientRaiinKubunListRequest
     {
         public int HpId { get; set; }
 

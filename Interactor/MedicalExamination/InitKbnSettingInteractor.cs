@@ -1,7 +1,6 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
-using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.TodayOdr;
 using Helper.Enum;
@@ -13,14 +12,12 @@ namespace Interactor.MedicalExamination
     {
         private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IRaiinKubunMstRepository _raiinKubunMstRepository;
-        private readonly IRaiinKbnRepository _raiinKbnRepository;
         private readonly INextOrderRepository _nextOrderRepository;
 
-        public InitKbnSettingInteractor(ITodayOdrRepository todayOdrRepository, IRaiinKubunMstRepository raiinKubunMstRepository, IRaiinKbnRepository raiinKbnRepository, INextOrderRepository nextOrderRepository)
+        public InitKbnSettingInteractor(ITodayOdrRepository todayOdrRepository, IRaiinKubunMstRepository raiinKubunMstRepository, INextOrderRepository nextOrderRepository)
         {
             _todayOdrRepository = todayOdrRepository;
             _raiinKubunMstRepository = raiinKubunMstRepository;
-            _raiinKbnRepository = raiinKbnRepository;
             _nextOrderRepository = nextOrderRepository;
         }
 
@@ -136,7 +133,7 @@ namespace Interactor.MedicalExamination
                         0,
                         ""
                     )).ToList();
-                var raiinKbnModels = _raiinKbnRepository.GetRaiinKbns(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+                var raiinKbnModels = _raiinKubunMstRepository.GetRaiinKbns(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
                 if (raiinKbnModels?.Count > 0)
                 {
                     var raiinKouiKbns = _raiinKubunMstRepository.GetRaiinKouiKbns(inputData.HpId);
@@ -151,7 +148,7 @@ namespace Interactor.MedicalExamination
                     }
                     else if (inputData.WindowType == WindowType.Booking)
                     {
-                        if (inputData.IsEnableLoadDefaultVal) _raiinKbnRepository.InitDefaultByRsv(inputData.HpId, inputData.FrameId, raiinKbnModels);
+                        if (inputData.IsEnableLoadDefaultVal) _raiinKubunMstRepository.InitDefaultByRsv(inputData.HpId, inputData.FrameId, raiinKbnModels);
                     }
                 }
 
@@ -165,7 +162,6 @@ namespace Interactor.MedicalExamination
             {
                 _todayOdrRepository.ReleaseResource();
                 _raiinKubunMstRepository.ReleaseResource();
-                _raiinKbnRepository.ReleaseResource();
                 _nextOrderRepository.ReleaseResource();
             }
         }

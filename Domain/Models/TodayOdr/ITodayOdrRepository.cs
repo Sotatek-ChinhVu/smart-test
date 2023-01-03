@@ -2,7 +2,6 @@
 using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
-using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 
 namespace Domain.Models.TodayOdr

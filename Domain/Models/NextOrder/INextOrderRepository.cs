@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 
 namespace Domain.Models.NextOrder

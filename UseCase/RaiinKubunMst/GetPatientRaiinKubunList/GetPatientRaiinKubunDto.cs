@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.PatientRaiinKubun
+﻿namespace UseCase.RaiinKbn.GetPatientRaiinKubunList
 {
-    public class PatientRaiinKubunModel
+    public class GetPatientRaiinKubunDto
     {
-        public PatientRaiinKubunModel(int hpId, int groupId, int kbnCd, int sortNo)
+        public GetPatientRaiinKubunDto(int hpId, int groupId, int kbnCd, int sortNo)
         {
             HpId = hpId;
             GroupId = groupId;
@@ -17,7 +11,7 @@ namespace Domain.Models.PatientRaiinKubun
         }
 
         public int HpId { get; private set; }
-        
+
         public int GroupId { get; private set; }
 
         public int KbnCd { get; private set; }

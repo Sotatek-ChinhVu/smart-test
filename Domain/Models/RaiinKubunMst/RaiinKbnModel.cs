@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.RaiinKbn
+﻿namespace Domain.Models.RaiinKubunMst
 {
     public class RaiinKbnModel
     {
@@ -22,7 +22,7 @@
         public string GrpName { get; private set; }
 
         public int IsDeleted { get; private set; }
-        
+
         public RaiinKbnInfModel RaiinKbnInfModel { get; private set; }
 
         public List<RaiinKbnDetailModel> RaiinKbnDetailModels { get; private set; }

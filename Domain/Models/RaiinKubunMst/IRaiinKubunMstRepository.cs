@@ -16,5 +16,15 @@ namespace Domain.Models.RaiinKubunMst
 
         public List<RaiinKbnItemModel> GetRaiinKbnItems(int hpId);
 
+        void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd, int userId);
+
+        bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId);
+
+        List<RaiinKbnModel> GetRaiinKbns(int hpId, long ptId, long raiinNo, int sinDate);
+
+        List<RaiinKbnModel> InitDefaultByRsv(int hpId, int frameID, List<RaiinKbnModel> raiinKbns);
+
+        IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate);
+
     }
 }

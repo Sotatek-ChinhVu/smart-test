@@ -3,7 +3,6 @@ using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
-using Domain.Models.RaiinKbn;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
