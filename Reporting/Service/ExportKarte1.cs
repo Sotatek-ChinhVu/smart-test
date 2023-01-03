@@ -8,7 +8,7 @@ using Reporting.Interface;
 using Reporting.Model.ExportKarte1;
 using System.Text;
 
-namespace Reporting.Export;
+namespace Reporting.Service;
 
 public class ExportKarte1 : IExportKarte1
 {

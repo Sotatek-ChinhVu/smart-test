@@ -2,7 +2,7 @@
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Reporting;
+using Reporting.Interface;
 using Reporting.Model.ExportKarte1;
 
 namespace EmrCloudApi.Controller;
@@ -10,8 +10,8 @@ namespace EmrCloudApi.Controller;
 [Route("api/[controller]")]
 public class ExportReportController : AuthorizeControllerBase
 {
-    private readonly IReporting _reporting;
-    public ExportReportController(IUserService userService, IReporting reporting) : base(userService)
+    private readonly IReportingService _reporting;
+    public ExportReportController(IUserService userService, IReportingService reporting) : base(userService)
     {
         _reporting = reporting;
     }
