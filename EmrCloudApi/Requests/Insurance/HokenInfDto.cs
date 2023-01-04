@@ -1,5 +1,5 @@
-﻿using EmrCloudApi.Requests.ConfirmDate;
-using EmrCloudApi.Requests.RousaiTenki;
+﻿using EmrCloudApi.Requests.RousaiTenki;
+using EmrCloudApi.Responses.Document.Dto;
 
 namespace EmrCloudApi.Requests.Insurance
 {

@@ -280,5 +280,27 @@ namespace Infrastructure.Repositories
         {
             DisposeDataContext();
         }
+
+        public long ConvertTextToRichText(int hpId, long ptId)
+        {
+            var listKarteItems = TrackingDataContext.KarteInfs.Where(item =>
+                                                                            item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.Text != null)
+                                                              .ToList();
+            if (listKarteItems.Any())
+            {
+                foreach (var karteItem in listKarteItems)
+                {
+                    if (karteItem.Text != null)
+                    {
+                        karteItem.RichText = Encoding.UTF8.GetBytes(karteItem.Text);
+                    }
+                }
+                TrackingDataContext.SaveChanges();
+                return ptId;
+            }
+            return 0;
+        }
     }
 }
