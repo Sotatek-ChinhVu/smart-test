@@ -12,72 +12,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public AccountingModel GetAccountingInfo(int hpId, long ptId, long oyaRaiinNo)
-        {
-            List<SyunoSeikyuModel> syunoSeikyuModels = new List<SyunoSeikyuModel>();
-            List<SyunoNyukinModel> syunoNyukinModels = new List<SyunoNyukinModel>();
-            int seikyuTensu = 0;
-
-            var raiinNoList = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.OyaRaiinNo == oyaRaiinNo).ToList();
-
-
-
-            var seikyuList = NoTrackingDataContext.SyunoSeikyus.Where(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == oyaRaiinNo).ToList();
-
-            var nyukinList = NoTrackingDataContext.SyunoNyukin.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).ToList();
-
-            var kaikeiList = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.RaiinNo == oyaRaiinNo && x.RaiinNo == oyaRaiinNo).ToList();
-
-
-            var accountingList = (from seikyu in seikyuList
-                                  join nyukin in nyukinList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
-                                                        equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo }
-                                  join kaikei in kaikeiList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
-                                                        equals new { kaikei.HpId, kaikei.PtId, kaikei.SinDate, kaikei.RaiinNo }
-                                  where 1 == 1
-                                  select ConvertToAccountingModel(hpId, ptId, seikyu, nyukin, kaikei)
-                                  ).ToList();
-
-          
-        }
-
-        private AccountingModel ConvertToAccountingModel(int hpId, long ptId, SyunoSeikyu seikyu, SyunoNyukin nyukin, KaikeiInf kaikeiInf)
-        {
-            return new AccountingModel
-                (
-                hpId,
-                ptId,
-                seikyu.SinDate,
-                seikyu.RaiinNo,
-                seikyu.AdjustFutan,
-                nyukin != null ? nyukin.NyukinGaku : 0,
-                nyukin != null ? nyukin.PaymentMethodCd : 0,
-                nyukin.NyukinDate,
-                nyukin.UketukeSbt,
-                nyukin.NyukinCmt,
-                nyukin.NyukinjiTensu,
-                nyukin.NyukinjiSeikyu,
-                nyukin.NyukinjiDetail,
-                nyukin.IsDeleted,
-                seikyu.NyukinKbn,
-                seikyu.SeikyuTensu,
-                seikyu.SeikyuGaku,
-                seikyu.SeikyuDetail,
-                seikyu.NewSeikyuTensu,
-                seikyu.NewAdjustFutan,
-                seikyu.NewSeikyuGaku,
-                seikyu.NewSeikyuDetail,
-                kaikeiInf.JihiFutan,
-                kaikeiInf.JihiOuttax
-                );
-        }
-
-        public void ReleaseResource()
-        {
-            DisposeDataContext();
-        }
-
-        public SyunoSeikyuModel GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false)
+        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false)
         {
             IQueryable<SyunoSeikyu> syunoSeikyuRepo = null;
 
@@ -142,14 +77,107 @@ namespace Infrastructure.Repositories
                             ListKaikeiInf = listKaikeInf
                         };
 
-            return query.AsEnumerable().Select(item => new SyunoSeikyuModel(item.SyunoSeikyu,
-                item.RaiinInf,
-                item.ListSyunoNyukin == null
-                    ? new List<SyunoNyukin>()
-                    : item.ListSyunoNyukin.ToList(),
-                item.ListKaikeiInf.ToList(),
-                listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid)?.HokenId ?? 0))
+            var result = query.AsEnumerable().Select(item => new AccountingModel(
+                    new SyunoSeikyuModel(
+                        item.SyunoSeikyu.HpId,
+                        item.SyunoSeikyu.PtId,
+                        item.SyunoSeikyu.SinDate,
+                        item.SyunoSeikyu.RaiinNo,
+                        item.SyunoSeikyu.NyukinKbn,
+                        item.SyunoSeikyu.SeikyuTensu,
+                        item.SyunoSeikyu.AdjustFutan,
+                        item.SyunoSeikyu.SeikyuGaku,
+                        item.SyunoSeikyu.SeikyuDetail,
+                        item.SyunoSeikyu.NewSeikyuTensu,
+                        item.SyunoSeikyu.NewAdjustFutan,
+                        item.SyunoSeikyu.NewSeikyuGaku,
+                        item.SyunoSeikyu.NewSeikyuDetail
+                    ),
+                    new SyunoRaiinInfModel(
+                        item.RaiinInf.Status,
+                        item.RaiinInf.KaikeiTime,
+                        item.RaiinInf.UketukeSbt
+                        ),
+                        item.ListSyunoNyukin == null
+                    ? new List<SyunoNyukinModel>()
+                    : item.ListSyunoNyukin.Select(y =>
+                        new SyunoNyukinModel(
+                        y.HpId,
+                        y.PtId,
+                        y.SinDate,
+                        y.RaiinNo,
+                        y.SeqNo,
+                        y.SortNo,
+                        y.AdjustFutan,
+                        y.NyukinGaku,
+                        y.PaymentMethodCd,
+                        y.NyukinDate,
+                        y.UketukeSbt,
+                        y.NyukinCmt,
+                        y.NyukinjiTensu,
+                        y.NyukinjiSeikyu,
+                        y.NyukinjiDetail
+                        )
+                        ).ToList(),
+
+                   item.ListKaikeiInf.Select(x =>
+                       new KaikeiInfModel(
+                        x.HpId,
+                        x.PtId,
+                        x.SinDate,
+                        x.RaiinNo,
+                        x.HokenId,
+                        x.Kohi1Id,
+                        x.Kohi2Id,
+                        x.Kohi3Id,
+                        x.Kohi4Id,
+                        x.HokenKbn,
+                        x.HokenSbtCd,
+                        x.ReceSbt,
+                        x.Houbetu,
+                        x.Kohi1Houbetu,
+                        x.Kohi2Houbetu,
+                        x.Kohi3Houbetu,
+                        x.Kohi4Houbetu,
+                        x.HonkeKbn,
+                        x.HokenRate,
+                        x.PtRate,
+                        x.DispRate,
+                        x.Tensu,
+                        x.TotalIryohi,
+                        x.PtFutan,
+                        x.JihiFutan,
+                        x.JihiTax,
+                        x.JihiOuttax,
+                        x.JihiFutanTaxfree,
+                        x.JihiFutanTaxNr,
+                        x.JihiFutanTaxGen,
+                        x.JihiFutanOuttaxNr,
+                        x.JihiFutanOuttaxGen,
+                        x.JihiTaxNr,
+                        x.JihiTaxGen,
+                        x.JihiOuttaxNr,
+                        x.JihiOuttaxGen,
+                        x.AdjustFutan,
+                        x.AdjustRound,
+                        x.TotalPtFutan,
+                        x.AdjustFutanVal,
+                        x.AdjustFutanRange,
+                        x.AdjustRateVal,
+                        x.AdjustRateRange
+                           )
+                       ).ToList(),
+                   listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid)?.HokenId ?? 0))
                 .ToList();
+            return result;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
+
+
     }
 }
