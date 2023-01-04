@@ -15,31 +15,24 @@ public class DeleteDocTemplateInteractor : IDeleteDocTemplateInputPort
 
     public DeleteDocTemplateOutputData Handle(DeleteDocTemplateInputData inputData)
     {
-        try
-        {
-            var listFolderPath = new List<string>(){
+        var listFolderPath = new List<string>(){
                                                    CommonConstants.Reference,
                                                    CommonConstants.Files,
                                                    inputData.CategoryCd.ToString()
                                                 };
-            string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
-            var checkExist = _amazonS3Service.ObjectExistsAsync(path + inputData.FileTemplateName);
-            checkExist.Wait();
-            if (!checkExist.Result)
-            {
-                return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.TemplateNotFound);
-            }
-            var response = _amazonS3Service.DeleteObjectAsync(path + inputData.FileTemplateName);
-            response.Wait();
-            if (response.Result)
-            {
-                return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.Successed);
-            }
-            return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.Failed);
-        }
-        catch (Exception)
+        string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
+        var checkExist = _amazonS3Service.ObjectExistsAsync(path + inputData.FileTemplateName);
+        checkExist.Wait();
+        if (!checkExist.Result)
         {
-            return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.Failed);
+            return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.TemplateNotFound);
         }
+        var response = _amazonS3Service.DeleteObjectAsync(path + inputData.FileTemplateName);
+        response.Wait();
+        if (response.Result)
+        {
+            return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.Successed);
+        }
+        return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.Failed);
     }
 }
