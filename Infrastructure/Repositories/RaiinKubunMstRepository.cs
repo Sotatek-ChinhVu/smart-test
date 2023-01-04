@@ -519,6 +519,7 @@ namespace Infrastructure.Repositories
             }
 
             SaveRaiinKbnInfs(hpId, userId, raiinInf, kbnInfDtos);
+            TrackingDataContext.SaveChanges();
 
             return true;
         }
