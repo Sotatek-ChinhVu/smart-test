@@ -13,12 +13,12 @@ using System.Globalization;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
-namespace UnitTests.Interactor.MedicalExamination;
+namespace CloudUnitTest.Interactor.MedicalExamination;
 
-public class GetCheckedSpecialItemInteractorTest
+public class GetCheckedSpecialItemInteractorTest : BaseUT
 {
     #region AgeLimitCheck
-    [Fact]
+    [Test]
     public void AgeLimitCheck_True()
     {
         // Arrange
@@ -62,7 +62,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(!output.Any());
     }
 
-    [Fact]
+    [Test]
     public void AgeLimitCheck_MaxAge_WithAgeDiffer0()
     {
         // Arrange
@@ -107,7 +107,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void AgeLimitCheck_MinAge_WithAgeDiffer0()
     {
         // Arrange
@@ -152,7 +152,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void AgeLimitCheck_MaxAge_WithMinAgeEqual0()
     {
         // Arrange
@@ -197,7 +197,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void AgeLimitCheck_MinAge_WithMaxAgeEqual0()
     {
         // Arrange
@@ -243,7 +243,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region ExpiredCheck
-    [Fact]
+    [Test]
     public void ExpiredCheck_True()
     {
         // Arrange
@@ -283,7 +283,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(!output.Any());
     }
 
-    [Fact]
+    [Test]
     public void ExpiredCheck_MinStartDate()
     {
         // Arrange
@@ -323,7 +323,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Any());
     }
 
-    [Fact]
+    [Test]
     public void ExpiredCheck_MaxEndDate()
     {
         // Arrange
@@ -365,7 +365,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region DuplicateCheck
-    [Fact]
+    [Test]
     public void DuplicateCheck_True()
     {
         // Arrange
@@ -440,7 +440,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(!output.Any());
     }
 
-    [Fact]
+    [Test]
     public void DuplicateCheck_Fail()
     {
         // Arrange
@@ -482,7 +482,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region ItemCommentCheck
-    [Fact]
+    [Test]
     public void ItemCommentCheck_True()
     {
         // Arrange
@@ -516,7 +516,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(!output1.Any() && !output2.Any());
     }
 
-    [Fact]
+    [Test]
     public void ItemCommentCheck_Fail()
     {
         // Arrange
@@ -550,7 +550,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region CalculationCountCheck
-    [Fact]
+    [Test]
     public void CalculationCountCheck_UnitCd_997_998()
     {
         // Arrange
@@ -681,7 +681,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void CalculationCountCheck_UnitCd_Other()
     {
         // Arrange
@@ -814,7 +814,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void CalculationCountCheck_UnitCd_Other_StartDateMoreThan0()
     {
         // Arrange
@@ -947,7 +947,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == odrDetails.Count);
     }
 
-    [Fact]
+    [Test]
     public void CalculationCountCheck_UnitCd_997_998_True()
     {
         // Arrange
@@ -1078,7 +1078,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(!output.Any());
     }
 
-    [Fact]
+    [Test]
     public void CalculationCountCheck_UnitCd_Other_True()
     {
         // Arrange
@@ -1211,7 +1211,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region Check Age
-    [Fact]
+    [Test]
     public void CheckAge_AA()
     {
         // Arrange
@@ -1233,7 +1233,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && !output2);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_B3()
     {
         // Arrange
@@ -1259,7 +1259,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && output2 && !output3 && !output4);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_B6()
     {
         // Arrange
@@ -1285,7 +1285,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && output2 && !output3 && !output4);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_BF()
     {
         // Arrange
@@ -1311,7 +1311,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && output2 && !output3 && !output4);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_BK()
     {
         // Arrange
@@ -1337,7 +1337,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && output2 && !output3 && !output4);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_AE()
     {
         // Arrange
@@ -1359,7 +1359,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && !output2);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_MG()
     {
         // Arrange
@@ -1386,7 +1386,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 && !output2 && output3 && !output4);
     }
 
-    [Fact]
+    [Test]
     public void CheckAge_Other()
     {
         // Arrange
@@ -1413,7 +1413,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region Common DensiSantei
-    [Fact]
+    [Test]
     public void CommonDensiSantei_53()
     {
         // Arrange
@@ -1471,7 +1471,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "患者あたり");
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_121()
     {
         // Arrange
@@ -1528,7 +1528,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "日" && startDate == sinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_131()
     {
         // Arrange
@@ -1585,7 +1585,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_138()
     {
         // Arrange
@@ -1642,7 +1642,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "週" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_141()
     {
         // Arrange
@@ -1700,7 +1700,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "一連" && startDate == -1);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_142()
     {
         // Arrange
@@ -1759,7 +1759,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "2週" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_143()
     {
         // Arrange
@@ -1818,7 +1818,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "2月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_144()
     {
         // Arrange
@@ -1877,7 +1877,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "3月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_145()
     {
         // Arrange
@@ -1936,7 +1936,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "4月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_146()
     {
         // Arrange
@@ -1995,7 +1995,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "6月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_147()
     {
         // Arrange
@@ -2054,7 +2054,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "12月" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_148()
     {
         // Arrange
@@ -2113,7 +2113,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm == "5年" && startDate == newSinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_997()
     {
         // Arrange
@@ -2194,7 +2194,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(endDate1 == 99999999 && endDate2 == 20191212);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_998()
     {
         // Arrange
@@ -2272,7 +2272,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(endDate1 == 99999999 && endDate2 == newSysyosinDate);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_999_TermSbt2()
     {
         // Arrange
@@ -2352,7 +2352,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm1 == "日" && startDate1 == newSinDate1 && sTerm2 == densiSanteiKaisuModel2.TermCount + "日" && startDate2 == newSinDate2);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_999_TermSbt3()
     {
         // Arrange
@@ -2432,7 +2432,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm1 == "週" && startDate1 == newSinDate1 && sTerm2 == densiSanteiKaisuModel2.TermCount + "週" && startDate2 == newSinDate2);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_999_TermSbt4()
     {
         // Arrange
@@ -2512,7 +2512,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm1 == "月" && startDate1 == newSinDate1 && sTerm2 == densiSanteiKaisuModel2.TermCount + "月" && startDate2 == newSinDate2);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_999_TermSbt5()
     {
         // Arrange
@@ -2592,7 +2592,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(sTerm1 == "年間" && startDate1 == newSinDate1 && sTerm2 == densiSanteiKaisuModel2.TermCount + "年間" && startDate2 == newSinDate2);
     }
 
-    [Fact]
+    [Test]
     public void CommonDensiSantei_Other()
     {
         // Arrange
@@ -2653,7 +2653,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region util function
-    [Fact]
+    [Test]
     public void WeekBefore()
     {
         // Arrange
@@ -2677,7 +2677,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output == retDate);
     }
 
-    [Fact]
+    [Test]
     public void MonthsBefore()
     {
         // Arrange
@@ -2703,7 +2703,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output == retDate);
     }
 
-    [Fact]
+    [Test]
     public void YearsBefore()
     {
         // Arrange
@@ -2729,7 +2729,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output == retDate);
     }
 
-    [Fact]
+    [Test]
     public void DaysBefore()
     {
         // Arrange
@@ -2754,7 +2754,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output == retDate);
     }
 
-    [Fact]
+    [Test]
     public void MonthsAfter()
     {
         // Arrange
@@ -2779,7 +2779,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output == retDate);
     }
 
-    [Fact]
+    [Test]
     public void GetHokenKbn()
     {
         // Arrange
@@ -2807,7 +2807,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output1 == 4 && output2 == 0 && output3 == 0 && output4 == 1 && output5 == 1 && output6 == 2 && output7 == 3);
     }
 
-    [Fact]
+    [Test]
     public void GetCheckSanteiKbns()
     {
         // Arrange
@@ -2828,7 +2828,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Count == 2 && output.Contains(2));
     }
 
-    [Fact]
+    [Test]
     public void GetCheckHokenKbns()
     {
         // Arrange
@@ -2855,19 +2855,19 @@ public class GetCheckedSpecialItemInteractorTest
         var output9 = interactor.GetCheckHokenKbns(odrHokenKbn1, hokensyuHandling3);
 
         // Assert
-        Assert.Equal(output1, new List<int> { 0, 1, 2, 3 });
-        Assert.Equal(output2, new List<int> { 0, 1, 2, 3 });
-        Assert.Equal(output3, new List<int> { 0, 1, 2, 3 });
-        Assert.Equal(output4, new List<int> { 0, 1, 2, 3 });
-        Assert.Equal(output5, new List<int> { 0, 1, 2, 3 });
-        Assert.Equal(output6, new List<int> { 0, 1, 2, 3 });
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output1));
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output2));
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output3));
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output4));
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output5));
+        Assert.That(new List<int> { 0, 1, 2, 3 }, Is.EqualTo(output6));
         Assert.Contains(4, output7);
-        Assert.Equal(output8, new List<int> { 0, 1, 2, 3, 4, 0 });
+        Assert.That(new List<int> { 0, 1, 2, 3, 4, 0 }, Is.EqualTo(output8));
         Assert.True(output9.Contains(4) && output9.Contains(0));
     }
 
 
-    [Fact]
+    [Test]
     public void GetPtHokenKbn()
     {
         // Arrange
@@ -2897,7 +2897,7 @@ public class GetCheckedSpecialItemInteractorTest
     #endregion
 
     #region Main
-    [Fact]
+    [Test]
     public void Handle_HpId()
     {
         // Arrange
@@ -2917,7 +2917,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidHpId && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_PtId()
     {
         // Arrange
@@ -2937,7 +2937,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidPtId && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_SinDate()
     {
         // Arrange
@@ -2957,7 +2957,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidSinDate && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_IBirthDay()
     {
         // Arrange
@@ -2977,7 +2977,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidIBirthDay && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_CheckAge()
     {
         // Arrange
@@ -2997,7 +2997,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidCheckAge && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_RaiinNo()
     {
         // Arrange
@@ -3017,7 +3017,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidRaiinNo && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_InvalidOrderAndKarte()
     {
         // Arrange
@@ -3037,7 +3037,7 @@ public class GetCheckedSpecialItemInteractorTest
         Assert.True(output.Status == CheckedSpecialItemStatus.InvalidOdrInfDetail && output.CheckSpecialItemModels.Count() == 0);
     }
 
-    [Fact]
+    [Test]
     public void Handle_EnabledInputCheck_True()
     {
         // Arrange
@@ -3069,7 +3069,7 @@ public class GetCheckedSpecialItemInteractorTest
             new TenItemModel(
             1,
            "111013850",
-        
+
            "00",
            "AA",
            "111013850",
@@ -3079,7 +3079,7 @@ public class GetCheckedSpecialItemInteractorTest
            new TenItemModel(
              1,
             "111014210",
-         
+
             "0",
             "AA",
             "111014210",
@@ -3230,14 +3230,14 @@ public class GetCheckedSpecialItemInteractorTest
         var output2 = interactor2.Handle(checkedSpecialItemInputData2);
 
         // Assert
-        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.AgeLimit);
-        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Duplicate);
-        Assert.Contains(output1.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.CalculationCount);
-        Assert.Contains(output2.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.Expiration);
+        Assert.Contains(Helper.Enum.CheckSpecialType.AgeLimit, output1.CheckSpecialItemModels);
+        Assert.Contains(Helper.Enum.CheckSpecialType.Duplicate, output1.CheckSpecialItemModels);
+        Assert.Contains(Helper.Enum.CheckSpecialType.CalculationCount, output1.CheckSpecialItemModels);
+        Assert.Contains(Helper.Enum.CheckSpecialType.Expiration, output2.CheckSpecialItemModels);
         Assert.True(output1.Status == CheckedSpecialItemStatus.Successed && output2.Status == CheckedSpecialItemStatus.Successed);
     }
 
-    [Fact]
+    [Test]
     public void Handle_EnabledCommentCheck_True()
     {
         // Arrange
@@ -3735,7 +3735,7 @@ public class GetCheckedSpecialItemInteractorTest
         var output = interactor.Handle(checkedSpecialItemInputData);
 
         // Assert
-        Assert.Contains(output.CheckSpecialItemModels, c => c.CheckingType == Helper.Enum.CheckSpecialType.ItemComment);
+        Assert.Contains(Helper.Enum.CheckSpecialType.ItemComment, output.CheckSpecialItemModels);
         Assert.True(output.Status == CheckedSpecialItemStatus.Successed);
     }
     #endregion
