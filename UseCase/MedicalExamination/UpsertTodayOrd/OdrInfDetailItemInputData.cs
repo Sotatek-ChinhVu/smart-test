@@ -40,6 +40,27 @@
             CommentNewline = commentNewline;
         }
 
+        public OdrInfDetailItemInputData(int hpId, string itemCd, int sinDate)
+        {
+
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+            JissiDate = DateTime.MinValue;
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            HpId = hpId;
+            ItemCd = itemCd;
+            SinDate = sinDate;
+        }
+
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public long RpNo { get; private set; }

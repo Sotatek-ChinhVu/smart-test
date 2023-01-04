@@ -1,3 +1,4 @@
+using Helper.Constants;
 using Helper.Extension;
 using System.Globalization;
 using System.Text;
@@ -14,6 +15,80 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        public static int FullStartDate(int startDate)
+        {
+            if (startDate == 0) return 0;
+
+            int startDateLength = startDate.AsString().Length;
+            if (startDateLength == 8)
+            {
+                //Format of StartDate is yyyymmdd
+                return startDate;
+            }
+            else if (startDateLength == 6)
+            {
+                //Format of StartDate is yyyymm
+                //Need to convert to yyyymm01
+                return startDate * 100 + 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static int FullEndDate(int endDate)
+        {
+            if (endDate.AsString().Count() == 8)
+            {
+                //Format of EndDate is yyyymmdd
+                return endDate;
+            }
+            //Format of EndDate is yyyymm
+            //Need to convert to yyyymm31
+            return endDate * 100 + 31;
+        }
+        public static bool IsDigitsOnly(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
+
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        // 切り上げ
+
+        public static double RoundUp(double x, int Factor)
+        {
+            double dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+            else
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+        }
+        private static double IntPower(int baseValue, int exponent)
+        {
+            return Math.Pow(baseValue, exponent);
+        }
+
+        // 切捨て
+        public static double RoundDown(double x, int Factor)
+        {
+            Double dFactor;
+            Factor = Factor - 1;
+            dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+            else
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+        }
         public static string ToHalfsize(string value)
         {
             if (value == null)
@@ -1984,6 +2059,42 @@ namespace Helper.Common
             }
         }
 
+        public static ReleasedDrugType SyohoToSempatu(int syohoKbn, int syohoLimitKbn)
+        {
+            switch (syohoKbn)
+            {
+                case 0:
+                    // 後発品のない先発品
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.None;
+                    break;
+                case 1:
+                    // 後発品への変更不可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Unchangeable;
+                    break;
+                case 2:
+                    // 後発品への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Changeable;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.Changeable_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+                case 3:
+                    // 一般名処方への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.CommonName;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.CommonName_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+            }
+            return ReleasedDrugType.None;
+        }
+
         ///<summary>
         ///指定の月数後の日付を取得する
         ///</summary>
@@ -2828,4 +2939,6 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
+
+
 }

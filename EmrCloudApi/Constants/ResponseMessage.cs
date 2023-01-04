@@ -34,6 +34,8 @@
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
+        public static readonly string InvalidWindowType = "Invalid WindowType";
+        public static readonly string InvalidFrameId = "Invalid FrameId";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -47,6 +49,7 @@
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
+        public static readonly string Error = "Error";
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
