@@ -3,6 +3,7 @@ using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.RaiinKubunMst;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
@@ -11,7 +12,6 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -1064,6 +1064,274 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        /// <summary>
+        /// 外来リハ初再診チェック
+        /// </summary>
+        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<OrdInfModel> allOdrInf)
+        {
+            var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                  p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 0)?.Val ?? 0;
+
+            if (checkGairaiRiha == 0)
+            {
+                return new(0, string.Empty, 0, string.Empty);
+            }
+
+            if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
+            {
+                // 外来リハビリテーション診療料１
+                int lastDaySanteiRiha1 = GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha1);
+                if (lastDaySanteiRiha1 != 0)
+                {
+                    int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha1, 6);
+                    if (lastDaySanteiRiha1 <= sinDate && tgtDay >= sinDate)
+                    {
+                        //前回算定日より7日以内の場合
+                        string itemName = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+                                           p.HpId == hpId &&
+                                           p.StartDate <= sinDate &&
+                                           p.EndDate >= sinDate &&
+                                           p.ItemCd == ItemCdConst.IgakuGairaiRiha1)?.Name ?? string.Empty;
+
+                        return new(1, itemName, lastDaySanteiRiha1, string.Empty);
+                    }
+                }
+
+            }
+
+            if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
+            {
+                // 外来リハビリテーション診療料２
+                int lastDaySanteiRiha2 = GetLastDaySantei(hpId, ptId, sinDate, raiinNo, ItemCdConst.IgakuGairaiRiha2);
+                if (lastDaySanteiRiha2 != 0)
+                {
+                    int tgtDay = CIUtil.SDateInc(lastDaySanteiRiha2, 13);
+                    if (lastDaySanteiRiha2 <= sinDate && tgtDay >= sinDate)
+                    {
+                        //前回算定日より14日以内の場合
+                        string itemName = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+                                           p.HpId == hpId &&
+                                           p.StartDate <= sinDate &&
+                                           p.EndDate >= sinDate &&
+                                           p.ItemCd == ItemCdConst.IgakuGairaiRiha2)?.Name ?? string.Empty;
+                        return new(2, itemName, lastDaySanteiRiha2, string.Empty);
+                    }
+                }
+            }
+
+            if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
+            {
+                //外来リハビリテーション診療料がオーダーされているか？
+                string rihaItemName = string.Empty;
+                foreach (var odrInf in allOdrInf)
+                {
+                    foreach (var detail in odrInf.OrdInfDetails)
+                    {
+                        if (detail.ItemCd == ItemCdConst.IgakuGairaiRiha1 || detail.ItemCd == ItemCdConst.IgakuGairaiRiha2)
+                        {
+                            rihaItemName = detail.ItemName;
+                            break;
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(rihaItemName))
+                {
+                    return new(3, string.Empty, 0, string.Empty);
+
+                }
+            }
+
+            return new(0, string.Empty, 0, string.Empty);
+        }
+
+        /// <summary>
+        /// 予防注射再診チェック
+        /// </summary>
+        /// <returns></returns>
+        public (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<OrdInfModel> allOrder)
+        {
+            var systemSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                  p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 2)?.Val ?? 0;
+
+            bool isExistYoboItemOnly = false;
+
+            if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
+            {
+                var itemCds = new List<string>();
+                foreach (var item in allOrder)
+                {
+                    itemCds.AddRange(item.OrdInfDetails.Select(o => o.ItemCd));
+                }
+                var tenMstItems = NoTrackingDataContext.TenMsts.Where(p =>
+               p.HpId == hpId &&
+               p.StartDate <= sinDate &&
+               p.EndDate >= sinDate &&
+               itemCds.Contains(p.ItemCd));
+                foreach (var odrInf in allOrder)
+                {
+                    isExistYoboItemOnly = true;
+                    bool hasItemDetail = false;
+
+                    foreach (var detail in odrInf.OrdInfDetails)
+                    {
+                        if (!string.IsNullOrEmpty(detail.ItemCd) && !detail.IsCommentMaster)
+                        {
+                            hasItemDetail = true;
+                            var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == detail.ItemCd) ?? new();
+                            if (tenMstItem != null)
+                            {
+                                if (tenMstItem.JihiSbt == 0)
+                                {
+                                    isExistYoboItemOnly = false;
+                                    break;
+                                }
+                                var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
+                                                .FirstOrDefault(i => i.HpId == Session.HospitalID
+                                                && i.IsDeleted == DeleteTypes.None
+                                                && i.JihiSbt == tenMstItem.JihiSbt);
+                                if (jihiSbtItem != null)
+                                {
+                                    if (jihiSbtItem.IsYobo != 1)
+                                    {
+                                        isExistYoboItemOnly = false;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    isExistYoboItemOnly = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!hasItemDetail) // Contain comment only
+                    {
+                        isExistYoboItemOnly = false;
+                    }
+                    if (hasItemDetail && !isExistYoboItemOnly)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return (systemSetting, isExistYoboItemOnly);
+        }
+
+        private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
+        {
+            int result = 0;
+            var sinKouiCountDiffDayQuery = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) < sinDate);
+            var sinKouiDetailQuery = NoTrackingDataContext.SinKouiDetails.Where(s => s.HpId == hpId && s.PtId == ptId && s.ItemCd == itemCd);
+            var resultDiffDayQuery = from sinKouiCount in sinKouiCountDiffDayQuery
+                                     join sinKouiDetail in sinKouiDetailQuery
+                                     on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
+                                     equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
+                                     select new
+                                     {
+                                         SinKouiCount = sinKouiCount,
+                                     };
+            var resultCountList = resultDiffDayQuery.ToList();
+            if (resultCountList.Count > 0)
+            {
+                //当日を含めない
+                result = resultCountList.Max(d => d.SinKouiCount.SinYm * 100 + d.SinKouiCount.SinDay);
+            }
+            else
+            {
+                //当日を含める
+                var sinKouiCountSameDayQuery = NoTrackingDataContext.SinKouiCounts
+                    .Where(s => s.HpId == hpId && s.PtId == ptId && (s.SinYm * 100 + s.SinDay) <= sinDate && s.RaiinNo != raiinNo);
+                var resultSameDayQuery = from sinKouiCount in sinKouiCountSameDayQuery
+                                         join sinKouiDetail in sinKouiDetailQuery
+                                         on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
+                                         equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
+                                         select new
+                                         {
+                                             SinKouiCount = sinKouiCount,
+                                         };
+                resultCountList = resultSameDayQuery.ToList();
+                if (resultCountList.Count > 0)
+                {
+                    result = resultCountList.Max(d => d.SinKouiCount.SinYm * 100 + d.SinKouiCount.SinDay);
+                }
+            }
+
+            return result;
+        }
+
+        public List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds)
+        {
+            foreach (var raiinKbn in raiinKbns)
+            {
+                int settingRaiinKbnCd = 0;
+                foreach (var kbnDetail in raiinKbn.RaiinKbnDetailModels)
+                {
+                    if (!kbnDetail.IsTodayOrderChecked) continue;
+
+                    //grid raiinKbnItem
+                    var kouiKbns = raiinKouiKbns.FindAll(k => k.grpId == kbnDetail.GrpCd && k.kbnCd == kbnDetail.KbnCd);
+
+                    //checkbox group raiinKouiKbn
+                    var kbnItems = raiinKbnItemCds.FindAll(p => p.GrpCd == kbnDetail.GrpCd && p.KbnCd == kbnDetail.KbnCd && !string.IsNullOrEmpty(p.ItemCd));
+                    var includeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+                    var excludeItems = kbnItems.FindAll(p => p.IsExclude == 1);
+
+                    bool existItem = false;
+                    foreach (var todayOrd in todayOrds)
+                    {
+                        foreach (var todayOdrDetail in todayOrd.OrdInfDetails)
+                        {
+                            if (excludeItems.Exists(p => p.ItemCd == todayOdrDetail.ItemCd)) continue;
+
+                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOrd.OdrKouiKbn || p.kouiKbn2 == todayOrd.OdrKouiKbn) ||
+                                includeItems.Exists(p => p.ItemCd == todayOdrDetail.ItemCd))
+                            {
+                                existItem = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (existItem)
+                    {
+                        if (kbnDetail.IsAutoDelete == DeleteTypes.Deleted && raiinKbn.RaiinKbnInfModel.KbnCd == kbnDetail.KbnCd)
+                        {
+                            raiinKbn.RaiinKbnInfModel.ChangeKbnCd(0);
+                        }
+                    }
+
+                    existItem = false;
+                    foreach (var todayOrd in todayOrds)
+                    {
+                        foreach (var todayOdr in todayOrd.OrdInfDetails)
+                        {
+                            if (excludeItems.Exists(p => p.ItemCd == todayOdr.ItemCd)) continue;
+
+                            if (kouiKbns.Exists(p => p.kouiKbn1 == todayOrd.OdrKouiKbn || p.kouiKbn2 == todayOrd.OdrKouiKbn) ||
+                                includeItems.Exists(p => p.ItemCd == todayOdr.ItemCd))
+                            {
+                                existItem = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (existItem)
+                    {
+                        settingRaiinKbnCd = kbnDetail.KbnCd;
+                    }
+                }
+                if (settingRaiinKbnCd != 0 && raiinKbn.RaiinKbnInfModel.KbnCd == 0)
+                {
+                    raiinKbn.RaiinKbnInfModel.ChangeKbnCd(settingRaiinKbnCd);
+                }
+            }
+
+            return raiinKbns;
         }
     }
 }

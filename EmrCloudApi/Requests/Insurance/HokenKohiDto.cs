@@ -1,4 +1,4 @@
-﻿using EmrCloudApi.Requests.ConfirmDate;
+﻿using EmrCloudApi.Responses.Document.Dto;
 
 namespace EmrCloudApi.Requests.Insurance
 {
