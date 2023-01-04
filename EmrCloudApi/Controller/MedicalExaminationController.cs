@@ -127,7 +127,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetInfCheckedSpecialItem)]
         public ActionResult<Response<CheckedSpecialItemResponse>> GetInfCheckedSpecialItem([FromBody] CheckedSpecialItemRequest request)
         {
-            var input = new CheckedSpecialItemInputData(HpId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
+            var input = new CheckedSpecialItemInputData(HpId, UserId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
                 o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,
