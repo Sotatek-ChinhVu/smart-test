@@ -153,7 +153,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo) - 1));
+                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo)));
                 }
                 return (index, Reception.FromRaiinInf(raiinInf));
             }
