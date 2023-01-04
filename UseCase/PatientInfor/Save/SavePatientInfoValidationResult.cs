@@ -6,10 +6,13 @@
 
         public SavePatientInforValidationCode Code { get; private set; }
 
-        public SavePatientInfoValidationResult(string message, SavePatientInforValidationCode code)
+        public int Type { get; private set; }
+
+        public SavePatientInfoValidationResult(string message, SavePatientInforValidationCode code, int type)
         {
             Message = message;
             Code = code;
+            Type = type;
         }
     }
 }

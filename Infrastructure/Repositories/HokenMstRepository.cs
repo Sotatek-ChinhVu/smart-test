@@ -89,14 +89,9 @@ namespace Infrastructure.Repositories
             var existHokenEdaNo = NoTrackingDataContext.HokenMsts
                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
                .Select(x => new HokenMasterModel(
-                   x.HpId,
-                   x.HokenNo,
-                   x.HokenEdaNo,
-                   0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
-                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty
-                   ))
-               .ToList();
-
+                       x.HokenNo,
+                       x.HokenEdaNo
+               )).ToList();
             return existHokenEdaNo;
         }
 

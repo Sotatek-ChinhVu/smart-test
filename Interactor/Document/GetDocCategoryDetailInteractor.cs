@@ -56,10 +56,6 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
                                                         GetDocCategoryDetailStatus.Successed
                                                     );
         }
-        catch
-        {
-            return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.Failed);
-        }
         finally
         {
             _documentRepository.ReleaseResource();

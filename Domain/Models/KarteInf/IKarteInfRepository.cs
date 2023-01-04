@@ -20,5 +20,7 @@ namespace Domain.Models.KarteInfs
         List<FileInfModel> GetListKarteFile(int hpId, long ptId, List<long> listRaiinNo, bool isGetAll);
 
         bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
+
+        long ConvertTextToRichText(int hpId, long ptId);
     }
 }
