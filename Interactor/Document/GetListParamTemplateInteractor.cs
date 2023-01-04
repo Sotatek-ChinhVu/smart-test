@@ -19,9 +19,9 @@ public class GetListParamTemplateInteractor : IGetListParamTemplateInputPort
             var result = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
             return new GetListParamTemplateOutputData(result, GetListParamTemplateStatus.Successed);
         }
-        catch (Exception)
+        finally
         {
-            return new GetListParamTemplateOutputData(GetListParamTemplateStatus.Failed);
+            _commonGetListParam.ReleaseResources();
         }
     }
 }

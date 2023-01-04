@@ -18,10 +18,14 @@ using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
 using UseCase.Document.GetListParamTemplate;
-using System.Net;
-using DocumentFormat.OpenXml.Packaging;
 using Interactor.Document.CommonGetListParam;
-using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Net;
+using UseCase.Document;
+using UseCase.Document.DownloadDocumentTemplate;
+using UseCase.Document.GetListDocComment;
+using UseCase.Document.ConfirmReplaceDocParam;
 
 namespace EmrCloudApi.Controller;
 
@@ -181,39 +185,57 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportEmployee([FromQuery] ReplaceParamTemplateRequest inputData)
+    [HttpPost(ApiPath.GetListDocComment)]
+    public ActionResult<Response<GetListDocCommentResponse>> GetListDocComment([FromBody] GetListDocCommentRequest request)
     {
-        using (var client = new WebClient())
-        {
-            var content = client.DownloadData(inputData.LinkFile);
-            using (var stream = new MemoryStream(content))
-            {
-                using (var word = WordprocessingDocument.Open(stream, true))
-                {
-                    if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
-                    {
-                        var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
-                        foreach (var group in listGroups)
-                        {
-                            foreach (var param in group.ListParamModel)
-                            {
-                                var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
-                                                 .FirstOrDefault(sdt => sdt.SdtProperties != null && sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<" + param.Parameter + ">>");
-                                if (element != null)
-                                {
-                                    element.Descendants<Text>().First().Text = param.Value;
-                                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
-                                }
-                            }
-                        }
-                    }
-                }
-                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
-            }
-        }
+        var input = new GetListDocCommentInputData(request.ListReplaceWord);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListDocCommentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListDocCommentResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.ConfirmReplaceDocParam)]
+    public ActionResult<Response<ConfirmReplaceDocParamResponse>> ConfirmReplaceDocParam([FromQuery] ConfirmReplaceDocParamRequest request)
+    {
+        var input = new ConfirmReplaceDocParamInputData(GetAllTextFile(request.LinkFile));
+        var output = _bus.Handle(input);
+
+        var presenter = new ConfirmReplaceDocParamPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ConfirmReplaceDocParamResponse>>(presenter.Result);
+    }
+
+
+    [HttpPost(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportTemplate([FromBody] DownloadDocumentTemplateRequest request)
+    {
+        var extension = Path.GetExtension(request.LinkFile).ToLower();
+        var fileName = Path.GetFileName(request.LinkFile);
+        if (extension.Equals(".docx"))
+        {
+            var input = new DownloadDocumentTemplateInputData(HpId,
+                                                              UserId,
+                                                              request.PtId,
+                                                              request.SinDate,
+                                                              request.RaiinNo,
+                                                              request.HokenPId,
+                                                              request.LinkFile,
+                                                              request.ListReplaceComment.Select(item => new ReplaceCommentInputItem(item.ReplaceKey, item.ReplaceValue)).ToList());
+            var output = _bus.Handle(input);
+            return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+        }
+        else if (extension.Equals(".xlsx"))
+        {
+            return File(ExportTemplateXlsx(HpId, UserId, request).ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        return File(new MemoryStream(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+    }
+
+    #region Private function
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
@@ -223,4 +245,88 @@ public class DocumentController : AuthorizeControllerBase
                                                     false
                                               )).ToList();
     }
+
+    private MemoryStream ExportTemplateXlsx(int hpId, int userId, DownloadDocumentTemplateRequest request)
+    {
+        var listGroupParams = _commonGetListParam.GetListParam(hpId, userId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(request.LinkFile).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            using (var workbook = SpreadsheetDocument.Open(streamOutput, true, new OpenSettings { AutoSave = true }))
+            {
+                // Replace shared strings
+                if (workbook.WorkbookPart != null)
+                {
+                    var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                    if (sharedStringsPart != null)
+                    {
+                        var sharedStringTextElements = sharedStringsPart.SharedStringTable.Descendants<Text>();
+                        foreach (var group in listGroupParams)
+                        {
+                            foreach (var param in group.ListParamModel)
+                            {
+                                DoReplaceFileXlsx("《", "》", sharedStringTextElements, param);
+                            }
+                        }
+                        foreach (var comment in request.ListReplaceComment)
+                        {
+                            DoReplaceFileXlsx("@", "@", sharedStringTextElements, new ItemDisplayParamModel(comment.ReplaceKey, comment.ReplaceValue));
+                        }
+                    }
+                }
+            }
+            return streamOutput;
+        }
+    }
+
+    private static void DoReplaceFileXlsx(string preCharParam, string subCharParam, IEnumerable<Text> textElements, ItemDisplayParamModel param)
+    {
+        var listData = textElements.ToList();
+        for (int i = 0; i < listData.Count; i++)
+        {
+            if (listData[i].Text.Trim().Contains(preCharParam + param.Parameter + subCharParam))
+            {
+                listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
+            }
+        }
+    }
+
+    private string GetAllTextFile(string fileLink)
+    {
+        string extention = Path.GetExtension(fileLink).ToLower();
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(fileLink).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            if (extention.Equals(".docx"))
+            {
+                using (var workbook = WordprocessingDocument.Open(streamOutput, true))
+                {
+                    if (workbook.MainDocumentPart != null)
+                    {
+                        return workbook.MainDocumentPart.Document.InnerText;
+                    }
+                }
+            }
+            else if (extention.Equals(".xlsx"))
+            {
+                using (var workbook = SpreadsheetDocument.Open(streamOutput, true))
+                {
+                    if (workbook.WorkbookPart != null)
+                    {
+                        var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                        if (sharedStringsPart != null)
+                        {
+                            return sharedStringsPart.SharedStringTable.InnerText;
+                        }
+                    }
+                }
+            }
+        }
+        return string.Empty;
+    }
+    #endregion
 }

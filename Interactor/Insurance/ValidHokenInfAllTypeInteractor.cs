@@ -111,6 +111,11 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
             return new ValidHokenInfAllTypeOutputData(validateDetails);
         }
 

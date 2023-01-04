@@ -33,6 +33,10 @@ namespace Interactor.RaiinKubunMst
             {
                 return new GetColumnNameListOutputData(GetColumnNameListStatus.Failed, new());
             }
+            finally
+            {
+                _raiinKubunMstRepository.ReleaseResource();
+            }
         }
     }
 }

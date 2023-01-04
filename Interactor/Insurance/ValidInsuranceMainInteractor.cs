@@ -83,6 +83,11 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
             return new ValidMainInsuranceOutputData(validateDetails);
         }
 

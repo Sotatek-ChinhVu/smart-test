@@ -94,6 +94,8 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0,
                                 "",
+                                "",
+                                "",
                                 ""
                         )).ToList(),
                         DateTime.MinValue,
@@ -109,6 +111,10 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new CheckedItemNameOutputData(CheckedItemNameStatus.Failed, new());
+            }
+            finally
+            {
+                _todayOdrRepository.ReleaseResource();
             }
         }
     }

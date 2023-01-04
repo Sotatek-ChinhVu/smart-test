@@ -18,19 +18,25 @@ namespace Interactor.GrpInf
 
         public GetListGroupInfOutputData Handle(GetListGroupInfInputData inputData)
         {
-
-            if (inputData.HpId < 0)
+            try
             {
-                return new GetListGroupInfOutputData(new List<GroupInfModel>(), GetListGroupInfSatus.InValidHpId);
+                if (inputData.HpId < 0)
+                {
+                    return new GetListGroupInfOutputData(new List<GroupInfModel>(), GetListGroupInfSatus.InValidHpId);
+                }
+                if (inputData.PtId < 0)
+                {
+                    return new GetListGroupInfOutputData(new List<GroupInfModel>(), GetListGroupInfSatus.InvalidPtId);
+                }
+
+                var data = _groupInfRepository.GetDataGroup(inputData.HpId, inputData.PtId);
+
+                return new GetListGroupInfOutputData(data.ToList(), GetListGroupInfSatus.Successed);
             }
-            if (inputData.PtId < 0)
+            finally
             {
-                return new GetListGroupInfOutputData(new List<GroupInfModel>(), GetListGroupInfSatus.InvalidPtId);
+                _groupInfRepository.ReleaseResource();
             }
-
-            var data = _groupInfRepository.GetDataGroup(inputData.HpId, inputData.PtId);
-
-            return new GetListGroupInfOutputData(data.ToList(), GetListGroupInfSatus.Successed);
         }
     }
 }

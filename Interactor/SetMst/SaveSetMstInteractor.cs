@@ -90,5 +90,9 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.Failed);
         }
+        finally
+        {
+            _setMstRepository.ReleaseResource();
+        }
     }
 }

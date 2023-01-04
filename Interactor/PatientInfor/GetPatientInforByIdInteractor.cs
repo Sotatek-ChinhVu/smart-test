@@ -19,30 +19,37 @@ namespace Interactor.PatientInfor
 
         public GetPatientInforByIdOutputData Handle(GetPatientInforByIdInputData inputData)
         {
-            if (inputData.HpId < 0)
+            try
             {
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
-            }
+                if (inputData.HpId < 0)
+                {
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
+                }
 
-            if (inputData.PtId < 0)
+                if (inputData.PtId < 0)
+                {
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
+                }
+
+                if (inputData.SinDate < 0)
+                {
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidSinDate);
+                }
+
+                if (inputData.RaiinNo < 0)
+                {
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidRaiinNo);
+                }
+
+                var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                if (data == null)
+                    return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.DataNotExist);
+                return new GetPatientInforByIdOutputData(data, GetPatientInforByIdStatus.Successed);
+            }
+            finally
             {
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
+                _patientInforRepository.ReleaseResource();
             }
-
-            if (inputData.SinDate < 0)
-            {
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidSinDate);
-            }
-
-            if (inputData.RaiinNo < 0)
-            {
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidRaiinNo);
-            }
-
-            var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
-            if (data == null)
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.DataNotExist);
-            return new GetPatientInforByIdOutputData(data, GetPatientInforByIdStatus.Successed);
         }
     }
 }

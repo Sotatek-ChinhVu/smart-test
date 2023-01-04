@@ -33,6 +33,10 @@ namespace Interactor.MonshinInf
             {
                 return new GetMonshinInforListOutputData(new List<MonshinInforModel>(), GetMonshinInforListStatus.Failed);
             }
+            finally
+            {
+                _monshinInforRepository.ReleaseResource();
+            }
         }
     }
 }

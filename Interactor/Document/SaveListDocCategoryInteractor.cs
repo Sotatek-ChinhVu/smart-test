@@ -36,9 +36,11 @@ public class SaveListDocCategoryInteractor : ISaveListDocCategoryInputPort
             _documentRepository.SaveListDocCategory(inputData.HpId, inputData.UserId, listDocCategoryModel);
             return new SaveListDocCategoryOutputData(SaveListDocCategoryStatus.Successed);
         }
-        catch (Exception)
+        finally
         {
-            return new SaveListDocCategoryOutputData(SaveListDocCategoryStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
     }
 

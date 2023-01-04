@@ -35,6 +35,7 @@
         public const string FindTenMst = "FindTenMst";
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
+        public const string GetCmtCheckMstList = "GetCmtCheckMstList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -50,6 +51,8 @@
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
         public const string GetInsuranceComboList = "GetInsuranceComboList";
+        public const string GetValidGairaiRiha = "GetValidGairaiRiha";
+        public const string GetValidJihiYobo = "GetValidJihiYobo";
         public const string GetAddedAutoItem = "GetAddedAutoItem";
         public const string AddAutoItem = "AddAutoItem";
 
@@ -97,6 +100,10 @@
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+        public const string ShowProductInf = "ShowProductInf";
+        public const string ShowKanjaMuke = "ShowKanjaMuke";
+        public const string ShowMdbByomei = "ShowMdbByomei";
+
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
@@ -135,19 +142,33 @@
         public const string DeleteDocCategory = "DeleteDocCategory";
         public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
         public const string GetListParamTemplate = "GetListParamTemplate";
+        public const string GetListDocComment = "GetListDocComment";
+        public const string ConfirmReplaceDocParam = "ConfirmReplaceDocParam";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
         public const string GetInfCheckedItemName = "GetInfCheckedItemName";
+        public const string Search = "Search";
+        public const string InitKbnSetting = "InitKbnSetting";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+        public const string Sagaku = "Sagaku";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
 
         //hoken sya
         public const string GetHokenSyaMst = "GetHokenSyaMst";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        //Order RealtimeChecker
+        public const string OrderRealtimeChecker = "OrderRealtimeChecker";
+        
+        // Karte
+        public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
 }

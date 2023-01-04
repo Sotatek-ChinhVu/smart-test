@@ -42,7 +42,22 @@
         /// 初診コロナ
         /// </summary>
         public const int SyosinCorona = 91;
-
+        /// <summary>
+        /// 初診情報通信機器
+        /// </summary>
+        public const int SyosinJouhou = 81;
+        /// <summary>
+        /// 再診情報通信機器
+        /// </summary>
+        public const int SaisinJouhou = 83;
+        /// <summary>
+        /// 初診２科目情報通信機器
+        /// </summary>
+        public const int Syosin2Jouhou = 86;
+        /// <summary>
+        /// 再診２科目情報通信機器
+        /// </summary>
+        public const int Saisin2Jouhou = 87;
         /// <summary>
         /// Add Const defind next order for display next order tooltip in flowsheet calendar
         /// 次回オーダー

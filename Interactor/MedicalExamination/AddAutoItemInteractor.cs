@@ -106,7 +106,9 @@ namespace Interactor.MedicalExamination
                                  od.Kasan2,
                                  od.CnvUnitName,
                                  od.OdrUnitName,
-                                 od.HasCmtName
+                                 od.HasCmtName,
+                                 od.CenterItemCd1,
+                                 od.CenterItemCd2
                                  )
                             ).ToList(),
                            r.CreateDate,

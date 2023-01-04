@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.User
+﻿using Domain.Common;
+
+namespace Domain.Models.User
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase
     {
         void Create(UserMstModel user);
 

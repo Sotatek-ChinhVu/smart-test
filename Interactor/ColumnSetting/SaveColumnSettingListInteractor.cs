@@ -14,8 +14,15 @@ public class SaveColumnSettingListInteractor : ISaveColumnSettingListInputPort
 
     public SaveColumnSettingListOutputData Handle(SaveColumnSettingListInputData input)
     {
-        bool success = _columnSettingRepository.SaveList(input.Settings);
-        var status = success ? SaveColumnSettingListStatus.Success : SaveColumnSettingListStatus.Failed;
-        return new SaveColumnSettingListOutputData(status);
+        try
+        {
+            bool success = _columnSettingRepository.SaveList(input.Settings);
+            var status = success ? SaveColumnSettingListStatus.Success : SaveColumnSettingListStatus.Failed;
+            return new SaveColumnSettingListOutputData(status);
+        }
+        finally
+        {
+            _columnSettingRepository.ReleaseResource();
+        }
     }
 }
