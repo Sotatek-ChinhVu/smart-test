@@ -39,4 +39,29 @@ namespace Helper.Enum
         MaxAge,
         MinAge
     }
+
+    public enum WindowType
+    {
+        MedicalExamination,
+        ReceptionInInsertMode,
+        ReceptionInUpdateMode,
+        ReceptionInYoyakuMode,
+        SearchPatient,
+        MonshinInput,
+        Accounting,
+        AccountingCard,
+        FamilyInfo,
+        AccountDueList,
+        Scan,
+        ApprovalInfo,
+        DiseaseRegistration,
+        SpecialNote,
+        Reservation,
+        DocumentManagement,
+        VisitingList,
+        KarteDaicho,
+        Booking,
+        PrintRaiinInf,
+        RaiinView
+    }
 }
