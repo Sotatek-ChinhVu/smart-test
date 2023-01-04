@@ -61,6 +61,10 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// </summary>
         private List<DensiHaihanMstModel> _densiHaihanMsts;
         /// <summary>
+        /// 行為包括マスタ
+        /// </summary>
+        private List<KouiHoukatuMstModel> _kouiHoukatuMsts;
+        /// <summary>
         /// 一般名処方加算除外一般名コード
         /// </summary>
         private List<IpnKasanExcludeModel> _ipnKasanExcludes;
@@ -87,7 +91,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         public IkaCalculateCommonMasterViewModel(
             MasterFinder masterFinder, //CommonBase.CommonMasters.DbAccess.MasterFinder commonMstFinder,
             int hpId, int sinDate,
-            List<TenMstModel> cacheTenMst, List<DensiSanteiKaisuModel> cacheDensiSanteiKaisu, List<ItemGrpMstModel> cacheItemGrpMst,
+            List<TenMstModel> cacheTenMst, List<DensiSanteiKaisuModel> cacheDensiSanteiKaisu, List<ItemGrpMstModel> cacheItemGrpMst, List<KouiHoukatuMstModel> cacheKouiHoukatuMst,
             ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             //マスタファインダー
@@ -98,6 +102,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             _tenMst = cacheTenMst;// new List<TenMstModel>();
             //電子点数表背反マスタ
             _densiHaihanMsts = new List<DensiHaihanMstModel>();
+            //行為包括マスタ
+            _kouiHoukatuMsts = new List<KouiHoukatuMstModel>();
 
             //医療機関識別ID
             _hpId = hpId;
@@ -109,6 +115,8 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             _systemConfigProvider = systemConfigProvider;
             _emrLogger = emrLogger;
+
+            _kouiHoukatuMsts = cacheKouiHoukatuMst;
         }
 
         public List<TenMstModel> CacheTenMst
@@ -987,6 +995,36 @@ namespace EmrCalculateApi.Ika.ViewModels
         public bool RecedenCmtSelectExistByCommentCd(string CommentCd)
         {
             return (RecedenCmtSelects != null && RecedenCmtSelects.Any(p => p.CommentCd == CommentCd));
+        }
+        /// <summary>
+        /// 行為包括マスタを取得する
+        /// </summary>
+        /// <param name="sinDate">診療日</param>
+        /// <param name="isRosai">労災かどうか</param>
+        /// <param name="itemCd">診療行為コード</param>
+        /// <returns></returns>
+        public List<KouiHoukatuMstModel> FindKouiHoukatuMst(int sinDate, bool isRosai, string itemCd = "")
+        {
+            List<KouiHoukatuMstModel> masters =
+                _kouiHoukatuMsts.FindAll(p =>
+                    p.HpId == _hpId &&
+                    (string.IsNullOrEmpty(itemCd) ? true : p.ItemCd == itemCd) &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate &&
+                    (p.TargetKbn == 0 || p.TargetKbn == (isRosai ? 2 : 1)) &&
+                    p.IsInvalid == 0)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenByDescending(p => p.UserSetting)
+                .ToList();
+
+            List<KouiHoukatuMstModel> results = new List<KouiHoukatuMstModel>();
+
+            foreach (KouiHoukatuMstModel master in masters)
+            {
+                results.Add(master);
+            }
+            return results;
         }
     }
 
