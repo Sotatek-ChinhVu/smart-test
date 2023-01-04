@@ -172,7 +172,7 @@ namespace Infrastructure.Repositories
 
             if (raiinNoByKarte == 0 && raiinNoByOrder == 0)
             {
-                return (0, new ReceptionModel());
+                return (-1, new ReceptionModel());
             }
 
             if (raiinNoByKarte == 0)
