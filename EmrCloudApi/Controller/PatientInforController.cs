@@ -75,6 +75,7 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
+using Domain.Models.GroupInf;
 
 namespace EmrCloudApi.Controller
 {
@@ -447,7 +448,15 @@ namespace EmrCloudApi.Controller
                        x.Kohi3Id,
                        x.Kohi4Id,
                        x.IsAddNew,
-                       x.IsDeleted)).ToList();
+                       x.IsDeleted,
+                       x.HokenPatternSelected)).ToList();
+
+            List<GroupInfModel> grpInfs = request.PtGrps.Select(x => new GroupInfModel(
+                                                x.HpPt,
+                                                x.PtId, 
+                                                x.GroupId,
+                                                x.GroupCode,
+                                                x.GroupName)).ToList();
 
             List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(HpId,
                    x.PtId,
@@ -560,7 +569,8 @@ namespace EmrCloudApi.Controller
                  insurances,
                  hokenInfs,
                  hokenKohis,
-                 request.PtGrps,
+                 grpInfs,
+                 request.ReactSave,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
