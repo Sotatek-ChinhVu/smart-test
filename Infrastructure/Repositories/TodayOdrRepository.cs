@@ -871,7 +871,7 @@ namespace Infrastructure.Repositories
                 o.SinYm <= endYm &&
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 checkSanteiKbn.Contains(o.SanteiKbn)
-            );
+            ).AsQueryable();
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
