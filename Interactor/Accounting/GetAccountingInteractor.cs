@@ -4,7 +4,7 @@ using UseCase.Accounting;
 
 namespace Interactor.Accounting
 {
-    public class GetAccountingInteractor : GetAccountingInputPort
+    public class GetAccountingInteractor : IGetAccountingInputPort
     {
         private readonly AccountingRepository _accountingRepository;
 
