@@ -4,7 +4,7 @@
     {
         InvalidHpId,
         InvalidFHokenNo,
-        InvalidFFHokenSbtKbn,
+        InvalidFHokenSbtKbn,
         Successful,
         DataNotFound
     }

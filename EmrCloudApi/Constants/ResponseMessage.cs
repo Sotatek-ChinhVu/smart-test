@@ -860,5 +860,9 @@
 
         //PtGrpMaster
         public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
+
+        //Insurance Mst Detail
+        public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
+        public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
     }
 }

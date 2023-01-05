@@ -3,7 +3,7 @@ using UseCase.InsuranceMst.GetMasterDetails;
 
 namespace Interactor.InsuranceMst
 {
-    internal class GetInsuranceMasterDetailInteractor : IGetInsuranceMasterDetailInputPort
+    public class GetInsuranceMasterDetailInteractor : IGetInsuranceMasterDetailInputPort
     {
         private readonly IInsuranceMstRepository _insuranceMstReponsitory;
 
@@ -22,7 +22,7 @@ namespace Interactor.InsuranceMst
                 return new GetInsuranceMasterDetailOutputData(result, GetInsuranceMasterDetailStatus.InvalidFHokenNo);
 
             if (inputData.FHokenSbtKbn < 0)
-                return new GetInsuranceMasterDetailOutputData(result, GetInsuranceMasterDetailStatus.InvalidFFHokenSbtKbn);
+                return new GetInsuranceMasterDetailOutputData(result, GetInsuranceMasterDetailStatus.InvalidFHokenSbtKbn);
 
             try
             {
