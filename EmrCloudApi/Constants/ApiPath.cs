@@ -151,6 +151,7 @@
         public const string GetInfCheckedItemName = "GetInfCheckedItemName";
         public const string Search = "Search";
         public const string InitKbnSetting = "InitKbnSetting";
+        public const string GetCheckedOrder = "GetCheckedOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -167,7 +168,7 @@
 
         //Order RealtimeChecker
         public const string OrderRealtimeChecker = "OrderRealtimeChecker";
-        
+
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
     }

@@ -36,6 +36,8 @@
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
         public static readonly string InvalidWindowType = "Invalid WindowType";
         public static readonly string InvalidFrameId = "Invalid FrameId";
+        public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
+        public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
 
         //Common
         public static readonly string NotFound = "Not found";

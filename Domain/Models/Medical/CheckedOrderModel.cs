@@ -15,6 +15,13 @@ namespace Domain.Models.MedicalExamination
             InOutKbn = inOutKbn;
         }
 
+        public CheckedOrderModel()
+        {
+            CheckingContent = string.Empty;
+            ItemCd = string.Empty;
+            ItemName = string.Empty;
+        }
+
         public CheckingType CheckingType { get; private set; }
 
         public bool Santei { get; private set; }
@@ -53,6 +60,12 @@ namespace Domain.Models.MedicalExamination
                         return string.Empty;
                 }
             }
+        }
+
+        public CheckedOrderModel ChangeSantei(bool santei)
+        {
+            Santei = santei;
+            return this;
         }
     }
 }

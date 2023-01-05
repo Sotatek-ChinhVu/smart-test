@@ -8,7 +8,9 @@ using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Diseases.Upsert;
 using UseCase.MedicalExamination.GetCheckDisease;
+using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -287,6 +289,102 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<InitKbnSettingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetCheckedOrder)]
+        public ActionResult<Response<GetCheckedOrderResponse>> GetCheckedOrder([FromBody] GetCheckedOrderRequest request)
+        {
+            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.PrimaryDoctor, request.TantoId, request.OdrInfItemInputDatas.Select(
+                o => new OdrInfItemInputData(
+                            HpId,
+                            o.RaiinNo,
+                            o.RpNo,
+                            o.RpEdaNo,
+                            o.PtId,
+                            o.SinDate,
+                            o.HokenPid,
+                            o.OdrKouiKbn,
+                            o.RpName,
+                            o.InoutKbn,
+                            o.SikyuKbn,
+                            o.SyohoSbt,
+                            o.SanteiKbn,
+                            o.TosekiKbn,
+                            o.DaysCnt,
+                            o.SortNo,
+                            o.Id,
+                            o.OdrDetails.Select(
+                                    od => new OdrInfDetailItemInputData(
+                                            HpId,
+                                            od.RaiinNo,
+                                            od.RpNo,
+                                            od.RpEdaNo,
+                                            od.RowNo,
+                                            od.PtId,
+                                            od.SinDate,
+                                            od.SinKouiKbn,
+                                            od.ItemCd,
+                                            od.ItemName,
+                                            od.Suryo,
+                                            od.UnitName,
+                                            od.UnitSbt,
+                                            od.TermVal,
+                                            od.KohatuKbn,
+                                            od.SyohoKbn,
+                                            od.SyohoLimitKbn,
+                                            od.DrugKbn,
+                                            od.YohoKbn,
+                                            od.Kokuji1,
+                                            od.Kokuji2,
+                                            od.IsNodspRece,
+                                            od.IpnCd,
+                                            od.IpnName,
+                                            od.JissiKbn,
+                                            od.JissiDate,
+                                            od.JissiId,
+                                            od.JissiMachine,
+                                            od.ReqCd,
+                                            od.Bunkatu,
+                                            od.CmtName,
+                                            od.CmtOpt,
+                                            od.FontColor,
+                                            od.CommentNewline
+                                        )
+                                ).ToList(),
+                            o.IsDeleted
+                        )
+                ).ToList(),
+                request.PtDiseaseListInputItems.Select(
+                    d => new UpsertPtDiseaseListInputItem(
+                                                            d.Id,
+                                                            d.PtId,
+                                                            d.SortNo,
+                                                            d.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                            d.SuffixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                            d.Byomei,
+                                                            d.StartDate,
+                                                            d.TenkiKbn,
+                                                            d.TenkiDate,
+                                                            d.SyubyoKbn,
+                                                            d.SikkanKbn,
+                                                            d.NanByoCd,
+                                                            d.HosokuCmt,
+                                                            d.HokenPid,
+                                                            d.IsNodspRece,
+                                                            d.IsNodspKarte,
+                                                            d.SeqNo,
+                                                            d.IsImportant,
+                                                            d.IsDeleted,
+                                                            d.ByomeiCd,
+                                                            HpId
+                                                        )).ToList()
+                );
+            var output = _bus.Handle(input);
+
+            var presenter = new GetCheckedOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetCheckedOrderResponse>>(presenter.Result);
         }
     }
 }
