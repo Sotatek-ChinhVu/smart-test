@@ -1,11 +1,11 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -924,6 +924,80 @@ namespace Infrastructure.Repositories
                 entity.FileName = item.LinkFile.Replace(host, string.Empty);
                 result.Add(entity);
                 position += 1;
+            }
+            return result;
+        }
+
+        public List<RaiinKbnModel> InitDefaultByNextOrder(int hpId, long ptId, int sinDate, List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds)
+        {
+            var allNextOdr = GetNextOdrInfModels(hpId, ptId, sinDate);
+            var nextOdrs = allNextOdr.FindAll(p => p.rsvDate == sinDate).ToList();
+            if (nextOdrs.Count == 0)
+            {
+                nextOdrs = allNextOdr.FindAll(o => o.rsvDate == NextOrderConst.DefaultRsvDate);
+            }
+
+            foreach (var raiinKbn in raiinKbns)
+            {
+                if (raiinKbn.RaiinKbnInfModel.KbnCd > 0) continue;
+
+                foreach (var kbnDetail in raiinKbn.RaiinKbnDetailModels)
+                {
+                    if (!kbnDetail.IsNextOrderChecked) continue;
+
+                    //grid raiinKbnItem
+                    var kouiKbns = raiinKouiKbns.FindAll(k => k.grpId == kbnDetail.GrpCd && k.kbnCd == kbnDetail.KbnCd);
+
+                    //checkbox group raiinKouiKbn
+                    var kbnItems = raiinKbnItemCds.FindAll(p => p.GrpCd == kbnDetail.GrpCd && p.KbnCd == kbnDetail.KbnCd && !string.IsNullOrEmpty(p.ItemCd));
+                    var includeItems = kbnItems.FindAll(p => !(p.IsExclude == 1));
+                    var excludeItems = kbnItems.FindAll(p => p.IsExclude == 1);
+
+                    bool isSet = false;
+                    foreach (var nextOdr in nextOdrs)
+                    {
+                        if (excludeItems.Exists(p => p.ItemCd == nextOdr.itemCd)) continue;
+
+                        if (kouiKbns.Exists(p => p.kouiKbn1 == nextOdr.sinKouiKbn || p.kouiKbn2 == nextOdr.sinKouiKbn) ||
+                            includeItems.Exists(p => p.ItemCd == nextOdr.itemCd))
+                        {
+                            raiinKbn.RaiinKbnInfModel.ChangeKbnCd(kbnDetail.KbnCd);
+                            isSet = true;
+                            break;
+                        }
+                    }
+                    if (isSet) break;
+                }
+            }
+
+            return raiinKbns;
+        }
+
+        private List<(int sinKouiKbn, int rsvDate, string itemCd)> GetNextOdrInfModels(int hpId, long ptId, int sinDate)
+        {
+            var result = new List<(int sinKouiKbn, int rsvDate, string itemCd)>();
+            var nextOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(p => p.HpId == hpId &&
+                                                                                             p.PtId == ptId &&
+                                                                                             p.IsDeleted == DeleteTypes.None &&
+                                                                                             (p.RsvDate == sinDate || p.RsvDate == NextOrderConst.DefaultRsvDate));
+            var nextOdrDetails = NoTrackingDataContext.RsvkrtOdrInfDetails.Where(p => p.HpId == hpId &&
+                                                                                                      p.PtId == ptId &&
+                                                                                                      (p.RsvDate == sinDate || p.RsvDate == NextOrderConst.DefaultRsvDate));
+            var odrInfJoinDetailQuery = from nextOdrInf in nextOdrInfs.AsEnumerable()
+                                        join nextOdrDetail in nextOdrDetails
+                                        on new { nextOdrInf.HpId, nextOdrInf.PtId, nextOdrInf.RsvkrtNo, nextOdrInf.RpNo, nextOdrInf.RpEdaNo }
+                                        equals new { nextOdrDetail.HpId, nextOdrDetail.PtId, nextOdrDetail.RsvkrtNo, nextOdrDetail.RpNo, nextOdrDetail.RpEdaNo } into TempNextOdrDetails
+                                        select new
+                                        {
+                                            NextOdrDetails = TempNextOdrDetails
+                                        };
+            var enities = odrInfJoinDetailQuery.ToList();
+            foreach (var entity in enities)
+            {
+                foreach (var entityDetail in entity.NextOdrDetails)
+                {
+                    result.Add(new(entityDetail.SinKouiKbn, entityDetail.RsvDate, entityDetail?.ItemCd ?? string.Empty));
+                }
             }
             return result;
         }

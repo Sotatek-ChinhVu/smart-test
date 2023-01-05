@@ -153,7 +153,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo) - 1));
+                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo)));
                 }
                 return (index, Reception.FromRaiinInf(raiinInf));
             }
@@ -172,7 +172,7 @@ namespace Infrastructure.Repositories
 
             if (raiinNoByKarte == 0 && raiinNoByOrder == 0)
             {
-                return (0, new ReceptionModel());
+                return (-1, new ReceptionModel());
             }
 
             if (raiinNoByKarte == 0)
@@ -205,6 +205,11 @@ namespace Infrastructure.Repositories
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
             Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
+            if (!allOrderInfList.Any())
+            {
+                return (0, new List<HistoryOrderModel>());
+            }
+
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);

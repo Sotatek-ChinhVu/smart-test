@@ -140,12 +140,15 @@
         public const string DeleteDocCategory = "DeleteDocCategory";
         public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
         public const string GetListParamTemplate = "GetListParamTemplate";
+        public const string GetListDocComment = "GetListDocComment";
+        public const string ConfirmReplaceDocParam = "ConfirmReplaceDocParam";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
         public const string GetInfCheckedItemName = "GetInfCheckedItemName";
         public const string Search = "Search";
+        public const string InitKbnSetting = "InitKbnSetting";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -159,5 +162,11 @@
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        //Order RealtimeChecker
+        public const string OrderRealtimeChecker = "OrderRealtimeChecker";
+        
+        // Karte
+        public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
 }

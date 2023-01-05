@@ -1,10 +1,7 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Responses.PatientRaiinKubun;
 using EmrCloudApi.Responses;
-using UseCase.PatientRaiinKubun.Get;
-using UseCase.ReceptionVisiting.Get;
 using EmrCloudApi.Responses.ReceptionVisiting;
-using System.Xml.Linq;
+using UseCase.ReceptionVisiting.Get;
 
 namespace EmrCloudApi.Presenters.Reception
 {
