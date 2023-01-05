@@ -21,9 +21,6 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.DefHokenNoModels.Any())
                 {
-                    bool hasMatch = inputData.DefHokenNoModels.Select(x => x.HokenNo).Distinct().Count() > 1;
-                    if (hasMatch) return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenNo);
-
                     var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo, inputData.HpId);
                     foreach (var item in inputData.DefHokenNoModels)
                     {
