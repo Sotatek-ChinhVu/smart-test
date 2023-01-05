@@ -13,6 +13,10 @@ namespace Domain.Models.Accounting
             HokenId = hokenId;
         }
 
+        public AccountingModel()
+        {
+        }
+
         public SyunoSeikyuModel SyunoSeikyu { get; }
 
         public SyunoRaiinInfModel RaiinInfModel { get; }

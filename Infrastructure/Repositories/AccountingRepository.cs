@@ -3,6 +3,8 @@ using Domain.Models.Accounting;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -10,11 +12,22 @@ namespace Infrastructure.Repositories
     {
         public AccountingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
+            
         }
 
-        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false)
+        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false)
         {
             IQueryable<SyunoSeikyu> syunoSeikyuRepo = null;
+
+            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.Where(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0).FirstOrDefault();
+
+            if(oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+            {
+                return new List<AccountingModel>();
+            }
+
+            var listRaiinNo = NoTrackingDataContext.RaiinInfs.Where(
+                item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > 3).ToList();
 
             if (getAll == true)
             {
@@ -43,10 +56,10 @@ namespace Infrastructure.Repositories
                              {
                                  SyunoSeikyu = syunoSeikyu,
                                  RaiinInf = raiinInf,
-                                 HokenPid = raiinInf.HokenPid
+                                 hokenPid = raiinInf.HokenPid
                              };
 
-            var listHokenPid = querySyuno.Select(item => item.HokenPid).ToList();
+            var listHokenPid = querySyuno.Select(item => item.hokenPid).ToList();
 
             var listHokenPattern = NoTrackingDataContext.PtHokenPatterns
                 .Where(pattern => pattern.HpId == hpId
@@ -71,32 +84,32 @@ namespace Infrastructure.Repositories
                             listKaikeInf
                         select new
                         {
-                            SyunoSeikyu = syuno.SyunoSeikyu,
-                            RaiinInf = syuno.RaiinInf,
+                            syunoSeikyu = syuno.SyunoSeikyu,
+                            raiinInf = syuno.RaiinInf,
                             ListSyunoNyukin = listSyunoNyukin,
                             ListKaikeiInf = listKaikeInf
                         };
 
             var result = query.AsEnumerable().Select(item => new AccountingModel(
                     new SyunoSeikyuModel(
-                        item.SyunoSeikyu.HpId,
-                        item.SyunoSeikyu.PtId,
-                        item.SyunoSeikyu.SinDate,
-                        item.SyunoSeikyu.RaiinNo,
-                        item.SyunoSeikyu.NyukinKbn,
-                        item.SyunoSeikyu.SeikyuTensu,
-                        item.SyunoSeikyu.AdjustFutan,
-                        item.SyunoSeikyu.SeikyuGaku,
-                        item.SyunoSeikyu.SeikyuDetail,
-                        item.SyunoSeikyu.NewSeikyuTensu,
-                        item.SyunoSeikyu.NewAdjustFutan,
-                        item.SyunoSeikyu.NewSeikyuGaku,
-                        item.SyunoSeikyu.NewSeikyuDetail
+                        item.syunoSeikyu.HpId,
+                        item.syunoSeikyu.PtId,
+                        item.syunoSeikyu.SinDate,
+                        item.syunoSeikyu.RaiinNo,
+                        item.syunoSeikyu.NyukinKbn,
+                        item.syunoSeikyu.SeikyuTensu,
+                        item.syunoSeikyu.AdjustFutan,
+                        item.syunoSeikyu.SeikyuGaku,
+                        item.syunoSeikyu.SeikyuDetail,
+                        item.syunoSeikyu.NewSeikyuTensu,
+                        item.syunoSeikyu.NewAdjustFutan,
+                        item.syunoSeikyu.NewSeikyuGaku,
+                        item.syunoSeikyu.NewSeikyuDetail
                     ),
                     new SyunoRaiinInfModel(
-                        item.RaiinInf.Status,
-                        item.RaiinInf.KaikeiTime,
-                        item.RaiinInf.UketukeSbt
+                        item.raiinInf.Status,
+                        item.raiinInf.KaikeiTime,
+                        item.raiinInf.UketukeSbt
                         ),
                         item.ListSyunoNyukin == null
                     ? new List<SyunoNyukinModel>()
