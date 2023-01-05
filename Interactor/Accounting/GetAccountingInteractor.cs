@@ -1,14 +1,13 @@
 ﻿using Domain.Models.Accounting;
-using Infrastructure.Repositories;
 using UseCase.Accounting;
 
 namespace Interactor.Accounting
 {
     public class GetAccountingInteractor : IGetAccountingInputPort
     {
-        private readonly AccountingRepository _accountingRepository;
+        private readonly IAccountingRepository _accountingRepository;
 
-        public GetAccountingInteractor(AccountingRepository accountingRepository)
+        public GetAccountingInteractor(IAccountingRepository accountingRepository)
         {
             _accountingRepository = accountingRepository;
         }
@@ -19,10 +18,9 @@ namespace Interactor.Accounting
             {
                 var syunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).FirstOrDefault();
 
-                if (syunoSeikyu != null)
-                {
-                    return new GetAccountingOutputData(syunoSeikyu, GetAccountingStatus.Successed);
-                }
+
+                return new GetAccountingOutputData(syunoSeikyu, GetAccountingStatus.Successed);
+
             }
             catch (Exception)
             {

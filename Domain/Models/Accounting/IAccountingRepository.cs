@@ -2,6 +2,6 @@
 {
     public interface IAccountingRepository
     {
-        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false);
+        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false);
     }
 }
