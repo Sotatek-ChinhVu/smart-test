@@ -1,6 +1,5 @@
-﻿using UseCase.Diseases.Upsert;
-using UseCase.MedicalExamination.UpsertTodayOrd;
-
+﻿using UseCase.MedicalExamination.GetCheckedOrder;
+using OdrInfItemU = UseCase.MedicalExamination.GetCheckedOrder.OdrInfItem;
 namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class GetCheckedOrderRequest
@@ -23,8 +22,8 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public int TantoId { get; set; }
 
-        public List<OdrInfItemInputData> OdrInfItemInputDatas { get; private set; } = new();
+        public List<OdrInfItemU> OdrInfItems { get; set; } = new();
 
-        public List<UpsertPtDiseaseListInputItem> PtDiseaseListInputItems { get; private set; } = new();
+        public List<DiseaseItem> DiseaseItems { get; set; } = new();
     }
 }

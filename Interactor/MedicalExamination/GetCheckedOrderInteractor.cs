@@ -59,121 +59,29 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidTantoId, new());
                 }
+
+
                 if (inputData.PrimaryDoctor < 0)
                 {
                     return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidPrimaryDoctor, new());
                 }
 
-                var ordInfs = inputData.OdrInfItemInputDatas.Select(o => new OrdInfModel(
-                        o.HpId,
-                        o.RaiinNo,
-                        o.RpNo,
-                        o.RpEdaNo,
-                        o.PtId,
-                        o.SinDate,
-                        o.HokenPid,
+                var ordInfs = inputData.OdrInfItems.Select(o => new OrdInfModel(
+                        o.InOutKbn,
                         o.OdrKouiKbn,
-                        o.RpName,
-                        o.InoutKbn,
-                        o.SikyuKbn,
-                        o.SyohoSbt,
-                        o.SanteiKbn,
-                        o.TosekiKbn,
-                        o.DaysCnt,
-                        o.SortNo,
-                        o.IsDeleted,
-                        o.Id,
-                        o.OdrDetails.Select(od => new OrdInfDetailModel(
-                                od.HpId,
-                                od.RaiinNo,
-                                od.RpNo,
-                                od.RpEdaNo,
-                                od.RowNo,
-                                od.PtId,
-                                od.SinDate,
-                                od.SinKouiKbn,
+                        o.OdrInfDetailItems.Select(od => new OrdInfDetailModel(
                                 od.ItemCd,
-                                od.ItemName,
-                                od.Suryo,
-                                od.UnitName,
-                                od.UnitSbt,
-                                od.TermVal,
-                                od.KohatuKbn,
-                                od.SyohoKbn,
-                                od.SyohoLimitKbn,
-                                od.DrugKbn,
-                                od.YohoKbn,
-                                od.Kokuji1,
-                                od.Kokuji2,
-                                od.IsNodspRece,
-                                od.IpnCd,
-                                string.Empty,
-                                od.JissiKbn,
-                                od.JissiDate,
-                                od.JissiId,
-                                od.JissiMachine,
-                                od.ReqCd,
-                                od.Bunkatu,
-                                od.CmtName,
-                                od.CmtOpt,
-                                od.FontColor,
-                                od.CommentNewline,
-                                string.Empty,
-                                0,
-                                0,
-                                false,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                0,
-                                "",
-                                new List<YohoSetMstModel>(),
-                                0,
-                                0,
-                                "",
-                                "",
-                                "",
-                                ""
-                            )).ToList(),
-                        DateTime.MinValue,
-                        0,
-                        "",
-                        DateTime.MinValue,
-                        0,
-                        ""
+                                od.SinKouiKbn
+                            )).ToList()
                     )).ToList();
 
-                var diseases = inputData.PtDiseaseListInputItems.Select(i => new PtDiseaseModel(
-                        i.HpId,
-                        i.PtId,
-                        i.SeqNo,
-                        i.ByomeiCd,
-                        i.SortNo,
-                        i.PrefixList,
-                        i.SuffixList,
-                        i.Byomei,
+                var diseases = inputData.DiseaseItems.Select(i => new PtDiseaseModel(
+                        i.SikkanKbn,
+                        i.HokenPid,
                         i.StartDate,
                         i.TenkiKbn,
                         i.TenkiDate,
-                        i.SyubyoKbn,
-                        i.SikkanKbn,
-                        i.NanByoCd,
-                        i.IsNodspRece,
-                        i.IsNodspKarte,
-                        i.IsDeleted,
-                        i.Id,
-                        i.IsImportant,
-                        0,
-                        "",
-                        "",
-                        "",
-                        "",
-                        i.HokenPid,
-                        i.HosokuCmt
+                        i.SyubyoKbn
                     )).ToList();
 
                 var checkedOrderModelList = new List<CheckedOrderModel>();

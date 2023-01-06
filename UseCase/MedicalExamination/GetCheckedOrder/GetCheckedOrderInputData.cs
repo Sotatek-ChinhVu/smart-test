@@ -1,12 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.Diseases.Upsert;
-using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace UseCase.MedicalExamination.GetCheckedOrder
 {
     public class GetCheckedOrderInputData : IInputData<GetCheckedOrderOutputData>
     {
-        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int primaryDoctor, int tantoId, List<OdrInfItemInputData> odrInfItemInputDatas, List<UpsertPtDiseaseListInputItem> ptDiseaseListInputItems)
+        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
         {
             HpId = hpId;
             UserId = userId;
@@ -17,10 +15,10 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
             RaiinNo = raiinNo;
             SyosaisinKbn = syosaisinKbn;
             OyaRaiinNo = oyaRaiinNo;
-            PrimaryDoctor = primaryDoctor;
             TantoId = tantoId;
-            OdrInfItemInputDatas = odrInfItemInputDatas;
-            PtDiseaseListInputItems = ptDiseaseListInputItems;
+            OdrInfItems = odrInfItems;
+            DiseaseItems = diseaseItems;
+            PrimaryDoctor = primaryDoctor;
         }
 
         public int HpId { get; private set; }
@@ -41,12 +39,12 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
 
         public long OyaRaiinNo { get; private set; }
 
-        public int PrimaryDoctor { get; private set; }
-
         public int TantoId { get; private set; }
 
-        public List<OdrInfItemInputData> OdrInfItemInputDatas { get; private set; }
+        public int PrimaryDoctor { get; private set; }
 
-        public List<UpsertPtDiseaseListInputItem> PtDiseaseListInputItems { get; private set; }
+        public List<OdrInfItem> OdrInfItems { get; private set; }
+
+        public List<DiseaseItem> DiseaseItems { get; private set; }
     }
 }
