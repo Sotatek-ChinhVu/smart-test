@@ -1199,33 +1199,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                     "commnet"
                 )
         });
-        var listSanteiModels = new List<SanteiInfModel>()
-            {
-                new SanteiInfModel(
-                            1,
-                            ptId,
-                            "itemCd",
-                            1,
-                            4,
-                            new List<SanteiInfDetailModel>()
-                            {
-                                new SanteiInfDetailModel(
-                                        1,
-                                        ptId,
-                                        "itemCd",
-                                        20221201,
-                                        1,
-                                        20221212,
-                                        "byomei",
-                                        "hosokuComment",
-                                        "commnet",
-                                        false
-                                    )
-                            },
-                            false
-                        )
-            };
-        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, listSanteiModels))
+        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, It.IsAny<List<SanteiInfModel>>()))
         .Returns(true);
 
         var mockHpInfRepo = new Mock<IHpInfRepository>();
@@ -1252,6 +1226,100 @@ public class SaveListSanteiInfInteractorTest : BaseUT
 
         // Assert
         Assert.True(output.Status == SaveListSanteiInfStatus.Successed);
+    }
+
+    [Test]
+    public void Handle_TestFalse()
+    {
+        // Arrange
+        #region Data Example
+        int hpId = 1;
+        int userId = 1;
+        long ptId = 1;
+        int sinDate = 20221111;
+        int hokenPid = 1;
+        var listSanteiInfs = new List<SanteiInfInputItem>()
+            {
+                new SanteiInfInputItem(
+                        1,
+                        "itemCd",
+                        1,
+                        4,
+                        false,
+                        new List<SanteiInfDetailInputItem>()
+                        {
+                            new SanteiInfDetailInputItem(
+                                    1,
+                                    20221201,
+                                    1,
+                                    20221212,
+                                    "byomei",
+                                    "hosokuComment",
+                                    "commnet",
+                                    false
+                                )
+                        })
+            };
+        var input = new SaveListSanteiInfInputData(hpId, userId, ptId, sinDate, hokenPid, listSanteiInfs);
+        #endregion
+
+        #region Mock Data
+        var mockSanteiInfRepo = new Mock<ISanteiInfRepository>();
+        var listItemCds = listSanteiInfs.Select(item => item.ItemCd).ToList();
+        mockSanteiInfRepo.Setup(repo => repo.CheckExistItemCd(hpId, listItemCds))
+        .Returns(true);
+        mockSanteiInfRepo.Setup(repo => repo.GetOnlyListSanteiInf(hpId, ptId))
+        .Returns(new List<SanteiInfModel>(){
+                                                new SanteiInfModel(
+                                                        1,
+                                                        ptId,
+                                                        "itemCd",
+                                                        1,
+                                                        3
+                                                    )
+                                    });
+        mockSanteiInfRepo.Setup(repo => repo.GetListSanteiInfDetails(hpId, ptId))
+        .Returns(new List<SanteiInfDetailModel>()
+        {
+            new SanteiInfDetailModel(
+                    1,
+                    ptId,
+                    "itemCd",
+                    20221201,
+                    1,
+                    20221212,
+                    "byomei",
+                    "hosokuComment",
+                    "commnet"
+                )
+        });
+        mockSanteiInfRepo.Setup(repo => repo.SaveSantei(hpId, userId, It.IsAny<List<SanteiInfModel>>()))
+        .Returns(false);
+
+        var mockHpInfRepo = new Mock<IHpInfRepository>();
+        mockHpInfRepo.Setup(repo => repo.CheckHpId(hpId))
+        .Returns(true);
+
+        var mockPatientInforRepo = new Mock<IPatientInforRepository>();
+        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        .Returns(true);
+
+        var mockUserRepo = new Mock<IUserRepository>();
+        mockUserRepo.Setup(repo => repo.CheckExistedUserId(userId))
+        .Returns(true);
+
+        var mockMstItemRepo = new Mock<IMstItemRepository>();
+        mockMstItemRepo.Setup(repo => repo.GetListSanteiByomeis(hpId, ptId, sinDate, hokenPid))
+        .Returns(new List<string>() { "byomei", "byomei1", "byomei2" });
+        #endregion
+
+        var interactor = new SaveListSanteiInfInteractor(mockSanteiInfRepo.Object, mockHpInfRepo.Object, mockPatientInforRepo.Object, mockUserRepo.Object, mockMstItemRepo.Object);
+
+        // Act
+        var output = interactor.Handle(input);
+
+        // Assert
+        Assert.True(output.Status == SaveListSanteiInfStatus.Failed);
     }
     #endregion
 }
