@@ -21,15 +21,17 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.DefHokenNoModels.Any())
                 {
-                    var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo, inputData.HpId);
                     foreach (var item in inputData.DefHokenNoModels)
                     {
                         var validationStatus = item.Validation();
+
                         if (validationStatus != ValidationStatus.Valid)
                             return new SaveInsuranceMasterLinkageOutputData(validationStatus);
 
                         if (item.HokenEdaNo == 0 && item.HokenNo == 0)
                             continue;
+
+                        var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(item.HokenNo, inputData.HpId);
 
                         var checkExistsHokenEda = listHokenEdaNo.Where(x => x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
 
