@@ -193,6 +193,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
@@ -528,6 +529,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
+            busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

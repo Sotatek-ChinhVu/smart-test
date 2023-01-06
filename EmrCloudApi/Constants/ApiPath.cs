@@ -152,6 +152,7 @@
         public const string Search = "Search";
         public const string InitKbnSetting = "InitKbnSetting";
         public const string GetCheckedOrder = "GetCheckedOrder";
+        public const string CheckedAfter327Screen = "CheckedAfter327Screen";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

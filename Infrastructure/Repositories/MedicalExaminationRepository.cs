@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Diseases;
 using Domain.Models.Ka;
+using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -9,6 +10,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Text;
 using static Helper.Constants.OrderInfConst;
 
 namespace Infrastructure.Repositories
@@ -1282,6 +1284,192 @@ namespace Infrastructure.Repositories
             }
 
             return checkedOrderModelList;
+        }
+
+        public (string, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder)
+        {
+            #region Checking
+            // 特定疾患処方管理加算２（処方料）・算定
+            string msg = string.Empty;
+            var tokysyoItem = checkedTenMstResult.FirstOrDefault(d => d.ItemCd == ItemCdConst.TouyakuTokuSyo2Syoho);
+            List<SinKouiCountModel> lastSanteiInMonth = new List<SinKouiCountModel>();
+            if (tokysyoItem != null && tokysyoItem.Santei)
+            {
+                TenMst? touyakuTokuSyo1Syoho = null;
+                // 当月すでに1回以上算定されている場合、警告を表示する
+                lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syoho);
+                if (lastSanteiInMonth.Count == 0)
+                {
+                    lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syohosen);
+                    if (lastSanteiInMonth.Count > 0)
+                    {
+                        touyakuTokuSyo1Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syohosen, sinDate);
+                    }
+                }
+                else
+                {
+                    touyakuTokuSyo1Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syoho, sinDate);
+                }
+                if (lastSanteiInMonth.Count > 0)
+                {
+                    var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
+                    if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
+                    {
+                        msg = _buildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                    }
+                }
+            }
+
+            // 特定疾患処方管理加算２（処方料）・オーダー
+            if (isTokysyoOrder)
+            {
+                TenMst? touyakuTokuSyo1Syoho = null;
+                // 当月すでに1回以上算定されている場合、警告を表示する
+                lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syoho);
+                if (lastSanteiInMonth.Count == 0)
+                {
+                    lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syohosen);
+                    if (lastSanteiInMonth.Count > 0)
+                    {
+                        touyakuTokuSyo1Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syohosen, sinDate);
+                    }
+                }
+                else
+                {
+                    touyakuTokuSyo1Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syoho, sinDate);
+                }
+
+                if (lastSanteiInMonth.Count > 0)
+                {
+                    var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
+                    if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
+                    {
+                        msg = _buildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                    }
+                }
+            }
+
+            // 特定疾患処方管理加算２（処方箋料）・算定
+            var tokysyosenItem = checkedTenMstResult.FirstOrDefault(d => d.ItemCd == ItemCdConst.TouyakuTokuSyo2Syohosen);
+            if (tokysyosenItem != null && tokysyosenItem.Santei)
+            {
+                TenMst? touyakuTokuSyo1Syohosen = null;
+                // 当月すでに1回以上算定されている場合、警告を表示する
+                lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syohosen);
+                if (lastSanteiInMonth.Count == 0)
+                {
+                    lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syoho);
+                    if (lastSanteiInMonth.Count > 0)
+                    {
+                        touyakuTokuSyo1Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syoho, sinDate);
+                    }
+                }
+                else
+                {
+                    touyakuTokuSyo1Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syohosen, sinDate);
+                }
+                if (lastSanteiInMonth.Count > 0)
+                {
+                    var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
+                    if (touyakuTokuSyo2Syohosen != null && touyakuTokuSyo2Syohosen != null)
+                    {
+                        msg = _buildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                    }
+                }
+            }
+
+            // 特定疾患処方管理加算２（処方箋料）・オーダー
+            if (isTokysyosenOrder)
+            {
+                TenMst? touyakuTokuSyo1Syohosen = null;
+                // 当月すでに1回以上算定されている場合、警告を表示する
+                lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syohosen);
+                if (lastSanteiInMonth.Count == 0)
+                {
+                    lastSanteiInMonth = GetSinkouCountInMonth(hpId, ptId, sinDate, ItemCdConst.TouyakuTokuSyo1Syoho);
+                    if (lastSanteiInMonth.Count > 0)
+                    {
+                        touyakuTokuSyo1Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syoho, sinDate);
+                    }
+                }
+                else
+                {
+                    touyakuTokuSyo1Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo1Syohosen, sinDate);
+                }
+                if (lastSanteiInMonth.Count > 0)
+                {
+                    var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
+                    if (touyakuTokuSyo1Syohosen != null && touyakuTokuSyo2Syohosen != null)
+                    {
+                        msg = _buildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                    }
+                }
+            }
+            #endregion
+
+            return new(msg, lastSanteiInMonth);
+        }
+
+        string _buildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
+        {
+            StringBuilder msg = new StringBuilder();
+            msg.Append("'");
+            msg.Append(touyaku1Name);
+            msg.Append("' ");
+            msg.Append("が");
+            msg.Append(dateSantei);
+            msg.Append("に算定されているため、");
+            msg.Append(Environment.NewLine);
+
+            msg.Append("'");
+            msg.Append(touyaku2Name);
+            msg.Append("' ");
+            msg.Append("を算定すると差額が発生します。");
+            msg.Append(Environment.NewLine);
+
+            msg.Append("'");
+            msg.Append(touyaku2Name);
+            msg.Append("' ");
+            msg.Append("を算定しますか？");
+
+            return msg.ToString();
+        }
+
+        string _santeiDateFormat(List<SinKouiCountModel> sinKouiCountList)
+        {
+            if (sinKouiCountList == null || sinKouiCountList.Count == 0)
+            {
+                return string.Empty;
+            }
+            var dateInt = sinKouiCountList.Select(d => d.SinDay + "日");
+            return string.Join(", ", dateInt);
+        }
+
+        private List<SinKouiCountModel> GetSinkouCountInMonth(int hpId, long ptId, int sinDate, string itemCd)
+        {
+            int sinYM = sinDate / 100;
+            int sinDay = sinDate - sinYM * 100;
+            var sinKouiCountQuery = NoTrackingDataContext.SinKouiCounts
+                .Where(s => s.HpId == hpId && s.PtId == ptId && s.SinYm == sinYM && s.SinDay < sinDay);
+
+            var sinKouiDetailQuery = NoTrackingDataContext.SinKouiDetails
+                .Where(s => s.HpId == hpId && s.PtId == ptId && itemCd == s.ItemCd);
+
+            var resultQuery = from sinKouiCount in sinKouiCountQuery
+                              join sinKouiDetail in sinKouiDetailQuery
+                              on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
+                              equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
+                              select new
+                              {
+                                  SinKouiCount = sinKouiCount,
+                              };
+            var sinKouiCountList = resultQuery.AsEnumerable().Select(s => s.SinKouiCount);
+            var santeiCount = sinKouiCountList.Sum(s => s.Count);
+            if (santeiCount > 0)
+            {
+                return sinKouiCountList.OrderBy(s => s.SinDay).Select(d => new SinKouiCountModel(d.HpId, d.PtId, d.SinYm, d.SinDay, d.SinDay, d.RaiinNo, d.RpNo, d.SeqNo, d.Count)).ToList();
+            }
+            return new List<SinKouiCountModel>();
         }
 
         public void ReleaseResource()

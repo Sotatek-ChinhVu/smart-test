@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.Diseases;
+using Domain.Models.Medical;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 
@@ -30,5 +31,7 @@ namespace Domain.Models.MedicalExamination
         List<CheckedOrderModel> SiIkuji(int hpId, int sinDate, int birthDay, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou, int syosaisinKbn);
 
         List<CheckedOrderModel> Zanyaku(int hpId, int sinDate, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOrderInf);
+
+        (string, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder);
     }
 }

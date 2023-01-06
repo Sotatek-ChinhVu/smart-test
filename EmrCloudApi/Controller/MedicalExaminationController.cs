@@ -8,6 +8,7 @@ using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.InitKbnSetting;
@@ -299,6 +300,17 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetCheckedOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckedAfter327Screen)]
+        public ActionResult<Response<CheckedAfter327ScreenResponse>> CheckedAfter327Screen([FromBody] CheckedAfter327ScreenRequest request)
+        {
+            var input = new CheckedAfter327ScreenInputData(HpId, request.PtId, request.SinDate, request.CheckedOrderModels, request.IsTokysyoOrder, request.IsTokysyosenOrder);
+            var output = _bus.Handle(input);
+            var presenter = new CheckedAfter327ScreenPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedAfter327ScreenResponse>>(presenter.Result);
         }
     }
 }
