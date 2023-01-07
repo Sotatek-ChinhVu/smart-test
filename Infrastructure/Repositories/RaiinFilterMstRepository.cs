@@ -1,9 +1,11 @@
 ﻿using Domain.Models.RaiinFilterMst;
+using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Linq;
 
 namespace Infrastructure.Repositories;
 
@@ -54,30 +56,85 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         var usermsts = _tenantDataContext.UserMsts.Where(x => 
                     x.HpId == hpId &&
                     x.Id == ptId &&
+                    ptId.Equals(x.Id) &&
                     x.IsDeleted ==0
                     );
         var raiinInfs = _tenantDataContext.RaiinInfs.Where(x =>
                     x.HpId == hpId &&
-                    x.Status >= RaiinState.TempSave &&
-                    x.IsDeleted == 0).OrderBy(x => x.SinDate);
-        /*var query = from usermst in usermsts.AsEnumerable()
-                    join raiinInf in raiinInfs on
-                        new { usermst.Id } equals
-                        new { raiinInf.PtId }
+                    x.IsDeleted == 0 &&
+                    x.PtId == ptId
+                    );
+        var kaMsts = _tenantDataContext.KaMsts.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0
+                    );
+        var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted ==0 &&
+                    x.PtId == ptId
+                    );
+        var ptHokenInfs = _tenantDataContext.PtHokenInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == 0 &&
+                    x.PtId == ptId
+                    );
+        var ptKohis = _tenantDataContext.PtKohis.Where(x =>
+                    x.HpId == hpId &&
+                   x.IsDeleted == 0 &&
+                   x.PtId == ptId
+                    );
+
+        var query = from raiinInf in raiinInfs.AsEnumerable()
+                    join KaMst in kaMsts on
+                       new { raiinInf.HpId, raiinInf.KaId } equals
+                       new { KaMst.HpId, KaMst.KaId } into listKaMst
+                    join usermst in usermsts on
+                        new { raiinInf.HpId, raiinInf.TantoId } equals
+                        new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
+                    join ptHokenPattern in ptHokenPatterns on
+                         new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals
+                         new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into raiinPtHokenPatterns
+                    from raiinPtHokenPattern in raiinPtHokenPatterns.DefaultIfEmpty()
+                    join ptKohi1 in ptKohis on
+                         new { raiinPtHokenPattern.HpId, raiinPtHokenPattern.PtId, HokenId = raiinPtHokenPattern.Kohi1Id } equals
+                         new { ptKohi1.HpId, ptKohi1.PtId, ptKohi1.HokenId } into ptKoHi1Infs
+                    from ptKoHi1Inf in ptKoHi1Infs.DefaultIfEmpty()
+                    join ptKohi2 in ptKohis on
+                         new { raiinPtHokenPattern.HpId, raiinPtHokenPattern.PtId, HokenId = raiinPtHokenPattern.Kohi2Id } equals
+                         new { ptKohi2.HpId, ptKohi2.PtId, ptKohi2.HokenId } into ptKoHi2Infs
+                    from ptKoHi2Inf in ptKoHi2Infs.DefaultIfEmpty()
+                    join ptKohi3 in ptKohis on
+                         new { raiinPtHokenPattern.HpId, raiinPtHokenPattern.PtId, HokenId = raiinPtHokenPattern.Kohi3Id } equals
+                         new { ptKohi3.HpId, ptKohi3.PtId, ptKohi3.HokenId } into ptKoHi3Infs
+                    from ptKoHi3Inf in ptKoHi3Infs.DefaultIfEmpty()
+                    join ptKohi4 in ptKohis on
+                         new { raiinPtHokenPattern.HpId, raiinPtHokenPattern.PtId, HokenId = raiinPtHokenPattern.Kohi4Id } equals
+                         new { ptKohi4.HpId, ptKohi4.PtId, ptKohi4.HokenId } into ptKoHi4Infs
+                    from ptKoHi4Inf in ptKoHi4Infs.DefaultIfEmpty()
+                    join ptHokenInf in ptHokenInfs on
+                         new { raiinPtHokenPattern.HpId, raiinPtHokenPattern.PtId, raiinPtHokenPattern.HokenId } equals
+                         new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into raiinPtHokenInfs
+                    from raiinPtHokenInf in raiinPtHokenInfs.DefaultIfEmpty()
                     select new
                     {
                         RaiinInf = raiinInf,
-                        UserMst = usermst
-                    };*/
+                        HokenPattern = raiinPtHokenPattern,
+                        PtHokenInf = raiinPtHokenInf,
+                        PtKoHi1 = ptKoHi1Inf,
+                        PtKoHi2 = ptKoHi2Inf,
+                        PtKoHi3 = ptKoHi3Inf,
+                        PtKoHi4 = ptKoHi4Inf,
+                        UserMst = listUserMst.FirstOrDefault(),
+                        KaMst = listKaMst.FirstOrDefault()
+                    };
 
-        /*result = query.Select((x) => new RaiinFilterMstModel(
-                        x.PtId,
-                        x.SinDate,
-                        x.UketukeNo,
-                        x.Status,
-                        x.UserMst.KaName,
-                        x.UserMst.SName
-            ));*/
+        result = query.Select((x) => new RaiinFilterMstModel(
+                        x.RaiinInf,
+                        new HokenPatternModel(x.HokenPattern, x.PtHokenInf, x.PtKoHi1, x.PtKoHi2, x.PtKoHi3, x.PtKoHi4),
+                        x.UserMst?.Sname ?? string.Empty,
+                        x.KaMst?.KaSname ?? string.Empty))
+                        .OrderByDescending(x => x.RaiinInf.SinDate)
+                        .ToList();
         return result;
     }
 

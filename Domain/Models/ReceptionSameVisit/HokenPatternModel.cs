@@ -1,6 +1,8 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
+using Entity.Tenant;
 using Helper.Common;
+using Helper.Extendsions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,25 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.ReceptionSameVisit
 {
-    public class HokenPatternModel
+    public class HokenPatternModel : ObservableObject
     {
+        public PtHokenInf? PtHokenInf { get; } = null;
+        public PtHokenPattern? PtHokenPattern { get; } = null;
+        public PtKohi? PtKohi1 { get; } = null;
+        public PtKohi? PtKohi2 { get; } = null;
+        public PtKohi? PtKohi3 { get; } = null;
+        public PtKohi? PtKohi4 { get; } = null;
+
+        public HokenPatternModel(PtHokenPattern ptHokenPattern, PtHokenInf ptHokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
+        {
+            PtHokenPattern = ptHokenPattern;
+            PtHokenInf = ptHokenInf;
+            PtKohi1 = ptKohi1;
+            PtKohi2 = ptKohi2;
+            PtKohi3 = ptKohi3;
+            PtKohi4 = ptKohi4;
+        }
+
         public HokenPatternModel(long ptId, int hokenPid, int startDate, int endDate, int hokenSbtCd, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int sinDate, string hokenMstHoubetu, int hokenMstFutanRate, long raiinNo, int raiinInfSyosaisinKbn, int raiinInfJikanKbn, int raiinInfSanteiKbn)
         {
             PtId = ptId;
@@ -82,6 +101,65 @@ namespace Domain.Models.ReceptionSameVisit
         public string HokenName
         {
             get => GetHokenName();
+        }
+
+        public string HokenKbnName
+        {
+            get
+            {
+                string result = string.Empty;
+                if (PtHokenPattern == null || PtHokenPattern.PtId == 0 && PtHokenPattern.HokenPid == 0 && PtHokenPattern.HpId == 0)
+                {
+                    return "";
+                }
+
+                if (PtHokenInf == null)
+                {
+                    result = "公費";
+                    return result;
+                }
+
+                if (PtHokenInf.Houbetu == HokenConstant.HOUBETU_NASHI)
+                {
+                    result = "公費";
+                    return result;
+                }
+
+                switch (HokenKbn)
+                {
+                    case 0:
+                        result = "自費";
+                        break;
+                    case 1:
+                        result = "社保";
+                        break;
+                    case 2:
+                        if (PtHokenInf.HokensyaNo?.Length == 8 &&
+                            PtHokenInf.HokensyaNo.StartsWith("39"))
+                        {
+                            result = "後期";
+                        }
+                        else if (PtHokenInf.HokensyaNo?.Length == 8 &&
+                            PtHokenInf.HokensyaNo.StartsWith("67"))
+                        {
+                            result = "退職";
+                        }
+                        else
+                        {
+                            result = "国保";
+                        }
+                        break;
+                    case 11:
+                    case 12:
+                    case 13:
+                        result = "労災";
+                        break;
+                    case 14:
+                        result = "自賠";
+                        break;
+                }
+                return result;
+            }
         }
 
         private string GetHokenName()
