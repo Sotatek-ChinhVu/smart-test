@@ -1315,7 +1315,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msgs.Add(BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs.Insert(0, BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1344,7 +1344,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msgs.Add(BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs.Insert(1, BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1373,7 +1373,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo2Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msgs.Add(BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs.Insert(2, BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1401,7 +1401,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo1Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msgs.Add(BuildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
+                        msgs.Insert(3, BuildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
