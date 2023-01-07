@@ -53,6 +53,8 @@
         public const string GetInsuranceComboList = "GetInsuranceComboList";
         public const string GetValidGairaiRiha = "GetValidGairaiRiha";
         public const string GetValidJihiYobo = "GetValidJihiYobo";
+        public const string GetAddedAutoItem = "GetAddedAutoItem";
+        public const string AddAutoItem = "AddAutoItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
