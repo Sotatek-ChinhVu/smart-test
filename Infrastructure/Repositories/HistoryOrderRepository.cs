@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
                             r.PtId == ptId &&
                             r.Status >= 3 &&
                             (r.IsDeleted == DeleteTypes.None || isDeleted == 1 || (r.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)) &&
-                            hokenPidListByCondition.Contains(r.HokenPid) &&
+                            (hokenPidListByCondition.Contains(r.HokenPid) || r.HokenPid == 0) &&
                             (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
                             (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
 
@@ -205,10 +205,10 @@ namespace Infrastructure.Repositories
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
             Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
-            if (!allOrderInfList.Any())
-            {
-                return (0, new List<HistoryOrderModel>());
-            }
+            //if (!allOrderInfList.Any())
+            //{
+            //    return (0, new List<HistoryOrderModel>());
+            //}
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
@@ -226,7 +226,8 @@ namespace Infrastructure.Repositories
 
                 ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
                 List<KarteInfModel> karteInfModels = allKarteInfList.Where(r => r.RaiinNo == raiinNo).ToList() ?? new();
-                List<OrdInfModel> orderInfList = allOrderInfList[raiinNo];
+                allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
+                List<OrdInfModel>? orderInfList = orderInfListTemp ?? new();
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
