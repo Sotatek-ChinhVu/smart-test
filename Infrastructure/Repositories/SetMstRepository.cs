@@ -642,7 +642,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
     }
 
-    public int PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
+    public int PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         int setCd = -1;
         try
@@ -650,24 +650,42 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var copyItem = NoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
             var pasteItem = NoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdPasteItem && mst.HpId == hpId);
 
+            // If copy item is null => return false
             if (copyItem == null)
             {
                 return setCd;
             }
-            else if (pasteItem == null && setCdPasteItem != 0)
+            // if paste item is null then paste item cd is lager than 0 or pasteSetKbnEdaNo equal 0 or pasteSetKbn equal 0 => return false
+            else if (pasteItem == null && (pasteSetKbnEdaNo == 0 || pasteSetKbn == 0 || setCdPasteItem != 0))
+            {
+                return setCd;
+            }
+            // if SetKbnEdaNo of pasteItem not equal pasteSetKbnEdaNo or SetKbn of pasteItem is not equal pasteSetKbn => return false
+            else if (pasteItem != null && (pasteItem.SetKbnEdaNo != pasteSetKbnEdaNo || pasteItem.SetKbn != pasteSetKbn))
             {
                 return setCd;
             }
 
+            pasteSetKbnEdaNo = pasteSetKbnEdaNo - 1;
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
             var listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            // if is paste to other group and paste item is not null
+            if (pasteToOtherGroup && pasteItem != null)
+            {
+                listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == pasteItem.SetKbn && mst.SetKbnEdaNo == pasteItem.SetKbnEdaNo && mst.HpId == pasteItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            }
+            // if is paste to other group and paste item is not null
+            else if (pasteToOtherGroup && pasteItem == null && pasteSetKbnEdaNo != 0 && pasteSetKbn != 0)
+            {
+                listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.HpId == hpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            }
             if (pasteItem != null)
             {
                 if (CountLevelItem(copyItem, listSetMsts) + GetLevelItem(pasteItem) > 3)
                 {
                     return setCd;
                 }
-                if (copyItem.SetKbn != pasteItem.SetKbn || copyItem.SetKbnEdaNo != pasteItem.SetKbnEdaNo)
+                if ((copyItem.SetKbn != pasteItem.SetKbn || copyItem.SetKbnEdaNo != pasteItem.SetKbnEdaNo) && !pasteToOtherGroup)
                 {
                     return setCd;
                 }

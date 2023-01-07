@@ -31,16 +31,12 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
         }
         try
         {
-            int newSetCd = _setMstRepository.PasteSetMst(inputData.UserId, inputData.HpId, inputData.CopySetCd, inputData.PasteSetCd);
+            int newSetCd = _setMstRepository.PasteSetMst(inputData.UserId, inputData.HpId, inputData.CopySetCd, inputData.PasteSetCd, inputData.PasteToOtherSetKbn, inputData.PasteSetKbnEdaNo, inputData.PasteSetKbn);
             if (newSetCd > 0)
             {
                 return new CopyPasteSetMstOutputData(newSetCd, CopyPasteSetMstStatus.Successed);
             }
             return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidLevel);
-        }
-        catch
-        {
-            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.Failed);
         }
         finally
         {
