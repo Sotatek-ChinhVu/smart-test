@@ -5,7 +5,7 @@ namespace UseCase.MedicalExamination.CheckedAfter327Screen
 {
     public class CheckedAfter327ScreenOutputData : IOutputData
     {
-        public CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus status, string message, List<SinKouiCountModel> sinKouiCountModels)
+        public CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus status, List<string> message, List<SinKouiCountModel> sinKouiCountModels)
         {
             Status = status;
             Message = message;
@@ -14,7 +14,7 @@ namespace UseCase.MedicalExamination.CheckedAfter327Screen
 
         public CheckedAfter327ScreenStatus Status { get; private set; }
 
-        public string Message { get; private set; }
+        public List<string> Message { get; private set; }
 
         public List<SinKouiCountModel> SinKouiCountModels { get; private set; }
     }

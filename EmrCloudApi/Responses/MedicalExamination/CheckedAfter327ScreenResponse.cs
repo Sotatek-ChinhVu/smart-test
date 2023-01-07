@@ -4,13 +4,13 @@ namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class CheckedAfter327ScreenResponse
     {
-        public CheckedAfter327ScreenResponse(string message, List<SinKouiCountModel> sinKouiCountModels)
+        public CheckedAfter327ScreenResponse(List<string> messages, List<SinKouiCountModel> sinKouiCountModels)
         {
-            Message = message;
+            Messages = messages;
             SinKouiCountModels = sinKouiCountModels;
         }
 
-        public string Message { get; private set; }
+        public List<string> Messages { get; private set; }
 
         public List<SinKouiCountModel> SinKouiCountModels { get; private set; }
     }

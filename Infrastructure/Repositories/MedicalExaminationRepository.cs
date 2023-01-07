@@ -1286,11 +1286,11 @@ namespace Infrastructure.Repositories
             return checkedOrderModelList;
         }
 
-        public (string, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder)
+        public (List<string>, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder)
         {
             #region Checking
             // 特定疾患処方管理加算２（処方料）・算定
-            string msg = string.Empty;
+            List<string> msgs = new();
             var tokysyoItem = checkedTenMstResult.FirstOrDefault(d => d.ItemCd == ItemCdConst.TouyakuTokuSyo2Syoho);
             List<SinKouiCountModel> lastSanteiInMonth = new List<SinKouiCountModel>();
             if (tokysyoItem != null && tokysyoItem.Santei)
@@ -1315,7 +1315,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msg = _buildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                        msgs.Add(BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1344,7 +1344,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syoho = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syoho, sinDate);
                     if (touyakuTokuSyo1Syoho != null && touyakuTokuSyo2Syoho != null)
                     {
-                        msg = _buildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                        msgs.Add(BuildMessage(touyakuTokuSyo1Syoho.Name ?? string.Empty, touyakuTokuSyo2Syoho.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1373,7 +1373,7 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo2Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msg = _buildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                        msgs.Add(BuildMessage(touyakuTokuSyo1Syohosen?.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
@@ -1401,16 +1401,16 @@ namespace Infrastructure.Repositories
                     var touyakuTokuSyo2Syohosen = FindTenMst(hpId, ItemCdConst.TouyakuTokuSyo2Syohosen, sinDate);
                     if (touyakuTokuSyo1Syohosen != null && touyakuTokuSyo2Syohosen != null)
                     {
-                        msg = _buildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, _santeiDateFormat(lastSanteiInMonth));
+                        msgs.Add(BuildMessage(touyakuTokuSyo1Syohosen.Name ?? string.Empty, touyakuTokuSyo2Syohosen.Name ?? string.Empty, SanteiDateFormat(lastSanteiInMonth)));
                     }
                 }
             }
             #endregion
 
-            return new(msg, lastSanteiInMonth);
+            return new(msgs, lastSanteiInMonth);
         }
 
-        string _buildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
+        string BuildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
         {
             StringBuilder msg = new StringBuilder();
             msg.Append("'");
@@ -1435,7 +1435,7 @@ namespace Infrastructure.Repositories
             return msg.ToString();
         }
 
-        string _santeiDateFormat(List<SinKouiCountModel> sinKouiCountList)
+        string SanteiDateFormat(List<SinKouiCountModel> sinKouiCountList)
         {
             if (sinKouiCountList == null || sinKouiCountList.Count == 0)
             {

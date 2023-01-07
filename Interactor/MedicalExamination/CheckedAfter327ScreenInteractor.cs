@@ -17,15 +17,15 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidHpId, string.Empty, new());
+                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidHpId, new(), new());
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidPtId, string.Empty, new());
+                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidPtId, new(), new());
                 }
                 if (inputData.SinDate < 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidSinDate, string.Empty, new());
+                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidSinDate, new(), new());
                 }
 
                 var data = _medicalExaminationRepository.GetCheckedAfter327Screen(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.CheckedOrderModels, inputData.IsTokysyoOrder, inputData.IsTokysyosenOrder);
