@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
                             r.PtId == ptId &&
                             r.Status >= 3 &&
                             (r.IsDeleted == DeleteTypes.None || isDeleted == 1 || (r.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)) &&
-                            (hokenPidListByCondition.Contains(r.HokenPid) || r.HokenPid == 0) &&
+                            hokenPidListByCondition.Contains(r.HokenPid) &&
                             (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
                             (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
 
