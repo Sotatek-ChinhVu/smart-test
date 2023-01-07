@@ -2,10 +2,10 @@
 
 public class InsertReceptionResponse
 {
-    public InsertReceptionResponse(bool success)
+    public InsertReceptionResponse(long raiinNo)
     {
-        Success = success;
+        RaiinNo = raiinNo;
     }
 
-    public bool Success { get; private set; }
+    public long RaiinNo { get; private set; }
 }
