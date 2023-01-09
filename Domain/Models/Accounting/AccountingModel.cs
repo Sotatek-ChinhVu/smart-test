@@ -15,15 +15,19 @@ namespace Domain.Models.Accounting
 
         public AccountingModel()
         {
+            SyunoSeikyu = new SyunoSeikyuModel();
+            RaiinInfModel = new SyunoRaiinInfModel();
+            SyunoNyukinModels = new List<SyunoNyukinModel>();
+            KaikeiInfModels = new List<KaikeiInfModel>();
         }
 
-        public SyunoSeikyuModel SyunoSeikyu { get; }
+        public SyunoSeikyuModel SyunoSeikyu { get; private set; }
 
-        public SyunoRaiinInfModel RaiinInfModel { get; }
+        public SyunoRaiinInfModel RaiinInfModel { get; private set; }
 
-        public List<SyunoNyukinModel> SyunoNyukinModels { get; }
+        public List<SyunoNyukinModel> SyunoNyukinModels { get; private set; }
 
-        public List<KaikeiInfModel> KaikeiInfModels { get; set; }
+        public List<KaikeiInfModel> KaikeiInfModels { get; private set; }
 
         public int HokenId { get; set; }
 

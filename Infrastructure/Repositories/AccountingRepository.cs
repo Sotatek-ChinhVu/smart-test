@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                IQueryable<SyunoSeikyu> syunoSeikyuRepo = null;
+                IQueryable<SyunoSeikyu> syunoSeikyuRepo;
 
                 var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.Where(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0).FirstOrDefault();
 
@@ -108,11 +108,11 @@ namespace Infrastructure.Repositories
                              syunoSeikyu.SeikyuTensu,
                              syunoSeikyu.AdjustFutan,
                              syunoSeikyu.SeikyuGaku,
-                             syunoSeikyu.SeikyuDetail,
+                             syunoSeikyu.SeikyuDetail ?? string.Empty,
                              syunoSeikyu.NewSeikyuTensu,
                              syunoSeikyu.NewAdjustFutan,
                              syunoSeikyu.NewSeikyuGaku,
-                             syunoSeikyu.NewSeikyuDetail
+                             syunoSeikyu.NewSeikyuDetail ?? string.Empty
                         ),
                         new SyunoRaiinInfModel(
                              raiinInf.Status,
@@ -134,10 +134,10 @@ namespace Infrastructure.Repositories
                             y.PaymentMethodCd,
                             y.NyukinDate,
                             y.UketukeSbt,
-                            y.NyukinCmt,
+                            y.NyukinCmt ?? string.Empty,
                             y.NyukinjiTensu,
                             y.NyukinjiSeikyu,
-                            y.NyukinjiDetail
+                            y.NyukinjiDetail ?? string.Empty
                             )
                             ).ToList(),
 
@@ -154,12 +154,12 @@ namespace Infrastructure.Repositories
                             x.Kohi4Id,
                             x.HokenKbn,
                             x.HokenSbtCd,
-                            x.ReceSbt,
-                            x.Houbetu,
-                            x.Kohi1Houbetu,
-                            x.Kohi2Houbetu,
-                            x.Kohi3Houbetu,
-                            x.Kohi4Houbetu,
+                            x.ReceSbt ?? string.Empty,
+                            x.Houbetu ?? string.Empty,
+                            x.Kohi1Houbetu ?? string.Empty,
+                            x.Kohi2Houbetu ?? string.Empty,
+                            x.Kohi3Houbetu ?? string.Empty,
+                            x.Kohi4Houbetu ?? string.Empty,
                             x.HonkeKbn,
                             x.HokenRate,
                             x.PtRate,

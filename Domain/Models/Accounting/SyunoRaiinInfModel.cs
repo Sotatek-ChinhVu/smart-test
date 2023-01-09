@@ -9,8 +9,12 @@
             UketukeSbt = uketukeSbt;
         }
 
-        public int Status { get; set; }
-        public string KaikeiTime { get; set; }
-        public int UketukeSbt { get; set; }
+        public SyunoRaiinInfModel()
+        {
+            KaikeiTime = string.Empty;
+        }
+        public int Status { get; private set; }
+        public string KaikeiTime { get; private set; }
+        public int UketukeSbt { get; private set; }
     }
 }
