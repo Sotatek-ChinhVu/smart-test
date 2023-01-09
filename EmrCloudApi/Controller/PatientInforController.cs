@@ -439,7 +439,7 @@ namespace EmrCloudApi.Controller
                        x.HokenPid,
                        x.HokenKbn,
                        x.HokenMemo,
-                       0,
+                       x.SinDate,
                        x.StartDate,
                        x.EndDate,
                        x.HokenId,
