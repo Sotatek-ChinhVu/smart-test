@@ -79,6 +79,27 @@ namespace Domain.Models.MstItem
             OdrTermVal = 0;
         }
 
+        public TenItemModel(int hpId, string itemCd, string minAge, string maxAge, string santeiItemCd, int startDate, int endDate)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            MinAge = minAge;
+            MaxAge = maxAge;
+            SanteiItemCd = santeiItemCd;
+            IpnCD = string.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
+            IpnNameCd = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            KensaMstCenterItemCd1 = string.Empty;
+            MasterSbt = string.Empty;
+            OdrUnitName = string.Empty;
+            Name = string.Empty;
+            KanaName1 = string.Empty;
+            StartDate = startDate;
+            EndDate = endDate;
+        }
+
         public int HpId { get; private set; }
 
         public string ItemCd { get; private set; }

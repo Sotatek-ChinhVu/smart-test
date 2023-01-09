@@ -7,6 +7,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using Domain.Constant;
 
 namespace EmrCalculateApi.Futan.ViewModels
 {

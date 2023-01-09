@@ -24,6 +24,7 @@ namespace Domain.Constant
         public const string MessageType_mInp00010 = "{0}を入力してください。";
         public const string MessageType_mEnt00020 = "{0}が既に登録されています。" + "\r\n" + "登録しますか？";
         public const string MessageType_mInp00140 = "{0}に {1}は入力できません。";
+        public const string MessageType_mChk00040 = "同一期間内に複数保険が登録されています。" + "\r\n" + "有効期限を確認してください。";
     }
 
     public static class TypeMessage

@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
+using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 
@@ -56,5 +57,17 @@ public class UserConfController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateUserConfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Sagaku)]
+    public ActionResult<Response<SagakuResponse>> Sagaku([FromQuery] SagakuRequest request)
+    {
+        var input = new SagakuInputData(HpId, UserId, request.FromRece);
+        var output = _bus.Handle(input);
+
+        var presenter = new SagakuPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SagakuResponse>>(presenter.Result);
     }
 }

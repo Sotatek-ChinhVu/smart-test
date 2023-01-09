@@ -47,5 +47,7 @@ namespace Domain.Models.MstItem
         List<string> GetCheckItemCds(List<string> itemCds);
 
         List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
+
+        List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
     }
 }

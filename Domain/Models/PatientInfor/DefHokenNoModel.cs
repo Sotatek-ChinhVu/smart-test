@@ -38,10 +38,10 @@ namespace Domain.Models.PatientInfor
         public ValidationStatus Validation()
         {
             #region common
-            if ((!int.TryParse(Digit1, out int d1) || d1 < 0 || d1 > 9) && !string.IsNullOrEmpty(Digit1))
+            if ((!int.TryParse(Digit1, out int d1) || d1 < 0 || d1 > 9) || string.IsNullOrEmpty(Digit1))
                 return ValidationStatus.InvalidDigit1;
 
-            if ((!int.TryParse(Digit2, out int d2) || d2 < 0 || d2 > 9) && !string.IsNullOrEmpty(Digit2))
+            if ((!int.TryParse(Digit2, out int d2) || d2 < 0 || d2 > 9) || string.IsNullOrEmpty(Digit2))
                 return ValidationStatus.InvalidDigit2;
 
             if ((!int.TryParse(Digit3, out int d3) || d3 < 0 || d3 > 9) && !string.IsNullOrEmpty(Digit3))

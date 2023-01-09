@@ -8,4 +8,5 @@ public enum UploadTemplateToCategoryStatus : byte
     InvalidCategoryCd = 4,
     InvalidFileInput = 5,
     ExistFileTemplateName = 6,
+    InvalidExtentionFile = 7,
 }

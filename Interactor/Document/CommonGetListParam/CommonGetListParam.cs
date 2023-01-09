@@ -1,4 +1,5 @@
-﻿using Domain.Models.HpInf;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -22,11 +23,12 @@ public class CommonGetListParam : ICommonGetListParam
     private readonly ISummaryInfRepository _summaryInfRepository;
     private readonly IPatientInfoRepository _patientInfoRepository;
     private readonly IInsuranceMstRepository _insuranceMstRepository;
+    private readonly IGroupInfRepository _groupInfRepository;
     private const string groupHpInf = "基本情報";
     private const string groupPtInf = "患者情報";
     private const string groupHokenInf = "保険情報";
 
-    public CommonGetListParam(IInsuranceRepository insuranceRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IRaiinFilterMstRepository raiinFilterMstRepository, ISummaryInfRepository summaryInfRepository, IPatientInfoRepository patientInfoRepository, IInsuranceMstRepository insuranceMstRepository)
+    public CommonGetListParam(IInsuranceRepository insuranceRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IRaiinFilterMstRepository raiinFilterMstRepository, ISummaryInfRepository summaryInfRepository, IPatientInfoRepository patientInfoRepository, IInsuranceMstRepository insuranceMstRepository, IGroupInfRepository groupInfRepository)
     {
         _insuranceRepository = insuranceRepository;
         _hpInfRepository = hpInfRepository;
@@ -36,6 +38,7 @@ public class CommonGetListParam : ICommonGetListParam
         _summaryInfRepository = summaryInfRepository;
         _patientInfoRepository = patientInfoRepository;
         _insuranceMstRepository = insuranceMstRepository;
+        _groupInfRepository = groupInfRepository;
     }
 
 
@@ -62,6 +65,7 @@ public class CommonGetListParam : ICommonGetListParam
         var sumaryContent = _summaryInfRepository.Get(hpId, ptId).Text;
         int lastTimeDate = _raiinFilterMstRepository.GetLastTimeDate(hpId, ptId, sinDate);
         var listKensaInf = _patientInfoRepository.GetListKensaInfModel(hpId, ptId, sinDate);
+        var listPtGroup = _groupInfRepository.GetDataGroup(hpId, ptId).ToList();
 
         // hoken
         var hokenPattern = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
@@ -71,7 +75,7 @@ public class CommonGetListParam : ICommonGetListParam
         // Get list param
         List<ItemGroupParamModel> result = new();
         result.Add(new ItemGroupParamModel(groupHpInf, GetListParamHpInf(hpInf)));
-        result.Add(new ItemGroupParamModel(groupPtInf, GetListParamPtInf(sinDate, age, lastTimeDate, sumaryContent, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf)));
+        result.Add(new ItemGroupParamModel(groupPtInf, GetListParamPtInf(sinDate, age, lastTimeDate, sumaryContent, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf, listPtGroup)));
         result.Add(new ItemGroupParamModel(groupHokenInf, ReplaceParamHokenAction(hokenModelToReplace)));
         return result;
     }
@@ -92,7 +96,7 @@ public class CommonGetListParam : ICommonGetListParam
         return listParam;
     }
 
-    private List<ItemDisplayParamModel> GetListParamPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf)
+    private List<ItemDisplayParamModel> GetListParamPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf, List<GroupInfModel> listPtGroup)
     {
         List<ItemDisplayParamModel> listParam = new();
 
@@ -139,6 +143,10 @@ public class CommonGetListParam : ICommonGetListParam
         listParam.Add(new ItemDisplayParamModel("メールアドレス", ptInf.Mail));
         listParam.Add(new ItemDisplayParamModel("メモ", !string.IsNullOrEmpty(ptInf.Memo) ? ptInf.Memo.Replace("\r\n", string.Empty).Replace("\n", string.Empty) : string.Empty));
         listParam.Add(new ItemDisplayParamModel("主治医氏名", docInf.Name));
+        foreach (var group in listPtGroup)
+        {
+            listParam.Add(new ItemDisplayParamModel(group.GroupName, group.GroupCodeName));
+        }
         listParam.Add(new ItemDisplayParamModel("サマリ", sumaryContent.Replace("\r\n", string.Empty).Replace("\n", string.Empty)));
         listParam.Add(new ItemDisplayParamModel("担当医", tantoInf.Name));
         listParam.Add(new ItemDisplayParamModel("保険医師名", userLogin.DrName));
@@ -593,8 +601,8 @@ public class CommonGetListParam : ICommonGetListParam
         listParam.Add(new ItemDisplayParamModel("労災/災害区分", model.RousaiSaigaiKbn));
         listParam.Add(new ItemDisplayParamModel("労災/労働保険番号", model.RousaiRoudouHokenNo));
         listParam.Add(new ItemDisplayParamModel("労災/年金証書番号", model.RousaiNenkinNo));
-        listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiRoudouKyoku));
-        listParam.Add(new ItemDisplayParamModel("労災/労働局", model.RousaiKantoku));
+        listParam.Add(new ItemDisplayParamModel("労災/労働局", model.RousaiRoudouKyoku));
+        listParam.Add(new ItemDisplayParamModel("労災/監督署", model.RousaiKantoku));
         listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiKenkoKanriNo));
         listParam.Add(new ItemDisplayParamModel("労災/傷病コード", model.RousaiShyobyoCode));
         listParam.Add(new ItemDisplayParamModel("労災/事業名称", model.RousaiJigyouName));

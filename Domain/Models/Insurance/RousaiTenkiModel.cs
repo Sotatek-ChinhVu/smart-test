@@ -26,5 +26,10 @@ namespace Domain.Models.Insurance
         public int RousaiTenkiIsDeleted { get; private set; }
 
         public long SeqNo { get; private set; }
+
+        public bool CheckDefaultValue()
+        {
+            return RousaiTenkiSinkei <= 0 && RousaiTenkiTenki <= 0 && (RousaiTenkiEndDate == 0 || RousaiTenkiEndDate == 999999);
+        }
     }
 }

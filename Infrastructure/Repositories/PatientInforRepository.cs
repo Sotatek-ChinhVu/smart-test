@@ -873,8 +873,14 @@ namespace Infrastructure.Repositories
             try
             {
                 int hokenNo = Int32.Parse(futansyaNo.Substring(0, 2));
+                string digit1 = futansyaNo.Substring(0, 1);
+                string digit2 = futansyaNo.Substring(1, 1);
                 var listDefHoken = NoTrackingDataContext.DefHokenNos
-                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
+                .Where(x => x.HpId == hpId
+                        && (x.HokenNo == hokenNo || x.HokenNo == 0)
+                        && x.Digit1.Equals(digit1)
+                        && x.Digit2.Equals(digit2)
+                        && x.IsDeleted == 0)
                 .OrderBy(x => x.SortNo)
                 .Select(x => new DefHokenNoModel(
                     x.Digit1,
@@ -925,7 +931,7 @@ namespace Infrastructure.Repositories
                 int sortNo = 1;
                 foreach (var item in defHokenNoModels)
                 {
-                    var checkExistDefHoken = TrackingDataContext.DefHokenNos
+                    var checkExistDefHoken = NoTrackingDataContext.DefHokenNos
                         .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
 
                     //Add new if data does not exist
@@ -1318,6 +1324,7 @@ namespace Infrastructure.Repositories
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
+                    kyuseiUpdate.UpdateId = userId;
                 }
             }
             #endregion
@@ -1447,8 +1454,9 @@ namespace Infrastructure.Repositories
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateId = userId;
+                    destR.UpdateId = userId;
                     destR.CreateDate = DateTime.UtcNow;
+                    destR.UpdateDate = DateTime.UtcNow;
                     return destR;
                 }));
                 #endregion
@@ -1457,7 +1465,9 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
                     destCf.CreateId = userId;
+                    destCf.UpdateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
+                    destCf.UpdateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
@@ -1538,6 +1548,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1546,6 +1558,8 @@ namespace Infrastructure.Repositories
                 {
                     destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
+                    destCf.UpdateDate = DateTime.UtcNow;
+                    destCf.UpdateId = userId;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
