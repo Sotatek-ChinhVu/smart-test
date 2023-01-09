@@ -49,90 +49,90 @@
             AdjustRateRange = adjustRateRange;
         }
 
-        public int HpId { get; set; }
+        public int HpId { get; private set; }
 
-        public long PtId { get; set; }
+        public long PtId { get; private set; }
 
-        public int SinDate { get; set; }
+        public int SinDate { get; private set; }
 
-        public long RaiinNo { get; set; }
+        public long RaiinNo { get; private set; }
 
-        public int HokenId { get; set; }
+        public int HokenId { get; private set; }
 
-        public int Kohi1Id { get; set; }
+        public int Kohi1Id { get; private set; }
 
-        public int Kohi2Id { get; set; }
+        public int Kohi2Id { get; private set; }
 
-        public int Kohi3Id { get; set; }
+        public int Kohi3Id { get; private set; }
 
-        public int Kohi4Id { get; set; }
+        public int Kohi4Id { get; private set; }
 
-        public int HokenKbn { get; set; }
+        public int HokenKbn { get; private set; }
 
-        public int HokenSbtCd { get; set; }
+        public int HokenSbtCd { get; private set; }
 
-        public string ReceSbt { get; set; }
+        public string ReceSbt { get; private set; }
 
-        public string Houbetu { get; set; }
+        public string Houbetu { get; private set; }
 
-        public string Kohi1Houbetu { get; set; }
+        public string Kohi1Houbetu { get; private set; }
 
-        public string Kohi2Houbetu { get; set; }
+        public string Kohi2Houbetu { get; private set; }
 
-        public string Kohi3Houbetu { get; set; }
+        public string Kohi3Houbetu { get; private set; }
 
-        public string Kohi4Houbetu { get; set; }
+        public string Kohi4Houbetu { get; private set; }
 
-        public int HonkeKbn { get; set; }
+        public int HonkeKbn { get; private set; }
 
-        public int HokenRate { get; set; }
+        public int HokenRate { get; private set; }
 
-        public int PtRate { get; set; }
+        public int PtRate { get; private set; }
 
-        public int DispRate { get; set; }
+        public int DispRate { get; private set; }
 
-        public int Tensu { get; set; }
+        public int Tensu { get; private set; }
 
-        public int TotalIryohi { get; set; }
+        public int TotalIryohi { get; private set; }
 
-        public int PtFutan { get; set; }
+        public int PtFutan { get; private set; }
 
-        public int JihiFutan { get; set; }
+        public int JihiFutan { get; private set; }
 
-        public int JihiTax { get; set; }
+        public int JihiTax { get; private set; }
 
-        public int JihiOuttax { get; set; }
+        public int JihiOuttax { get; private set; }
 
-        public int JihiFutanTaxfree { get; set; }
+        public int JihiFutanTaxfree { get; private set; }
 
-        public int JihiFutanTaxNr { get; set; }
+        public int JihiFutanTaxNr { get; private set; }
 
-        public int JihiFutanTaxGen { get; set; }
+        public int JihiFutanTaxGen { get; private set; }
 
-        public int JihiFutanOuttaxNr { get; set; }
+        public int JihiFutanOuttaxNr { get; private set; }
 
-        public int JihiFutanOuttaxGen { get; set; }
+        public int JihiFutanOuttaxGen { get; private set; }
 
-        public int JihiTaxNr { get; set; }
+        public int JihiTaxNr { get; private set; }
 
-        public int JihiTaxGen { get; set; }
+        public int JihiTaxGen { get; private set; }
 
-        public int JihiOuttaxNr { get; set; }
+        public int JihiOuttaxNr { get; private set; }
 
-        public int JihiOuttaxGen { get; set; }
+        public int JihiOuttaxGen { get; private set; }
 
-        public int AdjustFutan { get; set; }
+        public int AdjustFutan { get; private set; }
 
-        public int AdjustRound { get; set; }
+        public int AdjustRound { get; private set; }
 
-        public int TotalPtFutan { get; set; }
+        public int TotalPtFutan { get; private set; }
 
-        public int AdjustFutanVal { get; set; }
+        public int AdjustFutanVal { get; private set; }
 
-        public int AdjustFutanRange { get; set; }
+        public int AdjustFutanRange { get; private set; }
 
-        public int AdjustRateVal { get; set; }
+        public int AdjustRateVal { get; private set; }
 
-        public int AdjustRateRange { get; set; }
+        public int AdjustRateRange { get; private set; }
     }
 }
