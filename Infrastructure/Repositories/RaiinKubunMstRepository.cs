@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -443,7 +444,7 @@ namespace Infrastructure.Repositories
                           })
                           ?.OrderBy(p => p.KbnMst.SortNo)
                           ?.Select(obj => new RaiinKbnModel(obj.KbnMst.HpId, obj.KbnMst.GrpCd, obj.KbnMst.SortNo, obj.KbnMst?.GrpName ?? string.Empty, obj.KbnMst?.IsDeleted ?? 0,
-                                                                 new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, obj.KbnInf?.GrpId ?? 0, obj.KbnInf?.SeqNo ?? 0, obj.KbnInf?.KbnCd ?? 0, obj.KbnInf?.IsDelete ?? 0), obj.KbnDetails?.Select(p => new RaiinKbnDetailModel(p.HpId, p.GrpCd, p.KbnCd, p.SortNo, p.KbnName ?? string.Empty, p.ColorCd ?? string.Empty, p.IsConfirmed, p.IsAuto, p.IsAutoDelete, p.IsDeleted)).ToList() ?? new()))?.ToList() ?? new();
+                                                                 new RaiinKbnInfModel(hpId, ptId, sinDate, raiinNo, obj.KbnMst?.GrpCd ?? 0, obj.KbnInf?.SeqNo ?? 0, obj.KbnInf?.KbnCd ?? 0, obj.KbnInf?.IsDelete ?? 0), obj.KbnDetails?.Select(p => new RaiinKbnDetailModel(p.HpId, p.GrpCd, p.KbnCd, p.SortNo, p.KbnName ?? string.Empty, p.ColorCd ?? string.Empty, p.IsConfirmed, p.IsAuto, p.IsAutoDelete, p.IsDeleted)).ToList() ?? new()))?.ToList() ?? new();
             return result;
         }
 
@@ -502,6 +503,76 @@ namespace Infrastructure.Repositories
                                                          new()
                                                          ));
             return dataListItem;
+        }
+
+        public bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var raiinInf = TrackingDataContext.RaiinInfs
+                 .FirstOrDefault(r => r.HpId == hpId
+                     && r.PtId == ptId
+                     && r.SinDate == sinDate
+                     && r.RaiinNo == raiinNo
+                     && r.IsDeleted == DeleteTypes.None);
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            SaveRaiinKbnInfs(hpId, userId, raiinInf, kbnInfDtos);
+            TrackingDataContext.SaveChanges();
+
+            return true;
+        }
+
+        private void SaveRaiinKbnInfs(int hpId, int userId, RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+        {
+            var existingEntities = TrackingDataContext.RaiinKbnInfs
+                .Where(x => x.HpId == hpId
+                    && x.PtId == raiinInf.PtId
+                    && x.SinDate == raiinInf.SinDate
+                    && x.RaiinNo == raiinInf.RaiinNo
+                    && x.IsDelete == DeleteTypes.None)
+                .ToList();
+
+            foreach (var kbnInfDto in kbnInfDtos)
+            {
+                var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
+                if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
+                {
+                    if (existingEntity is not null)
+                    {
+                        // Soft-delete
+                        existingEntity.IsDelete = DeleteTypes.Deleted;
+                    }
+                }
+                else
+                {
+                    if (existingEntity is null)
+                    {
+                        // Insert
+                        TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                        {
+                            HpId = hpId,
+                            PtId = raiinInf.PtId,
+                            SinDate = raiinInf.SinDate,
+                            RaiinNo = raiinInf.RaiinNo,
+                            GrpId = kbnInfDto.GrpId,
+                            KbnCd = kbnInfDto.KbnCd,
+                            CreateDate = DateTime.UtcNow,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = userId,
+                            CreateId = userId
+                        });
+                    }
+                    else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                    {
+                        // Update
+                        existingEntity.KbnCd = kbnInfDto.KbnCd;
+                        existingEntity.UpdateDate = DateTime.UtcNow;
+                        existingEntity.UpdateId = userId;
+                    }
+                }
+            }
         }
 
         #region RaiinKbn

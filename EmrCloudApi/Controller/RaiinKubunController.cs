@@ -10,6 +10,7 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
+using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 
 namespace EmrCloudApi.Controller
 {
@@ -68,6 +69,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetColumnNameListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Save + "RaiinKbnInfList")]
+        public ActionResult<Response<SaveRaiinKbnInfListResponse>> SaveRaiinKbnInfList([FromBody] SaveRaiinKbnInfListRequest request)
+        {
+            var input = new SaveRaiinKbnInfListInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo, request.UserId, request.KbnInfDtos);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveRaiinKbnInfListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveRaiinKbnInfListResponse>>(presenter.Result);
         }
     }
 }

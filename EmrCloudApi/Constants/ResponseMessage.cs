@@ -287,6 +287,7 @@
         public static readonly string GetOrdInfSuccessed = "Successed";
 
         //RaiinKubun controller
+        public static readonly string RaiinKubunInvalidKbnInf = "Invalid KbnInf";
 
         //Calculation Inf
 
