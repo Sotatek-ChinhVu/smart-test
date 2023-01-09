@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.User
+﻿using Domain.Common;
+
+namespace Domain.Models.User
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase
     {
         void Create(UserMstModel user);
 
@@ -21,6 +23,8 @@
         int MaxUserId();
 
         UserMstModel? GetByUserId(int userId);
+
+        UserMstModel GetByUserId(int userId, int sinDate);
 
         UserMstModel? GetByLoginId(string loginId);
 

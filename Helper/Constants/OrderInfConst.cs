@@ -89,6 +89,8 @@
             HokenPidNoExist,
             RaiinNoNoExist,
             OdrNoMapOdrDetail,
+            InvalidKokuji1,
+            InvalidKokuji2,
             Valid
         };
 
@@ -157,5 +159,20 @@
             {"外用薬", 6},
             {"歯科用薬剤", 8},
         };
+    }
+
+    public class KensaGaichuText
+    {
+        public const int NONE = 0;
+        /// <summary>
+        /// "×"
+        /// </summary>
+        public const int GAICHU_NONE = 1;
+        /// <summary>
+        /// "△"
+        /// </summary>
+        public const int GAICHU_NOT_SET = 2;
+        public const int IS_DISPLAY_RECE_ON = 3;
+        public const int IS_DISPLAY_RECE_OFF = 4;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// グループコード
         /// CALC_GRP.SANTEI_GRP_CD
         /// </summary>
-        //[Key]
+        
         [Column("SANTEI_GRP_CD", Order = 2)]
         public int SanteiGrpCd { get; set; }
 
@@ -28,7 +27,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一グループコード内のチェック順番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         public int SeqNo { get; set; }
 
@@ -85,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(10)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 上限超動作
@@ -105,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TARGET_CD")]
         [MaxLength(10)]
-        public string TargetCd { get; set; } = string.Empty;
+        public string? TargetCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 特殊条件
@@ -159,6 +158,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

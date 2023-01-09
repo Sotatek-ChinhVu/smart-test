@@ -7,24 +7,24 @@ namespace Entity.Tenant
     [Table(name: "Z_SANTEI_INF_DETAIL")]
     public class ZSanteiInfDetail : EmrCloneable<ZSanteiInfDetail>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(160)]
-        public string Byomei { get; set; } = string.Empty;
+        public string? Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 補足コメント
@@ -93,14 +93,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOSOKU_COMMENT")]
         [MaxLength(80)]
-        public string HosokuComment { get; set; } = string.Empty;
+        public string? HosokuComment { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント
         /// 
         /// </summary>
         [Column("COMMENT")]
-        public string Comment { get; set; } = string.Empty;
+        public string? Comment { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

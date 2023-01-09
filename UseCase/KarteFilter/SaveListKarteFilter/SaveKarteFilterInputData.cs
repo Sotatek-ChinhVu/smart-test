@@ -4,13 +4,16 @@ namespace UseCase.KarteFilter.SaveListKarteFilter;
 
 public class SaveKarteFilterInputData : IInputData<SaveKarteFilterOutputData>
 {
-    public SaveKarteFilterInputData(List<SaveKarteFilterMstInputItem> saveKarteFilterMstModelInputItems, int hpId, int userId)
+    public SaveKarteFilterInputData(int hpId, int userId, List<SaveKarteFilterMstInputItem> saveKarteFilterMstModelInputs)
     {
-        SaveKarteFilterMstModelInputs = saveKarteFilterMstModelInputItems;
         HpId = hpId;
         UserId = userId;
+        SaveKarteFilterMstModelInputs = saveKarteFilterMstModelInputs;
     }
-    public List<SaveKarteFilterMstInputItem> SaveKarteFilterMstModelInputs { get; private set; }
+
     public int HpId { get; private set; }
+
     public int UserId { get; private set; }
+
+    public List<SaveKarteFilterMstInputItem> SaveKarteFilterMstModelInputs { get; private set; }
 }

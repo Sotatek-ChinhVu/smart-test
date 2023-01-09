@@ -225,6 +225,10 @@
         /// </summary>
         public const string SonotaSyohoSen = "8000";
         /// <summary>
+        /// その他-処方箋コメント
+        /// </summary>
+        public const string SonotaSyohoSenComment = "8001";
+        /// <summary>
         /// その他（アフターケア）
         /// </summary>
         public const string Sonota = "8000";

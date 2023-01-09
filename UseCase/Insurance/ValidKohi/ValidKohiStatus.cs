@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UseCase.Insurance.ValidKohi
+﻿namespace UseCase.Insurance.ValidKohi
 {
-    public enum ValidKohiStatus: byte
+    public enum ValidKohiStatus : byte
     {
         InvalidFaild = 0,
         InvalidSuccess = 1,
@@ -16,7 +10,7 @@ namespace UseCase.Insurance.ValidKohi
         InvalidKohiHokenMstEmpty1 = 5,
         InvalidFutansyaNoEmpty1 = 6,
         InvalidJyukyusyaNo1 = 7,
-        InvalidTokusyuNo1 = 8, 
+        InvalidTokusyuNo1 = 8,
         InvalidFutansyaNo01 = 9,
         InvalidKohiYukoDate1 = 10,
         InvalidKohiHokenMstStartDate1 = 11,

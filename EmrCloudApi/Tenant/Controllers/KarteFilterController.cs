@@ -35,7 +35,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public ActionResult<Response<SaveKarteFilterMstResponse>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
-            var input = new SaveKarteFilterInputData(request.KarteFilters, HpId, UserId);
+            var input = new SaveKarteFilterInputData(HpId, UserId, request.KarteFilters);
             var output = _bus.Handle(input);
 
             var presenter = new SaveKarteFilterMstPresenter();

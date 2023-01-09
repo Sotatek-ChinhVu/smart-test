@@ -2,6 +2,7 @@ using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -10,20 +11,16 @@ using System.Runtime.InteropServices;
 
 namespace Infrastructure.Repositories
 {
-    public class ReceptionRepository : IReceptionRepository
+    public class ReceptionRepository : RepositoryBase, IReceptionRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantTrackingDataContext;
-        public ReceptionRepository(ITenantProvider tenantProvider)
+        public ReceptionRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public ReceptionModel Get(long raiinNo)
         {
-            var receptionEntity = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
-            var raiinCommentInf = _tenantNoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var raiinCommentInf = NoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
@@ -56,15 +53,15 @@ namespace Infrastructure.Repositories
 
         public long Insert(ReceptionSaveDto dto, int hpId, int userId)
         {
-            var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             return executionStrategy.Execute(() =>
             {
-                using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
+                using var transaction = TrackingDataContext.Database.BeginTransaction();
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId);
-                _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
-                _tenantNoTrackingDataContext.SaveChanges();
+                TrackingDataContext.RaiinInfs.Add(raiinInf);
+                TrackingDataContext.SaveChanges();
 
                 if (raiinInf.OyaRaiinNo == 0)
                 {
@@ -75,19 +72,19 @@ namespace Infrastructure.Repositories
                 if (!string.IsNullOrWhiteSpace(dto.ReceptionComment))
                 {
                     var raiinCmtInf = CreateNewRaiinCmtInf(raiinInf, dto.ReceptionComment, hpId, userId);
-                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(raiinCmtInf);
+                    TrackingDataContext.RaiinCmtInfs.Add(raiinCmtInf);
                 }
 
                 // Insert RaiinKbnInfs
                 var raiinKbnInfs = dto.KubunInfs
                     .Where(model => model.KbnCd != CommonConstants.KbnCdDeleteFlag)
                     .Select(dto => CreateNewRaiinKbnInf(dto, raiinInf, hpId, userId));
-                _tenantNoTrackingDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
+                TrackingDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
 
                 // Update insurances and diseases
-                AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId, hpId, userId);
+                SaveInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId, hpId, userId);
                 UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId, hpId, userId);
-                _tenantNoTrackingDataContext.SaveChanges();
+                TrackingDataContext.SaveChanges();
 
                 transaction.Commit();
                 return raiinInf.RaiinNo;
@@ -167,7 +164,7 @@ namespace Infrastructure.Repositories
 
         public int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode)
         {
-            var query = _tenantNoTrackingDataContext.RaiinInfs.Where
+            var query = NoTrackingDataContext.RaiinInfs.Where
                 (
                     p => p.HpId == hpId && p.SinDate == sindate
                     && (!(uketukeMode == 1 || uketukeMode == 3) || p.UketukeSbt == infKbn)
@@ -183,7 +180,7 @@ namespace Infrastructure.Repositories
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)
         {
-            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking()
+            var raiinInf = TrackingDataContext.RaiinInfs
                 .FirstOrDefault(r => r.HpId == hpId
                     && r.PtId == dto.Reception.PtId
                     && r.SinDate == dto.Reception.SinDate
@@ -198,10 +195,10 @@ namespace Infrastructure.Repositories
             UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
             SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
             // Update insurances and diseases
-            AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId, hpId, userId);
+            SaveInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId, hpId, userId);
             UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId, hpId, userId);
 
-            _tenantNoTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return true;
 
             #region Helper methods
@@ -235,14 +232,14 @@ namespace Infrastructure.Repositories
 
             void UpsertRaiinCmtInf(RaiinInf raiinInf, string text)
             {
-                var raiinCmtInf = _tenantNoTrackingDataContext.RaiinCmtInfs.AsTracking()
+                var raiinCmtInf = TrackingDataContext.RaiinCmtInfs
                    .FirstOrDefault(x => x.HpId == hpId
                         && x.RaiinNo == raiinInf.RaiinNo
                         && x.CmtKbn == CmtKbns.Comment
                         && x.IsDelete == DeleteTypes.None);
                 if (raiinCmtInf is null)
                 {
-                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
+                    TrackingDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
                     {
                         HpId = hpId,
                         PtId = raiinInf.PtId,
@@ -266,7 +263,7 @@ namespace Infrastructure.Repositories
 
             void SaveRaiinKbnInfs(RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
             {
-                var existingEntities = _tenantNoTrackingDataContext.RaiinKbnInfs.AsTracking()
+                var existingEntities = TrackingDataContext.RaiinKbnInfs
                     .Where(x => x.HpId == hpId
                         && x.PtId == raiinInf.PtId
                         && x.SinDate == raiinInf.SinDate
@@ -290,7 +287,7 @@ namespace Infrastructure.Repositories
                         if (existingEntity is null)
                         {
                             // Insert
-                            _tenantNoTrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
                             {
                                 HpId = hpId,
                                 PtId = raiinInf.PtId,
@@ -318,57 +315,120 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
-        private void AddInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId, int hpId, int userId)
+        private void SaveInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId, int hpId, int userId)
         {
-            var hokenIds = insurances.Select(i => i.HokenId).Distinct();
-            var latestPtHokenChecks = (
-                from phc in _tenantNoTrackingDataContext.PtHokenChecks.AsTracking()
-                where phc.HpId == hpId
-                    && phc.PtID == ptId
-                    && hokenIds.Contains(phc.HokenId)
-                    && phc.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
-                    && phc.IsDeleted == DeleteTypes.None
-                group phc by phc.HokenId into phcGroup
-                select new { HokenId = phcGroup.Key, ConfirmDateList = phcGroup.OrderByDescending(x => x.CheckDate).ToList() }
-            ).ToList();
-
-            var newPhcs = new List<PtHokenCheck>();
-            foreach (var insurance in insurances)
+            if (insurances.Any())
             {
-                var latestPhcList = latestPtHokenChecks.Where(x => x.HokenId == insurance.HokenId).Select(x => x.ConfirmDateList.Select(c => c.CheckDate).ToList()).FirstOrDefault();
-                if (latestPhcList == null)
-                {
-                    continue;
-                }
+                List<PtHokenCheck> listHokenCheckAddNew = new();
 
-                foreach (var confirmDate in insurance.ConfirmDateList)
-                {
-                    var confirmDatetimeUtc = DateTime.ParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                var hokenIds = insurances.Select(i => i.HokenId).Distinct();
+                var oldHokenCheckDB = TrackingDataContext.PtHokenChecks
+                                            .Where(item =>
+                                                            hokenIds.Contains(item.HokenId)
+                                                            && item.HpId == hpId
+                                                            && item.PtID == ptId
+                                                            && item.IsDeleted == 0
+                                            ).ToList();
 
-                    if (latestPhcList is not null && !latestPhcList.Any(p => p == confirmDatetimeUtc))
+                foreach (var insuranceItem in insurances)
+                {
+                    var hokenGrp = insuranceItem.IsHokenGroupKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern;
+                    var listCheckTime = oldHokenCheckDB.Where(item =>
+                                                                    item.HokenId == insuranceItem.HokenId
+                                                                    && item.HokenGrp == hokenGrp)
+                                                        .OrderByDescending(item => item.CheckDate)
+                                                        .ToList();
+
+                    var listHokenCheckInsertInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo == 0).ToList();
+                    var listHokenCheckUpdateInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo != 0).ToList();
+
+                    // Update PtHokenCheck
+                    var listUpdateItemDB = TrackingDataContext.PtHokenChecks
+                                 .Where(item =>
+                                             listHokenCheckUpdateInput.Select(item => item.SeqNo).Contains(item.SeqNo)
+                                             && item.HpId == hpId
+                                             && item.PtID == ptId
+                                             && item.HokenId == insuranceItem.HokenId
+                                             && item.HokenGrp == hokenGrp
+                                             && item.IsDeleted == 0)
+                                 .ToList();
+
+                    // Update PtHokenCheck
+                    foreach (var update in listHokenCheckUpdateInput)
                     {
-                        newPhcs.Add(new PtHokenCheck
+                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
+                        if (hokenCheckItem != null)
                         {
-                            HpId = hpId,
-                            PtID = ptId,
-                            HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
-                            HokenId = insurance.HokenId,
-                            CheckDate = confirmDatetimeUtc,
-                            CheckCmt = string.Empty,
-                            CheckId = userId,
-                            CreateDate = DateTime.UtcNow,
-                            CreateId = userId
-                        });
+                            hokenCheckItem.UpdateDate = DateTime.UtcNow;
+                            hokenCheckItem.UpdateId = userId;
+
+                            /// <summary>
+                            /// Update check date:
+                            /// If checkDate of item in database is not equal checkDate input,
+                            /// and checkDate input not equal other checkDate in database
+                            /// then update checkDate
+                            /// </summary>
+                            if (!hokenCheckItem.CheckDate.ToString("yyyyMMdd").Equals(update.SinDate.ToString())
+                                && !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(update.SinDate.ToString()))
+                            {
+                                hokenCheckItem.CheckDate = checkDatetimeInput;
+                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
+                                if (removeItem != null)
+                                {
+                                    listCheckTime.Remove(removeItem);
+                                }
+                            }
+
+                            // update isDelete
+                            if (update.IsDelete)
+                            {
+                                hokenCheckItem.IsDeleted = 1;
+                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
+                                if (removeItem != null)
+                                {
+                                    listCheckTime.Remove(removeItem);
+                                }
+                            }
+                            else
+                            {
+                                hokenCheckItem.CheckCmt = update.Comment;
+                                hokenCheckItem.CheckId = userId;
+                            }
+                        }
+                    }
+
+                    // Add new PtHokenCheck
+                    foreach (var item in listHokenCheckInsertInput)
+                    {
+                        var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        if (listCheckTime == null || !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(item.SinDate.ToString()))
+                        {
+                            listHokenCheckAddNew.Add(new PtHokenCheck
+                            {
+                                HpId = hpId,
+                                PtID = ptId,
+                                HokenGrp = hokenGrp,
+                                HokenId = insuranceItem.HokenId,
+                                CheckDate = checkDatetime,
+                                CheckCmt = item.Comment,
+                                CheckId = userId,
+                                CreateDate = DateTime.UtcNow,
+                                CreateId = userId,
+                                UpdateDate = DateTime.UtcNow,
+                                UpdateId = userId
+                            });
+                        }
                     }
                 }
+                TrackingDataContext.PtHokenChecks.AddRange(listHokenCheckAddNew);
             }
-            _tenantNoTrackingDataContext.PtHokenChecks.AddRange(newPhcs);
         }
 
         private void UpdateDiseaseTenkis(IEnumerable<DiseaseDto> diseases, long ptId, int hpId, int userId)
         {
             var ptByomeiIds = diseases.Select(d => d.Id);
-            var ptByomeis = _tenantNoTrackingDataContext.PtByomeis.AsTracking()
+            var ptByomeis = TrackingDataContext.PtByomeis.AsTracking()
                 .Where(x => x.HpId == hpId && x.PtId == ptId && ptByomeiIds.Contains(x.Id))
                 .ToList();
 
@@ -393,7 +453,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
-            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
+            var result = NoTrackingDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
                                  (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2)));
@@ -428,7 +488,7 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
-            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+            var result = NoTrackingDataContext.RaiinInfs.Where(p =>
                                                                         p.HpId == hpId
                                                                         && p.PtId == ptId
                                                                         && p.IsDeleted == DeleteTypes.None
@@ -463,7 +523,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
         {
-            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
+            var result = NoTrackingDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 && r.IsDeleted == 0 && raiinNos.Contains(r.RaiinNo));
             return result.Select(r => new ReceptionModel(
@@ -497,7 +557,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckListNo(List<long> raininNos)
         {
-            var check = _tenantNoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            var check = NoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return check;
         }
 
@@ -505,27 +565,27 @@ namespace Infrastructure.Repositories
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var raiinCmtInfs = _tenantNoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = _tenantNoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = _tenantNoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = _tenantNoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = _tenantNoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptKohis = _tenantNoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var ptCmtInfs = NoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = _tenantNoTrackingDataContext.RsvInfs;
-            var rsvFrameMsts = _tenantNoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var rsvInfs = NoTrackingDataContext.RsvInfs;
+            var rsvFrameMsts = NoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = _tenantNoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
-            var lockInfs = _tenantNoTrackingDataContext.LockInfs.Where(x =>
+            var lockInfs = NoTrackingDataContext.LockInfs.Where(x =>
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
             // Uketuke
-            var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs;
@@ -647,7 +707,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
-            var grpIds = _tenantNoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
+            var grpIds = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.raiinInf.PtId,
@@ -656,8 +716,8 @@ namespace Infrastructure.Repositories
                 r.relatedLockInf is not null,
                 r.raiinInf.Status,
                 r.ptInf.PtNum,
-                r.ptInf.KanaName,
-                r.ptInf.Name,
+                r.ptInf.KanaName ?? string.Empty,
+                r.ptInf.Name ?? string.Empty,
                 r.ptInf.Sex,
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
@@ -678,7 +738,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd ?? string.Empty)).ToList(),
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd ?? string.Empty)).ToList(),
                 sinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
@@ -736,7 +796,7 @@ namespace Infrastructure.Repositories
 
         private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity, int userId)
         {
-            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
+            var raiinInf = NoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
                 r.HpId == hpId
                 && r.RaiinNo == raiinNo
                 && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
@@ -748,13 +808,13 @@ namespace Infrastructure.Repositories
             updateEntity(raiinInf);
             raiinInf.UpdateDate = DateTime.UtcNow;
             raiinInf.UpdateId = userId;
-            _tenantNoTrackingDataContext.SaveChanges();
+            NoTrackingDataContext.SaveChanges();
             return true;
         }
 
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
         {
-            var receptionComment = _tenantNoTrackingDataContext.RaiinCmtInfs
+            var receptionComment = NoTrackingDataContext.RaiinCmtInfs
                 .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
             if (receptionComment is null)
                 return new ReceptionModel();
@@ -762,13 +822,13 @@ namespace Infrastructure.Repositories
                 receptionComment.HpId,
                 receptionComment.PtId,
                 receptionComment.RaiinNo,
-                receptionComment.Text
+                receptionComment.Text ?? string.Empty
                 );
         }
 
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
-            var DataRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+            var DataRaiinInf = NoTrackingDataContext.RaiinInfs
                 .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
             if (DataRaiinInf is null)
                 return new ReceptionModel();
@@ -785,7 +845,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var check = _tenantNoTrackingDataContext.RaiinInfs
+            var check = NoTrackingDataContext.RaiinInfs
                 .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
             return check;
         }
@@ -795,10 +855,10 @@ namespace Infrastructure.Repositories
             var tantoId = 0;
             var kaId = 0;
             // Tanto Id
-            var mainDoctor = _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+            var mainDoctor = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
             if (mainDoctor != null)
             {
-                var userMst = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
                 if (userMst?.JobCd == 1)
                 {
                     tantoId = mainDoctor.PrimaryDoctor;
@@ -807,7 +867,7 @@ namespace Infrastructure.Repositories
                 // if DefaultDoctorSetting = 1 get doctor from last visit
                 if (defaultSettingDoctor == 1)
                 {
-                    var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
+                    var lastRaiinInf = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
                                                            p.PtId == ptId &&
                                                            p.IsDeleted == DeleteTypes.None &&
                                                            p.Status >= RaiinState.TempSave &&
@@ -823,7 +883,7 @@ namespace Infrastructure.Repositories
                 // if DefaultDoctorSetting = 2 get doctor from last reception
                 if (defaultSettingDoctor == 2)
                 {
-                    var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
+                    var lastRaiinInf = NoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
                                                            p.IsDeleted == DeleteTypes.None &&
                                                            p.SinDate <= sinDate)
                                                             .OrderByDescending(p => p.SinDate)
@@ -836,12 +896,118 @@ namespace Infrastructure.Repositories
             }
 
             // KaId
-            var getKaIdDefault = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == tantoId && u.IsDeleted == 0);
+            var getKaIdDefault = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == tantoId && u.IsDeleted == 0);
             if (getKaIdDefault != null)
             {
                 kaId = getKaIdDefault.KaId;
             }
             return new ReceptionModel(tantoId, kaId);
+        }
+
+        public long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate)
+        {
+            var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
+            var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+            if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
+            {
+                // if have only 1 doctor in user list
+                if (doctors.Count == 2)
+                {
+                    return doctors[1].Id;
+                }
+
+                if (isDoctor)
+                {
+                    return userId;
+                }
+                else
+                {
+                    var mainDoctor = NoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+
+                    if (mainDoctor != null)
+                    {
+                        var userMst = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                        if (userMst?.JobCd == 1)
+                        {
+                            return mainDoctor.PrimaryDoctor;
+                        }
+                    }
+                    var defaultDoctorSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                            p.HpId == hpId && p.GrpCd == 1009 && p.GrpEdaNo == 0)?.Val ?? 0;
+
+                    // if DefaultDoctorSetting = 1 get doctor from last visit
+                    if (defaultDoctorSetting == 1)
+                    {
+                        var lastRaiinInf = NoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.PtId == ptId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.Status >= RaiinState.TempSave &&
+                                            (sinDate <= 0 || p.SinDate < sinDate))
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault();
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+
+                    // if DefaultDoctorSetting = 2 get doctor from last reception
+                    if (defaultDoctorSetting == 2)
+                    {
+                        var lastRaiinInf = NoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.SinDate <= sinDate)
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault();
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+                }
+
+                //if DefaultDoctorSetting = 0
+                return doctors.Count > 0 ? doctors[0].Id : 0;
+            }
+
+            return 0;
+        }
+
+        public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
+        {
+            int firstDate = 0;
+            var syosinBi = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                                           && x.PtId == ptId
+                                                                           && x.SinDate < sinDate
+                                                                           && x.SyosaisinKbn == SyosaiConst.Syosin
+                                                                           && x.Status >= RaiinState.TempSave
+                                                                           && x.IsDeleted == DeleteTypes.None
+                )
+                .OrderByDescending(x => x.SinDate)
+                .FirstOrDefault();
+
+            if (syosinBi != null)
+            {
+                firstDate = syosinBi.SinDate;
+            }
+
+            return firstDate;
+        }
+
+        public bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo)
+        {
+            return NoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

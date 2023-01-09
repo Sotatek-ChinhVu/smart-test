@@ -1,5 +1,5 @@
 ﻿using Domain.Models.AccountDue;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
 using EventProcessor.Interfaces;
@@ -28,43 +28,53 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
     {
-        var validateResult = ValidateInputData(inputData);
-        if (validateResult != SaveAccountDueListStatus.ValidateSuccess)
+        try
         {
-            return new SaveAccountDueListOutputData(validateResult);
-        }
-        var listAccountDueModel = ConvertToListAccountDueModel(inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated).ToList());
-        var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
-        var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
-        var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(listRaiinNo);
-        List<ArgumentModel> listTraiLogModels = new();
-
-        if (!listAccountDueModel.Any())
-        {
-            return new SaveAccountDueListOutputData(SaveAccountDueListStatus.NoItemChange);
-        }
-        // validate PaymentMethodCd
-        var listSeqNos = listAccountDueModel.Select(item => item.SeqNo).ToList();
-        foreach (var accountDue in listAccountDueModel)
-        {
-            var validateInvalidNyukinKbnResult = ValidateInvalidNyukinKbn(accountDue, listSeqNos, listSyunoSeikyuDB, listSyunoNyukinDB, listAccountDueModel);
-            if (validateInvalidNyukinKbnResult != SaveAccountDueListStatus.ValidateSuccess)
+            var validateResult = ValidateInputData(inputData);
+            if (validateResult != SaveAccountDueListStatus.ValidateSuccess)
             {
-                return new SaveAccountDueListOutputData(validateInvalidNyukinKbnResult);
+                return new SaveAccountDueListOutputData(validateResult);
             }
-            listTraiLogModels = CreateListAuditTrailLogModel(inputData, accountDue, listSyunoSeikyuDB, listTraiLogModels);
+            var listAccountDueModel = ConvertToListAccountDueModel(inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated).ToList());
+            var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
+            var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
+            var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(listRaiinNo);
+            List<ArgumentModel> listTraiLogModels = new();
+
+            if (!listAccountDueModel.Any())
+            {
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.NoItemChange);
+            }
+            // validate PaymentMethodCd
+            var listSeqNos = listAccountDueModel.Select(item => item.SeqNo).ToList();
+            foreach (var accountDue in listAccountDueModel)
+            {
+                var validateInvalidNyukinKbnResult = ValidateInvalidNyukinKbn(accountDue, listSeqNos, listSyunoSeikyuDB, listSyunoNyukinDB, listAccountDueModel);
+                if (validateInvalidNyukinKbnResult != SaveAccountDueListStatus.ValidateSuccess)
+                {
+                    return new SaveAccountDueListOutputData(validateInvalidNyukinKbnResult);
+                }
+                listTraiLogModels = CreateListAuditTrailLogModel(inputData, accountDue, listSyunoSeikyuDB, listTraiLogModels);
+            }
+            var result = _accountDueRepository.SaveAccountDueList(
+                                                    inputData.HpId,
+                                                    inputData.PtId,
+                                                    inputData.UserId,
+                                                    inputData.SinDate,
+                                                    listAccountDueModel
+                                                );
+            if (result)
+            {
+                _eventProcessorService.DoEvent(listTraiLogModels);
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
+            }
         }
-        var result = _accountDueRepository.SaveAccountDueList(
-                                                inputData.HpId,
-                                                inputData.PtId,
-                                                inputData.UserId,
-                                                inputData.SinDate,
-                                                listAccountDueModel
-                                            );
-        if (result)
+        finally
         {
-            _eventProcessorService.DoEvent(listTraiLogModels);
-            return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
+            _accountDueRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
         }
         return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Failed);
     }

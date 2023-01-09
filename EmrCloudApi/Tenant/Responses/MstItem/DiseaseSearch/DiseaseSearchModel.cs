@@ -11,6 +11,7 @@ public class DiseaseSearchModel
         Sbyomei = model.Sbyomei;
         KanaName1 = model.KanaName1;
         Sikkan = model.Sikkan;
+        SikkanCd = model.SikkanCd;
         NanByo = model.NanByo;
         Icd10 = model.Icd10;
         Icd102013 = model.Icd102013;
@@ -24,6 +25,8 @@ public class DiseaseSearchModel
     public string Sbyomei { get; private set; }
 
     public string KanaName1 { get; private set; }
+
+    public int SikkanCd { get; private set; }
 
     public string Sikkan { get; private set; }
 

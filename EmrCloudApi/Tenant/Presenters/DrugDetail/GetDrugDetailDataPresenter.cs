@@ -1,10 +1,9 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.DrugDetail;
-using UseCase.DrugDetailData;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.DrugDetail;
+using UseCase.DrugDetailData.Get;
 
-
-namespace EmrCloudApi.Tenant.Presenters.DrugDetailData
+namespace EmrCloudApi.Presenters.DrugDetailData
 {
     public class GetDrugDetailDataPresenter : IGetDrugDetailDataOutputPort
     {

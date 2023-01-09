@@ -3,8 +3,6 @@ using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.InsuranceInfor
 {
@@ -70,7 +68,7 @@ namespace Domain.Models.InsuranceInfor
             EndDate = endDate;
         }
 
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted , bool hokenPatternSelected)
         {
             HpId = hpId;
             PtId = ptId;
@@ -95,6 +93,7 @@ namespace Domain.Models.InsuranceInfor
             Kohi3Id = kohi3Id;
             Kohi4Id = kohi4Id;
             IsAddNew = isAddNew;
+            HokenPatternSelected = hokenPatternSelected;
         }
 
         public int HpId { get; private set; }
@@ -180,6 +179,8 @@ namespace Domain.Models.InsuranceInfor
 
         public int Kohi4Id { get; private set; }
 
+        public bool HokenPatternSelected { get; private set; }
+
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
         public string HokenName => GetHokenName();
@@ -195,6 +196,8 @@ namespace Domain.Models.InsuranceInfor
         public bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public string PatternRate => GetHokenRate();
+
+        public bool IsEmptyModel => IsEmptyHoken && IsEmptyKohi1 && IsEmptyKohi2 && IsEmptyKohi3 && IsEmptyKohi4;
 
         public bool IsShaho
         {
@@ -227,9 +230,28 @@ namespace Domain.Models.InsuranceInfor
         public bool IsAddNew { get; private set; }
 
         public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);
+
         #endregion
 
         #region Function
+        public int GetHokenPatternType()
+        {
+            switch (HokenKbn)
+            {
+                case 0:
+                    return 3;
+                case 1:
+                case 2:
+                    return 1;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                    return 2;
+                default:
+                    return 0;
+            }
+        }
 
         public string GetHokenName()
         {

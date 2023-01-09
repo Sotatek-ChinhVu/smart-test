@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// カルテ区分
         /// >100は、ユーザー任意設定
         /// </summary>
-        //[Key]
+        
         [Column("KARTE_KBN", Order = 2)]
         public int KarteKbn { get; set; }
 

@@ -4,46 +4,40 @@ using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class ReceptionSameVisitRepository: IReceptionSameVisitRepository
+    public class ReceptionSameVisitRepository : RepositoryBase, IReceptionSameVisitRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public ReceptionSameVisitRepository(ITenantProvider tenantProvider)
+        public ReceptionSameVisitRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<ReceptionSameVisitModel> GetReceptionSameVisit(int hpId, long ptId, int sinDate)
         {
-            var listDataRaiinInf = _tenantDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).ToList();
-            
-            var _doctors = _tenantDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
-            
-            var _departments = _tenantDataContext.KaMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).ToList();
-            
-            var _comments = _tenantDataContext.RaiinCmtInfs.Where(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.IsDelete == DeleteTypes.None).ToList();
-            
-            var _timePeriodModels = _tenantDataContext.UketukeSbtMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo).ToList();
+            var listDataRaiinInf = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).ToList();
+
+            var _doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+
+            var _departments = NoTrackingDataContext.KaMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).ToList();
+
+            var _comments = NoTrackingDataContext.RaiinCmtInfs.Where(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.IsDelete == DeleteTypes.None).ToList();
+
+            var _timePeriodModels = NoTrackingDataContext.UketukeSbtMsts.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo).ToList();
 
 
-            var ptInfRespo = _tenantDataContext.PtInfs.Where(item =>
+            var ptInfRespo = NoTrackingDataContext.PtInfs.Where(item =>
                     item.HpId == hpId && item.PtId == ptId &&
                     item.IsDelete == 0).ToList();
 
-            var ptHokenPatternRepos = _tenantDataContext.PtHokenPatterns
+            var ptHokenPatternRepos = NoTrackingDataContext.PtHokenPatterns
                 .Where(hokenPattern =>
                     hokenPattern.HpId == hpId && hokenPattern.PtId == ptId &&
                     hokenPattern.IsDeleted == DeleteTypes.None).ToList();
-            var dataHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
+            var dataHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
 
             var listDorai =
                     (
@@ -76,7 +70,7 @@ namespace Infrastructure.Repositories
 
                 ).ToList();
 
-            var listPtKohi = _tenantDataContext.PtKohis.Where(x => x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+            var listPtKohi = NoTrackingDataContext.PtKohis.Where(x => x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
 
             var query = from doraiItem in listDorai
                         join ptKohi1 in listPtKohi on
@@ -215,19 +209,19 @@ namespace Infrastructure.Repositories
                     int syosaisinKbn = 0;
                     int jikanKbn = 0;
                     int santeiKbn = 0;
-                    var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId &&  (dataHokenInf == null || x.HokenNo == dataHokenInf.HokenNo && x.HokenEdaNo == dataHokenInf.HokenEdaNo));
+                    var hokenMst = NoTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId && (dataHokenInf == null || x.HokenNo == dataHokenInf.HokenNo && x.HokenEdaNo == dataHokenInf.HokenEdaNo));
                     if (hokenMst != null)
                     {
-                        houbetu = hokenMst.Houbetu;
+                        houbetu = hokenMst.Houbetu ?? string.Empty;
                         futanRate = hokenMst.FutanRate;
                     }
-                    if(item.RaiinInf != null)
+                    if (item.RaiinInf != null)
                     {
                         raiinNo = item.RaiinInf.RaiinNo;
                         syosaisinKbn = item.RaiinInf.SyosaisinKbn;
                         jikanKbn = item.RaiinInf.JikanKbn;
                         santeiKbn = item.RaiinInf.SanteiKbn;
-                    }    
+                    }
 
                     if (item.PtHokenPatternItem != null)
                     {
@@ -256,7 +250,7 @@ namespace Infrastructure.Repositories
                                             );
 
                         listHokenData.Add(itemHokenData);
-                    }    
+                    }
                 }
             }
             var listSameVisitModel = new List<ReceptionSameVisitModel>();
@@ -290,7 +284,7 @@ namespace Infrastructure.Repositories
                     if (_comments != null)
                     {
                         var tempComment = _comments.Find(cmt => cmt.RaiinNo == item.RaiinNo);
-                        comment = tempComment == null ? string.Empty : tempComment.Text;
+                        comment = tempComment == null ? string.Empty : tempComment.Text ?? string.Empty;
                     }
 
                     if (_doctors != null)
@@ -303,7 +297,7 @@ namespace Infrastructure.Repositories
                     if (_timePeriodModels != null)
                     {
                         var timePeriodModel = _timePeriodModels.Find(tp => tp.KbnId == item.UketukeSbt);
-                        timePeriod = timePeriodModel == null ? string.Empty : timePeriodModel.KbnName;
+                        timePeriod = timePeriodModel == null ? string.Empty : timePeriodModel.KbnName ?? string.Empty;
                     }
                     yoyakuInfo = GetYoyaku(listDataRaiinInf, item.OyaRaiinNo, kaName) ?? string.Empty;
 
@@ -333,10 +327,15 @@ namespace Infrastructure.Repositories
                     listSameVisitModel.Add(itemModelDorai);
                 }
 
-            }    
+            }
 
 
             return listSameVisitModel;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
 
         private string GetYoyaku(List<RaiinInf> listDoraiModel, long yoyakuNo, string kaName)

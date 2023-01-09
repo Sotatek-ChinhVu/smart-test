@@ -35,17 +35,17 @@ namespace Interactor.Insurance
             {
                 return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidSinDate);
             }
-            
+
             if (inputData.PatternHokenPid < 0)
             {
                 return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternHokenPid);
             }
-            
+
             if (inputData.PatternConfirmDate < 0)
             {
                 return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternConfirmDate);
             }
-            
+
             if (inputData.HokenInfStartDate < 0)
             {
                 return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHokenInfStartDate);
@@ -135,9 +135,15 @@ namespace Interactor.Insurance
             {
                 return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternHokenKbn);
             }
-
-            var result = getMessageCheckValidatePattern(inputData);
-            return result;
+            try
+            {
+                var result = getMessageCheckValidatePattern(inputData);
+                return result;
+            }
+            finally
+            {
+                _insuranceResponsitory.ReleaseResource();
+            }
         }
 
         private ValidPatternExpiratedOutputData getMessageCheckValidatePattern(ValidPatternExpiratedInputData inputData)

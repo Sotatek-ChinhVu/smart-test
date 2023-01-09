@@ -1,33 +1,36 @@
 ﻿using Domain.Models.JsonSetting;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class JsonSettingRepository : IJsonSettingRepository
+public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public JsonSettingRepository(ITenantProvider tenantProvider)
+    public JsonSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public JsonSettingModel? Get(int userId, string key)
     {
-        var entity = _tenantDataContext.JsonSettings.FirstOrDefault(e => e.UserId == userId && e.Key == key);
+        var entity = NoTrackingDataContext.JsonSettings.FirstOrDefault(e => e.UserId == userId && e.Key == key);
         return entity is null ? null : ToModel(entity);
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 
     public void Upsert(JsonSettingModel model)
     {
-        var existingEntity = _tenantDataContext.JsonSettings.AsTracking()
+        var existingEntity = TrackingDataContext.JsonSettings.AsTracking()
             .FirstOrDefault(e => e.UserId == model.UserId && e.Key == model.Key);
         if (existingEntity is null)
         {
-            _tenantDataContext.JsonSettings.Add(new JsonSetting
+            TrackingDataContext.JsonSettings.Add(new JsonSetting
             {
                 UserId = model.UserId,
                 Key = model.Key,
@@ -39,7 +42,7 @@ public class JsonSettingRepository : IJsonSettingRepository
             existingEntity.Value = model.Value;
         }
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     private JsonSettingModel ToModel(JsonSetting entity)

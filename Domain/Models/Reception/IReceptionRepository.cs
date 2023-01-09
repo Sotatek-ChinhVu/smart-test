@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using Domain.Common;
+using System.Runtime.InteropServices;
 
 namespace Domain.Models.Reception
 {
-    public interface IReceptionRepository
+    public interface IReceptionRepository : IRepositoryBase
     {
         long Insert(ReceptionSaveDto dto, int hpId, int userId);
 
@@ -13,7 +14,7 @@ namespace Domain.Models.Reception
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue);
 
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
-        
+
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
@@ -38,8 +39,14 @@ namespace Domain.Models.Reception
 
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
 
+        int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate);
+
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
 
         int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
+
+        long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate);
+
+        bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
     }
 }

@@ -18,24 +18,31 @@ namespace Interactor.ReceptionSameVisit
 
         public GetReceptionSameVisitOutputData Handle(GetReceptionSameVisitInputData inputData)
         {
-            if (inputData.HpId <= 0)
+            try
             {
-                return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidHpId);
-            }
-            
-            if (inputData.PtId <= 0)
-            {
-                return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidPtId);
-            }
+                if (inputData.HpId <= 0)
+                {
+                    return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidHpId);
+                }
 
-            if (inputData.SinDate <= 0)
-            {
-                return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidSinDate);
-            }
+                if (inputData.PtId <= 0)
+                {
+                    return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidPtId);
+                }
 
-            var listData = _receptionSameVisitRepository.GetReceptionSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
-            
-            return new GetReceptionSameVisitOutputData(listData.ToList(), GetReceptionSameVisitStatus.Success);
+                if (inputData.SinDate <= 0)
+                {
+                    return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidSinDate);
+                }
+
+                var listData = _receptionSameVisitRepository.GetReceptionSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
+
+                return new GetReceptionSameVisitOutputData(listData.ToList(), GetReceptionSameVisitStatus.Success);
+            }
+            finally
+            {
+                _receptionSameVisitRepository.ReleaseResource();
+            }
         }
     }
 }

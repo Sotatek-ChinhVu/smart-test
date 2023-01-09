@@ -1,29 +1,24 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Requests.ExportPDF;
-using EmrCloudApi.Tenant.Services;
-using Interactor.ExportPDF;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Requests.ExportPDF;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.Interface;
+using Reporting.Model.ExportKarte1;
 
-namespace EmrCloudApi.Tenant.Controllers;
+namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-[ApiController]
-
-public class ExportReportController : ControllerBase
+public class ExportReportController : AuthorizeControllerBase
 {
-    private readonly IReporting _reporting;
-    private readonly IUserService _userService;
-
-    public ExportReportController(IReporting reporting, IUserService userService)
+    private readonly IReportingService _reporting;
+    public ExportReportController(IUserService userService, IReportingService reporting) : base(userService)
     {
         _reporting = reporting;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
-    public IActionResult ReturnStream([FromQuery] Karte1ExportRequest request)
+    public ActionResult<Karte1ExportModel> ExportKarte1([FromQuery] Karte1ExportRequest request)
     {
-        var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
-        return File(output.DataStream.ToArray(), "application/pdf");
+        return _reporting.GetDataKarte1(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
     }
 }

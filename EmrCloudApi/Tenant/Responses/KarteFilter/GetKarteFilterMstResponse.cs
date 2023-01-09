@@ -1,13 +1,12 @@
-﻿using Domain.Models.KarteFilterMst;
-using UseCase.KarteFilter.GetListKarteFilter;
+﻿using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace EmrCloudApi.Tenant.Responses.KarteFilter;
 
 public class GetKarteFilterMstResponse
 {
-    public List<KarteFilterMstModel> KarteFilters { get; private set; }
+    public List<KarteFilterMstOutputItem> KarteFilters { get; private set; }
 
-    public GetKarteFilterMstResponse(List<KarteFilterMstModel> karteFilters)
+    public GetKarteFilterMstResponse(List<KarteFilterMstOutputItem> karteFilters)
     {
         KarteFilters = karteFilters;
     }

@@ -18,15 +18,23 @@ public class SearchPatientInfoAdvancedInteractor : ISearchPatientInfoAdvancedInp
 
     public SearchPatientInfoAdvancedOutputData Handle(SearchPatientInfoAdvancedInputData input)
     {
-        var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput, input.HpId);
-        var ptIds = patientInfos.Select(p => p.PtId).ToList();
-        var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds);
-        var ptWithGroups =
-            from pt in patientInfos
-            join grp in patientGroups on pt.PtId equals grp.PtId into groups
-            select new PatientInfoWithGroup(pt, groups.ToList());
+        try
+        {
+            var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput, input.HpId, input.PageIndex, input.PageSize);
+            var ptIds = patientInfos.Select(p => p.PtId).ToList();
+            var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds);
+            var ptWithGroups =
+                from pt in patientInfos
+                join grp in patientGroups on pt.PtId equals grp.PtId into groups
+                select new PatientInfoWithGroup(pt, groups.ToList());
 
-        var status = ptWithGroups.Any() ? SearchPatientInfoAdvancedStatus.Success : SearchPatientInfoAdvancedStatus.NoData;
-        return new SearchPatientInfoAdvancedOutputData(status, ptWithGroups.ToList());
+            var status = ptWithGroups.Any() ? SearchPatientInfoAdvancedStatus.Success : SearchPatientInfoAdvancedStatus.NoData;
+            return new SearchPatientInfoAdvancedOutputData(status, ptWithGroups.ToList());
+        }
+        finally
+        {
+            _patientInforRepository.ReleaseResource();
+            _groupInfRepository.ReleaseResource();
+        }
     }
 }

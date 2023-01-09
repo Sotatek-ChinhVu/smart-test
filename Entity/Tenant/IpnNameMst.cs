@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 一般名コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("IPN_NAME_CD", Order = 2)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; } = string.Empty;
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -48,13 +48,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(100)]
-        public string IpnName { get; set; } = string.Empty;
+        public string? IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
         /// 同一一般名コード、開始日内の連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

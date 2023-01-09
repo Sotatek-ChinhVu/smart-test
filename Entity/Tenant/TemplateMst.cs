@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -12,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("TEMPLATE_MST_PKEY", 1)]
@@ -22,7 +21,7 @@ namespace Entity.Tenant
         /// テンプレートコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("TEMPLATE_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MST_PKEY", 2)]
@@ -32,7 +31,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MST_PKEY", 3)]
@@ -56,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TITLE")]
         [MaxLength(40)]
-        public string Title { get; set; } = string.Empty;
+        public string? Title { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
@@ -109,7 +108,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

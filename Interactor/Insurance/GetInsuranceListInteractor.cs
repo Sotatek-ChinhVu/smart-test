@@ -36,8 +36,15 @@ namespace Interactor.Insurance
                 return new GetInsuranceListByIdOutputData(new InsuranceDataModel(), GetInsuranceListStatus.InvalidSinDate);
             }
 
-            var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            return new GetInsuranceListByIdOutputData(data, GetInsuranceListStatus.Successed);
+            try
+            {
+                var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+                return new GetInsuranceListByIdOutputData(data, GetInsuranceListStatus.Successed);
+            }
+            finally
+            {
+                _insuranceResponsitory.ReleaseResource();
+            }
         }
     }
 }

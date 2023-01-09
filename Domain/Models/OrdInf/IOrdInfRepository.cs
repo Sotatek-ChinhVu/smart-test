@@ -1,9 +1,10 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Common;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 
 namespace Domain.Models.OrdInfs
 {
-    public interface IOrdInfRepository
+    public interface IOrdInfRepository : IRepositoryBase
     {
         void Create(OrdInfModel ord);
 

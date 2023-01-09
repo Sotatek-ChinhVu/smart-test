@@ -7,24 +7,24 @@ namespace Entity.Tenant
     [Table(name: "Z_TODO_INF")]
     public class ZTodoInf : EmrCloneable<ZTodoInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID 
@@ -93,13 +93,13 @@ namespace Entity.Tenant
         /// コメント１ 
         /// </summary>
         [Column("CMT1")]
-        public string Cmt1 { get; set; } = string.Empty;
+        public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
         [Column("CMT2")]
-        public string Cmt2 { get; set; } = string.Empty;
+        public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済

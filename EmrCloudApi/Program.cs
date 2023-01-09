@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using PostgreDataContext;
 using Serilog;
 using Serilog.Events;
+using System.Globalization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -154,6 +155,13 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 app.UseHttpsRedirection();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+    await next(context);
+});
 
 app.UseCors();
 

@@ -1,28 +1,31 @@
-﻿using EmrCloudApi.Tenant.Presenters.DrugDetail;
-using EmrCloudApi.Tenant.Presenters.DrugInfor;
-using EmrCloudApi.Tenant.Requests.DrugDetail;
-using EmrCloudApi.Tenant.Requests.DrugInfor;
-using EmrCloudApi.Tenant.Presenters.UsageTreeSet;
-using EmrCloudApi.Tenant.Requests.UsageTreeSet;
-using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.DrugDetail;
-using EmrCloudApi.Tenant.Responses.DrugInfor;
-using EmrCloudApi.Tenant.Responses.UsageTreeSetResponse;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.DrugDetail;
+using EmrCloudApi.Presenters.DrugDetailData;
+using EmrCloudApi.Presenters.DrugInfor;
+using EmrCloudApi.Presenters.UsageTreeSet;
+using EmrCloudApi.Presenters.YohoSetMst;
+using EmrCloudApi.Requests.DrugDetail;
+using EmrCloudApi.Requests.DrugInfor;
+using EmrCloudApi.Requests.UsageTreeSet;
+using EmrCloudApi.Requests.YohoSetMst;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.DrugDetail;
+using EmrCloudApi.Responses.DrugInfor;
+using EmrCloudApi.Responses.UsageTreeSetResponse;
+using EmrCloudApi.Responses.YohoSetMst;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
+using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowKanjaMuke;
+using UseCase.DrugDetailData.ShowMdbByomei;
+using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.UsageTreeSet.GetTree;
-using EmrCloudApi.Tenant.Constants;
-using UseCase.DrugDetailData;
-using EmrCloudApi.Tenant.Presenters.DrugDetailData;
-using EmrCloudApi.Tenant.Services;
-using EmrCloudApi.Tenant.Requests.YohoSetMst;
-using EmrCloudApi.Tenant.Responses.YohoSetMst;
 using UseCase.YohoSetMst.GetByItemCd;
-using EmrCloudApi.Tenant.Presenters.YohoSetMst;
 
-namespace EmrCloudApi.Tenant.Controllers
+namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     public class InputItemController : AuthorizeControllerBase
@@ -88,6 +91,42 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetYohoMstByItemCdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetYohoSetMstByItemCdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ShowProductInf)]
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowProductInf([FromQuery] ShowProductInfRequest request)
+        {
+            var input = new ShowProductInfInputData(HpId, request.SinDate, request.ItemCd, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowProductInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ShowKanjaMuke)]
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowKanjaMuke([FromQuery] ShowKanjaMukeRequest request)
+        {
+            var input = new ShowKanjaMukeInputData(request.ItemCd, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowKanjaMukePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ShowMdbByomei)]
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowMdbByomei([FromQuery] ShowMdbByomeiRequest request)
+        {
+            var input = new ShowMdbByomeiInputData(request.ItemCd, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowMdbByomeiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
         }
     }
 }

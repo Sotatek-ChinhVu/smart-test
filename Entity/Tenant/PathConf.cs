@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,32 +13,31 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(GrpCd), nameof(GrpEdaNo), nameof(SeqNo), Name = "PT_PATH_CONF_PKEY")]
     public class PathConf : EmrCloneable<PathConf>
     {
-
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 分類コード
         /// </summary>
-        //[Key]
+        
         [Column("GRP_CD", Order = 2)]
         public int GrpCd { get; set; }
 
         /// <summary>
         /// 分類枝番
         /// </summary>
-        //[Key]
+        
         [Column("GRP_EDA_NO", Order = 3)]
         public int GrpEdaNo { get; set; }
 
         /// <summary>
         /// 連番 
         /// </summary
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
@@ -49,28 +47,28 @@ namespace Entity.Tenant
         /// </summary
         [Column("MACHINE")]
         [MaxLength(60)]
-        public string Machine { get; set; } = string.Empty;
+        public string? Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// パス 
         /// </summary
         [Column("PATH")]
         [MaxLength(300)]
-        public string Path { get; set; } = string.Empty;
+        public string? Path { get; set; } = string.Empty;
 
         /// <summary>
         /// パラメーター 
         /// </summary
         [Column("PARAM")]
         [MaxLength(1000)]
-        public string Param { get; set; } = string.Empty;
+        public string? Param { get; set; } = string.Empty;
 
         /// <summary>
         /// 備考 
         /// </summary
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字コード 
@@ -128,6 +126,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

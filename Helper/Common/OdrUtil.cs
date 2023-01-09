@@ -89,6 +89,18 @@ namespace Helper.Common
         }
 
         /// <summary>
+        /// Using to check comment master only
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="CmtName"></param>
+        /// <returns></returns>
+        public static bool IsFree830Prefix(string text, string CmtName)
+        {
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(CmtName)) return false;
+            return text.StartsWith(CmtName);
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="kouiCode">行為コード</param>

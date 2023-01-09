@@ -8,28 +8,32 @@ namespace PostgreDataContext
     {
         private readonly string _connectionString;
 
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
+        public TenantDataContext(DbContextOptions options)
         : base(options)
         {
             _connectionString = string.Empty;
         }
 
-        public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!string.IsNullOrEmpty(_connectionString))
-            {
-                optionsBuilder.UseNpgsql(_connectionString, buider =>
-                {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                }).LogTo(Console.WriteLine, LogLevel.Information);
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!string.IsNullOrEmpty(_connectionString))
+        //    {
+        //        optionsBuilder.UseNpgsql(_connectionString, buider =>
+        //        {
+        //            buider.EnableRetryOnFailure(maxRetryCount: 3);
+        //        }).LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //    else
+        //    {
+        //        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AccountingFormMst>().HasKey(a => new { a.HpId, a.FormNo });
+            modelBuilder.Entity<AuditTrailLog>().HasKey(a => new { a.LogId });
+            modelBuilder.Entity<AuditTrailLogDetail>().HasKey(a => new { a.LogId });
             modelBuilder.Entity<ApprovalInf>().HasKey(a => new { a.Id, a.HpId, a.RaiinNo });
             modelBuilder.Entity<AutoSanteiMst>().HasKey(a => new { a.Id, a.HpId, a.ItemCd });
             modelBuilder.Entity<BuiOdrByomeiMst>().HasKey(b => new { b.HpId, b.BuiId, b.ByomeiBui });
@@ -46,6 +50,28 @@ namespace PostgreDataContext
             modelBuilder.Entity<ConversionItemInf>().HasKey(b => new { b.HpId, b.SourceItemCd, b.DestItemCd });
             modelBuilder.Entity<DefHokenNo>().HasKey(b => new { b.HpId, b.Digit1, b.Digit2, b.SeqNo });
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHaihanDay>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHaihanKarte>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHaihanMonth>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHaihanWeek>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHojyo>().HasKey(b => new { b.HpId, b.ItemCd, b.StartDate });
+            modelBuilder.Entity<DensiHoukatu>().HasKey(b => new { b.StartDate, b.HpId, b.ItemCd, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<DensiHoukatuGrp>().HasKey(b => new { b.HpId, b.HoukatuGrpNo, b.ItemCd, b.SeqNo, b.UserSetting, b.StartDate });
+            modelBuilder.Entity<DensiSanteiKaisu>().HasKey(e => new { e.HpId, e.Id, e.ItemCd, e.SeqNo, e.UserSetting });
+            modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
+            modelBuilder.Entity<DocCommentDetail>().HasKey(e => new { e.CategoryId, e.EdaNo });
+            modelBuilder.Entity<DocInf>().HasKey(e => new { e.HpId, e.PtId, e.SinDate, e.RaiinNo, e.SeqNo });
+            modelBuilder.Entity<DosageDosage>().HasKey(e => new { e.DoeiCd, e.DoeiSeqNo });
+            modelBuilder.Entity<DosageDrug>().HasKey(e => new { e.DoeiCd, e.YjCd });
+            modelBuilder.Entity<DosageMst>().HasKey(e => new { e.Id, e.HpId, e.ItemCd, e.SeqNo });
+            modelBuilder.Entity<DrugDayLimit>().HasKey(e => new { e.Id, e.HpId, e.ItemCd, e.SeqNo });
+            modelBuilder.Entity<DrugInf>().HasKey(e => new { e.InfKbn, e.HpId, e.ItemCd, e.SeqNo });
+            modelBuilder.Entity<DrugUnitConv>().HasKey(e => new { e.ItemCd, e.StartDate });
+            modelBuilder.Entity<ExceptHokensya>().HasKey(e => new { e.Id, e.HpId, e.PrefNo, e.HokenNo, e.HokenEdaNo, e.StartDate });
+            modelBuilder.Entity<FilingAutoImp>().HasKey(e => new { e.SeqNo, e.HpId });
+            modelBuilder.Entity<FilingCategoryMst>().HasKey(e => new { e.CategoryCd, e.HpId });
+            modelBuilder.Entity<FilingInf>().HasKey(e => new { e.HpId, e.FileId, e.PtId, e.GetDate, e.FileNo });
+            modelBuilder.Entity<GcStdMst>().HasKey(e => new { e.HpId, e.StdKbn, e.Sex, e.Point });
             modelBuilder.Entity<PtByomei>().HasKey(table => new { table.HpId, table.PtId, table.Id });
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
@@ -92,7 +118,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<RsvGrpMst>().HasKey(r => new { r.HpId, r.RsvGrpId });
             modelBuilder.Entity<RsvInf>().HasKey(r => new { r.HpId, r.RsvFrameId, r.SinDate, r.StartTime, r.RaiinNo });
             modelBuilder.Entity<TenMst>().HasKey(r => new { r.HpId, r.ItemCd, r.StartDate });
-            modelBuilder.Entity<UserConf>().HasKey(r => new { r.HpId, r.UserId, r.GrpCd, r.GrpItemEdaNo });
             modelBuilder.Entity<RaiinListCmt>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });
@@ -123,6 +148,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
             modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
             modelBuilder.Entity<SystemGenerationConf>().HasKey(e => new { e.HpId, e.GrpEdaNo, e.GrpCd, e.Id });
+            modelBuilder.Entity<IpnNameMst>().HasKey(e => new { e.HpId, e.IpnNameCd, e.StartDate, e.SeqNo });
             modelBuilder.Entity<IpnMinYakkaMst>().HasKey(e => new { e.HpId, e.Id, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
@@ -141,14 +167,26 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnMst>().HasKey(e => new { e.HpId, e.GrpCd });
             modelBuilder.Entity<RaiinKbnYayoku>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(e => new { e.HpId, e.GrpCd, e.KbnCd });
+            modelBuilder.Entity<DensiSanteiKaisu>().HasKey(e => new { e.HpId, e.Id, e.ItemCd, e.SeqNo, e.UserSetting });
+            modelBuilder.Entity<DensiSanteiKaisu>().HasKey(e => new { e.HpId, e.Id, e.ItemCd, e.SeqNo, e.UserSetting });
+            modelBuilder.Entity<ItemGrpMst>().HasKey(e => new { e.HpId, e.GrpSbt, e.ItemGrpCd, e.SeqNo, e.StartDate });
+            modelBuilder.Entity<SinRpInf>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.RpNo });
+            modelBuilder.Entity<SinKouiCount>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo, e.SeqNo });
+            modelBuilder.Entity<SinKouiDetail>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.RpNo, e.SeqNo, e.RowNo });
+            modelBuilder.Entity<HolidayMst>().HasKey(e => new { e.HpId, e.SinDate, e.SeqNo});
             modelBuilder.Entity<SyunoNyukin>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
             modelBuilder.Entity<SyunoSeikyu>().HasKey(e => new { e.HpId, e.RaiinNo, e.PtId, e.SinDate });
             modelBuilder.Entity<PtRousaiTenki>().HasKey(e => new { e.HpId, e.PtId, e.HokenId, e.SeqNo });
-            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate });
-            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo });
-            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate});
+            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo});
+            modelBuilder.Entity<TekiouByomeiMst>().HasKey(e => new { e.HpId, e.ItemCd, e.ByomeiCd, e.SystemData });
+            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo});
             modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
             modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
+            modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
+            modelBuilder.Entity<OnlineConsent>().HasKey(e => new {e.PtId, e.ConsKbn });
+            modelBuilder.Entity<KouiHoukatuMst>().HasKey(e => new {e.HpId, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<DocInf>().HasKey(e => new {e.HpId, e.PtId, e.SinDate, e.RaiinNo, e.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -668,10 +706,15 @@ namespace PostgreDataContext
         public DbSet<SingleDoseMst> SingleDoseMsts { get; set; } = default!;
 
         public DbSet<RenkeiConf> RenkeiConfs { get; set; } = default!;
+
         public DbSet<RenkeiMst> RenkeiMsts { get; set; } = default!;
+
         public DbSet<RenkeiPathConf> RenkeiPathConfs { get; set; } = default!;
+
         public DbSet<RenkeiTemplateMst> RenkeiTemplateMsts { get; set; } = default!;
+
         public DbSet<RenkeiTimingConf> RenkeiTimingConfs { get; set; } = default!;
+
         public DbSet<RenkeiTimingMst> RenkeiTimingMsts { get; set; } = default!;
 
         public DbSet<LockInf> LockInfs { get; set; } = default!;
@@ -681,6 +724,7 @@ namespace PostgreDataContext
         public DbSet<YohoSetMst> YohoSetMsts { get; set; } = default!;
 
         public DbSet<AuditTrailLog> AuditTrailLogs { get; set; } = default!;
+
         public DbSet<AuditTrailLogDetail> AuditTrailLogDetails { get; set; } = default!;
 
         public DbSet<SessionInf> SessionInfs { get; set; } = default!;

@@ -12,7 +12,7 @@ namespace Domain.Models.Diseases
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
             List<PrefixSuffixModel> prefixSuffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate,
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte,
-            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt)
+            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt, int togetuByomei)
         {
             HpId = hpId;
             PtId = ptId;
@@ -47,6 +47,37 @@ namespace Domain.Models.Diseases
             Icd1022013 = icd1022013;
             HokenPid = hokenPid;
             HosokuCmt = hosokuCmt;
+            TogetuByomei = togetuByomei;
+        }
+
+        public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = byomeiCd;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = byomei;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = 0;
+            TenkiDate = 0;
+            SyubyoKbn = 0;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HokenPid = 0;
+            HosokuCmt = string.Empty;
         }
 
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
@@ -125,6 +156,59 @@ namespace Domain.Models.Diseases
         public ValidationStatus Validation()
         {
             #region common
+        
+            if (IsImportant != 0 && IsImportant != 1)
+            {
+                return ValidationStatus.InvalidIsImportant;
+            }
+            if (SyubyoKbn != 0 && SyubyoKbn != 1)
+            {
+                return ValidationStatus.InvalidSyubyoKbn;
+            }
+            if (string.IsNullOrEmpty(Byomei) || Byomei.Length > 160)
+            {
+                return ValidationStatus.InvalidByomei;
+            }
+            if (ByomeiCd.Length > 7)
+            {
+                return ValidationStatus.InvalidByomeiCd;
+            }
+            if (StartDate <= 0)
+            {
+                return ValidationStatus.InvalidStartDate;
+            }
+            if (!TenkiKbns.ContainsValue(TenkiKbn))
+            {
+                return ValidationStatus.InvalidTenkiKbn;
+            }
+            if (TenkiDate < 0)
+            {
+                return ValidationStatus.InvalidTenkiDate;
+            }
+            if (HosokuCmt.Length > 80)
+            {
+                return ValidationStatus.InvalidHosokuCmt;
+            }
+            if (!SikkanKbns.ContainsValue(SikkanKbn))
+            {
+                return ValidationStatus.InvalidSikkanKbn;
+            }
+            if (!NanByoCds.ContainsValue(NanbyoCd))
+            {
+                return ValidationStatus.InvalidNanByoCd;
+            }
+            if (IsNodspRece != 0 && IsNodspRece != 1)
+            {
+                return ValidationStatus.InvalidIsNodspRece;
+            }
+            if (IsNodspKarte != 0 && IsNodspKarte != 1)
+            {
+                return ValidationStatus.InvalidIsNodspKarte;
+            }
+            if (HokenPid < 0)
+            {
+                return ValidationStatus.InvalidHokenPid;
+            }
             if (Id < 0)
             {
                 return ValidationStatus.InvalidId;
@@ -141,46 +225,11 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidSortNo;
             }
-            if (ByomeiCd.Length > 7)
-            {
-                return ValidationStatus.InvalidByomeiCd;
-            }
-            if (StartDate <= 0)
-            {
-                return ValidationStatus.InvalidStartDate;
-            }
-            if (TenkiDate < 0)
-            {
-                return ValidationStatus.InvalidTenkiDate;
-            }
-            if (SyubyoKbn != 0 && SyubyoKbn != 1)
-            {
-                return ValidationStatus.InvalidSyubyoKbn;
-            }
-            if (HosokuCmt.Length > 80)
-            {
-                return ValidationStatus.InvalidHosokuCmt;
-            }
-            if (HokenPid < 0)
-            {
-                return ValidationStatus.InvalidHokenPid;
-            }
-            if (IsNodspRece != 0 && IsNodspRece != 1)
-            {
-                return ValidationStatus.InvalidIsNodspRece;
-            }
-            if (IsNodspKarte != 0 && IsNodspKarte != 1)
-            {
-                return ValidationStatus.InvalidIsNodspKarte;
-            }
             if (SeqNo < 0)
             {
                 return ValidationStatus.InvalidSeqNo;
             }
-            if (IsImportant != 0 && IsImportant != 1)
-            {
-                return ValidationStatus.InvalidIsImportant;
-            }
+          
             if (IsDeleted != 0 && IsDeleted != 1)
             {
                 return ValidationStatus.InvalidIsDeleted;
@@ -188,23 +237,6 @@ namespace Domain.Models.Diseases
             #endregion
 
             #region advance
-            if (string.IsNullOrEmpty(Byomei) || Byomei.Length > 160)
-            {
-                return ValidationStatus.InvalidByomei;
-            }
-
-            if (!PtDiseaseConst.TenkiKbns.Values.Contains(TenkiKbn))
-            {
-                return ValidationStatus.InvalidTenkiKbn;
-            }
-            if (!PtDiseaseConst.SikkanKbns.Values.Contains(SikkanKbn))
-            {
-                return ValidationStatus.InvalidSikkanKbn;
-            }
-            if (!PtDiseaseConst.NanByoCds.Values.Contains(NanbyoCd))
-            {
-                return ValidationStatus.InvalidNanByoCd;
-            }
             if (CIUtil.GetByteCountFromString(Byomei) > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
             {
                 return ValidationStatus.InvalidFreeWord;
@@ -297,5 +329,7 @@ namespace Domain.Models.Diseases
         public int SinDate { get; private set; }
 
         public string HosokuCmt { get; private set; }
+
+        public int TogetuByomei { get; private set; }
     }
 }

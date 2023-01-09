@@ -1,4 +1,4 @@
-﻿using Domain.Models.RaiinKbnInf;
+﻿using Domain.Models.RaiinKubunMst;
 using Helper.Constants;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -6,9 +6,9 @@ namespace Interactor.Reception;
 
 public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellInputPort
 {
-    private readonly IRaiinKbnInfRepository _raiinKbnInfRepository;
+    private readonly IRaiinKubunMstRepository _raiinKbnInfRepository;
 
-    public UpdateReceptionDynamicCellInteractor(IRaiinKbnInfRepository raiinKbnInfRepository)
+    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository)
     {
         _raiinKbnInfRepository = raiinKbnInfRepository;
     }
@@ -36,8 +36,15 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
             return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidGrpId);
         }
 
-        UpdateDynamicCell(input);
-        return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+        try
+        {
+            UpdateDynamicCell(input);
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
+        }
+        finally
+        {
+            _raiinKbnInfRepository.ReleaseResource();
+        }
     }
 
     private void UpdateDynamicCell(UpdateReceptionDynamicCellInputData input)

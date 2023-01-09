@@ -1,9 +1,7 @@
-﻿using Domain.Models.KarteInfs;
-using Domain.Models.NextOrder;
-using Domain.Models.OrdInfs;
+﻿using Domain.Models.NextOrder;
 using UseCase.NextOrder.Get;
 
-namespace EmrCloudApi.Tenant.Responses.NextOrder
+namespace EmrCloudApi.Responses.NextOrder
 {
     public class GetNextOrderResponse
     {
@@ -14,10 +12,11 @@ namespace EmrCloudApi.Tenant.Responses.NextOrder
             ByomeiItems = byomeiItems;
         }
 
-        public List<GroupHokenItem> GroupHokenItems { get; private set; }
+    public List<GroupHokenItem> GroupHokenItems { get; private set; }
 
-        public RsvkrtKarteInfModel KarteInfModel { get; private set; }
+    public RsvkrtKarteInfModel KarteInfModel { get; private set; }
 
-        public List<RsvKrtByomeiItem> ByomeiItems { get; private set; }
-    }
+    public List<RsvKrtByomeiItem> ByomeiItems { get; private set; }
+
+    public List<NextOrderFileInfItem> NextOrderFileItems { get; private set; }
 }

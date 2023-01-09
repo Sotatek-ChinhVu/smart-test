@@ -1,12 +1,9 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
-using EmrCloudApi.Tenant.Responses;
-using UseCase.PatientRaiinKubun.Get;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.ReceptionVisiting;
 using UseCase.ReceptionVisiting.Get;
-using EmrCloudApi.Tenant.Responses.ReceptionVisiting;
-using System.Xml.Linq;
 
-namespace EmrCloudApi.Tenant.Presenters.Reception
+namespace EmrCloudApi.Presenters.Reception
 {
     public class GetReceptionVisitingPresenter : IGetReceptionVisitingOutputPort
     {

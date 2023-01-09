@@ -1,7 +1,7 @@
-﻿using EmrCloudApi.Tenant.Requests.ConfirmDate;
-using EmrCloudApi.Tenant.Requests.RousaiTenki;
+﻿using EmrCloudApi.Requests.RousaiTenki;
+using EmrCloudApi.Responses.Document.Dto;
 
-namespace EmrCloudApi.Tenant.Requests.Insurance
+namespace EmrCloudApi.Requests.Insurance
 {
     public class HokenInfDto
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -28,7 +27,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_ID", Order = 3)]
         public int HokenId { get; set; }
 
@@ -36,7 +35,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 4)]
         public int SinYm { get; set; }
 
@@ -44,7 +43,7 @@ namespace Entity.Tenant
         /// エラーコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ERR_CD", Order = 5)]
         [MaxLength(5)]
         public string ErrCd { get; set; } = string.Empty;
@@ -53,7 +52,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDate { get; set; }
@@ -62,7 +61,7 @@ namespace Entity.Tenant
         /// Aコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("A_CD", Order = 7)]
         [MaxLength(100)]
         public string ACd { get; set; } = string.Empty;
@@ -71,7 +70,7 @@ namespace Entity.Tenant
         /// Bコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("B_CD", Order = 8)]
         [MaxLength(100)]
         public string BCd { get; set; } = string.Empty;
@@ -82,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_1")]
         [MaxLength(100)]
-        public string Message1 { get; set; } = string.Empty;
+        public string? Message1 { get; set; } = string.Empty;
 
         /// <summary>
         /// メッセージ２
@@ -90,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_2")]
         [MaxLength(100)]
-        public string Message2 { get; set; } = string.Empty;
+        public string? Message2 { get; set; } = string.Empty;
 
         /// <summary>
         /// チェックフラグ
@@ -144,7 +143,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

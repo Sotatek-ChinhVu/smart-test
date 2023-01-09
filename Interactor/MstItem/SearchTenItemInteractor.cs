@@ -53,9 +53,16 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InValidKeyword);
             }
 
-            var data = _mstItemRepository.SearchTenMst(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired, inputData.ItemCodeStartWith);
+            try
+            {
+                var data = _mstItemRepository.SearchTenMst(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired, inputData.ItemCodeStartWith, inputData.IsMasterSearch, inputData.IsSearch831SuffixOnly, inputData.IsSearchSanteiItem);
 
-            return new SearchTenItemOutputData(data.Item1, data.Item2, SearchTenItemStatus.Successed);
+                return new SearchTenItemOutputData(data.Item1, data.Item2, SearchTenItemStatus.Successed);
+            }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

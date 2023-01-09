@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Constants
+﻿namespace EmrCloudApi.Constants
 {
     public static class ApiPath
     {
@@ -13,7 +13,6 @@
         public const string Revert = "Revert";
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
-
 
         // SuperSet
         public const string Validate = "Validate";
@@ -34,10 +33,15 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
+        public const string GetCmtCheckMstList = "GetCmtCheckMstList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+        public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
+        public const string UploadListFileKarte = "UploadListFileKarte";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -47,6 +51,10 @@
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
         public const string GetInsuranceComboList = "GetInsuranceComboList";
+        public const string GetValidGairaiRiha = "GetValidGairaiRiha";
+        public const string GetValidJihiYobo = "GetValidJihiYobo";
+        public const string GetAddedAutoItem = "GetAddedAutoItem";
+        public const string AddAutoItem = "AddAutoItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -66,7 +74,6 @@
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
-        public const string GetListPatient = "GetListPatient";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -80,15 +87,23 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        //validate ValidHokenInf AllType
+        public const string ValidHokenInfAllType = "ValidHokenInfAllType";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
+        public const string GetSelectiveComment = "GetSelectiveComment";
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+        public const string ShowProductInf = "ShowProductInf";
+        public const string ShowKanjaMuke = "ShowKanjaMuke";
+        public const string ShowMdbByomei = "ShowMdbByomei";
+
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
@@ -98,17 +113,62 @@
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
         public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
+        public const string InitDoctorCombo = "InitDoctorCombo";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+        public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
 
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
+        // Document
+        public const string GetListDocumentCategory = "GetListDocumentCategory";
+        public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
+        public const string SaveListDocumentCategory = "SaveListDocumentCategory";
+        public const string SortDocCategory = "SortDocCategory";
+        public const string UploadTemplateToCategory = "UploadTemplateToCategory";
+        public const string CheckExistFileName = "CheckExistFileName";
+        public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
+        public const string DeleteDocTemplate = "DeleteDocTemplate";
+        public const string MoveTemplateToOtherCategory = "MoveTemplateToOtherCategory";
+        public const string DeleteDocCategory = "DeleteDocCategory";
+        public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
+        public const string GetListParamTemplate = "GetListParamTemplate";
+        public const string GetListDocComment = "GetListDocComment";
+        public const string ConfirmReplaceDocParam = "ConfirmReplaceDocParam";
+
+        //Medical Examination
+        public const string GetCheckDiseases = "GetCheckDiseases";
+        public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
+        public const string GetInfCheckedItemName = "GetInfCheckedItemName";
+        public const string Search = "Search";
+        public const string InitKbnSetting = "InitKbnSetting";
+
+        //User Config
+        public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+        public const string Sagaku = "Sagaku";
+
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        //Order RealtimeChecker
+        public const string OrderRealtimeChecker = "OrderRealtimeChecker";
+        
+        // Karte
+        public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
 }

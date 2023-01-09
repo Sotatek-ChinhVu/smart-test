@@ -37,5 +37,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
         public string SelectedHokenInfKenkoKanriBango { get; set; } = string.Empty;
 
         public int SelectedHokenInfConfirmDate { get; set; }
+
+        public bool SelectedHokenInfHokenMasterModelIsNull { get; set; }
     }
 }

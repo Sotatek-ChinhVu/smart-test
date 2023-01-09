@@ -6,23 +6,18 @@ using System.Threading.Tasks;
 
 namespace UseCase.ApprovalInfo.UpdateApprovalInfList;
 
-public enum UpdateApprovalInfListStatus
+public enum ApprovalInfConstant
 {
     Success = 1,
     ApprovalInfoListInputNoData,
-    InvalidHpId,
-    InvalidId,
-    InvalidIsDeleted,
-    InvalidRaiinNo,
-    InvalidSeqNo,
-    InvalidPtId,
-    InvalidSinDate,
-    InvalidCreateMachine,
-    InvalidCreateId,
-    InvalidUpdateMachine,
-    InvalidUpdateId,
+    ApprovalInfoInvalidHpId,
+    ApprovalInfoInvalidId,
+    ApprovalInfoInvalidIsDeleted,
+    ApprovalInfoInvalidRaiinNo,
+    ApprovalInfoInvalidPtId,
+    ApprovalInfoInvalidSinDate,
     ApprovalInfListExistedInputData,
-    ApprovalInfListInvalidNoExistedId,
-    ApprovalInfListInvalidNoExistedRaiinNo,
+    ApprovalInfListInvalidNoId,
+    ApprovalInfListInvalidNoRaiinNo,
     Failed,
 }

@@ -23,6 +23,7 @@ public class GetDefaultSelectedTimePresenter
         GetDefaultSelectedTimeStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetDefaultSelectedTimeStatus.InvalidBirthDay => ResponseMessage.InvalidBirthDay,
         GetDefaultSelectedTimeStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+        GetDefaultSelectedTimeStatus.InvalidUketukeTime => ResponseMessage.InvalidUketukeTime,
         _ => string.Empty
     };
 }

@@ -1,6 +1,6 @@
-﻿using EmrCloudApi.Tenant.Requests.ConfirmDate;
+﻿using EmrCloudApi.Responses.Document.Dto;
 
-namespace EmrCloudApi.Tenant.Requests.Insurance
+namespace EmrCloudApi.Requests.Insurance
 {
     public class HokenKohiDto
     {

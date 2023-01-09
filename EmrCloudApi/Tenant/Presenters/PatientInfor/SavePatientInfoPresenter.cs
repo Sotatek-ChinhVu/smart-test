@@ -11,11 +11,9 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
 
         public void Complete(SavePatientInfoOutputData outputData)
         {
-            Result.Data = new SavePatientInfoResponse(outputData.Status, outputData.PtID);
+            Result.Data = new SavePatientInfoResponse(outputData.ValidateDetails, outputData.Status, outputData.PtID);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
-            if (outputData.Status == SavePatientInfoStatus.Failed)
-                Result.Message += $".{outputData.Message}";
         }
 
         private string GetMessage(SavePatientInfoStatus status) => status switch

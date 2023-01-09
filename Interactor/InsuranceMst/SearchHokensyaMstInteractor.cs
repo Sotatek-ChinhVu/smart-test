@@ -30,10 +30,17 @@ namespace Interactor.InsuranceMst
                 return new SearchHokensyaMstOutputData(new List<HokensyaMstModel>(), SearchHokensyaMstStatus.InvalidKeyword);
             }
 
-            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
-            var data = _insuranceMstReponsitory.SearchListDataHokensyaMst(inputData.HpId, inputData.SinDate, keyword);
+            try
+            {
+                string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+                var data = _insuranceMstReponsitory.SearchListDataHokensyaMst(inputData.HpId, inputData.SinDate, keyword);
 
-            return new SearchHokensyaMstOutputData(data.ToList(), SearchHokensyaMstStatus.Successed);
+                return new SearchHokensyaMstOutputData(data.ToList(), SearchHokensyaMstStatus.Successed);
+            }
+            finally
+            {
+                _insuranceMstReponsitory.ReleaseResource();
+            }
         }
     }
 }

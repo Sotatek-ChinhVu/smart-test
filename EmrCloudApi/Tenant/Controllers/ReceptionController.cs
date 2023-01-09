@@ -1,34 +1,34 @@
-﻿using EmrCloudApi.Realtime;
-using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Messages;
-using EmrCloudApi.Tenant.Presenters.MaxMoney;
-using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
-using EmrCloudApi.Tenant.Presenters.Reception;
-using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
-using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
-using EmrCloudApi.Tenant.Requests.MaxMoney;
-using EmrCloudApi.Tenant.Requests.PatientRaiinKubun;
-using EmrCloudApi.Tenant.Requests.Reception;
-using EmrCloudApi.Tenant.Requests.ReceptionInsurance;
-using EmrCloudApi.Tenant.Requests.ReceptionSameVisit;
-using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.MaxMoney;
-using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
-using EmrCloudApi.Tenant.Responses.Reception;
-using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
-using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
-using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
+using EmrCloudApi.Presenters.MaxMoney;
+using EmrCloudApi.Presenters.RaiinKubun;
+using EmrCloudApi.Presenters.Reception;
+using EmrCloudApi.Presenters.ReceptionInsurance;
+using EmrCloudApi.Presenters.ReceptionSameVisit;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Requests.MaxMoney;
+using EmrCloudApi.Requests.RaiinKubun;
+using EmrCloudApi.Requests.Reception;
+using EmrCloudApi.Requests.ReceptionInsurance;
+using EmrCloudApi.Requests.ReceptionSameVisit;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Responses.RaiinKubun;
+using EmrCloudApi.Responses.Reception;
+using EmrCloudApi.Responses.ReceptionInsurance;
+using EmrCloudApi.Responses.ReceptionSameVisit;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
-using UseCase.PatientRaiinKubun.Get;
+using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
+using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
@@ -36,7 +36,7 @@ using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 
-namespace EmrCloudApi.Tenant.Controllers
+namespace EmrCloudApi.Controller
 {
     [Route("api/[controller]")]
     public class ReceptionController : AuthorizeControllerBase
@@ -118,15 +118,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetPatientRaiinKubun")]
-        public ActionResult<Response<GetPatientRaiinKubunResponse>> GetPatientRaiinKubun([FromQuery] PatientRaiinKubunRequest request)
+        public ActionResult<Response<GetPatientRaiinKubunListResponse>> GetPatientRaiinKubun([FromQuery] GetPatientRaiinKubunListRequest request)
         {
-            var input = new GetPatientRaiinKubunInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
+            var input = new GetPatientRaiinKubunListInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
             var output = _bus.Handle(input);
 
-            var presenter = new GetPatientRaiinKubunPresenter();
+            var presenter = new GetPatientRaiinKubunListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetPatientRaiinKubunResponse>>(presenter.Result);
+            return new ActionResult<Response<GetPatientRaiinKubunListResponse>>(presenter.Result);
         }
 
         [HttpGet("GetReceptionInsurance")]
@@ -209,7 +209,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDefaultSelectedTime)]
         public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
         {
-            var input = new GetDefaultSelectedTimeInputData(HpId, request.SinDate, request.BirthDay);
+            var input = new GetDefaultSelectedTimeInputData(HpId, request.UketukeTime, request.SinDate, request.BirthDay);
             var output = _bus.Handle(input);
 
             var presenter = new GetDefaultSelectedTimePresenter();
@@ -228,6 +228,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<UpdateTimeZoneDayInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.InitDoctorCombo)]
+        public ActionResult<Response<InitDoctorComboResponse>> InitDoctorCombo([FromQuery] InitDoctorComboRequest request)
+        {
+            var input = new InitDoctorComboInputData(UserId, request.TantoId, request.PtId, HpId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new InitDoctorComboPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<InitDoctorComboResponse>>(presenter.Result);
         }
     }
 }

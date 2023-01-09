@@ -10,14 +10,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -129,6 +129,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

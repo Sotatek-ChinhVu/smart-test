@@ -1,16 +1,18 @@
-﻿namespace EmrCloudApi.Tenant.Responses.Insurance
+﻿using Domain.Models.Insurance;
+using UseCase.Insurance.ValidateRousaiJibai;
+
+namespace EmrCloudApi.Responses.Insurance
 {
     public class ValidateRousaiJibaiResponse
     {
-        public ValidateRousaiJibaiResponse(bool resultCheck, string message, int typeMessage)
+        public ValidateRousaiJibaiResponse(bool resultCheck, List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> details)
         {
             ResultCheck = resultCheck;
-            Message = message;
-            TypeMessage = typeMessage;
+            Details = details;
         }
 
         public bool ResultCheck { get; private set; }
-        public string Message { get; private set; }
-        public int TypeMessage { get; private set; }
+
+        public List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> Details { get; private set; }
     }
 }

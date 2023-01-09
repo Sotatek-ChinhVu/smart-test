@@ -5,7 +5,7 @@ namespace Domain.Models.InsuranceMst
     public class HokenMstModel
     {
         [JsonConstructor]
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName,int prefNo)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -51,6 +51,7 @@ namespace Domain.Models.InsuranceMst
             ReceZeroKisai = receZeroKisai;
             ReceSpKbn = receSpKbn;
             PrefactureName = prefactureName;
+            PrefNo = prefNo;
         }
 
         public HokenMstModel()
@@ -150,6 +151,8 @@ namespace Domain.Models.InsuranceMst
         public int ReceSpKbn { get; private set; }
 
         public string PrefactureName { get; private set; }
+
+        public int PrefNo { get; private set; }
 
         public string SelectedValueMaster
         {

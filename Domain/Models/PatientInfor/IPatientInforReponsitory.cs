@@ -1,4 +1,5 @@
-﻿using Domain.Models.CalculationInf;
+﻿using Domain.Common;
+using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -8,7 +9,7 @@ using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Domain.Models.PatientInfor
 {
-    public interface IPatientInforRepository
+    public interface IPatientInforRepository : IRepositoryBase
     {
         PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
 

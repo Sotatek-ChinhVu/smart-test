@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 病院コード
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// USER_MST.USER_ID
         /// </summary>
-        //[Key]
+        
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// フィルタID
         /// USER_ID内で連番
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("FILTER_ID", Order = 3)]
         public long FilterId { get; set; }
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILTER_NAME")]
         [MaxLength(20)]
-        public string FilterName { get; set; } = string.Empty;
+        public string? FilterName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -111,6 +111,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

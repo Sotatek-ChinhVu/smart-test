@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -17,7 +12,7 @@ namespace Entity.Tenant
         /// 履歴番号
         ///     変更していく旅に増えていく
         /// </summary>
-        [Key]
+        
         [Column(name: "REVISION", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Revision { get; set; }
@@ -25,20 +20,20 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
         /// <summary>
         /// フィルターID
         /// </summary>
-        //[Key]
+        
         [Column("FILTER_ID", Order = 3)]
         public int FilterId { get; set; }
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -51,7 +46,7 @@ namespace Entity.Tenant
         /// フィルター名称
         /// </summary>
         [Column("FILTER_NAME")]
-        public string FilterName { get; set; } = string.Empty;
+        public string? FilterName { get; set; } = string.Empty;
         /// <summary>
         /// 選択区分
         /// </summary>
@@ -97,7 +92,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// Update type: 
@@ -107,6 +102,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }
