@@ -16,15 +16,20 @@ namespace Interactor.Accounting
         {
             try
             {
-                var syunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).FirstOrDefault();
+                var syunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
 
+                if (!syunoSeikyu.Any())
+                {
+                    return new GetAccountingOutputData(new AccountingInfModel(), GetAccountingStatus.NoData);
+                }
+                var accountingInf = _accountingRepository.GetAccountingInfAllRaiinNo(syunoSeikyu);
 
-                return new GetAccountingOutputData(syunoSeikyu, GetAccountingStatus.Successed);
+                return new GetAccountingOutputData(accountingInf, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new AccountingModel(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new AccountingInfModel(), GetAccountingStatus.Failed);
             }
         }
     }

@@ -23,9 +23,40 @@ namespace Domain.Models.Accounting
 
         public List<SyunoNyukinModel> SyunoNyukinModels { get; }
 
-        public List<KaikeiInfModel> KaikeiInfModels { get; }
+        public List<KaikeiInfModel> KaikeiInfModels { get; set; }
 
-        public int HokenId { get; }
+        public int HokenId { get; set; }
+
+
+        public int PtFutan
+        {
+            get => KaikeiInfModels.Sum(item => item.PtFutan);
+        }
+
+        public int JihiFutan
+        {
+            get => KaikeiInfModels.Sum(item => item.JihiFutan);
+        }
+
+        public int JihiOuttax
+        {
+            get => KaikeiInfModels.Sum(item => item.JihiOuttax);
+        }
+
+        public int AdjustRound
+        {
+            get => KaikeiInfModels.Sum(item => item.AdjustFutan);
+        }
+
+        public int JihiTax
+        {
+            get => KaikeiInfModels.Sum(item => item.JihiTax);
+        }
+
+        public int AdjFutan
+        {
+            get => KaikeiInfModels.Sum(item => item.AdjustFutan);
+        }
 
     }
 }

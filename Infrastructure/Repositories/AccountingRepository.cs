@@ -73,7 +73,7 @@ namespace Infrastructure.Repositories
                 var kaikeiInfRepo = NoTrackingDataContext.KaikeiInfs.Where(item =>
                     item.HpId == hpId && item.PtId == ptId);
 
-                var query = from syuno in querySyuno
+                var query = from syuno in querySyuno.AsEnumerable()
                             join syunoNyukin in syunoNyukinRepo on
                                 new { syuno.SyunoSeikyu.HpId, syuno.SyunoSeikyu.PtId, syuno.SyunoSeikyu.SinDate, syuno.SyunoSeikyu.RaiinNo } equals
                                 new { syunoNyukin.HpId, syunoNyukin.PtId, syunoNyukin.SinDate, syunoNyukin.RaiinNo } into
@@ -82,38 +82,46 @@ namespace Infrastructure.Repositories
                                 new { syuno.SyunoSeikyu.HpId, syuno.SyunoSeikyu.PtId, syuno.SyunoSeikyu.SinDate, syuno.SyunoSeikyu.RaiinNo } equals
                                 new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo } into
                                 listKaikeInf
-                            select new
-                            {
-                                syunoSeikyu = syuno.SyunoSeikyu,
-                                raiinInf = syuno.RaiinInf,
-                                ListSyunoNyukin = listSyunoNyukin,
-                                ListKaikeiInf = listKaikeInf
-                            };
+                            select ConvertToModel(syuno.SyunoSeikyu, syuno.RaiinInf, listSyunoNyukin.ToList(), listKaikeInf.ToList(), listHokenPattern.ToList());
 
-                var result = query.AsEnumerable().Select(item => new AccountingModel(
-                      new SyunoSeikyuModel(
-                            item.syunoSeikyu.HpId,
-                            item.syunoSeikyu.PtId,
-                            item.syunoSeikyu.SinDate,
-                            item.syunoSeikyu.RaiinNo,
-                            item.syunoSeikyu.NyukinKbn,
-                            item.syunoSeikyu.SeikyuTensu,
-                            item.syunoSeikyu.AdjustFutan,
-                            item.syunoSeikyu.SeikyuGaku,
-                            item.syunoSeikyu.SeikyuDetail,
-                            item.syunoSeikyu.NewSeikyuTensu,
-                            item.syunoSeikyu.NewAdjustFutan,
-                            item.syunoSeikyu.NewSeikyuGaku,
-                            item.syunoSeikyu.NewSeikyuDetail
+
+                return query.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        private AccountingModel ConvertToModel(SyunoSeikyu syunoSeikyu, RaiinInf raiinInf, List<SyunoNyukin> syunoNyukin, List<KaikeiInf> kaikeiInf, List<PtHokenPattern> listHokenPattern)
+        {
+            return new AccountingModel
+                (
+                    new SyunoSeikyuModel(
+                             syunoSeikyu.HpId,
+                             syunoSeikyu.PtId,
+                             syunoSeikyu.SinDate,
+                             syunoSeikyu.RaiinNo,
+                             syunoSeikyu.NyukinKbn,
+                             syunoSeikyu.SeikyuTensu,
+                             syunoSeikyu.AdjustFutan,
+                             syunoSeikyu.SeikyuGaku,
+                             syunoSeikyu.SeikyuDetail,
+                             syunoSeikyu.NewSeikyuTensu,
+                             syunoSeikyu.NewAdjustFutan,
+                             syunoSeikyu.NewSeikyuGaku,
+                             syunoSeikyu.NewSeikyuDetail
                         ),
                         new SyunoRaiinInfModel(
-                            item.raiinInf.Status,
-                            item.raiinInf.KaikeiTime,
-                            item.raiinInf.UketukeSbt
+                             raiinInf.Status,
+                             raiinInf.KaikeiTime,
+                             raiinInf.UketukeSbt
                             ),
-                            item.ListSyunoNyukin == null
+                             syunoNyukin == null
                         ? new List<SyunoNyukinModel>()
-                        : item.ListSyunoNyukin.Select(y =>
+                        : syunoNyukin.Select(y =>
                             new SyunoNyukinModel(
                             y.HpId,
                             y.PtId,
@@ -133,7 +141,7 @@ namespace Infrastructure.Repositories
                             )
                             ).ToList(),
 
-                       item.ListKaikeiInf.Select(x =>
+                       kaikeiInf.Select(x =>
                            new KaikeiInfModel(
                             x.HpId,
                             x.PtId,
@@ -178,11 +186,57 @@ namespace Infrastructure.Repositories
                             x.AdjustFutanRange,
                             x.AdjustRateVal,
                             x.AdjustRateRange
-                               )
-                           ).ToList(),
-                       listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.raiinInf.HokenPid)?.HokenId ?? 0))
-                    .ToList();
-                return result;
+                               )).ToList(),
+                        listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == raiinInf.HokenPid)?.HokenId ?? 0
+                );
+        }
+
+        public AccountingInfModel GetAccountingInfAllRaiinNo(List<AccountingModel> accountingModels)
+        {
+            try
+            {
+                var isSettled = accountingModels.Select(item => item.SyunoSeikyu.NyukinKbn != 0).FirstOrDefault();
+
+                var TotalPoint = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuTensu);
+
+                var KanFutan = accountingModels.Sum(item => item.PtFutan + item.AdjustRound);
+
+                var TotalSelfExpense =
+                    accountingModels.Sum(item => item.JihiFutan + item.JihiOuttax);
+                var Tax =
+                    accountingModels.Sum(item => item.JihiTax + item.JihiOuttax);
+                var AdjustFutan = accountingModels.Sum(item => item.AdjFutan);
+
+                var DebitBalance = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuGaku -
+                                                      item.SyunoNyukinModels.Sum(itemNyukin =>
+                                                          itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
+
+                var SumAdjust = 0;
+                var SumAdjustView = 0;
+                var ThisCredit = 0;
+                var ThisWari = 0;
+                var PayType = 0;
+                if (isSettled == true)
+                {
+                    SumAdjust = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuGaku);
+                    SumAdjustView = SumAdjust;
+                    ThisCredit =
+                       accountingModels.Sum(item => item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku));
+                    ThisWari =
+                       accountingModels.Sum(item => item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan));
+                    PayType = accountingModels.Where(item => item.SyunoNyukinModels.Count > 0)
+                       .Select(item => item.SyunoNyukinModels.Where(itemNyukin => itemNyukin.PaymentMethodCd > 0)
+                           .Select(itemNyukin => itemNyukin.PaymentMethodCd).FirstOrDefault())
+                       .FirstOrDefault();
+                }
+                else
+                {
+                    SumAdjust = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuGaku);
+                    SumAdjustView = SumAdjust + DebitBalance;
+
+                    ThisCredit = SumAdjust;
+                }
+                return new AccountingInfModel(TotalPoint, KanFutan, TotalSelfExpense, Tax, DebitBalance, SumAdjust, SumAdjustView, ThisCredit, ThisWari, PayType, AdjustFutan);
             }
             catch (Exception)
             {
@@ -191,6 +245,7 @@ namespace Infrastructure.Repositories
             }
 
         }
+
 
         public void ReleaseResource()
         {

@@ -7,10 +7,10 @@ namespace EmrCloudApi.Presenters.Accounting
 {
     public class GetAccountingPresenter : IGetAccountingOutputPort
     {
-        public Response<GetAccountingResponse> Result { get; private set; }
+        public Response<GetAccountingResponse> Result { get; private set; } = new();
         public void Complete(GetAccountingOutputData outputData)
         {
-           Result.Data = new GetAccountingResponse(outputData.AccountingModel);
+           Result.Data = new GetAccountingResponse(outputData.AccountingInfModel);
             Result.Message = GetMessage(outputData.GetAccountingStatus);
             Result.Status = (int)outputData.GetAccountingStatus;
         }

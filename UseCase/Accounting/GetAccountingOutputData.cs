@@ -5,13 +5,13 @@ namespace UseCase.Accounting
 {
     public class GetAccountingOutputData : IOutputData
     {
-        public GetAccountingOutputData(AccountingModel accountingModel, GetAccountingStatus getAccountingStatus)
+        public GetAccountingOutputData(AccountingInfModel accountingInfModel, GetAccountingStatus getAccountingStatus)
         {
-            AccountingModel = accountingModel;
+            AccountingInfModel = accountingInfModel;
             GetAccountingStatus = getAccountingStatus;
         }
 
-        public AccountingModel AccountingModel { get; private set; }
+        public AccountingInfModel AccountingInfModel { get; private set; }
         public GetAccountingStatus GetAccountingStatus { get; private set; }
     }
 }

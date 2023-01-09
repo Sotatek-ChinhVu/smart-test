@@ -1,15 +1,14 @@
 ﻿using Domain.Models.Accounting;
-using UseCase.Accounting;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingResponse
     {
-        public GetAccountingResponse(AccountingModel accountingModel)
+        public GetAccountingResponse(AccountingInfModel accountingInfModel)
         {
-            AccountingModel = accountingModel;
+            AccountingInfModel = accountingInfModel;
         }
 
-        public AccountingModel AccountingModel { get; private set; }
+        public AccountingInfModel AccountingInfModel { get; private set; }
     }
 }

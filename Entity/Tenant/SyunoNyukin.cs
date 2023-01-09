@@ -18,7 +18,7 @@ namespace Entity.Tenant
 
         /// <summary>
         /// 患者ID
-        /// 患者を識別するためのシステム固有の番号
+        /// 患者を識別するためのシステム固有の番号 
         /// </summary>
         [Column("PT_ID")]
         //[Index("SYUNO_NYUKIN_IDX01", 2)]
