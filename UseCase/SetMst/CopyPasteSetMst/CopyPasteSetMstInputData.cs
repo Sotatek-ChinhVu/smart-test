@@ -4,13 +4,13 @@ namespace UseCase.SetMst.CopyPasteSetMst;
 
 public class CopyPasteSetMstInputData : IInputData<CopyPasteSetMstOutputData>
 {
-    public CopyPasteSetMstInputData(int hpId, int userId, int copySetCd, int pasteSetCd, bool pasteToOtherSetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
+    public CopyPasteSetMstInputData(int hpId, int userId, int copySetCd, int pasteSetCd, bool pasteToOtherGroup, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         HpId = hpId;
         UserId = userId;
         CopySetCd = copySetCd;
         PasteSetCd = pasteSetCd;
-        PasteToOtherSetKbn = pasteToOtherSetKbn;
+        PasteToOtherGroup = pasteToOtherGroup;
         PasteSetKbnEdaNo = pasteSetKbnEdaNo;
         PasteSetKbn = pasteSetKbn;
     }
@@ -23,7 +23,7 @@ public class CopyPasteSetMstInputData : IInputData<CopyPasteSetMstOutputData>
 
     public int PasteSetCd { get; private set; }
 
-    public bool PasteToOtherSetKbn { get; private set; }
+    public bool PasteToOtherGroup { get; private set; }
 
     public int PasteSetKbnEdaNo { get; private set; }
 

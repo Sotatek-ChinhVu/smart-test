@@ -6,7 +6,7 @@
 
         public int PasteSetCd { get; set; }
 
-        public bool PasteToOtherSetKbn { get; set; }
+        public bool PasteToOtherGroup { get; set; }
 
         public int PasteSetKbn { get; set; }
 
