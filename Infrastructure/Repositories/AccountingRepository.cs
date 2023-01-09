@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
                         ),
                         new SyunoRaiinInfModel(
                              raiinInf.Status,
-                             raiinInf.KaikeiTime,
+                             raiinInf.KaikeiTime ?? string.Empty,
                              raiinInf.UketukeSbt
                             ),
                              syunoNyukin == null
