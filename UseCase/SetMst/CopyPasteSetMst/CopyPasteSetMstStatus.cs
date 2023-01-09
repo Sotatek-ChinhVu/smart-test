@@ -11,4 +11,6 @@ public enum CopyPasteSetMstStatus : byte
     InvalidPasteSetCd = 7,
     InvalidPasteSetKbn = 8,
     InvalidPasteSetKbnEdaNo = 9,
+    InvalidCopySetKbn = 10,
+    InvalidCopySetKbnEdaNo = 11,
 }

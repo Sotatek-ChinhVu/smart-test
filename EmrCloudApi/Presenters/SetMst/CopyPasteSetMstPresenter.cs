@@ -25,8 +25,10 @@ namespace EmrCloudApi.Presenters.SetMst
             CopyPasteSetMstStatus.InvalidPasteSetCd => ResponseMessage.InvalidPasteSetCd,
             CopyPasteSetMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             CopyPasteSetMstStatus.InvalidUserId => ResponseMessage.InvalidUserId,
-            CopyPasteSetMstStatus.InvalidPasteSetKbn => ResponseMessage.InvalidSetKbn,
-            CopyPasteSetMstStatus.InvalidPasteSetKbnEdaNo => ResponseMessage.InvalidSetKbnEdaNo,
+            CopyPasteSetMstStatus.InvalidPasteSetKbn => ResponseMessage.InvalidPasteSetKbn,
+            CopyPasteSetMstStatus.InvalidPasteSetKbnEdaNo => ResponseMessage.InvalidPasteSetKbnEdaNo,
+            CopyPasteSetMstStatus.InvalidCopySetKbn => ResponseMessage.InvalidCopySetKbn,
+            CopyPasteSetMstStatus.InvalidCopySetKbnEdaNo => ResponseMessage.InvalidCopySetKbnEdaNo,
             _ => string.Empty
         };
     }
