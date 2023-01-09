@@ -34,6 +34,8 @@
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
+        public static readonly string InvalidWindowType = "Invalid WindowType";
+        public static readonly string InvalidFrameId = "Invalid FrameId";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -47,6 +49,7 @@
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
+        public static readonly string Error = "Error";
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
@@ -107,11 +110,8 @@
         //ApprovalInfo
         public static readonly string InvalidStarDate = "InvalidStarDate";
         public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string InvalidId = "InvalidId";
         public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
-        public static readonly string InvalidCreateId = "InvalidCreateId";
-        public static readonly string InvalidUpdateId = "InvalidUpdateId";
-        public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
-        public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
         public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
         public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
         public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
@@ -467,6 +467,7 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+        public static readonly string TodayOrdInvalidAddedAutoItem = "Invalid Added Auto Item List";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
@@ -841,6 +842,7 @@
         public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
         public static readonly string DocInfNotFound = "DocInf Not Found!";
         public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
+        public static readonly string InvalidExtentionFile = "Extention file is must .docx or .xlsx!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
@@ -863,5 +865,16 @@
 
         //PtGrpMaster
         public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
+
+        // SanteiInf
+        public static readonly string InvalidAlertDays = "Invalid AlertDays!";
+        public static readonly string InvalidAlertTerm = "Invalid AlertTerm!";
+        public static readonly string InvalidKisanSbt = "Invalid KisanSbt!";
+        public static readonly string InvalidKisanDate = "Invalid KisanDate!";
+        public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
+        public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
+        public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
+        public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
+
     }
 }

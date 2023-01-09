@@ -1,11 +1,11 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Constant;
+using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -1114,6 +1114,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {
@@ -1272,5 +1273,25 @@ namespace Infrastructure.Repositories
         {
             DisposeDataContext();
         }
+
+        public List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid)
+        {
+            return NoTrackingDataContext.PtByomeis.Where(item => item.HpId == hpId
+                                                                         && item.PtId == ptId
+                                                                         && item.IsDeleted != 1
+                                                                         && (item.HokenPid == hokenPid || item.HokenPid == 0)
+                                                                         && item.IsNodspKarte == 0
+                                                                         && (item.TenkiKbn <= TenkiKbnConst.Continued || (item.StartDate <= (sinDate / 100 * 100 + 31) && item.TenkiDate >= (sinDate / 100 * 100 + 1)))
+                                                                    ).OrderBy(p => p.TenkiKbn)
+                                                                     .ThenByDescending(x => x.IsImportant)
+                                                                     .ThenBy(p => p.SortNo)
+                                                                     .ThenByDescending(p => p.StartDate)
+                                                                     .ThenByDescending(p => p.TenkiDate)
+                                                                     .ThenBy(p => p.Id)
+                                                                     .Select(item => item.Byomei ?? string.Empty)
+                                                                     .ToList();
+
+        }
+
     }
 }

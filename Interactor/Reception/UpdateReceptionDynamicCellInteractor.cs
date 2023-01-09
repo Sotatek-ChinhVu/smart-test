@@ -1,4 +1,4 @@
-﻿using Domain.Models.RaiinKbnInf;
+﻿using Domain.Models.RaiinKubunMst;
 using Helper.Constants;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -6,9 +6,9 @@ namespace Interactor.Reception;
 
 public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellInputPort
 {
-    private readonly IRaiinKbnInfRepository _raiinKbnInfRepository;
+    private readonly IRaiinKubunMstRepository _raiinKbnInfRepository;
 
-    public UpdateReceptionDynamicCellInteractor(IRaiinKbnInfRepository raiinKbnInfRepository)
+    public UpdateReceptionDynamicCellInteractor(IRaiinKubunMstRepository raiinKbnInfRepository)
     {
         _raiinKbnInfRepository = raiinKbnInfRepository;
     }

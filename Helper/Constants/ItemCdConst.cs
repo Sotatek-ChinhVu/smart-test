@@ -225,7 +225,14 @@
         /// 電子的保健医療情報活用加算（初診）（診療情報等の取得が困難等）
         /// </summary>
         public const string SyosinDensiHokenKonnan = "111015270";
-
+        /// <summary>
+        /// 医療情報・システム基盤整備体制充実加算１（初診）
+        /// </summary>
+        public const string SyosinIryoJyohoKiban1 = "111015970";
+        /// <summary>
+        /// 医療情報・システム基盤整備体制充実加算２（初診）
+        /// </summary>
+        public const string SyosinIryoJyohoKiban2 = "111016070";
         #endregion
 
         #region 再診関連
@@ -1884,7 +1891,22 @@
         /// ＳＡＲＳ－ＣｏＶ－２・ＲＳウイルス核酸同時検出（検査委託以外） 
         /// </summary>
         public const string KensaSARSRsVirusItakuIgai = "160234650";
-
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・ＲＳウイルス抗原同時検出（定性）
+        /// </summary>
+        public const string KensaSARSRsVirusKougen = "160234850";
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・インフルエンザ・ＲＳ核酸同時検出（委託）
+        /// </summary>
+        public const string KensaSARSInfluRsVirusItaku = "160235250";
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・インフルエンザ・ＲＳ核酸同時検出（委託外）
+        /// </summary>        
+        public const string KensaSARSInfluRsVirusItakuIgai = "160235350";
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・インフルエンザ・ＲＳ抗原同時検出（定性）
+        /// </summary>
+        public const string KensaSARSInfluRsVirusKougen = "160235450";
         /// <summary>
         /// ウイルス・細菌核酸多項目同時検出（検査委託）
         /// </summary>
@@ -3062,15 +3084,6 @@
         public const string Comment853Pattern = "853";
         public const string Comment880Pattern = "880";
 
-        #region Jihi
-
-        /// <summary>
-        /// Jihi
-        /// </summary>
-        public const string ItemJihi = "J";
-
-        #endregion
-
         /// <summary>
         /// 単純撮影（撮影部位）胸部（肩を除く）
         /// </summary>
@@ -3095,6 +3108,15 @@
         /// ７０枚を超えて湿布薬を投与した理由；
         /// </summary>
         public const string CommentSippu70 = "830000052";
+        #endregion
+
+        #region Jihi
+
+        /// <summary>
+        /// Jihi
+        /// </summary>
+        public const string ItemJihi = "J";
+
         #endregion
 
         /// <summary>

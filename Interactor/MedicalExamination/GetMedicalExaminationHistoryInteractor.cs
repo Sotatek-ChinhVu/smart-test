@@ -1,7 +1,6 @@
 ﻿using Domain.Models.HistoryOrder;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
@@ -66,16 +65,16 @@ namespace Interactor.MedicalExamination
                 host.Append(path);
                 foreach (HistoryOrderModel history in historyList.Item2)
                 {
-                    KarteInfModel karteInf = history.KarteInfModel;
-                    KarteInfHistoryItem karteInfHistoryItem = new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName);
+                    var karteInfs = history.KarteInfModels;
+                    var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
                     List<GrpKarteHistoryItem> karteHistoryList = new List<GrpKarteHistoryItem> {
                         new GrpKarteHistoryItem(
-                        karteInf.KarteKbn,
+                        karteInfHistoryItems.FirstOrDefault()?.KarteKbn ?? 0,
                         string.Empty,
                         string.Empty,
                         1,
                         0,
-                        new List<KarteInfHistoryItem> { karteInfHistoryItem })
+                        karteInfHistoryItems)
                     };
 
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
