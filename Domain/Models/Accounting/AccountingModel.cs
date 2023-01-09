@@ -29,7 +29,7 @@ namespace Domain.Models.Accounting
 
         public List<KaikeiInfModel> KaikeiInfModels { get; private set; }
 
-        public int HokenId { get; set; }
+        public int HokenId { get; private set; }
 
 
         public int PtFutan
