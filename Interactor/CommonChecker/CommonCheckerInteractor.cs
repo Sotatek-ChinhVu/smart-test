@@ -89,7 +89,7 @@ namespace Interactor.CommonChecker
                 }
                 else
                 {
-                    return new GetOrderCheckerOutputData(checkedResult.FirstOrDefault() ?? new(), GetOrderCheckerStatus.Error);
+                    return new GetOrderCheckerOutputData(checkedResult ?? new(), GetOrderCheckerStatus.Error);
                 }
             }
             catch (Exception)

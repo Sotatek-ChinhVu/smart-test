@@ -33,9 +33,12 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidToken = "Invalid Token";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
         public static readonly string InvalidWindowType = "Invalid WindowType";
         public static readonly string InvalidFrameId = "Invalid FrameId";
+        public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
+        public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -287,6 +290,7 @@
         public static readonly string GetOrdInfSuccessed = "Successed";
 
         //RaiinKubun controller
+        public static readonly string RaiinKubunInvalidKbnInf = "Invalid KbnInf";
 
         //Calculation Inf
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Reception;
 
 namespace Domain.Models.RaiinKubunMst
 {
@@ -26,5 +27,7 @@ namespace Domain.Models.RaiinKubunMst
 
         IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate);
 
+
+        bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos);
     }
 }
