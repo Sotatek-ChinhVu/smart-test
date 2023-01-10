@@ -1,4 +1,5 @@
-﻿using Domain.Models.Reception;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ using UseCase.Reception.GetListRaiinInfs;
 
 public class GetListRaiinInfsOutputData : IOutputData
 {
+    public GetListRaiinInfsOutputData(GetListRaiinInfsStatus status)
+    {
+        Status = status;
+    }
     public GetListRaiinInfsOutputData(List<ReceptionModel> raiinInfs, GetListRaiinInfsStatus status)
     {
         Status = status;
@@ -19,4 +24,3 @@ public class GetListRaiinInfsOutputData : IOutputData
     public GetListRaiinInfsStatus Status { get; private set; }
     public List<ReceptionModel> RaiinInfs { get; private set; }
 }
-

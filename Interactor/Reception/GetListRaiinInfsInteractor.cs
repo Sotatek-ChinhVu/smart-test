@@ -25,16 +25,20 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
             var data = _raiinInfRepository.GetListRaiinInf(inputData.HpId, inputData.PtId);
             if (inputData.HpId < 0)
             {
-                return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.InValidHpId);
+                return new GetListRaiinInfsOutputData(GetListRaiinInfsStatus.InValidHpId);
             }
             if (inputData.PtId < 0)
             {
-                return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.InValidPtId);
+                return new GetListRaiinInfsOutputData(GetListRaiinInfsStatus.InValidPtId);
             }
 
             
 
             return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.Success);
+        }
+        catch
+        {
+            return new GetListRaiinInfsOutputData(GetListRaiinInfsStatus.Failed);
         }
         finally
         {

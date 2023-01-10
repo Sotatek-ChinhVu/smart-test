@@ -20,6 +20,7 @@ public class GetListRaiinInfPresenter : IGetListRaiinInfsOutputPort
     private string GetMessage(GetListRaiinInfsStatus status) => status switch
     {
         GetListRaiinInfsStatus.Success => ResponseMessage.Success,
+        GetListRaiinInfsStatus.Failed => ResponseMessage.Failed,
         GetListRaiinInfsStatus.InValidHpId => ResponseMessage.InValidHpId,
         GetListRaiinInfsStatus.InValidPtId => ResponseMessage.InValidPtId,
         _ => string.Empty
