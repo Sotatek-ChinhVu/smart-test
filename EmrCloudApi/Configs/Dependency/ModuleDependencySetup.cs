@@ -22,6 +22,7 @@ using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.MaxMoney;
+using Domain.Models.MedicalExamination;
 using Domain.Models.MonshinInf;
 using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
@@ -192,9 +193,11 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
+using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
@@ -247,6 +250,7 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
+using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -419,6 +423,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMasterFinder, MasterFinder>();
             services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
+            services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -498,6 +503,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<LoadDataKubunSettingInputData, LoadDataKubunSettingInteractor>();
             busBuilder.RegisterUseCase<SaveDataKubunSettingInputData, SaveDataKubunSettingInteractor>();
             busBuilder.RegisterUseCase<GetColumnNameListInputData, GetColumnNameListInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinKbnInfListInputData, SaveRaiinKbnInfListInteractor>();
 
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
@@ -517,6 +523,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodayOrdInputData, UpsertTodayOrdInteractor>();
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
+            busBuilder.RegisterUseCase<GetCheckedOrderInputData, GetCheckedOrderInteractor>();
             busBuilder.RegisterUseCase<GetAddedAutoItemInputData, GetAddedAutoItemInteractor>();
             busBuilder.RegisterUseCase<AddAutoItemInputData, AddAutoItemInteractor>();
             busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
@@ -524,6 +531,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
+            busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
