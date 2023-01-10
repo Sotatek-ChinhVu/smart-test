@@ -11,5 +11,6 @@ namespace UseCase.PatientInfor.GetListPatient
         Success = 1,
         Failed,
         InvalidPtId,
+        InvalidHpId,
     }
 }

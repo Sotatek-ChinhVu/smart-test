@@ -20,10 +20,14 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
     {
         try
         {
-            if (input.PtId <= 0)
+            if (input.HpId <= 0)
+            {
+                return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidHpId);
+            }
+            if(input.PtId <= 0)
             {
                 return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidPtId);
-            }
+            }    
 
             var patientInf = _patientInforRepository.SearchPatient(input.HpId, input.PtId);
             return new GetPatientInfoOutputData(GetPatientInfoStatus.Success, patientInf);
@@ -31,6 +35,10 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
         catch
         {
             return new GetPatientInfoOutputData(GetPatientInfoStatus.Failed);
+        }
+        finally
+        {
+            _patientInforRepository.ReleaseResource();
         }
     }
 }

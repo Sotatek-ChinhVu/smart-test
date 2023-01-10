@@ -219,6 +219,7 @@ namespace Domain.Models.PatientInfor
 
             }
         }
+
         public string KarteDaichoAge
         {
             get
