@@ -5,7 +5,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
@@ -28,33 +27,42 @@ namespace Infrastructure.Repositories
             List<FlowSheetModel> result;
 
             var raiinInfsQueryable = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0);
-            var karteInfsQueryable = NoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
+            var raiinNos = raiinInfsQueryable.Select(r => r.RaiinNo);
+            var karteInfsQueryable = NoTrackingDataContext.KarteInfs.Where(k => raiinNos.Contains(k.RaiinNo) && k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && (k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))).OrderBy(karte => karte.SinDate).ThenBy(karte => karte.KarteKbn); ;
+
             var tagsQueryable = NoTrackingDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId);
             var commentsQueryable = NoTrackingDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId);
 
-            var query = from raiinInf in raiinInfsQueryable
-                        join karteInf in karteInfsQueryable on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
-                        from karteInf in gj.DefaultIfEmpty()
-                        join tagInf in tagsQueryable on raiinInf.RaiinNo equals tagInf.RaiinNo into gjTag
+            var raiinKarteQuery = from raiinInf in raiinInfsQueryable.AsEnumerable<RaiinInf>()
+                                  join karte in karteInfsQueryable on new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo, raiinInf.SinDate }
+                                                equals new { karte.HpId, karte.PtId, karte.RaiinNo, karte.SinDate } into odrKarteLeft
+                                  select new
+                                  {
+                                      RaiinList = raiinInf,
+                                      Karte = odrKarteLeft.FirstOrDefault()
+                                  };
+
+            var query = from raiinInf in raiinKarteQuery
+                        join tagInf in tagsQueryable on raiinInf.RaiinList.RaiinNo equals tagInf.RaiinNo into gjTag
                         from tagInf in gjTag.DefaultIfEmpty()
-                        join commentInf in commentsQueryable on raiinInf.RaiinNo equals commentInf.RaiinNo into gjComment
+                        join commentInf in commentsQueryable on raiinInf.RaiinList.RaiinNo equals commentInf.RaiinNo into gjComment
                         from commentInf in gjComment.DefaultIfEmpty()
                         select new
                         {
-                            raiinInf.RaiinNo,
-                            raiinInf.SyosaisinKbn,
-                            raiinInf.Status,
-                            raiinInf.SinDate,
-                            Text = karteInf == null ? string.Empty : karteInf.Text,
+                            raiinInf.RaiinList.RaiinNo,
+                            raiinInf.RaiinList.SyosaisinKbn,
+                            raiinInf.RaiinList.Status,
+                            raiinInf.RaiinList.SinDate,
+                            Text = raiinInf.Karte == null ? string.Empty : raiinInf.Karte.Text,
                             TagNo = tagInf == null ? 0 : tagInf.TagNo,
                             TagSeqNo = tagInf == null ? 0 : tagInf.SeqNo,
                             CommentContent = commentInf == null ? string.Empty : commentInf.Text,
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
-                            RaiinListInfs = (from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
+                            RaiinListInfs = (from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinList.RaiinNo)
                                              join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                                              on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                             select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
+                                             select new RaiinListInfModel(raiinInf.RaiinList.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
                             //.AsEnumerable<RaiinListInfModel>()
                         };
