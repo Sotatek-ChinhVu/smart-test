@@ -1019,36 +1019,25 @@ namespace Infrastructure.Repositories
                         x.HpId == hpId &&
                         x.IsDeleted == 0
                         );
-            var count0 = usermsts.ToList().Count();
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
                         );
-            var count1 = raiinInfs.ToList().Count();
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0
                         );
-            var count2 = kaMsts.ToList().Count();
             var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
                         );
-            var count3 = ptHokenPatterns.ToList().Count();
             var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
                         );
-            var count4 = ptHokenInfs.ToList().Count();
-            var ptKohis = NoTrackingDataContext.PtKohis.Where(x =>
-                        x.HpId == hpId &&
-                        x.IsDeleted == 0 &&
-                        x.PtId == ptId
-                        );
-            var count5 = ptKohis.ToList().Count();
             var query = from raiinInf in raiinInfs.AsEnumerable()
                         join KaMst in kaMsts on
                            new { raiinInf.HpId, raiinInf.KaId } equals

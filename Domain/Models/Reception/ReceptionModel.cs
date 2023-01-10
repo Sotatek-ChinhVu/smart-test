@@ -61,6 +61,62 @@ namespace Domain.Models.Reception
 
         public string KaSname { get; private set; }
 
+        public string HokenKbnName
+        {
+            get
+            {
+                string result = string.Empty;
+                if (PtId == 0 && HokenPid == 0 && HpId == 0)
+                {
+                    return "";
+                }
+                if (PtId == 0 && HokenId == 0 && HpId == 0)
+                {
+                    result = "公費";
+                    return result;
+                }
+                if (Houbetu == HokenConstant.HOUBETU_NASHI)
+                {
+                    result = "公費";
+                    return result;
+                }
+                switch (HokenKbn)
+                {
+                    case 0:
+                        result = "自費";
+                        break;
+                    case 1:
+                        result = "社保";
+                        break;
+                    case 2:
+                        if (HokensyaNo.Length == 8 &&
+                            HokensyaNo.StartsWith("39"))
+                        {
+                            result = "後期";
+                        }
+                        else if (HokensyaNo.Length == 8 &&
+                            HokensyaNo.StartsWith("67"))
+                        {
+                            result = "退職";
+                        }
+                        else
+                        {
+                            result = "国保";
+                        }
+                        break;
+                    case 11:
+                    case 12:
+                    case 13:
+                        result = "労災";
+                        break;
+                    case 14:
+                        result = "自賠";
+                        break;
+                }
+                return result;
+            }
+        }
+
         public string Houbetu { get; private set; }
 
         public string HokensyaNo { get; private set; }
@@ -257,63 +313,6 @@ namespace Domain.Models.Reception
         {
             UketukeNo = uketukeNo;
             return this;
-        }
-
-
-        public string HokenKbnName
-        {
-            get
-            {
-                string result = string.Empty;
-                if (PtId == 0 && HokenPid == 0 && HpId == 0)
-                {
-                    return "";
-                }
-                if (PtId == 0 && HokenId == 0 && HpId == 0)
-                {
-                    result = "公費";
-                    return result;
-                }
-                if (Houbetu == HokenConstant.HOUBETU_NASHI)
-                {
-                    result = "公費";
-                    return result;
-                }
-                switch (HokenKbn)
-                {
-                    case 0:
-                        result = "自費";
-                        break;
-                    case 1:
-                        result = "社保";
-                        break;
-                    case 2:
-                        if (HokensyaNo.Length == 8 &&
-                            HokensyaNo.StartsWith("39"))
-                        {
-                            result = "後期";
-                        }
-                        else if (HokensyaNo.Length == 8 &&
-                            HokensyaNo.StartsWith("67"))
-                        {
-                            result = "退職";
-                        }
-                        else
-                        {
-                            result = "国保";
-                        }
-                        break;
-                    case 11:
-                    case 12:
-                    case 13:
-                        result = "労災";
-                        break;
-                    case 14:
-                        result = "自賠";
-                        break;
-                }
-                return result;
-            }
         }
 
         public bool CheckDefaultValue()
