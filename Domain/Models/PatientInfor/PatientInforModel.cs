@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.PatientInfor
+﻿using Helper.Common;
+using Helper.Extension;
+
+namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
@@ -186,21 +189,59 @@
             Comment = string.Empty;
         }
 
-        public int LastVisitDate { get; private set; }
+        public PatientInforModel(long ptId, long ptNum, string kanaName, string name, int birthday, int sinDate)
+        {
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Birthday = birthday;
+            SinDate = sinDate;
+        }
 
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
-
-        public long SeqNo { get; private set; }
-
-        public long ReferenceNo { get; private set; }
 
         public long PtNum { get; private set; }
 
         public string KanaName { get; private set; }
 
         public string Name { get; private set; }
+
+        public string DisplayBirthday
+        {
+            get
+            {
+                int intDate = Birthday;
+                string tDate = CIUtil.SDateToShowSWDate(intDate);
+                return tDate;
+
+            }
+        }
+        public string KarteDaichoAge
+        {
+            get
+            {
+                if (Birthday <= 0)
+                {
+                    return "";
+                }
+                else
+                {
+                    return CIUtil.SDateToDecodeAge(Birthday.AsString(), DateTime.UtcNow.ToString("yyyyMMdd").AsInteger().AsString());
+                }
+            }
+        }
+
+        public string SinDateLabel
+        {
+            get { return CIUtil.SDateToShowSDate(SinDate); }
+        }
+
+        public long SeqNo { get; private set; }
+
+        public long ReferenceNo { get; private set; }
 
         public int Sex { get; private set; }
 
@@ -269,5 +310,9 @@
         public string RainCount { get; private set; }
 
         public string Comment { get; private set; }
+
+        public int SinDate { get; private set; }
+
+        public int LastVisitDate { get; private set; }
     }
 }

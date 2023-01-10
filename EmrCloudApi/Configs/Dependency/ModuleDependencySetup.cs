@@ -234,6 +234,7 @@ using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
+using UseCase.PatientInfor.GetListPatient;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -498,7 +499,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
             busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
-            busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
+            busBuilder.RegisterUseCase<GetPatientInfoInputData, GetListPatientInfoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

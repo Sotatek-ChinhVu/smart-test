@@ -76,6 +76,10 @@ using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
 using Domain.Models.GroupInf;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor;
+using UseCase.PatientInfor.GetListPatient;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
 
 namespace EmrCloudApi.Controller
 {
@@ -771,6 +775,18 @@ namespace EmrCloudApi.Controller
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
+        }
+
+
+
+        [HttpGet(ApiPath.GetListPatient)]
+        public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
+        {
+            var input = new GetPatientInfoInputData(HpId, req.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetListPatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
         }
     }
 }

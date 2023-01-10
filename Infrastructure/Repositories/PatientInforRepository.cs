@@ -1817,5 +1817,45 @@ namespace Infrastructure.Repositories
         {
             DisposeDataContext();
         }
+
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId)
+        {
+            var result = new List<PatientInforModel>();
+            var ptInfs = NoTrackingDataContext.PtInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.IsDelete == 0 &&
+                    x.PtId.ToString().Contains(ptId.ToString())
+                );
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0)
+                .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
+                .Select(grp => new
+                {
+                    HpId = grp.Key.HpId,
+                    PtId = grp.Key.PtId,
+                    SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
+                });
+            var query = from raiinInf in raiinInfs.AsEnumerable()
+                        join ptInf in ptInfs on
+                                new { raiinInf.PtId } equals
+                                new { ptInf.PtId }
+                        select new
+                        {
+                            PtInf = ptInf,
+                            RaiinInf = raiinInf
+                        };
+            result = query.Select((x) => new PatientInforModel(
+                           x.PtInf.PtId,
+                           x.PtInf.PtNum,
+                           x.PtInf.KanaName,
+                           x.PtInf.Name,
+                           x.PtInf.Birthday,
+                           x.RaiinInf.SinDate
+                           )).OrderBy(x => x.PtNum)
+                           .ToList();
+            return result;
+        }
     }
 }

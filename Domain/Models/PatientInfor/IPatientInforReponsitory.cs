@@ -50,5 +50,7 @@ namespace Domain.Models.PatientInfor
         HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo);
 
         HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya);
+
+        List<PatientInforModel> SearchPatient(int hpId, long ptId);
     }
 }
