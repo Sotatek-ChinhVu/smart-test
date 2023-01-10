@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Domain.Models.Reception
 {
-    public class ReceptionModel : ObservableObject
+    public class ReceptionModel
     {
         public int HpId { get; private set; }
 
