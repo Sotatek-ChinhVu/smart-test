@@ -269,19 +269,16 @@ namespace Domain.Models.Reception
                 {
                     return "";
                 }
-
                 if (PtId == 0 && HokenId == 0 && HpId == 0)
                 {
                     result = "公費";
                     return result;
                 }
-
                 if (Houbetu == HokenConstant.HOUBETU_NASHI)
                 {
                     result = "公費";
                     return result;
                 }
-
                 switch (HokenKbn)
                 {
                     case 0:

@@ -1,4 +1,9 @@
 ﻿using Domain.Models.Reception;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInfs;
 
@@ -15,8 +20,25 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
 
     public GetListRaiinInfsOutputData Handle(GetListRaiinInfsInputData inputData)
     {
-        var raiinInfs = _raiinInfRepository.GetListRaiinInf(inputData.HpId, inputData.PtId);
-        var status = raiinInfs.Any() ? GetListRaiinInfsStatus.Success : GetListRaiinInfsStatus.NoData;
-        return new GetListRaiinInfsOutputData(status, raiinInfs);
+        try
+        {
+            var data = _raiinInfRepository.GetListRaiinInf(inputData.HpId, inputData.PtId);
+            if (inputData.HpId < 0)
+            {
+                return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.InValidHpId);
+            }
+            if (inputData.PtId < 0)
+            {
+                return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.InValidPtId);
+            }
+
+            
+
+            return new GetListRaiinInfsOutputData(data.ToList(), GetListRaiinInfsStatus.Success);
+        }
+        finally
+        {
+            _raiinInfRepository.ReleaseResource();
+        }
     }
 }

@@ -6,8 +6,8 @@ public class GetListRaiinInfResponse
 {
     public GetListRaiinInfResponse(List<ReceptionModel> raiinInfs)
     {
-        RaiinInf = raiinInfs;
+        RaiinInfs = raiinInfs;
     }
 
-    public List<ReceptionModel> RaiinInf { get; private set; } = new List<ReceptionModel>();
+    public List<ReceptionModel> RaiinInfs { get; private set; } = new List<ReceptionModel>();
 }

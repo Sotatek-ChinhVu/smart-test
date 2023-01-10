@@ -10,7 +10,7 @@ using UseCase.Reception.GetListRaiinInfs;
 
 public class GetListRaiinInfsOutputData : IOutputData
 {
-    public GetListRaiinInfsOutputData(GetListRaiinInfsStatus status, List<ReceptionModel> raiinInfs)
+    public GetListRaiinInfsOutputData(List<ReceptionModel> raiinInfs, GetListRaiinInfsStatus status)
     {
         Status = status;
         RaiinInfs = raiinInfs;

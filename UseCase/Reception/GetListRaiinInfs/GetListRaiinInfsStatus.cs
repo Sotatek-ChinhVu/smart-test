@@ -8,5 +8,8 @@ namespace UseCase.Reception.GetListRaiinInfs;
 public enum GetListRaiinInfsStatus
 {
     Success,
-    NoData
+    NoData,
+    InValidHpId,
+    InValidPtId,
+    Failed
 }

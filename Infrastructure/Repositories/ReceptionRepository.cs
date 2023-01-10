@@ -1081,8 +1081,8 @@ namespace Infrastructure.Repositories
                             x.RaiinInf.Status,
                             x.KaMst?.KaSname ?? string.Empty,
                             x.UserMst?.Sname ?? string.Empty,
-                            x.PtHokenInf?.Houbetu,
-                            x.PtHokenInf?.HokensyaNo,
+                            x.PtHokenInf.Houbetu,
+                            x.PtHokenInf.HokensyaNo,
                             x.PtHokenInf.HokenKbn,
                             x.PtHokenInf.HokenId))
                             .OrderByDescending(x => x.SinDate)
