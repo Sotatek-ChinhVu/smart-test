@@ -27,7 +27,7 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
             {
                 return new GetListRaiinInfsOutputData(GetListRaiinInfsStatus.InValidHpId);
             }
-            if (inputData.PtId < 0)
+            if (inputData.PtId <= 0)
             {
                 return new GetListRaiinInfsOutputData(GetListRaiinInfsStatus.InValidPtId);
             }
