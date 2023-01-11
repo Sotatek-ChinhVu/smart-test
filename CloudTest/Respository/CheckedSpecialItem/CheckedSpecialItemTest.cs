@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using CloudUnitTest.SampleData;
+using Domain.Models.Insurance;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Reception;
@@ -71,14 +72,20 @@ public class CheckedSpecialItemTest : BaseUT
     [Test]
     public void GetFirstVisitWithSyosin()
     {
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        var sampleData = ReadSampleData.ReadRainInf();
+        tenant.RaiinInfs.AddRange(sampleData);
+        tenant.SaveChanges();
         // Arrange
         ReceptionRepository receptionRepository = new ReceptionRepository(TenantProvider);
         // Act
         var value = receptionRepository.GetFirstVisitWithSyosin(1, 56025, 20140331);
         // Assert
         Assert.True(value > 0);
+        tenant.RaiinInfs.RemoveRange(sampleData);
+        tenant.SaveChanges();
     }
-    
+
     [Test]
     public void GetPtHokenInf()
     {
