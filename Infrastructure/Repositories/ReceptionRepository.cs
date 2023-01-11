@@ -1028,11 +1028,6 @@ namespace Infrastructure.Repositories
                         x.HpId == hpId &&
                         x.IsDeleted == 0
                         );
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x =>
-                        x.HpId == hpId &&
-                        x.IsDeleted == 0 &&
-                        x.PtId == ptId
-                        );
             var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
@@ -1045,9 +1040,6 @@ namespace Infrastructure.Repositories
                         join usermst in usermsts on
                             new { raiinInf.HpId, raiinInf.TantoId } equals
                             new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
-                        join ptHokenPattern in ptHokenPatterns on
-                             new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals
-                             new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into raiinPtHokenPatterns
                         join ptHokenInf in ptHokenInfs on
                             new { raiinInf.HpId, raiinInf.PtId} equals
                             new { ptHokenInf.HpId, ptHokenInf.PtId} into raiinPtHokenInfs
@@ -1056,7 +1048,6 @@ namespace Infrastructure.Repositories
                         select new
                         {
                             RaiinInf = raiinInf,
-                            HokenPattern = raiinPtHokenPatterns,
                             PtHokenInf = raiinPtHokenInf,
                             UserMst = listUserMst.FirstOrDefault(),
                             KaMst = listKaMst.FirstOrDefault()
