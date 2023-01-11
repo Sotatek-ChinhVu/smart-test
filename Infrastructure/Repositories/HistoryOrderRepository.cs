@@ -153,7 +153,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo) - 1));
+                    index = Math.Max(0, currentIndex - (raiinNoList.Count - raiinNoList.IndexOf(raiinNo)));
                 }
                 return (index, Reception.FromRaiinInf(raiinInf));
             }
@@ -172,7 +172,7 @@ namespace Infrastructure.Repositories
 
             if (raiinNoByKarte == 0 && raiinNoByOrder == 0)
             {
-                return (0, new ReceptionModel());
+                return (-1, new ReceptionModel());
             }
 
             if (raiinNoByKarte == 0)
@@ -205,10 +205,10 @@ namespace Infrastructure.Repositories
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
             Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
-            if (!allOrderInfList.Any())
-            {
-                return (0, new List<HistoryOrderModel>());
-            }
+            //if (!allOrderInfList.Any())
+            //{
+            //    return (0, new List<HistoryOrderModel>());
+            //}
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
@@ -225,8 +225,9 @@ namespace Infrastructure.Repositories
                 }
 
                 ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
-                KarteInfModel karteInfModel = allKarteInfList.FirstOrDefault(r => r.RaiinNo == raiinNo) ?? new KarteInfModel(hpId, raiinNo);
-                List<OrdInfModel> orderInfList = allOrderInfList[raiinNo];
+                List<KarteInfModel> karteInfModels = allKarteInfList.Where(r => r.RaiinNo == raiinNo).ToList() ?? new();
+                allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
+                List<OrdInfModel>? orderInfList = orderInfListTemp ?? new();
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
@@ -234,7 +235,7 @@ namespace Infrastructure.Repositories
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModel, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel));
             }
 
             return (totalCount, historyOrderModelList);
@@ -249,7 +250,7 @@ namespace Infrastructure.Repositories
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
             var karteInfEntities = NoTrackingDataContext.KarteInfs
-                .Where(k => k.PtId == ptId && 
+                .Where(k => k.PtId == ptId &&
                             k.HpId == hpId &&
                             k.Text != null &&
                             k.Text.Contains(keyWord) &&

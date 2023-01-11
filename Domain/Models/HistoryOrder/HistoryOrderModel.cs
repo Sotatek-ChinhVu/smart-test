@@ -12,13 +12,13 @@ namespace Domain.Models.HistoryOrder
         public long RaiinNo { get; private set; }
 
         public int SinDate { get; private set; }
-        
+
         public int HokenPid { get; private set; }
-        
+
         public string HokenTitle { get; private set; }
-        
+
         public string HokenRate { get; private set; }
-        
+
         public int HokenType { get; private set; }
 
         public int SyosaisinKbn { get; private set; }
@@ -41,7 +41,7 @@ namespace Domain.Models.HistoryOrder
 
         public List<OrdInfModel> OrderInfList { get; private set; }
 
-        public KarteInfModel KarteInfModel { get; private set; }
+        public List<KarteInfModel> KarteInfModels { get; private set; }
 
         public string SanteiKbnDisplay { get => _jihiSanteiDict.FirstOrDefault(x => x.Key == SanteiKbn).Value; }
 
@@ -57,7 +57,7 @@ namespace Domain.Models.HistoryOrder
 
         public List<FileInfModel> ListKarteFile { get; private set; }
 
-        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, KarteInfModel karteInfModel, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
@@ -74,7 +74,7 @@ namespace Domain.Models.HistoryOrder
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
             OrderInfList = orderList;
-            KarteInfModel = karteInfModel;
+            KarteInfModels = karteInfModels;
             ListKarteFile = listKarteFile;
         }
     }

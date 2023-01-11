@@ -210,4 +210,6 @@ public static class FunctionCode
     /// ロック情報
     /// </summary>
     public const string LockInf = "99999000";
+    public const string CheckDrugInfo = "99013000";
+    public const string CheckSpecificHealth = "99014000";
 }
