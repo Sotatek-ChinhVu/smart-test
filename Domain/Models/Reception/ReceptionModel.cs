@@ -68,7 +68,7 @@ namespace Domain.Models.Reception
                 string result = string.Empty;
                 if (PtId == 0 && HokenPid == 0 && HpId == 0)
                 {
-                    return "";
+                    return string.Empty;
                 }
                 if (PtId == 0 && HokenId == 0 && HpId == 0)
                 {
