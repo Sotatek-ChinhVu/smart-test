@@ -2,6 +2,10 @@
 {
     public class DuplicationResultModel
     {
+        public int RpNo { get; set; }
+
+        public int RowNo { get; set; }
+
         public int Level { get; set; }
 
         public string ItemCd { get; set; } = string.Empty;

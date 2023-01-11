@@ -142,7 +142,6 @@ namespace Interactor.CommonChecker
             {
                 listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
                 {
-                    RowNo = error.RowNo,
                     CheckerType = error.CheckerType,
                     ErrorInfo = error.ErrorInfo,
                     IsError = error.IsError,
@@ -155,7 +154,6 @@ namespace Interactor.CommonChecker
             {
                 listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
                 {
-                    RowNo = error.RowNo,
                     CheckerType = error.CheckerType,
                     ErrorInfo = error.ErrorInfo,
                     IsError = error.IsError,

@@ -2,6 +2,10 @@
 {
     public class DiseaseResultModel
     {
+        public int RpNo { get; set; }
+
+        public int RowNo { get; set; }
+
         public int DiseaseType { get; set; } //0:現疾患 1:既往歴 2:家族歴
 
         public string ItemCd { get; set; } = string.Empty;
