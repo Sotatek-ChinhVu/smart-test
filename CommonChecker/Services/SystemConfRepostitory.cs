@@ -5,7 +5,7 @@ using PostgreDataContext;
 
 namespace CommonChecker.Services
 {
-    public class SystemConfRepostitory : ISystemConfRepository
+    public class SystemConfRepostitory : ISystemConfigRepository
     {
         private readonly TenantDataContext _tenantDataContext;
 
