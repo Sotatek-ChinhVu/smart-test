@@ -89,9 +89,9 @@ namespace Interactor.NextOrder
                     nextOrderItem.RsvName,
                     nextOrderItem.IsDeleted,
                     nextOrderItem.SortNo,
-                    nextOrderItem.rsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
-                    ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.rsvkrtKarteInf),
-                    nextOrderItem.rsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
+                    nextOrderItem.RsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
+                    ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.RsvkrtKarteInf),
+                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
                 );
         }
 
