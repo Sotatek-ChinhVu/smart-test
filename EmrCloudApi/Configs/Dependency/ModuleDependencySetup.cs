@@ -1,4 +1,6 @@
 ﻿using CommonChecker;
+using CommonChecker.DB;
+using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
@@ -426,6 +428,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
             services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
+            services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
+            services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)

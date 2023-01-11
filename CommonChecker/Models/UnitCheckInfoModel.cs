@@ -4,6 +4,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 {
     public class UnitCheckInfoModel
     {
+        public int RowNo { get; set; }
+
         public RealtimeCheckerType CheckerType { get; set; }
 
         public int Sinday { get; set; }
