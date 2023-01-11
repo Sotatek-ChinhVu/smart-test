@@ -106,6 +106,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 listErrorInfo.Add(new DuplicationResultModel()
                 {
+                    RpNo = duplicatedComponent.RpNo,
+                    RowNo = duplicatedComponent.RowNo,
                     Level = duplicatedComponent.Level,
                     ItemCd = duplicatedComponent.ItemCd,
                     DuplicatedItemCd = duplicatedComponent.AllergyItemCd,
