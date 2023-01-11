@@ -272,8 +272,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
-                            RpNo = duplicatedItem.RpNo,
-                            RowNo = duplicatedItem.RowNo,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,
@@ -300,8 +298,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
-                            RpNo = duplicatedItem.RpNo,
-                            RowNo = duplicatedItem.RowNo,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,
