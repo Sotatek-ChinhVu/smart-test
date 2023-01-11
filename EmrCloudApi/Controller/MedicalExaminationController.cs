@@ -8,7 +8,9 @@ using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
+using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -127,7 +129,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetInfCheckedSpecialItem)]
         public ActionResult<Response<CheckedSpecialItemResponse>> GetInfCheckedSpecialItem([FromBody] CheckedSpecialItemRequest request)
         {
-            var input = new CheckedSpecialItemInputData(HpId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
+            var input = new CheckedSpecialItemInputData(HpId, UserId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
                 o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,
@@ -287,6 +289,28 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<InitKbnSettingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetCheckedOrder)]
+        public ActionResult<Response<GetCheckedOrderResponse>> GetCheckedOrder([FromBody] GetCheckedOrderRequest request)
+        {
+            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.TantoId, request.PrimaryDoctor, request.OdrInfItems, request.DiseaseItems);
+            var output = _bus.Handle(input);
+            var presenter = new GetCheckedOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetCheckedOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckedAfter327Screen)]
+        public ActionResult<Response<CheckedAfter327ScreenResponse>> CheckedAfter327Screen([FromBody] CheckedAfter327ScreenRequest request)
+        {
+            var input = new CheckedAfter327ScreenInputData(HpId, request.PtId, request.SinDate, request.CheckedOrderModels, request.IsTokysyoOrder, request.IsTokysyosenOrder);
+            var output = _bus.Handle(input);
+            var presenter = new CheckedAfter327ScreenPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedAfter327ScreenResponse>>(presenter.Result);
         }
     }
 }

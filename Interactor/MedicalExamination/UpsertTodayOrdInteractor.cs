@@ -369,7 +369,7 @@ namespace Interactor.MedicalExamination
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn;
             }
-            else if (inputDatas.HokenPid < 0)
+            else if (inputDatas.HokenPid <= 0)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid;
             }

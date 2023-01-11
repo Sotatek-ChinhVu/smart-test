@@ -33,9 +33,9 @@ namespace Interactor.PatientInfor
             {
                 (bool, long) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.UserId);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.LimitLists, inputData.UserId);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.UserId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.LimitLists, inputData.UserId);
 
                 if (result.Item1)
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.Item2);
@@ -587,15 +587,14 @@ namespace Interactor.PatientInfor
                 message = "'" + insurances.FirstOrDefault(x=>x.HokenPatternSelected)?.HokenName + "'" + "の保険組合せを主保険に設定しますか？";
                 resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.ConfirmHokenPatternSelectedIsInfMainHokenPid, TypeMessage.TypeMessageConfirmation));
             }
-            else
+
+            var mainHokenPattern = insurances.FirstOrDefault(p => p.HokenPid == ptInfMainHokenPid);
+            if (mainHokenPattern != null && mainHokenPattern.IsExpirated && !reactFromUI.ConfirmHaveanExpiredHokenOnMain) //not ok
             {
-                var mainHokenPattern = insurances.FirstOrDefault(p => p.HokenPid == ptInfMainHokenPid);
-                if (mainHokenPattern != null && mainHokenPattern.IsExpirated && !reactFromUI.ConfirmHaveanExpiredHokenOnMain) //not ok
-                {
-                    message = "主保険に期限切れの保険が設定されています。主保険の設定を確認してください。";
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningHaveanExpiredHokenOnMain, TypeMessage.TypeMessageWarning));
-                }
+                message = "主保険に期限切れの保険が設定されています。主保険の設定を確認してください。";
+                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningHaveanExpiredHokenOnMain, TypeMessage.TypeMessageWarning));
             }
+
             return resultMessages;
         }
 

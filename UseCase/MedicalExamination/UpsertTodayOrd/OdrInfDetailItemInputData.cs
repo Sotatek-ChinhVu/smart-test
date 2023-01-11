@@ -1,7 +1,10 @@
-﻿namespace UseCase.MedicalExamination.UpsertTodayOrd
+﻿using System.Text.Json.Serialization;
+
+namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class OdrInfDetailItemInputData
     {
+        [JsonConstructor]
         public OdrInfDetailItemInputData(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
         {
             HpId = hpId;
@@ -38,6 +41,27 @@
             CmtOpt = cmtOpt;
             FontColor = fontColor;
             CommentNewline = commentNewline;
+        }
+
+        public OdrInfDetailItemInputData(int hpId, string itemCd, int sinDate)
+        {
+
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+            JissiDate = DateTime.MinValue;
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            HpId = hpId;
+            ItemCd = itemCd;
+            SinDate = sinDate;
         }
 
         public int HpId { get; private set; }

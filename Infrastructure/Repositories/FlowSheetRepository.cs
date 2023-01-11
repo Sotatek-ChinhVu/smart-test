@@ -5,8 +5,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
-using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories

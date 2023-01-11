@@ -53,6 +53,8 @@
         public const string GetInsuranceComboList = "GetInsuranceComboList";
         public const string GetValidGairaiRiha = "GetValidGairaiRiha";
         public const string GetValidJihiYobo = "GetValidJihiYobo";
+        public const string GetAddedAutoItem = "GetAddedAutoItem";
+        public const string AddAutoItem = "AddAutoItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -149,6 +151,8 @@
         public const string GetInfCheckedItemName = "GetInfCheckedItemName";
         public const string Search = "Search";
         public const string InitKbnSetting = "InitKbnSetting";
+        public const string GetCheckedOrder = "GetCheckedOrder";
+        public const string CheckedAfter327Screen = "CheckedAfter327Screen";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -160,12 +164,16 @@
         //hoken sya
         public const string GetHokenSyaMst = "GetHokenSyaMst";
 
+        //User
+        public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
+        public const string GetPermissionByScreen = "GetPermissionByScreen";
+
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
 
         //Order RealtimeChecker
         public const string OrderRealtimeChecker = "OrderRealtimeChecker";
-        
+
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
     }
