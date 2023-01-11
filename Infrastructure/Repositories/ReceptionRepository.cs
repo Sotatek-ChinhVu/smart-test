@@ -1,6 +1,5 @@
 using Domain.Constant;
 using Domain.Models.Reception;
-using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -8,7 +7,6 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Infrastructure.Repositories

@@ -777,8 +777,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
         }
 
-
-
         [HttpGet(ApiPath.GetListPatient)]
         public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {

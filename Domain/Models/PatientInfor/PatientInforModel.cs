@@ -226,7 +226,7 @@ namespace Domain.Models.PatientInfor
             {
                 if (Birthday <= 0)
                 {
-                    return "";
+                    return string.Empty;
                 }
                 else
                 {
