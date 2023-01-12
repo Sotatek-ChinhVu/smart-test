@@ -1,4 +1,6 @@
 ﻿using CommonChecker;
+using CommonChecker.DB;
+using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
@@ -179,6 +181,7 @@ using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
+using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
@@ -426,6 +429,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
             services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
+            services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
+            services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -543,6 +548,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
             busBuilder.RegisterUseCase<GetDefaultSelectPatternInputData, GetDefaultSelectPatternInteractor>();
+            busBuilder.RegisterUseCase<GetInsuranceMasterDetailInputData, GetInsuranceMasterDetailInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();

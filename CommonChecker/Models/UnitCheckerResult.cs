@@ -11,6 +11,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public long PtId;
 
+        public int RowNo;
+
         public ActionResultType ActionType = ActionResultType.OK;
 
         public RealtimeCheckerType CheckerType { get; private set; }
@@ -25,13 +27,13 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public List<string> AdditionData { get; set; } = new List<string>();
 
-        public UnitCheckerResult(RealtimeCheckerType checkerType, TOdrInf checkingData, int sinday, long ptId)
+        public UnitCheckerResult(int rowNo, RealtimeCheckerType checkerType, TOdrInf checkingData, int sinday, long ptId)
         {
+            RowNo = rowNo;
             CheckerType = checkerType;
             CheckingData = checkingData;
             Sinday = sinday;
             PtId = ptId;
-
         }
     }
 }
