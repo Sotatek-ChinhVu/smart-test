@@ -878,7 +878,6 @@ namespace Infrastructure.Repositories
                 o.SinDate >= startDate &&
                 o.SinDate <= endDate &&
                 o.RaiinNo != raiinNo);
-            var count1 = sinKouiCounts.Count();
             var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
@@ -887,6 +886,7 @@ namespace Infrastructure.Repositories
                 itemCds.Contains(p.ItemCd ?? string.Empty) &&
                 p.FmtKbn != 10  // 在がん医総のダミー項目を除く
                 );
+
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
                 join sinKouiCount in sinKouiCounts on
