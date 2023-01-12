@@ -1,4 +1,5 @@
-﻿using Domain.Models.Santei;
+﻿using CloudUnitTest.SampleData;
+using Domain.Models.Santei;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -14,31 +15,18 @@ public class SanteiInfRepositoryTest : BaseUT
     [Test]
     public void GetListSanteiInf_TestSuccess()
     {
-        #region DataExample
-        int hpId = 1;
-        long ptId = 1;
-        int sinDate = 20221212;
-
-        var listSanteiInfs = new List<SanteiInf>()
-        {
-            new SanteiInf()
-            {
-                HpId = hpId,
-                PtId = ptId,
-                Id = 1,
-                ItemCd = "itemCd",
-                SeqNo = 1,
-                AlertDays = 1,
-                AlertTerm = 2
-            }
-        };
-        TenantProvider.GetNoTrackingDataContext().SanteiInfs.AddRange(listSanteiInfs);
-        //mocTennantProvider.Setup(repo => repo.GetNoTrackingDataContext().SanteiInfs.AddRange(listSanteiInfs));
-
-        #endregion
-
-        var repository = new SanteiInfRepository(TenantProvider);
-        var list = repository.GetListSanteiInf(hpId, ptId, sinDate);
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        var sampleData = ReadDataSanteiInf.ReadSanteiInf();
+        tenant.SanteiInfs.AddRange(sampleData);
+        tenant.SaveChanges();
+        // Arrange
+        SanteiInfRepository santeiInfRepository = new SanteiInfRepository(TenantProvider);
+        // Act
+        var value = santeiInfRepository.GetListSanteiInf(1, 883, 20221212);
+        // Assert
+        //Assert.True(value.Any(item => item.Id == 999999));
+        tenant.SanteiInfs.RemoveRange(sampleData);
+        tenant.SaveChanges();
     }
 
 
