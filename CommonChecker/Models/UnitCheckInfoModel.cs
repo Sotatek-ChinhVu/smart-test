@@ -1,5 +1,4 @@
-﻿using CommonChecker.Models;
-using CommonCheckers.OrderRealtimeChecker.Enums;
+﻿using CommonCheckers.OrderRealtimeChecker.Enums;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {
@@ -14,7 +13,5 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
         public bool IsError { get; set; }
 
         public object ErrorInfo { get; set; } = string.Empty;
-
-        List<ErrorInfoModel> ErrorInfoModels { get; set; }
     }
 }
