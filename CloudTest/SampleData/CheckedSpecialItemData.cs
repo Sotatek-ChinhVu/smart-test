@@ -303,9 +303,13 @@ namespace CloudUnitTest.SampleData
                                     tenMst.MasterSbt = text;
                                     break;
                                 case "F":
-                                    tenMst.Name = text;
+                                    int.TryParse(text, out int sinkouiKbn);
+                                    tenMst.SinKouiKbn = sinkouiKbn;
                                     break;
                                 case "G":
+                                    tenMst.Name = text;
+                                    break;
+                                case "AO":
                                     int.TryParse(text, out int maxCount);
                                     tenMst.MaxCount = maxCount;
                                     break;
