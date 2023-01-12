@@ -115,7 +115,7 @@ public class CheckedSpecialItemTest : BaseUT
         // Act
         var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> {1}, new List<int> {10});
         // Assert
-        //Assert.True(santeiCount == 1);
+        Assert.True(santeiCount == 1);
 
         tenant.SinRpInfs.RemoveRange(sinRpInfs);
         tenant.SinKouiCounts.RemoveRange(sinKouiCounts);

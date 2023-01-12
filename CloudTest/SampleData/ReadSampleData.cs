@@ -2,7 +2,6 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Entity.Tenant;
-using NUnit.Framework.Internal;
 
 namespace CloudUnitTest.SampleData
 {
@@ -175,7 +174,7 @@ namespace CloudUnitTest.SampleData
                             if (c.DataType != null && c.DataType == CellValues.SharedString)
                             {
                                 var stringId = Convert.ToInt32(c.InnerText);
-                                text = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText;
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
                             }
 
                             switch (numberCell)
@@ -398,6 +397,10 @@ namespace CloudUnitTest.SampleData
                                     int.TryParse(text, out int santeiKbn);
                                     sinRpInf.SanteiKbn = santeiKbn;
                                     break;
+                                case "P":
+                                    int.TryParse(text, out int hokenKbn);
+                                    sinRpInf.HokenKbn = hokenKbn;
+                                    break;
                                 default:
                                     break;
                             }
@@ -421,7 +424,7 @@ namespace CloudUnitTest.SampleData
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
             {
                 var workbookPart = spreadsheetDocument.WorkbookPart;
-                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SIN_RP_INF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SIN_KOUI_DETAIL").WorksheetPart?.Worksheet.Elements<SheetData>().First();
                 string text;
                 if (sheetData != null)
                 {
@@ -466,7 +469,8 @@ namespace CloudUnitTest.SampleData
                                     sinRpInf.ItemName = text;
                                     break;
                                 case "J":
-                                    double.TryParse(text, out double suryo);
+                                    var check = double.TryParse(text, out double suryo);
+                                    suryo = check ? double.Parse(text, System.Globalization.CultureInfo.InvariantCulture) : 0;
                                     sinRpInf.Suryo = suryo;
                                     break;
                                 case "O":
@@ -496,7 +500,7 @@ namespace CloudUnitTest.SampleData
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
             {
                 var workbookPart = spreadsheetDocument.WorkbookPart;
-                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SIN_RP_INF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "SIN_KOUI_COUNT").WorksheetPart?.Worksheet.Elements<SheetData>().First();
                 string text;
                 if (sheetData != null)
                 {
@@ -577,8 +581,6 @@ namespace CloudUnitTest.SampleData
             return worksheet;
         }
 
-
-
         private static string GetColumnName(string text)
         {
             var check = int.TryParse(text.Skip(1).FirstOrDefault().ToString(), out int number);
@@ -591,5 +593,7 @@ namespace CloudUnitTest.SampleData
                 return text.Substring(0, 2);
             }
         }
+
+
     }
 }
