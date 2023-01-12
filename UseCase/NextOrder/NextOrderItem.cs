@@ -10,9 +10,9 @@
             RsvName = rsvName;
             SortNo = sortNo;
             IsDeleted = isDeleted;
-            this.rsvKrtByomeiItems = rsvKrtByomeiItems;
-            this.rsvkrtKarteInf = rsvkrtKarteInf;
-            this.rsvKrtOrderInfItems = rsvKrtOrderInfItems;
+            RsvKrtByomeiItems = rsvKrtByomeiItems;
+            RsvkrtKarteInf = rsvkrtKarteInf;
+            RsvKrtOrderInfItems = rsvKrtOrderInfItems;
         }
 
         public long RsvkrtNo { get; private set; }
@@ -27,10 +27,10 @@
 
         public int IsDeleted { get; private set; }
 
-        public List<RsvKrtByomeiItem> rsvKrtByomeiItems { get; private set; }
+        public List<RsvKrtByomeiItem> RsvKrtByomeiItems { get; private set; }
 
-        public RsvKrtKarteInfItem rsvkrtKarteInf { get; private set; }
+        public RsvKrtKarteInfItem RsvkrtKarteInf { get; private set; }
 
-        public List<RsvKrtOrderInfItem> rsvKrtOrderInfItems { get; private set; }
+        public List<RsvKrtOrderInfItem> RsvKrtOrderInfItems { get; private set; }
     }
 }

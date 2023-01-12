@@ -16,10 +16,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type)
+        public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
         {
             var byomeis = new List<RsvkrtByomei>();
-            if (type == 0)
+            if (rsvkrtKbn == 0)
             {
                 byomeis = NoTrackingDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
             }

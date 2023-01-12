@@ -1,6 +1,8 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class KinkiResultModel
+    public class KinkiResultModel : OrderInforResultModel
     {
         public string ItemCd { get; set; } = string.Empty;
 

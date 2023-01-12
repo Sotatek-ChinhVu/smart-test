@@ -6,10 +6,10 @@ namespace UseCase.NextOrder.GetList
     public class GetNextOrderListOutputData : IOutputData
     {
 
-        public List<NextOrderModel> NextOrders { get; private set; }
+        public List<NextOrderLabelItem> NextOrders { get; private set; }
         public GetNextOrderListStatus Status { get; private set; }
 
-        public GetNextOrderListOutputData(List<NextOrderModel> nextOrders, GetNextOrderListStatus status)
+        public GetNextOrderListOutputData(List<NextOrderLabelItem> nextOrders, GetNextOrderListStatus status)
         {
             NextOrders = nextOrders;
             Status = status;
