@@ -24,12 +24,16 @@ namespace Infrastructure.Repositories
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount)
         {
+            Console.WriteLine("Start GetListFlowSheet");
+
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
                 .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.SyosaisinKbn, r.Status))
                 .ToList();
-            
+
+            Console.WriteLine("Get allRaiinInfList");
+
             // From NextOrder
             var rsvkrtOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
                                                                                         && r.PtId == ptId
@@ -47,6 +51,8 @@ namespace Infrastructure.Repositories
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, -1, 0)
                                ).ToList();
 
+            Console.WriteLine("Get groupNextOdr");
+
 
             var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
             
@@ -54,7 +60,7 @@ namespace Infrastructure.Repositories
             List<FlowSheetModel> flowSheetModelList = 
                 allFlowSheetQueryable.OrderByDescending(r => r.SinDate)
                                      .ThenByDescending(r => r.RaiinNo)
-                                     .Skip(startIndex)
+                                     .Skip(startIndex) 
                                      .Take(count)
                                      .ToList();
 
@@ -65,13 +71,22 @@ namespace Infrastructure.Repositories
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && nextRaiinNoList.Contains(k.RsvkrtNo))
                 .ToList();
+            Console.WriteLine("Get nextKarteList");
+
             var historyKarteList = NoTrackingDataContext.KarteInfs
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && historyRaiinNoList.Contains(k.RaiinNo))
                 .ToList();
+            Console.WriteLine("Get historyKarteList");
+
             var tagInfList = NoTrackingDataContext.RaiinListTags
-                .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0 && allRaiinNoList.Contains(tag.RaiinNo));
-            var commentList = NoTrackingDataContext.RaiinListCmts.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && historyRaiinNoList.Contains(k.RaiinNo))
+                .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0 && allRaiinNoList.Contains(tag.RaiinNo))
                 .ToList();
+            Console.WriteLine("Get tagInfList");
+
+            var commentList = NoTrackingDataContext.RaiinListCmts
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && historyRaiinNoList.Contains(k.RaiinNo))
+                .ToList();
+            Console.WriteLine("Get commentList");
 
             var raiinListInfs =
                      (
@@ -80,7 +95,7 @@ namespace Infrastructure.Repositories
                         on raiinListInf.KbnCd equals raiinListMst.KbnCd
                         select new RaiinListInfModel(raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                      ).ToList();
-
+            Console.WriteLine("Get raiinListInfs");
 
             List<FlowSheetModel> result = new List<FlowSheetModel>();
             foreach (var flowSheetModel in flowSheetModelList)
@@ -124,6 +139,8 @@ namespace Infrastructure.Repositories
                         false
                     ));
             }
+
+            Console.WriteLine("End GetListFlowSheet");
 
             return result;
         }
