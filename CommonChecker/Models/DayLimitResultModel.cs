@@ -1,10 +1,9 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class DayLimitResultModel
+    public class DayLimitResultModel : OrderInforResultModel
     {
-        public int RpNo;
-        public int RpEdaNo;
-        public int RowNo;
         public string YjCd = string.Empty;
         public double UsingDay;
         public double LimitDay;

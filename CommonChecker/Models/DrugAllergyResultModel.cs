@@ -1,13 +1,9 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class DrugAllergyResultModel
+    public class DrugAllergyResultModel : OrderInforResultModel
     {
-        public int RpNo { get; set; }
-
-        public int RpEdaNo { get; set; }
-
-        public int RowNo { get; set; }
-
         public int Level { get; set; }
 
         public string ItemCd { get; set; } = string.Empty;

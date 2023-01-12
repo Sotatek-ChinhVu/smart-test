@@ -1,13 +1,9 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class KinkiResultModel
+    public class KinkiResultModel : OrderInforResultModel
     {
-        public int RpNo { get; set; }
-
-        public int RpEdaNo { get; set; }
-
-        public int RowNo { get; set; }
-
         public string ItemCd { get; set; } = string.Empty;
 
         public string AYjCd { get; set; } = string.Empty;
