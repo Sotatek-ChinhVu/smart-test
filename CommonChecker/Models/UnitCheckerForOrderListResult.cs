@@ -7,6 +7,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
+        public int RpNo { get; private set; }
+
+        public int RpEdaNo { get; private set; }
+
         public int RowNo { get; private set; }
 
         public int Sinday { get; private set; }
@@ -25,8 +29,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public List<TOdrInf> CheckingOrderList { get; private set; }
 
-        public UnitCheckerForOrderListResult(int rowNo, RealtimeCheckerType checkerType, List<TOdrInf> checkingOrderList, int sinday, long ptId)
+        public UnitCheckerForOrderListResult(int rpNo, int rpEdaNo, int rowNo, RealtimeCheckerType checkerType, List<TOdrInf> checkingOrderList, int sinday, long ptId)
         {
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
             RowNo = rowNo;
             CheckerType = checkerType;
             CheckingOrderList = checkingOrderList;

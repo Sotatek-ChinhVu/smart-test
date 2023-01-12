@@ -1,4 +1,6 @@
-﻿namespace CommonChecker.Models
+﻿using CommonCheckers.OrderRealtimeChecker.Enums;
+
+namespace CommonChecker.Models
 {
     public class ErrorInfoModel
     {
