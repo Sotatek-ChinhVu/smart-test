@@ -54,7 +54,7 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
 
             var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
 
-            var byomeis = _nextOrderRepository.GetByomeis(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.Type);
+            var byomeis = _nextOrderRepository.GetByomeis(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.RsvkrtKbn);
             var orderInfs = _nextOrderRepository.GetOrderInfs(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.SinDate, inputData.UserId);
             var karteInf = _nextOrderRepository.GetKarteInf(inputData.HpId, inputData.PtId, inputData.RsvkrtNo);
             var listNextOrderFiles = GetListNextOrderFile(inputData.HpId, inputData.PtId, inputData.RsvkrtNo)
