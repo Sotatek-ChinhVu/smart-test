@@ -107,6 +107,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listErrorInfo.Add(new DuplicationResultModel()
                 {
                     RpNo = duplicatedComponent.RpNo,
+                    RpEdaNo = duplicatedComponent.RpEdaNo,
                     RowNo = duplicatedComponent.RowNo,
                     Level = duplicatedComponent.Level,
                     ItemCd = duplicatedComponent.ItemCd,
@@ -201,12 +202,15 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     listErrorInfo.Add(new DuplicationResultModel()
                     {
+                        RpNo = duplicatedItem.RpNo,
+                        RpEdaNo = duplicatedItem.RpEdaNo,
+                        RowNo = duplicatedItem.RowNo,
                         Level = 0,
                         ItemCd = itemCode,
                         DuplicatedItemCd = duplicatedItem.ItemCd,
                         IsIppanCdDuplicated = false,
                         IsComponentDuplicated = false,
-                    });
+                    }); ;
                 }
             }
 
@@ -222,6 +226,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     listErrorInfo.Add(new DuplicationResultModel()
                     {
+                        RpNo = detail.RpNo,
+                        RpEdaNo = detail.RpEdaNo,
+                        RowNo = detail.RowNo,
                         Level = 0,
                         ItemCd = detail.ItemCd,
                         DuplicatedItemCd = detail.ItemCd,
@@ -272,6 +279,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
+                            RpNo = duplicatedItem.RpNo,
+                            RpEdaNo = duplicatedItem.RpEdaNo,
+                            RowNo = duplicatedItem.RowNo,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,
@@ -298,6 +308,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
+                            RpNo = duplicatedItem.RpNo,
+                            RpEdaNo = duplicatedItem.RpEdaNo,
+                            RowNo = duplicatedItem.RowNo,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,

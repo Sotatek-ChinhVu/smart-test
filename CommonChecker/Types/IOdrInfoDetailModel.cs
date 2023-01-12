@@ -4,9 +4,11 @@ namespace CommonChecker.Types
 {
     public interface IOdrInfoDetailModel
     {
+        int RpNo { get; }
+
         int RowNo { get; }
 
-        int RpNo { get; }
+        int RpEdaNo { get; }
 
         int SinKouiKbn { get; }
 

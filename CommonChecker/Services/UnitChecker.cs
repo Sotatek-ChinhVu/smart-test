@@ -12,6 +12,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrDetail : class, IOdrInfoDetailModel
     {
         public int RpNo;
+        public int RpEdaNo;
         public int RowNo;
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder = null!;
@@ -23,14 +24,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public UnitCheckerResult<TOdrInf, TOdrDetail> CheckOrder(TOdrInf checkingOrder)
         {
-            UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckResult = new UnitCheckerResult<TOdrInf, TOdrDetail>(RpNo, RowNo, CheckType, checkingOrder, Sinday, PtID);
+            UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckResult = new UnitCheckerResult<TOdrInf, TOdrDetail>(RpNo, RpEdaNo, RowNo, CheckType, checkingOrder, Sinday, PtID);
             unitCheckResult = HandleCheckOrder(unitCheckResult);
             return unitCheckResult;
         }
 
         public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> CheckOrderList(List<TOdrInf> checkingOrderList)
         {
-            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(RpNo, RowNo, CheckType, checkingOrderList, Sinday, PtID);
+            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(RpNo, RpEdaNo, RowNo, CheckType, checkingOrderList, Sinday, PtID);
             unitCheckForOrderListResult = HandleCheckOrderList(unitCheckForOrderListResult);
             return unitCheckForOrderListResult;
         }
@@ -38,7 +39,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         // For this checking, dont need to show error message
         public UnitCheckerResult<TOdrInf, TOdrDetail> CheckOnlyOrder(TOdrInf checkingOrder)
         {
-            UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckResult = new UnitCheckerResult<TOdrInf, TOdrDetail>(RpNo, RowNo, CheckType, checkingOrder, Sinday, PtID);
+            UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckResult = new UnitCheckerResult<TOdrInf, TOdrDetail>(RpNo, RpEdaNo, RowNo, CheckType, checkingOrder, Sinday, PtID);
             return HandleCheckOrder(unitCheckResult);
         }
 

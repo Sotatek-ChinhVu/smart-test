@@ -4,6 +4,8 @@
     {
         public int RpNo { get; set; }
 
+        public int RpEdaNo { get; set; }
+
         public int RowNo { get; set; }
 
         public long PtId { get; set; }
