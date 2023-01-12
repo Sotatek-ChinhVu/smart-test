@@ -872,7 +872,6 @@ namespace Infrastructure.Repositories
                 checkHokenKbn.Contains(o.HokenKbn) &&
                 checkSanteiKbn.Contains(o.SanteiKbn)
             ).AsQueryable();
-            var count = sinRpInfs.Count();
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -888,8 +887,6 @@ namespace Infrastructure.Repositories
                 itemCds.Contains(p.ItemCd ?? string.Empty) &&
                 p.FmtKbn != 10  // 在がん医総のダミー項目を除く
                 );
-            var count2 = sinKouiDetails.Count();
-
             var joinQuery = (
                 from sinKouiDetail in sinKouiDetails
                 join sinKouiCount in sinKouiCounts on
