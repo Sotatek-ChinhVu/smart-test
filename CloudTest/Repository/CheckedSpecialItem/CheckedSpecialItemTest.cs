@@ -14,7 +14,7 @@ public class CheckedSpecialItemTest : BaseUT
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = ReadSampleData.ReadTenMst();
+        var sampleData = CheckedSpecialItemData.ReadTenMst();
         tenant.TenMsts.AddRange(sampleData);
         tenant.SaveChanges();
         MstItemRepository mstItemRepository = new MstItemRepository(TenantProvider);
@@ -36,7 +36,7 @@ public class CheckedSpecialItemTest : BaseUT
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = ReadSampleData.ReadDensiSanteiKaisu();
+        var sampleData = CheckedSpecialItemData.ReadDensiSanteiKaisu();
         tenant.DensiSanteiKaisus.AddRange(sampleData);
         tenant.SaveChanges();
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
@@ -75,7 +75,7 @@ public class CheckedSpecialItemTest : BaseUT
     public void GetFirstVisitWithSyosin()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = ReadSampleData.ReadRainInf();
+        var sampleData = CheckedSpecialItemData.ReadRainInf();
         tenant.RaiinInfs.AddRange(sampleData);
         tenant.SaveChanges();
         // Arrange
@@ -92,11 +92,46 @@ public class CheckedSpecialItemTest : BaseUT
     public void GetPtHokenInf()
     {
         // Arrange
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        var hokenMsts = CheckedSpecialItemData.ReadHokenMst();
+        var ptHokenInfs = CheckedSpecialItemData.ReadPtHokenInf();
+        var ptKohis = CheckedSpecialItemData.ReadPtKoHi();
+        var ptHokenChecks = CheckedSpecialItemData.ReadPtHokenCheck();
+        var ptInfs = CheckedSpecialItemData.ReadPtInf();
+        var userMsts = CheckedSpecialItemData.ReadUserMst();
+        var hokenSyaMsts = CheckedSpecialItemData.ReadHokenSyaMst();
+        var roudous = CheckedSpecialItemData.ReadRoudouMst();
+        var ptRouSaiTenkis = CheckedSpecialItemData.ReadPtRouSaiTenKi();
+        var ptHokenPatterns = CheckedSpecialItemData.ReadPtHokenPattern();
+        tenant.HokenMsts.AddRange(hokenMsts);
+        tenant.PtHokenInfs.AddRange(ptHokenInfs);
+        tenant.PtKohis.AddRange(ptKohis);
+        tenant.PtHokenChecks.AddRange(ptHokenChecks);
+        tenant.PtInfs.AddRange(ptInfs);
+        tenant.UserMsts.AddRange(userMsts);
+        tenant.HokensyaMsts.AddRange(hokenSyaMsts);
+        tenant.RoudouMsts.AddRange(roudous);
+        tenant.PtRousaiTenkis.AddRange(ptRouSaiTenkis);
+        tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
+        tenant.SaveChanges();
         InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider);
         // Act
-        var hokenInf = insuranceRepository.GetPtHokenInf(1, 10, 56025, 20140325);
+        var hokenInf = insuranceRepository.GetPtHokenInf(1, 99999, 999999, 20220325);
         // Assert
-        Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0);
+        Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0 && hokenInf.Kohi1.HokenId != 0 && hokenInf.Kohi3.HokenId != 0 && hokenInf.Kohi2.HokenId != 0 && hokenInf.Kohi4.HokenId != 0);
+
+        tenant.HokenMsts.RemoveRange(hokenMsts);
+        tenant.PtHokenInfs.RemoveRange(ptHokenInfs);
+        tenant.PtKohis.RemoveRange(ptKohis);
+        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
+        tenant.PtInfs.RemoveRange(ptInfs);
+        tenant.UserMsts.RemoveRange(userMsts);
+        tenant.HokensyaMsts.RemoveRange(hokenSyaMsts);
+        tenant.RoudouMsts.RemoveRange(roudous);
+        tenant.PtRousaiTenkis.RemoveRange(ptRouSaiTenkis);
+        tenant.PtHokenPatterns.RemoveRange(ptHokenPatterns);
+        tenant.SaveChanges();
     }
 
     [Test]
@@ -104,9 +139,9 @@ public class CheckedSpecialItemTest : BaseUT
     {
         // Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sinKouiCounts = ReadSampleData.ReadSinKouiCount();
-        var sinRpInfs = ReadSampleData.ReadSinRpInf();
-        var sinKouiDetails = ReadSampleData.ReadSinKouiDetail();
+        var sinKouiCounts = CheckedSpecialItemData.ReadSinKouiCount();
+        var sinRpInfs = CheckedSpecialItemData.ReadSinRpInf();
+        var sinKouiDetails = CheckedSpecialItemData.ReadSinKouiDetail();
         tenant.SinRpInfs.AddRange(sinRpInfs);
         tenant.SinKouiCounts.AddRange(sinKouiCounts);
         tenant.SinKouiDetails.AddRange(sinKouiDetails);
