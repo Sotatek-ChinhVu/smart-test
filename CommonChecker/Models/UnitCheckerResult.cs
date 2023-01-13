@@ -7,11 +7,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
+        public string Id;
+
         public int Sinday;
 
         public long PtId;
-
-        public int RowNo;
 
         public ActionResultType ActionType = ActionResultType.OK;
 
@@ -27,9 +27,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public List<string> AdditionData { get; set; } = new List<string>();
 
-        public UnitCheckerResult(int rowNo, RealtimeCheckerType checkerType, TOdrInf checkingData, int sinday, long ptId)
+        public UnitCheckerResult(string id, RealtimeCheckerType checkerType, TOdrInf checkingData, int sinday, long ptId)
         {
-            RowNo = rowNo;
+            Id = id;
             CheckerType = checkerType;
             CheckingData = checkingData;
             Sinday = sinday;

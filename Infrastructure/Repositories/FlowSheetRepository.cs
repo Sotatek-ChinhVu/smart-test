@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
 
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)  
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.SyosaisinKbn, r.Status))
                 .ToList();
 
@@ -60,37 +60,35 @@ namespace Infrastructure.Repositories
             List<FlowSheetModel> flowSheetModelList = 
                 allFlowSheetQueryable.OrderByDescending(r => r.SinDate)
                                      .ThenByDescending(r => r.RaiinNo)
-                                     .Skip(startIndex) 
-                                     .Take(count)
                                      .ToList();
 
-            List<long> allRaiinNoList = flowSheetModelList.Select(f => f.RaiinNo).ToList();
-            List<long> historyRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn >= 0).Select(f => f.RaiinNo).ToList();
-            List<long> nextRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn < 0).Select(f => f.RaiinNo).ToList();
+            //List<long> allRaiinNoList = flowSheetModelList.Select(f => f.RaiinNo).ToList();
+            //List<long> historyRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn >= 0).Select(f => f.RaiinNo).ToList();
+            //List<long> nextRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn < 0).Select(f => f.RaiinNo).ToList();
 
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && nextRaiinNoList.Contains(k.RsvkrtNo))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
             Console.WriteLine("Get nextKarteList");
 
             var historyKarteList = NoTrackingDataContext.KarteInfs
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && historyRaiinNoList.Contains(k.RaiinNo))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
             Console.WriteLine("Get historyKarteList");
 
             var tagInfList = NoTrackingDataContext.RaiinListTags
-                .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0 && allRaiinNoList.Contains(tag.RaiinNo))
+                .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0)
                 .ToList();
             Console.WriteLine("Get tagInfList");
 
             var commentList = NoTrackingDataContext.RaiinListCmts
-                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()) && historyRaiinNoList.Contains(k.RaiinNo))
+                .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
             Console.WriteLine("Get commentList");
 
             var raiinListInfs =
                      (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && allRaiinNoList.Contains(r.RaiinNo))
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                         on raiinListInf.KbnCd equals raiinListMst.KbnCd
                         select new RaiinListInfModel(raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)

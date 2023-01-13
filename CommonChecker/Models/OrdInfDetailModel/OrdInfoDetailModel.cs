@@ -8,7 +8,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
 {
     public class OrdInfoDetailModel : IOdrInfoDetailModel
     {
-        public int RowNo { get; set; }
+        public string Id { get; set; }
         public int SinKouiKbn { get; set; }
         public string ItemCd { get; set; }
         public string ItemName { get; set; }
@@ -25,7 +25,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public int BunkatuKoui { get; set; }
 
 
-       
+
 
         public bool IsDrugUsage
         {

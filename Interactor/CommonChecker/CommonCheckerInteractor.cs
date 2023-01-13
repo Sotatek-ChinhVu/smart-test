@@ -88,21 +88,21 @@ namespace Interactor.CommonChecker
 
                 var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
 
-                var errorDetails = GetErrorDetails(checkedResult);
+                 GetErrorDetails(checkedResult);
 
                 if (checkedResult == null || checkedResult.Count == 0)
                 {
-                    return new GetOrderCheckerOutputData(new(), new(), GetOrderCheckerStatus.Successed);
+                    return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
                 }
                 else
                 {
-                    return new GetOrderCheckerOutputData(checkedResult ?? new(), errorDetails ?? new(), GetOrderCheckerStatus.Error);
+                    return new GetOrderCheckerOutputData(checkedResult ?? new(), GetOrderCheckerStatus.Error);
                 }
             }
             catch (Exception)
             {
 
-                return new GetOrderCheckerOutputData(new(), new(), GetOrderCheckerStatus.Failed);
+                return new GetOrderCheckerOutputData(new(),GetOrderCheckerStatus.Failed);
             }
 
         }
@@ -142,7 +142,6 @@ namespace Interactor.CommonChecker
             {
                 listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
                 {
-                    RowNo = error.RowNo,
                     CheckerType = error.CheckerType,
                     ErrorInfo = error.ErrorInfo,
                     IsError = error.IsError,
@@ -155,7 +154,6 @@ namespace Interactor.CommonChecker
             {
                 listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
                 {
-                    RowNo = error.RowNo,
                     CheckerType = error.CheckerType,
                     ErrorInfo = error.ErrorInfo,
                     IsError = error.IsError,
@@ -448,7 +446,7 @@ namespace Interactor.CommonChecker
         #endregion
 
         #region Get Error Details
-        private List<ErrorInfoModel> GetErrorDetails(List<UnitCheckInfoModel> listErrorInfo)
+        private void GetErrorDetails(List<UnitCheckInfoModel> listErrorInfo)
         {
             List<ErrorInfoModel> listErrorInfoModel = new List<ErrorInfoModel>();
             listErrorInfo.ForEach((errorInfo) =>
@@ -460,6 +458,7 @@ namespace Interactor.CommonChecker
                         if (drugAllergyInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(drugAllergyInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.FoodAllergy:
@@ -467,6 +466,7 @@ namespace Interactor.CommonChecker
                         if (foodAllergyInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForFoodAllergy(foodAllergyInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Age:
@@ -474,6 +474,7 @@ namespace Interactor.CommonChecker
                         if (ageErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForAge(ageErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Disease:
@@ -481,6 +482,7 @@ namespace Interactor.CommonChecker
                         if (diseaseErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDisease(diseaseErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Kinki:
@@ -491,6 +493,7 @@ namespace Interactor.CommonChecker
                         if (kinkiErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForKinki(errorInfo.CheckerType, kinkiErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.KinkiUser:
@@ -498,6 +501,7 @@ namespace Interactor.CommonChecker
                         if (kinkiUserErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForKinkiUser(kinkiUserErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Days:
@@ -505,6 +509,7 @@ namespace Interactor.CommonChecker
                         if (dayLimitErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDayLimit(dayLimitErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Dosage:
@@ -512,6 +517,7 @@ namespace Interactor.CommonChecker
                         if (dosageErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDosage(dosageErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Duplication:
@@ -519,11 +525,11 @@ namespace Interactor.CommonChecker
                         if (duplicationErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDuplication(duplicationErrorInfo));
+                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                 }
             });
-            return listErrorInfoModel;
         }
         #endregion
 

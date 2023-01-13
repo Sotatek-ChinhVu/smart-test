@@ -492,28 +492,28 @@ namespace Infrastructure.Repositories
                 if (ptIds.Count == 0) return new();
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
             }
+
             // PatientGroups
-            var validPatientGroups = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).ToList();
-            if (validPatientGroups.Any())
+            var groupKeyList = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).Select(p => new { p.GroupId, p.GroupCode });
+            if (groupKeyList.Any())
             {
-                var ptGrpInfQuery = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteTypes.None);
-                var firstGrp = validPatientGroups.First();
-                var ptIdsByPtGroupsQuery = ptGrpInfQuery.Where(p => p.GroupId == firstGrp.GroupId && p.GroupCode == firstGrp.GroupCode).Select(p => p.PtId);
-                // Inner join with another groups
-                for (int i = 1; i < validPatientGroups.Count; i++)
+                var groupIdList = groupKeyList.Select(g => g.GroupId).ToList();
+                var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
+                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId))
+                    .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
+                    .ToList();
+
+                List<long> ptIds = new List<long>();
+                foreach (var groupId in groupIdList)
                 {
-                    var anotherGrp = validPatientGroups[i];
-                    ptIdsByPtGroupsQuery =
-                        from ptId in ptIdsByPtGroupsQuery
-                        join anotherPtGrpInf in ptGrpInfQuery on ptId equals anotherPtGrpInf.PtId
-                        where anotherPtGrpInf.GroupId == anotherGrp.GroupId && anotherPtGrpInf.GroupCode == anotherGrp.GroupCode
-                        select ptId;
+                    string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
+                    ptIds.AddRange(groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList());
                 }
 
-                var ptIds = ptIdsByPtGroupsQuery.ToList();
                 if (ptIds.Count == 0) return new();
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
             }
+
             // Orders
             if (input.OrderItemCodes.Any())
             {

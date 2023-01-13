@@ -73,7 +73,7 @@ public class CheckedSpecialItemTest : BaseUT
     public void GetFirstVisitWithSyosin()
     {
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = ReadSampleData.ReadRainInf();
+        var sampleData = CheckedSpecialItemData.ReadRainInf();
         tenant.RaiinInfs.AddRange(sampleData);
         tenant.SaveChanges();
         // Arrange
