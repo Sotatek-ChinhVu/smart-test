@@ -140,7 +140,7 @@ namespace Infrastructure.Repositories
 
             Console.WriteLine("End GetListFlowSheet");
 
-            return result.Skip(startIndex).Take(count).ToList();
+            return result;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
