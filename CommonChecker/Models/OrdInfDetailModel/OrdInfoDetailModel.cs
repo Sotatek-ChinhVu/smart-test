@@ -8,7 +8,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
 {
     public class OrdInfoDetailModel : IOdrInfoDetailModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public int SinKouiKbn { get; set; }
         public string ItemCd { get; set; }
         public string ItemName { get; set; }

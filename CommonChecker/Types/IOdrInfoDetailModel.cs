@@ -4,7 +4,7 @@ namespace CommonChecker.Types
 {
     public interface IOdrInfoDetailModel
     {
-        int Id { get; set; }
+        string Id { get; set; }
 
         int SinKouiKbn { get; }
 
