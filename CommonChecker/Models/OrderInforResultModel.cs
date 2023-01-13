@@ -2,6 +2,6 @@
 {
     public class OrderInforResultModel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 }

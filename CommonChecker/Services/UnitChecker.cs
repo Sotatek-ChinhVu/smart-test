@@ -11,7 +11,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public int Id;
+        public string Id;
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder = null!;
         public IMasterFinder? MasterFinder;
