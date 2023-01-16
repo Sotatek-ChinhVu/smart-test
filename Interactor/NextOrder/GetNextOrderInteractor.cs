@@ -95,7 +95,7 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
                         })
                         .Select(grp => grp.FirstOrDefault())
                         .ToList();
-                    if (!(groupOdrInfs == null || groupOdrInfs.Any()))
+                    if (groupOdrInfs?.Any() == true)
                     {
                         var objGroupOdrInf = new object();
                         Parallel.ForEach(groupOdrInfs, groupOdrInf =>
