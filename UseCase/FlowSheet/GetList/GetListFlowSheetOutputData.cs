@@ -13,16 +13,29 @@ namespace UseCase.FlowSheet.GetList
     {
         public List<FlowSheetModel> ListFlowSheetModel { get; private set; }
 
-        public List<RaiinListMstModel> ListRaiinListMstModels { get; private set; }
+        public List<RaiinListMstModel> ListRaiinListMstModel { get; private set; }
 
         public List<HolidayModel> ListHolidayModel { get; private set; }
+
+        public List<RaiinListInfModel> ListRaiinListInfModel { get; private set; }
+
         public long TotalListFlowSheet { get; private set; }
 
-        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, List<HolidayModel> listHolidayModel, long totalListFlowSheet = 0)
+        public GetListFlowSheetOutputData(List<HolidayModel> listHolidayModel)
+        {
+            ListFlowSheetModel = new List<FlowSheetModel>();
+            ListRaiinListMstModel = new List<RaiinListMstModel>();
+            ListRaiinListInfModel = new List<RaiinListInfModel>();
+            ListHolidayModel = listHolidayModel;
+            TotalListFlowSheet = 0;
+        }
+
+        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, List<RaiinListInfModel> listRaiinListInfModel, long totalListFlowSheet = 0)
         {
             ListFlowSheetModel = listFlowSheetModel;
-            ListRaiinListMstModels = listRaiinListMstModel;
-            ListHolidayModel = listHolidayModel;
+            ListRaiinListMstModel = listRaiinListMstModel;
+            ListRaiinListInfModel = listRaiinListInfModel;
+            ListHolidayModel = new List<HolidayModel>();
             TotalListFlowSheet = totalListFlowSheet;
         }
     }

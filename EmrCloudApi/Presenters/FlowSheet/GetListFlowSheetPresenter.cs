@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.FlowSheet
         {
             Result = new Response<GetListFlowSheetResponse>()
             {
-                Data = new GetListFlowSheetResponse(outputData.ListFlowSheetModel, outputData.ListRaiinListMstModels, outputData.TotalListFlowSheet),
+                Data = new GetListFlowSheetResponse(outputData.ListFlowSheetModel, outputData.ListRaiinListMstModel, outputData.ListRaiinListInfModel, outputData.TotalListFlowSheet),
                 Message = ResponseMessage.Success,
                 Status = 1
             };

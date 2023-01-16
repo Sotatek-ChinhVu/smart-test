@@ -14,7 +14,7 @@ namespace EmrCloudApi.Presenters.FlowSheet
             {
                 Data = new GetListRaiinMstResponse()
                 {
-                    ListRaiinListMstModels = outputData.ListRaiinListMstModels
+                    ListRaiinListMstModels = outputData.ListRaiinListMstModel
                 },
                 Message = ResponseMessage.Success,
                 Status = 1
