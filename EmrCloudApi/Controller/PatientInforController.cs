@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -43,7 +44,6 @@ using EmrCloudApi.Responses.SwapHoken;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
-using UseCase.CommonChecker;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
@@ -457,7 +457,7 @@ namespace EmrCloudApi.Controller
 
             List<GroupInfModel> grpInfs = request.PtGrps.Select(x => new GroupInfModel(
                                                 x.HpPt,
-                                                x.PtId, 
+                                                x.PtId,
                                                 x.GroupId,
                                                 x.GroupCode,
                                                 x.GroupName)).ToList();
@@ -575,6 +575,7 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
+                 request.LimitLists,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
