@@ -1,5 +1,6 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -138,7 +139,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
             TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
-        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = adoptedValue;
 
         TrackingDataContext.SaveChanges();
@@ -155,12 +156,12 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
                 GrpCd = grpCd,
                 UserId = userId,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow()
             };
             TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
-        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = value;
         TrackingDataContext.SaveChanges();
     }

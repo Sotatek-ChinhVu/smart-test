@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories
                     if (CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -100,8 +100,8 @@ namespace Infrastructure.Repositories
                         TotalGaku = item.TotalGaku,
                         Biko = item.Biko,
                         IsDeleted = 0,
-                        CreateDate = DateTime.UtcNow,
-                        UpdateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
                         CreateId = userId
                     };
@@ -117,7 +117,7 @@ namespace Infrastructure.Repositories
                         update.TotalGaku = item.TotalGaku;
                         update.Biko = item.Biko;
                         update.SinDate = item.SinDateY * 10000 + item.SinDateM * 100 + item.SinDateD;
-                        update.UpdateDate = DateTime.UtcNow;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = userId;
                     }
                 }

@@ -2,10 +2,10 @@
 using Domain.Enum;
 using Domain.Models.Diseases;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -242,7 +242,7 @@ namespace Infrastructure.Repositories
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
                         ptByomei.UpdateId = userId;
-                        ptByomei.UpdateDate = DateTime.UtcNow;
+                        ptByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
@@ -301,11 +301,11 @@ namespace Infrastructure.Repositories
                 IsNodspRece = model.IsNodspRece,
                 IsNodspKarte = model.IsNodspKarte,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 SeqNo = model.SeqNo,
                 IsImportant = model.IsImportant,
                 UpdateId = userId,
-                UpdateDate = DateTime.UtcNow
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
         }
 

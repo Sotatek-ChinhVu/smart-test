@@ -1,8 +1,8 @@
 ﻿using Domain.Models.SwapHoken;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
 
         public bool SwapHokenParttern(int hpId, long PtId, int OldHokenPid, int NewHokenPid, int StartDate, int EndDate, int userId)
         {
-            var updateDate = DateTime.UtcNow;
+            var updateDate = CIUtil.GetJapanDateTimeNow();
             var updateId = userId;
 
             #region UpdateHokenPatternInRaiin

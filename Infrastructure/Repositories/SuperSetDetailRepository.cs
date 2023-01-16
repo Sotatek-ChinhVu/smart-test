@@ -708,7 +708,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             foreach (var mst in listSetByomeiDelete)
             {
                 mst.IsDeleted = DeleteTypes.Deleted;
-                mst.UpdateDate = DateTime.UtcNow;
+                mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 mst.UpdateId = userId;
             }
             TrackingDataContext.SaveChanges();
@@ -782,10 +782,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
         if (model.Id == 0)
         {
-            mst.CreateDate = DateTime.UtcNow;
+            mst.CreateDate = CIUtil.GetJapanDateTimeNow();
             mst.CreateId = userId;
         }
-        mst.UpdateDate = DateTime.UtcNow;
+        mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
         mst.UpdateId = userId;
         return mst;
     }
@@ -807,8 +807,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 entity.HpId = model.HpId;
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
                 entity.IsDeleted = 0;
-                entity.CreateDate = DateTime.UtcNow;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
                 entity.CreateId = userId;
                 TrackingDataContext.SetKarteInf.Add(entity);
@@ -817,7 +817,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             {
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
                 entity.UpdateId = userId;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
 
             // if set karte have image, update setKarteImage
@@ -895,7 +895,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 foreach (var mst in listSetOdrInfDeletes)
                 {
                     mst.IsDeleted = DeleteTypes.Deleted;
-                    mst.UpdateDate = DateTime.UtcNow;
+                    mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     mst.UpdateId = userId;
                 }
             }
@@ -925,11 +925,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         entity.TosekiKbn = model.TosekiKbn;
         entity.DaysCnt = model.DaysCnt;
         entity.SortNo = model.SortNo;
-        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
         entity.UpdateId = userId;
         if (entity.Id == 0)
         {
-            entity.CreateDate = DateTime.UtcNow;
+            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
             entity.CreateId = userId;
             entity.IsDeleted = 0;
         }

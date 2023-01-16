@@ -12,9 +12,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Repositories
 {

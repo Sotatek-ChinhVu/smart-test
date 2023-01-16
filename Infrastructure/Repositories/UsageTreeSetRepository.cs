@@ -2,7 +2,6 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 using System.Data;
 
 namespace Infrastructure.Repositories
