@@ -5,6 +5,7 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
@@ -1032,7 +1033,8 @@ namespace Infrastructure.Repositories
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
-                        );
+            );
+
             var query = from raiinInf in raiinInfs.AsEnumerable()
                         join KaMst in kaMsts on
                            new { raiinInf.HpId, raiinInf.KaId } equals
@@ -1041,8 +1043,8 @@ namespace Infrastructure.Repositories
                             new { raiinInf.HpId, raiinInf.TantoId } equals
                             new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
                         join ptHokenInf in ptHokenInfs on
-                            new { raiinInf.HpId, raiinInf.PtId} equals
-                            new { ptHokenInf.HpId, ptHokenInf.PtId} into raiinPtHokenInfs
+                            new { raiinInf.HpId, raiinInf.PtId } equals
+                            new { ptHokenInf.HpId, ptHokenInf.PtId } into raiinPtHokenInfs
 
                         from raiinPtHokenInf in raiinPtHokenInfs.DefaultIfEmpty()
                         select new
@@ -1064,9 +1066,9 @@ namespace Infrastructure.Repositories
                             x.PtHokenInf?.Houbetu ?? string.Empty,
                             x.PtHokenInf?.HokensyaNo ?? string.Empty,
                             x.PtHokenInf.HokenKbn,
-                            x.PtHokenInf.HokenId))
-                            .OrderByDescending(x => x.SinDate)
-                            .ToList();
+                            x.PtHokenInf.HokenId,
+                            x.RaiinInf.HokenPid,
+                            x.RaiinInf.RaiinNo)).OrderByDescending(x => x.SinDate).ToList();
             return result;
         }
     }

@@ -10,6 +10,5 @@ public enum GetListRaiinInfsStatus
     Success,
     NoData,
     InValidHpId,
-    InValidPtId,
-    Failed
+    InValidPtId
 }

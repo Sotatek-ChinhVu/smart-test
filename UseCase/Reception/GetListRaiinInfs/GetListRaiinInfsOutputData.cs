@@ -11,16 +11,12 @@ using UseCase.Reception.GetListRaiinInfs;
 
 public class GetListRaiinInfsOutputData : IOutputData
 {
-    public GetListRaiinInfsOutputData(GetListRaiinInfsStatus status)
-    {
-        Status = status;
-    }
-    public GetListRaiinInfsOutputData(List<ReceptionModel> raiinInfs, GetListRaiinInfsStatus status)
+    public GetListRaiinInfsOutputData(List<GetListRaiinInfsInputItem> raiinInfs, GetListRaiinInfsStatus status)
     {
         Status = status;
         RaiinInfs = raiinInfs;
     }
 
     public GetListRaiinInfsStatus Status { get; private set; }
-    public List<ReceptionModel> RaiinInfs { get; private set; }
+    public List<GetListRaiinInfsInputItem> RaiinInfs { get; private set; }
 }

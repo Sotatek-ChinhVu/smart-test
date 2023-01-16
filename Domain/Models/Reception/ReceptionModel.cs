@@ -14,108 +14,11 @@ namespace Domain.Models.Reception
 
         public int SinDate { get; private set; }
 
-        public string SinDateLabel
-        {
-            get { return CIUtil.SDateToShowSDate(SinDate); }
-        }
-
         public int UketukeNo { get; private set; }
-
-        public string StatusLbl
-        {
-            get
-            {
-                if (CheckDefaultValue())
-                {
-                    return string.Empty;
-                }
-                string result = string.Empty;
-                switch (Status)
-                {
-                    case 0:
-                        result = "予約";
-                        break;
-                    case 1:
-                        result = "";
-                        break;
-                    case 3:
-                        result = "一時保存";
-                        break;
-                    case 5:
-                        result = "計算";
-                        break;
-                    case 7:
-                        result = "精算待ち";
-                        break;
-                    case 9:
-                        result = "精算済";
-                        break;
-                    default:
-                        break;
-                }
-                return result;
-            }
-        }
 
         public string SName { get; private set; }
 
         public string KaSname { get; private set; }
-
-        public string HokenKbnName
-        {
-            get
-            {
-                string result = string.Empty;
-                if (PtId == 0 && HokenPid == 0 && HpId == 0)
-                {
-                    return string.Empty;
-                }
-                if (PtId == 0 && HokenId == 0 && HpId == 0)
-                {
-                    result = "公費";
-                    return result;
-                }
-                if (Houbetu == HokenConstant.HOUBETU_NASHI)
-                {
-                    result = "公費";
-                    return result;
-                }
-                switch (HokenKbn)
-                {
-                    case 0:
-                        result = "自費";
-                        break;
-                    case 1:
-                        result = "社保";
-                        break;
-                    case 2:
-                        if (HokensyaNo.Length == 8 &&
-                            HokensyaNo.StartsWith("39"))
-                        {
-                            result = "後期";
-                        }
-                        else if (HokensyaNo.Length == 8 &&
-                            HokensyaNo.StartsWith("67"))
-                        {
-                            result = "退職";
-                        }
-                        else
-                        {
-                            result = "国保";
-                        }
-                        break;
-                    case 11:
-                    case 12:
-                    case 13:
-                        result = "労災";
-                        break;
-                    case 14:
-                        result = "自賠";
-                        break;
-                }
-                return result;
-            }
-        }
 
         public string Houbetu { get; private set; }
 
@@ -192,6 +95,10 @@ namespace Domain.Models.Reception
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
             Comment = comment;
+            KaSname = String.Empty;
+            SName = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
@@ -205,6 +112,10 @@ namespace Domain.Models.Reception
             SinStartTime = String.Empty;
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
+            KaSname = String.Empty;
+            SName = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
@@ -221,6 +132,10 @@ namespace Domain.Models.Reception
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
             Comment = String.Empty;
+            KaSname = String.Empty;
+            SName = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel()
@@ -249,6 +164,10 @@ namespace Domain.Models.Reception
             SyosaisinKbn = 0;
             JikanKbn = 0;
             Comment = String.Empty;
+            KaSname = String.Empty;
+            SName = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(int tantoId, int kaId)
@@ -261,9 +180,13 @@ namespace Domain.Models.Reception
             KaikeiTime = String.Empty;
             KaId = kaId;
             TantoId = tantoId;
+            KaSname = String.Empty;
+            SName = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
-        public ReceptionModel(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId)
+        public ReceptionModel(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -276,6 +199,14 @@ namespace Domain.Models.Reception
             HokensyaNo = hokensyaNo;
             HokenKbn = hokenKbn;
             HokenId = hokenId;
+            HokenPid = hokenPid;
+            RaiinNo = raiinNo;
+            Comment = String.Empty;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
         }
 
         public ReceptionDto ToDto()
@@ -313,11 +244,6 @@ namespace Domain.Models.Reception
         {
             UketukeNo = uketukeNo;
             return this;
-        }
-
-        public bool CheckDefaultValue()
-        {
-            return PtId == 0 && SinDate == 0 && RaiinNo == 0;
         }
     }
 }
