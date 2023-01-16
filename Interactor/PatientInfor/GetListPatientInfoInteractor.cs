@@ -48,20 +48,14 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
 
     private List<PatientInforModel> GetListPatientInfos(int hpId, long ptId)
     {
-        var patientInfs = _patientInforRepository.SearchPatient(hpId, ptId);
-        List<PatientInforModel> result = new();
-        foreach (var patientInf in patientInfs)
-        {
-            result.Add(new PatientInforModel(
-                patientInf.HpId,
-                patientInf.PtId,
-                patientInf.PtNum,
-                patientInf.KanaName,
-                patientInf.Name,
-                patientInf.Birthday,
-                patientInf.LastVisitDate
-                ));
-        }
+        List<PatientInforModel> result = new(_patientInforRepository.SearchPatient(hpId, ptId).Select(x => new PatientInforModel(
+                                                    x.HpId,
+                                                    x.PtId,
+                                                    x.PtNum,
+                                                    x.KanaName,
+                                                    x.Name,
+                                                    x.Birthday,
+                                                    x.LastVisitDate)));
         return result;
     }
 }
