@@ -4,6 +4,7 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -1847,12 +1848,47 @@ namespace Infrastructure.Repositories
                             RaiinInf = raiinInf
                         };
             result = query.Select((x) => new PatientInforModel(
-                           x.PtInf.PtId,
-                           x.PtInf.PtNum,
-                           x.PtInf.KanaName,
-                           x.PtInf.Name,
-                           x.PtInf.Birthday,
-                           x.RaiinInf.SinDate
+                            x.PtInf.HpId,
+                            x.PtInf.PtId,
+                            0,
+                            0,
+                            x.PtInf.PtNum,
+                            x.PtInf.KanaName ?? string.Empty,
+                            x.PtInf.Name ?? string.Empty,
+                            0,
+                            x.PtInf.Birthday,
+                            0,
+                            0,
+                            0,
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            0,
+                            0,
+                            0,
+                            0,
+                            "",
+                            x.RaiinInf.SinDate,
+                            0,
+                            ""
                            )).OrderBy(x => x.PtNum)
                            .ToList();
             return result;

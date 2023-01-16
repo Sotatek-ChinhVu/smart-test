@@ -9,7 +9,6 @@ namespace UseCase.PatientInfor.GetListPatient
     public enum GetPatientInfoStatus
     {
         Success = 1,
-        Failed,
         InvalidPtId,
         InvalidHpId,
     }

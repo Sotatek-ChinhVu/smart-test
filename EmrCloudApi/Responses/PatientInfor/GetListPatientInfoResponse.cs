@@ -1,14 +1,15 @@
 ﻿using Domain.Models.PatientInfor;
+using UseCase.PatientInfor.GetListPatient;
 
 namespace EmrCloudApi.Tenant.Responses.PatientInfor
 {
     public class GetListPatientInfoResponse
     {
-        public GetListPatientInfoResponse(List<PatientInforModel> patientInfoList)
+        public GetListPatientInfoResponse(List<GetListPatientInfoInputItem> patientInfoList)
         {
             PatientInfoList = patientInfoList;
         }
 
-        public List<PatientInforModel> PatientInfoList { get; private set; } = new List<PatientInforModel>();
+        public List<GetListPatientInfoInputItem> PatientInfoList { get; private set; } = new List<GetListPatientInfoInputItem>();
     }
 }

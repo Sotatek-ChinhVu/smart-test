@@ -17,7 +17,6 @@ public class GetListPatientInfoPresenter : IGetPatientInfoOutputPort
     private string GetMessage(GetPatientInfoStatus status) => status switch
     {
         GetPatientInfoStatus.Success => ResponseMessage.Success,
-        GetPatientInfoStatus.Failed => ResponseMessage.Failed,
         GetPatientInfoStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetPatientInfoStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         _ => string.Empty

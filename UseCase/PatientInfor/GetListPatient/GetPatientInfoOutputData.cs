@@ -10,15 +10,12 @@ namespace UseCase.PatientInfor.GetListPatient;
 
 public class GetPatientInfoOutputData : IOutputData
 {
-    public GetPatientInfoOutputData(GetPatientInfoStatus status)
+    public GetPatientInfoOutputData(GetPatientInfoStatus status, List<GetListPatientInfoInputItem> patientInfoLists)
     {
         Status = status;
+        PatientInfoLists = patientInfoLists;
     }
-    public GetPatientInfoOutputData(GetPatientInfoStatus staus, List<PatientInforModel> patientInfoList)
-    {
-        Status = staus;
-        PatientInfoList = patientInfoList;
-    }
+
     public GetPatientInfoStatus Status { get; private set; }
-    public List<PatientInforModel> PatientInfoList { get; private set; } = new List<PatientInforModel>();
+    public List<GetListPatientInfoInputItem> PatientInfoLists { get; private set; } = new List<GetListPatientInfoInputItem>();
 }
