@@ -359,17 +359,19 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<RaiinListInfModel> GetRaiinListInf(int hpId, long ptId)
+        public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
         {
             var raiinListInfs =
                      (
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                         on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                        select new RaiinListInfModel(raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
-                     ).ToList();
+                        select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+                     );
 
-            return raiinListInfs;
+            return raiinListInfs
+                .GroupBy(r => r.RaiinNo)
+                .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
         }
     }
 }

@@ -17,7 +17,7 @@ namespace UseCase.FlowSheet.GetList
 
         public List<HolidayModel> ListHolidayModel { get; private set; }
 
-        public List<RaiinListInfModel> ListRaiinListInfModel { get; private set; }
+        public Dictionary<long, List<RaiinListInfModel>> ListRaiinListInfModel { get; private set; }
 
         public long TotalListFlowSheet { get; private set; }
 
@@ -25,12 +25,12 @@ namespace UseCase.FlowSheet.GetList
         {
             ListFlowSheetModel = new List<FlowSheetModel>();
             ListRaiinListMstModel = new List<RaiinListMstModel>();
-            ListRaiinListInfModel = new List<RaiinListInfModel>();
+            ListRaiinListInfModel = new Dictionary<long, List<RaiinListInfModel>>();
             ListHolidayModel = listHolidayModel;
             TotalListFlowSheet = 0;
         }
 
-        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, List<RaiinListInfModel> listRaiinListInfModel, long totalListFlowSheet = 0)
+        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, Dictionary<long, List<RaiinListInfModel>> listRaiinListInfModel, long totalListFlowSheet = 0)
         {
             ListFlowSheetModel = listFlowSheetModel;
             ListRaiinListMstModel = listRaiinListMstModel;

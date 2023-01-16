@@ -7,7 +7,7 @@ namespace Domain.Models.FlowSheet
     {
         List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount);
 
-        List<RaiinListInfModel> GetRaiinListInf(int hpId, long ptId);
+        Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId);
 
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 
