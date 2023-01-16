@@ -14,12 +14,19 @@ namespace Interactor.StickyNote
 
         public SaveStickyNoteOutputData Handle(SaveStickyNoteInputData inputData)
         {
-            var validate = Validate(inputData);
-            if (validate != UpdateStickyNoteStatus.Successed)
-                return new SaveStickyNoteOutputData(false, validate);
+            try
+            {
+                var validate = Validate(inputData);
+                if (validate != UpdateStickyNoteStatus.Successed)
+                    return new SaveStickyNoteOutputData(false, validate);
 
-            var result = _ptTagRepository.SaveStickyNote(inputData.stickyNoteModels, inputData.UserId);
-            return new SaveStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
+                var result = _ptTagRepository.SaveStickyNote(inputData.stickyNoteModels, inputData.UserId);
+                return new SaveStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
+            }
+            finally
+            {
+                _ptTagRepository.ReleaseResource();
+            }
         }
 
         public UpdateStickyNoteStatus Validate(SaveStickyNoteInputData inputData)

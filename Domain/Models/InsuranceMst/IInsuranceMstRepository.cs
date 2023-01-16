@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Common;
 
 namespace Domain.Models.InsuranceMst
 {
-    public interface IInsuranceMstRepository
+    public interface IInsuranceMstRepository : IRepositoryBase
     {
         InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate);
 
@@ -17,5 +13,7 @@ namespace Domain.Models.InsuranceMst
         bool SaveHokenSyaMst(HokensyaMstModel model, int userId);
 
         HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch);
+
+        List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken);
     }
 }

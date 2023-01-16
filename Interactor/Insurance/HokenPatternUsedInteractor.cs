@@ -32,6 +32,10 @@ namespace Interactor.Insurance
             {
                 return new HokenPatternUsedOutputData(false, HokenPatternUsedStatus.Exception);
             }
+            finally
+            {
+                _insuranceRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -61,6 +61,10 @@ namespace Interactor.MstItem
             {
                 return new SearchPostCodeOutputData(0, new List<PostCodeMstModel>(), SearchPostCodeStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

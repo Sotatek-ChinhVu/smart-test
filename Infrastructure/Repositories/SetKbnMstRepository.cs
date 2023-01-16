@@ -1,20 +1,18 @@
 ﻿using Domain.Models.SetKbnMst;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class SetKbnMstRepository : ISetKbnMstRepository
+    public class SetKbnMstRepository : RepositoryBase, ISetKbnMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public SetKbnMstRepository(ITenantProvider tenantProvider)
+        public SetKbnMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            var setEntities = _tenantDataContext.SetKbnMsts.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
+            var setEntities = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
 
             if (setEntities == null)
             {
@@ -33,6 +31,11 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

@@ -1,20 +1,23 @@
 ﻿using Domain.Models.PtGroupMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Mapping;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class GroupNameMstRepository : IGroupNameMstRepository
+    public class GroupNameMstRepository : RepositoryBase, IGroupNameMstRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        public GroupNameMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        {
+        }
         private readonly TenantDataContext _tenantNoTrackingDataContext;
 
-        public GroupNameMstRepository(ITenantProvider tenantProvider)
+        public void ReleaseResource()
         {
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+            DisposeDataContext();
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
@@ -60,21 +63,21 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public bool SaveGroupNameMst(List<GroupNameMstModel> groupNameMsts, int hpId, int userId)
         {
-            var grpNameDatabases = _tenantDataContext.PtGrpNameMsts.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId).ToList();
+            var grpNameDatabases = TrackingDataContext.PtGrpNameMsts.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId).ToList();
             var grpNameDeletes = grpNameDatabases.Where(x => !groupNameMsts.Any(o => o.GrpId == x.GrpId));
             foreach(var item in grpNameDeletes)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
 
-                var grpItemDeletes = _tenantDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
+                var grpItemDeletes = TrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
                                         && x.GrpId == item.GrpId);
 
                 foreach(var itemGrp in grpItemDeletes)
                 {
                     itemGrp.IsDeleted = DeleteTypes.Deleted;
-                    itemGrp.UpdateDate = DateTime.UtcNow;
+                    itemGrp.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemGrp.UpdateId = userId;
                 }
             }
@@ -87,24 +90,24 @@ namespace Infrastructure.Repositories
                 var itemAct = grpNameDatabases.FirstOrDefault(x => x.GrpId == item.GrpId);
                 if(itemAct is null)
                 {
-                    _tenantDataContext.PtGrpNameMsts.Add(new PtGrpNameMst()
+                    TrackingDataContext.PtGrpNameMsts.Add(new PtGrpNameMst()
                     {
                         HpId = hpId,
                         GrpId = item.GrpId,
                         SortNo = item.SortNo,
                         GrpName = item.GrpName,
                         IsDeleted = DeleteTypes.None,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     });
-                    _tenantDataContext.PtGrpItems.AddRange(Mapper.Map<GroupItemModel, PtGrpItem>(item.GroupItems, (src, dest) =>
+                    TrackingDataContext.PtGrpItems.AddRange(Mapper.Map<GroupItemModel, PtGrpItem>(item.GroupItems, (src, dest) =>
                     {
                         dest.CreateId = userId;
                         dest.HpId = hpId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     }));
@@ -113,10 +116,10 @@ namespace Infrastructure.Repositories
                 {
                     itemAct.GrpName = item.GrpName;
                     itemAct.SortNo = item.SortNo;
-                    itemAct.UpdateDate = DateTime.UtcNow;
+                    itemAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemAct.UpdateId = userId;
 
-                    var itemInDatabases = _tenantDataContext.PtGrpItems
+                    var itemInDatabases = TrackingDataContext.PtGrpItems
                                     .Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
                                         && x.GrpId == item.GrpId).ToList();
 
@@ -133,7 +136,7 @@ namespace Infrastructure.Repositories
                         var itemGrpAct = itemInDatabases.FirstOrDefault(x => x.GrpCode == itemGrp.GrpCode);
                         if(itemGrpAct is null)
                         {
-                            _tenantDataContext.PtGrpItems.Add(new PtGrpItem()
+                            TrackingDataContext.PtGrpItems.Add(new PtGrpItem()
                             {
                                 GrpId = itemGrp.GrpId,
                                 GrpCode = itemGrp.GrpCode,
@@ -141,21 +144,21 @@ namespace Infrastructure.Repositories
                                 SortNo = itemGrp.SortNo,
                                 CreateId = userId,
                                 HpId = hpId,
-                                CreateDate = DateTime.UtcNow,
-                                UpdateDate = DateTime.UtcNow,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateId = userId
                             });
                         }
                         else
                         {
                             itemGrpAct.GrpCodeName = itemGrp.GrpCodeName;
-                            itemGrpAct.UpdateDate = DateTime.UtcNow;
+                            itemGrpAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             itemGrpAct.UpdateId = userId;
                         }
                     }
                 }
             }
-            return _tenantDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

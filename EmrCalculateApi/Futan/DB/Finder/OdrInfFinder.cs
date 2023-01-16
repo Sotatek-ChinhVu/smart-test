@@ -1,4 +1,5 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Futan.Models;
 using PostgreDataContext;

@@ -1,14 +1,16 @@
-﻿using Domain.Models.CalculationInf;
+﻿using Domain.Common;
+using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
+using Domain.Models.MaxMoney;
 using Helper.Constants;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Domain.Models.PatientInfor
 {
-    public interface IPatientInforRepository
+    public interface IPatientInforRepository : IRepositoryBase
     {
         PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
 
@@ -39,9 +41,9 @@ namespace Domain.Models.PatientInfor
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId);
-        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId);
+        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId);
 
-        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId);
+        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId);
 
         bool DeletePatientInfo(long ptId, int hpId, int userId);
         bool IsAllowDeletePatient(int hpId, long ptId);

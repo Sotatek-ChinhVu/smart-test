@@ -1,12 +1,11 @@
-﻿using Domain.Models;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace UseCase.OrdInfs.CheckedSpecialItem
 {
     public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOutputData>
     {
-        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfItemInputData> odrInfs, List<CheckedSpecialItemOrderItem> checkedOrderModels, KarteItemInputData karteInf, bool enabledInputCheck, bool enabledCommentCheck)
+        public CheckedSpecialItemInputData(int hpId, int userId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfItemInputData> odrInfs, List<CheckedSpecialItemOrderItem> checkedOrderModels, KarteItemInputData karteInf, bool enabledInputCheck, bool enabledCommentCheck)
         {
             HpId = hpId;
             PtId = ptId;
@@ -19,6 +18,7 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
             EnabledCommentCheck = enabledCommentCheck;
             CheckedOrderModels = checkedOrderModels;
             KarteInf = karteInf;
+            UserId = userId;
         }
 
         public int HpId { get; private set; }

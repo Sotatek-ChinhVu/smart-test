@@ -99,5 +99,11 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
         {
             return new GetAccountDueListOutputData(GetAccountDueListStatus.Failed);
         }
+        finally
+        {
+            _accountDueRepository.ReleaseResource();
+            _receptionRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 }

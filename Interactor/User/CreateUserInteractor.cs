@@ -19,17 +19,24 @@ namespace Interactor.User
 
         public CreateUserOutputData Handle(CreateUserInputData inputData)
         {
-            if (string.IsNullOrWhiteSpace(inputData.Name))
+            try
             {
-                return new CreateUserOutputData(0, CreateUserStatus.InvalidName);
+                if (string.IsNullOrWhiteSpace(inputData.Name))
+                {
+                    return new CreateUserOutputData(0, CreateUserStatus.InvalidName);
+                }
+
+                int userId = _userRepository.MaxUserId();
+                var user = inputData.GenerateUserModel(userId);
+
+                _userRepository.Create(user);
+
+                return new CreateUserOutputData(userId, CreateUserStatus.Success);
             }
-
-            int userId = _userRepository.MaxUserId();
-            var user = inputData.GenerateUserModel(userId);
-
-            _userRepository.Create(user);
-
-            return new CreateUserOutputData(userId, CreateUserStatus.Success);
+            finally
+            {
+                _userRepository.ReleaseResource();
+            }
         }
     }
 }

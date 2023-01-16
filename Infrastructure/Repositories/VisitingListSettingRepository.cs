@@ -2,30 +2,32 @@
 using Domain.Models.VisitingListSetting;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class VisitingListSettingRepository : IVisitingListSettingRepository
+public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettingRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public VisitingListSettingRepository(ITenantProvider tenantProvider)
+    public VisitingListSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 
     public void Save(List<SystemConfModel> systemConfModels, int hpId, int userId)
     {
         ModifySystemConfs(systemConfModels, hpId, userId);
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     private void ModifySystemConfs(List<SystemConfModel> confModels, int hpId, int userId)
     {
-        var existingConfigs = _tenantDataContext.SystemConfs
+        var existingConfigs = TrackingDataContext.SystemConfs
             .Where(s => s.GrpCd == SystemConfGroupCodes.ReceptionTimeColor
                 || s.GrpCd == SystemConfGroupCodes.ReceptionStatusColor).ToList();
         var configsToInsert = new List<SystemConf>();
@@ -38,7 +40,7 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
                 if (configToUpdate.Param != model.Param)
                 {
                     configToUpdate.Param = model.Param;
-                    configToUpdate.UpdateDate = DateTime.UtcNow;
+                    configToUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     configToUpdate.UpdateId = userId;
                 }
             }
@@ -52,17 +54,17 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
                     Val = model.Val,
                     Param = model.Param,
                     Biko = model.Biko,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 });
             }
         }
 
-        _tenantDataContext.SystemConfs.AddRange(configsToInsert);
+        TrackingDataContext.SystemConfs.AddRange(configsToInsert);
 
         var configsToDelete = existingConfigs.Where(c => !confModels.Exists(m => m.GrpCd == c.GrpCd && m.GrpEdaNo == c.GrpEdaNo));
-        _tenantDataContext.SystemConfs.RemoveRange(configsToDelete);
+        TrackingDataContext.SystemConfs.RemoveRange(configsToDelete);
     }
 }

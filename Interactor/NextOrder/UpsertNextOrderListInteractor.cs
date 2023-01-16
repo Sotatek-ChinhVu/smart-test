@@ -64,7 +64,7 @@ namespace Interactor.NextOrder
                 var hokenPids = new List<int>();
                 foreach (var item in inputData.NextOrderItems)
                 {
-                    hokenPids.AddRange(item.rsvKrtOrderInfItems.Select(o => o.HokenPid));
+                    hokenPids.AddRange(item.RsvKrtOrderInfItems.Select(o => o.HokenPid));
                 }
 
                 var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids.Distinct().ToList() ?? new List<int>());
@@ -72,10 +72,10 @@ namespace Interactor.NextOrder
                 foreach (var nextOrder in inputData.NextOrderItems)
                 {
                     rsvkrtNos.Add(nextOrder.RsvkrtNo);
-                    rsvkrtNos.Add(nextOrder.rsvkrtKarteInf.RsvkrtNo);
+                    rsvkrtNos.Add(nextOrder.RsvkrtKarteInf.RsvkrtNo);
                     rsvkrtDates.Add(nextOrder.RsvDate);
-                    rsvkrtDates.Add(nextOrder.rsvkrtKarteInf.RsvDate);
-                    foreach (var orderInfModel in nextOrder.rsvKrtOrderInfItems)
+                    rsvkrtDates.Add(nextOrder.RsvkrtKarteInf.RsvDate);
+                    foreach (var orderInfModel in nextOrder.RsvKrtOrderInfItems)
                     {
                         rsvkrtNos.Add(orderInfModel.RsvkrtNo);
                         rsvkrtNos.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvkrtNo));
@@ -84,7 +84,7 @@ namespace Interactor.NextOrder
                         itemCds.AddRange(_mstItemRepository.GetCheckItemCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
                         ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
                     }
-                    foreach (var byomei in nextOrder.rsvKrtByomeiItems)
+                    foreach (var byomei in nextOrder.RsvKrtByomeiItems)
                     {
                         rsvkrtNos.Add(byomei.RsvkrtNo);
                     }
@@ -142,19 +142,37 @@ namespace Interactor.NextOrder
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
                 }
                 var rsvkrtNo = _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
-                if (rsvkrtNo > 0)
+
+                if (inputData.FileItem.IsUpdateFile)
                 {
-                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, true);
-                }
-                else
-                {
-                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, false);
+                    if (rsvkrtNo > 0)
+                    {
+                        var listFileItems = inputData.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, listFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.FileItem.ListFileItems, false);
+                    }
                 }
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
             }
             catch
             {
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
+            }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _nextOrderRepository.ReleaseResource();
+                _patientInfRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
             }
         }
 
@@ -171,7 +189,11 @@ namespace Interactor.NextOrder
             var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
             if (saveSuccess)
             {
-                _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, listUpdates, false);
+                if (!listUpdates.Any())
+                {
+                    listUpdates = new List<string> { string.Empty };
+                }
+                _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, host, listUpdates.Select(item => new NextOrderFileInfModel(false, item)).ToList(), false);
             }
             else
             {

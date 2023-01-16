@@ -20,8 +20,7 @@ namespace Interactor.NextOrder
                 }
             }
 
-            object obj = new();
-            Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
+            for (int index = 0; index < nextOrderModel.RsvkrtOrderInfs.Count; index++)
             {
                 var item = nextOrderModel.RsvkrtOrderInfs[index];
 
@@ -30,8 +29,8 @@ namespace Interactor.NextOrder
                     var check = checkOderInfs.Any(c => c.RsvkrtNo == item.RsvkrtNo && c.RsvDate == item.RsvDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                     if (!check)
                     {
-                        AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                        return;
+                        AddErrorStatus(validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                        break;
                     }
                 }
 
@@ -39,42 +38,42 @@ namespace Interactor.NextOrder
                 var positionOrd = nextOrderModel.RsvkrtOrderInfs.FindIndex(o => o == checkObjs.LastOrDefault());
                 if (checkObjs.Count >= 2 && positionOrd == index)
                 {
-                    AddErrorStatus(obj, validationOneOrdInf, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                    return;
+                    AddErrorStatus(validationOneOrdInf, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                    break;
                 }
 
                 var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                 if (!checkHokenPid)
                 {
-                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                    AddErrorStatus(validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
 
-                    return;
+                    break;
                 }
 
                 var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvkrtNo != itemOd.RsvkrtNo);
                 if (odrDetail != null)
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
-                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                    return;
+                    AddErrorStatus(validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                    break;
                 }
 
                 odrDetail = item.OrdInfDetails.FirstOrDefault(od => !itemCds.Contains(od.ItemCd));
                 if (odrDetail != null)
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
-                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidItemCd));
-                    return;
+                    AddErrorStatus(validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidItemCd));
+                    break;
                 }
 
                 odrDetail = item.OrdInfDetails.FirstOrDefault(od => !ipnCds.Contains(od.IpnCd));
                 if (odrDetail != null)
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
-                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidIpnCd));
-                    return;
+                    AddErrorStatus(validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidIpnCd));
+                    break;
                 }
-            });
+            }
 
             return validationOneOrdInf;
         }
@@ -90,9 +89,9 @@ namespace Interactor.NextOrder
                     nextOrderItem.RsvName,
                     nextOrderItem.IsDeleted,
                     nextOrderItem.SortNo,
-                    nextOrderItem.rsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
-                    ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.rsvkrtKarteInf),
-                    nextOrderItem.rsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
+                    nextOrderItem.RsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
+                    ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.RsvkrtKarteInf),
+                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
                 );
         }
 
@@ -217,12 +216,9 @@ namespace Interactor.NextOrder
                 );
         }
 
-        private static void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        private static void AddErrorStatus(Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
         {
-            lock (obj)
-            {
-                dicValidation.Add(key, status);
-            }
+            dicValidation.Add(key, status);
         }
     }
 }

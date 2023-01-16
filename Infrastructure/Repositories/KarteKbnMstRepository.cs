@@ -1,20 +1,18 @@
 ﻿using Domain.Models.KarteKbnMst;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class KarteKbnMstRepository : IKarteKbnMstRepository
+    public class KarteKbnMstRepository : RepositoryBase, IKarteKbnMstRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
-        public KarteKbnMstRepository(ITenantProvider tenantProvider)
+        public KarteKbnMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<KarteKbnMstModel> GetList(int hpId, bool isDeleted)
         {
-            var karteInfEntity = _tenantDataContext.KarteKbnMst.Where(k => k.HpId == hpId && (isDeleted || k.IsDeleted == 0));
+            var karteInfEntity = NoTrackingDataContext.KarteKbnMst.Where(k => k.HpId == hpId && (isDeleted || k.IsDeleted == 0));
 
             if (karteInfEntity == null)
             {
@@ -32,6 +30,11 @@ namespace Infrastructure.Repositories
                             k.IsDeleted
                     )
                   ).ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

@@ -1,21 +1,18 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
-    public class PatientInfoRepository : IPatientInfoRepository
+    public class PatientInfoRepository : RepositoryBase, IPatientInfoRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-
-        public PatientInfoRepository(ITenantProvider tenantProvider)
+        public PatientInfoRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<KensaInfDetailModel> GetListKensaInfModel(int hpId, long ptId, int sinDate)
         {
-            var listKensaInfDetail = _tenantDataContext.KensaInfDetails.Where(u => u.HpId == hpId
+            var listKensaInfDetail = NoTrackingDataContext.KensaInfDetails.Where(u => u.HpId == hpId
                                                                                 && u.PtId == ptId
                                                                                 && u.IsDeleted == 0
                                                                                 && (u.KensaItemCd == "V0001"
@@ -49,9 +46,9 @@ namespace Infrastructure.Repositories.SpecialNote
         public List<PhysicalInfoModel> GetPhysicalList(int hpId, long ptId)
         {
             var physicals = new List<PhysicalInfoModel>();
-            var allKensaInfDetails = _tenantDataContext.KensaInfDetails.Where(x => x.PtId == ptId && x.IsDeleted == 0 && (x.KensaItemCd != null && x.KensaItemCd.StartsWith("V")))?.GroupBy(item => new { item.KensaItemCd, item.IraiDate })
+            var allKensaInfDetails = NoTrackingDataContext.KensaInfDetails.Where(x => x.PtId == ptId && x.IsDeleted == 0 && (x.KensaItemCd != null && x.KensaItemCd.StartsWith("V")))?.GroupBy(item => new { item.KensaItemCd, item.IraiDate })
                .Select(item => item.OrderByDescending(x => x.SeqNo).FirstOrDefault()).ToList();
-            var kensaMsts = _tenantDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0 && x.KensaItemCd.StartsWith("V")).OrderBy(mst => mst.SortNo);
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0 && x.KensaItemCd.StartsWith("V")).OrderBy(mst => mst.SortNo);
 
             foreach (var kensaMst in kensaMsts)
             {
@@ -105,7 +102,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId)
         {
-            var ptPregnancys = _tenantDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).Select(x => new PtPregnancyModel(
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).Select(x => new PtPregnancyModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
@@ -126,7 +123,7 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)
         {
-            var seikaturekiInfs = _tenantDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
+            var seikaturekiInfs = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
@@ -134,6 +131,11 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Text ?? String.Empty
             ));
             return seikaturekiInfs.ToList();
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

@@ -14,8 +14,15 @@ namespace Interactor.MstItem
 
         public GetFoodAlrgyOutputData Handle(GetFoodAlrgyInputData inputData)
         {
-            var foodAlrgyMasterData = GetFoodAlrgyMasterData();
-            return new GetFoodAlrgyOutputData(foodAlrgyMasterData, GetFoodAlrgyStatus.Successed);
+            try
+            {
+                var foodAlrgyMasterData = GetFoodAlrgyMasterData();
+                return new GetFoodAlrgyOutputData(foodAlrgyMasterData, GetFoodAlrgyStatus.Successed);
+            }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
         private List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {

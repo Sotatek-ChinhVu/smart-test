@@ -1,42 +1,43 @@
 ﻿using Domain.Models.UketukeSbtDayInf;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
+public class UketukeSbtDayInfRepository : RepositoryBase, IUketukeSbtDayInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public UketukeSbtDayInfRepository(ITenantProvider tenantProvider)
+    public UketukeSbtDayInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<UketukeSbtDayInfModel> GetListBySinDate(int sinDate)
     {
-        return _tenantDataContext.UketukeSbtDayInfs
+        return NoTrackingDataContext.UketukeSbtDayInfs
             .Where(u => u.SinDate == sinDate).AsEnumerable()
             .Select(u => ToModel(u)).ToList();
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Upsert(int sinDate, int uketukeSbt, int seqNo, int userId)
     {
-        var dayInf = _tenantDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.SinDate == sinDate).FirstOrDefault();
+        var dayInf = TrackingDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.SinDate == sinDate).FirstOrDefault();
         if (dayInf is null)
         {
-            _tenantDataContext.UketukeSbtDayInfs.Add(new UketukeSbtDayInf
+            TrackingDataContext.UketukeSbtDayInfs.Add(new UketukeSbtDayInf
             {
                 HpId = 1,
                 SinDate = sinDate,
                 UketukeSbt = uketukeSbt,
                 SeqNo = seqNo,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow()
             });
         }
         else
@@ -44,7 +45,7 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
             dayInf.UketukeSbt = uketukeSbt;
         }
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     private UketukeSbtDayInfModel ToModel(UketukeSbtDayInf u)

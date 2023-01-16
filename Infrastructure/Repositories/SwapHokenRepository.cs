@@ -1,24 +1,20 @@
 ﻿using Domain.Models.SwapHoken;
+using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class SwapHokenRepository : ISwapHokenRepository
+    public class SwapHokenRepository : RepositoryBase, ISwapHokenRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        private readonly TenantDataContext _tenantTrackingDataContext;
-
-        public SwapHokenRepository(ITenantProvider tenantProvider)
+        public SwapHokenRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public long CountOdrInf(int hpId, long ptId, int hokenPid, int startDate, int endDate)
         {
-            return _tenantDataContext.OdrInfs.Count((x) =>
+            return NoTrackingDataContext.OdrInfs.Count((x) =>
                             x.HpId == hpId &&
                             x.PtId == ptId &&
                             x.HokenPid == hokenPid &&
@@ -29,7 +25,7 @@ namespace Infrastructure.Repositories
 
         public List<int> GetListSeikyuYms(int hpId, long ptId, int hokenPid, int startDate, int endDate)
         {
-            var listRaiin = _tenantDataContext.RaiinInfs.Where(x =>
+            var listRaiin = NoTrackingDataContext.RaiinInfs.Where(x =>
                         x.HpId == hpId &&
                         x.PtId == ptId &&
                         x.HokenPid == hokenPid &&
@@ -43,7 +39,7 @@ namespace Infrastructure.Repositories
 
         public List<int> GetSeikyuYmsInPendingSeikyu(int hpId, long ptId, List<int> sinYms, int hokenId)
         {
-            return _tenantDataContext.ReceSeikyus.Where(p => p.HpId == hpId &&
+            return NoTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId &&
                                                         p.PtId == ptId &&
                                                         p.IsDeleted == DeleteTypes.None &&
                                                         sinYms.Contains(p.SinYm) &&
@@ -54,11 +50,11 @@ namespace Infrastructure.Repositories
 
         public bool SwapHokenParttern(int hpId, long PtId, int OldHokenPid, int NewHokenPid, int StartDate, int EndDate, int userId)
         {
-            var updateDate = DateTime.UtcNow;
+            var updateDate = CIUtil.GetJapanDateTimeNow();
             var updateId = userId;
 
             #region UpdateHokenPatternInRaiin
-            var raiinInfList = _tenantTrackingDataContext.RaiinInfs.Where((x) =>
+            var raiinInfList = TrackingDataContext.RaiinInfs.Where((x) =>
                 x.HpId == hpId &&
                 x.PtId == PtId &&
                 x.HokenPid == OldHokenPid &&
@@ -76,7 +72,7 @@ namespace Infrastructure.Repositories
             #endregion UpdateHokenPatternInRaiin
 
             #region UpdateHokenPatternInOdrInf
-            var odrInfList = _tenantTrackingDataContext.OdrInfs.Where((x) =>
+            var odrInfList = TrackingDataContext.OdrInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.PtId == PtId &&
                     x.SinDate >= StartDate &&
@@ -91,12 +87,12 @@ namespace Infrastructure.Repositories
             });
             #endregion 
 
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public bool ExistRaiinInfUsedOldHokenId(int hpId, long ptId, List<int> sinYms, int oldHokenPId)
         {
-            return _tenantDataContext.RaiinInfs.Any(p => p.HpId == hpId &&
+            return NoTrackingDataContext.RaiinInfs.Any(p => p.HpId == hpId &&
                                                          p.PtId == ptId &&
                                                          sinYms.Contains(p.SinDate / 100) &&
                                                          p.HokenPid == oldHokenPId &&
@@ -106,7 +102,7 @@ namespace Infrastructure.Repositories
 
         public bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId, int userId)
         {
-            var receSeiKyus = _tenantTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
+            var receSeiKyus = TrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
             if (!receSeiKyus.Any())
                 return true;
             foreach (var receSeiKyu in receSeiKyus)
@@ -117,7 +113,12 @@ namespace Infrastructure.Repositories
                 receSeiKyu.UpdateDate = DateTime.Now;
                 receSeiKyu.UpdateId = userId;
             }
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

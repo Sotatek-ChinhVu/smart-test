@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.KarteFilterMst;
+﻿using Domain.Common;
 
-public interface IKarteFilterMstRepository
+namespace Domain.Models.KarteFilterMst;
+
+public interface IKarteFilterMstRepository : IRepositoryBase
 {
     List<KarteFilterMstModel> GetList(int hpId, int userId);
     KarteFilterMstModel Get(int hpId, int userId, long filterId);

@@ -2,21 +2,18 @@
 using Domain.Enum;
 using Domain.Models.Diseases;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class DiseaseRepository : IPtDiseaseRepository
+    public class DiseaseRepository : RepositoryBase, IPtDiseaseRepository
     {
         private const string FREE_WORD = "0000999";
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantTrackingDataContext;
-        public DiseaseRepository(ITenantProvider tenantProvider)
+        public DiseaseRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<PtDiseaseModel> GetListPatientDiseaseForReport(int hpId, long ptId, int hokenPid, int sinDate, bool tenkiByomei)
@@ -28,7 +25,7 @@ namespace Infrastructure.Repositories
                 tenkiKbns.AddRange(new List<int> { TenkiKbnConst.Cured, TenkiKbnConst.Dead, TenkiKbnConst.Canceled, TenkiKbnConst.Other });
             }
 
-            var ptByomeiList = _tenantNoTrackingDataContext.PtByomeis.Where(p =>
+            var ptByomeiList = NoTrackingDataContext.PtByomeis.Where(p =>
                 p.HpId == hpId &&
                 p.PtId == ptId &&
                 (p.HokenPid == 0 || p.HokenPid == hokenPid) &&
@@ -42,7 +39,7 @@ namespace Infrastructure.Repositories
             .ToList();
 
 
-            var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
 
             var byomeiMstList = (from ptByomei in ptByomeiList
@@ -121,7 +118,7 @@ namespace Infrastructure.Repositories
 
         public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
         {
-            var ptByomeiListQueryable = _tenantNoTrackingDataContext.PtByomeis
+            var ptByomeiListQueryable = NoTrackingDataContext.PtByomeis
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
@@ -138,7 +135,7 @@ namespace Infrastructure.Repositories
                                                     .ThenByDescending(p => p.TenkiDate)
                                                     .ThenBy(p => p.Id).ToList();
 
-            var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
 
             var byomeiMstList = (from ptByomei in ptByomeiListQueryable
@@ -215,6 +212,11 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
         {
             var byomeis = new List<PtByomei>();
@@ -222,7 +224,7 @@ namespace Infrastructure.Repositories
             {
                 if (inputData.IsDeleted == DeleteTypes.Deleted)
                 {
-                    var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+                    var ptByomei = TrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
                     if (ptByomei != null)
                     {
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
@@ -230,28 +232,28 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+                    var ptByomei = TrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
                     var byomei = new PtByomei();
 
                     if (ptByomei != null)
                     {
                         byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
-                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
+                        TrackingDataContext.PtByomeis.Add(byomei);
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
                         ptByomei.UpdateId = userId;
-                        ptByomei.UpdateDate = DateTime.UtcNow;
+                        ptByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
                         byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
-                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
+                        TrackingDataContext.PtByomeis.Add(byomei);
                     }
 
                     byomeis.Add(byomei);
                 }
             }
-            _tenantTrackingDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
 
             return byomeis.Select(b => b.Id).ToList();
         }
@@ -299,11 +301,11 @@ namespace Infrastructure.Repositories
                 IsNodspRece = model.IsNodspRece,
                 IsNodspKarte = model.IsNodspKarte,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 SeqNo = model.SeqNo,
                 IsImportant = model.IsImportant,
                 UpdateId = userId,
-                UpdateDate = DateTime.UtcNow
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
         }
 
@@ -340,7 +342,7 @@ namespace Infrastructure.Repositories
                 return new List<PrefixSuffixModel>();
             }
 
-            var byomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
 
             List<PrefixSuffixModel> result = new();
             foreach (var code in codeList)

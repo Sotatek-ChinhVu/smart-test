@@ -1,30 +1,27 @@
 ﻿using Domain.Models.TimeZone;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class TimeZoneRepository : ITimeZoneRepository
+public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
-    public TimeZoneRepository(ITenantProvider tenantProvider)
+    public TimeZoneRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public bool IsHoliday(int hpId, int sinDate)
     {
-        var holidayMst = _tenantNoTrackingDataContext.HolidayMsts.FirstOrDefault(item => item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted != 1);
+        var holidayMst = NoTrackingDataContext.HolidayMsts.FirstOrDefault(item => item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted != 1);
         return holidayMst != null && holidayMst.HolidayKbn != 0 && holidayMst.KyusinKbn == 1;
     }
 
     public int GetShonikaSetting(int hpId, int presentDate)
     {
-        var systemConfig = _tenantNoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(
+        var systemConfig = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(
                                 item => item.HpId == hpId
                                 && item.GrpCd == 8001
                                 && item.GrpEdaNo == 0
@@ -40,7 +37,7 @@ public class TimeZoneRepository : ITimeZoneRepository
 
     public List<TimeZoneConfModel> GetTimeZoneConfs(int hpId)
     {
-        return _tenantNoTrackingDataContext.TimeZoneConfs.Where(item => item.HpId == hpId && item.IsDelete == DeleteTypes.None)
+        return NoTrackingDataContext.TimeZoneConfs.Where(item => item.HpId == hpId && item.IsDelete == DeleteTypes.None)
                                                          .Select(item => new TimeZoneConfModel(
                                                                 item.HpId,
                                                                 item.YoubiKbn,
@@ -54,7 +51,7 @@ public class TimeZoneRepository : ITimeZoneRepository
 
     public TimeZoneDayInfModel GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime)
     {
-        var result = _tenantNoTrackingDataContext.TimeZoneDayInfs.Where(item => item.HpId == hpId &&
+        var result = NoTrackingDataContext.TimeZoneDayInfs.Where(item => item.HpId == hpId &&
                                                                                       item.SinDate == sinDate &&
                                                                                       uketukeTime >= item.StartTime &&
                                                                                       (item.EndTime == 0 ? uketukeTime <= 2400 : uketukeTime <= item.EndTime))
@@ -75,7 +72,7 @@ public class TimeZoneRepository : ITimeZoneRepository
         try
         {
             //update latest timeZoneDayInf in sindate
-            var updateTimeZoneDayInf = _tenantDataContext.TimeZoneDayInfs.Where(t => t.HpId == hpId &&
+            var updateTimeZoneDayInf = TrackingDataContext.TimeZoneDayInfs.Where(t => t.HpId == hpId &&
                                                                 t.SinDate == sinDate &&
                                                                 uketukeTime >= t.StartTime &&
                                                                 (t.EndTime == 0 ? uketukeTime <= 2400 : uketukeTime <= t.EndTime))
@@ -96,16 +93,21 @@ public class TimeZoneRepository : ITimeZoneRepository
                 EndTime = 0,
                 CreateId = userId,
                 UpdateId = userId,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
-            _tenantDataContext.TimeZoneDayInfs.Add(timeDayInf);
+            TrackingDataContext.TimeZoneDayInfs.Add(timeDayInf);
 
-            return _tenantDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
         catch
         {
             return false;
         }
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

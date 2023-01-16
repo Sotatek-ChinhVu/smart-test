@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.KarteKbnMst
+﻿using Domain.Common;
+
+namespace Domain.Models.KarteKbnMst
 {
-    public interface IKarteKbnMstRepository
+    public interface IKarteKbnMstRepository : IRepositoryBase
     {
         List<KarteKbnMstModel> GetList(int hpId, bool isDeleted);
     }

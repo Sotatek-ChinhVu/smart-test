@@ -69,9 +69,13 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             }
             return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
         }
-        catch (Exception)
+        finally
         {
-            return new SaveDocInfOutputData(SaveDocInfStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _receptionRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 
@@ -93,7 +97,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX)$";
+        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX|doc|DOC)$";
         var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {

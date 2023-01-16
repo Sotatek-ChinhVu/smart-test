@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.Document;
+﻿using Domain.Common;
 
-public interface IDocumentRepository
+namespace Domain.Models.Document;
+
+public interface IDocumentRepository : IRepositoryBase
 {
     List<DocCategoryModel> GetAllDocCategory(int hpId);
 
@@ -29,4 +31,6 @@ public interface IDocumentRepository
     bool DeleteDocCategory(int hpId, int userId, int categoryCd);
 
     bool MoveDocInf(int hpId, int userId, int categoryCd, int moveCategoryCd);
+
+    List<DocCommentModel> GetListDocComment(List<string> listReplaceWord);
 }

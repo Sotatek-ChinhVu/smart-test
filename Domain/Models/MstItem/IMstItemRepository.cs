@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.MstItem
+﻿using Domain.Common;
+
+namespace Domain.Models.MstItem
 {
-    public interface IMstItemRepository
+    public interface IMstItemRepository : IRepositoryBase
     {
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
@@ -45,5 +47,7 @@
         List<string> GetCheckItemCds(List<string> itemCds);
 
         List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
+
+        List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
     }
 }

@@ -59,9 +59,11 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
             response.Wait();
             return new CheckExistFileNameOutputData(response.Result, CheckExistFileNameStatus.Successed);
         }
-        catch
+        finally
         {
-            return new CheckExistFileNameOutputData(CheckExistFileNameStatus.Failed);
+            _patientInforRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _documentRepository.ReleaseResource();
         }
     }
 

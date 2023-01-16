@@ -34,8 +34,15 @@ namespace Interactor.InsuranceMst
                 return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidSinDate);
             }
 
-            var data = _insuranceMstReponsitory.GetDataInsuranceMst(inputData.HpId, inputData.PtId, inputData.SinDate);
-            return new GetInsuranceMstOutputData(data, GetInsuranceMstStatus.Successed);
+            try
+            {
+                var data = _insuranceMstReponsitory.GetDataInsuranceMst(inputData.HpId, inputData.PtId, inputData.SinDate);
+                return new GetInsuranceMstOutputData(data, GetInsuranceMstStatus.Successed);
+            }
+            finally
+            {
+                _insuranceMstReponsitory.ReleaseResource();
+            }
         }
     }
 }

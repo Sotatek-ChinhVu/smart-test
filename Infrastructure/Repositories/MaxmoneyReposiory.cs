@@ -2,23 +2,21 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class MaxmoneyReposiory : IMaxmoneyReposiory
+    public class MaxmoneyReposiory : RepositoryBase, IMaxmoneyReposiory
     {
-        private readonly TenantDataContext _tenantDataContext;
-
-        public MaxmoneyReposiory(ITenantProvider tenantProvider)
+        public MaxmoneyReposiory(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<LimitListModel> GetListLimitModel(long ptId, int hpId)
         {
-            IEnumerable<LimitListInf> maxMoneys = _tenantDataContext.LimitListInfs.Where(u => u.HpId == hpId
+            IEnumerable<LimitListInf> maxMoneys = NoTrackingDataContext.LimitListInfs.Where(u => u.HpId == hpId
                                                                    && u.PtId == ptId
                                                                    && u.IsDeleted == 0)
                                                                    .OrderBy(u => u.SortKey)
@@ -28,13 +26,13 @@ namespace Infrastructure.Repositories
 
         public MaxMoneyInfoHokenModel GetInfoHokenMoney(int hpId, long ptId, int kohiId, int sinYm)
         {
-            var kohi = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId
+            var kohi = NoTrackingDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.PtId == ptId
                                                                 && x.HokenId == kohiId);
 
             if (kohi is null) return new MaxMoneyInfoHokenModel(0, 0, 0, 0, 0, 0, string.Empty, string.Empty, 0, 0, 0, 0);
 
-            var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
+            var hokenMst = NoTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.HokenNo == kohi.HokenNo
                                                                 && x.HokenEdaNo == kohi.HokenEdaNo);
 
@@ -64,7 +62,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveMaxMoney(List<LimitListModel> dataInputs, int hpId, long ptId, int kohiId, int sinYm, int userId)
         {
-            List<LimitListInf> maxMoneyDatabases = _tenantDataContext.LimitListInfs.Where(x => x.HpId == hpId
+            List<LimitListInf> maxMoneyDatabases = TrackingDataContext.LimitListInfs.Where(x => x.HpId == hpId
                                                                    && x.PtId == ptId
                                                                    && x.KohiId == kohiId
                                                                    && x.IsDeleted == 0)
@@ -79,7 +77,7 @@ namespace Infrastructure.Repositories
                     if (CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -102,12 +100,12 @@ namespace Infrastructure.Repositories
                         TotalGaku = item.TotalGaku,
                         Biko = item.Biko,
                         IsDeleted = 0,
-                        CreateDate = DateTime.UtcNow,
-                        UpdateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
                         CreateId = userId
                     };
-                    _tenantDataContext.LimitListInfs.Add(create);
+                    TrackingDataContext.LimitListInfs.Add(create);
                 }
                 else
                 {
@@ -119,13 +117,18 @@ namespace Infrastructure.Repositories
                         update.TotalGaku = item.TotalGaku;
                         update.Biko = item.Biko;
                         update.SinDate = item.SinDateY * 10000 + item.SinDateM * 100 + item.SinDateD;
-                        update.UpdateDate = DateTime.UtcNow;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         update.UpdateId = userId;
                     }
                 }
             };
 
-            return _tenantDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

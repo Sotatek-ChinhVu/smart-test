@@ -122,6 +122,91 @@ namespace Domain.Models.OrdInfDetails
             CenterItemCd2 = centerItemCd2;
         }
 
+        public OrdInfDetailModel(int hpId, string itemCd, int sinDate)
+        {
+
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CnvUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            HpId = hpId;
+            ItemCd = itemCd;
+            SinDate = sinDate;
+        }
+        public OrdInfDetailModel(int hpId, string itemCd, int sinDate, int suryo)
+        {
+
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CnvUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            HpId = hpId;
+            ItemCd = itemCd;
+            SinDate = sinDate;
+            Suryo = suryo;
+        }
+
+        public OrdInfDetailModel(string itemCd, int sinKouiKbn)
+        {
+
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CnvUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            HpId = 0;
+            ItemCd = itemCd;
+            SinDate = 0;
+            SinKouiKbn = sinKouiKbn;
+        }
+
         public bool IsSpecialItem
         {
             get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
@@ -140,7 +225,7 @@ namespace Domain.Models.OrdInfDetails
 
         public bool IsInjection
         {
-            get => SinKouiKbn == 30;
+            get => SinKouiKbn == 30 && MasterSbt != "S";
         }
 
         public bool Is820Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment820Pattern);
@@ -236,6 +321,8 @@ namespace Domain.Models.OrdInfDetails
         }
 
         public bool HasCmtName => Is830Cmt || Is831Cmt || Is840Cmt || Is842Cmt || Is850Cmt || Is851Cmt || Is852Cmt || Is853Cmt || Is880Cmt;
+
+        public bool IsCommentMaster => Is820Cmt || Is830Cmt || Is831Cmt || Is840Cmt || Is842Cmt || Is850Cmt || Is851Cmt || Is852Cmt || Is853Cmt || Is880Cmt;
 
         public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
 

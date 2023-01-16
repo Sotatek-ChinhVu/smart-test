@@ -44,6 +44,10 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+            }
             return new ValidateRousaiJibaiOutputData(validateDetails);
         }
 

@@ -25,7 +25,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get)]
     public ActionResult<Response<GetNextOrderResponse>> Get([FromQuery] GetNextOrderRequest request)
     {
-        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.Type, UserId);
+        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.RsvkrtKbn, UserId);
         var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderPresenter();
@@ -49,7 +49,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpPost(ApiPath.Upsert)]
     public ActionResult<Response<UpsertNextOrderListResponse>> Upsert([FromBody] UpsertNextOrderListRequest request)
     {
-        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems, request.ListFileItems);
+        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems, new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems));
         var output = _bus.Handle(input);
 
         var presenter = new UpsertNextOrderListPresenter();

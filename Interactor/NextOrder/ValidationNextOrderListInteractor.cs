@@ -56,7 +56,7 @@ namespace Interactor.NextOrder
                 var hokenPids = new List<int>();
                 foreach (var item in inputData.NextOrderItems)
                 {
-                    hokenPids.AddRange(item.rsvKrtOrderInfItems.Select(o => o.HokenPid));
+                    hokenPids.AddRange(item.RsvKrtOrderInfItems.Select(o => o.HokenPid));
                 }
 
                 var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids.Distinct().ToList() ?? new List<int>());
@@ -64,10 +64,10 @@ namespace Interactor.NextOrder
                 foreach (var nextOrder in inputData.NextOrderItems)
                 {
                     rsvkrtNos.Add(nextOrder.RsvkrtNo);
-                    rsvkrtNos.Add(nextOrder.rsvkrtKarteInf.RsvkrtNo);
+                    rsvkrtNos.Add(nextOrder.RsvkrtKarteInf.RsvkrtNo);
                     rsvkrtDates.Add(nextOrder.RsvDate);
-                    rsvkrtDates.Add(nextOrder.rsvkrtKarteInf.RsvDate);
-                    foreach (var orderInfModel in nextOrder.rsvKrtOrderInfItems)
+                    rsvkrtDates.Add(nextOrder.RsvkrtKarteInf.RsvDate);
+                    foreach (var orderInfModel in nextOrder.RsvKrtOrderInfItems)
                     {
                         rsvkrtNos.Add(orderInfModel.RsvkrtNo);
                         rsvkrtNos.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvkrtNo));
@@ -76,7 +76,7 @@ namespace Interactor.NextOrder
                         itemCds.AddRange(_mstItemRepository.GetCheckItemCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
                         ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
                     }
-                    foreach (var byomei in nextOrder.rsvKrtByomeiItems)
+                    foreach (var byomei in nextOrder.RsvKrtByomeiItems)
                     {
                         rsvkrtNos.Add(byomei.RsvkrtNo);
                     }
@@ -138,6 +138,15 @@ namespace Interactor.NextOrder
             catch
             {
                 return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.Failed, new(), new(), new(), new());
+            }
+            finally
+            {
+                _insuranceRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _nextOrderRepository.ReleaseResource();
+                _patientInfRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
             }
         }
     }
