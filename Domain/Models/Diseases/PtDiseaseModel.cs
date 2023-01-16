@@ -182,6 +182,36 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
         }
+      
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = string.Empty;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = string.Empty;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = tenkiKbn;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HokenPid = hokenPid;
+            HosokuCmt = string.Empty;
+        }
 
         public ValidationStatus Validation()
         {
