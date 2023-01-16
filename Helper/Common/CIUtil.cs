@@ -2492,7 +2492,7 @@ namespace Helper.Common
 
             return Result;
         }
-        
+
 
         //----------------------------------------------------------------------------//
         // 機能      ： ＪＩＳコードチェック
@@ -2665,7 +2665,7 @@ namespace Helper.Common
 
             return ret;
         }
-        
+
         /// <summary>
         /// ひらがなの濁点を結合
         /// </summary>
@@ -2925,6 +2925,11 @@ namespace Helper.Common
                 monthDiff++;
             }
             return monthDiff;
+        }
+
+        public static DateTime GetJapanDateTimeNow()
+        {
+            return DateTime.UtcNow.AddHours(9);
         }
     }
     public struct WarekiYmd

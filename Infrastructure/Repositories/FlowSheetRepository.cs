@@ -1,6 +1,7 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -180,8 +181,8 @@ namespace Infrastructure.Repositories
                         SinDate = inputData.SinDate,
                         RaiinNo = inputData.RaiinNo,
                         TagNo = inputData.TagNo,
-                        CreateDate = DateTime.UtcNow,
-                        UpdateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
                         CreateId = userId
                     });
@@ -189,7 +190,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     raiinListTag.TagNo = inputData.TagNo;
-                    raiinListTag.UpdateDate = DateTime.UtcNow;
+                    raiinListTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     raiinListTag.UpdateId = userId;
                 }
             }
@@ -213,8 +214,8 @@ namespace Infrastructure.Repositories
                         RaiinNo = inputData.RaiinNo,
                         CmtKbn = cmtKbn,
                         Text = inputData.Comment,
-                        CreateDate = DateTime.UtcNow,
-                        UpdateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
                         CreateId = userId
                     });
@@ -222,7 +223,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     raiinListCmt.Text = inputData.Comment;
-                    raiinListCmt.UpdateDate = DateTime.UtcNow;
+                    raiinListCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     raiinListCmt.UpdateId = userId;
                 }
             }

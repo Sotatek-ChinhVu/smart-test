@@ -1,5 +1,6 @@
 ﻿using Domain.Models.User;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -173,7 +174,7 @@ namespace Infrastructure.Repositories
                         userMst.RenkeiCd1 = inputData.RenkeiCd1 ?? string.Empty;
                         userMst.IsDeleted = inputData.IsDeleted;
                         userMst.UpdateId = userId;
-                        userMst.UpdateDate = DateTime.UtcNow;
+                        userMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {

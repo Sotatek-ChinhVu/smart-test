@@ -1,8 +1,8 @@
 ﻿using Domain.Models.MonshinInf;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -67,7 +67,7 @@ namespace Infrastructure.Repositories
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
                             CreateMachine = monshinInfor.CreateMachine,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         });
                     }
@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
                             CreateMachine = monshinInfor.CreateMachine,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         });
                     }
@@ -107,8 +107,8 @@ namespace Infrastructure.Repositories
                             GetKbn = 0,
                             IsDeleted = 0,
                             CreateId = userId,
-                            CreateDate = DateTime.UtcNow,
-                            UpdateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         });
                     }

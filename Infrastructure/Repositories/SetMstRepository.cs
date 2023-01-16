@@ -1,9 +1,9 @@
 ﻿using Domain.Models.SetMst;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -107,9 +107,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         setMst.SetName = setMst.IsGroup == 1 ? DefaultGroupName : DefaultSetName;
                     }
                     setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
-                    setMst.CreateDate = DateTime.UtcNow;
+                    setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                     setMst.CreateId = userId;
-                    setMst.UpdateDate = DateTime.UtcNow;
+                    setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     setMst.UpdateId = userId;
 
                     // Save SetMst 
@@ -138,7 +138,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     foreach (var item in listSetMstLevel3)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -171,14 +171,14 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     foreach (var level2 in listSetMstLevel2)
                     {
                         level2.IsDeleted = 1;
-                        level2.UpdateDate = DateTime.UtcNow;
+                        level2.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level2.UpdateId = userId;
                     }
 
                     foreach (var level3 in listSetMstLevel3)
                     {
                         level3.IsDeleted = 1;
-                        level3.UpdateDate = DateTime.UtcNow;
+                        level3.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         level3.UpdateId = userId;
                     }
                 }
@@ -233,7 +233,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         setMst.SetName = setMstModel.SetName;
         setMst.Color = setMstModel.Color;
         setMst.WeightKbn = setMstModel.WeightKbn;
-        setMst.UpdateDate = DateTime.UtcNow;
+        setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
         setMst.UpdateId = userId;
         return setMst;
     }
@@ -314,7 +314,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listDragItem)
                 {
                     item.Level1 = dropItem.Level1 + 1;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
             }
@@ -326,7 +326,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listDragItem)
                 {
                     item.Level1 = dropItem.Level1 + 1;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
             }
@@ -381,7 +381,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 foreach (var item in listDragItem)
                 {
                     item.Level2 = 1;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
             }
@@ -399,7 +399,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 {
                     item.Level1 = dropItem.Level1;
                     item.Level2 = 1;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
             }
@@ -418,7 +418,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     foreach (var item in listDragUpdateLevel2)
                     {
                         item.Level2 = dropItem.Level2 + 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -430,7 +430,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     foreach (var item in listDragUpdateLevel2)
                     {
                         item.Level2 = dropItem.Level2 + 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -454,7 +454,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
                 dragItem.Level3 = 1;
-                dragItem.UpdateDate = DateTime.UtcNow;
+                dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dragItem.UpdateId = userId;
             }
         }
@@ -480,7 +480,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             dragItem.Level1 = dropItem.Level1;
             dragItem.Level2 = 1;
             dragItem.Level3 = 0;
-            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             dragItem.UpdateId = userId;
         }
         else if (dropItem.Level2 > 0 && dropItem.Level3 == 0)
@@ -491,7 +491,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 LevelDown(3, userId, listUpdateLevel3);
                 dragItem.Level3 = 1;
                 dragItem.UpdateId = userId;
-                dragItem.UpdateDate = DateTime.UtcNow;
+                dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
             else
             {
@@ -504,7 +504,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
                 dragItem.Level3 = 1;
-                dragItem.UpdateDate = DateTime.UtcNow;
+                dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dragItem.UpdateId = userId;
             }
         }
@@ -518,7 +518,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     LevelDown(3, userId, listDropUpdateLevel3);
 
                     dragItem.Level3 = dropItem.Level3 + 1;
-                    dragItem.UpdateDate = DateTime.UtcNow;
+                    dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dragItem.UpdateId = userId;
                 }
                 else if (dragItem.Level3 < dropItem.Level3)
@@ -527,7 +527,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     LevelUp(3, userId, listDropUpdateLevel3);
 
                     dragItem.Level3 = dropItem.Level3 + 1;
-                    dragItem.UpdateDate = DateTime.UtcNow;
+                    dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dragItem.UpdateId = userId;
                 }
                 else
@@ -553,7 +553,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             foreach (var item in listDragUpdate)
             {
                 item.Level1 = 1;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
             }
         }
@@ -573,14 +573,14 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                 levelNew.Level1 = 1;
                 levelNew.Level2 = levelNew.Level3;
                 levelNew.Level3 = 0;
-                levelNew.UpdateDate = DateTime.UtcNow;
+                levelNew.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 levelNew.UpdateId = userId;
             }
 
             // level2 => level1
             dragItem.Level1 = 1;
             dragItem.Level2 = 0;
-            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             dragItem.UpdateId = userId;
         }
         else if (dragItem.Level2 > 0 && dragItem.Level3 > 0)
@@ -595,7 +595,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             dragItem.Level1 = 1;
             dragItem.Level2 = 0;
             dragItem.Level3 = 0;
-            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             dragItem.UpdateId = userId;
         }
         return true;
@@ -616,7 +616,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.Level3 = item.Level3 + 1;
                     break;
             }
-            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateDate = CIUtil.GetJapanDateTimeNow();
             item.UpdateId = userId;
         }
     }
@@ -637,7 +637,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     item.Level3 = item.Level3 - 1;
                     break;
             }
-            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateDate = CIUtil.GetJapanDateTimeNow();
             item.UpdateId = userId;
         }
     }
@@ -735,9 +735,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             listCopyItems.Remove(rootSet);
 
                             rootSet.SetCd = 0;
-                            rootSet.CreateDate = DateTime.UtcNow;
+                            rootSet.CreateDate = CIUtil.GetJapanDateTimeNow();
                             rootSet.CreateId = userId;
-                            rootSet.UpdateDate = DateTime.UtcNow;
+                            rootSet.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             rootSet.UpdateId = userId;
                             TrackingDataContext.SetMsts.Add(rootSet);
                             TrackingDataContext.SaveChanges();
@@ -747,9 +747,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             {
                                 SetMst setMst = item.DeepClone();
                                 setMst.SetCd = 0;
-                                setMst.CreateDate = DateTime.UtcNow;
+                                setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                                 setMst.CreateId = userId;
-                                setMst.UpdateDate = DateTime.UtcNow;
+                                setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 setMst.UpdateId = userId;
                                 listPasteItems.Add(setMst);
                             }
@@ -933,9 +933,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             SetOdrInf order = item.DeepClone();
             order.Id = 0;
             order.SetCd = dictionarySetMstMap[order.SetCd].SetCd;
-            order.CreateDate = DateTime.UtcNow;
+            order.CreateDate = CIUtil.GetJapanDateTimeNow();
             order.CreateId = userId;
-            order.UpdateDate = DateTime.UtcNow;
+            order.UpdateDate = CIUtil.GetJapanDateTimeNow();
             order.UpdateId = userId;
             listPasteSetOrderInfs.Add(order);
         }
@@ -959,9 +959,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             SetKarteInf karte = item.DeepClone();
             karte.SetCd = dictionarySetMstMap[karte.SetCd].SetCd;
-            karte.CreateDate = DateTime.UtcNow;
+            karte.CreateDate = CIUtil.GetJapanDateTimeNow();
             karte.CreateId = userId;
-            karte.UpdateDate = DateTime.UtcNow;
+            karte.UpdateDate = CIUtil.GetJapanDateTimeNow();
             karte.UpdateId = userId;
             listPasteSetKarteInfs.Add(karte);
         }
@@ -974,9 +974,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             SetByomei karte = item.DeepClone();
             karte.SetCd = dictionarySetMstMap[karte.SetCd].SetCd;
-            karte.CreateDate = DateTime.UtcNow;
+            karte.CreateDate = CIUtil.GetJapanDateTimeNow();
             karte.CreateId = userId;
-            karte.UpdateDate = DateTime.UtcNow;
+            karte.UpdateDate = CIUtil.GetJapanDateTimeNow();
             karte.UpdateId = userId;
             listPasteSetByomeies.Add(karte);
         }
