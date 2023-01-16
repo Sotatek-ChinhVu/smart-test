@@ -768,16 +768,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.OrderRealtimeChecker)]
-        public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
-        {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder);
-            var output = _bus.Handle(input);
-            var presenter = new OrderRealtimeCheckerPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
-        }
-
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {
