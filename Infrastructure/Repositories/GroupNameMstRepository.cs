@@ -13,18 +13,16 @@ namespace Infrastructure.Repositories
         public GroupNameMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
-        private readonly TenantDataContext _tenantNoTrackingDataContext;
 
         public void ReleaseResource()
         {
             DisposeDataContext();
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<GroupNameMstModel> GetListGroupNameMst(int hpId)
         {
             List<GroupNameMstModel> result = new List<GroupNameMstModel>();
-            var grpNameDatabases = _tenantNoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId).ToList();
+            var grpNameDatabases = NoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId).ToList();
             foreach (var item in grpNameDatabases)
             {
                 if(item.IsDeleted == DeleteTypes.Deleted)
@@ -34,7 +32,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var grpItems = _tenantNoTrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
+                    var grpItems = NoTrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
                                                                         && x.GrpId == item.GrpId)
                                                                 .OrderBy(x => x.SortNo)
                                                                 .Select(x => new GroupItemModel(
