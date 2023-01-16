@@ -189,6 +189,41 @@ namespace Domain.Models.PatientInfor
             Comment = string.Empty;
         }
 
+        public PatientInforModel(int hpId, long ptId, long ptNum, string kanaName, string name, int birthday, int lastVisitDate)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Birthday = birthday;
+            LastVisitDate = lastVisitDate;
+            HomePost = string.Empty;
+            HomeAddress1 = string.Empty;
+            HomeAddress2 = string.Empty;
+            Tel1 = string.Empty;
+            Tel2 = string.Empty;
+            Mail = string.Empty;
+            Setanusi = string.Empty;
+            Zokugara = string.Empty;
+            Job = string.Empty;
+            RenrakuName = string.Empty;
+            RenrakuPost = string.Empty;
+            RenrakuAddress1 = string.Empty;
+            RenrakuAddress2 = string.Empty;
+            RenrakuTel = string.Empty;
+            RenrakuMemo = string.Empty;
+            OfficeName = string.Empty;
+            OfficePost = string.Empty;
+            OfficeAddress1 = string.Empty;
+            OfficeAddress2 = string.Empty;
+            OfficeTel = string.Empty;
+            OfficeMemo = string.Empty;
+            Memo = string.Empty;
+            RainCount = string.Empty;
+            Comment = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }

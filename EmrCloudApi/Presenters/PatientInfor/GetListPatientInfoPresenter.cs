@@ -10,7 +10,7 @@ public class GetListPatientInfoPresenter : IGetPatientInfoOutputPort
     public Response<GetListPatientInfoResponse> Result { get; private set; } = new Response<GetListPatientInfoResponse>();
     public void Complete(GetPatientInfoOutputData outputData)
     {
-        Result.Data = new GetListPatientInfoResponse(outputData.PatientInfoList);
+        Result.Data = new GetListPatientInfoResponse(outputData.PatientInfoLists);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

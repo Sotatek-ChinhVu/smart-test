@@ -29,7 +29,14 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
             {
                 return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidPtId, new());
             }
-            var listPatientInfs = GetListPatientInfos(input.HpId, input.PtId).Select(item => new GetListPatientInfoInputItem(item.HpId, item.PtId, item.PtNum, item.KanaName, item.Name, item.Birthday, item.LastVisitDate)).ToList();
+            var listPatientInfs = GetListPatientInfos(input.HpId, input.PtId).Select(item => new GetListPatientInfoInputItem(
+                                                                                     item.HpId, 
+                                                                                     item.PtId, 
+                                                                                     item.PtNum, 
+                                                                                     item.KanaName, 
+                                                                                     item.Name, 
+                                                                                     item.Birthday, 
+                                                                                     item.LastVisitDate)).ToList();
 
             return new GetPatientInfoOutputData(GetPatientInfoStatus.Success, listPatientInfs);
         }
@@ -48,45 +55,11 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
             result.Add(new PatientInforModel(
                 patientInf.HpId,
                 patientInf.PtId,
-                0,
-                0,
                 patientInf.PtNum,
                 patientInf.KanaName,
                 patientInf.Name,
-                0,
                 patientInf.Birthday,
-                0,
-                0,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                "",
-                patientInf.LastVisitDate,
-                0,
-                ""
+                patientInf.LastVisitDate
                 ));
         }
         return result;
