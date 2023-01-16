@@ -1,9 +1,9 @@
 ﻿using Domain.Models.KarteFilterMst;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -119,9 +119,9 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
                                     SortNo = mst.SortNo,
                                     AutoApply = mst.AutoApply,
                                     IsDeleted = mst.IsDeleted,
-                                    CreateDate = DateTime.UtcNow,
+                                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                                     CreateId = userId,
-                                    UpdateDate = DateTime.UtcNow,
+                                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                     UpdateId = userId
                                 };
                                 dictionaryKarteFilterMstMap.Add(mst, karteFilterMst);
@@ -161,7 +161,7 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
                                 var karteFilterMst = TrackingDataContext.KarteFilterMsts.FirstOrDefault(mst => mst.HpId == item.HpId && mst.UserId == item.UserId && mst.FilterId == item.FilterId);
                                 if (karteFilterMst != null)
                                 {
-                                    karteFilterMst.UpdateDate = DateTime.UtcNow;
+                                    karteFilterMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     karteFilterMst.UpdateId = userId;
                                     karteFilterMst.FilterId = item.FilterId;
                                     karteFilterMst.FilterName = item.FilterName;

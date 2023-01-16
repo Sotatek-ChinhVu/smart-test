@@ -1,7 +1,7 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
 using UseCase.CommonChecker;
 
-namespace EmrCloudApi.Responses.PatientInfor
+namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class OrderRealtimeCheckerResponse
     {

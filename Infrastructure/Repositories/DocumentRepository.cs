@@ -1,8 +1,8 @@
 ﻿using Domain.Models.Document;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -76,7 +76,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             var modelUpdate = listUpdateModels.FirstOrDefault(model => model.CategoryCd == entity.CategoryCd);
             if (modelUpdate != null)
             {
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
                 entity.CategoryName = modelUpdate.CategoryName;
                 entity.SortNo = modelUpdate.SortNo;
@@ -114,12 +114,12 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
 
             // move in item
             moveInItem.SortNo = moveOutSortNo;
-            moveInItem.UpdateDate = DateTime.UtcNow;
+            moveInItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             moveInItem.UpdateId = userId;
 
             // move out item
             moveOutItem.SortNo = moveInSortNo;
-            moveOutItem.UpdateDate = DateTime.UtcNow;
+            moveOutItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
             moveOutItem.UpdateId = userId;
             TrackingDataContext.SaveChanges();
             return true;
@@ -167,7 +167,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             }
             docInfDB.CategoryCd = model.CategoryCd;
             docInfDB.DspFileName = model.DisplayFileName;
-            docInfDB.UpdateDate = DateTime.UtcNow;
+            docInfDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
             docInfDB.UpdateId = userId;
         }
         return TrackingDataContext.SaveChanges() > 0;
@@ -188,7 +188,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             return false;
         }
         docInfDB.IsDeleted = 1;
-        docInfDB.UpdateDate = DateTime.UtcNow;
+        docInfDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
         docInfDB.UpdateId = userId;
         TrackingDataContext.SaveChanges();
         return true;
@@ -207,7 +207,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             foreach (var item in docInfsDB)
             {
                 item.IsDeleted = 1;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
             }
             return TrackingDataContext.SaveChanges() > 0;
@@ -227,7 +227,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             return false;
         }
         docCategoryDB.IsDeleted = 1;
-        docCategoryDB.UpdateDate = DateTime.UtcNow;
+        docCategoryDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
         docCategoryDB.UpdateId = userId;
         SortDocCategory();
         return TrackingDataContext.SaveChanges() > 0;
@@ -243,7 +243,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         foreach (var item in listDocInfs)
         {
             item.CategoryCd = moveCategoryCd;
-            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateDate = CIUtil.GetJapanDateTimeNow();
             item.UpdateId = userId;
         }
         return TrackingDataContext.SaveChanges() > 0;
@@ -280,10 +280,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         entity.CategoryCd = model.CategoryCd;
         entity.CategoryName = model.CategoryName;
         entity.SortNo = model.SortNo;
-        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
         entity.UpdateId = userId;
         entity.IsDeleted = 0;
-        entity.CreateDate = DateTime.UtcNow;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
         entity.CreateId = userId;
         return entity;
     }
@@ -299,10 +299,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         entity.CategoryCd = model.CategoryCd;
         entity.FileName = model.FileName;
         entity.DspFileName = model.DisplayFileName;
-        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
         entity.UpdateId = userId;
         entity.IsDeleted = 0;
-        entity.CreateDate = DateTime.UtcNow;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
         entity.CreateId = userId;
         return entity;
     }

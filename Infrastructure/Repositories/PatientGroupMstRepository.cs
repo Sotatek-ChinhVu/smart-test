@@ -1,8 +1,8 @@
 ﻿using Domain.Models.PatientGroupMst;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
                                 groupDetail.GrpCodeName = detail.GroupDetailName;
                                 groupDetail.SortNo = sortNo;
                                 groupDetail.UpdateId = userId;
-                                groupDetail.UpdateDate = DateTime.UtcNow;
+                                groupDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             }
                             else
                             {
@@ -101,7 +101,7 @@ namespace Infrastructure.Repositories
                     foreach (var item in listGroupDeletes)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -113,7 +113,7 @@ namespace Infrastructure.Repositories
                     foreach (var item in listDetailDeletes)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         item.UpdateId = userId;
                     }
                 }
@@ -137,10 +137,10 @@ namespace Infrastructure.Repositories
             entity.IsDeleted = isDelete;
             if (isAddNew == true)
             {
-                entity.CreateDate = DateTime.UtcNow;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 entity.CreateId = userId;
             }
-            entity.UpdateDate = DateTime.UtcNow;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
             return entity;
         }
@@ -157,10 +157,10 @@ namespace Infrastructure.Repositories
             if (isAddNew == true)
             {
                 entity.SeqNo = 0;
-                entity.CreateDate = DateTime.UtcNow;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 entity.CreateId = userId;
             }
-            entity.UpdateDate = DateTime.UtcNow;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             entity.UpdateId = userId;
             return entity;
         }

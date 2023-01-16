@@ -492,8 +492,8 @@ namespace Infrastructure.Repositories
                     Address1 = model.Address1,
                     Address2 = model.Address2,
                     Tel1 = model.Tel1,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 };
@@ -515,7 +515,7 @@ namespace Infrastructure.Repositories
                 hoken.Address1 = model.Address1;
                 hoken.Address2 = model.Address2;
                 hoken.Tel1 = model.Tel1;
-                hoken.UpdateDate = DateTime.UtcNow;
+                hoken.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 hoken.UpdateId = userId;
             }
             return TrackingDataContext.SaveChanges() > 0;
