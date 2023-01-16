@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.PatientInfor;
+using EmrCloudApi.Responses.MedicalExamination;
 using UseCase.CommonChecker;
 
-namespace EmrCloudApi.Presenters.PatientInfor
+namespace EmrCloudApi.Presenters.MedicalExamination
 {
     public class OrderRealtimeCheckerPresenter : IGetOrderCheckerOutputPort
     {
