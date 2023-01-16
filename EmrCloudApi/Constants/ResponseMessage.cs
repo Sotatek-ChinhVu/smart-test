@@ -33,6 +33,7 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidToken = "Invalid Token";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
         public static readonly string InvalidWindowType = "Invalid WindowType";
         public static readonly string InvalidFrameId = "Invalid FrameId";
@@ -879,5 +880,9 @@
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
 
+
+        //Insurance Mst Detail
+        public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
+        public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
     }
 }

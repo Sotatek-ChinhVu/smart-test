@@ -1,16 +1,7 @@
 ﻿using Domain.Models.LockInf;
 using Domain.Models.ReceptionLock;
-using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {

@@ -8,24 +8,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
 {
     public class OrdInfoDetailModel : IOdrInfoDetailModel
     {
-        public OrdInfoDetailModel( int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, double termVal, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string ipnCd, string bunkatu, string masterSbt, int bunkatuKoui)
-        {
-            SinKouiKbn = sinKouiKbn;
-            ItemCd = itemCd;
-            ItemName = itemName;
-            Suryo = suryo;
-            UnitName = unitName;
-            TermVal = termVal;
-            SyohoKbn = syohoKbn;
-            SyohoLimitKbn = syohoLimitKbn;
-            DrugKbn = drugKbn;
-            YohoKbn = yohoKbn;
-            IpnCd = ipnCd;
-            Bunkatu = bunkatu;
-            MasterSbt = masterSbt;
-            BunkatuKoui = bunkatuKoui;
-        }
-
+        public string Id { get; set; }
         public int SinKouiKbn { get; set; }
         public string ItemCd { get; set; }
         public string ItemName { get; set; }
@@ -42,7 +25,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public int BunkatuKoui { get; set; }
 
 
-       
+
 
         public bool IsDrugUsage
         {

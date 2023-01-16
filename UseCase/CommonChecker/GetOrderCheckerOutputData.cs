@@ -12,6 +12,7 @@ namespace UseCase.CommonChecker
         }
 
         public List<UnitCheckInfoModel> UnitCheckInfoModel { get; private set; }
+
         public GetOrderCheckerStatus Status { get; private set; }
     }
 }

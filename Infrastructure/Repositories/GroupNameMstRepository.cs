@@ -1,12 +1,10 @@
-﻿using Domain.Models.GroupInf;
-using Domain.Models.PtGroupMst;
+﻿using Domain.Models.PtGroupMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System;
 
 namespace Infrastructure.Repositories
 {
@@ -37,7 +35,7 @@ namespace Infrastructure.Repositories
             foreach(var item in grpNameDeletes)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
 
                 var grpItemDeletes = TrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
@@ -46,7 +44,7 @@ namespace Infrastructure.Repositories
                 foreach(var itemGrp in grpItemDeletes)
                 {
                     itemGrp.IsDeleted = DeleteTypes.Deleted;
-                    itemGrp.UpdateDate = DateTime.UtcNow;
+                    itemGrp.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemGrp.UpdateId = userId;
                 }
             }
@@ -63,17 +61,17 @@ namespace Infrastructure.Repositories
                         SortNo = item.SortNo,
                         GrpName = item.GrpName,
                         IsDeleted = DeleteTypes.None,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     });
                     TrackingDataContext.PtGrpItems.AddRange(Mapper.Map<GroupItemModel, PtGrpItem>(item.GroupItems, (src, dest) =>
                     {
                         dest.CreateId = userId;
                         dest.HpId = hpId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     }));
@@ -82,7 +80,7 @@ namespace Infrastructure.Repositories
                 {
                     itemAct.GrpName = item.GrpName;
                     itemAct.SortNo = item.SortNo;
-                    itemAct.UpdateDate = DateTime.UtcNow;
+                    itemAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemAct.UpdateId = userId;
 
                     var itemInDatabases = TrackingDataContext.PtGrpItems
@@ -101,8 +99,8 @@ namespace Infrastructure.Repositories
                                 GrpCodeName = itemGrp.GrpCodeName,
                                 CreateId = userId,
                                 HpId = hpId,
-                                CreateDate = DateTime.UtcNow,
-                                UpdateDate = DateTime.UtcNow,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateId = userId,
                             });
                         }
@@ -110,7 +108,7 @@ namespace Infrastructure.Repositories
                         {
                             itemGrpAct.GrpCode = itemGrp.GrpCode;
                             itemGrpAct.GrpCodeName = itemGrp.GrpCodeName;
-                            itemGrpAct.UpdateDate = DateTime.UtcNow;
+                            itemGrpAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             itemGrpAct.UpdateId = userId;
                             itemGrpAct.IsDeleted = itemGrp.IsDeleted;
                         }

@@ -146,7 +146,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                                .ToList();
         try
         {
-            var dateTimeNow = DateTime.UtcNow;
+            var dateTimeNow = CIUtil.GetJapanDateTimeNow();
 
             foreach (var model in listAccountDues)
             {

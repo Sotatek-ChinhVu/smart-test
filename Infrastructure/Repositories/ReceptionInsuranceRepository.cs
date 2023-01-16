@@ -1,18 +1,10 @@
 ﻿using Domain.Constant;
-using Domain.Models.Insurance;
-using Domain.Models.InsuranceInfor;
 using Domain.Models.ReceptionInsurance;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {

@@ -2,6 +2,7 @@
 using Domain.Models.OrdInfDetails;
 using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -16,10 +17,10 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type)
+        public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
         {
             var byomeis = new List<RsvkrtByomei>();
-            if (type == 0)
+            if (rsvkrtKbn == 0)
             {
                 byomeis = NoTrackingDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
             }
@@ -111,7 +112,7 @@ namespace Infrastructure.Repositories
                                         if (orderInf != null)
                                         {
                                             orderInf.IsDeleted = item.IsDeleted;
-                                            orderInf.UpdateDate = DateTime.UtcNow;
+                                            orderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                             orderInf.UpdateId = userId;
                                         }
                                     }
@@ -128,7 +129,7 @@ namespace Infrastructure.Repositories
                                     oldNextOrder.RsvName = nextOrderModel.RsvName;
                                     oldNextOrder.SortNo = nextOrderModel.SortNo;
                                     oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
-                                    oldNextOrder.UpdateDate = DateTime.UtcNow;
+                                    oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     oldNextOrder.UpdateId = userId;
                                     rsvkrtNo = oldNextOrder.RsvkrtNo;
                                     UpsertByomei(userId, nextOrderModel.RsvkrtByomeis);
@@ -175,7 +176,7 @@ namespace Infrastructure.Repositories
                     if (oldOrderInf != null)
                     {
                         oldOrderInf.IsDeleted = orderInf.IsDeleted;
-                        oldOrderInf.UpdateDate = DateTime.UtcNow;
+                        oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldOrderInf.CreateId = userId;
                     }
                 }
@@ -184,7 +185,7 @@ namespace Infrastructure.Repositories
                     if (oldOrderInf != null)
                     {
                         oldOrderInf.IsDeleted = DeleteTypes.Deleted;
-                        oldOrderInf.UpdateDate = DateTime.UtcNow;
+                        oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldOrderInf.CreateId = userId;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf, orderInf.RpEdaNo + 1);
                         TrackingDataContext.Add(orderInfEntity);
@@ -220,7 +221,7 @@ namespace Infrastructure.Repositories
                 if (oldKarteInf != null)
                 {
                     oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
-                    oldKarteInf.UpdateDate = DateTime.UtcNow;
+                    oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     oldKarteInf.CreateId = userId;
                 }
             }
@@ -230,7 +231,7 @@ namespace Infrastructure.Repositories
                 {
                     seqNo++;
                     oldKarteInf.IsDeleted = karteInf.IsDeleted != DeleteTypes.Confirm ? DeleteTypes.Deleted : karteInf.IsDeleted;
-                    oldKarteInf.UpdateDate = DateTime.UtcNow;
+                    oldKarteInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     oldKarteInf.CreateId = userId;
                     var karteInfEntity = ConvertModelToRsvkrtKarteInf(userId, karteInf, karteInf.RsvkrtNo, seqNo);
                     TrackingDataContext.Add(karteInfEntity);
@@ -270,7 +271,7 @@ namespace Infrastructure.Repositories
                     if (oldByomei != null)
                     {
                         oldByomei.IsDeleted = DeleteTypes.Deleted;
-                        oldByomei.UpdateDate = DateTime.UtcNow;
+                        oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldByomei.CreateId = userId;
                     }
                 }
@@ -309,7 +310,7 @@ namespace Infrastructure.Repositories
                         oldByomei.IsNodspKarte = byomei.IsNodspKarte;
                         oldByomei.IsNodspRece = byomei.IsNodspRece;
                         oldByomei.IsDeleted = byomei.IsDeleted;
-                        oldByomei.UpdateDate = DateTime.UtcNow;
+                        oldByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldByomei.UpdateId = userId;
                     }
                     else
@@ -647,9 +648,9 @@ namespace Infrastructure.Repositories
                 RsvName = nextOrderModel.RsvName,
                 SortNo = nextOrderModel.SortNo,
                 IsDeleted = nextOrderModel.IsDeleted,
-                CreateDate = oldNextOrder == null ? DateTime.UtcNow : oldNextOrder.CreateDate,
+                CreateDate = oldNextOrder == null ? CIUtil.GetJapanDateTimeNow() : oldNextOrder.CreateDate,
                 CreateId = oldNextOrder == null ? userId : oldNextOrder.CreateId,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId
             };
         }
@@ -693,9 +694,9 @@ namespace Infrastructure.Repositories
                 IsNodspKarte = byomei.IsNodspKarte,
                 IsNodspRece = byomei.IsNodspRece,
                 IsDeleted = byomei.IsDeleted,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId
             };
         }
@@ -713,9 +714,9 @@ namespace Infrastructure.Repositories
                 Text = rsvkrtKarteInfModel.Text,
                 RichText = Encoding.UTF8.GetBytes(rsvkrtKarteInfModel.RichText),
                 IsDeleted = rsvkrtKarteInfModel.IsDeleted,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId
             };
         }
@@ -742,9 +743,9 @@ namespace Infrastructure.Repositories
                 DaysCnt = rsvkrtOrderInfModel.DaysCnt,
                 IsDeleted = rsvkrtOrderInfModel.IsDeleted,
                 SortNo = rsvkrtOrderInfModel.SortNo,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId
             };
         }

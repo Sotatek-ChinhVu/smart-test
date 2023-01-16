@@ -138,7 +138,7 @@ namespace Infrastructure.Repositories
                 raiinInf.SinEndTime = sinEndTime;
                 raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = userId;
-                raiinInf.UpdateDate = DateTime.UtcNow;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
         }
@@ -159,7 +159,7 @@ namespace Infrastructure.Repositories
                 {
                     if (oldHeaderInfModel.IsDeleted == DeleteTypes.Deleted)
                     {
-                        oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                        oldHeaderInfModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldHeaderInfModel.UpdateId = userId;
                     }
                     oldHeaderInfModel.IsDeleted = 0;
@@ -168,7 +168,7 @@ namespace Infrastructure.Repositories
                 {
                     // Be sure old header is deleted
                     oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
-                    oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                    oldHeaderInfModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     oldHeaderInfModel.UpdateId = userId;
 
                     var newHeaderInf = new OdrInf
@@ -181,8 +181,8 @@ namespace Infrastructure.Repositories
                         SinDate = sinDate,
                         HokenPid = hokenPid,
                         OdrKouiKbn = headerOdrKouiKbn,
-                        CreateDate = DateTime.UtcNow,
-                        UpdateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
                         CreateId = userId,
                         DaysCnt = daysCntDefalt
@@ -235,8 +235,8 @@ namespace Infrastructure.Repositories
                     SinDate = sinDate,
                     HokenPid = hokenPid,
                     OdrKouiKbn = headerOdrKouiKbn,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId,
                     DaysCnt = daysCntDefalt
@@ -559,9 +559,9 @@ namespace Infrastructure.Repositories
                             DaysCnt = item.DaysCnt,
                             SortNo = item.SortNo,
                             IsDeleted = item.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         };
 
@@ -630,9 +630,9 @@ namespace Infrastructure.Repositories
                             DaysCnt = item.DaysCnt,
                             SortNo = item.SortNo,
                             IsDeleted = item.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         };
 
@@ -720,9 +720,9 @@ namespace Infrastructure.Repositories
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
                             IsDeleted = karte.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         };
 
@@ -746,9 +746,9 @@ namespace Infrastructure.Repositories
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
                             IsDeleted = karte.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId
                         };
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.NextOrder;
+using UseCase.NextOrder;
 using UseCase.NextOrder.GetList;
 
 namespace Interactor.NextOrder
@@ -37,7 +38,15 @@ namespace Interactor.NextOrder
                     return new GetNextOrderListOutputData(new(), GetNextOrderListStatus.NoData);
                 }
 
-                return new GetNextOrderListOutputData(nextOrders, GetNextOrderListStatus.Successed);
+                return new GetNextOrderListOutputData(nextOrders.Select(n => new NextOrderLabelItem(
+                    n.RsvkrtNo,
+                    n.RsvkrtKbn,
+                    n.RsvDate,
+                    n.RsvName,
+                    n.SortNo,
+                    n.IsDeleted
+                    )).ToList(),
+                    GetNextOrderListStatus.Successed);
             }
             catch
             {

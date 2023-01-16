@@ -1,4 +1,6 @@
 ﻿using CommonChecker;
+using CommonChecker.DB;
+using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
@@ -179,6 +181,7 @@ using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
+using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
@@ -293,8 +296,10 @@ using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UsageTreeSet.GetTree;
+using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
+using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
 using UseCase.User.Sagaku;
@@ -425,6 +430,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
             services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
+            services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
+            services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -437,6 +444,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
             busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
+            busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
+            busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -541,6 +550,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
             busBuilder.RegisterUseCase<GetDefaultSelectPatternInputData, GetDefaultSelectPatternInteractor>();
+            busBuilder.RegisterUseCase<GetInsuranceMasterDetailInputData, GetInsuranceMasterDetailInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
