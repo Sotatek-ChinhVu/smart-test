@@ -85,31 +85,77 @@ namespace Infrastructure.Repositories
                 .ToList();
             Console.WriteLine("Get commentList: " + stopwatch.ElapsedMilliseconds);
 
-            var result =
-                from flowsheet in flowSheetModelList
-                join nextKarte in nextKarteList on flowsheet.RaiinNo equals nextKarte.RsvkrtNo into gj
-                from subNextKarte in gj.DefaultIfEmpty()
-                join historyKarte in historyKarteList on flowsheet.RaiinNo equals historyKarte.RaiinNo into gj1
-                from subHistoryKarte in gj1.DefaultIfEmpty()
-                join tagInf in tagInfList on flowsheet.RaiinNo equals tagInf.RaiinNo into gj2
-                from subTagInf in gj2.DefaultIfEmpty()
-                join commentInf in commentList on flowsheet.RaiinNo equals commentInf.RaiinNo into gj3
-                from subCommentInf in gj3.DefaultIfEmpty()
-                select new FlowSheetModel(
-                    flowsheet.SinDate,
-                    subTagInf != null ? subTagInf.TagNo : 0,
-                    (subNextKarte == null || string.IsNullOrEmpty(subNextKarte.Text)) ? ((subHistoryKarte == null || string.IsNullOrEmpty(subHistoryKarte.Text)) ? string.Empty : subHistoryKarte.Text!) : subNextKarte.Text!,
-                    flowsheet.RaiinNo,
-                    flowsheet.SyosaisinKbn,
-                    (subCommentInf == null || string.IsNullOrEmpty(subCommentInf.Text)) ? string.Empty : subCommentInf.Text,
-                    flowsheet.Status,
-                    flowsheet.IsNext,
-                    !flowsheet.IsNext,
-                    new List<RaiinListInfModel>(),
-                    ptId,
-                    false
-                    );
-            return result.ToList();
+            //var result =
+            //    from flowsheet in flowSheetModelList
+            //    join nextKarte in nextKarteList on flowsheet.RaiinNo equals nextKarte.RsvkrtNo into gj
+            //    from subNextKarte in gj.DefaultIfEmpty()
+            //    join historyKarte in historyKarteList on flowsheet.RaiinNo equals historyKarte.RaiinNo into gj1
+            //    from subHistoryKarte in gj1.DefaultIfEmpty()
+            //    join tagInf in tagInfList on flowsheet.RaiinNo equals tagInf.RaiinNo into gj2
+            //    from subTagInf in gj2.DefaultIfEmpty()
+            //    join commentInf in commentList on flowsheet.RaiinNo equals commentInf.RaiinNo into gj3
+            //    from subCommentInf in gj3.DefaultIfEmpty()
+            //    select new FlowSheetModel(
+            //        flowsheet.SinDate,
+            //        subTagInf != null ? subTagInf.TagNo : 0,
+            //        (subNextKarte == null || string.IsNullOrEmpty(subNextKarte.Text)) ? ((subHistoryKarte == null || string.IsNullOrEmpty(subHistoryKarte.Text)) ? string.Empty : subHistoryKarte.Text!) : subNextKarte.Text!,
+            //        flowsheet.RaiinNo,
+            //        flowsheet.SyosaisinKbn,
+            //        (subCommentInf == null || string.IsNullOrEmpty(subCommentInf.Text)) ? string.Empty : subCommentInf.Text,
+            //        flowsheet.Status,
+            //        flowsheet.IsNext,
+            //        !flowsheet.IsNext,
+            //        new List<RaiinListInfModel>(),
+            //        ptId,
+            //        false
+            //        );
+            //return result.ToList();
+
+            List<FlowSheetModel> result = new List<FlowSheetModel>();
+            foreach (var flowSheetModel in flowSheetModelList)
+            {
+                string karteContent = string.Empty;
+                if (flowSheetModel.IsNext)
+                {
+                    var nextKarte = nextKarteList.FirstOrDefault(n => n.RsvkrtNo == flowSheetModel.RaiinNo);
+                    karteContent = nextKarte?.Text ?? string.Empty;
+                }
+                else
+                {
+                    var historyKarte = historyKarteList.FirstOrDefault(n => n.RaiinNo == flowSheetModel.RaiinNo);
+                    karteContent = historyKarte?.Text ?? string.Empty;
+                }
+
+                int tagNoValue = 0;
+                var tagInf = tagInfList.FirstOrDefault(t => t.RaiinNo == flowSheetModel.RaiinNo);
+                if (tagInf != null)
+                {
+                    tagNoValue = tagInf.TagNo;
+                }
+
+                var commentInf = commentList.FirstOrDefault(t => t.RaiinNo == flowSheetModel.RaiinNo);
+                string commentValue = (commentInf == null || commentInf.Text == null) ? string.Empty : commentInf.Text;
+
+                result.Add(new FlowSheetModel
+                    (
+                        flowSheetModel.SinDate,
+                        tagNoValue,
+                        karteContent,
+                        flowSheetModel.RaiinNo,
+                        flowSheetModel.SyosaisinKbn,
+                        commentValue,
+                        flowSheetModel.Status,
+                        flowSheetModel.IsNext,
+                        !flowSheetModel.IsNext,
+                        new List<RaiinListInfModel>(),
+                        ptId,
+                        false
+                    ));
+            }
+
+            Console.WriteLine("End GetListFlowSheet");
+
+            return result;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
