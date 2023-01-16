@@ -34,13 +34,54 @@ namespace UseCase.Reception.GetListRaiinInfs
 
         public long PtId { get; private set;}
 
-        public int SinDate { get; private set;} 
+        public string SinDateLabel
+        {
+            get { return CIUtil.SDateToShowSDate(SinDate); }
+        }
 
         public int UketukeNo { get; private set; }
 
-        public int Status { get; private set;}
+        public string StatusLbl
+        {
+            get
+            {
+                if (CheckDefaultValue())
+                {
+                    return string.Empty;
+                }
+                string result = string.Empty;
+                switch (Status)
+                {
+                    case 0:
+                        result = "予約";
+                        break;
+                    case 1:
+                        result = string.Empty;
+                        break;
+                    case 3:
+                        result = "一時保存";
+                        break;
+                    case 5:
+                        result = "計算";
+                        break;
+                    case 7:
+                        result = "精算待ち";
+                        break;
+                    case 9:
+                        result = "精算済";
+                        break;
+                    default:
+                        break;
+                }
+                return result;
+            }
+        }
 
-        public string KaSname { get; private set;}
+        public string KaSname { get; private set; }
+
+        public string SName { get; private set; }
+
+        public int SinDate { get; private set;} 
 
         public string HokenKbnName
         {
@@ -98,7 +139,7 @@ namespace UseCase.Reception.GetListRaiinInfs
             }
         }
 
-        public string SName { get; private set;}
+        public int Status { get; private set; }
 
         public string Houbetu { get; private set; }
 
@@ -107,47 +148,6 @@ namespace UseCase.Reception.GetListRaiinInfs
         public int HokenKbn { get; private set; }
 
         public int HokenId { get; private set; }
-
-        public string SinDateLabel
-        {
-            get { return CIUtil.SDateToShowSDate(SinDate); }
-        }
-
-        public string StatusLbl
-        {
-            get
-            {
-                if (CheckDefaultValue())
-                {
-                    return string.Empty;
-                }
-                string result = string.Empty;
-                switch (Status)
-                {
-                    case 0:
-                        result = "予約";
-                        break;
-                    case 1:
-                        result = "";
-                        break;
-                    case 3:
-                        result = "一時保存";
-                        break;
-                    case 5:
-                        result = "計算";
-                        break;
-                    case 7:
-                        result = "精算待ち";
-                        break;
-                    case 9:
-                        result = "精算済";
-                        break;
-                    default:
-                        break;
-                }
-                return result;
-            }
-        }
 
         public bool CheckDefaultValue()
         {

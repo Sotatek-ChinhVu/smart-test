@@ -201,12 +201,12 @@ namespace Domain.Models.Reception
             HokenId = hokenId;
             HokenPid = hokenPid;
             RaiinNo = raiinNo;
-            Comment = String.Empty;
-            YoyakuTime = String.Empty;
-            UketukeTime = String.Empty;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
+            Comment = string.Empty;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
         }
 
         public ReceptionDto ToDto()

@@ -1065,8 +1065,8 @@ namespace Infrastructure.Repositories
                             x.UserMst?.Sname ?? string.Empty,
                             x.PtHokenInf?.Houbetu ?? string.Empty,
                             x.PtHokenInf?.HokensyaNo ?? string.Empty,
-                            x.PtHokenInf.HokenKbn,
-                            x.PtHokenInf.HokenId,
+                            x.PtHokenInf?.HokenKbn ?? 0,
+                            x.PtHokenInf?.HokenId ?? 0,
                             x.RaiinInf.HokenPid,
                             x.RaiinInf.RaiinNo)).OrderByDescending(x => x.SinDate).ToList();
             return result;

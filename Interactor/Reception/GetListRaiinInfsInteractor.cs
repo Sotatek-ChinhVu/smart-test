@@ -59,25 +59,20 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
 
     private List<ReceptionModel> GetListRaiinInfos(int hpId, long ptId)
     {
-        var raiinInfos = _raiinInfRepository.GetListRaiinInf(hpId, ptId);
-        List<ReceptionModel> result = new();
-        foreach (var raiinInfo in raiinInfos)
-        {
-            result.Add(new ReceptionModel(
-                raiinInfo.HpId, 
-                raiinInfo.PtId, 
-                raiinInfo.SinDate, 
-                raiinInfo.UketukeNo, 
-                raiinInfo.Status, 
-                raiinInfo.KaSname, 
-                raiinInfo.SName, 
-                raiinInfo.Houbetu, 
-                raiinInfo.HokensyaNo, 
-                raiinInfo.HokenKbn, 
-                raiinInfo.HokenId,
-                raiinInfo.HokenPid,
-                raiinInfo.RaiinNo));
-        }
+        List<ReceptionModel> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId).Select(x => new ReceptionModel(
+                                                      x.HpId,
+                                                      x.PtId,
+                                                      x.SinDate,
+                                                      x.UketukeNo,
+                                                      x.Status,
+                                                      x.KaSname,
+                                                      x.SName,
+                                                      x.Houbetu,
+                                                      x.HokensyaNo,
+                                                      x.HokenKbn,
+                                                      x.HokenId,
+                                                      x.HokenPid,
+                                                      x.RaiinNo)));
         return result;
     }
 }
