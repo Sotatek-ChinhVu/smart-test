@@ -3,6 +3,7 @@ using Domain.Models.Accounting;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -252,7 +253,116 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
+        public bool SaveAccountingInf(bool isIgnoreDateNotVerify, AccountingInfModel accountingInf, List<AccountingModel> accountingModels, List<SyunoNyukinModel> syunoNyukins, int PayType)
+        {
+            int allSeikyuGaku = accountingInf.SumAdjust;
+            int adjustFutan = accountingInf.ThisWari;
+            int nyukinGaku = accountingInf.ThisCredit;
+            int outAdjustFutan = 0;
+            int outNyukinGaku = 0;
+            int outNyukinKbn = 0;
+            var uketukeSbt = syunoNyukins.FirstOrDefault(x => x.RaiinNo == syunoNyukins[0].RaiinNo)?.UketukeSbt ?? 0;
 
+            for (int i = 0; i < accountingModels.Count; i++)
+            {
+                var item = accountingModels[i];
+                int thisSeikyuGaku = item.SyunoSeikyu.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                 item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                bool isLastRecord = i == accountingModels.Count - 1;
+
+                ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                    out outNyukinKbn, isLastRecord);
+
+                allSeikyuGaku -= thisSeikyuGaku;
+
+                if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
+                    item.SyunoNyukinModels[0].NyukinGaku != 0)
+                {
+                    TrackingDataContext.Update(new SyunoNyukin()
+                    {
+                        SinDate = item.SyunoSeikyu.SinDate,
+                        SortNo = 1,
+                        AdjustFutan = outAdjustFutan,
+                        NyukinGaku = outNyukinGaku,
+                        PaymentMethodCd = PayType,
+                        UketukeSbt = uketukeSbt,
+                        NyukinCmt = "",
+                        NyukinjiTensu = item.SyunoSeikyu.SeikyuTensu,
+                        NyukinjiDetail = item.SyunoSeikyu.SeikyuDetail,
+                        NyukinjiSeikyu = item.SyunoSeikyu.SeikyuGaku
+                    });
+                }
+                else
+                {
+
+                    item.SyunoNyukinModels[0].AdjustFutan = outAdjustFutan;
+                    item.SyunoNyukinModels[0].NyukinGaku = outNyukinGaku;
+                    item.SyunoNyukinModels[0].PaymentMethodCd = AccountingInf.PayType;
+                    item.SyunoNyukinModels[0].UketukeSbt = _raiinUketukeSbt;
+                    item.SyunoNyukinModels[0].NyukinCmt = AccountingInf.Comment;
+                    item.SyunoNyukinModels[0].NyukinjiTensu = item.SeikyuTensu;
+                    item.SyunoNyukinModels[0].NyukinjiDetail = item.SeikyuDetail;
+                    item.SyunoNyukinModels[0].NyukinjiSeikyu = item.SeikyuGaku;
+                }
+
+                item.NyukinKbn = outNyukinKbn;
+            }
+
+            _accountingModelsSave.AddRange(accountingModels);
+
+            if (AccountingInf.AccDue != 0 && nyukinGaku != 0)
+            {
+                AdjustWariExecute(nyukinGaku, isIgnoreDateNotVerify);
+            }
+
+            return true;
+
+        }
+
+        private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
+        {
+            int credit = adjustFutan + nyukinGaku;
+
+            if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
+            {
+                if (isLastRecord == true)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
+                {
+                    outAdjustFutan = thisSeikyuGaku;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+            }
+            else
+            {
+                outAdjustFutan = adjustFutan;
+                outNyukinGaku = nyukinGaku;
+
+                adjustFutan -= outAdjustFutan;
+                nyukinGaku -= outNyukinGaku;
+            }
+
+            thisSeikyuGaku = thisSeikyuGaku - outAdjustFutan - outNyukinGaku;
+            outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
+        }
 
     }
 }
