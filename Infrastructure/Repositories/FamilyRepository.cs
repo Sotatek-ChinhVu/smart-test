@@ -55,6 +55,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                     ptFamily.FamilyId,
                                     ptFamily.SeqNo,
                                     ptFamily.ZokugaraCd ?? string.Empty,
+                                    ptFamily.FamilyPtId,
                                     familyPtNum,
                                     name,
                                     sex,

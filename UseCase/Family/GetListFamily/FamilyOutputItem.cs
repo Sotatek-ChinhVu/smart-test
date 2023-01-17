@@ -10,6 +10,7 @@ public class FamilyOutputItem
         FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtNum = model.FamilyPtNum;
+        FamilyPtId = model.FamilyPtId;
         Name = model.Name;
         Sex = model.Sex;
         Birthday = model.Birthday;
@@ -24,6 +25,8 @@ public class FamilyOutputItem
     public long FamilyId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
+
+    public long FamilyPtId { get; private set; }
 
     public long FamilyPtNum { get; private set; }
 
