@@ -125,6 +125,55 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
+        public List<MaxMoneyInfoHokenModel> GetListInfoHokenMoneys(int hpId, long ptId, IEnumerable<int> kohiIds, int sinYm)
+        {
+            var result = new List<MaxMoneyInfoHokenModel>();
+            var kohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId
+                                                                && x.PtId == ptId
+                                                                && kohiIds.Contains(x.HokenId)).ToList();
+
+            if (kohis is null || !kohis.Any())
+                return result;
+
+            var hokenNoIds = kohis.Select(x => x.HokenNo);
+            var hokenEdaNoIds = kohis.Select(x => x.HokenEdaNo);
+
+            var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId
+                                                                && hokenNoIds.Contains(x.HokenNo)
+                                                                && hokenEdaNoIds.Contains(x.HokenEdaNo)).ToList();
+
+            foreach(PtKohi kohi in kohis)
+            {
+                var hokenMst = hokenMsts.FirstOrDefault(x => x.HokenNo == kohi.HokenNo
+                                                               && x.HokenEdaNo == kohi.HokenEdaNo);
+
+                if (hokenMst is null)
+                    continue;
+
+                int limitFutan = 0;
+                if (hokenMst.KaiLimitFutan > 0)
+                    limitFutan = hokenMst.KaiLimitFutan;
+                else if (hokenMst.DayLimitFutan > 0)
+                    limitFutan = hokenMst.DayLimitFutan;
+                else if (hokenMst.MonthLimitFutan > 0)
+                    limitFutan = hokenMst.MonthLimitFutan;
+
+                result.Add(new MaxMoneyInfoHokenModel(kohi.HokenId,
+                                                kohi.Rate,
+                                                sinYm,
+                                                hokenMst.FutanKbn,
+                                                hokenMst.MonthLimitFutan,
+                                                kohi.GendoGaku,
+                                                hokenMst.Houbetu ?? string.Empty,
+                                                hokenMst.HokenName ?? string.Empty,
+                                                hokenMst.IsLimitListSum,
+                                                hokenMst.IsLimitList,
+                                                hokenMst.FutanRate,
+                                                limitFutan));
+            }
+            return result;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

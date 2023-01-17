@@ -79,6 +79,7 @@ using EmrCloudApi.Responses.MaxMoney;
 using EmrCloudApi.Requests.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using EmrCloudApi.Presenters.MaxMoney;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -575,6 +576,7 @@ namespace EmrCloudApi.Controller
                  grpInfs,
                  request.ReactSave,
                  request.LimitLists,
+                 request.SinYM,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
@@ -768,10 +770,11 @@ namespace EmrCloudApi.Controller
         }
 
 
+        [AllowAnonymous]
         [HttpPost(ApiPath.GetMaxMoneyByPtId)]
         public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
         {
-            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId, request.SinDate );
+            var input = new GetMaxMoneyByPtIdInputData(1, request.PtId, request.SinDate );
             var output = _bus.Handle(input);
             var presenter = new GetMaxMoneyByPtIdPresenter();
             presenter.Complete(output);

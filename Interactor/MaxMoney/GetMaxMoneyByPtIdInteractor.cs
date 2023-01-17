@@ -32,10 +32,12 @@ namespace Interactor.MaxMoney
 
                 var kohiIdList = datas.GroupBy(x => x.KohiId).Select(x => x.Key);
 
-                foreach(int kohiId in kohiIdList)
+                var infoHokens = _maxmoneyReposiory.GetListInfoHokenMoneys(inputData.HpId, inputData.PtId, kohiIdList, inputData.SinYM);
+
+                foreach (int kohiId in kohiIdList)
                 {
                     var listLimit = datas.Where(x => x.KohiId == kohiId);
-                    var infoHoken = _maxmoneyReposiory.GetInfoHokenMoney(inputData.HpId, inputData.PtId, kohiId, inputData.SinYM);
+                    var infoHoken = infoHokens.FirstOrDefault(x => x.HokenKohiId == kohiId) ?? new MaxMoneyInfoHokenModel(0, 0, 0, 0, 0, 0, string.Empty, string.Empty, 0, 0, 0, 0);
 
                     int rate = infoHoken.Rate;
                     int sinDateYM = infoHoken.SinYM;
