@@ -13,7 +13,7 @@ namespace UseCase.MaxMoney.GetMaxMoneyByPtId
             SinDate = sinDate;
         }
 
-        public int HpId { get; private set }
+        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 
