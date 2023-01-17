@@ -22,6 +22,26 @@ public class FamilyModel
         IsDeleted = false;
     }
 
+    public FamilyModel(long familyId, string zokugaraCd, long familyPtId)
+    {
+        FamilyId = familyId;
+        ZokugaraCd = zokugaraCd;
+        FamilyPtId = familyPtId;
+        SeqNo = 0;
+        FamilyPtNum = 0;
+        Name = string.Empty;
+        KanaName = string.Empty;
+        Sex = 0;
+        Birthday = 0;
+        Age = 0;
+        IsDead = 0;
+        IsSeparated = 0;
+        Biko = string.Empty;
+        SortNo = 0;
+        ListPtFamilyRekis = new();
+        IsDeleted = false;
+    }
+
     public long FamilyId { get; private set; }
 
     public long SeqNo { get; private set; }
