@@ -1,9 +1,9 @@
 ﻿using Domain.Models.Ka;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -59,55 +59,45 @@ public class KaRepository : RepositoryBase, IKaRepository
 
     public bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels)
     {
-        bool status = false;
-        try
+        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+        int sortNo = 1;
+        List<KaMst> listAddNews = new();
+        foreach (var model in kaMstModels)
         {
-            var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
-            int sortNo = 1;
-            List<KaMst> listAddNews = new();
-            foreach (var model in kaMstModels)
+            var entity = listKaMsts.FirstOrDefault(mst => mst.Id == model.Id && mst.HpId == hpId);
+            if (entity == null)
             {
-                var entity = listKaMsts.FirstOrDefault(mst => mst.Id == model.Id && mst.HpId == hpId);
-                if (entity == null)
-                {
-                    entity = new KaMst();
-                    entity.HpId = hpId;
-                    entity.Id = 0;
-                    entity.CreateDate = DateTime.UtcNow;
-                    entity.CreateId = userId;
-                }
-                entity.KaId = model.KaId;
-                entity.SortNo = sortNo;
-                entity.ReceKaCd = model.ReceKaCd;
-                entity.KaSname = model.KaSname;
-                entity.KaName = model.KaSname;
-                entity.IsDeleted = 0;
-                entity.UpdateDate = DateTime.UtcNow;
-                entity.UpdateId = userId;
-                if (entity.Id == 0)
-                {
-                    listAddNews.Add(entity);
-                }
-                sortNo++;
+                entity = new KaMst();
+                entity.HpId = hpId;
+                entity.Id = 0;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.CreateId = userId;
             }
-            TrackingDataContext.KaMsts.AddRange(listAddNews);
+            entity.KaId = model.KaId;
+            entity.SortNo = sortNo;
+            entity.ReceKaCd = model.ReceKaCd;
+            entity.KaSname = model.KaSname;
+            entity.KaName = model.KaSname;
+            entity.IsDeleted = 0;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (entity.Id == 0)
+            {
+                listAddNews.Add(entity);
+            }
+            sortNo++;
+        }
+        TrackingDataContext.KaMsts.AddRange(listAddNews);
 
-            var listKaIdModel = kaMstModels.Select(model => model.Id).ToList();
-            var listKaDeletes = listKaMsts.Where(model => !listKaIdModel.Contains(model.Id)).ToList();
-            foreach (var mst in listKaDeletes)
-            {
-                mst.IsDeleted = 1;
-                mst.UpdateDate = DateTime.UtcNow;
-                mst.UpdateId = userId;
-            }
-            TrackingDataContext.SaveChanges();
-            status = true;
-            return status;
-        }
-        catch (Exception)
+        var listKaIdModel = kaMstModels.Select(model => model.Id).ToList();
+        var listKaDeletes = listKaMsts.Where(model => !listKaIdModel.Contains(model.Id)).ToList();
+        foreach (var mst in listKaDeletes)
         {
-            return status;
+            mst.IsDeleted = 1;
+            mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            mst.UpdateId = userId;
         }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private static KaMstModel ConvertToKaMstModel(KaMst k)

@@ -164,6 +164,10 @@
         //hoken sya
         public const string GetHokenSyaMst = "GetHokenSyaMst";
 
+        //User
+        public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
+        public const string GetPermissionByScreen = "GetPermissionByScreen";
+
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
 

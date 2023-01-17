@@ -19,6 +19,26 @@
             IsNotSaved = isNotSaved;
         }
 
+        public FlowSheetModel(int sinDate, long ptId, long raiinNo, int syosaisinKbn, int status)
+        {
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
+            PtId = ptId;
+            SyosaisinKbn = syosaisinKbn;
+            Status = status;
+            FullLineOfKarte = string.Empty;
+            Comment = string.Empty;
+            RaiinListInfs = new List<RaiinListInfModel>();
+        }
+
+        public bool IsNext
+        {
+            get
+            {
+                return SyosaisinKbn < 0;
+            }
+        }
+
         public int SinDate { get; private set; }
 
         public int TagNo { get; private set; }

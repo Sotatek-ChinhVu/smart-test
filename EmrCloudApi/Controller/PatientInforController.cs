@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -43,7 +44,6 @@ using EmrCloudApi.Responses.SwapHoken;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
-using UseCase.CommonChecker;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
@@ -75,7 +75,6 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
-using Domain.Models.GroupInf;
 
 namespace EmrCloudApi.Controller
 {
@@ -453,7 +452,7 @@ namespace EmrCloudApi.Controller
 
             List<GroupInfModel> grpInfs = request.PtGrps.Select(x => new GroupInfModel(
                                                 x.HpPt,
-                                                x.PtId, 
+                                                x.PtId,
                                                 x.GroupId,
                                                 x.GroupCode,
                                                 x.GroupName)).ToList();
@@ -571,6 +570,7 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
+                 request.LimitLists,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
@@ -763,14 +763,5 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.OrderRealtimeChecker)]
-        public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
-        {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder);
-            var output = _bus.Handle(input);
-            var presenter = new OrderRealtimeCheckerPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
-        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using CommonChecker.Models.OrdInf;
 
-namespace EmrCloudApi.Requests.PatientInfor
+namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class OrderRealtimeCheckerRequest
     {

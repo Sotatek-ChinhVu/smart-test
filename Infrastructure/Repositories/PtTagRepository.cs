@@ -1,9 +1,9 @@
 ﻿using Domain.Models.PtTag;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -31,7 +31,7 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
 
             ptTag.IsDeleted = isDeleted;
 
-            ptTag.UpdateDate = DateTime.UtcNow;
+            ptTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
             ptTag.UpdateId = userId;
             ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
@@ -84,7 +84,7 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
 
                             updateList.ForEach(ptTag =>
                             {
-                                ptTag.UpdateDate = DateTime.UtcNow;
+                                ptTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 ptTag.UpdateId = userId;
                                 ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
@@ -92,9 +92,9 @@ public class PtTagRepository : RepositoryBase, IPtTagRepository
 
                             addList.ForEach(ptTag =>
                             {
-                                ptTag.CreateDate = DateTime.UtcNow;
+                                ptTag.CreateDate = CIUtil.GetJapanDateTimeNow();
                                 ptTag.CreateId = userId;
-                                ptTag.UpdateDate = DateTime.UtcNow;
+                                ptTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 ptTag.UpdateId = userId;
                             });
 

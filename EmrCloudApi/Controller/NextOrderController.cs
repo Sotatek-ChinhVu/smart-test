@@ -25,7 +25,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get)]
     public ActionResult<Response<GetNextOrderResponse>> Get([FromQuery] GetNextOrderRequest request)
     {
-        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.Type, UserId);
+        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.RsvkrtKbn, UserId);
         var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderPresenter();

@@ -12,17 +12,17 @@ namespace UseCase.NextOrder.Get
 
         public int SinDate { get; private set; }
 
-        public int Type { get; private set; }
+        public int RsvkrtKbn { get; private set; }
 
         public int UserId { get; private set; }
 
-        public GetNextOrderInputData(long ptId, int hpId, long rsvkrtNo, int sinDate, int type, int userId)
+        public GetNextOrderInputData(long ptId, int hpId, long rsvkrtNo, int sinDate, int rsvkrtKbn, int userId)
         {
             PtId = ptId;
             HpId = hpId;
             RsvkrtNo = rsvkrtNo;
             SinDate = sinDate;
-            Type = type;
+            RsvkrtKbn = rsvkrtKbn;
             UserId = userId;
         }
     }

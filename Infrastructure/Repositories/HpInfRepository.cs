@@ -1,7 +1,6 @@
 ﻿using Domain.Models.HpInf;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {

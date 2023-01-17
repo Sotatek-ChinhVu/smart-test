@@ -1,6 +1,8 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class AutoCheckResultModel
+    public class AutoCheckResultModel : OrderInforResultModel
     {
         public string ItemCd { get; set; } = string.Empty;
 
