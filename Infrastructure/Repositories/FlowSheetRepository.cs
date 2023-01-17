@@ -365,13 +365,15 @@ namespace Infrastructure.Repositories
                      (
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                        on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId , raiinListMst.KbnCd }
                         select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                      );
 
-            return raiinListInfs
+            var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
+
+            return result;
         }
     }
 }
