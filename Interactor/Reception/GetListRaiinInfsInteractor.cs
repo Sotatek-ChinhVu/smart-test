@@ -34,7 +34,7 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
             {
                 return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InValidPtId);
             }
-            var listNextOrderFiles = GetListRaiinInfos(inputData.HpId, inputData.PtId).Select(item => new GetListRaiinInfsInputItem(
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId).Select(item => new GetListRaiinInfsInputItem(
                                                             item.HpId, 
                                                             item.PtId, 
                                                             item.SinDate, 
@@ -49,7 +49,7 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
                                                             item.HokenPid,
                                                             item.RaiinNo))
                                                             .ToList();
-            return new GetListRaiinInfsOutputData(listNextOrderFiles, GetListRaiinInfsStatus.Success);
+            return new GetListRaiinInfsOutputData(listRaiinInfos, GetListRaiinInfsStatus.Success);
         }
         finally
         {
