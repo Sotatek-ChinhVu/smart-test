@@ -6,7 +6,7 @@ public class FamilyDto
 {
     public FamilyDto(FamilyOutputItem model)
     {
-        SeqNo = model.SeqNo;
+        FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtNum = model.FamilyPtNum;
         Name = model.Name;
@@ -20,7 +20,7 @@ public class FamilyDto
         ListPtFamilyReki = model.ListPtFamilyReki.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
-    public long SeqNo { get; private set; }
+    public long FamilyId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 

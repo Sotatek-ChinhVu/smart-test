@@ -52,6 +52,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         int birthday = ptInf != null ? ptInf.Birthday : ptFamily.Birthday;
         int isDead = ptInf != null ? ptInf.IsDead : ptFamily.IsDead;
         return new FamilyModel(
+                                    ptFamily.FamilyId,
                                     ptFamily.SeqNo,
                                     ptFamily.ZokugaraCd ?? string.Empty,
                                     familyPtNum,

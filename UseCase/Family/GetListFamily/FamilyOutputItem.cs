@@ -7,7 +7,7 @@ public class FamilyOutputItem
 {
     public FamilyOutputItem(FamilyModel model)
     {
-        SeqNo = model.SeqNo;
+        FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtNum = model.FamilyPtNum;
         Name = model.Name;
@@ -21,7 +21,7 @@ public class FamilyOutputItem
         ListPtFamilyReki = model.ListPtFamilyRekis.Select(item => new PtFamilyRekiOutputItem(item)).ToList();
     }
 
-    public long SeqNo { get; private set; }
+    public long FamilyId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 
