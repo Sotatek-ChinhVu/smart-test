@@ -44,6 +44,4 @@ public class FamilyOutputItem
     public int SortNo { get; private set; }
 
     public List<PtFamilyRekiOutputItem> ListPtFamilyReki { get; private set; }
-
-    public string BirthdayDisplay { get => CIUtil.SDateToShowWDate(Birthday); }
 }

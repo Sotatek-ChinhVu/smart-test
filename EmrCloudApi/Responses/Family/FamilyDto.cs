@@ -17,7 +17,6 @@ public class FamilyDto
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
-        BirthdayDisplay = model.BirthdayDisplay;
         ListPtFamilyReki = model.ListPtFamilyReki.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
@@ -42,8 +41,6 @@ public class FamilyDto
     public string Biko { get; private set; }
 
     public int SortNo { get; private set; }
-
-    public string BirthdayDisplay { get; private set; }
 
     public List<PtFamilyRekiDto> ListPtFamilyReki { get; private set; }
 }

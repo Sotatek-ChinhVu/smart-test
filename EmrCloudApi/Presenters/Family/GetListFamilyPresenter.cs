@@ -19,7 +19,7 @@ public class GetListFamilyPresenter : IGetListFamilyOutputPort
     private string GetMessage(GetListFamilyStatus status) => status switch
     {
         GetListFamilyStatus.Successed => ResponseMessage.Success,
-        GetListFamilyStatus.InvalidPtId => ResponseMessage.PtInfNotFould,
+        GetListFamilyStatus.InvalidPtId => ResponseMessage.PtInfNotFound,
         GetListFamilyStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
         _ => string.Empty
     };
