@@ -19,7 +19,7 @@ namespace Interactor.FlowSheet
                 if (inputData.IsHolidayOnly)
                 {
                     var holidayMstList = _flowsheetRepository.GetHolidayMst(inputData.HpId, inputData.HolidayFrom, inputData.HolidayTo);
-                    return new GetListFlowSheetOutputData(new List<FlowSheetModel>(), new List<RaiinListMstModel>(), holidayMstList);
+                    return new GetListFlowSheetOutputData(holidayMstList);
                 }
                 else
                 {
@@ -27,8 +27,9 @@ namespace Interactor.FlowSheet
                     int count = inputData.Count <= 0 ? 50 : inputData.Count;
                     var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.StartIndex, count, inputData.Sort, ref totalFlowSheet);
                     var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
+                    var raiinListInfList = _flowsheetRepository.GetRaiinListInf(inputData.HpId, inputData.PtId);
 
-                    return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, new List<HolidayModel>(), totalFlowSheet);
+                    return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, raiinListInfList, totalFlowSheet);
                 }
             }
             finally
