@@ -2,7 +2,7 @@
 
 public class FamilyModel
 {
-    public FamilyModel(long familyId, long seqNo, string zokugaraCd, long familyPtId, long familyPtNum, string name, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis)
+    public FamilyModel(long familyId, long seqNo, string zokugaraCd, long familyPtId, long familyPtNum, string name, string kanaName, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis)
     {
         FamilyId = familyId;
         SeqNo = seqNo;
@@ -10,6 +10,7 @@ public class FamilyModel
         FamilyPtId = familyPtId;
         FamilyPtNum = familyPtNum;
         Name = name;
+        KanaName = kanaName;
         Sex = sex;
         Birthday = birthday;
         Age = age;
@@ -32,6 +33,8 @@ public class FamilyModel
     public long FamilyPtNum { get; private set; }
 
     public string Name { get; private set; }
+
+    public string KanaName { get; private set; }
 
     public int Sex { get; private set; }
 

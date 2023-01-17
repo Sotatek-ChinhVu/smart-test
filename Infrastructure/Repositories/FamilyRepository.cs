@@ -58,6 +58,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                     ptFamily.FamilyPtId,
                                     familyPtNum,
                                     name,
+                                    ptFamily.KanaName ?? string.Empty,
                                     sex,
                                     birthday,
                                     CIUtil.SDateToAge(birthday, sinDate),

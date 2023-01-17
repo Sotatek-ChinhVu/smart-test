@@ -12,6 +12,7 @@ public class FamilyOutputItem
         FamilyPtNum = model.FamilyPtNum;
         FamilyPtId = model.FamilyPtId;
         Name = model.Name;
+        KanaName = model.KanaName;
         Sex = model.Sex;
         Birthday = model.Birthday;
         Age = model.Age;
@@ -31,6 +32,8 @@ public class FamilyOutputItem
     public long FamilyPtNum { get; private set; }
 
     public string Name { get; private set; }
+
+    public string KanaName { get; private set; }
 
     public int Sex { get; private set; }
 

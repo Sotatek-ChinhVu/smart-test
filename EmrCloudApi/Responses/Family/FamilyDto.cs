@@ -11,6 +11,7 @@ public class FamilyDto
         FamilyPtId = model.FamilyPtId;
         FamilyPtNum = model.FamilyPtNum;
         Name = model.Name;
+        KanaName = model.KanaName;
         Sex = model.Sex;
         Birthday = model.Birthday;
         Age = model.Age;
@@ -30,6 +31,8 @@ public class FamilyDto
     public long FamilyPtNum { get; private set; }
 
     public string Name { get; private set; }
+
+    public string KanaName { get; private set; }
 
     public int Sex { get; private set; }
 
