@@ -75,6 +75,10 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
+using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
+using EmrCloudApi.Presenters.MaxMoney;
 
 namespace EmrCloudApi.Controller
 {
@@ -570,7 +574,7 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
-                 request.LimitLists,
+                 request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
@@ -763,5 +767,15 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
 
+
+        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
+        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        {
+            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxMoneyByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
     }
 }
