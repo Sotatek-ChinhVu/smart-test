@@ -20,9 +20,6 @@ namespace Interactor.MaxMoney
                 if (inputData.HpId < 0)
                     return new GetMaxMoneyByPtIdOutputData(datas, GetMaxMoneyByPtIdStatus.InvalidHpId);
 
-                if (inputData.SinDate <= 0)
-                    return new GetMaxMoneyByPtIdOutputData(datas, GetMaxMoneyByPtIdStatus.InvalidSinDate);
-
                 datas = _maxmoneyReposiory.GetListLimitModel(inputData.PtId, inputData.HpId);
 
                 if (datas == null || !datas.Any())
