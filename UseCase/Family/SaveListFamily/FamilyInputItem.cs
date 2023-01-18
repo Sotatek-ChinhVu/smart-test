@@ -2,9 +2,10 @@
 
 public class FamilyInputItem
 {
-    public FamilyInputItem(long familyId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiInputItem> listPtFamilyReki)
+    public FamilyInputItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiInputItem> listPtFamilyReki)
     {
         FamilyId = familyId;
+        PtId = ptId;
         ZokugaraCd = zokugaraCd;
         FamilyPtId = familyPtId;
         Name = name;
@@ -20,6 +21,8 @@ public class FamilyInputItem
     }
 
     public long FamilyId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 

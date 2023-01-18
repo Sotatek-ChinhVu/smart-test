@@ -884,5 +884,21 @@
         //Insurance Mst Detail
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
+
+        // Family
+        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
+        public static readonly string InvalidFamilyId = "Invalid FamilyId";
+        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
+        public static readonly string InvalidFamilyName = "Invalid Family Name";
+        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
+        public static readonly string InvalidFamilySex = "Invalid Family Sex";
+        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
+        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
+        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
+        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
+        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
+        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
+        public static readonly string DuplicateFamily = "Duplicate Family";
     }
 }

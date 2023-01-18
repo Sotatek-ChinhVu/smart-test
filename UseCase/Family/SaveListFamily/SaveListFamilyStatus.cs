@@ -2,8 +2,9 @@
 
 public enum SaveListFamilyStatus : byte
 {
+    ValidateSuccess = 0,
     Successed = 1,
-    ValidateSuccess = 2,
+    Failed = 2,
     InvalidHpId = 3,
     InvalidUserId = 4,
     InvalidPtIdOrFamilyPtId = 5,
@@ -18,4 +19,8 @@ public enum SaveListFamilyStatus : byte
     InvalidIsSeparated = 14,
     InvalidBiko = 15,
     InvalidFamilyRekiId = 16,
+    InvalidByomeiCd = 17,
+    InvalidByomei = 18,
+    InvalidCmt = 19,
+    DuplicateFamily = 20,
 }
