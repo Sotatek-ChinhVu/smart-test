@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Family.GetListFamily;
+using UseCase.Family.GetListFamilyReverser;
 using UseCase.Family.SaveListFamily;
 
 namespace EmrCloudApi.Controller;
@@ -30,6 +31,18 @@ public class FamilyController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListFamilyResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListFamilyReverser)]
+    public ActionResult<Response<GetListFamilyReverserResponse>> GetListFamilyReverser([FromBody] GetListFamilyReverserRequest request)
+    {
+        var input = new GetListFamilyReverserInputData(HpId, request.FamilyPtId, request.DicPtInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListFamilyReverserPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListFamilyReverserResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]

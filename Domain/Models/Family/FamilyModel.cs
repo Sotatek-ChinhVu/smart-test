@@ -44,6 +44,27 @@ public class FamilyModel
         IsDeleted = false;
     }
 
+    public FamilyModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int isDead)
+    {
+        FamilyId = 0;
+        ZokugaraCd = string.Empty;
+        FamilyPtId = 0;
+        SeqNo = 0;
+        PtId = ptId;
+        FamilyPtNum = ptNum;
+        Name = name;
+        KanaName = kanaName;
+        Sex = sex;
+        Birthday = birthday;
+        Age = 0;
+        IsDead = isDead;
+        IsSeparated = 0;
+        Biko = string.Empty;
+        SortNo = 0;
+        ListPtFamilyRekis = new();
+        IsDeleted = false;
+    }
+
     public FamilyModel(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<PtFamilyRekiModel> listPtFamilyRekis)
     {
         FamilyId = familyId;

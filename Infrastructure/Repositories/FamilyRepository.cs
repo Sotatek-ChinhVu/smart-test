@@ -39,6 +39,32 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                         .ToList();
     }
 
+    public List<FamilyModel> GetListFamilyReverser(int hpId, long familyPtId, List<long> listPtIdInput)
+    {
+        var listPtIdExist = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
+                                                                    && listPtIdInput.Contains(item.PtId)
+                                                                    && item.FamilyPtId == familyPtId
+                                                                    && item.IsDeleted != 1)
+                                                        .Select(item => item.PtId)
+                                                        .ToList();
+
+        var listPtInf = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                && listPtIdInput.Contains(item.PtId)
+                                                                && !listPtIdExist.Contains(item.PtId)
+                                                                && item.IsDelete != 1)
+                                                 .ToList();
+
+        return listPtInf.Select(item => new FamilyModel(
+                                                            item.PtId,
+                                                            item.PtNum,
+                                                            item.Name ?? string.Empty,
+                                                            item.KanaName ?? string.Empty,
+                                                            item.Sex,
+                                                            item.Birthday,
+                                                            item.IsDead
+                                                        )).ToList();
+    }
+
     public bool SaveListFamily(int hpId, int userId, List<FamilyModel> listFamily)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
@@ -64,7 +90,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
             });
     }
 
-    public List<FamilyModel> GetListByPtIdId(int hpId, long ptId)
+    public List<FamilyModel> GetListByPtId(int hpId, long ptId)
     {
         return NoTrackingDataContext.PtFamilys.Where(x => x.HpId == hpId
                                                           && x.PtId == ptId
@@ -84,19 +110,6 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         return listFamilyRekiId.Count == countFromDB;
     }
 
-    public List<FamilyModel> GetListByFamilyPtId(int hpId, List<long> listPtId)
-    {
-        return NoTrackingDataContext.PtFamilys.Where(x => x.HpId == hpId
-                                                          && listPtId.Contains(x.FamilyPtId)
-                                                          && x.IsDeleted != 1)
-                                              .Select(item => new FamilyModel(
-                                                item.FamilyId,
-                                                item.PtId,
-                                                item.ZokugaraCd ?? string.Empty,
-                                                item.FamilyPtId
-                                               ))
-                                              .ToList();
-    }
     #region private function
     private FamilyModel ConvertToFamilyModel(int sinDate, PtFamily ptFamily, List<PtInf> ptInfs, List<PtFamilyReki> ptFamilyRekis)
     {
@@ -142,9 +155,11 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
     private bool SaveListFamilyAction(int hpId, int userId, List<FamilyModel> listFamily)
     {
+        var listFamilyPtId = listFamily.Where(item => item.FamilyPtId > 0 && !item.IsDeleted).Select(item => item.FamilyPtId).ToList();
         var listFamilyId = listFamily.Select(item => item.FamilyId).ToList();
         var listFamilyDB = TrackingDataContext.PtFamilys.Where(item => listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1);
         var listFamilyRekiDB = TrackingDataContext.PtFamilyRekis.Where(item => listFamilyId.Contains(item.FamilyId) && item.IsDeleted != 1).ToList();
+        var listPtInf = TrackingDataContext.PtInfs.Where(item => item.IsDelete != 1 && listFamilyPtId.Contains(item.PtId)).ToList();
 
         foreach (var familyModel in listFamily)
         {
@@ -153,6 +168,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 var ptFamilyEntity = ConvertToNewPtFamily(hpId, userId, familyModel);
                 TrackingDataContext.PtFamilys.Add(ptFamilyEntity);
                 TrackingDataContext.SaveChanges();
+                UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 if (!SaveListFamilyReki(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
                     return false;
@@ -182,6 +198,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ptFamilyEntity.IsDead = familyModel.IsDead;
                 ptFamilyEntity.IsSeparated = familyModel.IsSeparated;
                 ptFamilyEntity.Biko = familyModel.Biko;
+                UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
                 if (!SaveListFamilyReki(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
                     return false;
@@ -265,6 +282,15 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         ptFamilyRekiEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
         ptFamilyRekiEntity.UpdateId = userId;
         return ptFamilyRekiEntity;
+    }
+
+    private void UpdatePtInf(List<PtInf> ptInfs, long ptId, int isDead)
+    {
+        var ptInf = ptInfs.FirstOrDefault(item => item.PtId == ptId);
+        if (ptInf != null)
+        {
+            ptInf.IsDead = isDead;
+        }
     }
     #endregion
 

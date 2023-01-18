@@ -125,15 +125,15 @@ public class SaveListFamilyInteractor : ISaveListFamilyInputPort
         {
             return SaveListFamilyStatus.InvalidPtIdOrFamilyPtId;
         }
-        return ValidateListFamilyInputItem(input.HpId, input.PtId, input.ListFamily, listFamilyPtId);
+        return ValidateListFamilyInputItem(input.HpId, input.PtId, input.ListFamily);
     }
 
-    private SaveListFamilyStatus ValidateListFamilyInputItem(int hpId, long ptId, List<FamilyInputItem> listFamily, List<long> listFamilyPtId)
+    private SaveListFamilyStatus ValidateListFamilyInputItem(int hpId, long ptId, List<FamilyInputItem> listFamily)
     {
         List<FamilyRekiInputItem> listFamilyReki = new();
         // validate familyId
         var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).ToList();
-        var listOnlyFamlily = _familyRepository.GetListByPtIdId(hpId, ptId);
+        var listOnlyFamlily = _familyRepository.GetListByPtId(hpId, ptId);
         if (listOnlyFamlily.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
         {
             return SaveListFamilyStatus.InvalidFamilyId;
