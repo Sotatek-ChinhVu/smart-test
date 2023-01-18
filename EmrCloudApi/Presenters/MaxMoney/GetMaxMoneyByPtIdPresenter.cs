@@ -20,7 +20,6 @@ namespace EmrCloudApi.Presenters.MaxMoney
             GetMaxMoneyByPtIdStatus.Successed => ResponseMessage.Success,
             GetMaxMoneyByPtIdStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             GetMaxMoneyByPtIdStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-            GetMaxMoneyByPtIdStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
             GetMaxMoneyByPtIdStatus.DataNotFound => ResponseMessage.NotFound,
             _ => string.Empty
         };
