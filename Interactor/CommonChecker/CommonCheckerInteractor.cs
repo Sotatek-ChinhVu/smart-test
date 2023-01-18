@@ -1149,6 +1149,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
+                errorInfoModel.Id = duplicationError.Id;
                 errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
                 errorInfoModel.SecondCellContent = "ー";
                 errorInfoModel.ThridCellContent = itemName;

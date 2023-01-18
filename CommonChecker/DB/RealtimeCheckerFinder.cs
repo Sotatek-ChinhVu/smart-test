@@ -1,4 +1,5 @@
-﻿using CommonChecker.Models;
+﻿using Amazon.Runtime;
+using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Entity.Tenant;
 using Helper.Common;
@@ -17,11 +18,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<string> itemCdList, int sinDate)
+        public Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<ItemCodeModel> itemCdList, int sinDate)
         {
             return _tenantNoTrackingDataContext
                 .TenMsts
-                .Where(i => i.HpId == hpId && itemCdList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                .Where(i => i.HpId == hpId && itemCdList.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                 .Select(t => new { t.ItemCd, t.YjCd })
                 .ToDictionary(t => t.ItemCd ?? string.Empty, t => t.YjCd ?? string.Empty);
         }
@@ -106,7 +107,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         #region Check allergy
 
-        public List<DrugAllergyResultModel> CheckDuplicatedComponent(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode)
+        public List<DrugAllergyResultModel> CheckDuplicatedComponent(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<string> listComparedItemCode)
         {
             bool IsNoMasterData()
             {
@@ -130,7 +131,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                      }).ToList();
 
                 var listCheckingDrugInfo =
-                    (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                    (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                      join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
                      select new
@@ -183,13 +184,13 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DrugAllergyResultModel> CheckProDrug(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode)
+        public List<DrugAllergyResultModel> CheckProDrug(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<string> listComparedItemCode)
         {
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugPro in _tenantNoTrackingDataContext.M56ProdrugCd
@@ -249,13 +250,13 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<DrugAllergyResultModel> CheckSameComponent(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode)
+        public List<DrugAllergyResultModel> CheckSameComponent(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<string> listComparedItemCode)
         {
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugAnalogue in _tenantNoTrackingDataContext.M56ExAnalogue
@@ -315,13 +316,13 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<DrugAllergyResultModel> CheckDuplicatedClass(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode)
+        public List<DrugAllergyResultModel> CheckDuplicatedClass(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<string> listComparedItemCode)
         {
             List<DrugAllergyResultModel> result;
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                 (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                   join componentInfo in _tenantNoTrackingDataContext.M56AlrgyDerivatives
                   on drugMst.YjCd equals componentInfo.YjCd
                   join drvalrgyCode in _tenantNoTrackingDataContext.M56DrvalrgyCode
@@ -381,12 +382,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         #endregion
 
         #region Check duplicated component
-        public List<DrugAllergyResultModel> CheckDuplicatedComponentForDuplication(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode, int haigouSetting)
+        public List<DrugAllergyResultModel> CheckDuplicatedComponentForDuplication(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<ItemCodeModel> listComparedItemCode, int haigouSetting)
         {
             List<DrugAllergyResultModel> checkedResult = new List<DrugAllergyResultModel>();
 
             var listDrugAllergyAsPatientInfo =
-                    (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                    (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                      join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1)
                      on drugMst.YjCd equals componentInfo.YjCd
                      join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -404,7 +405,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                      }).ToList();
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1)
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -465,12 +466,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DrugAllergyResultModel> CheckProDrugForDuplication(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode, int haigouSetting)
+        public List<DrugAllergyResultModel> CheckProDrugForDuplication(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<ItemCodeModel> listComparedItemCode, int haigouSetting)
         {
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -494,7 +495,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -546,12 +547,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<DrugAllergyResultModel> CheckSameComponentForDuplication(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode, int haigouSetting)
+        public List<DrugAllergyResultModel> CheckSameComponentForDuplication(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<ItemCodeModel> listComparedItemCode, int haigouSetting)
         {
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -575,7 +576,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredients.Where(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
@@ -627,12 +628,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<DrugAllergyResultModel> CheckDuplicatedClassForDuplication(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode, int haigouSetting)
+        public List<DrugAllergyResultModel> CheckDuplicatedClassForDuplication(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<ItemCodeModel> listComparedItemCode, int haigouSetting)
         {
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
                  join yjDrugClass in _tenantNoTrackingDataContext.M56YjDrugClass
@@ -652,7 +653,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listComparedItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
                  join yjDrugClass in _tenantNoTrackingDataContext.M56YjDrugClass
@@ -698,7 +699,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         }
         #endregion
 
-        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<string> listItemCode, int level, List<PtAlrgyFoodModel> listPtAlrgyFoods)
+        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, int level, List<PtAlrgyFoodModel> listPtAlrgyFoods)
         {
             List<FoodAllergyResultModel> result = new List<FoodAllergyResultModel>();
             var allergyFoodAsPatient = listPtAlrgyFoods ?? GetFoodAllergyByPtId(hpID, ptID, sinDate);
@@ -706,7 +707,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             List<string> listAlrgyKbn = allergyFoodAsPatient.Where(a => a.AlrgyKbn != null).Select(a => a.AlrgyKbn).ToList();
             var checkedResult =
                 _tenantNoTrackingDataContext.M12FoodAlrgy.
-                Where(c => listItemCode.Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn))
+                Where(c => listItemCode.Select(x=>x.ItemCd).Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn))
                 .Select(c => new
                 {
                     c.FoodKbn,
@@ -742,7 +743,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<AgeResultModel> CheckAge(int hpID, long ptID, int sinday, int level, int ageTypeCheckSetting, List<string> listItemCode)
+        public List<AgeResultModel> CheckAge(int hpID, long ptID, int sinday, int level, int ageTypeCheckSetting, List<ItemCodeModel> listItemCode)
         {
             //99: 収集又は作成中
             //00: 禁忌等の情報なし
@@ -806,7 +807,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
 
                 checkedResult =
-                (from itemInfo in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                (from itemInfo in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x=>x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
                  join ageCheck in _tenantNoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
@@ -829,7 +830,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             else
             {
                 checkedResult =
-                (from itemInfo in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                (from itemInfo in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x=>x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
                  join ageCheck in _tenantNoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
@@ -854,7 +855,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, int level, int sinDate, List<string> listItemCode, List<string> listDiseaseCode)
+        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, int level, int sinDate, List<ItemCodeModel> listItemCode, List<string> listDiseaseCode)
         {
 
             List<string> listBYCode =
@@ -864,7 +865,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x=>x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainEx.Where(c => c.TenpuLevel <= level && listBYCode.Contains(c.ByotaiCd) && (string.IsNullOrEmpty(c.KioCd) || c.KioCd == "1") && (string.IsNullOrEmpty(c.FamilyCd) || c.FamilyCd == "1"))
                  on itemMst.YjCd equals contraindication.YjCd
                  select new DiseaseResultModel()
@@ -881,7 +882,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode, List<PtKioRekiModel> listPtKioReki)
+        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode, List<PtKioRekiModel> listPtKioReki)
         {
             List<string> listByomeiCd = new List<string>();
             if (listPtKioReki != null)
@@ -905,7 +906,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
 
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x=>x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
                  join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainEx.Where(c => c.TenpuLevel <= level && (c.KioCd == "1" || c.KioCd == "2"))
                  on itemMst.YjCd equals contraindication.YjCd
                  join contraindiDisCon in _tenantNoTrackingDataContext.M42ContraindiDisCon.Where(c => listByomeiCd.Contains(c.ReceCd))
@@ -924,10 +925,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode)
+        public List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode)
         {
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                (from itemMst in _tenantNoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x=>x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
                  join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainEx.Where(c => c.TenpuLevel <= level && (c.FamilyCd == "1" || c.FamilyCd == "2"))
                  on itemMst.YjCd equals contraindication.YjCd
                  join contraindiDisCon in _tenantNoTrackingDataContext.M42ContraindiDisCon
@@ -950,10 +951,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<KinkiResultModel> CheckKinki(int hpID, int level, int sinday, List<string> listCurrentOrderCode, List<string> listAddedOrderCode)
+        public List<KinkiResultModel> CheckKinki(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode)
         {
             var listCurrentOrderSubYjCode = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => listCurrentOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
@@ -967,7 +968,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => listAddedOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => listAddedOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
@@ -1031,18 +1032,18 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<KinkiResultModel> result = new List<KinkiResultModel>();
 
-            foreach (string addedOrderItemCode in listAddedOrderCode)
+            foreach (var addedOrderItemCode in listAddedOrderCode)
             {
-                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode);
+                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
 
                 if (addedOrderSubYjCode == null)
                 {
                     continue;
                 }
 
-                foreach (string currentOrderCode in listCurrentOrderCode)
+                foreach (var currentOrderCode in listCurrentOrderCode)
                 {
-                    var currentOrderSubYjCode = listCurrentOrderSubYjCode.FirstOrDefault(s => s.ItemCd == currentOrderCode);
+                    var currentOrderSubYjCode = listCurrentOrderSubYjCode.FirstOrDefault(s => s.ItemCd == currentOrderCode.ItemCd);
                     if (currentOrderSubYjCode == null)
                     {
                         continue;
@@ -1100,7 +1101,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                     m.ACd == currentOrderSubYjCode.YjCd9 ||
                                     m.ACd == currentOrderSubYjCode.YjCd12
                                 ),
-                                ItemCd = addedOrderItemCode
+                                ItemCd = addedOrderItemCode.ItemCd ?? string.Empty,
                             }
                         )
                         .ToList();
@@ -1121,11 +1122,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiUser(int hpID, int level, int sinday, List<string> listCurrentOrderCode, List<string> listAddedOrderCode)
+        public List<KinkiResultModel> CheckKinkiUser(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode)
         {
             if (level <= 0) return new List<KinkiResultModel>();
             var listYjCd = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => (listCurrentOrderCode.Contains(m.ItemCd) || listAddedOrderCode.Contains(m.ItemCd)) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => (listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) || listAddedOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd)) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.ItemCd,
@@ -1136,8 +1137,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var listChecked = _tenantNoTrackingDataContext.KinkiMsts.Where(k => k.HpId == hpID &&
                                                                                          k.IsDeleted == 0 &&
                                                                                          (
-                                                                                              listCurrentOrderCode.Contains(k.ACd) && listAddedOrderCode.Contains(k.BCd) ||
-                                                                                              listCurrentOrderCode.Contains(k.BCd) && listAddedOrderCode.Contains(k.ACd)
+                                                                                              listCurrentOrderCode.Select(x => x.ItemCd).Contains(k.ACd) && listAddedOrderCode.Select(x => x.ItemCd).Contains(k.BCd) ||
+                                                                                              listCurrentOrderCode.Select(x => x.ItemCd).Contains(k.BCd) && listAddedOrderCode.Select(x => x.ItemCd).Contains(k.ACd)
                                                                                          )
                                                                                     )
                                                           .ToList();
@@ -1157,7 +1158,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtherDrugModel> listPtOtherDrug)
+        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtherDrugModel> listPtOtherDrug)
         {
             List<string> listTainCode = new List<string>();
             if (listPtOtherDrug == null)
@@ -1193,7 +1194,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => addedOrderItemCodeList.Select(x=>x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
@@ -1208,15 +1209,15 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<KinkiResultModel> result = new List<KinkiResultModel>();
 
-            foreach (string addedOrderItemCode in addedOrderItemCodeList)
+            foreach (var addedOrderItemCode in addedOrderItemCodeList)
             {
-                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode);
+                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
                 if (addedOrderSubYjCode == null)
                 {
                     continue;
                 }
 
-                foreach (string currentOrderCode in listTainCode)
+                foreach (var currentOrderCode in listTainCode)
                 {
                     var currentOrderSubYjCode = listCurrentOrderSubYjCode.FirstOrDefault(s => s.ItemCd == currentOrderCode);
                     if (currentOrderSubYjCode == null)
@@ -1277,7 +1278,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                     m.ACd == currentOrderSubYjCode.YjCd9 ||
                                     m.ACd == currentOrderSubYjCode.YjCd12
                                 ),
-                                ItemCd = addedOrderItemCode
+                                ItemCd = addedOrderItemCode.ItemCd
                             }
                         )
                         .ToList();
@@ -1298,7 +1299,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtcDrugModel> listPtOtcDrug)
+        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtcDrugModel> listPtOtcDrug)
         {
             List<int> listSerialNum = new List<int>();
             if (listPtOtcDrug == null)
@@ -1328,7 +1329,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => addedOrderItemCodeList.Select(x=>x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
@@ -1343,9 +1344,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<KinkiResultModel> result = new List<KinkiResultModel>();
 
-            foreach (string addedOrderItemCode in addedOrderItemCodeList)
+            foreach (var addedOrderItemCode in addedOrderItemCodeList)
             {
-                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode);
+                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
                 if (addedOrderSubYjCode == null)
                 {
                     continue;
@@ -1387,7 +1388,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             m => new KinkiResultModel()
                             {
-                                ItemCd = addedOrderItemCode,
+                                Id = addedOrderItemCode.Id,
+                                ItemCd = addedOrderItemCode.ItemCd,
                                 AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
                                 BYjCd = oTCSerialNum.ToString(),
                                 SubAYjCd = m.ACd,
@@ -1429,7 +1431,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtSuppleModel> listPtSupple)
+        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtSuppleModel> listPtSupple)
         {
             List<string> listIndexWord = new List<string>();
 
@@ -1463,7 +1465,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     ).ToList();
 
             var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMsts
-                .Where(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                .Where(m => addedOrderItemCodeList.Select(x=>x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
@@ -1478,9 +1480,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<KinkiResultModel> result = new List<KinkiResultModel>();
 
-            foreach (string addedOrderItemCode in addedOrderItemCodeList)
+            foreach (var addedOrderItemCode in addedOrderItemCodeList)
             {
-                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode);
+                var addedOrderSubYjCode = listAddedOrderSubYjCode.FirstOrDefault(s => s.ItemCd == addedOrderItemCode.ItemCd);
                 if (addedOrderSubYjCode == null)
                 {
                     continue;
@@ -1510,6 +1512,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             m => new KinkiResultModel()
                             {
+                                Id = addedOrderItemCode.Id,
                                 AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
                                 BYjCd = seibunInfo.IndexCd,
                                 SubAYjCd = m.ACd,
@@ -1520,7 +1523,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 IsNeedToReplace = true,
                                 IndexWord = seibunInfo.IndexWord,
                                 SeibunCd = seibunInfo.SeibunCd,
-                                ItemCd = addedOrderItemCode
+                                ItemCd = addedOrderItemCode.ItemCd
                             }
                         )
                         .ToList();
@@ -2251,19 +2254,22 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DayLimitResultModel> CheckDayLimit(int hpID, int sinday, List<string> listAddedOrderCode, double usingDay)
+        public List<DayLimitResultModel> CheckDayLimit(int hpID, int sinday, List<ItemCodeModel> listAddedOrderCodes, double usingDay)
         {
             var dayLimitInfoByUser =
                (
-                   from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(m => listAddedOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                   from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(m => listAddedOrderCodes.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                    join dayLimit in _tenantNoTrackingDataContext.DrugDayLimits.Where(d => 0 < d.LimitDay &&
                                                                                                    d.LimitDay < 999 &&
                                                                                                    d.StartDate <= sinday &&
                                                                                                    sinday <= d.EndDate &&
                                                                                                    d.IsDeleted == 0)
                    on drugMst.ItemCd equals dayLimit.ItemCd
+                   join listAddedOrderCode in listAddedOrderCodes
+                   on drugMst.ItemCd equals listAddedOrderCode.ItemCd
                    select new
                    {
+                       listAddedOrderCode.Id,
                        drugMst.Name,
                        drugMst.ItemCd,
                        drugMst.YjCd,
@@ -2273,16 +2279,19 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                    }
                ).ToList();
 
-            List<string> listItemCodeByUserSetting = dayLimitInfoByUser.Select(d => d.ItemCd).ToList();
-            List<string> listRestedItemCode = listAddedOrderCode.Where(c => !listItemCodeByUserSetting.Contains(c)).ToList();
+            List<ItemCodeModel> listItemCodeByUserSetting = dayLimitInfoByUser.Select(d => new ItemCodeModel(d.ItemCd, d.Id)).ToList();
+            List<ItemCodeModel> listRestedItemCode = listAddedOrderCodes.Where(c => !listItemCodeByUserSetting.Contains(c)).ToList();
 
             var dayLimitInfo =
                 (
-                from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(m => listRestedItemCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                from drugMst in _tenantNoTrackingDataContext.TenMsts.Where(m => listRestedItemCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 join dayLimit in _tenantNoTrackingDataContext.M10DayLimit.Where(d => 0 < d.LimitDay && d.LimitDay < 999)
                 on drugMst.YjCd equals dayLimit.YjCd
+                join listAddedOrderCode in listAddedOrderCodes
+                on drugMst.ItemCd equals listAddedOrderCode.ItemCd
                 select new
                 {
+                    listAddedOrderCode.Id,
                     drugMst.Name,
                     drugMst.ItemCd,
                     drugMst.YjCd,
@@ -2304,6 +2313,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
                 result.Add(new DayLimitResultModel()
                 {
+                    Id = item.Id,
                     ItemCd = item.ItemCd,
                     ItemName = item.Name,
                     YjCd = item.YjCd,
@@ -2322,6 +2332,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 }
                 result.Add(new DayLimitResultModel()
                 {
+                    Id = item.Id,
                     ItemCd = item.ItemCd,
                     ItemName = item.Name,
                     YjCd = item.YjCd,
