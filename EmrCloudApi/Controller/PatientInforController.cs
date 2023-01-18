@@ -576,7 +576,6 @@ namespace EmrCloudApi.Controller
                  grpInfs,
                  request.ReactSave,
                  request.MaxMoneys,
-                 request.SinYM,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
