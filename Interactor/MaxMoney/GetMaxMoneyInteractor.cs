@@ -1,6 +1,5 @@
 ﻿using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
-using UseCase.ReceptionSameVisit.Get;
 
 namespace Interactor.MaxMoney
 {
