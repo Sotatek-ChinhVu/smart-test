@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public MedicalExaminationRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
-        public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
+        public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)                                      
         {
             var checkedOrderModelList = new List<CheckedOrderModel>();
             var igakuTokusituItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
@@ -121,10 +121,11 @@ namespace Infrastructure.Repositories
             return checkedOrderModelList;
         }
 
-        public void IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, ref List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
+        public List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var result = new List<CheckedOrderModel>();
             var igakuTokusituItems = checkedOrders.Where(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
+            var igakuTokusituItemOthers = checkedOrders.Where(detail => detail.ItemCd != ItemCdConst.IgakuTokusitu || detail.ItemCd != ItemCdConst.IgakuTokusitu1);
             if (syosaisinKbn == SyosaiConst.None)
             {
                 bool containCdKbn = false;
@@ -154,6 +155,10 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
+
+            result.AddRange(igakuTokusituItemOthers);
+
+            return result;
         }
 
         public List<CheckedOrderModel> SihifuToku1(int hpId, long ptId, int sinDate, int hokenId, int syosaisinKbn, long raiinNo, long oyaRaiinNo, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
@@ -282,11 +287,13 @@ namespace Infrastructure.Repositories
         {
             var raiinInfQuery = NoTrackingDataContext.RaiinInfs
                .Where(s => s.HpId == hpId && s.PtId == ptId && s.SinDate == sinDate && s.OyaRaiinNo == oyaRaiinNo && s.RaiinNo != raiinNo);
+            var count = raiinInfQuery.Count();
             var odrInfQuery = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.IsDeleted == 0);
+            count = odrInfQuery.Count();
             var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && itemCd.Contains(o.ItemCd));
-            var resultQuery = from raiinInf in raiinInfQuery
+            var resultQuery = from raiinInf in raiinInfQuery.AsEnumerable()
                               join odrInf in odrInfQuery
                               on new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
                               equals new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo }
@@ -316,7 +323,7 @@ namespace Infrastructure.Repositories
             var sinKouiDetailQuery = NoTrackingDataContext.SinKouiDetails
                 .Where(s => s.HpId == hpId && s.PtId == ptId && itemCd.Contains(s.ItemCd));
 
-            var resultQuery = from sinKouiCount in sinKouiCountQuery
+            var resultQuery = from sinKouiCount in sinKouiCountQuery.AsEnumerable()
                               join sinKouiDetail in sinKouiDetailQuery
                               on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
                               equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
