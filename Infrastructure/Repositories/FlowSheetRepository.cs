@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
         {
             var stopwatch = Stopwatch.StartNew();
             Console.WriteLine("Start GetListFlowSheet");
