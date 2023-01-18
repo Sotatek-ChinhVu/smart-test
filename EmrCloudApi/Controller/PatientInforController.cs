@@ -575,7 +575,7 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
-                 request.LimitLists,
+                 request.MaxMoneys,
                  request.SinYM,
                  UserId);
             var output = _bus.Handle(input);
