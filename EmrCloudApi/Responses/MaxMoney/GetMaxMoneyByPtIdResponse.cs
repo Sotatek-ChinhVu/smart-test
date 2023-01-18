@@ -4,8 +4,8 @@ namespace EmrCloudApi.Responses.MaxMoney
 {
     public class GetMaxMoneyByPtIdResponse
     {
-        public GetMaxMoneyByPtIdResponse(IEnumerable<MaxMoneyModel> data) => Data = data;
+        public GetMaxMoneyByPtIdResponse(IEnumerable<LimitListModel> data) => Data = data;
 
-        public IEnumerable<MaxMoneyModel> Data { get; private set; }
+        public IEnumerable<LimitListModel> Data { get; private set; }
     }
 }
