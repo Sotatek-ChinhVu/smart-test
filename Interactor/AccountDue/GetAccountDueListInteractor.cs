@@ -95,10 +95,6 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             var result = new AccountDueListModel(listAccountDues, paymentMethod, uketsukeSbt);
             return new GetAccountDueListOutputData(result, GetAccountDueListStatus.Successed);
         }
-        catch
-        {
-            return new GetAccountDueListOutputData(GetAccountDueListStatus.Failed);
-        }
         finally
         {
             _accountDueRepository.ReleaseResource();

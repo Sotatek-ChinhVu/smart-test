@@ -33,9 +33,12 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidToken = "Invalid Token";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
         public static readonly string InvalidWindowType = "Invalid WindowType";
         public static readonly string InvalidFrameId = "Invalid FrameId";
+        public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
+        public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -287,6 +290,7 @@
         public static readonly string GetOrdInfSuccessed = "Successed";
 
         //RaiinKubun controller
+        public static readonly string RaiinKubunInvalidKbnInf = "Invalid KbnInf";
 
         //Calculation Inf
 
@@ -467,6 +471,7 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+        public static readonly string TodayOrdInvalidAddedAutoItem = "Invalid Added Auto Item List";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
@@ -614,8 +619,8 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
-        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 
@@ -875,5 +880,9 @@
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
 
+
+        //Insurance Mst Detail
+        public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
+        public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
     }
 }

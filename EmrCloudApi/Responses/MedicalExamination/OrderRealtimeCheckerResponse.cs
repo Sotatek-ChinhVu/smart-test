@@ -1,17 +1,18 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
 using UseCase.CommonChecker;
 
-namespace EmrCloudApi.Responses.PatientInfor
+namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class OrderRealtimeCheckerResponse
     {
-        public OrderRealtimeCheckerResponse(UnitCheckInfoModel unitCheckInfoModel, GetOrderCheckerStatus status)
+        public OrderRealtimeCheckerResponse(List<UnitCheckInfoModel> unitCheckInfoModel, GetOrderCheckerStatus status)
         {
             UnitCheckInfoModel = unitCheckInfoModel;
             Status = status;
         }
 
-        public UnitCheckInfoModel UnitCheckInfoModel { get; private set; }
+        public List<UnitCheckInfoModel> UnitCheckInfoModel { get; private set; }
+
         public GetOrderCheckerStatus Status { get; private set; }
     }
 }

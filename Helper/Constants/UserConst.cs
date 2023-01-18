@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Helper.Constants
+﻿namespace Helper.Constants
 {
     public static class UserConst
     {
@@ -36,6 +30,13 @@ namespace Helper.Constants
             UserListIdNoExist,
             UserListInputData,
             Valid
+        };
+
+        public enum PermissionType
+        {
+            Unlimited,
+            ReadOnly,
+            NotAvailable = 99,
         };
     }
 }

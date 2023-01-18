@@ -1,8 +1,6 @@
 ﻿using Domain.Models.HokenMst;
-using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {

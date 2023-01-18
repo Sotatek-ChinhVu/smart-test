@@ -642,7 +642,7 @@ namespace Infrastructure.Repositories
 
             tenMst.IsAdopted = valueAdopted;
 
-            tenMst.UpdateDate = DateTime.UtcNow;
+            tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             tenMst.UpdateId = userId;
 
             TrackingDataContext.SaveChanges();
@@ -664,7 +664,7 @@ namespace Infrastructure.Repositories
 
                 tenMst.IsAdopted = valueAdopted;
 
-                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 tenMst.UpdateId = userId;
             }
 
@@ -805,7 +805,7 @@ namespace Infrastructure.Repositories
             {
                 byomeiMst.IsAdopted = 1;
                 byomeiMst.UpdateId = userId;
-                byomeiMst.UpdateDate = DateTime.UtcNow;
+                byomeiMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
             return true;

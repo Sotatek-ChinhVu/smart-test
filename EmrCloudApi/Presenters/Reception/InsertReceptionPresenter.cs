@@ -11,7 +11,7 @@ public class InsertReceptionPresenter : IInsertReceptionOutputPort
 
     public void Complete(InsertReceptionOutputData output)
     {
-        Result.Data = new InsertReceptionResponse(output.Status == InsertReceptionStatus.Success);
+        Result.Data = new InsertReceptionResponse(output.RaiinNo);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

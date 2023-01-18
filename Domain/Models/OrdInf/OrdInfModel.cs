@@ -25,14 +25,14 @@ namespace Domain.Models.OrdInfs
         public int SortNo { get; private set; }
         public int IsDeleted { get; private set; }
         public long Id { get; private set; }
-        
+
         public GroupKoui GroupKoui { get; private set; }
         public List<OrdInfDetailModel> OrdInfDetails { get; private set; }
 
         public DateTime CreateDate { get; private set; }
 
         public int CreateId { get; private set; }
-        
+
         public string CreateName { get; private set; }
 
         public DateTime UpdateDate { get; private set; }
@@ -93,6 +93,36 @@ namespace Domain.Models.OrdInfs
             Id = 0;
             GroupKoui = GroupKoui.From(0);
             OrdInfDetails = new List<OrdInfDetailModel>();
+            CreateDate = DateTime.MinValue;
+            CreateId = 0;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateId = 0;
+            UpdateName = string.Empty;
+        }
+
+        public OrdInfModel(int inoutKbn, int odrKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            HpId = 0;
+            RaiinNo = 0;
+            RpNo = 0;
+            RpEdaNo = 0;
+            PtId = 0;
+            SinDate = 0;
+            HokenPid = 0;
+            OdrKouiKbn = odrKouiKbn;
+            RpName = string.Empty;
+            InoutKbn = inoutKbn;
+            SikyuKbn = 0;
+            SyohoSbt = 0;
+            SanteiKbn = 0;
+            TosekiKbn = 0;
+            DaysCnt = 0;
+            SortNo = 0;
+            IsDeleted = 0;
+            Id = 0;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = ordInfDetailModels;
             CreateDate = DateTime.MinValue;
             CreateId = 0;
             CreateName = string.Empty;

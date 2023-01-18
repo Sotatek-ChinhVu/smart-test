@@ -4,13 +4,7 @@ namespace CommonChecker.Types
 {
     public interface IOdrInfoDetailModel
     {
-        int HpId { get; }
-
-        long RpNo { get; }
-
-        long RpEdaNo { get; }
-
-        int RowNo { get; }
+        string Id { get; set; }
 
         int SinKouiKbn { get; }
 
@@ -22,11 +16,7 @@ namespace CommonChecker.Types
 
         string UnitName { get; }
 
-        int UnitSbt { get; }
-
         double TermVal { get; }
-
-        int KohatuKbn { get; }
 
         int SyohoKbn { get; }
 
@@ -36,42 +26,18 @@ namespace CommonChecker.Types
 
         int YohoKbn { get; }
 
-        string Kokuji1 { get; }
-
-        string Kokuji2 { get; }
-
-        int IsNodspRece { get; }
-
         string IpnCd { get; }
-
-        string IpnName { get; }
 
         string Bunkatu { get; }
 
-        string CmtName { get; }
-
-        string CmtOpt { get; }
-
-        string FontColor { get; }
-
-        int CommentNewline { get; }
-
         #region Exposed properties
         bool IsEmpty { get; }
-
-        double Price { get; }
 
         string DisplayedQuantity { get; }
 
         string DisplayedUnit { get; }
 
-        int CmtCol1 { get; }
-
-        double Ten { get; }
-
         string MasterSbt { get; }
-
-        bool IsSpecialItem { get; }
 
         bool IsStandardUsage { get; }
 

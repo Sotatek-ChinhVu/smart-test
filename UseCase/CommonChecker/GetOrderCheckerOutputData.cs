@@ -5,13 +5,14 @@ namespace UseCase.CommonChecker
 {
     public class GetOrderCheckerOutputData : IOutputData
     {
-        public GetOrderCheckerOutputData(UnitCheckInfoModel unitCheckInfoModel, GetOrderCheckerStatus status)
+        public GetOrderCheckerOutputData(List<UnitCheckInfoModel> unitCheckInfoModel, GetOrderCheckerStatus status)
         {
             UnitCheckInfoModel = unitCheckInfoModel;
             Status = status;
         }
 
-        public UnitCheckInfoModel UnitCheckInfoModel { get; private set; }
+        public List<UnitCheckInfoModel> UnitCheckInfoModel { get; private set; }
+
         public GetOrderCheckerStatus Status { get; private set; }
     }
 }

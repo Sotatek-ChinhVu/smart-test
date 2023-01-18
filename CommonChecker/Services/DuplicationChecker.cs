@@ -106,6 +106,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             {
                 listErrorInfo.Add(new DuplicationResultModel()
                 {
+                    Id = duplicatedComponent.Id,
                     Level = duplicatedComponent.Level,
                     ItemCd = duplicatedComponent.ItemCd,
                     DuplicatedItemCd = duplicatedComponent.AllergyItemCd,
@@ -199,12 +200,13 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     listErrorInfo.Add(new DuplicationResultModel()
                     {
+                        Id = duplicatedItem.Id,
                         Level = 0,
                         ItemCd = itemCode,
                         DuplicatedItemCd = duplicatedItem.ItemCd,
                         IsIppanCdDuplicated = false,
                         IsComponentDuplicated = false,
-                    });
+                    }); ;
                 }
             }
 
@@ -220,6 +222,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     listErrorInfo.Add(new DuplicationResultModel()
                     {
+                        Id = detail.Id,
                         Level = 0,
                         ItemCd = detail.ItemCd,
                         DuplicatedItemCd = detail.ItemCd,
@@ -270,6 +273,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
+                            Id = duplicatedItem.Id,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,
@@ -296,6 +300,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     {
                         listErrorInfo.Add(new DuplicationResultModel()
                         {
+                            Id = duplicatedItem.Id,
                             Level = 0,
                             ItemCd = checkingOrderDetail.ItemCd,
                             DuplicatedItemCd = duplicatedItem.ItemCd,

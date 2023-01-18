@@ -1,9 +1,9 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -28,7 +28,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     {
         if (fromRece)
         {
-            return  NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+            return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
         }
         return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
     }
@@ -54,6 +54,8 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
         var confirmEditByomei = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
         result.Add("ConfirmEditByomei", confirmEditByomei);
+        var isLockSuperSetDisplay = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 906 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(906);
+        result.Add("IsLockSuperSetDisplay", isLockSuperSetDisplay);
         var displayByomeiDateType = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
         result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
@@ -137,7 +139,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
             TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
-        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = adoptedValue;
 
         TrackingDataContext.SaveChanges();
@@ -154,12 +156,12 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
                 GrpCd = grpCd,
                 UserId = userId,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow()
             };
             TrackingDataContext.UserConfs.Add(userConfig);
         }
         userConfig.UpdateId = userId;
-        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.UpdateDate = CIUtil.GetJapanDateTimeNow();
         userConfig.Val = value;
         TrackingDataContext.SaveChanges();
     }

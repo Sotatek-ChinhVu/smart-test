@@ -252,7 +252,7 @@ namespace Domain.Models.NextOrder
 
         public bool IsInjection
         {
-            get => SinKouiKbn == 30;
+            get => SinKouiKbn == 30 && MasterSbt != "S";
         }
 
         public bool Is820Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment820Pattern);
