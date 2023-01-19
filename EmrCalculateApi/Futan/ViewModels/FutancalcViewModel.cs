@@ -61,7 +61,7 @@ namespace EmrCalculateApi.Futan.ViewModels
             ///     2:社保/公費負担額を含まない　国保/公費負担額を含む
             ///     3:公費負担額を含まない
             /// </summary>
-            public int ChokiFutan { get; private set; }
+            public int ChokiFutan { get; set; }
 
             /// <summary>
             /// マル長計算オプション
@@ -74,7 +74,7 @@ namespace EmrCalculateApi.Futan.ViewModels
             ///     公１が5000円上限、マル長10000円で、1日目にマル長上限に達して公1上限未満だった場合に、
             ///     2日目以降に公1上限まで患者負担させるかどうか（月単位の場合は公1上限まで患者負担させる）
             /// </remarks>
-            public int ChokiDateRange { get; private set; }
+            public int ChokiDateRange { get; set; }
 
             /// <summary>
             /// 高額療養費の窓口負担まるめ設定
@@ -82,7 +82,7 @@ namespace EmrCalculateApi.Futan.ViewModels
             ///     1:10円単位(四捨五入)
             ///     2:10円単位(切り捨て)
             /// </summary>
-            public int RoundKogakuPtFutan { get; private set; }
+            public int RoundKogakuPtFutan { get; set; }
 
             public SystemConfs(int chokiFutan, int chokiDateRange, int roundKogakuPtFutan)
             {
@@ -91,7 +91,7 @@ namespace EmrCalculateApi.Futan.ViewModels
                 RoundKogakuPtFutan = roundKogakuPtFutan;
             }
         }
-        public readonly SystemConfs SystemConf;
+        public SystemConfs SystemConf;
 
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
@@ -109,10 +109,10 @@ namespace EmrCalculateApi.Futan.ViewModels
             _clearCommandHandler = new ClearCommandHandler(_tenantDataContext, emrLogger);
 
             SystemConf = new SystemConfs(
-            chokiFutan: _systemConfigProvider.GetChokiFutan(),
-            chokiDateRange: _systemConfigProvider.GetChokiDateRange(),
-            roundKogakuPtFutan: _systemConfigProvider.GetRoundKogakuPtFutan()
-        );
+                chokiFutan: _systemConfigProvider.GetChokiFutan(),
+                chokiDateRange: _systemConfigProvider.GetChokiDateRange(),
+                roundKogakuPtFutan: _systemConfigProvider.GetRoundKogakuPtFutan()
+            );
         }
 
         /// <summary>
