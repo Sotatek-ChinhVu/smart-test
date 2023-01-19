@@ -181,5 +181,6 @@
 
         // Family
         public const string GetListFamilyReverser = "GetListFamilyReverser";
+        public const string GetListRaiinInf = "GetListRaiinInf";
     }
 }

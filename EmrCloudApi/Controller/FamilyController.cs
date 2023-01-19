@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Family.GetListFamily;
 using UseCase.Family.GetListFamilyReverser;
+using UseCase.Family.GetListRaiinInf;
 using UseCase.Family.SaveListFamily;
 
 namespace EmrCloudApi.Controller;
@@ -56,6 +57,18 @@ public class FamilyController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveListFamilyResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListRaiinInf)]
+    public ActionResult<Response<GetListRaiinInfResponse>> GetListRaiinInf([FromQuery] GetListRaiinInfRequest request)
+    {
+        var input = new GetListRaiinInfInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListRaiinInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListRaiinInfResponse>>(presenter.Result);
     }
 
     private List<FamilyInputItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)

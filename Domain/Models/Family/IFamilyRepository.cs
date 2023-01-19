@@ -13,4 +13,6 @@ public interface IFamilyRepository : IRepositoryBase
     List<FamilyModel> GetListByPtId(int hpId, long ptId);
 
     bool CheckExistListFamilyReki(int hpId, List<long> listFamilyRekiId);
+
+    List<RaiinInfModel> GetListRaiinInfByPtId(int hpId, long ptId);
 }

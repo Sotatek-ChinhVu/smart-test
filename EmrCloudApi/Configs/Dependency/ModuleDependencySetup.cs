@@ -167,6 +167,7 @@ using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.Family.GetListFamily;
 using UseCase.Family.GetListFamilyReverser;
+using UseCase.Family.GetListRaiinInf;
 using UseCase.Family.SaveListFamily;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -744,6 +745,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
             busBuilder.RegisterUseCase<SaveListFamilyInputData, SaveListFamilyInteractor>();
             busBuilder.RegisterUseCase<GetListFamilyReverserInputData, GetListFamilyReverserInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
