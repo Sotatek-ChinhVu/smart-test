@@ -10,7 +10,7 @@ namespace UseCase.PatientInfor.Save
 {
     public class SavePatientInfoInputData : IInputData<SavePatientInfoOutputData>
     {
-        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, ReactSavePatientInfo reactSave, List<MaxMoneyModel> maxMoneys, int sinYm, int userId)
+        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, ReactSavePatientInfo reactSave, List<LimitListModel> maxMoneys, int userId)
         {
             Patient = patient;
             PtKyuseis = ptKyuseis;
@@ -21,7 +21,6 @@ namespace UseCase.PatientInfor.Save
             HokenKohis = hokenKohis;
             ReactSave = reactSave;
             MaxMoneys = maxMoneys;
-            SinYm = sinYm;
             UserId = userId;
         }
 
@@ -39,11 +38,9 @@ namespace UseCase.PatientInfor.Save
 
         public List<KohiInfModel> HokenKohis { get; private set; }
 
-        public List<MaxMoneyModel> MaxMoneys { get; private set; }
+        public List<LimitListModel> MaxMoneys { get; private set; }
 
         public ReactSavePatientInfo ReactSave { get; private set; }
-
-        public int SinYm { get; private set; } 
 
         public int UserId { get; private set; }
     }

@@ -19,6 +19,6 @@ public class ExportReportController : AuthorizeControllerBase
     [HttpGet(ApiPath.ExportKarte1)]
     public ActionResult<Karte1ExportModel> ExportKarte1([FromQuery] Karte1ExportRequest request)
     {
-        return _reporting.GetDataKarte1(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
+        return _reporting.GetDataKarte1(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
     }
 }

@@ -9,7 +9,5 @@ namespace Domain.Models.MaxMoney
         MaxMoneyInfoHokenModel GetInfoHokenMoney(int hpId, long ptId, int kohiId, int sinYm);
 
         bool SaveMaxMoney(List<LimitListModel> dataInputs, int hpId, long ptId, int kohiId, int sinYm, int userId);
-
-        List<MaxMoneyInfoHokenModel> GetListInfoHokenMoneys(int hpId, long ptId, IEnumerable<int> kohiIds, int sinYm);
     }
 }

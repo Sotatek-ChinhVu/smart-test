@@ -6,7 +6,6 @@ namespace UseCase.MaxMoney.GetMaxMoneyByPtId
         Successed,
         InvalidHpId,
         InvalidPtId,
-        InvalidSinDate,
         DataNotFound
     }
 }

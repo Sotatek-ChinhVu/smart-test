@@ -335,6 +335,10 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
+        public static readonly string InvalidPasteSetKbn = "Invalid PasteSetKbn";
+        public static readonly string InvalidPasteSetKbnEdaNo = "Invalid PasteSetKbnEdaNo";
+        public static readonly string InvalidCopySetKbn = "Invalid CopySetKbn";
+        public static readonly string InvalidCopySetKbnEdaNo = "Invalid CopySetKbnEdaNo";
         public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";

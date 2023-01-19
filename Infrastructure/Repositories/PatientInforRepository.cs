@@ -1002,7 +1002,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<MaxMoneyModel> maxMoneys, int userId)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1184,20 +1184,17 @@ namespace Infrastructure.Repositories
             #region Maxmoney
             if(maxMoneys != null && maxMoneys.Any())
             {
-                maxMoneys.ForEach(x =>
+                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
-                    TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(x.ListLimits , (src, dest) =>
-                    {
-                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        dest.PtId = patientInsert.PtId;
-                        dest.HpId = hpId;
-                        dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
-                        dest.UpdateId = userId;
-                        dest.CreateId = userId;
-                        return dest;
-                    }));
-                });
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.PtId = patientInsert.PtId;
+                    dest.HpId = hpId;
+                    dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
+                    dest.UpdateId = userId;
+                    dest.CreateId = userId;
+                    return dest;
+                }));
             }
             #endregion Maxmoney
 
@@ -1208,7 +1205,7 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<MaxMoneyModel> maxMoneys, int userId , int sinYm)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1623,23 +1620,14 @@ namespace Infrastructure.Repositories
                                                                    && x.PtId == patientInfo.PtId
                                                                    && x.IsDeleted == 0).ToList();
 
-            var limitLists = new List<LimitListModel>();
-            maxMoneys.ForEach(x =>
-            {
-                limitLists.AddRange(x.ListLimits);
-            });
-
             foreach (var item in maxMoneyDatabases)
             {
-                var exist = limitLists.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
+                var exist = maxMoneys.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
                 if (exist == null)
                 {
-                    if (CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
-                    {
-                        item.IsDeleted = DeleteTypes.Deleted;
-                        item.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        item.UpdateId = userId;
-                    }
+                    item.IsDeleted = DeleteTypes.Deleted;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    item.UpdateId = userId;
                 }
                 else
                 {
@@ -1653,7 +1641,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();

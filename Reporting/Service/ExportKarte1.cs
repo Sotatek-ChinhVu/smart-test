@@ -23,7 +23,7 @@ public class ExportKarte1 : IExportKarte1
         _insuranceRepository = insuranceRepository;
     }
 
-    public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
+    public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
     {
         var ptInf = _patientInforRepository.GetById(hpId, ptId, sinDate, 0);
         if (ptInf == null)
@@ -32,11 +32,11 @@ public class ExportKarte1 : IExportKarte1
         }
         var hoken = _insuranceRepository.GetPtHokenInf(hpId, hokenPid, ptId, sinDate);
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
-        return ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis);
+        return ConvertToKarte1ExportModel(ptInf, hoken, ptByomeis, syuByomei);
 
     }
 
-    private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel ptInf, InsuranceModel hoken, List<PtDiseaseModel> ptByomeis)
+    private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel ptInf, InsuranceModel hoken, List<PtDiseaseModel> ptByomeis, bool syuByomei)
     {
         var printoutDateTime = DateTime.UtcNow;
         var ptNum = string.Empty;
@@ -137,7 +137,7 @@ public class ExportKarte1 : IExportKarte1
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
 
-        var listByomeiModels = ConvertToListKarte1ByomeiModel(ptByomeis);
+        var listByomeiModels = ConvertToListKarte1ByomeiModel(ptByomeis, syuByomei);
 
         return new Karte1ExportModel(
                 sysDateTimeS,
@@ -173,7 +173,7 @@ public class ExportKarte1 : IExportKarte1
             );
     }
 
-    private List<Karte1ByomeiModel> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis)
+    private List<Karte1ByomeiModel> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis, bool syuByomei)
     {
         if (ptByomeis == null)
         {
@@ -203,8 +203,7 @@ public class ExportKarte1 : IExportKarte1
                 }
             }
             byomeiDisplay = prefixList + byomei.Byomei + suffixList;
-
-            if (byomei.SyubyoKbn == 1)
+            if (syuByomei && byomei.SyubyoKbn == 1)
             {
                 byomeiDisplay = "（主）" + byomeiDisplay;
             }

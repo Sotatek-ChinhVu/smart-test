@@ -1,12 +1,11 @@
-﻿namespace EmrCloudApi.Responses.SetMst
-{
-    public class CopyPasteSetMstResponse
-    {
-        public CopyPasteSetMstResponse(int newSetCd)
-        {
-            NewSetCd = newSetCd;
-        }
+﻿namespace EmrCloudApi.Responses.SetMst;
 
-        public int NewSetCd { get; private set; }
+public class CopyPasteSetMstResponse
+{
+    public CopyPasteSetMstResponse(int newSetCd)
+    {
+        NewSetCd = newSetCd;
     }
+
+    public int NewSetCd { get; private set; }
 }

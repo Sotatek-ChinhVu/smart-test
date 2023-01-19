@@ -12,8 +12,8 @@ public class ReportingService : IReportingService
         _exportKarte1 = exportKarte1;
     }
 
-    public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
+    public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
     {
-        return _exportKarte1.GetDataKarte1(hpId, ptId, sinDate, hokenPid, tenkiByomei);
+        return _exportKarte1.GetDataKarte1(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
     }
 }
