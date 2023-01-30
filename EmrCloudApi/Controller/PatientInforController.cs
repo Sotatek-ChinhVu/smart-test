@@ -79,6 +79,8 @@ using EmrCloudApi.Responses.MaxMoney;
 using EmrCloudApi.Requests.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using EmrCloudApi.Presenters.MaxMoney;
+using Domain.Models.PtGroupMst;
+using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -756,11 +758,23 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
         }
 
-
         [HttpPost(ApiPath.SaveGroupNameMst)]
         public ActionResult<Response<SaveGroupNameMstResponse>> SaveGroupNameMst([FromBody] SaveGroupNameMstRequest request)
         {
-            var input = new SaveGroupNameMstInputData(UserId, HpId, request.GroupNameMsts);
+            var inputModel = request.PtGroupMsts.Select(x => new GroupNameMstModel(
+                                                            x.GrpId,
+                                                            x.SortNo,
+                                                            x.GrpName,
+                                                            0,
+                                                            x.GroupItems.Select(m => new GroupItemModel(
+                                                                m.GrpId,
+                                                                m.GrpCode,
+                                                                m.SeqNo,
+                                                                m.GrpCodeName,
+                                                                m.SortNo,
+                                                                0)).ToList())).ToList();
+
+            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel); 
             var output = _bus.Handle(input);
             var presenter = new SaveGroupNameMstPresenter();
             presenter.Complete(output);
@@ -776,6 +790,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetMaxMoneyByPtIdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetGroupNameMst)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
+        {
+            var input = new GetGroupNameMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
         }
     }
 }

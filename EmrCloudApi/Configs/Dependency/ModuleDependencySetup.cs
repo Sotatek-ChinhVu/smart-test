@@ -312,6 +312,7 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -733,6 +734,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //PtGroupMaster
             busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
+            busBuilder.RegisterUseCase<GetGroupNameMstInputData, GetGroupNameMstInteractor>();
 
             //SanteiInf
             busBuilder.RegisterUseCase<GetListSanteiInfInputData, GetListSanteiInfInteractor>();
