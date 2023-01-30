@@ -1,9 +1,11 @@
-﻿using Domain.Models.SetMst;
+﻿using Domain.Models.SetGenerationMst;
+using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
 
@@ -11,28 +13,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 {
     private readonly string DefaultSetName = "新規セット";
     private readonly string DefaultGroupName = "新規グループ";
-    public SetMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IMemoryCache _memoryCache;
+    public SetMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
+        _memoryCache = memoryCache;
     }
 
     public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch)
     {
-        var setEntities = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch))))
-          .OrderBy(s => s.Level1)
-          .ThenBy(s => s.Level2)
-          .ThenBy(s => s.Level3)
-          .ToList();
-
-        if (setEntities == null)
+        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel> setMstModelList))
         {
-            return new List<SetMstModel>();
-        }
-
-        var result = new List<SetMstModel>();
-        var obj = new object();
-        Parallel.ForEach(setEntities, s =>
-        {
-            var item = new SetMstModel(
+            setMstModelList =
+                NoTrackingDataContext.SetMsts
+                .Where(s => s.HpId == hpId)
+                .Select(s => new SetMstModel(
                     s.HpId,
                     s.SetCd,
                     s.SetKbn,
@@ -46,16 +40,21 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     s.Color,
                     s.IsDeleted,
                     s.IsGroup
-                    );
-            lock (obj)
-            {
-                result.Add(item);
-            }
-        });
+                    ))
+                .ToList();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(GetCacheKey(), setMstModelList, cacheEntryOptions);
+        }
 
-        return result.OrderBy(s => s.Level1)
+        var result = setMstModelList!
+          .Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch))))
+          .OrderBy(s => s.Level1)
           .ThenBy(s => s.Level2)
-          .ThenBy(s => s.Level3).ToList();
+          .ThenBy(s => s.Level3)
+          .ToList();
+
+        return result;
     }
 
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
