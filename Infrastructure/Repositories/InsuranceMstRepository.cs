@@ -686,6 +686,18 @@ namespace Infrastructure.Repositories
             return result.OrderBy(h => h.Master.HokenNo).ToList();
         }
 
+        public bool SaveHokenMaster(int hpId, int userId, HokenMstModel insurance)
+        {
+            var model = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
+                                                                    && x.StartDate == insurance.StartDate
+                                                                    && x.PrefNo == insurance.PrefNo
+                                                                    && x.HokenNo == insurance.HokenNo
+                                                                    && x.HokenEdaNo == insurance.HokenEdaNo);
+
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
