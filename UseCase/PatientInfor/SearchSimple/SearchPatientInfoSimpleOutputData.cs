@@ -32,7 +32,7 @@ namespace UseCase.PatientInfor.SearchSimple
 
         public string Birthday { get; private set; }
 
-        public int BirthdayData { get; private set; }
+        public int BirthdayRaw { get; private set; }
 
         public int Sex { get; private set; }
 
@@ -60,7 +60,7 @@ namespace UseCase.PatientInfor.SearchSimple
 
             //Generate birthday
             Birthday = CIUtil.SDateToShowSWDate(patientInfo.Birthday);
-            BirthdayData = patientInfo.Birthday;
+            BirthdayRaw = patientInfo.Birthday;
 
             //Generate age
             int intDate = patientInfo.Birthday;
