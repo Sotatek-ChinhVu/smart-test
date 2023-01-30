@@ -14,6 +14,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Collections.Generic;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -1001,7 +1002,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1181,9 +1182,9 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             #region Maxmoney
-            if(limitLists != null && limitLists.Any())
+            if(maxMoneys != null && maxMoneys.Any())
             {
-                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists, (src, dest) =>
+                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
                     dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dest.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -1204,7 +1205,7 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1621,7 +1622,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in maxMoneyDatabases)
             {
-                var exist = limitLists.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
+                var exist = maxMoneys.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
                 if (exist == null)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
@@ -1640,7 +1641,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();

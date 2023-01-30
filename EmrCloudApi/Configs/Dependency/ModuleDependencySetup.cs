@@ -11,6 +11,7 @@ using Domain.Models.Diseases;
 using Domain.Models.Document;
 using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
+using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
 using Domain.Models.HistoryOrder;
@@ -84,6 +85,7 @@ using Interactor.Document.CommonGetListParam;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
+using Interactor.Family;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
@@ -163,6 +165,7 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
+using UseCase.Family.GetListFamily;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -194,6 +197,7 @@ using UseCase.KarteInf.ConvertTextToRichText;
 using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
@@ -432,6 +436,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
             services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
+            services.AddTransient<IFamilyRepository, FamilyRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -653,6 +658,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
+            busBuilder.RegisterUseCase<GetMaxMoneyByPtIdInputData, GetMaxMoneyByPtIdInteractor>();
 
             //Monshin
             busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
@@ -733,6 +739,9 @@ namespace EmrCloudApi.Configs.Dependency
             //SanteiInf
             busBuilder.RegisterUseCase<GetListSanteiInfInputData, GetListSanteiInfInteractor>();
             busBuilder.RegisterUseCase<SaveListSanteiInfInputData, SaveListSanteiInfInteractor>();
+
+            //Family
+            busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

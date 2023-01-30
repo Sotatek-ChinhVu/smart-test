@@ -335,6 +335,10 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
+        public static readonly string InvalidPasteSetKbn = "Invalid PasteSetKbn";
+        public static readonly string InvalidPasteSetKbnEdaNo = "Invalid PasteSetKbnEdaNo";
+        public static readonly string InvalidCopySetKbn = "Invalid CopySetKbn";
+        public static readonly string InvalidCopySetKbnEdaNo = "Invalid CopySetKbnEdaNo";
         public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
@@ -619,8 +623,8 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
-        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 

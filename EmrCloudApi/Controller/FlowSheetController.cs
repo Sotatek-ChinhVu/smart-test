@@ -26,7 +26,7 @@ namespace EmrCloudApi.Controller
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
             watch.Start();
-            var input = new GetListFlowSheetInputData(HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsHolidayOnly, 0, 0, false, inputData.StartIndex, inputData.Count, inputData.Sort);
+            var input = new GetListFlowSheetInputData(HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsHolidayOnly, 0, 0, false);
             var output = _bus.Handle(input);
             var presenter = new GetListFlowSheetPresenter();
             presenter.Complete(output);
@@ -41,7 +41,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<GetListHolidayResponse>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
         {
 
-            var input = new GetListFlowSheetInputData(HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false, 0, 0, string.Empty);
+            var input = new GetListFlowSheetInputData(HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false);
             var output = _bus.Handle(input);
             var presenter = new GetListHolidayPresenter();
             presenter.Complete(output);
@@ -53,7 +53,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<GetListRaiinMstResponse>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
 
-            var input = new GetListFlowSheetInputData(HpId, 0, 0, 0, false, 0, 0, true, 0, 0, string.Empty);
+            var input = new GetListFlowSheetInputData(HpId, 0, 0, 0, false, 0, 0, true);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinMstPresenter();
             presenter.Complete(output);

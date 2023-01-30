@@ -6,6 +6,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
@@ -23,8 +24,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
         {
+            var stopwatch = Stopwatch.StartNew();
             Console.WriteLine("Start GetListFlowSheet");
 
             // From History
@@ -33,7 +35,7 @@ namespace Infrastructure.Repositories
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.SyosaisinKbn, r.Status))
                 .ToList();
 
-            Console.WriteLine("Get allRaiinInfList");
+            Console.WriteLine("Get allRaiinInfList: " + stopwatch.ElapsedMilliseconds);
 
             // From NextOrder
             var rsvkrtOdrInfs = NoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
@@ -52,7 +54,7 @@ namespace Infrastructure.Repositories
                                     select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, -1, 0)
                                ).ToList();
 
-            Console.WriteLine("Get groupNextOdr");
+            Console.WriteLine("Get groupNextOdr: " + stopwatch.ElapsedMilliseconds);
 
 
             var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
@@ -63,38 +65,51 @@ namespace Infrastructure.Repositories
                                      .ThenByDescending(r => r.RaiinNo)
                                      .ToList();
 
-            //List<long> allRaiinNoList = flowSheetModelList.Select(f => f.RaiinNo).ToList();
-            //List<long> historyRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn >= 0).Select(f => f.RaiinNo).ToList();
-            //List<long> nextRaiinNoList = flowSheetModelList.Where(f => f.SyosaisinKbn < 0).Select(f => f.RaiinNo).ToList();
-
             var nextKarteList = NoTrackingDataContext.RsvkrtKarteInfs
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
-            Console.WriteLine("Get nextKarteList");
+            Console.WriteLine("Get nextKarteList: " + stopwatch.ElapsedMilliseconds);
 
             var historyKarteList = NoTrackingDataContext.KarteInfs
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
-            Console.WriteLine("Get historyKarteList");
+            Console.WriteLine("Get historyKarteList: " + stopwatch.ElapsedMilliseconds);
 
             var tagInfList = NoTrackingDataContext.RaiinListTags
                 .Where(tag => tag.HpId == hpId && tag.PtId == ptId && tag.IsDeleted == 0)
                 .ToList();
-            Console.WriteLine("Get tagInfList");
+            Console.WriteLine("Get tagInfList: " + stopwatch.ElapsedMilliseconds);
 
             var commentList = NoTrackingDataContext.RaiinListCmts
                 .Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && k.Text != null && !string.IsNullOrEmpty(k.Text.Trim()))
                 .ToList();
-            Console.WriteLine("Get commentList");
+            Console.WriteLine("Get commentList: " + stopwatch.ElapsedMilliseconds);
 
-            var raiinListInfs =
-                     (
-                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
-                        join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                        on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                        select new RaiinListInfModel(raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
-                     ).ToList();
-            Console.WriteLine("Get raiinListInfs");
+            //var result =
+            //    from flowsheet in flowSheetModelList
+            //    join nextKarte in nextKarteList on flowsheet.RaiinNo equals nextKarte.RsvkrtNo into gj
+            //    from subNextKarte in gj.DefaultIfEmpty()
+            //    join historyKarte in historyKarteList on flowsheet.RaiinNo equals historyKarte.RaiinNo into gj1
+            //    from subHistoryKarte in gj1.DefaultIfEmpty()
+            //    join tagInf in tagInfList on flowsheet.RaiinNo equals tagInf.RaiinNo into gj2
+            //    from subTagInf in gj2.DefaultIfEmpty()
+            //    join commentInf in commentList on flowsheet.RaiinNo equals commentInf.RaiinNo into gj3
+            //    from subCommentInf in gj3.DefaultIfEmpty()
+            //    select new FlowSheetModel(
+            //        flowsheet.SinDate,
+            //        subTagInf != null ? subTagInf.TagNo : 0,
+            //        (subNextKarte == null || string.IsNullOrEmpty(subNextKarte.Text)) ? ((subHistoryKarte == null || string.IsNullOrEmpty(subHistoryKarte.Text)) ? string.Empty : subHistoryKarte.Text!) : subNextKarte.Text!,
+            //        flowsheet.RaiinNo,
+            //        flowsheet.SyosaisinKbn,
+            //        (subCommentInf == null || string.IsNullOrEmpty(subCommentInf.Text)) ? string.Empty : subCommentInf.Text,
+            //        flowsheet.Status,
+            //        flowsheet.IsNext,
+            //        !flowsheet.IsNext,
+            //        new List<RaiinListInfModel>(),
+            //        ptId,
+            //        false
+            //        );
+            //return result.ToList();
 
             List<FlowSheetModel> result = new List<FlowSheetModel>();
             foreach (var flowSheetModel in flowSheetModelList)
@@ -110,7 +125,7 @@ namespace Infrastructure.Repositories
                     var historyKarte = historyKarteList.FirstOrDefault(n => n.RaiinNo == flowSheetModel.RaiinNo);
                     karteContent = historyKarte?.Text ?? string.Empty;
                 }
-                
+
                 int tagNoValue = 0;
                 var tagInf = tagInfList.FirstOrDefault(t => t.RaiinNo == flowSheetModel.RaiinNo);
                 if (tagInf != null)
@@ -120,7 +135,6 @@ namespace Infrastructure.Repositories
 
                 var commentInf = commentList.FirstOrDefault(t => t.RaiinNo == flowSheetModel.RaiinNo);
                 string commentValue = (commentInf == null || commentInf.Text == null) ? string.Empty : commentInf.Text;
-                var raiinInfList = raiinListInfs.Where(r => r.RaiinNo == flowSheetModel.RaiinNo).ToList();
 
                 result.Add(new FlowSheetModel
                     (
@@ -133,7 +147,7 @@ namespace Infrastructure.Repositories
                         flowSheetModel.Status,
                         flowSheetModel.IsNext,
                         !flowSheetModel.IsNext,
-                        raiinInfList,
+                        new List<RaiinListInfModel>(),
                         ptId,
                         false
                     ));
@@ -343,6 +357,23 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId)
+        {
+            var raiinListInfs =
+                     (
+                        from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
+                        join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId , raiinListMst.KbnCd }
+                        select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
+                     );
+
+            var result = raiinListInfs
+                .GroupBy(r => r.RaiinNo)
+                .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
+
+            return result;
         }
     }
 }

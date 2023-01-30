@@ -4,7 +4,6 @@ using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
