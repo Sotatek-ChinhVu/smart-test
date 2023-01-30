@@ -15,6 +15,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -1878,44 +1879,43 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<PatientInforModel> SearchPatient(int hpId, long ptId)
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
         {
+            string keyword = ptId.ToString();
+
             var result = new List<PatientInforModel>();
-            var ptInfs = NoTrackingDataContext.PtInfs.Where(x =>
-                    x.HpId == hpId &&
-                    x.IsDelete == 0 &&
-                    x.PtId.ToString().Contains(ptId.ToString())
-                );
+            var ptInfs = NoTrackingDataContext.PtInfs
+                .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
+                .OrderBy(x => x.PtNum)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var ptIdList = ptInfs.Select(p => p.PtId).ToList();
+
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
                     x.HpId == hpId &&
                     x.Status >= RaiinState.TempSave &&
-                    x.IsDeleted == 0)
+                    x.IsDeleted == 0 &&
+                    ptIdList.Contains(x.PtId))
                 .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
                 .Select(grp => new
                 {
-                    HpId = grp.Key.HpId,
-                    PtId = grp.Key.PtId,
+                    grp.Key.PtId,
                     SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
-                });
-            var query = from raiinInf in raiinInfs.AsEnumerable()
-                        join ptInf in ptInfs on
-                                new { raiinInf.PtId } equals
-                                new { ptInf.PtId }
-                        select new
-                        {
-                            PtInf = ptInf,
-                            RaiinInf = raiinInf
-                        };
-            result = query.Select((x) => new PatientInforModel(
-                            x.PtInf.HpId,
-                            x.PtInf.PtId,
-                            x.PtInf.PtNum,
-                            x.PtInf.KanaName ?? string.Empty,
-                            x.PtInf.Name ?? string.Empty,
-                            x.PtInf.Birthday,
-                            x.RaiinInf.SinDate
-                           )).OrderBy(x => x.PtNum)
-                           .ToList();
+                })
+                .ToList();
+
+            result = ptInfs.Select((x) => new PatientInforModel(
+                            x.HpId,
+                            x.PtId,
+                            x.PtNum,
+                            x.KanaName ?? string.Empty,
+                            x.Name ?? string.Empty,
+                            x.Birthday,
+                            raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
+                            ))
+                            .ToList();
             return result;
         }
     }

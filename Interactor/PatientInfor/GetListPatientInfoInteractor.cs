@@ -29,7 +29,7 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
             {
                 return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidPtId, new());
             }
-            var listPatientInfs = GetListPatientInfos(input.HpId, input.PtId).Select(item => new GetListPatientInfoInputItem(
+            var listPatientInfs = GetListPatientInfos(input.HpId, input.PtId, input.PageIndex, input.PageSize).Select(item => new GetListPatientInfoInputItem(
                                                                                      item.HpId, 
                                                                                      item.PtId, 
                                                                                      item.PtNum, 
@@ -46,9 +46,9 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
         }
     }
 
-    private List<PatientInforModel> GetListPatientInfos(int hpId, long ptId)
+    private List<PatientInforModel> GetListPatientInfos(int hpId, long ptId, int pageIndex, int pageSize)
     {
-        List<PatientInforModel> result = new(_patientInforRepository.SearchPatient(hpId, ptId).Select(x => new PatientInforModel(
+        List<PatientInforModel> result = new(_patientInforRepository.SearchPatient(hpId, ptId, pageIndex, pageSize).Select(x => new PatientInforModel(
                                                     x.HpId,
                                                     x.PtId,
                                                     x.PtNum,

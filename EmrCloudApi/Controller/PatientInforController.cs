@@ -75,7 +75,6 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
-using Domain.Models.GroupInf;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using UseCase.PatientInfor.GetListPatient;
@@ -771,7 +770,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {
-            var input = new GetPatientInfoInputData(HpId, req.PtId);
+            var input = new GetPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
             var output = _bus.Handle(input);
             var presenter = new GetListPatientInfoPresenter();
             presenter.Complete(output);
