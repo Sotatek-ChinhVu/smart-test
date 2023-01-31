@@ -1,5 +1,6 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
+using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -188,7 +189,12 @@ namespace Infrastructure.Repositories
                             x.AdjustRateRange
                                )).ToList(),
                         listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == raiinInf.HokenPid)?.HokenId ?? 0
-                );
+            );
+        }
+
+       public List<PtHokenPatternModel> FindPtHokenPatternList(long ptId, int sinDay, List<int> listPatternId)
+        {
+
         }
 
         public void ReleaseResource()
