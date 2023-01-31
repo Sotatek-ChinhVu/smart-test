@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public MedicalExaminationRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
-        public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)                                      
+        public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
         {
             var checkedOrderModelList = new List<CheckedOrderModel>();
             var igakuTokusituItem = allOdrInfDetail.FirstOrDefault(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTokusitu1, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTokusitu, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -180,7 +180,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku1JyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -193,7 +193,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku1, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -364,7 +364,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku2JyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -377,7 +377,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku2, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -497,7 +497,7 @@ namespace Infrastructure.Repositories
             if (isJouhou)
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTenkanJyohoTusin, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -505,7 +505,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTenkan, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -627,7 +627,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuNanbyoJyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -640,7 +640,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuNanbyo, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -749,91 +749,7 @@ namespace Infrastructure.Repositories
 
         public List<CheckedOrderModel> TouyakuTokusyoSyoho(int hpId, int sinDate, int hokenId, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOdrInf)
         {
-            #region sub function
-            CheckedOrderModel checkByoMei(int hpId, int sinDate, int hokenId, bool isCheckShuByomeiOnly, bool isCheckTeikyoByomei, string itemTokusyoCd, string itemCd, int inoutKbn)
-            {
-                var tenMstModel = FindTenMst(hpId, itemTokusyoCd, sinDate);
 
-                var byoMeiSpecialList = ByomeiModelList
-                                .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
-                                    b.SikkanKbn == SikkanKbnConst.Special &&
-                                    (b.HokenPid == hokenId || b.HokenPid == 0) &&
-                                    b.StartDate <= sinDate &&
-                                    (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
-                                .ToList();
-                if (byoMeiSpecialList.Count > 0)
-                {
-                    bool isSantei = false;
-                    if (isCheckTeikyoByomei)
-                    {
-                        var byomeiCdList = byoMeiSpecialList.Select(b => b.ByomeiCd);
-                        var byomeiCdTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                        foreach (var byomeiCd in byomeiCdTenkiouList)
-                        {
-                            if (byomeiCdList.Contains(byomeiCd))
-                            {
-                                isSantei = true;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isSantei = true;
-                    }
-                    if (isSantei)
-                    {
-                        var santei = false;
-                        var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
-                        if (touyaku == 1)
-                        {
-                            santei = true;
-                        }
-                        var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
-                        var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
-
-                        return checkedOrderModel;
-                    }
-                }
-
-                var byoMeiOtherList = ByomeiModelList
-                                .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
-                                    b.SikkanKbn == SikkanKbnConst.Other &&
-                                    (b.HokenPid == hokenId || b.HokenPid == 0) &&
-                                    b.StartDate <= sinDate &&
-                                    (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
-                                .ToList();
-                if (byoMeiOtherList.Count > 0)
-                {
-                    bool isSantei = false;
-                    if (isCheckTeikyoByomei)
-                    {
-                        var byomeiCdList = byoMeiOtherList.Select(b => b.ByomeiCd);
-                        var byomeiCdFromTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                        foreach (var byomeiCdFromTenkiou in byomeiCdFromTenkiouList)
-                        {
-                            if (byomeiCdList.Contains(byomeiCdFromTenkiou))
-                            {
-                                isSantei = true;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isSantei = true;
-                    }
-                    if (isSantei)
-                    {
-                        var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
-                        var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, false, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
-
-                        return checkedOrderModel;
-                    }
-                }
-                return new CheckedOrderModel();
-            }
-            #endregion
 
             var checkedOrderModelList = new List<CheckedOrderModel>();
 
@@ -888,7 +804,7 @@ namespace Infrastructure.Repositories
                 {
                     foreach (var drug in drugItems)
                     {
-                        var checkedMoreThan28DaysOdr = checkByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd2, drug.ItemCd, inoutKbn);
+                        var checkedMoreThan28DaysOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd2, drug.ItemCd, inoutKbn, ByomeiModelList);
                         if (checkedMoreThan28DaysOdr != null)
                         {
                             // having item with usage day >= 28, just break
@@ -901,7 +817,7 @@ namespace Infrastructure.Repositories
                 if (checkedOdr != null) continue;
                 foreach (var drug in drugItems)
                 {
-                    checkedOdr = checkByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd1, drug.ItemCd, inoutKbn);
+                    checkedOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd1, drug.ItemCd, inoutKbn, ByomeiModelList);
                     if (checkedOdr != null)
                     {
                         break;
@@ -918,6 +834,90 @@ namespace Infrastructure.Repositories
             // 背反設定されている場合は不可
 
             return checkedOrderModelList;
+        }
+
+        public CheckedOrderModel CheckByoMei(int hpId, int sinDate, int hokenId, bool isCheckShuByomeiOnly, bool isCheckTeikyoByomei, string itemTokusyoCd, string itemCd, int inoutKbn, List<PtDiseaseModel> ByomeiModelList)
+        {
+            var tenMstModel = FindTenMst(hpId, itemTokusyoCd, sinDate);
+
+            var byoMeiSpecialList = ByomeiModelList
+                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                                b.SikkanKbn == SikkanKbnConst.Special &&
+                                (b.HokenPid == hokenId || b.HokenPid == 0) &&
+                                b.StartDate <= sinDate &&
+                                (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
+                            .ToList();
+            if (byoMeiSpecialList.Count > 0)
+            {
+                bool isSantei = false;
+                if (isCheckTeikyoByomei)
+                {
+                    var byomeiCdList = byoMeiSpecialList.Select(b => b.ByomeiCd);
+                    var byomeiCdTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
+                    foreach (var byomeiCd in byomeiCdTenkiouList)
+                    {
+                        if (byomeiCdList.Contains(byomeiCd))
+                        {
+                            isSantei = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    isSantei = true;
+                }
+                if (isSantei)
+                {
+                    var santei = false;
+                    var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
+                    if (touyaku == 1)
+                    {
+                        santei = true;
+                    }
+                    var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
+                    var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
+
+                    return checkedOrderModel;
+                }
+            }
+
+            var byoMeiOtherList = ByomeiModelList
+                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                                b.SikkanKbn == SikkanKbnConst.Other &&
+                                (b.HokenPid == hokenId || b.HokenPid == 0) &&
+                                b.StartDate <= sinDate &&
+                                (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
+                            .ToList();
+            if (byoMeiOtherList.Count > 0)
+            {
+                bool isSantei = false;
+                if (isCheckTeikyoByomei)
+                {
+                    var byomeiCdList = byoMeiOtherList.Select(b => b.ByomeiCd);
+                    var byomeiCdFromTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
+                    foreach (var byomeiCdFromTenkiou in byomeiCdFromTenkiouList)
+                    {
+                        if (byomeiCdList.Contains(byomeiCdFromTenkiou))
+                        {
+                            isSantei = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    isSantei = true;
+                }
+                if (isSantei)
+                {
+                    var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
+                    var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, false, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
+
+                    return checkedOrderModel;
+                }
+            }
+            return new CheckedOrderModel();
         }
 
         private List<string> GetByomeiCdFromTenkiou(int hpId, string itemCd, bool isFromCheckingView = false)
@@ -1111,13 +1111,13 @@ namespace Infrastructure.Repositories
             }
 
             var tenMstModel = FindTenMst(hpId, ItemCdConst.YakuzaiJoho, sinDate);
-            if (tenMstModel == null)
+            if (string.IsNullOrEmpty(tenMstModel.ItemCd))
             {
                 return checkedOrderModelList;
             }
 
             var tenMstTeiyoModel = FindTenMst(hpId, ItemCdConst.YakuzaiJohoTeiyo, sinDate);
-            if (tenMstTeiyoModel == null)
+            if (string.IsNullOrEmpty(tenMstTeiyoModel.ItemCd))
             {
                 return checkedOrderModelList;
             }
@@ -1188,7 +1188,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiIkujiJyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -1201,7 +1201,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiIkuji, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }

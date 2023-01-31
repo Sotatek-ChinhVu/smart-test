@@ -294,6 +294,239 @@ namespace CloudUnitTest.SampleData
             return odrDetails;
         }
 
+        public static List<PtSanteiConf> ReadPtSanteiConf()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var ptSanteiConfs = new List<PtSanteiConf>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_SANTEI_CONF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptSanteiConf = new PtSanteiConf();
+                        ptSanteiConf.CreateId = 1;
+                        ptSanteiConf.CreateDate = DateTime.UtcNow;
+                        ptSanteiConf.UpdateId = 1;
+                        ptSanteiConf.UpdateDate = DateTime.UtcNow;
+
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptSanteiConf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
+                                    ptSanteiConf.PtId = long.MaxValue;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int kbnNo);
+                                    ptSanteiConf.KbnNo = kbnNo;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int edaNo);
+                                    ptSanteiConf.EdaNo = edaNo;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int startDate);
+                                    ptSanteiConf.StartDate = startDate;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int endDate);
+                                    ptSanteiConf.EndDate = endDate;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptSanteiConfs.Add(ptSanteiConf);
+                    }
+                }
+            }
+
+            return ptSanteiConfs;
+        }
+
+        public static List<PtSanteiConf> ReadPtSanteiConfToNoCheckSantei()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var ptSanteiConfs = new List<PtSanteiConf>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "PT_SANTEI_CONF").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptSanteiConf = new PtSanteiConf();
+                        ptSanteiConf.CreateId = 1;
+                        ptSanteiConf.CreateDate = DateTime.UtcNow;
+                        ptSanteiConf.UpdateId = 1;
+                        ptSanteiConf.UpdateDate = DateTime.UtcNow;
+
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptSanteiConf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
+                                    ptSanteiConf.PtId = long.MaxValue;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int kbnNo);
+                                    ptSanteiConf.KbnNo = 3;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int edaNo);
+                                    ptSanteiConf.EdaNo = 1;
+                                    break;
+                                case "H":
+                                    int.TryParse(text, out int startDate);
+                                    ptSanteiConf.StartDate = startDate;
+                                    break;
+                                case "I":
+                                    int.TryParse(text, out int endDate);
+                                    ptSanteiConf.EndDate = endDate;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptSanteiConfs.Add(ptSanteiConf);
+                    }
+                }
+            }
+
+            return ptSanteiConfs;
+        }
+
+        public static List<UserMst> ReadUserMst()
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var ptInfs = new List<UserMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "USER_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var ptInf = new UserMst();
+                        ptInf.CreateId = 1;
+                        ptInf.CreateDate = DateTime.UtcNow;
+                        ptInf.UpdateId = 1;
+                        ptInf.UpdateDate = DateTime.UtcNow;
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    ptInf.HpId = hpId;
+                                    break;
+                                case "B":
+                                    int.TryParse(text, out int id);
+                                    ptInf.Id = id;
+                                    break;
+                                case "C":
+                                    int.TryParse(text, out int userId);
+                                    ptInf.UserId = userId;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int jobCd);
+                                    ptInf.JobCd = jobCd;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int managerKbn);
+                                    ptInf.ManagerKbn = managerKbn;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int kaId);
+                                    ptInf.KaId = kaId;
+                                    break;
+                                case "G":
+                                    ptInf.KanaName = text;
+                                    break;
+                                case "H":
+                                    ptInf.Name = text;
+                                    break;
+                                case "I":
+                                    ptInf.Sname = text;
+                                    break;
+                                case "J":
+                                    ptInf.LoginId = text;
+                                    break;
+                                case "K":
+                                    ptInf.LoginPass = text;
+                                    break;
+                                case "M":
+                                    int.TryParse(text, out int startDate);
+                                    ptInf.StartDate = startDate;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int endDate);
+                                    ptInf.EndDate = endDate;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        ptInfs.Add(ptInf);
+                    }
+                }
+            }
+
+            return ptInfs;
+        }
+
+
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
 
