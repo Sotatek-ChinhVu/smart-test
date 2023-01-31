@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.InsuranceMst.GetMasterDetails;
+using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenMaster;
 
 namespace EmrCloudApi.Controller
@@ -25,6 +26,16 @@ namespace EmrCloudApi.Controller
             var input = new GetInsuranceMasterDetailInputData(HpId, request.FHokenNo, request.FHokenSbtKbn , request.IsJitan , request.IsTaken);
             var output = _bus.Handle(input);
             var presenter = new GetInsuranceMasterDetailPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.Get + "SelectMaintenance")]
+        public ActionResult<Response<GetSelectMaintenanceResponse>> GetSelectMaintenance([FromQuery] GetSelectMaintenanceRequest request)
+        {
+            var input = new GetSelectMaintenanceInputData(HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.StartDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetSelectMaintenancePresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

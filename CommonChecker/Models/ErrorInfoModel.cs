@@ -4,6 +4,8 @@ namespace CommonChecker.Models
 {
     public class ErrorInfoModel
     {
+        public string Id { get; set; }
+
         public string FirstCellContent { get; set; }
 
         public string SecondCellContent { get; set; }
