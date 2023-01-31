@@ -885,7 +885,13 @@ namespace Infrastructure.Repositories
                                                                                                          x.ReceSpKbn,
                                                                                                          string.Empty,
                                                                                                          x.PrefNo,
-                                                                                                         x.SortNo)).ToList();
+                                                                                                         x.SortNo,
+                                                                                                         x.JyukyuCheckDigit,
+                                                                                                         x.SeikyuYm,
+                                                                                                         x.ReceFutanHide,
+                                                                                                         x.ReceFutanKbn,
+                                                                                                         x.KogakuTotalAll,
+                                                                                                         false)).ToList();
                 hokenMsts.ForEach(x =>
                 {
                     result.Add(new SelectMaintenanceModel(x));
@@ -957,7 +963,13 @@ namespace Infrastructure.Repositories
                                                                             hokenMaster.ReceSpKbn,
                                                                             string.Empty,
                                                                             hokenMaster.PrefNo,
-                                                                            hokenMaster.SortNo)));
+                                                                            hokenMaster.SortNo,
+                                                                            hokenMaster.JyukyuCheckDigit,
+                                                                            hokenMaster.SeikyuYm,
+                                                                            hokenMaster.ReceFutanHide,
+                                                                            hokenMaster.ReceFutanKbn,
+                                                                            hokenMaster.KogakuTotalAll,
+                                                                            false)));
             }
 
             return result;
