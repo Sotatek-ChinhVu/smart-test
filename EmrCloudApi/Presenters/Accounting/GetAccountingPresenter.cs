@@ -22,6 +22,7 @@ namespace EmrCloudApi.Presenters.Accounting
             GetAccountingStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
             GetAccountingStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
             GetAccountingStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+            _ => string.Empty
         };
     }
 }

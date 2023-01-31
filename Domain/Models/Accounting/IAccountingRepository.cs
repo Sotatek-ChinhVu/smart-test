@@ -4,8 +4,5 @@
     {
         public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false);
 
-        public AccountingInfModel GetAccountingInfAllRaiinNo(List<AccountingModel> accountingModels);
-
-        public bool SaveAccountingInf(bool isIgnoreDateNotVerify);
     }
 }
