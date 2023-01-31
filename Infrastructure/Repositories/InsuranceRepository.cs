@@ -1408,7 +1408,13 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceSpKbn,
                                         prefactureName,
                                         hokenMst.PrefNo,
-                                        hokenMst.SortNo);
+                                        hokenMst.SortNo,
+                                        hokenMst.JyukyuCheckDigit,
+                                        hokenMst.SeikyuYm,
+                                        hokenMst.ReceFutanHide,
+                                        hokenMst.ReceFutanKbn,
+                                        hokenMst.KogakuTotalAll,
+                                        false);
                 return itemHokenMst;
             }
             return new HokenMstModel();

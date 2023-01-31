@@ -7,6 +7,11 @@
         Failed,
         InvalidHpId,
         InvalidStartDate,
-        InvalidEndDate
+        InvalidEndDate,
+        InvalidStartDateMoreThanEndDate,
+        InvalidPrefNo,
+        InvalidHokenNo,
+        InvalidDuplicateKey,
+        InvalidAgeStartMoreThanAgeEnd,
     }
 }

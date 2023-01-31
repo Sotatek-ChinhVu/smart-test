@@ -16,6 +16,11 @@ namespace Domain.Models.InsuranceMst
 
         List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken);
 
-        bool SaveHokenMaster(int hpId, int userId, HokenMstModel insurance);
+        bool CheckDuplicateKey(int hpId, HokenMstModel model);
+
+        bool CreateHokenMaster(int hpId, int userId, HokenMstModel insurance);
+
+        bool UpdateHokenMaster(int hpId, int userId, HokenMstModel insurance);
+
     }
 }
