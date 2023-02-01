@@ -15,5 +15,7 @@ namespace Domain.Models.InsuranceMst
         HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch);
 
         List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken);
+
+        List<SelectMaintenanceModel> GetSelectMaintenance(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate);
     }
 }
