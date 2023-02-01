@@ -314,6 +314,7 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.PtGroupMst.GetGroupNameMst;
+using Reporting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -359,7 +360,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
-            services.AddTransient<IReportingService, ReportingService>();
+            services.AddTransient<IReportService, ReportService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
