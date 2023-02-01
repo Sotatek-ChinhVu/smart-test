@@ -46,7 +46,7 @@ namespace Interactor.Accounting
                 }
 
                 if (item.Kohi1InfModel != null &&
-                    item.PtHokenPatternModel.Kohi1Inf.HokenId > 0 &&
+                    item.Kohi1Inf.HokenId > 0 &&
                     !CheckIdIsExits(listKohiId, item.PtHokenPatternModel.Kohi1Inf.HokenId))
                 {
                     listKohiId.Add(item.PtHokenPatternModel.Kohi1Inf.HokenId);
