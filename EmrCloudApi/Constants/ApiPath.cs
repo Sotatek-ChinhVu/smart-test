@@ -179,5 +179,6 @@
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
+        public const string GetGroupNameMst = "GetGroupNameMst";
     }
 }

@@ -76,5 +76,6 @@
         PtGrpInvalidGroupId,
         PtGrpInvalidGroupCode,
         #endregion PtGrps
+        InvalidSex
     }
 }
