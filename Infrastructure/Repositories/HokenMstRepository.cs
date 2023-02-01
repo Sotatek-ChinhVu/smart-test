@@ -1,8 +1,6 @@
 ﻿using Domain.Models.HokenMst;
-using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -95,9 +93,50 @@ namespace Infrastructure.Repositories
             return existHokenEdaNo;
         }
 
+        public List<PtHokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item =>
+                item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                item.RaiinNo == raiinNo && item.IsDeleted == 0);
+
+            if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+                return new List<PtHokenPatternModel>();
+
+            var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(item =>
+                item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.Status > 3 && item.IsDeleted == 0);
+            if (!listRaiinInf.Any())
+                return new List<PtHokenPatternModel>();
+
+            var listHokenPattern = NoTrackingDataContext.PtHokenPatterns
+                                                        .Where(pattern => pattern.HpId == hpId
+                                                         && pattern.PtId == ptId
+                                                         && pattern.IsDeleted == 0
+                                                         && listRaiinInf.Select(item => item.HokenPid).ToList().Contains(pattern.HokenPid))
+                                                        .Select(x => new PtHokenPatternModel(
+                                                                x.HpId,
+                                                                x.PtId,
+                                                                x.HokenPid,
+                                                                x.HokenKbn,
+                                                                x.HokenSbtCd,
+                                                                x.HokenId,
+                                                                x.Kohi1Id,
+                                                                x.Kohi2Id,
+                                                                x.Kohi3Id,
+                                                                x.Kohi4Id,
+                                                                x.HokenMemo ?? string.Empty,
+                                                                x.StartDate,
+                                                                x.EndDate
+                                                            )).ToList();
+
+            return listHokenPattern;
+        }
+
+
         public void ReleaseResource()
         {
             DisposeDataContext();
         }
+
     }
 }

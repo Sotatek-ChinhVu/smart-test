@@ -192,11 +192,6 @@ namespace Infrastructure.Repositories
             );
         }
 
-       public List<PtHokenPatternModel> FindPtHokenPatternList(long ptId, int sinDay, List<int> listPatternId)
-        {
-
-        }
-
         public void ReleaseResource()
         {
             DisposeDataContext();

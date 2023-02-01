@@ -1,11 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.InsuranceMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
 {
@@ -331,5 +326,27 @@ namespace Domain.Models.Insurance
         public bool IsRousai => HokenKbn == 11 || HokenKbn == 12 || HokenKbn == 13;
 
         public bool IsJibai => HokenKbn == 14;
+
+        public bool IsHoken => IsShaho || IsKokuho;
+
+        public bool HasDateConfirmed
+        {
+            get
+            {
+                // Jihi
+                if (IsJihi)
+                {
+                    return true;
+                }
+
+                // nashi
+                if (Houbetu == HokenConstant.HOUBETU_NASHI)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
     }
 }

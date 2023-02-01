@@ -1,14 +1,15 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Accounting;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Accounting.GetWarningMemo
 {
     public class GetWarningMemoOutputData : IOutputData
     {
-        public GetWarningMemoOutputData(string warningMemo)
+        public GetWarningMemoOutputData(WarningMemoModel warningMemoModel)
         {
-            WarningMemo = warningMemo;
+            WarningMemoModel = warningMemoModel;
         }
 
-        public string WarningMemo { get; private set; }
+        public WarningMemoModel WarningMemoModel { get; private set; }
     }
 }
