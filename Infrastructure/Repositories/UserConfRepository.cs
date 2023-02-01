@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
 
@@ -11,9 +12,11 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
+    private readonly IMemoryCache _memoryCache;
 
-    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
+        _memoryCache = memoryCache;
         InitConfigDefaultValue();
     }
 
@@ -26,13 +29,12 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes)
     {
-        return NoTrackingDataContext.UserConfs
-                                    .Where(item => item.UserId == userId
-                                                   && item.HpId == hpId
-                                                   && grpCodes.Contains(item.GrpCd))
-                                    .AsEnumerable()
-                                    .Select(item => ToModel(item))
-                                    .ToList();
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out List<UserConfModel> result))
+        //{
+        //    result = ReloadCache(hpId, userId, grpCodes);
+        //}
+        var result = ReloadCache(hpId, userId, grpCodes);
+        return result!;
     }
 
     public Dictionary<string, int> GetList(int userId)
@@ -103,6 +105,20 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return result;
     }
 
+    private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)
+    {
+        var result = NoTrackingDataContext.UserConfs
+                                    .Where(item => item.UserId == userId
+                                                   && item.HpId == hpId
+                                                   && grpCodes.Contains(item.GrpCd))
+                                    .AsEnumerable()
+                                    .Select(item => ToModel(item))
+                                    .ToList();
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.Normal);
+        _memoryCache.Set(GetCacheKey(), result, cacheEntryOptions);
+        return result;
+    }
     public int Sagaku(bool fromRece)
     {
         if (fromRece)
