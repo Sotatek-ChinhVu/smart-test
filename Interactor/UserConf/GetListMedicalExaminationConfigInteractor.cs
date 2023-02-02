@@ -606,12 +606,12 @@ public class GetListMedicalExaminationConfigInteractor : IGetListMedicalExaminat
     private ConfigCheckboxSubItem ConvertToConfigCheckboxModel(List<UserConfModel> listUserConfig, int grpCd, int grpItemCd, string defaultParam)
     {
         var tempModel = listUserConfig.FirstOrDefault(item => item.GrpCd == grpCd && item.GrpItemCd == grpItemCd);
-        var Param = tempModel != null ? tempModel.Param : defaultParam;
-        bool isCheckedFirstCharParam = !string.IsNullOrEmpty(Param) && Param[0].AsInteger() == 1;
-        bool isCheckedSecondCharParam = !string.IsNullOrEmpty(Param) && Param[1].AsInteger() == 1;
-        bool isCheckedThirdCharParam = !string.IsNullOrEmpty(Param) && Param[2].AsInteger() == 1;
-        bool isCheckedFourthCharParam = !string.IsNullOrEmpty(Param) && Param[3].AsInteger() == 1;
-        bool isCheckedFifthCharParam = !string.IsNullOrEmpty(Param) && Param[4].AsInteger() == 1;
+        var param = tempModel != null ? tempModel.Param : defaultParam;
+        bool isCheckedFirstCharParam = !string.IsNullOrEmpty(param) && param[0].AsInteger() == 1;
+        bool isCheckedSecondCharParam = !string.IsNullOrEmpty(param) && param[1].AsInteger() == 1;
+        bool isCheckedThirdCharParam = !string.IsNullOrEmpty(param) && param[2].AsInteger() == 1;
+        bool isCheckedFourthCharParam = !string.IsNullOrEmpty(param) && param[3].AsInteger() == 1;
+        bool isCheckedFifthCharParam = !string.IsNullOrEmpty(param) && param[4].AsInteger() == 1;
         return new ConfigCheckboxSubItem(
                                             isCheckedFirstCharParam,
                                             isCheckedSecondCharParam,
