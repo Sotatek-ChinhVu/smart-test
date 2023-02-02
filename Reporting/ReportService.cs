@@ -1,35 +1,19 @@
-﻿using Helper.Common;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Reporting.Interface;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Model;
-using Reporting.Model.ExportKarte1;
 using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Models;
-using Reporting.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Reporting
 {
     public class ReportService : IReportService
     {
         private readonly ITenantProvider _tenantProvider;
-        private readonly IExportKarte1 _exportKarte1;
 
-        public ReportService(ITenantProvider tenantProvider, IExportKarte1 exportKarte1)
+        public ReportService(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
-            _exportKarte1 = exportKarte1;
-        }
-
-        public Karte1ExportModel GetDataKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
-        {
-            return _exportKarte1.GetDataKarte1(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
         }
 
         public CoKarte1Model GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
