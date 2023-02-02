@@ -888,5 +888,6 @@
         //Insurance Mst Detail
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
+        public static readonly string InvalidPrefNo = "PrefNo is in valid";
     }
 }
