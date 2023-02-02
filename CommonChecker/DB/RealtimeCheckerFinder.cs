@@ -1144,6 +1144,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                     m.ACd == currentOrderSubYjCode.YjCd12
                                 ),
                                 ItemCd = addedOrderItemCode.ItemCd ?? string.Empty,
+                                KinkiItemCd = currentOrderCode.ItemCd ?? string.Empty,
                             }
                         )
                         .ToList();
@@ -1190,11 +1191,15 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             {
                 string addedYjCd = listYjCd.Where(y => y.ItemCd == c.ACd).Select(y => y.YjCd).FirstOrDefault() ?? string.Empty;
                 string currentYjCd = listYjCd.Where(y => y.ItemCd == c.BCd).Select(y => y.YjCd).FirstOrDefault() ?? string.Empty;
+                string addedItemCd = listYjCd.Where(y => y.ItemCd == c.ACd).Select(y => y.ItemCd).FirstOrDefault() ?? string.Empty;
+                string currentItemCd = listYjCd.Where(y => y.ItemCd == c.BCd).Select(y => y.ItemCd).FirstOrDefault() ?? string.Empty;
                 result.Add(new KinkiResultModel()
                 {
                     AYjCd = addedYjCd,
                     BYjCd = currentYjCd,
                     IsNeedToReplace = false,
+                    ItemCd = addedItemCd,
+                    KinkiItemCd = currentItemCd,
                 });
             });
             return result;
