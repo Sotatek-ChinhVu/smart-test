@@ -855,9 +855,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd }
+                                 group a by new { a.AYjCd, a.BYjCd ,a.ItemCd, a.KinkiItemCd}
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd }
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd , gcs.Key.ItemCd, gcs.Key.KinkiItemCd}
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
@@ -903,8 +903,8 @@ namespace Interactor.CommonChecker
                     FirstCellContent = GetCheckingTitle(),
                     ThridCellContent = itemAName,
                     FourthCellContent = itemBName,
-                    CurrentItemCd = kikinCode.BYjCd,
-                    CheckingItemCd = kikinCode.AYjCd,
+                    CurrentItemCd = kikinCode.ItemCd,
+                    CheckingItemCd = kikinCode.KinkiItemCd,
                 };
                 result.Add(tempModel);
 
