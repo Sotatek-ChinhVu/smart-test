@@ -243,6 +243,14 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.KarteFilterMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
         }
 
+        public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted)
+        {
+            var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted).OrderByDescending(r => r.SinDate)
+                                                .OrderByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
+            var index = raiinInfs.IndexOf(raiinNo);
+            return index;
+        }
+
         #region private method
         private long SearchKarte(int hpId, long ptId, int isDeleted, List<long> raiinNoList, string keyWord, bool isNext)
         {
