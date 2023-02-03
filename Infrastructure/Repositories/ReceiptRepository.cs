@@ -1,11 +1,13 @@
 ﻿using Domain.Constant;
 using Domain.Models.Receipt;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Linq;
 
 namespace Infrastructure.Repositories;
 
@@ -31,7 +33,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     private List<ReceiptListModel> ActionGetReceiptList(int hpId, int fromDay, int toDay, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
     {
-        List<ReceiptListModel> result = new();
         List<ItemSumModel> sinYmPtIdForFilterList = new();
 
         #region Simple query 
@@ -173,9 +174,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                      .Select(item => new { item.HpId, item.UserId, item.Name });
         #endregion
 
+        #region AdvancedSearch query for receInfs
         if (searchModel.IsAdvanceSearch)
         {
-            #region AdvancedSearch query for receInfs
             // 練習患者を表示しない
             if (!searchModel.IsTestPatientSearch)
             {
@@ -774,8 +775,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                     && (x.TenkiKbn == TenkiKbnConst.Continued
                                                                         || (x.TenkiDate / 100 >= item.SinYm))));
             }
-            #endregion
         }
+        #endregion
 
         #region main query
         var query = from receInf in receInfs
@@ -912,6 +913,158 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     };
         #endregion
 
+        #region Search after query
+        // 請求区分
+        if (!searchModel.SeikyuKbnAll)
+        {
+            // 労災のレセプト電算
+            var rousaiRecedenValue = GetSettingValue(hpId, 100003, 0);
+            var rousaiRecedenParam = GetSettingParam(hpId, 100003, 0).AsInteger();
+            // アフターケア電算
+            var aftercareDensanValue = GetSettingValue(hpId, 100003, 1);
+            var aftercareDensanParam = GetSettingParam(hpId, 100003, 1).AsInteger();
+            if (searchModel.SeikyuKbnDenshi)
+            {
+                query = query.Where(item => !(item.IsPaperRece == 1
+                                               || item.SeikyuKbn == 2
+                                               || item.HokenKbn == 0
+                                               || item.HokenKbn == 14
+                                               || ((rousaiRecedenValue != 1 || (rousaiRecedenValue == 1 && item.SeikyuYm < rousaiRecedenParam))
+                                                   && (item.HokenKbn == 11 || item.HokenKbn == 12))
+                                               || ((aftercareDensanValue != 1 || (aftercareDensanValue == 1 && item.SeikyuYm < aftercareDensanParam))
+                                                   && item.HokenKbn == 13)));
+            }
+            else if (searchModel.SeikyuKbnPaper)
+            {
+                query = query.Where(item => item.IsPaperRece == 1
+                                               || item.SeikyuKbn == 2
+                                               || item.HokenKbn == 0
+                                               || item.HokenKbn == 14
+                                               || ((rousaiRecedenValue != 1 || (rousaiRecedenValue == 1 && item.SeikyuYm < rousaiRecedenParam))
+                                                   && (item.HokenKbn == 11 || item.HokenKbn == 12))
+                                               || ((aftercareDensanValue != 1 || (aftercareDensanValue == 1 && item.SeikyuYm < aftercareDensanParam))
+                                                   && item.HokenKbn == 13));
+            }
+        }
+        #endregion
+
+        #region Filter after query
+        if (searchModel.IsAdvanceSearch)
+        {
+            // 確認
+            if (!searchModel.IsAll)
+            {
+                List<int> statusKbnList = new List<int>();
+
+                if (searchModel.IsSystemSave)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.SystemPending);
+                }
+
+                if (searchModel.IsSave1)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.Keep1);
+                }
+
+                if (searchModel.IsSave2)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.Keep2);
+                }
+
+                if (searchModel.IsSave3)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.Keep3);
+                }
+
+                if (searchModel.IsTempSave)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.TempComfirmed);
+                }
+
+                if (searchModel.IsDone)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.Confirmed);
+                }
+
+                if (searchModel.IsNoSetting)
+                {
+                    statusKbnList.Add((int)ReceCheckStatusEnum.UnConfirmed);
+                    query = query.Where(item => statusKbnList.Any(status => status == item.StatusKbn) || !item.IsReceStatusExists);
+                }
+                else
+                {
+                    query = query.Where(item => statusKbnList.Any(status => status == item.StatusKbn) && item.IsReceStatusExists);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(searchModel.HokenHoubetu)
+                || searchModel.HokensyaNoFromLong > 0
+                || searchModel.HokensyaNoToLong > 0)
+            {
+                query = query.Where(item => item.IsPtHokenInfExists);
+            }
+
+            // 生年月日
+            if (searchModel.BirthDayFrom > 0
+                || searchModel.BirthDayTo > 0
+                 || !string.IsNullOrEmpty(searchModel.Name)
+                 || searchModel.PtIdFrom > 0
+                 || searchModel.PtIdTo > 0
+                 || string.IsNullOrEmpty(searchModel.PtId))
+            {
+                query = query.Where(item => item.IsPtInfExists);
+            }
+
+            // 最終来院日
+            if (searchModel.LastRaiinDateFrom > 0
+                || searchModel.LastRaiinDateTo > 0)
+            {
+                query = query.Where(item => item.IsPtLastVisitDateExist);
+            }
+        }
+        #endregion
+
+        #region Convert to list model
+        var result = query.AsEnumerable().Select(
+                        data => new ReceiptListModel(
+                                data.SeikyuKbn,
+                                data.SinYm,
+                                data.IsReceInfDetailExist,
+                                data.IsPaperRece,
+                                data.HokenKbn,
+                                data.Output,
+                                data.FusenKbn,
+                                data.StatusKbn,
+                                data.IsPending,
+                                data.PtNum,
+                                data.KanaName,
+                                data.Name,
+                                data.Sex,
+                                data.LastSinDateByHokenId != 0 ? data.LastSinDateByHokenId : data.SinYm * 100 + 1,
+                                data.Birthday,
+                                data.ReceSbt,
+                                data.HokensyaNo,
+                                data.Tensu,
+                                data.HokenSbtCd,
+                                data.Kohi1Nissu ?? 0,
+                                data.IsSyoukiInfExist,
+                                data.IsReceCmtExist,
+                                data.IsSyobyoKeikaExist,
+                                data.SeikyuCmt,
+                                data.LastVisitDate,
+                                data.KaName,
+                                data.UserName,
+                                data.IsPtKyuseiExist,
+                                data.FutansyaNoKohi1,
+                                data.FutansyaNoKohi2,
+                                data.FutansyaNoKohi3,
+                                data.FutansyaNoKohi4,
+                                data.IsTester == 1
+                            ))
+                    .OrderBy(item => item.SinYm)
+                    .ThenBy(item => item.PtNum)
+                    .ToList();
+        #endregion
         return result;
     }
 
@@ -921,6 +1074,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                && p.GrpCd == groupCd
                                                                                && p.GrpEdaNo == grpEdaNo);
         return systemConf != null ? systemConf.Val : defaultValue;
+    }
+
+    private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
+    {
+        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+                                                                               && p.GrpCd == groupCd
+                                                                               && p.GrpEdaNo == grpEdaNo);
+        return systemConf?.Param ?? string.Empty;
     }
 
     public void ReleaseResource()

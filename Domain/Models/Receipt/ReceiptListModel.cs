@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.Receipt;
+﻿using Helper.Common;
+
+namespace Domain.Models.Receipt;
 
 public class ReceiptListModel
 {
-    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptNum, string kanaName, string name, int sex, int age, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, int receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, string isPtTest)
+    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest)
     {
         SeikyuKbn = seikyuKbn;
         SinYm = sinYm;
@@ -17,7 +19,7 @@ public class ReceiptListModel
         KanaName = kanaName;
         Name = name;
         Sex = sex;
-        Age = age;
+        Age = CIUtil.SDateToAge(birthDay, lastSinDateByHokenId);
         LastSinDateByHokenId = lastSinDateByHokenId;
         BirthDay = birthDay;
         ReceSbt = receSbt;
@@ -88,7 +90,7 @@ public class ReceiptListModel
 
     public int IsSyobyoKeikaExist { get; private set; }
 
-    public int ReceSeikyuCmt { get; private set; }
+    public string ReceSeikyuCmt { get; private set; }
 
     public int LastVisitDate { get; private set; }
 
@@ -106,5 +108,5 @@ public class ReceiptListModel
 
     public string FutansyaNoKohi4 { get; private set; }
 
-    public string IsPtTest { get; private set; }
+    public bool IsPtTest { get; private set; }
 }
