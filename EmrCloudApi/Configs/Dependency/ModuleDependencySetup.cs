@@ -206,6 +206,7 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
@@ -749,6 +750,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Family
             busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
+
+            //Convert Input Item to Today Order
+            busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
