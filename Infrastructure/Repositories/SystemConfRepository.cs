@@ -25,6 +25,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
+
     public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);

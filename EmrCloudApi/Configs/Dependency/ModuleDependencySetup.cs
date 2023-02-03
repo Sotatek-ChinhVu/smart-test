@@ -3,6 +3,8 @@ using CommonChecker.DB;
 using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ApprovalInfo;
@@ -130,6 +132,7 @@ using Interactor.UserConf;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Reporting;
 using Reporting.Interface;
 using Reporting.Service;
 using Schema.Insurance.SaveInsuranceScan;
@@ -250,6 +253,7 @@ using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
@@ -309,11 +313,11 @@ using UseCase.User.MigrateDatabase;
 using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
+using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -342,6 +346,7 @@ namespace EmrCloudApi.Configs.Dependency
 
         private void SetupLogger(IServiceCollection services)
         {
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             var serviceProvider = services.BuildServiceProvider();
         }
 
@@ -359,7 +364,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
-            services.AddTransient<IReportingService, ReportingService>();
+            services.AddTransient<IReportService, ReportService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -696,6 +701,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiConfigInputData, UpdateAdoptedByomeiConfigInteractor>();
             busBuilder.RegisterUseCase<UpdateUserConfInputData, UpdateUserConfInteractor>();
             busBuilder.RegisterUseCase<SagakuInputData, SagakuInteractor>();
+            busBuilder.RegisterUseCase<GetListMedicalExaminationConfigInputData, GetListMedicalExaminationConfigInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
