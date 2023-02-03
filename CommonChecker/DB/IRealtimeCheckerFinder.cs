@@ -1,10 +1,11 @@
 ﻿using CommonChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Common;
 using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public interface IRealtimeCheckerFinder
+    public interface IRealtimeCheckerFinder : IRepositoryBase
     {
         Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<ItemCodeModel> itemCdList, int sinDate);
 

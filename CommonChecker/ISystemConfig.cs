@@ -1,9 +1,10 @@
-﻿using Entity.Tenant;
+﻿using Domain.Common;
+using Entity.Tenant;
 using Helper.Extension;
 
 namespace CommonChecker
 {
-    public interface ISystemConfig
+    public interface ISystemConfig : IRepositoryBase
     {
 
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false);

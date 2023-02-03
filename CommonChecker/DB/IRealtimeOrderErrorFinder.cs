@@ -1,6 +1,8 @@
-﻿namespace CommonChecker.DB
+﻿using Domain.Common;
+
+namespace CommonChecker.DB
 {
-    public interface IRealtimeOrderErrorFinder
+    public interface IRealtimeOrderErrorFinder : IRepositoryBase
     {
         public bool IsNoMasterData();
 

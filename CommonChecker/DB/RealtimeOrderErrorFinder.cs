@@ -191,5 +191,10 @@ namespace CommonChecker.DB
         {
             return NoTrackingDataContext.M56ExEdIngredients.Count() == 0;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

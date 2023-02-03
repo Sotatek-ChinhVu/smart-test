@@ -2525,6 +2525,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             }
         }
         #endregion
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 
     class SeibunInfo

@@ -112,5 +112,10 @@ namespace CommonCheckers
 
             return systemConf;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }
