@@ -24,13 +24,13 @@ namespace Infrastructure.Repositories
             {
                 byomeis = NoTrackingDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
             }
-            List<string> codeLists = new();
+            List<PrefixSuffixModel> codeLists = new();
             foreach (var item in byomeis)
             {
-                codeLists.AddRange(GetCodeLists(item));
+                codeLists.AddRange(SyusyokuCdToList(item));
             }
 
-            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Any(c => c.Code == b.ByomeiCd)).ToList();
 
             var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b, byomeiMstList)).ToList();
 
@@ -281,27 +281,27 @@ namespace Infrastructure.Repositories
                     {
                         oldByomei.SeqNo = byomei.SeqNo;
                         oldByomei.ByomeiCd = byomei.ByomeiCd;
-                        oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault();
-                        oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault();
-                        oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault();
-                        oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault();
-                        oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault();
-                        oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault();
-                        oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault();
-                        oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault();
-                        oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault();
-                        oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault();
-                        oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault();
-                        oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault();
-                        oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault();
-                        oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault();
-                        oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault();
-                        oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault();
-                        oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault();
-                        oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault();
-                        oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault();
-                        oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault();
-                        oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault();
+                        oldByomei.SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty;
+                        oldByomei.SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty;
                         oldByomei.Byomei = byomei.Byomei;
                         oldByomei.SyobyoKbn = byomei.SyobyoKbn;
                         oldByomei.SikkanKbn = byomei.SikkanKbn;
@@ -326,9 +326,9 @@ namespace Infrastructure.Repositories
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
         {
-            var codeLists = GetCodeLists(byomei);
+            var codeLists = SyusyokuCdToList(byomei);
             //prefix and suffix
-            var byomeiMst = byomeiMsts.FirstOrDefault(item => codeLists.Contains(item.ByomeiCd)) ?? new ByomeiMst();
+            var byomeiMst = byomeiMsts.FirstOrDefault(item => codeLists.Any(c => c.Code == item.ByomeiCd)) ?? new ByomeiMst();
             return new RsvkrtByomeiModel(
                     byomei.Id,
                     byomei.HpId,
@@ -344,7 +344,7 @@ namespace Infrastructure.Repositories
                     byomei.IsNodspRece,
                     byomei.IsNodspKarte,
                     byomei.IsDeleted,
-                    GetCodeLists(byomei),
+                    SyusyokuCdToList(byomei),
                     byomeiMst.Icd101 ?? string.Empty,
                     byomeiMst.Icd1012013 ?? string.Empty,
                     byomeiMst.Icd1012013 ?? string.Empty,
@@ -435,7 +435,10 @@ namespace Infrastructure.Repositories
                          tenMst?.YjCd ?? string.Empty,
                          yohoSet,
                          kasan?.Kasan1 ?? 0,
-                         kasan?.Kasan2 ?? 0
+                         kasan?.Kasan2 ?? 0,
+                         kensaMst?.CenterItemCd1 ?? string.Empty,
+                         kensaMst?.CenterItemCd2 ?? string.Empty,
+                         tenMst?.HandanGrpKbn ?? 0
                         );
                 lock (obj)
                 {
@@ -583,9 +586,9 @@ namespace Infrastructure.Repositories
             return KensaGaichuTextConst.NONE;
         }
 
-        private List<string> GetCodeLists(RsvkrtByomei mst)
+        private List<PrefixSuffixModel> SyusyokuCdToList(RsvkrtByomei mst)
         {
-            var codeLists = new List<string>()
+            List<string> codeList = new()
             {
                 mst.SyusyokuCd1 ?? string.Empty,
                 mst.SyusyokuCd2 ?? string.Empty,
@@ -609,7 +612,27 @@ namespace Infrastructure.Repositories
                 mst.SyusyokuCd20 ?? string.Empty,
                 mst.SyusyokuCd21 ?? string.Empty
             };
-            return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
+            codeList = codeList.Where(c => c != string.Empty).ToList();
+
+            if (codeList.Count == 0)
+            {
+                return new List<PrefixSuffixModel>();
+            }
+
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+
+            List<PrefixSuffixModel> result = new();
+            foreach (var code in codeList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(b => b.ByomeiCd == code);
+                if (byomeiMst == null)
+                {
+                    continue;
+                }
+                result.Add(new PrefixSuffixModel(code, byomeiMst.Byomei ?? string.Empty));
+            }
+
+            return result;
         }
 
         public List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted)
@@ -665,27 +688,27 @@ namespace Infrastructure.Repositories
                 RsvkrtNo = rsvkrtNo == 0 ? byomei.RsvkrtNo : rsvkrtNo,
                 SeqNo = byomei.SeqNo,
                 ByomeiCd = byomei.ByomeiCd,
-                SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault(),
-                SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault(),
-                SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault(),
-                SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault(),
-                SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault(),
-                SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault(),
-                SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault(),
-                SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault(),
-                SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault(),
-                SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault(),
-                SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault(),
-                SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault(),
-                SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault(),
-                SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault(),
-                SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault(),
-                SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault(),
-                SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault(),
-                SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault(),
-                SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault(),
-                SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault(),
-                SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault(),
+                SyusyokuCd1 = byomei.PrefixSuffixList.FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd2 = byomei.PrefixSuffixList.Skip(1).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd3 = byomei.PrefixSuffixList.Skip(2).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd4 = byomei.PrefixSuffixList.Skip(3).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd5 = byomei.PrefixSuffixList.Skip(4).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd6 = byomei.PrefixSuffixList.Skip(5).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd7 = byomei.PrefixSuffixList.Skip(6).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd8 = byomei.PrefixSuffixList.Skip(7).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd9 = byomei.PrefixSuffixList.Skip(8).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd10 = byomei.PrefixSuffixList.Skip(9).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd11 = byomei.PrefixSuffixList.Skip(10).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd12 = byomei.PrefixSuffixList.Skip(11).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd13 = byomei.PrefixSuffixList.Skip(12).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd14 = byomei.PrefixSuffixList.Skip(13).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd15 = byomei.PrefixSuffixList.Skip(14).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd16 = byomei.PrefixSuffixList.Skip(15).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd17 = byomei.PrefixSuffixList.Skip(16).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd18 = byomei.PrefixSuffixList.Skip(17).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd19 = byomei.PrefixSuffixList.Skip(18).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd20 = byomei.PrefixSuffixList.Skip(19).FirstOrDefault()?.Code ?? string.Empty,
+                SyusyokuCd21 = byomei.PrefixSuffixList.Skip(20).FirstOrDefault()?.Code ?? string.Empty,
                 Byomei = byomei.Byomei,
                 SyobyoKbn = byomei.SyobyoKbn,
                 SikkanKbn = byomei.SikkanKbn,
