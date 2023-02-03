@@ -63,6 +63,6 @@ namespace UseCase.NextOrder.Get
 
         public string Icd1022013 { get; private set; }
 
-        public List<string> PrefixSuffixList { get; private set; }
+        public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
     }
 }

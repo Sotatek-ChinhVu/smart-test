@@ -143,5 +143,11 @@ namespace UseCase.NextOrder.Get
         public int Kasan1 { get; private set; }
 
         public int Kasan2 { get; private set; }
+
+        public string CenterItemCd1 { get; private set; }
+
+        public string CenterItemCd2 { get; private set; }
+
+        public int HandanGrpKbn { get; private set; }
     }
 }
