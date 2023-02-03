@@ -890,7 +890,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<string> listBYCode =
                 NoTrackingDataContext.M42ContraindiDisCon
-                .Where(m => listDiseaseCode.Contains(m.ReceCd))
+                .Where(m => listDiseaseCode.Contains(m.ReceCd ?? string.Empty))
                 .Select(m => m.ByotaiCd)
                 .ToList();
 
