@@ -88,7 +88,7 @@ namespace Interactor.CommonChecker
 
                 var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
 
-                var result =  GetErrorDetails(checkedResult);
+                var result = GetErrorDetails(checkedResult);
 
                 if (checkedResult == null || checkedResult.Count == 0)
                 {
@@ -102,7 +102,7 @@ namespace Interactor.CommonChecker
             catch (Exception)
             {
 
-                return new GetOrderCheckerOutputData(new(),GetOrderCheckerStatus.Failed);
+                return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Failed);
             }
 
         }
@@ -855,9 +855,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd }
+                                 group a by new { a.AYjCd, a.BYjCd ,a.ItemCd, a.KinkiItemCd}
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd }
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd , gcs.Key.ItemCd, gcs.Key.KinkiItemCd}
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
@@ -902,7 +902,9 @@ namespace Interactor.CommonChecker
                 {
                     FirstCellContent = GetCheckingTitle(),
                     ThridCellContent = itemAName,
-                    FourthCellContent = itemBName
+                    FourthCellContent = itemBName,
+                    CurrentItemCd = kikinCode.ItemCd,
+                    CheckingItemCd = kikinCode.KinkiItemCd,
                 };
                 result.Add(tempModel);
 
@@ -1153,6 +1155,8 @@ namespace Interactor.CommonChecker
                 errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
                 errorInfoModel.SecondCellContent = "ー";
                 errorInfoModel.ThridCellContent = itemName;
+                errorInfoModel.CheckingItemCd = duplicationError.ItemCd;
+                errorInfoModel.CurrentItemCd = duplicationError.DuplicatedItemCd;
                 if (duplicationError.IsIppanCdDuplicated || duplicationError.IsComponentDuplicated)
                 {
                     errorInfoModel.FourthCellContent = duplicatedItemName;
