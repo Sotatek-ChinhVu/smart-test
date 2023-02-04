@@ -58,6 +58,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
                     uketukeSbtMst.KbnId = inputData.KbnId;
                     uketukeSbtMst.KbnName = inputData.KbnName;
                     uketukeSbtMst.SortNo = inputData.SortNo;
+                    uketukeSbtMst.IsDeleted = inputData.IsDeleted;
                     uketukeSbtMst.UpdateMachine = CIUtil.GetComputerName();
                     uketukeSbtMst.UpdateDate = DateTime.UtcNow;
                     uketukeSbtMst.UpdateId = userId;
