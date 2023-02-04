@@ -1,5 +1,7 @@
-﻿using Domain.Models.UketukeSbtMst;
+﻿using Domain.Models.ApprovalInfo;
+using Domain.Models.UketukeSbtMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -27,11 +29,6 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             .Select(u => ToModel(u)).ToList();
     }
 
-    public void ReleaseResource()
-    {
-        DisposeDataContext();
-    }
-
     private UketukeSbtMstModel ToModel(UketukeSbtMst u)
     {
         return new UketukeSbtMstModel(
@@ -39,5 +36,68 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             u.KbnName ?? string.Empty,
             u.SortNo,
             u.IsDeleted);
+    }
+
+    public void Upsert(List<UketukeSbtMstModel> upsertUketukeList, int userId, int hpId)
+    {
+        foreach(var inputData in upsertUketukeList)
+        {
+            if (inputData.IsDeleted == DeleteTypes.Deleted)
+            {
+                var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
+                if (uketukeSbtMsts != null)
+                {
+                    uketukeSbtMsts.IsDeleted = DeleteTypes.Deleted;
+                }
+            }
+            else
+            {
+                var uketukeSbtMst = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
+                if (uketukeSbtMst != null)
+                {
+                    uketukeSbtMst.KbnId = inputData.KbnId;
+                    uketukeSbtMst.KbnName = inputData.KbnName;
+                    uketukeSbtMst.SortNo = inputData.SortNo;
+                    uketukeSbtMst.UpdateMachine = CIUtil.GetComputerName();
+                    uketukeSbtMst.UpdateDate = DateTime.UtcNow;
+                    uketukeSbtMst.UpdateId = userId;
+                }
+                else
+                {
+                    TrackingDataContext.UketukeSbtMsts.AddRange(ConvertUketukeSbtMsts(inputData, userId, hpId));
+                }
+            }
+            
+        }
+        TrackingDataContext.SaveChanges();
+    }
+
+    private static UketukeSbtMst ConvertUketukeSbtMsts(UketukeSbtMstModel u, int userId, int hpId)
+    {
+        return new UketukeSbtMst
+        {
+            HpId = hpId,
+            KbnId = u.KbnId,
+            KbnName = u.KbnName,
+            SortNo = u.SortNo,
+            IsDeleted = u.IsDeleted,
+            CreateDate = DateTime.UtcNow,
+            CreateId = userId,
+            CreateMachine = CIUtil.GetComputerName(),
+            UpdateDate = DateTime.UtcNow,
+            UpdateId = userId,
+            UpdateMachine = CIUtil.GetComputerName()
+        };
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
+    public bool CheckExistedKbnId(List<int> kbnIds)
+    {
+        var anyUketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Count(x => kbnIds.Contains(x.KbnId));
+        return kbnIds.Count == anyUketukeSbtMsts;
     }
 }

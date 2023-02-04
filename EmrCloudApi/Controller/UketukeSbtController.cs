@@ -1,6 +1,9 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.UketukeSbtMst;
+using Domain.Models.User;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.UketukeSbt;
 using EmrCloudApi.Requests.UketukeSbt;
+using EmrCloudApi.Requests.User;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.UketukeSbt;
 using EmrCloudApi.Services;
@@ -9,6 +12,7 @@ using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
+using UseCase.UketukeSbtMst.Upsert;
 
 namespace EmrCloudApi.Controller;
 
@@ -48,6 +52,20 @@ public class UketukeSbtController : AuthorizeControllerBase
         var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, UserId);
         var output = _bus.Handle(input);
         var presenter = new GetNextUketukeSbtMstPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Upsert + "Mst")]
+    public ActionResult<Response<UpsertUketukeSbtMstListResponse>> GetNext([FromBody] UpsertUketukeSbtMstListRequest req)
+    {
+        var input = new UpsertUketukeSbtMstInputData(req.uketukeSbtMsts.Select(x => new UketukeSbtMstModel(
+                                                    x.KbnId,
+                                                    x.KbnName,
+                                                    x.SortNo,
+                                                    x.IsDeleted)).ToList(), UserId, HpId);
+        var output = _bus.Handle(input);
+        var presenter = new UpsertUketukeSbtMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

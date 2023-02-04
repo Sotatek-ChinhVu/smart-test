@@ -525,6 +525,13 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
+        //UketukeMst
+        public static readonly string InvalidKbnId = "InvalidKbnId";
+        public static readonly string InvalidKbnName = "InvalidKbnName";
+        public static readonly string InputNoData = "InputNoData";
+        public static readonly string UketukeListExistedInputData = "UketukeListExistedInputData";
+        public static readonly string UketukeListInvalidNoExistedKbnId = "UketukeListInvalidNoExistedKbnId";
+
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
