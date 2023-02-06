@@ -6,7 +6,7 @@ using KarteReport.NameLabel.Models;
 
 namespace KarteReport
 {
-    public interface ReportService : IReportService
+    public class ReportService : IReportService
     {
         private readonly ITenantProvider _tenantProvider;
 
