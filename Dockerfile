@@ -21,11 +21,16 @@ RUN apt-get update \
     && apt-get install -y libgdiplus \
     && ln -s /usr/liblibgdiplus.so /usr/libgdiplus.dll \
     && apt-get install -y libc6-dev libx11-dev \
+    && apt-get install -y fontconfig \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
+COPY yugothib.ttf usr/share/fonts
 #RUN rm -rf EmrCloudApi.runtimeconfig.json
 #COPY --from=build-env /app/EmrCloudApi.runtimeconfig.json .
+RUN ls usr/share/fonts
+RUN fc-cache -fv
+
 ENV ASPNETCORE_URLS=http://+:5286
 EXPOSE 5286
 ENTRYPOINT ["dotnet", "EmrCloudApi.dll"]
