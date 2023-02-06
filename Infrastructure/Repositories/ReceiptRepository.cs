@@ -85,6 +85,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var receInfEdits = NoTrackingDataContext.ReceInfEdits.Where(item => item.SeikyuYm == seikyuYm
                                                                             && item.IsDeleted == 0
                                                                             && item.HpId == hpId)
+                                                             .AsEnumerable()
                                                              .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm, item.SeikyuYm })
                                                              .Select(grp => grp.FirstOrDefault() ?? new ReceInfEdit())
                                                              .Select(item => new { item.SinYm, item.SeikyuYm, item.HpId, item.HokenId, item.PtId });
@@ -99,6 +100,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                               && item.IsChecked == 0
                                                                               && item.SinYm >= minSinYM
                                                                               && item.SinYm <= seikyuYm)
+                                                                .AsEnumerable()
                                                                 .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                                 .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt())
                                                                 .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Cmt, item.IsPending });
@@ -107,6 +109,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && item.IsChecked == 0
                                                                                 && item.SinYm >= minSinYM
                                                                                 && item.SinYm <= seikyuYm)
+                                                                  .AsEnumerable()
                                                                   .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                                   .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr())
                                                                   .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Message1, item.Message2 });
@@ -115,6 +118,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                     && item.HpId == hpId
                                                                     && item.SinYm >= minSinYM
                                                                     && item.SinYm <= seikyuYm)
+                                                     .AsEnumerable()
                                                      .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                      .Select(grp => grp.FirstOrDefault() ?? new ReceCmt())
                                                      .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId });
@@ -128,6 +132,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                      && item.HpId == hpId
                                                                                      && item.SinYm >= minSinYM
                                                                                      && item.SinYm <= seikyuYm)
+                                                         .AsEnumerable()
                                                          .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                          .Select(grp => grp.FirstOrDefault() ?? new SyoukiInf())
                                                          .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId });
@@ -147,8 +152,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId && item.IsDeleted == 0)
                                                            .Select(item => new { item.PtId, item.HpId, item.HokenId, item.HokenNo, item.HokensyaNo });
 
+        var listPtIds = receInfs.Select(item => item.PtId).ToList().Distinct();
         var ptLastVisitDates = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == 0
+                                                                             && listPtIds.Contains(item.PtId)
                                                                              && item.Status > RaiinState.TempSave)
                                                               .Select(item => new { item.PtId, item.HpId, item.SinDate, item.RaiinNo });
 
@@ -778,8 +785,25 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         #endregion
 
+        var test1 = receInfs.ToList();
+        var test2 = receInfEdits.ToList();
+        var test3 = receStatuses.ToList();
+        var test4 = receCheckCmts.ToList();
+        var test5 = receCheckErrors.ToList();
+        var test6 = receSeikyus.ToList();
+        var test7 = syoukiInfs.ToList();
+        var test8 = syobyokeikas.ToList();
+        var test9 = ptInfs.ToList();
+        var test10 = ptHokenInfs.ToList();
+        var test11 = ptLastVisitDates.ToList();
+        var test12 = kaikeiInfs.ToList();
+        var test13 = ptKyuseis.ToList();
+        var test14 = kaMsts.ToList();
+        var test15 = userMsts.ToList();
+        var test16 = ptKohis.ToList();
+        //return new List<ReceiptListModel>();
         #region main query
-        var query = from receInf in receInfs
+        var query = from receInf in receInfs.AsEnumerable()
                     join receInfEdit in receInfEdits on new { receInf.HpId, receInf.SeikyuYm, receInf.PtId, receInf.HokenId, receInf.SinYm }
                                                 equals new { receInfEdit.HpId, receInfEdit.SeikyuYm, receInfEdit.PtId, receInfEdit.HokenId, receInfEdit.SinYm } into receInfEditLeft
                     from receInfEdit in receInfEditLeft.DefaultIfEmpty()
@@ -1025,7 +1049,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         #endregion
 
         #region Convert to list model
-        var result = query.AsEnumerable().Select(
+        var result = query.Select(
                         data => new ReceiptListModel(
                                 data.SeikyuKbn,
                                 data.SinYm,

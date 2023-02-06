@@ -41,6 +41,7 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.RainListTag;
+using Domain.Models.Receipt;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionLock;
@@ -111,6 +112,7 @@ using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
+using Interactor.Receipt;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
@@ -263,6 +265,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -443,6 +446,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
             services.AddTransient<IFamilyRepository, FamilyRepository>();
+            services.AddTransient<IReceiptRepository, ReceiptRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -751,6 +755,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Family
             busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
+
+            //Receipt
+            busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
