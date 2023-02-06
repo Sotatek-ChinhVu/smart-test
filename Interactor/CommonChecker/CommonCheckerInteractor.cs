@@ -104,6 +104,10 @@ namespace Interactor.CommonChecker
 
                 return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Failed);
             }
+            finally
+            {
+                _realtimeOrderErrorFinder.ReleaseResource();
+            }
 
         }
 
