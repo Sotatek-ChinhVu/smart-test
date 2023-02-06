@@ -1,4 +1,4 @@
-﻿using KarteReport.NameLabel.Models;
+﻿using KarteReport.Karte1.Model;
 using PostgreDataContext;
 
 namespace KarteReport.NameLabel.DB
@@ -30,3 +30,4 @@ namespace KarteReport.NameLabel.DB
         }
     }
 }
+
