@@ -49,6 +49,6 @@ namespace Domain.Models.Reception
 
         bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
 
-        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId);
+        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize);
     }
 }

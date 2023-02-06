@@ -1013,7 +1013,7 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize)
         {
             var result = new List<ReceptionModel>();
             var usermsts = NoTrackingDataContext.UserMsts.Where(x =>
@@ -1068,7 +1068,10 @@ namespace Infrastructure.Repositories
                             x.PtHokenInf?.HokenKbn ?? 0,
                             x.PtHokenInf?.HokenId ?? 0,
                             x.RaiinInf.HokenPid,
-                            x.RaiinInf.RaiinNo)).OrderByDescending(x => x.SinDate).ToList();
+                            x.RaiinInf.RaiinNo))
+                            .Skip((pageIndex - 1) * pageSize)
+                            .Take(pageSize)
+                            .OrderByDescending(x => x.SinDate).ToList();
             return result;
         }
     }

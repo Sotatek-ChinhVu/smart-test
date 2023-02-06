@@ -25,7 +25,8 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
     {
         try
         {
-            var data = _raiinInfRepository.GetListRaiinInf(inputData.HpId, inputData.PtId);
+            var data = _raiinInfRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize);
+
             if (inputData.HpId < 0)
             {
                 return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InValidHpId);
@@ -34,7 +35,8 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
             {
                 return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InValidPtId);
             }
-            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId).Select(item => new GetListRaiinInfsInputItem(
+
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfsInputItem(
                                                             item.HpId, 
                                                             item.PtId, 
                                                             item.SinDate, 
@@ -57,9 +59,9 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
         }
     }
 
-    private List<ReceptionModel> GetListRaiinInfos(int hpId, long ptId)
+    private List<ReceptionModel> GetListRaiinInfos(int hpId, long ptId, int pageIndex, int pageSize)
     {
-        List<ReceptionModel> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId).Select(x => new ReceptionModel(
+        List<ReceptionModel> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId, pageIndex, pageSize).Select(x => new ReceptionModel(
                                                       x.HpId,
                                                       x.PtId,
                                                       x.SinDate,
