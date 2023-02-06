@@ -32,7 +32,7 @@ namespace KarteReport.Utility
                                     <table style=""border-collapse: collapse; width: 49.858%; height: 43px;"" border=""1"">
                                     <tbody>
                                     <tr style=""height: 43px;"">
-                                    <td style=""width: 34.1658%; height: 43px;""><span dir=""ltr"" role=""presentation"">公 費 負 担 医 療</span><br role=""presentation"" /><span dir=""ltr"" role=""presentation"">の 受 給 者 番 号</span></td>
+                                    <td style=""width: 34.1658%; height: 43px;""><span dir=""ltr"" role=""presentation"">Nothing to say!!!</span><br role=""presentation"" /><span dir=""ltr"" role=""presentation"">の 受 給 者 番 号</span></td>
                                     <td style=""width: 5.4755%; height: 43px;"">9</td>
                                     <td style=""width: 7.3647%; height: 43px;"">9</td>
                                     <td style=""width: 11.1111%; height: 43px;"">9</td>
