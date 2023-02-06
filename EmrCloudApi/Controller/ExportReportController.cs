@@ -3,7 +3,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Interface;
-using Reporting.Model.ExportKarte1;
+using Reporting.Karte1.Model;
 using Reporting.NameLabel.Models;
 
 namespace EmrCloudApi.Controller;
@@ -18,9 +18,9 @@ public class ExportReportController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
-    public ActionResult<Karte1ExportModel> ExportKarte1([FromQuery] Karte1ExportRequest request)
+    public ActionResult<CoKarte1Model> ExportKarte1w([FromQuery] Karte1ExportRequest request)
     {
-        return _report.GetDataKarte1(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
+        return _report.GetKarte1ReportingData(HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
     }
 
     [HttpGet("ExportNameLabel")]
