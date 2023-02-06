@@ -98,7 +98,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
 
     public bool CheckExistedKbnId(List<int> kbnIds)
     {
-        var anyUketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Any(x => kbnIds.Contains(x.KbnId) && x.IsDeleted != 0);
+        var anyUketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Any(x => kbnIds.Contains(x.KbnId) && x.IsDeleted != 1);
         return anyUketukeSbtMsts ;
     }
 }
