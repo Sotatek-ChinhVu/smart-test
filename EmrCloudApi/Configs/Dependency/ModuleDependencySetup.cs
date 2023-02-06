@@ -136,7 +136,6 @@ using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Reporting.Service;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
@@ -346,7 +345,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupInterfaces(services);
             SetupUseCase(services);
             SetupLogger(services);
-            SetupReporting(services);
         }
 
         private void SetupLogger(IServiceCollection services)
@@ -767,11 +765,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
-        }
-
-        private void SetupReporting(IServiceCollection services)
-        {
-            services.AddTransient<IExportKarte1, ExportKarte1>();
         }
     }
 }
