@@ -346,60 +346,60 @@ namespace Domain.Models.InsuranceInfor
                         prefix += thirNum + "併";
                     }
 
-                    if (Kohi1 != null)
+                    if (Kohi1 != null || (Kohi1?.HokenNo != 0 && Kohi1?.HokenId != 0))
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
                             postfix += "+";
                         }
-                        if (Kohi1.HokenSbtKbn != 2)
+                        if (Kohi1?.HokenSbtKbn != 2)
                         {
-                            postfix += Kohi1.Houbetu;
+                            postfix += Kohi1?.Houbetu ?? string.Empty;
                         }
                         else
                         {
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi2 != null)
+                    if (Kohi2 != null || (Kohi2?.HokenNo != 0 &&    Kohi2?.HokenId != 0))
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
                             postfix += "+";
                         }
-                        if (Kohi2.HokenSbtKbn != 2)
+                        if (Kohi2?.HokenSbtKbn != 2)
                         {
-                            postfix += Kohi2.Houbetu;
+                            postfix += Kohi2?.Houbetu ?? string.Empty;
                         }
                         else
                         {
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi3 != null)
+                    if (Kohi3 != null || (Kohi3?.HokenNo != 0 && Kohi3?.HokenId != 0))
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
                             postfix += "+";
                         }
-                        if (Kohi3.HokenSbtKbn != 2)
+                        if (Kohi3?.HokenSbtKbn != 2)
                         {
-                            postfix += Kohi3.Houbetu;
+                            postfix += Kohi3?.Houbetu ?? string.Empty;
                         }
                         else
                         {
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi4 != null)
+                    if (Kohi4 != null || (Kohi4?.HokenNo != 0 && Kohi4?.HokenId != 0))
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
                             postfix += "+";
                         }
-                        if (Kohi4.HokenSbtKbn != 2)
+                        if (Kohi4?.HokenSbtKbn != 2)
                         {
-                            postfix += Kohi4.Houbetu;
+                            postfix += Kohi4?.Houbetu ?? string.Empty;
                         }
                         else
                         {
