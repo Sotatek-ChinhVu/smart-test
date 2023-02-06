@@ -2,15 +2,16 @@
 using KarteReport.Interface;
 using KarteReport.Karte1.DB;
 using KarteReport.Karte1.Model;
+using KarteReport.NameLabel.DB;
 using KarteReport.NameLabel.Models;
 
 namespace KarteReport
 {
-    public class ReportService : IReportService
+    public class ReportServices : IReportServices
     {
         private readonly ITenantProvider _tenantProvider;
 
-        public ReportService(ITenantProvider tenantProvider)
+        public ReportServices(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
         }

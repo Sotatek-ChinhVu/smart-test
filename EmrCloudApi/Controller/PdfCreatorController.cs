@@ -1,5 +1,7 @@
 ﻿using DinkToPdf;
 using DinkToPdf.Contracts;
+using EmrCloudApi.Requests.ExportPDF;
+using KarteReport.Interface;
 using KarteReport.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,13 +12,16 @@ namespace EmrCloudApi.Controller
     public class PdfCreatorController : ControllerBase
     {
         private IConverter _converter;
-        public PdfCreatorController(IConverter converter)
+        private IReportServices _reportService;
+        public PdfCreatorController(IConverter converter, IReportServices reportService)
         {
             _converter = converter;
+            _reportService = reportService;
         }
         [HttpGet]
-        public IActionResult ReturnStream()
+        public IActionResult ReturnStream([FromQuery] Karte1ExportRequest request)
         {
+            var templateGenerator = new TemplateGenerator(_reportService);
             var globalSettings = new GlobalSettings
             {
                 ColorMode = ColorMode.Color,
@@ -27,7 +32,7 @@ namespace EmrCloudApi.Controller
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
-                HtmlContent = TemplateGenerator.GetHTMLString(),
+                HtmlContent = templateGenerator.GetHTMLString(1, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei),
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
                 //HeaderSettings = { FontName = "DejaVu Sans", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
                 //FooterSettings = { FontName = "DejaVu Sans", FontSize = 9, Line = true, Center = "Report Footer" }

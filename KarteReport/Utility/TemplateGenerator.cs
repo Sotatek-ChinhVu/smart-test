@@ -1,11 +1,22 @@
-﻿using System.Text;
+﻿using KarteReport.Interface;
+using System.Text;
+
 
 namespace KarteReport.Utility
 {
-    public static class TemplateGenerator
+    public class TemplateGenerator
     {
-        public static string GetHTMLString()
+        private readonly IReportServices _reportService;
+
+        public TemplateGenerator(IReportServices reportService)
         {
+            _reportService = reportService;
+        }
+
+        public string GetHTMLString(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
+        {
+            var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
+
             var sb = new StringBuilder();
             sb.Append(@"<!DOCTYPE html>
 <html lang=""en"">

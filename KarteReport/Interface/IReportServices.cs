@@ -3,7 +3,7 @@ using KarteReport.NameLabel.Models;
 
 namespace KarteReport.Interface
 {
-    public interface IReportService
+    public interface IReportServices
     {
         CoNameLabelModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
 
