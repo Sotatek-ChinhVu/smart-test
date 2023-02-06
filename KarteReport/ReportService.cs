@@ -1,5 +1,6 @@
 ﻿using KarteReport.Karte1.DB;
 using KarteReport.Karte1.Model;
+using KarteReport.NameLabel.Models;
 
 namespace KarteReport
 {
