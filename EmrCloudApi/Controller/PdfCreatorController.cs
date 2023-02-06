@@ -22,15 +22,15 @@ namespace EmrCloudApi.Controller
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10 },
+                Margins = new MarginSettings { Top = 0, Bottom = 0, Left = 0, Right = 0 },
             };
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
                 HtmlContent = TemplateGenerator.GetHTMLString(),
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
-                HeaderSettings = { FontName = "DejaVu Sans", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "DejaVu Sans", FontSize = 9, Line = true, Center = "Report Footer" }
+                //HeaderSettings = { FontName = "DejaVu Sans", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                //FooterSettings = { FontName = "DejaVu Sans", FontSize = 9, Line = true, Center = "Report Footer" }
             };
             var pdf = new HtmlToPdfDocument()
             {
