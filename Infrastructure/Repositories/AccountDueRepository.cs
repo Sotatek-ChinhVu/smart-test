@@ -4,7 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -14,7 +13,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
     {
     }
 
-    public List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
+    public List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked)
     {
         // Left table
         var seikyuList = NoTrackingDataContext.SyunoSeikyus
@@ -53,11 +52,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                               from kaMstItem in kaMstLeft.DefaultIfEmpty()
                               select ConvertToAccountDueListModel(hpId, ptId, seikyu, nyukinItem, raiinItem, kaMstItem)
                          )
-                         .OrderByDescending(item => item.SeikyuSinDate)
-                         .ThenByDescending(item => item.RaiinNo)
-                         .ThenByDescending(item => item.SortNo)
-                         .Skip((pageIndex - 1) * pageSize)
-                         .Take(pageSize)
+                         .OrderBy(item => item.SeikyuSinDate)
+                         .ThenBy(item => item.RaiinNo)
+                         .ThenBy(item => item.SortNo)
                          .ToList();
         return accountDueList;
     }
