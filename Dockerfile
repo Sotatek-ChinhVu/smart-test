@@ -25,10 +25,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
-COPY yugothib.ttf usr/share/fonts
+COPY yugothib.ttf /usr/share/fonts
 #RUN rm -rf EmrCloudApi.runtimeconfig.json
 #COPY --from=build-env /app/EmrCloudApi.runtimeconfig.json .
-RUN ls usr/share/fonts
+RUN ls /usr/share/fonts
 RUN fc-cache -fv
 
 ENV ASPNETCORE_URLS=http://+:5286
