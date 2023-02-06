@@ -128,7 +128,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 return new SetKarteInfModel(
                     setKarteInf.HpId,
                     setKarteInf.SetCd,
-                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText));
+                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText),
+                    string.Empty
+                    );
             }
 
         return null;
@@ -240,7 +242,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
-                setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)
+                setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText),
+                string.Empty
             );
     }
 
@@ -811,11 +814,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
                 entity.CreateId = userId;
+                entity.Text = model.Text;
                 TrackingDataContext.SetKarteInf.Add(entity);
             }
             else
             {
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.Text = model.Text;
                 entity.UpdateId = userId;
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }
