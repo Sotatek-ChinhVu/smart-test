@@ -68,7 +68,7 @@ namespace Domain.Models.InsuranceInfor
             EndDate = endDate;
         }
 
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted , bool hokenPatternSelected)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted, bool hokenPatternSelected)
         {
             HpId = hpId;
             PtId = ptId;
@@ -346,7 +346,7 @@ namespace Domain.Models.InsuranceInfor
                         prefix += thirNum + "併";
                     }
 
-                    if (Kohi1 != null || (Kohi1?.HokenNo != 0 && Kohi1?.HokenId != 0))
+                    if (Kohi1 != null && Kohi1?.HokenNo != 0 && Kohi1?.HokenId != 0)
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
@@ -361,7 +361,7 @@ namespace Domain.Models.InsuranceInfor
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi2 != null || (Kohi2?.HokenNo != 0 &&    Kohi2?.HokenId != 0))
+                    if (Kohi2 != null && Kohi2?.HokenNo != 0 && Kohi2?.HokenId != 0)
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
@@ -376,7 +376,7 @@ namespace Domain.Models.InsuranceInfor
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi3 != null || (Kohi3?.HokenNo != 0 && Kohi3?.HokenId != 0))
+                    if (Kohi3 != null && Kohi3?.HokenNo != 0 && Kohi3?.HokenId != 0)
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
@@ -391,7 +391,7 @@ namespace Domain.Models.InsuranceInfor
                             postfix += "マル長";
                         }
                     }
-                    if (Kohi4 != null || (Kohi4?.HokenNo != 0 && Kohi4?.HokenId != 0))
+                    if (Kohi4 != null && Kohi4?.HokenNo != 0 && Kohi4?.HokenId != 0)
                     {
                         if (!string.IsNullOrEmpty(postfix))
                         {
