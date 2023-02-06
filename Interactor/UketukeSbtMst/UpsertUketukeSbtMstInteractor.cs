@@ -40,7 +40,7 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
 
             if(!_uketukeSbtMstRepository.CheckExistedKbnId(inputdata.UketukeSbtMsts.Where(x => x.KbnId > 0).Select(x => x.KbnId).ToList()))
             {
-                return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.UketukeListInvalidNoExistedKbnId);
+                return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.UketukeListInvalidExistedKbnId);
             }
 
             _uketukeSbtMstRepository.Upsert(inputdata.ToList(), inputdata.UserId, inputdata.HpId);
@@ -69,7 +69,7 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
         if (status == ValidationStatus.InputNoData)
             return UpsertUketukeSbtMstStatus.InputNoData;
         if (status == ValidationStatus.UketukeListInvalidNoExistedKbnId)
-            return UpsertUketukeSbtMstStatus.UketukeListInvalidNoExistedKbnId;
+            return UpsertUketukeSbtMstStatus.UketukeListInvalidExistedKbnId;
         if (status == ValidationStatus.UketukeListExistedInputData)
             return UpsertUketukeSbtMstStatus.UketukeListExistedInputData;
 
