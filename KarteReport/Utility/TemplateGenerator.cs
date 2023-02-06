@@ -3397,7 +3397,10 @@ dialog :link {
                 style=""left: 47.43%; top: 19.51%; font-size: calc(var(--scale-factor)*12.00px); font-family: serif;""
                 role=""presentation"" dir=""ltr"">女</span><br role=""presentation""><span
                 style=""left: 19.98%; top: 28.42%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.12837);""
-                role=""presentation"" dir=""ltr"">070-0123-4567</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">
+                ");
+            sb.Append(karte1Data.PtTel);
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 22.46%; top: 21.76%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.14801);""
                 role=""presentation"" dir=""ltr"">675-1115</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
@@ -3453,7 +3456,9 @@ dialog :link {
                 style=""left: 73.67%; top: 52.84%; font-size: calc(var(--scale-factor)*14.04px); font-family: serif;""
                 role=""presentation"" dir=""ltr"">〇</span><br role=""presentation""><span
                 style=""left: 78.51%; top: 2.95%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.15792);""
-                role=""presentation"" dir=""ltr"">2022/12/26 16:41</span>
+                role=""presentation"" dir=""ltr""> ");
+            sb.Append(karte1Data.SysDateTimeS);
+            sb.Append(@"</span>
             <div class=""endOfContent""></div>
         </div>
         <div class=""annotationEditorLayer"" tabindex=""0"" style=""pointer-events: none; width: 992px; height: 1403px;""
@@ -3462,6 +3467,7 @@ dialog :link {
 </body>
 
 </html>");
+
             return sb.ToString();
         }
     }
