@@ -7,7 +7,7 @@ namespace Domain.Models.NextOrder
 {
     public class RsvkrtByomeiModel
     {
-        public RsvkrtByomeiModel(long id, int hpId, long ptId, long rsvkrtNo, long seqNo, string byomeiCd, string byomei, int syobyoKbn, int sikkanKbn, int nanbyoCd, string hosokuCmt, int isNodspRece, int isNodspKarte, int isDeleted, List<string> prefixSuffixList, string icd10, string icd102013, string icd1012013, string icd1022013)
+        public RsvkrtByomeiModel(long id, int hpId, long ptId, long rsvkrtNo, long seqNo, string byomeiCd, string byomei, int syobyoKbn, int sikkanKbn, int nanbyoCd, string hosokuCmt, int isNodspRece, int isNodspKarte, int isDeleted, List<PrefixSuffixModel> prefixSuffixList, string icd10, string icd102013, string icd1012013, string icd1022013)
         {
             Id = id;
             HpId = hpId;
@@ -140,6 +140,6 @@ namespace Domain.Models.NextOrder
             get => !IsFreeWord;
         }
 
-        public List<string> PrefixSuffixList { get; private set; }
+        public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
     }
 }
