@@ -1,5 +1,4 @@
-﻿using Domain.Models.Reception;
-using UseCase.Reception.GetListRaiinInfs;
+﻿using UseCase.Reception.GetListRaiinInfs;
 
 namespace EmrCloudApi.Tenant.Responses.Reception;
 

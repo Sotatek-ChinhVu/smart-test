@@ -1,13 +1,5 @@
 ﻿using Domain.Constant;
-using Entity.Tenant;
 using Helper.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace UseCase.Reception.GetListRaiinInfs
 {
@@ -30,9 +22,9 @@ namespace UseCase.Reception.GetListRaiinInfs
             RaiinNo = raiinNo;
         }
 
-        public int HpId { get; private set;}
+        public int HpId { get; private set; }
 
-        public long PtId { get; private set;}
+        public long PtId { get; private set; }
 
         public string SinDateLabel
         {
@@ -81,7 +73,7 @@ namespace UseCase.Reception.GetListRaiinInfs
 
         public string SName { get; private set; }
 
-        public int SinDate { get; private set;} 
+        public int SinDate { get; private set; }
 
         public string HokenKbnName
         {

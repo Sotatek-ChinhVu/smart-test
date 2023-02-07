@@ -1,13 +1,4 @@
-﻿using Domain.Models.NextOrder;
-using Domain.Models.Reception;
-using Helper.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.NextOrder.Get;
-using UseCase.Reception.GetLastRaiinInfs;
+﻿using Domain.Models.Reception;
 using UseCase.Reception.GetListRaiinInfs;
 
 namespace Interactor.RaiinFilterMst;
@@ -29,18 +20,18 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
 
             if (inputData.HpId < 0)
             {
-                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InValidHpId);
+                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InvalidHpId);
             }
             if (inputData.PtId <= 0)
             {
-                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InValidPtId);
+                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InvalidPtId);
             }
 
             var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfsInputItem(
-                                                            item.HpId, 
-                                                            item.PtId, 
-                                                            item.SinDate, 
-                                                            item.UketukeNo, 
+                                                            item.HpId,
+                                                            item.PtId,
+                                                            item.SinDate,
+                                                            item.UketukeNo,
                                                             item.Status,
                                                             item.KaSname,
                                                             item.SName,

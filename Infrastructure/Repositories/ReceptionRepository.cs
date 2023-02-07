@@ -1,15 +1,11 @@
 using Domain.Constant;
 using Domain.Models.Reception;
-using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Infrastructure.Repositories
@@ -1034,7 +1030,7 @@ namespace Infrastructure.Repositories
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
                         );
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => 
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
@@ -1048,11 +1044,11 @@ namespace Infrastructure.Repositories
                             new { raiinInf.HpId, raiinInf.TantoId } equals
                             new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
                         join ptHokenPattern in ptHokenPatterns on
-                            new {raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid} equals
-                            new {ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid} into listPtHokenPatterns
+                            new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals
+                            new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into listPtHokenPatterns
                         from listPtHokenPattern in listPtHokenPatterns.DefaultIfEmpty()
                         join ptHokenInf in ptHokenInfs on
-                            new { listPtHokenPattern.HpId, listPtHokenPattern.PtId, listPtHokenPattern.HokenId} equals
+                            new { listPtHokenPattern.HpId, listPtHokenPattern.PtId, listPtHokenPattern.HokenId } equals
                             new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into raiinPtHokenInfs
 
                         from raiinPtHokenInf in raiinPtHokenInfs.DefaultIfEmpty()

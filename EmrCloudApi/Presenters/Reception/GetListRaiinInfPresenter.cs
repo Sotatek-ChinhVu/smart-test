@@ -1,9 +1,7 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
 using UseCase.Reception.GetListRaiinInfs;
-using UseCase.Reception.GetLastRaiinInfs;
 
 namespace EmrCloudApi.Tenant.Presenters.Reception;
 public class GetListRaiinInfPresenter : IGetListRaiinInfsOutputPort
@@ -20,8 +18,8 @@ public class GetListRaiinInfPresenter : IGetListRaiinInfsOutputPort
     private string GetMessage(GetListRaiinInfsStatus status) => status switch
     {
         GetListRaiinInfsStatus.Success => ResponseMessage.Success,
-        GetListRaiinInfsStatus.InValidHpId => ResponseMessage.InValidHpId,
-        GetListRaiinInfsStatus.InValidPtId => ResponseMessage.InValidPtId,
+        GetListRaiinInfsStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        GetListRaiinInfsStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         _ => string.Empty
     };
 }

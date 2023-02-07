@@ -1,8 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.ReceptionSameVisit;
-using Helper.Common;
-using Helper.Extendsions;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models.Reception
 {
