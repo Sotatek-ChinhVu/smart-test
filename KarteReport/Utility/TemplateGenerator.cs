@@ -1,4 +1,4 @@
-﻿using KarteReport.Interface;
+using KarteReport.Interface;
 using System.Text;
 
 
