@@ -75,12 +75,10 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
-using EmrCloudApi.Responses.MaxMoney;
-using EmrCloudApi.Requests.MaxMoney;
-using UseCase.MaxMoney.GetMaxMoneyByPtId;
-using EmrCloudApi.Presenters.MaxMoney;
-using Domain.Models.PtGroupMst;
-using UseCase.PtGroupMst.GetGroupNameMst;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor;
+using UseCase.PatientInfor.GetListPatient;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
 
 namespace EmrCloudApi.Controller
 {
@@ -781,25 +779,14 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
 
-
-        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
-        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {
-            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var input = new GetPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
             var output = _bus.Handle(input);
-            var presenter = new GetMaxMoneyByPtIdPresenter();
+            var presenter = new GetListPatientInfoPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.GetGroupNameMst)]
-        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
-        {
-            var input = new GetGroupNameMstInputData(HpId);
-            var output = _bus.Handle(input);
-            var presenter = new GetGroupNameMstPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+            return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
         }
     }
 }
