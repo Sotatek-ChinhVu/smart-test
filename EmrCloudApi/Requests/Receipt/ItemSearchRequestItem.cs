@@ -10,8 +10,6 @@ public class ItemSearchRequestItem
 
     public int Amount { get; set; }
 
-    public bool IsTestPatientSearch { get; set; }
-
     public int OrderStatus { get; set; }
 
     public bool IsComment { get; set; }

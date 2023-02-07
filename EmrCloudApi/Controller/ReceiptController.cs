@@ -38,7 +38,6 @@ public class ReceiptController : AuthorizeControllerBase
                                                                                     item.InputName,
                                                                                     item.RangeSeach,
                                                                                     item.Amount,
-                                                                                    item.IsTestPatientSearch,
                                                                                     item.OrderStatus,
                                                                                     item.IsComment
                                                                                )).ToList();
@@ -52,6 +51,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ReceiptListAdvancedSearchInputData(
                 hpId,
                 request.SeikyuYm,
+                request.Tokki,
                 request.IsAdvanceSearch,
                 request.HokenSbts,
                 request.IsAll,
@@ -89,6 +89,9 @@ public class ReceiptController : AuthorizeControllerBase
                 request.IsOnlySuspectedDisease,
                 request.ByomeiQuery,
                 byomeiCdList,
+                request.IsFutanIncludeSingle,
+                request.FutansyaNoFromLong,
+                request.FutansyaNoToLong,
                 request.KaId,
                 request.DoctorId,
                 request.Name,

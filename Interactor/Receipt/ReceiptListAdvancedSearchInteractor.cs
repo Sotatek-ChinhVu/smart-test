@@ -33,7 +33,6 @@ public class ReceiptListAdvancedSearchInteractor : IReceiptListAdvancedSearchInp
                                                                                 item.InputName,
                                                                                 item.RangeSeach,
                                                                                 item.Amount,
-                                                                                item.IsTestPatientSearch,
                                                                                 item.OrderStatus,
                                                                                 item.IsComment
                                                                             ))
@@ -48,6 +47,7 @@ public class ReceiptListAdvancedSearchInteractor : IReceiptListAdvancedSearchInp
 
         return new ReceiptListAdvancedSearchInput(
                                                     inputData.IsAdvanceSearch,
+                                                    inputData.Tokki,
                                                     inputData.HokenSbts,
                                                     inputData.IsAll,
                                                     inputData.IsNoSetting,
@@ -84,6 +84,9 @@ public class ReceiptListAdvancedSearchInteractor : IReceiptListAdvancedSearchInp
                                                     inputData.IsOnlySuspectedDisease,
                                                     (QuerySearchEnum)inputData.ByomeiQuery,
                                                     byomeiCdList,
+                                                    inputData.IsFutanIncludeSingle,
+                                                    inputData.FutansyaNoFromLong,
+                                                    inputData.FutansyaNoToLong,
                                                     inputData.KaId,
                                                     inputData.DoctorId,
                                                     inputData.Name,

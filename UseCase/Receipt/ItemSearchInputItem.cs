@@ -2,13 +2,12 @@
 
 public class ItemSearchInputItem
 {
-    public ItemSearchInputItem(string itemCd, string inputName, string rangeSeach, int amount, bool isTestPatientSearch, int orderStatus, bool isComment)
+    public ItemSearchInputItem(string itemCd, string inputName, string rangeSeach, int amount, int orderStatus, bool isComment)
     {
         ItemCd = itemCd;
         InputName = inputName;
         RangeSeach = rangeSeach;
         Amount = amount;
-        IsTestPatientSearch = isTestPatientSearch;
         OrderStatus = orderStatus;
         IsComment = isComment;
     }
@@ -20,8 +19,6 @@ public class ItemSearchInputItem
     public string RangeSeach { get; private set; }
 
     public int Amount { get; private set; }
-
-    public bool IsTestPatientSearch { get; private set; }
 
     public int OrderStatus { get; private set; }
 

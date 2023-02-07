@@ -4,10 +4,11 @@ namespace UseCase.Receipt;
 
 public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvancedSearchOutputData>
 {
-    public ReceiptListAdvancedSearchInputData(int hpId, int seikyuYm, bool isAdvanceSearch, List<int> hokenSbts, bool isAll, bool isNoSetting, bool isSystemSave, bool isSave1, bool isSave2, bool isSave3, bool isTempSave, bool isDone, int receSbtCenter, int receSbtRight, string hokenHoubetu, int kohi1Houbetu, int kohi2Houbetu, int kohi3Houbetu, int kohi4Houbetu, bool isIncludeSingle, string hokensyaNoFrom, string hokensyaNoTo, long hokensyaNoFromLong, long hokensyaNoToLong, string ptId, long ptIdFrom, long ptIdTo, int ptSearchOption, long tensuFrom, long tensuTo, int lastRaiinDateFrom, int lastRaiinDateTo, int birthDayFrom, int birthDayTo, List<ItemSearchInputItem> itemList, int itemQuery, bool isOnlySuspectedDisease, int byomeiQuery, List<SearchByoMstInputItem> byomeiCdList, int kaId, int doctorId, string name, bool isTestPatientSearch, bool isNotDisplayPrinted, Dictionary<int, string> groupSearchModels, bool seikyuKbnAll, bool seikyuKbnDenshi, bool seikyuKbnPaper)
+    public ReceiptListAdvancedSearchInputData(int hpId, int seikyuYm, string tokki, bool isAdvanceSearch, List<int> hokenSbts, bool isAll, bool isNoSetting, bool isSystemSave, bool isSave1, bool isSave2, bool isSave3, bool isTempSave, bool isDone, int receSbtCenter, int receSbtRight, string hokenHoubetu, int kohi1Houbetu, int kohi2Houbetu, int kohi3Houbetu, int kohi4Houbetu, bool isIncludeSingle, string hokensyaNoFrom, string hokensyaNoTo, long hokensyaNoFromLong, long hokensyaNoToLong, string ptId, long ptIdFrom, long ptIdTo, int ptSearchOption, long tensuFrom, long tensuTo, int lastRaiinDateFrom, int lastRaiinDateTo, int birthDayFrom, int birthDayTo, List<ItemSearchInputItem> itemList, int itemQuery, bool isOnlySuspectedDisease, int byomeiQuery, List<SearchByoMstInputItem> byomeiCdList, bool isFutanIncludeSingle, long futansyaNoFromLong, long futansyaNoToLong, int kaId, int doctorId, string name, bool isTestPatientSearch, bool isNotDisplayPrinted, Dictionary<int, string> groupSearchModels, bool seikyuKbnAll, bool seikyuKbnDenshi, bool seikyuKbnPaper)
     {
         HpId = hpId;
         SeikyuYm = seikyuYm;
+        Tokki = tokki;
         IsAdvanceSearch = isAdvanceSearch;
         HokenSbts = hokenSbts;
         IsAll = isAll;
@@ -45,6 +46,9 @@ public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvanced
         IsOnlySuspectedDisease = isOnlySuspectedDisease;
         ByomeiQuery = byomeiQuery;
         ByomeiCdList = byomeiCdList;
+        IsFutanIncludeSingle = isFutanIncludeSingle;
+        FutansyaNoFromLong = futansyaNoFromLong;
+        FutansyaNoToLong = futansyaNoToLong;
         KaId = kaId;
         DoctorId = doctorId;
         Name = name;
@@ -59,6 +63,8 @@ public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvanced
     public int HpId { get; private set; }
 
     public int SeikyuYm { get; private set; }
+
+    public string Tokki { get; private set; }
 
     public bool IsAdvanceSearch { get; private set; }
 
@@ -83,8 +89,6 @@ public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvanced
     #endregion
 
     #region レセプト種別 Receipt Sbt
-    //public int HokenKbnQuery { get; private set; }
-
     public int ReceSbtCenter { get; private set; }
 
     public int ReceSbtRight { get; private set; }
@@ -155,6 +159,14 @@ public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvanced
     public int ByomeiQuery { get; private set; }
 
     public List<SearchByoMstInputItem> ByomeiCdList { get; private set; }
+    #endregion
+
+    #region 負担者番号 FutansyaNo
+    public bool IsFutanIncludeSingle { get; private set; }
+
+    public long FutansyaNoFromLong { get; private set; }
+
+    public long FutansyaNoToLong { get; private set; }
     #endregion
 
     #region Other

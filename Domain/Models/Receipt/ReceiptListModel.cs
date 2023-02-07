@@ -4,17 +4,19 @@ namespace Domain.Models.Receipt;
 
 public class ReceiptListModel
 {
-    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest)
+    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki)
     {
         SeikyuKbn = seikyuKbn;
         SinYm = sinYm;
         IsReceInfDetailExist = isReceInfDetailExist;
         IsPaperRece = isPaperRece;
+        HokenId = hokenId;
         HokenKbn = hokenKbn;
         Output = output;
         FusenKbn = fusenKbn;
         StatusKbn = statusKbn;
         IsPending = isPending;
+        PtId = ptId;
         PtNum = ptNum;
         KanaName = kanaName;
         Name = name;
@@ -40,6 +42,11 @@ public class ReceiptListModel
         FutansyaNoKohi3 = futansyaNoKohi3;
         FutansyaNoKohi4 = futansyaNoKohi4;
         IsPtTest = isPtTest;
+        Kohi1ReceKisai = kohi1ReceKisai;
+        Kohi2ReceKisai = kohi2ReceKisai;
+        Kohi3ReceKisai = kohi3ReceKisai;
+        Kohi4ReceKisai = kohi4ReceKisai;
+        Tokki = tokki;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -50,6 +57,8 @@ public class ReceiptListModel
 
     public int IsPaperRece { get; private set; }
 
+    public int HokenId { get; private set; }
+
     public int HokenKbn { get; private set; }
 
     public int Output { get; private set; }
@@ -59,6 +68,8 @@ public class ReceiptListModel
     public int StatusKbn { get; private set; }
 
     public int IsPending { get; private set; }
+
+    public long PtId { get; private set; }
 
     public long PtNum { get; private set; }
 
@@ -109,4 +120,14 @@ public class ReceiptListModel
     public string FutansyaNoKohi4 { get; private set; }
 
     public bool IsPtTest { get; private set; }
+
+    public int Kohi1ReceKisai { get; private set; }
+
+    public int Kohi2ReceKisai { get; private set; }
+
+    public int Kohi3ReceKisai { get; private set; }
+
+    public int Kohi4ReceKisai { get; private set; }
+
+    public string Tokki { get; private set; }
 }

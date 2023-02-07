@@ -4,6 +4,8 @@ public class ReceiptListAdvancedSearchRequest
 {
     public int SeikyuYm { get; set; }
 
+    public string Tokki { get; set; } = string.Empty;
+
     public bool IsAdvanceSearch { get; set; }
 
     public List<int> HokenSbts { get; set; } = new();
@@ -27,8 +29,6 @@ public class ReceiptListAdvancedSearchRequest
     #endregion
 
     #region レセプト種別 Receipt Sbt
-    //public int HokenKbnQuery { get;  set; }
-
     public int ReceSbtCenter { get; set; }
 
     public int ReceSbtRight { get; set; }
@@ -99,6 +99,14 @@ public class ReceiptListAdvancedSearchRequest
     public int ByomeiQuery { get; set; }
 
     public List<SearchByoMstRequestItem> ByomeiCdList { get; set; } = new();
+    #endregion
+
+    #region 負担者番号 FutansyaNo
+    public bool IsFutanIncludeSingle { get; set; }
+
+    public long FutansyaNoFromLong { get; set; }
+
+    public long FutansyaNoToLong { get; set; }
     #endregion
 
     #region Other
