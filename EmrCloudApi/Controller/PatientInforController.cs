@@ -574,7 +574,7 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
-                 request.LimitLists,
+                 request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
@@ -756,11 +756,23 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
         }
 
-
         [HttpPost(ApiPath.SaveGroupNameMst)]
         public ActionResult<Response<SaveGroupNameMstResponse>> SaveGroupNameMst([FromBody] SaveGroupNameMstRequest request)
         {
-            var input = new SaveGroupNameMstInputData(UserId, HpId, request.GroupNameMsts);
+            var inputModel = request.PtGroupMsts.Select(x => new GroupNameMstModel(
+                                                            x.GrpId,
+                                                            x.SortNo,
+                                                            x.GrpName,
+                                                            0,
+                                                            x.GroupItems.Select(m => new GroupItemModel(
+                                                                m.GrpId,
+                                                                m.GrpCode,
+                                                                m.SeqNo,
+                                                                m.GrpCodeName,
+                                                                m.SortNo,
+                                                                0)).ToList())).ToList();
+
+            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel); 
             var output = _bus.Handle(input);
             var presenter = new SaveGroupNameMstPresenter();
             presenter.Complete(output);

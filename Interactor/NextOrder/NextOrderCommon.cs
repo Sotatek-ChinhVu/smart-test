@@ -113,7 +113,7 @@ namespace Interactor.NextOrder
                     rsvkrtByomeiItem.IsNodspRece,
                     rsvkrtByomeiItem.IsNodspKarte,
                     rsvkrtByomeiItem.IsDeleted,
-                    rsvkrtByomeiItem.PrefixSuffixList,
+                    rsvkrtByomeiItem.PrefixSuffixList.Select(r => new PrefixSuffixModel(r, string.Empty)).ToList(),
                     string.Empty,
                     string.Empty,
                     string.Empty,
@@ -212,6 +212,9 @@ namespace Interactor.NextOrder
                     string.Empty,
                     new(),
                     0,
+                    0,
+                    string.Empty,
+                    string.Empty,
                     0
                 );
         }

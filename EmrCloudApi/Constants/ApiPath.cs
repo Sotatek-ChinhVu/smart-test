@@ -55,6 +55,7 @@
         public const string GetValidJihiYobo = "GetValidJihiYobo";
         public const string GetAddedAutoItem = "GetAddedAutoItem";
         public const string AddAutoItem = "AddAutoItem";
+        public const string ConvertInputItemToTodayOrder = "ConvertInputItemToTodayOrder";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -154,10 +155,12 @@
         public const string InitKbnSetting = "InitKbnSetting";
         public const string GetCheckedOrder = "GetCheckedOrder";
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
+        public const string GetHistoryIndex = "GetHistoryIndex";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
+        public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -177,5 +180,8 @@
 
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
+
+        public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
+        public const string GetGroupNameMst = "GetGroupNameMst";
     }
 }

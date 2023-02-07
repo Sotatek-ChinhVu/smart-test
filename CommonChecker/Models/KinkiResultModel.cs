@@ -6,6 +6,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
     {
         public string ItemCd { get; set; } = string.Empty;
 
+        public string KinkiItemCd { get; set; } = string.Empty;
+
         public string AYjCd { get; set; } = string.Empty;
 
         public string BYjCd { get; set; } = string.Empty;

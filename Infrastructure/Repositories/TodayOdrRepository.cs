@@ -1759,5 +1759,25 @@ namespace Infrastructure.Repositories
 
             return raiinKbns;
         }
+
+        public Dictionary<string, bool> ConvertInputItemToTodayOdr(int hpId, int sinDate, Dictionary<string, string> detailInfs)
+        {
+            var ipnKasanExcludeQuery = NoTrackingDataContext.IpnKasanMsts.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
+
+            var ipnKasanExcludeItemQuery = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.StartDate <= sinDate && u.EndDate >= sinDate);
+
+            var query = from detail in detailInfs
+                        join ipnkasan in ipnKasanExcludeQuery
+                            on detail.Value equals ipnkasan.IpnNameCd into ipnKasanList
+                        join ipnKasanItem in ipnKasanExcludeItemQuery
+                            on detail.Key equals ipnKasanItem.ItemCd into ipnKasanItemList
+                        select new
+                        {
+                            ItemCd = detail.Key,
+                            IsGetYaka = ipnKasanList.FirstOrDefault() == null && ipnKasanItemList.FirstOrDefault() == null
+                        };
+
+            return query.AsEnumerable().ToDictionary(u => u.ItemCd, u => u.IsGetYaka);
+        }
     }
 }

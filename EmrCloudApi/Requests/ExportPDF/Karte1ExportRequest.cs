@@ -9,4 +9,6 @@ public class Karte1ExportRequest
     public int HokenPid { get; set; }
 
     public bool TenkiByomei { get; set; }
+
+    public bool SyuByomei { get; set; }
 }
