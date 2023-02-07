@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
+using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -102,7 +103,8 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId)
         {
-            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).Select(x => new PtPregnancyModel(
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
+              .Select(x => new PtPregnancyModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
@@ -131,6 +133,42 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Text ?? String.Empty
             ));
             return seikaturekiInfs.ToList();
+        }
+
+        public List<KensaInfDetailModel> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate)
+        {
+            var result = new List<KensaInfDetailModel>();
+            var KensaMstRepos = NoTrackingDataContext.KensaMsts.Where(k => k.HpId == hpId && k.IsDelete == 0 && k.KensaItemCd.StartsWith("V"))
+                .Select(u => new
+                {
+                    KensaName = u.KensaName,
+                    KensaItemCd = u.KensaItemCd,
+                    Unit = u.Unit,
+                    SortNo = u.SortNo
+                });
+            var kensaInfDetailRepos = NoTrackingDataContext.KensaInfDetails.Where(d => d.HpId == hpId
+                                                                                                    && d.PtId == ptId
+                                                                                                    && d.IsDeleted == 0
+                                                                                                    && d.IraiDate <= sinDate
+                                                                                                    && d.KensaItemCd != null && d.KensaItemCd.StartsWith("V")
+                                                                                                    && !string.IsNullOrEmpty(d.ResultVal));
+            var query = from KensaMst in KensaMstRepos
+                        join kensaInfDetail in kensaInfDetailRepos on
+                        KensaMst.KensaItemCd equals kensaInfDetail.KensaItemCd into listDetail
+                        select new
+                        {
+                            KensaMst = KensaMst,
+                            KensaInfDetail = listDetail.OrderByDescending(item => item.IraiDate).ThenByDescending(item => item.UpdateDate).FirstOrDefault()
+                        };
+
+            result = query.AsEnumerable().Select(u => new KensaInfDetailModel(
+                u.KensaMst.KensaItemCd,
+                u.KensaMst.Unit,
+                u.KensaMst.KensaName,
+                u.KensaMst.SortNo
+            )).ToList();
+
+            return result;
         }
 
         public void ReleaseResource()
