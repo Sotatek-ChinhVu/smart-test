@@ -200,7 +200,6 @@ namespace Infrastructure.Repositories
 
             TrackingDataContext.SaveChanges();
             return true;
-
             #region Helper methods
 
             void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
@@ -311,6 +310,7 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
+
             #endregion
         }
 
