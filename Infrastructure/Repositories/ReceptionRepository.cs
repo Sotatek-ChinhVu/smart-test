@@ -1033,7 +1033,12 @@ namespace Infrastructure.Repositories
                         x.HpId == hpId &&
                         x.IsDeleted == 0 &&
                         x.PtId == ptId
-            );
+                        );
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => 
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.PtId == ptId
+                        );
 
             var query = from raiinInf in raiinInfs.AsEnumerable()
                         join KaMst in kaMsts on
@@ -1042,9 +1047,13 @@ namespace Infrastructure.Repositories
                         join usermst in usermsts on
                             new { raiinInf.HpId, raiinInf.TantoId } equals
                             new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
+                        join ptHokenPattern in ptHokenPatterns on
+                            new {raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid} equals
+                            new {ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid} into listPtHokenPatterns
+                        from listPtHokenPattern in listPtHokenPatterns.DefaultIfEmpty()
                         join ptHokenInf in ptHokenInfs on
-                            new { raiinInf.HpId, raiinInf.PtId } equals
-                            new { ptHokenInf.HpId, ptHokenInf.PtId } into raiinPtHokenInfs
+                            new { listPtHokenPattern.HpId, listPtHokenPattern.PtId, listPtHokenPattern.HokenId} equals
+                            new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into raiinPtHokenInfs
 
                         from raiinPtHokenInf in raiinPtHokenInfs.DefaultIfEmpty()
                         select new
@@ -1052,7 +1061,8 @@ namespace Infrastructure.Repositories
                             RaiinInf = raiinInf,
                             PtHokenInf = raiinPtHokenInf,
                             UserMst = listUserMst.FirstOrDefault(),
-                            KaMst = listKaMst.FirstOrDefault()
+                            KaMst = listKaMst.FirstOrDefault(),
+                            PtHokenPattern = listPtHokenPattern
                         };
 
             result = query.Select((x) => new ReceptionModel(
@@ -1069,9 +1079,9 @@ namespace Infrastructure.Repositories
                             x.PtHokenInf?.HokenId ?? 0,
                             x.RaiinInf.HokenPid,
                             x.RaiinInf.RaiinNo))
+                            .OrderByDescending(x => x.SinDate)
                             .Skip((pageIndex - 1) * pageSize)
-                            .Take(pageSize)
-                            .OrderByDescending(x => x.SinDate).ToList();
+                            .Take(pageSize).ToList();
             return result;
         }
     }
