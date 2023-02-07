@@ -27,18 +27,18 @@ namespace Domain.Common
                 var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
                 if (!checkDrugOfDetail)
                 {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasInjectionButNotUsage);
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
                 }
             }
 
             //Check has not Injection 
-            if (odrInf.IsDrug)
+            if (odrInf.IsInjection)
             {
                 // 用法
-                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsInjection);
+                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsInjection || o.IsDrug);
                 if (!checkDrugOfDetail)
                 {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasInjectionButNotUsage);
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
                 }
             }
 
