@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCloudApi.Controller
 {
-    [Route("api/ExportKarte1")]
+    [Route("api/[controller]")]
+
     [ApiController]
     public class PdfCreatorController : ControllerBase
     {
@@ -18,7 +19,7 @@ namespace EmrCloudApi.Controller
             _converter = converter;
             _reportService = reportService;
         }
-        [HttpGet]
+        [HttpGet("ExportKarte1")]
         public IActionResult ReturnStream([FromQuery] Karte1ExportRequest request)
         {
             var templateGenerator = new TemplateGenerator(_reportService);
