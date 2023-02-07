@@ -15,6 +15,8 @@ namespace KarteReport.Utility
 
         public string GetHTMLString(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
         {
+            var rootPath = Environment.CurrentDirectory;
+
             var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
 
             var sb = new StringBuilder();
@@ -2531,7 +2533,7 @@ dialog :link {
     </style>
 
 
-<img src='http://127.0.0.1:5500/print1.jpg' width='1000px'>
+<img src='"); sb.Append(rootPath); sb.Append(@"//print1.jpg' width='1000px'>
 <div style=""width: 992px; height: 1403px;"" data-page-number=""1"" role=""region"" aria-label=""Page 1""
         data-loaded=""true"">
         <div class=""textLayer""
@@ -3386,11 +3388,11 @@ dialog :link {
                 style=""left: 61.9%; top: 11.91%; font-size: calc(var(--scale-factor)*9.96px); font-family: serif;""
                 role=""presentation"" dir=""ltr"">・</span><br role=""presentation""><span
                 style=""left: 19.98%; top: 15.02%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.03528);""
-                role=""presentation"" dir=""ltr"">ｶﾝｼﾞｬ 91</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr""></span><br role=""presentation""><span
                 style=""left: 20.5%; top: 6.49%; font-size: calc(var(--scale-factor)*14.04px); font-family: serif; transform: scaleX(1.11156);""
-                role=""presentation"" dir=""ltr"">91</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr""></span><br role=""presentation""><span
                 style=""left: 19.98%; top: 16.99%; font-size: calc(var(--scale-factor)*12.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">患者</span><span
+                role=""presentation"" dir=""ltr""></span><span
                 style=""left: 24.01%; top: 16.99%; font-size: calc(var(--scale-factor)*12.00px); font-family: serif;""
                 role=""presentation"" dir=""ltr""> </span><span
                 style=""left: 26.02%; top: 16.99%; font-size: calc(var(--scale-factor)*12.00px); font-family: serif; transform: scaleX(1.10604);""
@@ -3493,7 +3495,7 @@ dialog :link {
 </span><br role=""presentation""><span
                 style=""left: 37.23%; top: 53.03%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
                 role=""presentation"" dir=""ltr"">");
-                if (karte1Data.ListByomeis.Count > 3)
+            if (karte1Data.ListByomeis.Count > 3)
                 sb.Append(karte1Data.ListByomeis[3].ByomeiStartDateWFormat);
             sb.Append(@"
 </span><br role=""presentation""><span
