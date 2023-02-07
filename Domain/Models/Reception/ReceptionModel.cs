@@ -1,4 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Constant;
+using Domain.Models.ReceptionSameVisit;
+using Helper.Common;
+using Helper.Extendsions;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.Reception
 {
@@ -9,6 +13,18 @@ namespace Domain.Models.Reception
         public long PtId { get; private set; }
 
         public int SinDate { get; private set; }
+
+        public int UketukeNo { get; private set; }
+
+        public string SName { get; private set; }
+
+        public string KaSname { get; private set; }
+
+        public string Houbetu { get; private set; }
+
+        public string HokensyaNo { get; private set; }
+
+        public int HokenKbn { get; private set; }
 
         public long RaiinNo { get; private set; }
 
@@ -32,8 +48,6 @@ namespace Domain.Models.Reception
 
         public int UketukeId { get; private set; }
 
-        public int UketukeNo { get; private set; }
-
         public string SinStartTime { get; private set; }
 
         public string SinEndTime { get; private set; }
@@ -51,6 +65,8 @@ namespace Domain.Models.Reception
         public int JikanKbn { get; private set; }
 
         public string Comment { get; private set; }
+
+        public int HokenId { get; private set; }
 
         [JsonConstructor]
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
@@ -79,6 +95,10 @@ namespace Domain.Models.Reception
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
             Comment = comment;
+            KaSname = string.Empty;
+            SName = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
         }
 
         public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
@@ -87,11 +107,15 @@ namespace Domain.Models.Reception
             PtId = ptId;
             RaiinNo = raiinNo;
             Comment = comment;
-            YoyakuTime = String.Empty;
-            UketukeTime = String.Empty;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            KaSname = string.Empty;
+            SName = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
         }
 
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
@@ -104,10 +128,14 @@ namespace Domain.Models.Reception
             Status = status;
             YoyakuId = yokakuId;
             TantoId = tantoId;
-            YoyakuTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
-            Comment = String.Empty;
+            YoyakuTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            Comment = string.Empty;
+            KaSname = string.Empty;
+            SName = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
         }
 
         public ReceptionModel()
@@ -121,33 +149,64 @@ namespace Domain.Models.Reception
             SanteiKbn = 0;
             Status = 0;
             IsYoyaku = 0;
-            YoyakuTime = String.Empty;
+            YoyakuTime = string.Empty;
             YoyakuId = 0;
             UketukeSbt = 0;
-            UketukeTime = String.Empty;
+            UketukeTime = string.Empty;
             UketukeId = 0;
             UketukeNo = 0;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
             KaikeiId = 0;
             KaId = 0;
             TantoId = 0;
             SyosaisinKbn = 0;
             JikanKbn = 0;
-            Comment = String.Empty;
+            Comment = string.Empty;
+            KaSname = string.Empty;
+            SName = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
         }
 
         public ReceptionModel(int tantoId, int kaId)
         {
-            Comment = String.Empty;
-            YoyakuTime = String.Empty;
-            UketukeTime = String.Empty;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
+            Comment = string.Empty;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
             KaId = kaId;
             TantoId = tantoId;
+            KaSname = string.Empty;
+            SName = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
+        }
+
+        public ReceptionModel(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            SinDate = sinDate;
+            UketukeNo = uketukeNo;
+            Status = status;
+            KaSname = kaSname;
+            SName = sName;
+            Houbetu = houbetu;
+            HokensyaNo = hokensyaNo;
+            HokenKbn = hokenKbn;
+            HokenId = hokenId;
+            HokenPid = hokenPid;
+            RaiinNo = raiinNo;
+            Comment = string.Empty;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
         }
 
         public ReceptionDto ToDto()

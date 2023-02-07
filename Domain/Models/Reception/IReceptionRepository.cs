@@ -48,5 +48,7 @@ namespace Domain.Models.Reception
         long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate);
 
         bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
+
+        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId);
     }
 }
