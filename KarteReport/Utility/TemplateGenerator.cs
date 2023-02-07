@@ -16,6 +16,7 @@ namespace KarteReport.Utility
         public string GetHTMLString(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
         {
             var rootPath = Environment.CurrentDirectory;
+            string fileName = Path.Combine(rootPath, "print1.jpg");
 
             var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
 
@@ -2533,7 +2534,7 @@ dialog :link {
     </style>
 
 
-<img src='"); sb.Append(rootPath); sb.Append(@"//print1.jpg' width='1000px'>
+<img src='"); sb.Append(fileName); sb.Append(@"' width='1000px'>
 <div style=""width: 992px; height: 1403px;"" data-page-number=""1"" role=""region"" aria-label=""Page 1""
         data-loaded=""true"">
         <div class=""textLayer""
