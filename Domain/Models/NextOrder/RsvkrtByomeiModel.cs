@@ -37,7 +37,7 @@ namespace Domain.Models.NextOrder
             {
                 return RsvkrtByomeiStatus.InvalidId;
             }
-            if (RsvkrtNo <= 0)
+            if (RsvkrtNo < 0)
             {
                 return RsvkrtByomeiStatus.InvalidRsvkrtNo;
             }
