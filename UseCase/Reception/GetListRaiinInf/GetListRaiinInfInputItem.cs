@@ -3,9 +3,9 @@ using Helper.Common;
 
 namespace UseCase.Reception.GetListRaiinInfs
 {
-    public class GetListRaiinInfsInputItem
+    public class GetListRaiinInfInputItem
     {
-        public GetListRaiinInfsInputItem(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
+        public GetListRaiinInfInputItem(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
         {
             HpId = hpId;
             PtId = ptId;

@@ -1,5 +1,5 @@
 ﻿namespace UseCase.Reception.GetListRaiinInfs;
-public enum GetListRaiinInfsStatus
+public enum GetListRaiinInfStatus
 {
     Success,
     NoData,

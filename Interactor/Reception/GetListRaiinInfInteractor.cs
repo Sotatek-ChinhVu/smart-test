@@ -3,16 +3,16 @@ using UseCase.Reception.GetListRaiinInfs;
 
 namespace Interactor.RaiinFilterMst;
 
-public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
+public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
 {
     private readonly IReceptionRepository _raiinInfRepository;
 
-    public GetListRaiinInfsInteractor(IReceptionRepository raiinInfRepository)
+    public GetListRaiinInfInteractor(IReceptionRepository raiinInfRepository)
     {
         _raiinInfRepository = raiinInfRepository;
     }
 
-    public GetListRaiinInfsOutputData Handle(GetListRaiinInfsInputData inputData)
+    public GetListRaiinInfOutputData Handle(GetListRaiinInfInputData inputData)
     {
         try
         {
@@ -20,14 +20,14 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
 
             if (inputData.HpId < 0)
             {
-                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InvalidHpId);
+                return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidHpId);
             }
             if (inputData.PtId <= 0)
             {
-                return new GetListRaiinInfsOutputData(new(), GetListRaiinInfsStatus.InvalidPtId);
+                return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPtId);
             }
 
-            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfsInputItem(
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfInputItem(
                                                             item.HpId,
                                                             item.PtId,
                                                             item.SinDate,
@@ -42,7 +42,7 @@ public class GetListRaiinInfsInteractor : IGetListRaiinInfsInputPort
                                                             item.HokenPid,
                                                             item.RaiinNo))
                                                             .ToList();
-            return new GetListRaiinInfsOutputData(listRaiinInfos, GetListRaiinInfsStatus.Success);
+            return new GetListRaiinInfOutputData(listRaiinInfos, GetListRaiinInfStatus.Success);
         }
         finally
         {

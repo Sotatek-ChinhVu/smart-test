@@ -4,10 +4,10 @@ namespace EmrCloudApi.Tenant.Responses.Reception;
 
 public class GetListRaiinInfResponse
 {
-    public GetListRaiinInfResponse(List<GetListRaiinInfsInputItem> raiinInfs)
+    public GetListRaiinInfResponse(List<GetListRaiinInfInputItem> raiinInfs)
     {
         RaiinInfs = raiinInfs;
     }
 
-    public List<GetListRaiinInfsInputItem> RaiinInfs { get; private set; } = new List<GetListRaiinInfsInputItem>();
+    public List<GetListRaiinInfInputItem> RaiinInfs { get; private set; } = new List<GetListRaiinInfInputItem>();
 }
