@@ -3374,17 +3374,12 @@ dialog :link {
                 style=""left: 37.15%; top: 19.53%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.10605);""
                 role=""presentation"" dir=""ltr"">75</span><span
                 style=""left: 19.98%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif;""
-                role=""presentation"" dir=""ltr"">昭</span><span
-                style=""left: 21.83%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif;""
-                role=""presentation"" dir=""ltr"">和</span><span
-                style=""left: 23.68%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif;""
-                role=""presentation"" dir=""ltr""> </span><span
-                style=""left: 24.19%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.10605);""
-                role=""presentation"" dir=""ltr"">22</span><span
-                style=""left: 26.24%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif;""
-                role=""presentation"" dir=""ltr"">年</span><span
-                style=""left: 28.1%; top: 19.48%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.05062);""
-                role=""presentation"" dir=""ltr"">02月10日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            sb.Append(karte1Data.BirthDateW);
+            sb.Append(@"
+            </span>
+                
+                <br role=""presentation""><span
                 style=""left: 61.9%; top: 11.91%; font-size: calc(var(--scale-factor)*9.96px); font-family: serif;""
                 role=""presentation"" dir=""ltr"">・</span><br role=""presentation""><span
                 style=""left: 19.98%; top: 15.02%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.03528);""
@@ -3408,7 +3403,10 @@ dialog :link {
 
             sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 22.46%; top: 21.76%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.14801);""
-                role=""presentation"" dir=""ltr"">675-1115</span>
+                role=""presentation"" dir=""ltr"">");
+                sb.Append(karte1Data.PtPostCd);
+            sb.Append(@"
+                </span>
                 <br role=""presentation"">
 
              
