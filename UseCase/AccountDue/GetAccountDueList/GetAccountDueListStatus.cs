@@ -7,6 +7,4 @@ public enum GetAccountDueListStatus : byte
     InvalidHpId = 3,
     InvalidPtId = 4,
     InvalidSindate = 5,
-    InvalidpageSize = 6,
-    InvalidpageIndex = 7,
 }

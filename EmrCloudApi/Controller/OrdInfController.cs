@@ -1,11 +1,14 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.OrdInfs;
 using EmrCloudApi.Requests.OrdInfs;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.OrdInfs;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -92,6 +95,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetHeaderInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertInputItemToTodayOrder)]
+        public ActionResult<Response<ConvertInputItemToTodayOrdResponse>> ConvertInputItemToTodayOrder([FromBody] ConvertInputItemToTodayOrdInputData request)
+        {
+            var input = new ConvertInputItemToTodayOrdInputData(HpId, request.SinDate, request.DetailInfs);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertInputItemToTodayOrdPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertInputItemToTodayOrdResponse>>(presenter.Result);
         }
     }
 }
