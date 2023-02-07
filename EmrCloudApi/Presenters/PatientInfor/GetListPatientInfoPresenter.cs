@@ -5,20 +5,22 @@ using UseCase.PatientInfor.GetListPatient;
 
 namespace EmrCloudApi.Tenant.Presenters.PatientInfor;
 
-public class GetListPatientInfoPresenter : IGetPatientInfoOutputPort
+public class GetListPatientInfoPresenter : IGetListPatientInfoOutputPort
 {
     public Response<GetListPatientInfoResponse> Result { get; private set; } = new Response<GetListPatientInfoResponse>();
-    public void Complete(GetPatientInfoOutputData outputData)
+    public void Complete(GetListPatientInfoOutputData outputData)
     {
         Result.Data = new GetListPatientInfoResponse(outputData.PatientInfoLists);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
-    private string GetMessage(GetPatientInfoStatus status) => status switch
+    private string GetMessage(GetListPatientInfoStatus status) => status switch
     {
-        GetPatientInfoStatus.Success => ResponseMessage.Success,
-        GetPatientInfoStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-        GetPatientInfoStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+        GetListPatientInfoStatus.Success => ResponseMessage.Success,
+        GetListPatientInfoStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        GetListPatientInfoStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+        GetListPatientInfoStatus.InvalidPageIndex => ResponseMessage.InvalidPageIndex,
+        GetListPatientInfoStatus.InvalidPageSize => ResponseMessage.InvalidPageSize,
         _ => string.Empty
     };
 }
