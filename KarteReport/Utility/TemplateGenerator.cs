@@ -18,6 +18,7 @@ namespace KarteReport.Utility
             var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
 
             var sb = new StringBuilder();
+
             sb.Append(@"<!DOCTYPE html>
 <html lang=""en"">
 
@@ -3469,37 +3470,90 @@ dialog :link {
                 role=""presentation"" dir=""ltr"">");
             if (karte1Data.ListByomeis.Count > 8)
                 sb.Append(karte1Data.ListByomeis[8]?.Byomei ?? string.Empty);
+
+
             sb.Append(@"
 </span><br role=""presentation"">
 
                 <span style=""left: 37.23%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">
-
-平成 25年05月01日</span><br role=""presentation"">
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 0)
+                sb.Append(karte1Data.ListByomeis[0].ByomeiStartDateWFormat);
+            sb.Append(@"</span><br role=""presentation"">
                <span style=""left: 37.23%; top: 45.79%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 25年05月01日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 1)
+                sb.Append(karte1Data.ListByomeis[1].ByomeiStartDateWFormat);
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 49.41%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年03月11日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 2)
+                sb.Append(karte1Data.ListByomeis[2].ByomeiStartDateWFormat);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 53.03%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年03月11日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+                if (karte1Data.ListByomeis.Count > 3)
+                sb.Append(karte1Data.ListByomeis[3].ByomeiStartDateWFormat);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 56.64%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 4)
+                sb.Append(karte1Data.ListByomeis[4].ByomeiStartDateWFormat);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 37.23%; top: 60.26%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 5)
+                sb.Append(karte1Data.ListByomeis[5].ByomeiStartDateWFormat);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 63.88%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">
+");
+            if (karte1Data.ListByomeis.Count > 6)
+                sb.Append(karte1Data.ListByomeis[6].ByomeiStartDateWFormat);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 67.5%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">
+");
+            if (karte1Data.ListByomeis.Count > 7)
+                sb.Append(karte1Data.ListByomeis[7].ByomeiStartDateWFormat);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 71.11%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 8)
+                sb.Append(karte1Data.ListByomeis[8].ByomeiStartDateWFormat);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 37.23%; top: 74.73%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 9)
+                sb.Append(karte1Data.ListByomeis[9].ByomeiStartDateWFormat);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 51.42%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 25年09月30日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 0)
+                sb.Append(karte1Data.ListByomeis[0].ByomeiTenkiDateWFormat);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 51.42%; top: 45.79%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 26年03月31日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+
+            if (karte1Data.ListByomeis.Count > 2)
+                sb.Append(karte1Data.ListByomeis[2].ByomeiTenkiDateWFormat);
+
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 51.42%; top: 53.03%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 28年04月08日</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 3)
+                sb.Append(karte1Data.ListByomeis[3].ByomeiTenkiDateWFormat);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 73.67%; top: 41.99%; font-size: calc(var(--scale-factor)*14.04px); font-family: serif;""
                 role=""presentation"" dir=""ltr"">〇</span><br role=""presentation""><span
                 style=""left: 73.67%; top: 45.61%; font-size: calc(var(--scale-factor)*14.04px); font-family: serif;""
