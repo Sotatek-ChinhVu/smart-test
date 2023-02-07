@@ -338,23 +338,32 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             // 最終来院日
             if (searchModel.LastRaiinDateFrom > 0 || searchModel.LastRaiinDateTo > 0)
             {
+                Dictionary<long, int> dicLastVisitDate = new();
                 listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
-                foreach (var item in listPtIds)
+                var listLastSindate = ptLastVisitDates.ToList();
+                object obj = new object();
+                Parallel.ForEach(listPtIds, ptId =>
                 {
-
-                }
-                var ptLastVisitDateQuery = ptLastVisitDates.AsEnumerable().GroupBy(p => p.PtId).SelectMany(p => p.Where(q => q.SinDate == p.Max(k => k.SinDate)));
-                if (searchModel.LastRaiinDateFrom > 0)
-                {
-                    ptLastVisitDateQuery = ptLastVisitDateQuery.Where(item => item.SinDate >= searchModel.LastRaiinDateFrom);
-                }
-                if (searchModel.LastRaiinDateTo > 0)
-                {
-                    ptLastVisitDateQuery = ptLastVisitDateQuery.Where(item => item.SinDate <= searchModel.LastRaiinDateTo);
-                }
-                var check1 = ptLastVisitDates.ToList();
-                var check2 = ptLastVisitDateQuery.ToList();
-                receInfs = receInfs.Where(item => ptLastVisitDateQuery.Select(pt => pt.PtId).Any(x => x == item.PtId));
+                    var lastSinDate = listLastSindate.Where(item => item.PtId == ptId).Max(item => item.SinDate);
+                    if (lastSinDate > 0)
+                    {
+                        if (searchModel.LastRaiinDateFrom > 0 && lastSinDate >= searchModel.LastRaiinDateFrom)
+                        {
+                            lock (obj)
+                            {
+                                dicLastVisitDate.Add(ptId, lastSinDate);
+                            }
+                        }
+                        if (searchModel.LastRaiinDateTo > 0 && lastSinDate <= searchModel.LastRaiinDateTo)
+                        {
+                            lock (obj)
+                            {
+                                dicLastVisitDate.Add(ptId, lastSinDate);
+                            }
+                        }
+                    }
+                });
+                receInfs = receInfs.Where(item => dicLastVisitDate.Keys.Contains(item.PtId));
             }
 
             // 患者番号
