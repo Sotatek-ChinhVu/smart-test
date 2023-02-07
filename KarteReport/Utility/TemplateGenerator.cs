@@ -3400,32 +3400,83 @@ dialog :link {
                 role=""presentation"" dir=""ltr"">
                 ");
             sb.Append(karte1Data.PtTel);
+
+
+
             sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 22.46%; top: 21.76%; font-size: calc(var(--scale-factor)*11.04px); font-family: serif; transform: scaleX(1.14801);""
-                role=""presentation"" dir=""ltr"">675-1115</span><br role=""presentation""><span
-                style=""left: 8.06%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">（主）両変形性膝関節症</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">675-1115</span>
+                <br role=""presentation"">
+
+             
+                <span style=""left: 8.06%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
+                role=""presentation"" dir=""ltr"">");
+
+            if (karte1Data.ListByomeis.Count > 0)
+                sb.Append(karte1Data.ListByomeis[0]?.Byomei ?? string.Empty);
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 45.79%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">（主）両変形性膝関節症</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 1)
+                sb.Append(karte1Data.ListByomeis[1]?.Byomei ?? string.Empty);
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 49.41%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">両変形性膝関節症</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 2)
+                sb.Append(karte1Data.ListByomeis[2]?.Byomei ?? string.Empty);
+
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 8.06%; top: 53.03%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">肺癌の疑い</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 3)
+                sb.Append(karte1Data.ListByomeis[3]?.Byomei ?? string.Empty);
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 8.06%; top: 56.64%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">アレルギー性鼻炎</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 4)
+                sb.Append(karte1Data.ListByomeis[4]?.Byomei ?? string.Empty);
+            sb.Append(@"</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 60.26%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">びらん性胃炎</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+
+            if (karte1Data.ListByomeis.Count > 5)
+                sb.Append(karte1Data.ListByomeis[5]?.Byomei ?? string.Empty);
+
+            sb.Append(@"
+            </span><br role=""presentation""><span
                 style=""left: 8.06%; top: 63.88%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">両足白癬</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 6)
+                sb.Append(karte1Data.ListByomeis[6]?.Byomei ?? string.Empty);
+            sb.Append(@"   
+                </span><br role=""presentation""><span
                 style=""left: 8.06%; top: 67.5%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">変形性腰椎症</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+
+            if (karte1Data.ListByomeis.Count > 7)
+                sb.Append(karte1Data.ListByomeis[7]?.Byomei ?? string.Empty);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 71.11%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">慢性胃腸炎</span><br role=""presentation""><span
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 8)
+                sb.Append(karte1Data.ListByomeis[8]?.Byomei ?? string.Empty);
+            sb.Append(@"
+</span><br role=""presentation""><span
                 style=""left: 8.06%; top: 74.73%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.00004);""
-                role=""presentation"" dir=""ltr"">（主）高脂血症</span><br role=""presentation""><span
-                style=""left: 37.23%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
-                role=""presentation"" dir=""ltr"">平成 25年05月01日</span><br role=""presentation""><span
-                style=""left: 37.23%; top: 45.79%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
+                role=""presentation"" dir=""ltr"">");
+            if (karte1Data.ListByomeis.Count > 8)
+                sb.Append(karte1Data.ListByomeis[8]?.Byomei ?? string.Empty);
+            sb.Append(@"
+</span><br role=""presentation"">
+
+                <span style=""left: 37.23%; top: 42.17%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
+                role=""presentation"" dir=""ltr"">
+
+平成 25年05月01日</span><br role=""presentation"">
+               <span style=""left: 37.23%; top: 45.79%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
                 role=""presentation"" dir=""ltr"">平成 25年05月01日</span><br role=""presentation""><span
                 style=""left: 37.23%; top: 49.41%; font-size: calc(var(--scale-factor)*9.00px); font-family: serif; transform: scaleX(1.03125);""
                 role=""presentation"" dir=""ltr"">平成 28年03月11日</span><br role=""presentation""><span

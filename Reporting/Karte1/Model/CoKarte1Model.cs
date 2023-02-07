@@ -384,7 +384,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public int KohiId(int index)
     {
-        return PtHokenInfModel.KohiId(index);
+        return PtHokenInfModel?.KohiId(index) ?? 0;
     }
     /// <summary>
     /// 公費負担者番号
@@ -393,7 +393,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public string KohiFutansyaNo(int index)
     {
-        return PtHokenInfModel.KohiFutansyaNo(index);
+        return PtHokenInfModel?.KohiFutansyaNo(index) ?? string.Empty;
 
     }
     /// <summary>
@@ -403,7 +403,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public string KohiJyukyusyaNo(int index)
     {
-        return PtHokenInfModel.KohiJyukyusyaNo(index);
+        return PtHokenInfModel?.KohiJyukyusyaNo(index) ?? string.Empty;
 
     }
     /// <summary>
@@ -413,7 +413,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public int KohiStartDate(int index)
     {
-        return PtHokenInfModel.KohiStartDate(index);
+        return PtHokenInfModel?.KohiStartDate(index) ?? 0;
 
     }
     /// <summary>
@@ -423,7 +423,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public int KohiEndDate(int index)
     {
-        return PtHokenInfModel.KohiEndDate(index);
+        return PtHokenInfModel?.KohiEndDate(index) ?? 0;
 
     }
     /// <summary>
@@ -433,7 +433,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public int KohiSikakuDate(int index)
     {
-        return PtHokenInfModel.KohiSikakuDate(index);
+        return PtHokenInfModel?.KohiSikakuDate(index) ?? 0;
 
     }
     /// <summary>
@@ -443,7 +443,7 @@ public class CoKarte1Model
     /// <returns></returns>
     public int KohiKofuDate(int index)
     {
-        return PtHokenInfModel.KohiKofuDate(index);
+        return PtHokenInfModel?.KohiKofuDate(index) ?? 0;
 
     }
     /// <summary>
