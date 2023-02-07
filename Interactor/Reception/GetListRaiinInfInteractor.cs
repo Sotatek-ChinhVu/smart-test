@@ -26,6 +26,14 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
             {
                 return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPtId);
             }
+            if(inputData.PageIndex < 1)
+            {
+                return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPageIndex);
+            }    
+            if(inputData.PageSize < 0)
+            {
+                return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPageSize);
+            }
 
             var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfInputItem(
                                                             item.HpId,

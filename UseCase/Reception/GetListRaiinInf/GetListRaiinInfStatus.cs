@@ -4,5 +4,7 @@ public enum GetListRaiinInfStatus
     Success,
     NoData,
     InvalidHpId,
-    InvalidPtId
+    InvalidPtId,
+    InvalidPageIndex,
+    InvalidPageSize
 }

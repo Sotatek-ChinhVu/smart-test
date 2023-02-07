@@ -20,6 +20,8 @@ public class GetListRaiinInfPresenter : IGetListRaiinInfOutputPort
         GetListRaiinInfStatus.Success => ResponseMessage.Success,
         GetListRaiinInfStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetListRaiinInfStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+        GetListRaiinInfStatus.InvalidPageIndex => ResponseMessage.InvalidPageIndex,
+        GetListRaiinInfStatus.InvalidPageSize => ResponseMessage.InvalidPageSize,
         _ => string.Empty
     };
 }
