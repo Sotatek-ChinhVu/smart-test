@@ -16,7 +16,9 @@ namespace KarteReport.Utility
         public string GetHTMLString(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
         {
             var rootPath = Environment.CurrentDirectory;
-            string fileName = Path.Combine(rootPath, "Reporting", "print1.jpg");
+            string fileName = Path.Combine(rootPath, "print1.jpg");
+            Console.WriteLine("RootPath " + rootPath);
+            Console.WriteLine("FileNameKarteIndex " + fileName);
             var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
 
             var sb = new StringBuilder();
