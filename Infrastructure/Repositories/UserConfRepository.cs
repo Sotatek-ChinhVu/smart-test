@@ -4,16 +4,19 @@ using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
 
 public class UserConfRepository : RepositoryBase, IUserConfRepository
 {
     private const int ADOPTED_CONFIRM_CD = 100005;
-    public static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
+    private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
+    private readonly IMemoryCache _memoryCache;
 
-    public UserConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
+        _memoryCache = memoryCache;
         InitConfigDefaultValue();
     }
 
@@ -24,13 +27,14 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
             .AsEnumerable().Select(u => ToModel(u)).ToList();
     }
 
-    public int Sagaku(bool fromRece)
+    public List<UserConfModel> GetList(int hpId, int userId, List<int> grpCodes)
     {
-        if (fromRece)
-        {
-            return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
-        }
-        return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+        //if (!_memoryCache.TryGetValue(GetCacheKey(), out List<UserConfModel> result))
+        //{
+        //    result = ReloadCache(hpId, userId, grpCodes);
+        //}
+        var result = ReloadCache(hpId, userId, grpCodes);
+        return result!;
     }
 
     public Dictionary<string, int> GetList(int userId)
@@ -98,29 +102,30 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
         result.Add("IsInputCheckPrint", isInputCheckPrint);
 
-        string commentCheckSaveParam = NoTrackingDataContext.UserConfs
-        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 0)?.Param ?? "00000";
-        var isCmtCheckNormalSave = inputCheckSaveParam[0].AsInteger();
-        var isCmtCheckTempSave = inputCheckSaveParam[2].AsInteger();
-        var isCmtCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
-        var isCmtCheckTrialCalc = inputCheckSaveParam[3].AsInteger();
-        var isCmtCheckPrint = inputCheckSaveParam[4].AsInteger();
-        result.Add("IsCmtCheckNormalSave", isCmtCheckNormalSave);
-        result.Add("IsCmtCheckTempSave", isCmtCheckTempSave);
-        result.Add("IsCmtCheckKeisanSave", isCmtCheckKeisanSave);
-        result.Add("IsCmtCheckTrialCalc", isCmtCheckTrialCalc);
-        result.Add("IsCmtCheckPrint", isCmtCheckPrint);
-
-        string kubunCheckSaveParam = NoTrackingDataContext.UserConfs
-        .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 3)?.Param ?? "10100";
-        var isKubunCheckNormalSave = inputCheckSaveParam[0].AsInteger();
-        var isKubunCheckTempSave = inputCheckSaveParam[2].AsInteger();
-        var isKubunCheckKeisanSave = inputCheckSaveParam[1].AsInteger();
-        result.Add("IsKubunCheckNormalSave", isKubunCheckNormalSave);
-        result.Add("IsKubunCheckTempSave", isKubunCheckTempSave);
-        result.Add("IsKubunCheckKeisanSave", isKubunCheckKeisanSave);
-
         return result;
+    }
+
+    private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)
+    {
+        var result = NoTrackingDataContext.UserConfs
+                                    .Where(item => item.UserId == userId
+                                                   && item.HpId == hpId
+                                                   && grpCodes.Contains(item.GrpCd))
+                                    .AsEnumerable()
+                                    .Select(item => ToModel(item))
+                                    .ToList();
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetPriority(CacheItemPriority.Normal);
+        _memoryCache.Set(GetCacheKey(), result, cacheEntryOptions);
+        return result;
+    }
+    public int Sagaku(bool fromRece)
+    {
+        if (fromRece)
+        {
+            return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 923 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
+        }
+        return NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 922 && p.GrpItemCd == 0 && p.GrpItemEdaNo == 0)?.Val ?? 0;
     }
 
     public void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue)
@@ -307,7 +312,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         }
     }
 
-    private int GetDefaultValue(int groupCd, int groupItemCd = 0)
+    public int GetDefaultValue(int groupCd, int groupItemCd = 0)
     {
         if (ConfigGroupDefault.ContainsKey(groupCd))
         {
@@ -325,4 +330,5 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     {
         DisposeDataContext();
     }
+
 }

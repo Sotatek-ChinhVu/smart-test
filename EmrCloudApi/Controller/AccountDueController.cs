@@ -23,8 +23,7 @@ public class AccountDueController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetAccountDueListResponse>> GetList([FromQuery] GetAccountDueListRequest request)
     {
-
-        var input = new GetAccountDueListInputData(HpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
+        var input = new GetAccountDueListInputData(HpId, request.PtId, request.SinDate, request.IsUnpaidChecked);
         var output = _bus.Handle(input);
 
         var presenter = new GetAccountDueListPresenter();

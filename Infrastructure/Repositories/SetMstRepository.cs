@@ -2,8 +2,10 @@
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
+using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
@@ -66,8 +68,15 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
     {
         var listByomeis = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
-        var listKarteNames = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Text != String.Empty).Select(item => item.Text ?? String.Empty).ToList();
-        var listOrders = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
+        var listKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1).ToList();
+        var listKarteNames = listKarteInfs.Where(item => item.RichText != null && Encoding.UTF8.GetString(item.RichText) != String.Empty).Select(item => item.RichText != null ? Encoding.UTF8.GetString(item.RichText) : String.Empty).ToList();
+        var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
+        var allOrderDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).ToList();
+        var listOrders = new List<OrderTooltipModel>();
+        foreach (var key in keys)
+        {
+            listOrders.AddRange(allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)));
+        }
 
         return new SetMstTooltipModel(listKarteNames, listOrders, listByomeis);
     }
