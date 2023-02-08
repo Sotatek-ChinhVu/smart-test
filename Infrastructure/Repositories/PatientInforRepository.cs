@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -14,7 +15,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -1876,6 +1877,46 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            string keyword = ptId.ToString();
+
+            var result = new List<PatientInforModel>();
+            var ptInfs = NoTrackingDataContext.PtInfs
+                .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
+                .OrderBy(x => x.PtNum)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var ptIdList = ptInfs.Select(p => p.PtId).ToList();
+
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0 &&
+                    ptIdList.Contains(x.PtId))
+                .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
+                .Select(grp => new
+                {
+                    grp.Key.PtId,
+                    SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
+                })
+                .ToList();
+
+            result = ptInfs.Select((x) => new PatientInforModel(
+                            x.HpId,
+                            x.PtId,
+                            x.PtNum,
+                            x.KanaName ?? string.Empty,
+                            x.Name ?? string.Empty,
+                            x.Birthday,
+                            raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
+                            ))
+                            .ToList();
+            return result;
         }
     }
 }
