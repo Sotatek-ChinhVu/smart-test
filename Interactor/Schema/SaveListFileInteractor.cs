@@ -70,10 +70,6 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
             }
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
-        catch (Exception)
-        {
-            return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
-        }
         finally
         {
             _karteInfRepository.ReleaseResource();

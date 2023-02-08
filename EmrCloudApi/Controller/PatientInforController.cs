@@ -789,5 +789,15 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
+        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        {
+            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxMoneyByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
     }
 }

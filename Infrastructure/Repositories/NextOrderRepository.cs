@@ -6,15 +6,22 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Text;
 
 namespace Infrastructure.Repositories
 {
     public class NextOrderRepository : RepositoryBase, INextOrderRepository
     {
-        public NextOrderRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
+
+        public NextOrderRepository(ITenantProvider tenantProvider, IAmazonS3Service amazonS3Service, IOptions<AmazonS3Options> optionsAccessor) : base(tenantProvider)
         {
+            _amazonS3Service = amazonS3Service;
+            _options = optionsAccessor.Value;
         }
 
         public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn)
@@ -91,6 +98,7 @@ namespace Infrastructure.Repositories
         {
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             long rsvkrtNo = 0;
+            long ptNum = GetPtNum(hpId, ptId);
             return executionStrategy.Execute(
                 () =>
                 {
@@ -99,7 +107,7 @@ namespace Infrastructure.Repositories
                     {
                         foreach (var nextOrderModel in nextOrderModels)
                         {
-                            var maxRpNo = GetMaxRpNo(hpId, ptId, nextOrderModel.RsvkrtNo);
+                            var maxRpNo = GetMaxRpNo(hpId, ptId);
                             var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                             if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                             {
@@ -147,6 +155,7 @@ namespace Infrastructure.Repositories
                                     UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                                     UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
                                 }
+                                SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                             }
                         }
 
@@ -157,12 +166,9 @@ namespace Infrastructure.Repositories
                     catch
                     {
                         transaction.Rollback();
-
                         return rsvkrtNo;
                     }
-                }
-                );
-
+                });
         }
 
         private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
@@ -657,6 +663,7 @@ namespace Infrastructure.Repositories
                         rsvkrtMst.SortNo,
                         new(),
                         new(),
+                        new(),
                         new()
                    );
         }
@@ -811,7 +818,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private long GetMaxRpNo(int hpId, long ptId, long rsvkrtNo)
+        private long GetMaxRpNo(int hpId, long ptId)
         {
             var odrList = NoTrackingDataContext.RsvkrtOdrInfs
                 .Where(odr => odr.HpId == hpId && odr.PtId == ptId);
@@ -850,26 +857,19 @@ namespace Infrastructure.Repositories
 
         public bool SaveListFileNextOrder(int hpId, long ptId, long rsvkrtNo, string host, List<NextOrderFileInfModel> listFiles, bool saveTempFile)
         {
-            try
+            if (saveTempFile)
             {
-                if (saveTempFile)
+                var listFileInsert = ConvertListInsertTempNextOrderFile(hpId, ptId, host, listFiles);
+                if (listFileInsert.Any())
                 {
-                    var listFileInsert = ConvertListInsertTempNextOrderFile(hpId, ptId, host, listFiles);
-                    if (listFileInsert.Any())
-                    {
-                        TrackingDataContext.RsvkrtKarteImgInfs.AddRange(listFileInsert);
-                    }
+                    TrackingDataContext.RsvkrtKarteImgInfs.AddRange(listFileInsert);
                 }
-                else
-                {
-                    UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
-                }
-                return TrackingDataContext.SaveChanges() > 0;
             }
-            catch (Exception)
+            else
             {
-                return false;
+                UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFiles.Select(item => item.LinkFile.Replace(host, string.Empty)).ToList());
             }
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         private void UpdateSeqNoNextOrderFile(int hpId, long ptId, long rsvkrtNo, List<string> listFileName)
@@ -1030,9 +1030,68 @@ namespace Infrastructure.Repositories
 
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)
         {
-            throw new NotImplementedException();
+            var listDeletes = TrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId
+                                                                                   && item.SeqNo == 0
+                                                                                   && item.RsvkrtNo == 0
+                                                                                   && item.FileName != null
+                                                                                   && listFileNames.Contains(item.FileName)
+                                                            ).ToList();
+            TrackingDataContext.RsvkrtKarteImgInfs.RemoveRange(listDeletes);
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
+        private long GetPtNum(int hpId, long ptId)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
+            return ptInf != null ? ptInf.PtNum : 0;
+        }
+        private void SaveFileNextOrder(int hpId, long ptId, long ptNum, long rsvkrtNo, NextOrderModel nextOrderModel)
+        {
+            if (nextOrderModel.FileItem.IsUpdateFile)
+            {
+                if (rsvkrtNo > 0)
+                {
+                    var listFileItems = nextOrderModel.FileItem.ListFileItems;
+                    if (!listFileItems.Any())
+                    {
+                        listFileItems = new List<string> { string.Empty };
+                    }
+                    SaveFileNextOrderAction(hpId, ptId, ptNum, rsvkrtNo, listFileItems, true);
+                }
+                else
+                {
+                    SaveFileNextOrderAction(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel.FileItem.ListFileItems, false);
+                }
+            }
+        }
+
+        private void SaveFileNextOrderAction(int hpId, long ptId, long ptNum, long rsvkrtNo, List<string> listFileItems, bool saveSuccess)
+        {
+            List<string> listFolders = new();
+            string path = string.Empty;
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            listFolders.Add(CommonConstants.NextPic);
+            path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
+            string host = _options.BaseAccessUrl + "/" + path;
+            var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
+            if (saveSuccess)
+            {
+                if (!listUpdates.Any())
+                {
+                    listUpdates = new List<string> { string.Empty };
+                }
+                SaveListFileNextOrder(hpId, ptId, rsvkrtNo, host, listUpdates.Select(item => new NextOrderFileInfModel(false, item)).ToList(), false);
+            }
+            else
+            {
+                ClearTempData(hpId, ptId, listUpdates.ToList());
+                foreach (var item in listUpdates)
+                {
+                    _amazonS3Service.DeleteObjectAsync(path + item);
+                }
+            }
+        }
         public void ReleaseResource()
         {
             DisposeDataContext();
