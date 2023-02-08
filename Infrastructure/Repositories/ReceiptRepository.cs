@@ -38,7 +38,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         #region Simple query 
         // Rece
         var receInfs = NoTrackingDataContext.ReceInfs.Where(item => item.SeikyuYm == seikyuYm
-                                                                    && item.HpId == hpId)
+                                                                    && item.HpId == hpId).AsEnumerable()
                                                       .Select(item => new
                                                       {
                                                           item.HpId,
@@ -340,30 +340,32 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             {
                 Dictionary<long, int> dicLastVisitDate = new();
                 listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
-                var listLastSindate = ptLastVisitDates.ToList();
-                object obj = new object();
-                Parallel.ForEach(listPtIds, ptId =>
-                {
-                    var lastSinDate = listLastSindate.Where(item => item.PtId == ptId).Max(item => item.SinDate);
-                    if (lastSinDate > 0)
-                    {
-                        if (searchModel.LastRaiinDateFrom > 0 && lastSinDate >= searchModel.LastRaiinDateFrom)
-                        {
-                            lock (obj)
-                            {
-                                dicLastVisitDate.Add(ptId, lastSinDate);
-                            }
-                        }
-                        if (searchModel.LastRaiinDateTo > 0 && lastSinDate <= searchModel.LastRaiinDateTo)
-                        {
-                            lock (obj)
-                            {
-                                dicLastVisitDate.Add(ptId, lastSinDate);
-                            }
-                        }
-                    }
-                });
-                receInfs = receInfs.Where(item => dicLastVisitDate.Keys.Contains(item.PtId));
+                //var listLastSindate = ptLastVisitDates.ToList();
+                var listLastSindate = ptLastVisitDates.Where(p => (p.SinDate >= searchModel.LastRaiinDateFrom && p.SinDate <= searchModel.LastRaiinDateTo) || (searchModel.LastRaiinDateTo == 0 && p.SinDate >= searchModel.LastRaiinDateFrom));
+                var ptIds = listLastSindate.Select(p => p.PtId).Distinct().ToList();
+                //object obj = new object();
+                //Parallel.ForEach(listPtIds, ptId =>
+                //{
+                //    var lastSinDate = listLastSindate.Where(item => item.PtId == ptId).Max(item => item.SinDate);
+                //    if (lastSinDate > 0)
+                //    {
+                //        if (searchModel.LastRaiinDateFrom > 0 && lastSinDate >= searchModel.LastRaiinDateFrom)
+                //        {
+                //            lock (obj)
+                //            {
+                //                dicLastVisitDate.Add(ptId, lastSinDate);
+                //            }
+                //        }
+                //        if (searchModel.LastRaiinDateTo > 0 && lastSinDate <= searchModel.LastRaiinDateTo)
+                //        {
+                //            lock (obj)
+                //            {
+                //                dicLastVisitDate.Add(ptId, lastSinDate);
+                //            }
+                //        }
+                //    }
+                //});
+                receInfs = receInfs.Where(item => ptIds.Contains(item.PtId));
             }
 
             // 患者番号
@@ -897,7 +899,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         //var test16 = ptKohis.ToList();
         //return new List<ReceiptListModel>();
         #region main query
-        var query = from receInf in receInfs.AsEnumerable()
+        var query = from receInf in receInfs
                     join receInfEdit in receInfEdits on new { receInf.HpId, receInf.SeikyuYm, receInf.PtId, receInf.HokenId, receInf.SinYm }
                                                 equals new { receInfEdit.HpId, receInfEdit.SeikyuYm, receInfEdit.PtId, receInfEdit.HokenId, receInfEdit.SinYm } into receInfEditLeft
                     from receInfEdit in receInfEditLeft.DefaultIfEmpty()
