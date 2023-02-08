@@ -338,38 +338,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             // 最終来院日
             if (searchModel.LastRaiinDateFrom > 0 || searchModel.LastRaiinDateTo > 0)
             {
-                Dictionary<long, int> dicLastVisitDate = new();
-                listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
-                //var listLastSindate = ptLastVisitDates.ToList();
-                var listLastSindate = ptLastVisitDates.Where(p => (p.SinDate >= searchModel.LastRaiinDateFrom && p.SinDate <= searchModel.LastRaiinDateTo) || (searchModel.LastRaiinDateTo == 0 && p.SinDate >= searchModel.LastRaiinDateFrom));
-                var ptIds = listLastSindate.Select(p => p.PtId).Distinct().ToList();
-                //object obj = new object();
-                //Parallel.ForEach(listPtIds, ptId =>
-                //{
-                //    var lastSinDate = listLastSindate.Where(item => item.PtId == ptId).Max(item => item.SinDate);
-                //    if (lastSinDate > 0)
-                //    {
-                //        if (searchModel.LastRaiinDateFrom > 0 && lastSinDate >= searchModel.LastRaiinDateFrom)
-                //        {
-                //            lock (obj)
-                //            {
-                //                dicLastVisitDate.Add(ptId, lastSinDate);
-                //            }
-                //        }
-                //        if (searchModel.LastRaiinDateTo > 0 && lastSinDate <= searchModel.LastRaiinDateTo)
-                //        {
-                //            lock (obj)
-                //            {
-                //                dicLastVisitDate.Add(ptId, lastSinDate);
-                //            }
-                //        }
-                //    }
-                //});
+
+                ptLastVisitDates = ptLastVisitDates.Where(p => (p.SinDate >= searchModel.LastRaiinDateFrom && p.SinDate <= searchModel.LastRaiinDateTo)
+                                                               || (searchModel.LastRaiinDateTo == 0 && p.SinDate >= searchModel.LastRaiinDateFrom));
+                var ptIds = ptLastVisitDates.Select(p => p.PtId).Distinct().ToList();
                 receInfs = receInfs.Where(item => ptIds.Contains(item.PtId));
             }
 
             // 患者番号
-            if (searchModel.PtSearchOption == PtIdSearchOptionEnum.RangeSearch)
+            if (searchModel.PtSearchOption == PtIdSearchOptionEnum.RangeSearch
+                && (searchModel.PtIdFrom > 0 || searchModel.PtIdTo > 0))
             {
                 if (searchModel.PtIdFrom > 0)
                 {
@@ -379,13 +357,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     ptInfs = ptInfs.Where(item => item.PtNum <= searchModel.PtIdTo);
                 }
-                receInfs = receInfs.Where(item => ptInfs.Select(pt => pt.PtId).Any(x => x == item.PtId));
+                listPtIds = ptInfs.Select(pt => pt.PtId).ToList();
+                receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
             }
             else if (searchModel.PtSearchOption == PtIdSearchOptionEnum.IndividualSearch && !string.IsNullOrEmpty(searchModel.PtId))
             {
                 List<long> ptIdList = searchModel.PtId.Split(',').Select(item => item.AsLong()).ToList();
                 ptInfs = ptInfs.Where(item => ptIdList.Contains(item.PtNum));
-                receInfs = receInfs.Where(item => ptInfs.Select(pt => pt.PtId).Any(x => x == item.PtId));
+                listPtIds = ptInfs.Select(pt => pt.PtId).ToList();
+                receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
             }
 
             // 診療科 + 担当医 + SYSTEM_CONFIG 6002
@@ -496,7 +476,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 {
                     ptInfs = ptInfs.Where(item => item.Birthday <= searchModel.BirthDayTo);
                 }
-                receInfs = receInfs.Where(item => ptInfs.Select(pt => pt.PtId).Any(x => x == item.PtId));
+                listPtIds = ptInfs.Select(pt => pt.PtId).ToList();
+                receInfs = receInfs.Where(item => listPtIds.Contains(item.PtId));
             }
 
             // 印刷済を表示しない
@@ -509,19 +490,51 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             }
 
             // グループ
-            var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(ptGrpInf => ptGrpInf.IsDeleted == 0);
-            foreach (var group in searchModel.GroupSearchModels)
+            if (searchModel.GroupSearchModels.Any(item => !string.IsNullOrEmpty(item.Value)))
             {
-                if (string.IsNullOrEmpty(group.Value))
+                var ptGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(ptGrpInf => ptGrpInf.IsDeleted == 0
+                                                                                  && listPtIds.Contains(ptGrpInf.PtId))
+                                                               .ToList();
+
+                //foreach (var group in searchModel.GroupSearchModels)
+                //{
+                //    if (string.IsNullOrEmpty(group.Value))
+                //    {
+                //        continue;
+                //    }
+                //    ptGrpInfs = ptGrpInfs.Where(ptGr => ptGr.GroupId == group.Key
+                //                                                                      && ptGr.GroupCode == group.Value)
+                //                                                .ToList();
+
+
+                //}
+                //listPtIds = ptGrpInfs
+                //                         .Select(item => item.PtId)
+                //                         .Distinct()
+                //                         .ToList();
+
+                //receInfs = receInfs.Where(pt => listPtIds.Contains(pt.PtId));
+                foreach (var group in searchModel.GroupSearchModels)
                 {
-                    continue;
+                    if (string.IsNullOrEmpty(group.Value))
+                    {
+                        continue;
+                    }
+                    listPtIds = NoTrackingDataContext.PtGrpInfs.Where(ptGr => ptGr.GroupId == group.Key
+                                                                                      && ptGr.GroupCode == group.Value
+                                                                                      && ptGr.IsDeleted == 0
+                                                                                      && listPtIds.Contains(ptGr.PtId))
+                                                                .Select(item => item.PtId)
+                                                                .Distinct()
+                                                                .ToList();
+
+                    listPtIds = ptGrpInfs.Where(ptGr => listPtIds.Contains(ptGr.PtId))
+                                         .Select(item => item.PtId)
+                                         .Distinct()
+                                         .ToList();
+
+                    receInfs = receInfs.Where(pt => listPtIds.Contains(pt.PtId));
                 }
-                var ptGrpInfTemps = NoTrackingDataContext.PtGrpInfs.Where(ptGr => ptGr.GroupId == group.Key
-                                                                                  && ptGr.GroupCode == group.Value
-                                                                                  && ptGr.IsDeleted == 0
-                                                                                  && listPtIds.Contains(ptGr.PtId));
-                ptGrpInfs = ptGrpInfs.Where(ptGr => ptGrpInfTemps.Any(x => x.PtId == ptGr.PtId));
-                receInfs = receInfs.Where(pt => ptGrpInfs.Any(x => x.PtId == pt.PtId));
             }
 
             // 項目
@@ -601,7 +614,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                        && listRpEdaNo.Contains(item.RpEdaNo)
                                                                                        && listRpNo.Contains(item.RpNo)
                                                                                        && listSinYm.Contains(item.SinDate / 100)
-                                                                                       && (orderItemList.Contains(item.ItemCd) && !string.IsNullOrEmpty(item.ItemCd)) // For normal item
+                                                                                       && (!string.IsNullOrEmpty(item.ItemCd) && orderItemList.Contains(item.ItemCd)) // For normal item
                                                                                        || (string.IsNullOrEmpty(item.ItemCd) // For free comment
                                                                                        && !string.IsNullOrEmpty(item.ItemName)
                                                                                        && listFreeComment.Any(str => item.ItemName.Contains(str))))
