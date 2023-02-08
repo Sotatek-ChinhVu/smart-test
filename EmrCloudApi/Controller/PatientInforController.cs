@@ -79,6 +79,7 @@ using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using UseCase.PatientInfor.GetListPatient;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using Domain.Models.PtGroupMst;
 
 namespace EmrCloudApi.Controller
 {
