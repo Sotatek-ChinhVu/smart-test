@@ -147,6 +147,58 @@ namespace KarteReport.Utility
             sb.Replace("{dfJyukyusyaNo_K2}", karte1Data.JyukyusyaNo_K2);
             sb.Replace("{dfPtNum}", karte1Data.PtNum.ToString());
             sb.Replace("{dfSysDateTimeS}", karte1Data.SysDateTimeS);
+
+            
+            sb.Append(@"<table>
+                          <tr>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">傷 病 名</th>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">職 務</th>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">開 始</th>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">終 了</th>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">転 帰</th>
+                                <th style =""border: 1px solid #dddddd;
+                              text-align: left;
+                              padding: 8px;"">期 間 満 了  予 定 日</th>
+                            </tr>");
+            for(int i = 0; i < 30; i++)
+            {
+                foreach (var item in karte1Data.ListByomeis)
+                {
+                    sb.AppendFormat(@"<tr>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">{0}</td>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">上・外</td>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">{1}</td>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">{2}</td>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">治ゆ・死亡・中止・他</td>
+                                    <td style=""border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;"">年 月 日</td>
+                                  </tr>", item.Byomei, item.ByomeiStartDateWFormat, item.ByomeiTenkiDateWFormat);
+                }
+            }
+            
+            sb.Append(@" </table>");
+                          
             return sb.ToString();
         }
     }
