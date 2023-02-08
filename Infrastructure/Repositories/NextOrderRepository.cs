@@ -196,22 +196,16 @@ namespace Infrastructure.Repositories
                         oldOrderInf.CreateId = userId;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf, orderInf.RpEdaNo + 1);
                         TrackingDataContext.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
-                        {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo, orderInf.RpEdaNo + 1));
-                            TrackingDataContext.AddRange(orderInfDetailEntity);
-                        }
+                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo, orderInf.RpEdaNo + 1));
+                        TrackingDataContext.AddRange(orderInfDetailEntity);
                     }
                     else
                     {
                         maxRpNo++;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
-                        TrackingDataContext.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
-                        {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
-                            TrackingDataContext.AddRange(orderInfDetailEntity);
-                        }
+                        TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
+                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
+                        TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
                     }
                 }
             }
