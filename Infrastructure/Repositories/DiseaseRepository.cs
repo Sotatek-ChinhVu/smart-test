@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
+        public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom, bool isContiFiltered, bool isInMonthFiltered)
         {
             var ptByomeiListQueryable = NoTrackingDataContext.PtByomeis
                 .Where(p => p.HpId == hpId &&
@@ -127,6 +127,15 @@ namespace Infrastructure.Repositories
             if (hokenId > 0)
             {
                 ptByomeiListQueryable = ptByomeiListQueryable.Where(b => b.HokenPid == hokenId || b.HokenPid == 0);
+            }
+
+            if (isContiFiltered)
+            {
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(x => x.TenkiKbn <= TenkiKbnConst.Continued);
+            }
+            else if (isInMonthFiltered)
+            {
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(x => x.TenkiKbn <= TenkiKbnConst.Continued || (x.StartDate <= (sinDate / 100 * 100 + 31) && x.TenkiDate >= (sinDate / 100 * 100 + 1)));
             }
 
             var ptByomeiList = ptByomeiListQueryable.OrderBy(p => p.TenkiKbn)
