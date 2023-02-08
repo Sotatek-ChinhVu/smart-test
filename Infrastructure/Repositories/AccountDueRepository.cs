@@ -86,7 +86,9 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                 nyukin != null ? nyukin.SeqNo : 0,
                 seikyu.SeikyuDetail ?? string.Empty,
                 raiinItem.Status,
-                seikyu.AdjustFutan
+                seikyu.AdjustFutan,
+                seikyu.NewSeikyuDetail ?? string.Empty,
+                seikyu.NewSeikyuTensu
             );
     }
     private int GetMonth(int date)
