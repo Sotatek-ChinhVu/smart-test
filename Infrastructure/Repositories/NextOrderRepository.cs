@@ -263,9 +263,11 @@ namespace Infrastructure.Repositories
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
             var oldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo) && o.IsDeleted == DeleteTypes.None);
+            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo));
 
             foreach (var byomei in byomeis)
             {
+                var maxSeqNo = allOldByomeis.Where(a => a.RsvkrtNo == byomei.RsvkrtNo).Max(a => a.SeqNo);
                 var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == byomei.RsvkrtNo && o.IsDeleted == DeleteTypes.None);
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
@@ -316,7 +318,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, rsvkrtNo);
+                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, ++maxSeqNo, rsvkrtNo);
                         TrackingDataContext.Add(orderInfEntity);
                     }
                 }
@@ -681,7 +683,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long rsvkrtNo = 0)
+        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long seqNo, long rsvkrtNo = 0)
         {
             return new RsvkrtByomei
             {
