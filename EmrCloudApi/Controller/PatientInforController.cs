@@ -80,6 +80,10 @@ using EmrCloudApi.Tenant.Requests.PatientInfor;
 using UseCase.PatientInfor.GetListPatient;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using Domain.Models.PtGroupMst;
+using EmrCloudApi.Presenters.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
+using EmrCloudApi.Responses.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
 
 namespace EmrCloudApi.Controller
 {
@@ -788,6 +792,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListPatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
+        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        {
+            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxMoneyByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
         }
     }
 }
