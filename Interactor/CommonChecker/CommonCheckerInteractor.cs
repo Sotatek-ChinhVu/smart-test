@@ -46,6 +46,14 @@ namespace Interactor.CommonChecker
             _masterFinder = masterFinder;
             _systemConfig = systemConfig;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+            _listPtAlrgyDrug = new();
+            _listPtAlrgyFood = new();
+            _listPtOtherDrug = new();
+            _listPtOtcDrug = new();
+            _listPtSupple = new();
+            _listPtKioReki = new();
+            _listDiseaseCode = new();
+            _listPtAlrgyDrugCode = new();
         }
 
         public List<string> ListPtAlrgyDrugCode
