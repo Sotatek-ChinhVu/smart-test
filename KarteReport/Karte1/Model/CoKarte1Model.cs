@@ -393,7 +393,7 @@ namespace KarteReport.Karte1.Model
         /// <returns></returns>
         public string KohiFutansyaNo(int index)
         {
-            return PtHokenInfModel?.KohiFutansyaNo(index)?? string.Empty;
+            return PtHokenInfModel?.KohiFutansyaNo(index) ?? string.Empty;
 
         }
         /// <summary>
@@ -413,7 +413,7 @@ namespace KarteReport.Karte1.Model
         /// <returns></returns>
         public int KohiStartDate(int index)
         {
-            return PtHokenInfModel?.KohiStartDate(index)?? 0;
+            return PtHokenInfModel?.KohiStartDate(index) ?? 0;
 
         }
         /// <summary>
@@ -423,7 +423,7 @@ namespace KarteReport.Karte1.Model
         /// <returns></returns>
         public int KohiEndDate(int index)
         {
-            return PtHokenInfModel?.KohiEndDate(index)??0;
+            return PtHokenInfModel?.KohiEndDate(index) ?? 0;
 
         }
         /// <summary>
@@ -433,7 +433,7 @@ namespace KarteReport.Karte1.Model
         /// <returns></returns>
         public int KohiSikakuDate(int index)
         {
-            return PtHokenInfModel?.KohiSikakuDate(index)??0;
+            return PtHokenInfModel?.KohiSikakuDate(index) ?? 0;
 
         }
         /// <summary>
@@ -443,7 +443,7 @@ namespace KarteReport.Karte1.Model
         /// <returns></returns>
         public int KohiKofuDate(int index)
         {
-            return PtHokenInfModel?.KohiKofuDate(index)??0;
+            return PtHokenInfModel?.KohiKofuDate(index) ?? 0;
 
         }
         /// <summary>
