@@ -1,8 +1,11 @@
-﻿using Domain.Models.PatientInfor;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.PatientInfor;
+using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Text;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.SummaryInf;
 using SpecialNotePatienInfDomain = Domain.Models.SpecialNote.PatientInfo;
@@ -11,13 +14,15 @@ namespace Interactor.MedicalExamination
 {
     public class SummaryInfInteractor
     {
-        public bool IsGetDataFromSpecialNote = false;
+        private const string Space = " ";
         private readonly IPatientInforRepository _patientInfRepository;
         private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfRepository;
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository)
+        private readonly IImportantNoteRepository _importantNoteRepository;
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
+            _importantNoteRepository = importantNoteRepository;
         }
 
         public CheckedAfter327ScreenOutputData Handle(CheckedAfter327ScreenInputData inputData)
@@ -48,10 +53,11 @@ namespace Interactor.MedicalExamination
         }
 
 
-        private void GetPhysicalInfo(int hpId, long ptId, int sinDate, SummaryInfItem ptHeaderInfoModel)
+        private void GetPhysicalInfo(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
         {
             int grpItemCd = 1;
             string headerName = "■身体情報";
+            string headerInfo = summaryInfItem.HeaderInfo;
             List<KensaInfDetailModel> listKensaInfDetailModel = _specialNotePatientInfRepository.GetListKensaInfDetailModel(hpId, ptId, sinDate);
             long maxSortNo = listKensaInfDetailModel.Max(u => u.SortNo);
             KensaInfDetailModel heightModel = listKensaInfDetailModel.Where(u => u.KensaItemCd == IraiCodeConstant.HEIGHT_CODE).FirstOrDefault() ?? new();
@@ -112,14 +118,180 @@ namespace Interactor.MedicalExamination
                 }
                 if (!string.IsNullOrEmpty(kensaDetailModel.ResultVal))
                 {
-                    ptHeaderInfoModel.HeaderInfo += (string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + Space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + Space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + Space + "/";
+                    headerInfo += (string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + Space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + Space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + Space + "/";
                 }
             }
-            string headerInfo = ptHeaderInfoModel.HeaderInfo?.TrimEnd('/') ?? string.Empty;
+            headerInfo = headerInfo.TrimEnd('/') ?? string.Empty;
+
+            summaryInfItem = new SummaryInfItem(headerInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
+        private void GetDrugInfo(long ptId, int sinDate, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 2;
+            string headerName = "◆アレルギー";
+            StringBuilder headerInf = new StringBuilder();
+            List<PtAlrgyElseModel> listPtAlrgyElseModel = new List<PtAlrgyElseModel>();
+            List<PtAlrgyFoodModel> listPtAlrgyFoodModel = new List<PtAlrgyFoodModel>();
+            List<PtAlrgyDrugModel> listPtAlrgyDrugModel = new List<PtAlrgyDrugModel>();
 
-        private void GetPhoneNumber(int hpId, long ptId, SummaryInfItem ptHeaderInfoModel)
+            listPtAlrgyElseModel = _importantNoteRepository.GetAlrgyElseList(ptId, sinDate);
+            listPtAlrgyFoodModel = _importantNoteRepository.GetAlrgyFoodList(ptId, sinDate);
+            listPtAlrgyDrugModel = _importantNoteRepository.GetAlrgyDrugList(ptId, sinDate);
+
+            foreach (var ptAlrgyDrugModel in listPtAlrgyDrugModel)
+            {
+                if (!string.IsNullOrEmpty(ptAlrgyDrugModel.DrugName))
+                {
+                    headerInf.Append(ptAlrgyDrugModel.DrugName);
+                    if (!string.IsNullOrEmpty(ptAlrgyDrugModel.Cmt))
+                    {
+                        headerInf.Append("／" + ptAlrgyDrugModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+
+            foreach (var ptAlrgyFoodModel in listPtAlrgyFoodModel)
+            {
+                if (!string.IsNullOrEmpty(ptAlrgyFoodModel.FoodName))
+                {
+                    headerInf.Append(ptAlrgyFoodModel.FoodName);
+                    if (!string.IsNullOrEmpty(ptAlrgyFoodModel.Cmt))
+                    {
+                        headerInf.Append("／" + ptAlrgyFoodModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+
+            foreach (var ptAlrgyElseModel in listPtAlrgyElseModel)
+            {
+                if (!string.IsNullOrEmpty(ptAlrgyElseModel.AlrgyName))
+                {
+                    headerInf.Append(ptAlrgyElseModel.AlrgyName);
+                    if (!string.IsNullOrEmpty(ptAlrgyElseModel.Cmt))
+                    {
+                        headerInf.Append("／" + ptAlrgyElseModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+
+            string strHeaderInf = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+
+            summaryInfItem = new SummaryInfItem(strHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private void GetPathologicalStatus(long ptId, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 3;
+            string headerName = "◆病歴";
+            StringBuilder headerInfo = new StringBuilder();
+            List<PtKioRekiModel> listPtKioRekiModel = new List<PtKioRekiModel>();
+            List<PtInfectionModel> listPtInfectionModel = new List<PtInfectionModel>();
+
+            listPtKioRekiModel = _importantNoteRepository.GetKioRekiList(ptId);
+            listPtInfectionModel = _importantNoteRepository.GetInfectionList(ptId);
+
+            foreach (var ptKioRekiModel in listPtKioRekiModel)
+            {
+                if (!string.IsNullOrEmpty(ptKioRekiModel.Byomei))
+                {
+                    headerInfo.Append(ptKioRekiModel.Byomei);
+                    if (!string.IsNullOrEmpty(ptKioRekiModel.Cmt))
+                    {
+                        headerInfo.Append("／" + ptKioRekiModel.Cmt);
+                    }
+                    headerInfo.Append(Environment.NewLine);
+                }
+            }
+            foreach (var ptInfectionModel in listPtInfectionModel)
+            {
+                if (!string.IsNullOrEmpty(ptInfectionModel.Byomei))
+                {
+                    headerInfo.Append(ptInfectionModel.Byomei);
+                    if (!string.IsNullOrEmpty(ptInfectionModel.Cmt))
+                    {
+                        headerInfo.Append("／" + ptInfectionModel.Cmt);
+                    }
+                    headerInfo.Append(Environment.NewLine);
+                }
+            }
+            string strHeaderInfo = headerInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+            summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private void GetInteraction(long ptId, int sinDate, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 4;
+            string headerName = "◆服薬情報";
+            StringBuilder headerInf = new StringBuilder();
+            List<PtOtherDrugModel> listPtOtherDrugModel = new List<PtOtherDrugModel>();
+            List<PtOtcDrugModel> listPtOtcDrugModel = new List<PtOtcDrugModel>();
+            List<PtSuppleModel> listPtSuppleModel = new List<PtSuppleModel>();
+
+            listPtOtherDrugModel = _importantNoteRepository.GetOtherDrugList(ptId, sinDate);
+            listPtOtcDrugModel = _importantNoteRepository.GetOtcDrugList(ptId, sinDate);
+            listPtSuppleModel = _importantNoteRepository.GetSuppleList(ptId, sinDate);
+
+            foreach (var ptOtherDrugModel in listPtOtherDrugModel)
+            {
+                if (!string.IsNullOrEmpty(ptOtherDrugModel.DrugName))
+                {
+                    headerInf.Append(ptOtherDrugModel.DrugName);
+                    if (!string.IsNullOrEmpty(ptOtherDrugModel.Cmt))
+                    {
+                        headerInf.Append("／" + ptOtherDrugModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+            foreach (var ptOtcDrugModel in listPtOtcDrugModel)
+            {
+                if (!string.IsNullOrEmpty(ptOtcDrugModel.TradeName))
+                {
+                    headerInf.Append(ptOtcDrugModel.TradeName);
+                    if (!string.IsNullOrEmpty(ptOtcDrugModel.Cmt))
+                    {
+                        headerInf.Append("／" + ptOtcDrugModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+            foreach (var suppleModel in listPtSuppleModel)
+            {
+                if (!string.IsNullOrEmpty(suppleModel.IndexWord))
+                {
+                    headerInf.Append(suppleModel.IndexWord);
+                    if (!string.IsNullOrEmpty(suppleModel.Cmt))
+                    {
+                        headerInf.Append("／" + suppleModel.Cmt);
+                    }
+                    headerInf.Append(Environment.NewLine);
+                }
+            }
+            string strHeaderInfo = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+            summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private void GetCalculationInfo(SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 5;
+            string headerName = "◆算定情報";
+            List<SanteiInfomationModel> listSanteiInfModels = _masterFinder.GetCalculationInfo(_ptId, _sinDate);
+            if (listSanteiInfModels.Count > 0)
+            {
+                listSanteiInfModels = listSanteiInfModels.Where(u => u.DayCount > u.AlertDays).ToList();
+                foreach (SanteiInfomationModel santeiInfomationModel in listSanteiInfModels)
+                {
+                    summaryInfItem.HeaderInfo += santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine;
+                }
+                summaryInfItem.HeaderInfo = summaryInfItem.HeaderInfo?.TrimEnd(Environment.NewLine.ToCharArray());
+            }
+        }
+
+        private void GetPhoneNumber(int hpId, long ptId, SummaryInfItem summaryInfItem)
         {
             int grpItemCd = 12;
             string headerName = "◆電話番号";
@@ -129,10 +301,10 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = ptInfModel.Tel1 + Environment.NewLine + ptInfModel.Tel2;
             }
-            ptHeaderInfoModel = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
-        private void GetLifeHistory(int hpId, long ptId, SummaryInfItem ptHeaderInfoModel)
+        private void GetLifeHistory(int hpId, long ptId, SummaryInfItem summaryInfItem)
         {
             var grpItemCd = 11;
             var headerName = "■生活歴";
@@ -142,7 +314,7 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = seikaturekiInfModel.Text;
             }
-            ptHeaderInfoModel = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
 
