@@ -34,6 +34,8 @@ public class AccountDueDto
         SeikyuDetail = item.SeikyuDetail;
         RaiinInfStatus = item.RaiinInfStatus;
         SeikyuAdjustFutan = item.SeikyuAdjustFutan;
+        NewSeikyuDetail = item.NewSeikyuDetail;
+        NewSeikyuTensu = item.NewSeikyuTensu;
     }
 
     public int HpId { get; private set; }
@@ -89,6 +91,10 @@ public class AccountDueDto
     public int RaiinInfStatus { get; private set; }
 
     public int SeikyuAdjustFutan { get; private set; }
+
+    public string NewSeikyuDetail { get; private set; }
+
+    public int NewSeikyuTensu { get; private set; }
 
     // properties only display
     public string StateDisplay

@@ -20,6 +20,28 @@ namespace Domain.Common
             }
 
             #region Validate business
+            //Check has not drug 
+            if (odrInf.IsDrug)
+            {
+                // 用法
+                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
+                if (!checkDrugOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                }
+            }
+
+            //Check has not Injection 
+            if (odrInf.IsInjection)
+            {
+                // 用法
+                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsInjection || o.IsDrug);
+                if (!checkDrugOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                }
+            }
+
             if (odrInf.OrdInfDetails.Any(o => o.IsSpecialItem))
             {
                 var validateSpecialItem = ValidateSpecialItem(odrInf);
