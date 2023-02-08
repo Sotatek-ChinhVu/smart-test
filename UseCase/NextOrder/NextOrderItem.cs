@@ -1,8 +1,10 @@
-﻿namespace UseCase.NextOrder
+﻿using UseCase.MedicalExamination.UpsertTodayOrd;
+
+namespace UseCase.NextOrder
 {
     public class NextOrderItem
     {
-        public NextOrderItem(long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int sortNo, int isDeleted, List<RsvKrtByomeiItem> rsvKrtByomeiItems, RsvKrtKarteInfItem rsvkrtKarteInf, List<RsvKrtOrderInfItem> rsvKrtOrderInfItems)
+        public NextOrderItem(long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int sortNo, int isDeleted, List<RsvKrtByomeiItem> rsvKrtByomeiItems, RsvKrtKarteInfItem rsvkrtKarteInf, List<RsvKrtOrderInfItem> rsvKrtOrderInfItems, FileItemInputItem fileItem)
         {
             RsvkrtNo = rsvkrtNo;
             RsvkrtKbn = rsvkrtKbn;
@@ -13,6 +15,7 @@
             RsvKrtByomeiItems = rsvKrtByomeiItems;
             RsvkrtKarteInf = rsvkrtKarteInf;
             RsvKrtOrderInfItems = rsvKrtOrderInfItems;
+            FileItem = fileItem;
         }
 
         public long RsvkrtNo { get; private set; }
@@ -32,5 +35,7 @@
         public RsvKrtKarteInfItem RsvkrtKarteInf { get; private set; }
 
         public List<RsvKrtOrderInfItem> RsvKrtOrderInfItems { get; private set; }
+
+        public FileItemInputItem FileItem { get; private set; }
     }
 }
