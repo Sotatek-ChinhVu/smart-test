@@ -1,7 +1,6 @@
 ﻿using Domain.Models.RainListTag;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -40,7 +39,7 @@ namespace Infrastructure.Repositories
                     x.IsDeleted
                 ));
         }
-        
+
         public List<RaiinListTagModel> GetList(int hpId, long ptId, List<long> raiinNoList)
         {
             var result = NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && raiinNoList.Contains(r.RaiinNo));

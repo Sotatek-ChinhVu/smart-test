@@ -1,10 +1,10 @@
 ﻿using Domain.Models.RaiinFilterMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -127,9 +127,9 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                         FilterName = mstModel.FilterName,
                         SelectKbn = mstModel.SelectKbn,
                         Shortcut = mstModel.Shortcut,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId
                     };
                     // Create RaiinFilterSort entities with temporary FilterId = 0
@@ -194,7 +194,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                 entity.FilterName = model.FilterName;
                 entity.SelectKbn = model.SelectKbn;
                 entity.Shortcut = model.Shortcut;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
             }
         }
@@ -213,7 +213,7 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                 entity.ColumnName = model.ColumnName;
                 entity.KbnCd = model.KbnCd;
                 entity.SortKbn = model.SortKbn;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
             }
         }
@@ -228,10 +228,10 @@ public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepositor
                 Priority = sortModel.Priority,
                 ColumnName = sortModel.ColumnName,
                 KbnCd = sortModel.KbnCd,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
                 SortKbn = sortModel.SortKbn,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId
             };
         }

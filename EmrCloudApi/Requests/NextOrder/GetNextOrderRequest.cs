@@ -8,6 +8,6 @@
 
         public int SinDate { get; set; }
 
-        public int Type { get; set; }
+        public int RsvkrtKbn { get; set; }
     }
 }

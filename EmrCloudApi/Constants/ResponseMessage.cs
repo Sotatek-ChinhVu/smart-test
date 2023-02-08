@@ -33,11 +33,13 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidToken = "Invalid Token";
         public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
         public static readonly string InvalidWindowType = "Invalid WindowType";
         public static readonly string InvalidFrameId = "Invalid FrameId";
         public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
+        public static readonly string InvalidDetailInfs = "Invalid Details";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -334,6 +336,10 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
+        public static readonly string InvalidPasteSetKbn = "Invalid PasteSetKbn";
+        public static readonly string InvalidPasteSetKbnEdaNo = "Invalid PasteSetKbnEdaNo";
+        public static readonly string InvalidCopySetKbn = "Invalid CopySetKbn";
+        public static readonly string InvalidCopySetKbnEdaNo = "Invalid CopySetKbnEdaNo";
         public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
@@ -618,8 +624,8 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
-        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 
@@ -879,5 +885,10 @@
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
 
+
+        //Insurance Mst Detail
+        public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
+        public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
+        public static readonly string InvalidPrefNo = "PrefNo is in valid";
     }
 }

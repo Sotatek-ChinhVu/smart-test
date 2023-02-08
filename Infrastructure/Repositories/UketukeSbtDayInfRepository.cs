@@ -1,5 +1,6 @@
 ﻿using Domain.Models.UketukeSbtDayInf;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ public class UketukeSbtDayInfRepository : RepositoryBase, IUketukeSbtDayInfRepos
                 UketukeSbt = uketukeSbt,
                 SeqNo = seqNo,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow()
             });
         }
         else

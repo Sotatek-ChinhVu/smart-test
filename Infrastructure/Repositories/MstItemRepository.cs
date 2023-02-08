@@ -642,7 +642,7 @@ namespace Infrastructure.Repositories
 
             tenMst.IsAdopted = valueAdopted;
 
-            tenMst.UpdateDate = DateTime.UtcNow;
+            tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             tenMst.UpdateId = userId;
 
             TrackingDataContext.SaveChanges();
@@ -664,7 +664,7 @@ namespace Infrastructure.Repositories
 
                 tenMst.IsAdopted = valueAdopted;
 
-                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 tenMst.UpdateId = userId;
             }
 
@@ -805,7 +805,7 @@ namespace Infrastructure.Repositories
             {
                 byomeiMst.IsAdopted = 1;
                 byomeiMst.UpdateId = userId;
-                byomeiMst.UpdateDate = DateTime.UtcNow;
+                byomeiMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
             return true;
@@ -931,7 +931,7 @@ namespace Infrastructure.Repositories
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
