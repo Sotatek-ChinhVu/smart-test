@@ -2,7 +2,7 @@
 
 public class SanteiInfModel
 {
-    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, List<SanteiInfDetailModel> listSanteiInfDetails)
+    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, int sinDate, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         Id = id;
         PtId = ptId;
@@ -18,6 +18,7 @@ public class SanteiInfModel
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
         ListSanteiInfDetails = listSanteiInfDetails;
         IsDeleted = false;
+        SinDate = sinDate;
     }
 
     public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
@@ -99,6 +100,8 @@ public class SanteiInfModel
     public double CurrentMonthSanteiItemSum { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public int SinDate { get; private set; }
 
     public List<SanteiInfDetailModel> ListSanteiInfDetails { get; private set; }
 }

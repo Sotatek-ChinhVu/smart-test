@@ -3,7 +3,6 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -263,83 +262,84 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     public List<SanteiInfModel> GetCalculationInfo(int hpId, long ptId, int sinDate)
     {
         List<int> listAletTermIsValid = new List<int>() { 2, 3, 4, 5, 6 };
-        List<SanteiInfModel> result = new ();
-        string funcName = nameof(GetCalculationInfo);
-        try
-        {
-            var santeiInfs = NoTrackingDataContext.SanteiInfs.Where(u => u.HpId == hpId &&
-                                                                                         (u.PtId == ptId || u.PtId == 0) &&
-                                                                                         u.AlertDays > 0 &&
-                                                                                         listAletTermIsValid.Contains(u.AlertTerm)).GroupBy(u => u.ItemCd).Select(x => x.OrderBy(t => t.PtId).FirstOrDefault());
-            var santeiInfDetails = NoTrackingDataContext.SanteiInfDetails.Where(u => u.HpId == hpId &&
-                                                                                                     u.PtId == ptId &&
-                                                                                                     u.KisanDate > 0 &&
-                                                                                                     u.EndDate >= sinDate &&
-                                                                                                     u.IsDeleted == 0);
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
-                                                                                   u.StartDate <= sinDate &&
-                                                                                   u.EndDate >= sinDate);
+        List<SanteiInfModel> result = new();
+        var santeiInfs = NoTrackingDataContext.SanteiInfs.Where(u => u.HpId == hpId &&
+                                                                                     (u.PtId == ptId || u.PtId == 0) &&
+                                                                                     u.AlertDays > 0 &&
+                                                                                     listAletTermIsValid.Contains(u.AlertTerm)).GroupBy(u => u.ItemCd).Select(x => x.OrderBy(t => t.PtId).FirstOrDefault());
+        var santeiInfDetails = NoTrackingDataContext.SanteiInfDetails.Where(u => u.HpId == hpId &&
+                                                                                                 u.PtId == ptId &&
+                                                                                                 u.KisanDate > 0 &&
+                                                                                                 u.EndDate >= sinDate &&
+                                                                                                 u.IsDeleted == 0);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(u => u.HpId == hpId &&
+                                                                               u.StartDate <= sinDate &&
+                                                                               u.EndDate >= sinDate);
 
-            // Query Santei inf code
-            var kensaTenMst = NoTrackingDataContext.TenMsts.Where(e => e.HpId == hpId
-                                                                                    && e.StartDate <= sinDate
-                                                                                    && e.EndDate >= sinDate);
+        // Query Santei inf code
+        var kensaTenMst = NoTrackingDataContext.TenMsts.Where(e => e.HpId == hpId
+                                                                                && e.StartDate <= sinDate
+                                                                                && e.EndDate >= sinDate);
 
-            var tenMstList = from santeiInf in santeiInfs
-                             join tenMst in kensaTenMst on santeiInf.ItemCd
-                                                    equals tenMst.SanteiItemCd into tenMstLeft
-                             from tenMst in tenMstLeft.DefaultIfEmpty()
-                             select new
-                             {
-                                 SanteiCd = santeiInf.ItemCd,
-                                 ItemCd = tenMst.ItemCd ?? santeiInf.ItemCd
-                             };
+        var tenMstList = from santeiInf in santeiInfs
+                         join tenMst in kensaTenMst on santeiInf.ItemCd
+                                                equals tenMst.SanteiItemCd into tenMstLeft
+                         from tenMst in tenMstLeft.DefaultIfEmpty()
+                         select new
+                         {
+                             SanteiCd = santeiInf.ItemCd,
+                             ItemCd = tenMst.ItemCd ?? santeiInf.ItemCd
+                         };
 
 
-            var odrInfs = dbService.OdrInfRepository.FindListQueryableNoTrack(u => u.HpId == hpId &&
-                                                                                  u.PtId == ptId &&
-                                                                                  u.SinDate < sinDate &&
-                                                                                  u.IsDeleted == 0);
-            var odrInfDetails = dbService.OdrInfDetailRepository.FindListQueryableNoTrack(u => u.HpId == hpId &&
-                                                                                               u.PtId == ptId);
-            var listOdrInfs = from odrInfItem in odrInfs
-                              join odrInfDetailItem in odrInfDetails on new { odrInfItem.RaiinNo, odrInfItem.RpEdaNo, odrInfItem.RpNo } equals
-                                                                         new { odrInfDetailItem.RaiinNo, odrInfDetailItem.RpEdaNo, odrInfDetailItem.RpNo }
-                              join tenMstItem in tenMstList on odrInfDetailItem.ItemCd equals tenMstItem.ItemCd
-                              select new
-                              {
-                                  tenMstItem.SanteiCd,
-                                  OdrInf = odrInfItem,
-                                  OdrInfDetail = odrInfDetailItem,
-                              };
+        var odrInfs = NoTrackingDataContext.OdrInfs.Where(u => u.HpId == hpId &&
+                                                                              u.PtId == ptId &&
+                                                                              u.SinDate < sinDate &&
+                                                                              u.IsDeleted == 0);
+        var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(u => u.HpId == hpId &&
+                                                                                           u.PtId == ptId);
+        var listOdrInfs = from odrInfItem in odrInfs
+                          join odrInfDetailItem in odrInfDetails on new { odrInfItem.RaiinNo, odrInfItem.RpEdaNo, odrInfItem.RpNo } equals
+                                                                     new { odrInfDetailItem.RaiinNo, odrInfDetailItem.RpEdaNo, odrInfDetailItem.RpNo }
+                          join tenMstItem in tenMstList on odrInfDetailItem.ItemCd equals tenMstItem.ItemCd
+                          select new
+                          {
+                              tenMstItem.SanteiCd,
+                              OdrInf = odrInfItem,
+                              OdrInfDetail = odrInfDetailItem,
+                          };
 
-            //Get last oder day by ItemCd
-            var listOrdInfomation = listOdrInfs.AsEnumerable().OrderByDescending(u => u.OdrInf.SinDate).GroupBy(o => o.SanteiCd).Select(g => g.First()).ToList(); //select distinct by ItemCd
-            var listOrdDetailInfomation = listOrdInfomation.Select(o => new { o.OdrInfDetail, o.SanteiCd }).ToList(); // only select OdrDetailInfo 
+        //Get last oder day by ItemCd
+        var listOrdInfomation = listOdrInfs.AsEnumerable().OrderByDescending(u => u.OdrInf.SinDate).GroupBy(o => o.SanteiCd).Select(g => g.First()).ToList(); //select distinct by ItemCd
+        var listOrdDetailInfomation = listOrdInfomation.Select(o => new { o.OdrInfDetail, o.SanteiCd }).ToList(); // only select OdrDetailInfo 
 
-            var santeiQuery = from santeiInfItem in santeiInfs
-                              join santeiInfDetailItem in santeiInfDetails on santeiInfItem.ItemCd equals santeiInfDetailItem.ItemCd into listSanteiDetail
-                              join tenMstItem in tenMsts on santeiInfItem.ItemCd equals tenMstItem.ItemCd
-                              select new
-                              {
-                                  SanteiInf = santeiInfItem,
-                                  SnteiInfDetail = listSanteiDetail.OrderByDescending(u => u.KisanDate).FirstOrDefault(),
-                                  TenMst = tenMstItem
-                              };
-            result = santeiQuery.AsEnumerable().Select(u => new SanteiInfomationModel(u.SanteiInf, u.SnteiInfDetail, u.TenMst, listOrdDetailInfomation.Where(o => o.SanteiCd == u.SanteiInf.ItemCd).FirstOrDefault()?.OdrInfDetail, sinDate)).OrderBy(t => t.ItemCd).ToList();
-            return result;
-        }
-        catch (Exception e)
-        {
-            Log.WriteLogError(_moduleName, this, funcName, e);
-        }
-        finally
-        {
-            Log.WriteLogEnd(_moduleName, this, funcName, "");
-        }
+        var santeiQuery = from santeiInfItem in santeiInfs
+                          join santeiInfDetailItem in santeiInfDetails on santeiInfItem.ItemCd equals santeiInfDetailItem.ItemCd into listSanteiDetail
+                          join tenMstItem in tenMsts on santeiInfItem.ItemCd equals tenMstItem.ItemCd
+                          select new
+                          {
+                              SanteiInf = santeiInfItem,
+                              SnteiInfDetail = listSanteiDetail.OrderByDescending(u => u.KisanDate).FirstOrDefault(),
+                              TenMst = tenMstItem
+                          };
+        result = santeiQuery.AsEnumerable().Select(u => new SanteiInfModel(u.SanteiInf.Id,
+            u.SanteiInf.PtId, u.SanteiInf.ItemCd ?? string.Empty, u.SanteiInf.SeqNo, u.SanteiInf.AlertDays, u.SanteiInf.AlertTerm, u.TenMst.Name ?? string.Empty, LastOdrDate(u.SnteiInfDetail, listOrdDetailInfomation.Where(o => o.SanteiCd == u.SanteiInf.ItemCd).FirstOrDefault()?.OdrInfDetail ?? new()), u.SnteiInfDetail?.KisanSbt ?? 0, 0, 0, 0, sinDate, new List<SanteiInfDetailModel> { })).OrderBy(t => t.ItemCd).ToList();
         return result;
     }
 
+    private int LastOdrDate(SanteiInfDetail santeiInfDetail, OdrInfDetail odrInfDetail)
+    {
+
+        if (santeiInfDetail != null)
+        {
+            return santeiInfDetail.KisanDate;
+        }
+        else if (odrInfDetail != null)
+        {
+            return odrInfDetail.SinDate;
+        }
+        return 0;
+    }
     public void ReleaseResource()
     {
         DisposeDataContext();
