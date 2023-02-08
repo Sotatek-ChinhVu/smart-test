@@ -10,9 +10,12 @@
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="DinkToPdfCopy" Version="1.0.0" />
   </ItemGroup>
- 
+
   <ItemGroup>
-    <Folder Include="Model\" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
+    <ProjectReference Include="..\UseCase\UseCase.csproj" />
   </ItemGroup>
 
 </Project>
