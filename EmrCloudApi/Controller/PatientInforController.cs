@@ -80,6 +80,10 @@ using EmrCloudApi.Tenant.Requests.PatientInfor;
 using UseCase.PatientInfor.GetListPatient;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using Domain.Models.PtGroupMst;
+using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
+using EmrCloudApi.Presenters.MaxMoney;
 
 namespace EmrCloudApi.Controller
 {
