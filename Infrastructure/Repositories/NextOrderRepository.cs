@@ -158,7 +158,7 @@ namespace Infrastructure.Repositories
                                 SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                             }
                         }
-
+                        TrackingDataContext.SaveChanges();
                         transaction.Commit();
 
                         return rsvkrtNo;
@@ -210,7 +210,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private void UpsertKarteInf(int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
@@ -250,7 +250,7 @@ namespace Infrastructure.Repositories
                 img.RsvkrtNo = karteInf.RsvkrtNo;
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private long GetMaxSeqNo(long ptId, int hpId, long rsvkrtNo)
@@ -324,7 +324,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
