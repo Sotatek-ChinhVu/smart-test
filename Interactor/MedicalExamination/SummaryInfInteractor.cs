@@ -1,5 +1,5 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.PatientInfor;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Helper.Common;
@@ -18,11 +18,13 @@ namespace Interactor.MedicalExamination
         private readonly IPatientInforRepository _patientInfRepository;
         private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfRepository;
         private readonly IImportantNoteRepository _importantNoteRepository;
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository)
+        private readonly ISanteiInfRepository _santeiInfRepository;
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
             _importantNoteRepository = importantNoteRepository;
+            _santeiInfRepository = santeiInfRepository;
         }
 
         public CheckedAfter327ScreenOutputData Handle(CheckedAfter327ScreenInputData inputData)
@@ -275,19 +277,21 @@ namespace Interactor.MedicalExamination
             summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
-        private void GetCalculationInfo(SummaryInfItem summaryInfItem)
+        private void GetCalculationInfo(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
         {
             int grpItemCd = 5;
             string headerName = "◆算定情報";
-            List<SanteiInfomationModel> listSanteiInfModels = _masterFinder.GetCalculationInfo(_ptId, _sinDate);
+            string headerInf = "";
+            List<SanteiInfModel> listSanteiInfModels = _santeiInfRepository.GetCalculationInfo(hpId, ptId, sinDate);
             if (listSanteiInfModels.Count > 0)
             {
                 listSanteiInfModels = listSanteiInfModels.Where(u => u.DayCount > u.AlertDays).ToList();
-                foreach (SanteiInfomationModel santeiInfomationModel in listSanteiInfModels)
+                foreach (var santeiInfomationModel in listSanteiInfModels)
                 {
-                    summaryInfItem.HeaderInfo += santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine;
+                    headerInf += santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine;
                 }
-                summaryInfItem.HeaderInfo = summaryInfItem.HeaderInfo?.TrimEnd(Environment.NewLine.ToCharArray());
+                headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
+                summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
             }
         }
 
