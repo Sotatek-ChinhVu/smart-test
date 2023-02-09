@@ -496,24 +496,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                   && listPtIds.Contains(ptGrpInf.PtId))
                                                                .ToList();
 
-                //foreach (var group in searchModel.GroupSearchModels)
-                //{
-                //    if (string.IsNullOrEmpty(group.Value))
-                //    {
-                //        continue;
-                //    }
-                //    ptGrpInfs = ptGrpInfs.Where(ptGr => ptGr.GroupId == group.Key
-                //                                                                      && ptGr.GroupCode == group.Value)
-                //                                                .ToList();
-
-
-                //}
-                //listPtIds = ptGrpInfs
-                //                         .Select(item => item.PtId)
-                //                         .Distinct()
-                //                         .ToList();
-
-                //receInfs = receInfs.Where(pt => listPtIds.Contains(pt.PtId));
                 foreach (var group in searchModel.GroupSearchModels)
                 {
                     if (string.IsNullOrEmpty(group.Value))
@@ -601,18 +583,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         orderItemList.Add(itemCd);
                     }
 
-                    var listOrderInfs = odrInfs.ToList();
-                    var listRaiinNo = listOrderInfs.Select(item => item.RaiinNo).Distinct().ToList();
-                    var listSinDate = listOrderInfs.Select(item => item.SinDate).Distinct().ToList();
-                    var listRpEdaNo = listOrderInfs.Select(item => item.RpEdaNo).Distinct().ToList();
-                    var listRpNo = listOrderInfs.Select(item => item.RpNo).Distinct().ToList();
                     var odrDetails = NoTrackingDataContext.OdrInfDetails.AsEnumerable()
                                                                         .Where(item => item.HpId == hpId
                                                                                        && listPtIds.Contains(item.PtId)
-                                                                                       && listRaiinNo.Contains(item.RaiinNo)
-                                                                                       && listSinDate.Contains(item.SinDate)
-                                                                                       && listRpEdaNo.Contains(item.RpEdaNo)
-                                                                                       && listRpNo.Contains(item.RpNo)
                                                                                        && listSinYm.Contains(item.SinDate / 100)
                                                                                        && (!string.IsNullOrEmpty(item.ItemCd) && orderItemList.Contains(item.ItemCd)) // For normal item
                                                                                        || (string.IsNullOrEmpty(item.ItemCd) // For free comment
@@ -630,14 +603,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                             item.Suryo,
                                                                             item.ItemName,
                                                                             SinYm = item.SinDate / 100
-                                                                        });
+                                                                        }).AsEnumerable();
 
-                    var check = odrInfs.ToList();
-                    var check1 = hokenPatterns.ToList();
-                    var check2 = tenMstOdrs.ToList();
-                    var check3 = odrDetails.ToList();
-
-                    odrDetailItemSum = (from odrDetail in odrDetails.AsEnumerable()
+                    //var check = odrInfs.ToList();
+                    //var check1 = hokenPatterns.ToList();
+                    //var check2 = tenMstOdrs.ToList();
+                    //var check3 = odrDetails.ToList();
+                    odrDetailItemSum = (from odrDetail in odrDetails
                                         join rece in receInfs on new { odrDetail.HpId, odrDetail.PtId, odrDetail.SinYm } equals new { rece.HpId, rece.PtId, rece.SinYm }
                                         join odr in odrInfs on new { odrDetail.HpId, odrDetail.PtId, odrDetail.SinDate, odrDetail.RaiinNo, odrDetail.RpEdaNo, odrDetail.RpNo }
                                                             equals new { odr.HpId, odr.PtId, odr.SinDate, odr.RaiinNo, odr.RpEdaNo, odr.RpNo }
@@ -682,28 +654,20 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                     ))
                                                                               .Select(item => new { item.HpId, item.PtId, item.SinYm, item.SeqNo, item.RpNo, item.Suryo, item.ItemCd, item.ItemName });
 
-                    var listSinkouiDetails = sinkouiDetails.ToList();
-                    var listSeqNo = listSinkouiDetails.Select(item => item.SeqNo).ToList();
-                    var listRpNo = listSinkouiDetails.Select(item => item.RpNo).ToList();
-
                     var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
                                                                                 && item.IsDeleted == 0
                                                                                 && listSinYm.Contains(item.SinYm)
-                                                                                && listSeqNo.Contains(item.SeqNo)
-                                                                                && listRpNo.Contains(item.RpNo)
                                                                                 && listPtIds.Contains(item.PtId))
                                                                  .Select(item => new { item.HpId, item.PtId, item.SinYm, item.RpNo, item.SeqNo, item.HokenId, item.InoutKbn });
 
 
                     var sinkouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                                          && listPtIds.Contains(item.PtId)
                                                                                           && listSinYm.Contains(item.SinYm)
-                                                                                          && listSeqNo.Contains(item.SeqNo)
-                                                                                          && listRpNo.Contains(item.RpNo)
-                                                                                          && listPtIds.Contains(item.PtId))
+                                                                                          )
                                                                            .Select(item => new { item.HpId, item.PtId, item.SinYm, item.SeqNo, item.RpNo, item.Count });
                     //var check = sinkouiDetails.ToList();
                     //var check1 = sinKouis.ToList();
-                    //var check2 = sinkouiCounts.ToList();
 
                     santeiItemSum = (from detail in sinkouiDetails.AsEnumerable()
                                      join rece in receInfs on new { detail.PtId, detail.SinYm } equals new { rece.PtId, rece.SinYm }
@@ -748,7 +712,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     {
                         itemSumList = santeiItemSum;
                         // Get santei item
-                        var itemSantei = santeiItemListWithItemCd.Find(item => item.ItemCd == model.ItemCd);
+                        var itemSantei = santeiItemListWithItemCd.FirstOrDefault(item => item.ItemCd == model.ItemCd);
                         if (!string.IsNullOrEmpty(itemCd) && !itemCd.StartsWith("CO"))
                         {
                             if (itemSantei == null) { continue; }
