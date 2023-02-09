@@ -1,6 +1,8 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class DrugAllergyResultModel
+    public class DrugAllergyResultModel : OrderInforResultModel
     {
         public int Level { get; set; }
 

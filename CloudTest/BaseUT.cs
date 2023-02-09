@@ -33,9 +33,15 @@ namespace CloudUnitTest
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
                 }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var noTrackingOptions = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(_unittestDBConnectionString, buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                var noTrackingFactory = new PooledDbContextFactory<TenantNoTrackingDataContext>(noTrackingOptions);
                 mockTenantProvider.Setup(repo => repo.GetTrackingTenantDataContext()).Returns(factory.CreateDbContext());
-                
+                mockTenantProvider.Setup(repo => repo.GetNoTrackingDataContext()).Returns(noTrackingFactory.CreateDbContext());
+
                 return mockTenantProvider.Object;
             }
         }

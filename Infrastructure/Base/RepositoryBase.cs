@@ -11,6 +11,11 @@ namespace Infrastructure.Base
             _tenantProvider = tenantProvider;
         }
 
+        public string GetCacheKey()
+        {
+            return _tenantProvider.GetClinicID() + "-" + this.GetType().Name;
+        }
+
         private TenantDataContext? _trackingDataContext;
         public TenantDataContext TrackingDataContext
         {

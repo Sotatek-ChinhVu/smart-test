@@ -7,6 +7,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.CommonChecker;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
@@ -311,6 +312,16 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckedAfter327ScreenResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.OrderRealtimeChecker)]
+        public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
+        {
+            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder);
+            var output = _bus.Handle(input);
+            var presenter = new OrderRealtimeCheckerPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
@@ -20,11 +21,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             // Get listItemCode
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
+            List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
             List<KinkiResultModel> checkedResult = Finder.CheckKinki(HpID, settingLevel, Sinday, listItemCode, listItemCode);
             RemoveDuplicate(ref checkedResult);
 
-            List<string> listDrugItemCode = GetAllOdrDetailCodeByOrderList(CurrentListOrder);
+            List<ItemCodeModel> listDrugItemCode = GetAllOdrDetailCodeByOrderList(CurrentListOrder);
             checkedResult.AddRange(Finder.CheckKinki(HpID, settingLevel, Sinday, listDrugItemCode, listItemCode));
 
             return unitCheckerResult;

@@ -1,8 +1,10 @@
-﻿namespace UseCase.NextOrder
+﻿using UseCase.MedicalExamination.UpsertTodayOrd;
+
+namespace UseCase.NextOrder
 {
     public class NextOrderItem
     {
-        public NextOrderItem(long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int sortNo, int isDeleted, List<RsvKrtByomeiItem> rsvKrtByomeiItems, RsvKrtKarteInfItem rsvkrtKarteInf, List<RsvKrtOrderInfItem> rsvKrtOrderInfItems)
+        public NextOrderItem(long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int sortNo, int isDeleted, List<RsvKrtByomeiItem> rsvKrtByomeiItems, RsvKrtKarteInfItem rsvkrtKarteInf, List<RsvKrtOrderInfItem> rsvKrtOrderInfItems, FileItemInputItem fileItem)
         {
             RsvkrtNo = rsvkrtNo;
             RsvkrtKbn = rsvkrtKbn;
@@ -10,9 +12,10 @@
             RsvName = rsvName;
             SortNo = sortNo;
             IsDeleted = isDeleted;
-            this.rsvKrtByomeiItems = rsvKrtByomeiItems;
-            this.rsvkrtKarteInf = rsvkrtKarteInf;
-            this.rsvKrtOrderInfItems = rsvKrtOrderInfItems;
+            RsvKrtByomeiItems = rsvKrtByomeiItems;
+            RsvkrtKarteInf = rsvkrtKarteInf;
+            RsvKrtOrderInfItems = rsvKrtOrderInfItems;
+            FileItem = fileItem;
         }
 
         public long RsvkrtNo { get; private set; }
@@ -27,10 +30,12 @@
 
         public int IsDeleted { get; private set; }
 
-        public List<RsvKrtByomeiItem> rsvKrtByomeiItems { get; private set; }
+        public List<RsvKrtByomeiItem> RsvKrtByomeiItems { get; private set; }
 
-        public RsvKrtKarteInfItem rsvkrtKarteInf { get; private set; }
+        public RsvKrtKarteInfItem RsvkrtKarteInf { get; private set; }
 
-        public List<RsvKrtOrderInfItem> rsvKrtOrderInfItems { get; private set; }
+        public List<RsvKrtOrderInfItem> RsvKrtOrderInfItems { get; private set; }
+
+        public FileItemInputItem FileItem { get; private set; }
     }
 }

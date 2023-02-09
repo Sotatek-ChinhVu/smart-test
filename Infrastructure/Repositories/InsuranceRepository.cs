@@ -1407,7 +1407,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceZeroKisai,
                                         hokenMst.ReceSpKbn,
                                         prefactureName,
-                                        hokenMst.PrefNo);
+                                        hokenMst.PrefNo,
+                                        hokenMst.SortNo);
                 return itemHokenMst;
             }
             return new HokenMstModel();
@@ -1430,14 +1431,14 @@ namespace Infrastructure.Repositories
                     HokenId = insuranceScan.HokenId,
                     FileName = insuranceScan.FileName,
                     IsDeleted = DeleteStatus.None,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId
                 });
             }
             else
             {
                 model.FileName = insuranceScan.FileName;
-                model.UpdateDate = DateTime.UtcNow;
+                model.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 model.UpdateId = userId;
             }
             return TrackingDataContext.SaveChanges() > 0;
@@ -1455,7 +1456,7 @@ namespace Infrastructure.Repositories
                 return false;
 
             model.IsDeleted = DeleteStatus.DeleteFlag;
-            model.UpdateDate = DateTime.UtcNow;
+            model.UpdateDate = CIUtil.GetJapanDateTimeNow();
             model.UpdateId = userId;
 
             return TrackingDataContext.SaveChanges() > 0;

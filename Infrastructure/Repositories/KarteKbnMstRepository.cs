@@ -1,7 +1,6 @@
 ﻿using Domain.Models.KarteKbnMst;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {

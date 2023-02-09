@@ -12,9 +12,6 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Infrastructure.Repositories
 {
@@ -244,6 +241,14 @@ namespace Infrastructure.Repositories
         public bool CheckExistedFilter(int hpId, int userId, int filterId)
         {
             return NoTrackingDataContext.KarteFilterMsts.Any(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted == 0);
+        }
+
+        public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted)
+        {
+            var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted).OrderByDescending(r => r.SinDate)
+                                                .OrderByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
+            var index = raiinInfs.IndexOf(raiinNo);
+            return index;
         }
 
         #region private method

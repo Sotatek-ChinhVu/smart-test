@@ -1,15 +1,8 @@
 ﻿using Domain.Constant;
 using Domain.Models.DrugInfor;
-using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
-using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {

@@ -7,7 +7,5 @@ namespace EmrCloudApi.Requests.NextOrder
         public long PtId { get; set; }
 
         public List<NextOrderItem> NextOrderItems { get; set; } = new();
-
-        public FileItemRequestItem FileItem { get; set; } = new();
     }
 }
