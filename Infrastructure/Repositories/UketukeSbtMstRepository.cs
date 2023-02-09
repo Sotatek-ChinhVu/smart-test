@@ -59,13 +59,13 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
                     uketukeSbtMst.KbnName = inputData.KbnName;
                     uketukeSbtMst.SortNo = inputData.SortNo;
                     uketukeSbtMst.IsDeleted = inputData.IsDeleted;
-                    uketukeSbtMst.UpdateMachine = CIUtil.GetComputerName();
+                    uketukeSbtMst.UpdateMachine = string.Empty;
                     uketukeSbtMst.UpdateDate = DateTime.UtcNow;
                     uketukeSbtMst.UpdateId = userId;
                 }
                 else
                 {
-                    TrackingDataContext.UketukeSbtMsts.AddRange(ConvertUketukeSbtMsts(inputData, userId, hpId));
+                    TrackingDataContext.UketukeSbtMsts.AddRange(CreateUketukeSbtMst(inputData, userId, hpId));
                 }
             }
             
@@ -73,7 +73,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
         TrackingDataContext.SaveChanges();
     }
 
-    private static UketukeSbtMst ConvertUketukeSbtMsts(UketukeSbtMstModel u, int userId, int hpId)
+    private UketukeSbtMst CreateUketukeSbtMst(UketukeSbtMstModel u, int userId, int hpId)
     {
         return new UketukeSbtMst
         {
@@ -84,10 +84,10 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             IsDeleted = u.IsDeleted,
             CreateDate = DateTime.UtcNow,
             CreateId = userId,
-            CreateMachine = CIUtil.GetComputerName(),
+            CreateMachine = string.Empty,
             UpdateDate = DateTime.UtcNow,
             UpdateId = userId,
-            UpdateMachine = CIUtil.GetComputerName()
+            UpdateMachine = string.Empty
         };
     }
 

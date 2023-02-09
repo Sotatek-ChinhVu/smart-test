@@ -37,11 +37,6 @@ namespace Helper.Common
             }
         }
 
-        public static String GetComputerName()
-        {
-            return Environment.MachineName;
-        }
-
         public static int FullEndDate(int endDate)
         {
             if (endDate.AsString().Count() == 8)
