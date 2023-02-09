@@ -262,8 +262,8 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var oldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo) && o.IsDeleted == DeleteTypes.None);
             var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo));
+            var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
 
             foreach (var byomei in byomeis)
             {
