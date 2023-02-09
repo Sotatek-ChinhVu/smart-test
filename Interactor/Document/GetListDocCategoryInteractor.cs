@@ -85,6 +85,7 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
                 var listFileItem = listOutputData
                                             .Where(file => file.Contains("/" + catId + "/"))
                                             .Select(file => new FileDocumentModel(
+                                                    catId,
                                                     file.Replace(path, string.Empty).Replace(catId + "/", string.Empty),
                                                     domainUrl + file
                                              )).ToList();
