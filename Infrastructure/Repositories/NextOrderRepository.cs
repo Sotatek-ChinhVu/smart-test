@@ -215,8 +215,7 @@ namespace Infrastructure.Repositories
 
         private void UpsertKarteInf(int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
         {
-
-            var oldKarteInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == karteInf.HpId && o.PtId == karteInf.PtId && o.RsvkrtNo == karteInf.RsvkrtNo && o.RsvDate == karteInf.RsvDate && o.IsDeleted == DeleteTypes.None);
+            var oldKarteInf = TrackingDataContext.RsvkrtKarteInfs.FirstOrDefault(o => o.HpId == karteInf.HpId && o.PtId == karteInf.PtId && o.RsvkrtNo == karteInf.RsvkrtNo && o.RsvDate == karteInf.RsvDate && o.IsDeleted == DeleteTypes.None);
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
                 if (oldKarteInf != null)
