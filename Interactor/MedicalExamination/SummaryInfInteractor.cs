@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.PatientInfor;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
@@ -292,6 +293,54 @@ namespace Interactor.MedicalExamination
                 }
                 headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
                 summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            }
+        }
+
+        private void GetReproductionInfo(SummaryInfItem ptHeaderInfoModel)
+        {
+            int grpItemCd = 6;
+            string headerName = "■出産予定";
+            List<PtPregnancyModel> listPtPregnancyModels = new List<PtPregnancyModel>();
+
+            listPtPregnancyModels = _masterFinder.GetPtPregnancyCollecion(_ptId, _sinDate);
+
+            if (listPtPregnancyModels.Count > 0)
+            {
+                string GetSDateFromDateTime(DateTime? dateTime)
+                {
+                    if (dateTime == null)
+                    {
+                        return string.Empty;
+                    }
+                    return CIUtil.SDateToShowSDate(CIUtil.DateTimeToInt((DateTime)dateTime));
+                };
+
+                PtPregnancyModel ptPregnancyModel = listPtPregnancyModels.FirstOrDefault();
+                if (ptPregnancyModel.PeriodDate != null)
+                {
+                    ptHeaderInfoModel.HeaderInfo += "月経日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDate) + ")" + Space + "/";
+                }
+                if (!string.IsNullOrEmpty(ptPregnancyModel.PeriodWeek) && ptPregnancyModel.PeriodWeek != "0W0D")
+                {
+                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + Space + "/";
+                }
+                if (ptPregnancyModel.PeriodDueDate != null)
+                {
+                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDueDate) + ")" + Space + "/";
+                }
+                if (ptPregnancyModel.OvulationDate != null)
+                {
+                    ptHeaderInfoModel.HeaderInfo += "排卵日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDate) + ")" + Space + "/";
+                }
+                if (!string.IsNullOrEmpty(ptPregnancyModel.OvulationWeek) && ptPregnancyModel.OvulationWeek != "0W0D")
+                {
+                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + Space + "/";
+                }
+                if (ptPregnancyModel.OvulationDueDate != null)
+                {
+                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDueDate) + ")";
+                }
+                ptHeaderInfoModel.HeaderInfo = ptHeaderInfoModel.HeaderInfo?.TrimEnd('/');
             }
         }
 
