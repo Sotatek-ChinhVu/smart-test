@@ -7,6 +7,6 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInfor.GetListPatient;
 
-public interface IGetPatientInfoOutputPort : IOutputPort<GetPatientInfoOutputData>
+public interface IGetListPatientInfoInputPort : IInputPort<GetListPatientInfoInputData, GetListPatientInfoOutputData>
 {
 }
