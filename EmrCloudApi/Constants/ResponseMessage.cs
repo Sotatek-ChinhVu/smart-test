@@ -534,7 +534,6 @@
         public static readonly string InvalidKbnName = "InvalidKbnName";
         public static readonly string InputNoData = "InputNoData";
         public static readonly string UketukeListExistedInputData = "UketukeListExistedInputData";
-        public static readonly string UketukeListInvalidExistedKbnId = "UketukeListInvalidExistedKbnId";
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";

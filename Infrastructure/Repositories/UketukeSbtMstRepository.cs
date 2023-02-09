@@ -39,11 +39,11 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
 
     public void Upsert(List<UketukeSbtMstModel> upsertUketukeList, int userId, int hpId)
     {
-        foreach(var inputData in upsertUketukeList)
+        foreach (var inputData in upsertUketukeList)
         {
+            var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
             if (inputData.IsDeleted == DeleteTypes.Deleted)
             {
-                var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
                 if (uketukeSbtMsts != null)
                 {
                     uketukeSbtMsts.IsDeleted = DeleteTypes.Deleted;
@@ -51,16 +51,15 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             }
             else
             {
-                var uketukeSbtMst = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
-                if (uketukeSbtMst != null)
+                if (uketukeSbtMsts != null && uketukeSbtMsts.KbnId == inputData.KbnId)
                 {
-                    uketukeSbtMst.KbnId = inputData.KbnId;
-                    uketukeSbtMst.KbnName = inputData.KbnName;
-                    uketukeSbtMst.SortNo = inputData.SortNo;
-                    uketukeSbtMst.IsDeleted = inputData.IsDeleted;
-                    uketukeSbtMst.UpdateMachine = string.Empty;
-                    uketukeSbtMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    uketukeSbtMst.UpdateId = userId;
+                    uketukeSbtMsts.KbnId = inputData.KbnId;
+                    uketukeSbtMsts.KbnName = inputData.KbnName;
+                    uketukeSbtMsts.SortNo = inputData.SortNo;
+                    uketukeSbtMsts.IsDeleted = inputData.IsDeleted;
+                    uketukeSbtMsts.UpdateMachine = string.Empty;
+                    uketukeSbtMsts.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    uketukeSbtMsts.UpdateId = userId;
                 }
                 else
                 {
@@ -93,11 +92,5 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     public void ReleaseResource()
     {
         DisposeDataContext();
-    }
-
-    public bool CheckExistedKbnId(List<int> kbnIds)
-    {
-        var anyUketukeSbtMsts = NoTrackingDataContext.UketukeSbtMsts.Any(x => kbnIds.Contains(x.KbnId) && x.IsDeleted != 1);
-        return anyUketukeSbtMsts ;
     }
 }

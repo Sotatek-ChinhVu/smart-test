@@ -4,9 +4,9 @@ namespace EmrCloudApi.Requests.UketukeSbt;
 
 public class UpsertUketukeSbtMstListRequest
 {
-    public List<UketukeSbtMstModel> uketukeSbtMsts { get; set; } = new List<UketukeSbtMstModel> ();
+    public List<UketukeSbtMstDto> UketukeSbtMsts { get; set; } = new List<UketukeSbtMstDto>();
 
-    public class UketukeSbtMstModel
+    public class UketukeSbtMstDto
     {
         public int KbnId { get; set; }
 

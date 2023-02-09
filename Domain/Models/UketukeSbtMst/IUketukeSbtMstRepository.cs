@@ -10,6 +10,4 @@ public interface IUketukeSbtMstRepository : IRepositoryBase
     List<UketukeSbtMstModel> GetList();
 
     void Upsert(List<UketukeSbtMstModel> upsertUketukeList, int userId, int hpId);
-
-    bool CheckExistedKbnId(List<int> kbnIds);
 }

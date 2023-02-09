@@ -38,11 +38,6 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
                 return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.UketukeListExistedInputData);
             }
 
-            if(!_uketukeSbtMstRepository.CheckExistedKbnId(inputdata.UketukeSbtMsts.Select(x => x.KbnId).ToList()))
-            {
-                return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.UketukeListInvalidExistedKbnId);
-            }
-
             _uketukeSbtMstRepository.Upsert(inputdata.ToList(), inputdata.UserId, inputdata.HpId);
 
             return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.Success);

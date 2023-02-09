@@ -59,7 +59,7 @@ public class UketukeSbtController : AuthorizeControllerBase
     [HttpPost(ApiPath.Upsert + "Mst")]
     public ActionResult<Response<UpsertUketukeSbtMstListResponse>> GetNext([FromBody] UpsertUketukeSbtMstListRequest req)
     {
-        var input = new UpsertUketukeSbtMstInputData(req.uketukeSbtMsts.Select(x => new UketukeSbtMstModel(
+        var input = new UpsertUketukeSbtMstInputData(req.UketukeSbtMsts.Select(x => new UketukeSbtMstModel(
                                                     x.KbnId,
                                                     x.KbnName,
                                                     x.SortNo,
