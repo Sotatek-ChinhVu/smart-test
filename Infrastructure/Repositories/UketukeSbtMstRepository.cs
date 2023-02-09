@@ -59,7 +59,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
                     uketukeSbtMst.SortNo = inputData.SortNo;
                     uketukeSbtMst.IsDeleted = inputData.IsDeleted;
                     uketukeSbtMst.UpdateMachine = string.Empty;
-                    uketukeSbtMst.UpdateDate = DateTime.UtcNow;
+                    uketukeSbtMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     uketukeSbtMst.UpdateId = userId;
                 }
                 else
@@ -81,10 +81,10 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             KbnName = u.KbnName,
             SortNo = u.SortNo,
             IsDeleted = u.IsDeleted,
-            CreateDate = DateTime.UtcNow,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
             CreateId = userId,
             CreateMachine = string.Empty,
-            UpdateDate = DateTime.UtcNow,
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateId = userId,
             UpdateMachine = string.Empty
         };
