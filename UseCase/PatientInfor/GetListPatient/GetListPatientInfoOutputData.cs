@@ -8,14 +8,14 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInfor.GetListPatient;
 
-public class GetPatientInfoOutputData : IOutputData
+public class GetListPatientInfoOutputData : IOutputData
 {
-    public GetPatientInfoOutputData(GetPatientInfoStatus status, List<GetListPatientInfoInputItem> patientInfoLists)
+    public GetListPatientInfoOutputData(GetListPatientInfoStatus status, List<GetListPatientInfoInputItem> patientInfoLists)
     {
         Status = status;
         PatientInfoLists = patientInfoLists;
     }
 
-    public GetPatientInfoStatus Status { get; private set; }
+    public GetListPatientInfoStatus Status { get; private set; }
     public List<GetListPatientInfoInputItem> PatientInfoLists { get; private set; } = new List<GetListPatientInfoInputItem>();
 }
