@@ -40,40 +40,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         // Rece
         var receInfs = NoTrackingDataContext.ReceInfs.Where(item => item.SeikyuYm == seikyuYm
                                                                     && item.HpId == hpId);
-        //.AsEnumerable()
-        //.Select(item => new
-        //{
-        //    item.HpId,
-        //    item.PtId,
-        //    item.SinYm,
-        //    item.SeikyuYm,
-        //    item.HokenId,
-        //    item.HokenKbn,
-        //    item.ReceSbt,
-        //    item.Tensu,
-        //    item.HokenSbtCd,
-        //    item.TantoId,
-        //    item.KaId,
-        //    item.IsTester,
-        //    item.Kohi1Nissu,
-        //    item.HokenNissu,
-        //    item.Kohi1Id,
-        //    item.Kohi2Id,
-        //    item.Kohi3Id,
-        //    item.Kohi4Id,
-        //    item.SeikyuKbn,
-        //    item.HokensyaNo,
-        //    item.Kohi1Houbetu,
-        //    item.Kohi2Houbetu,
-        //    item.Kohi3Houbetu,
-        //    item.Kohi4Houbetu,
-        //    item.Kohi1ReceKisai,
-        //    item.Kohi2ReceKisai,
-        //    item.Kohi3ReceKisai,
-        //    item.Kohi4ReceKisai,
-        //    item.Houbetu,
-        //    item.Tokki
-        //});
+        List<ReceInf> receInfFilters = new();
 
         var listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
         var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty().Min();
@@ -548,7 +515,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, item.SanteiItemCd })
                                                             .Select(item => new { item.Key.ItemCd, item.Key.SanteiItemCd }).ToList();
 
-                List<ItemSumModel> odrDetailItemSum = new();
                 IEnumerable<ItemSumModel> enumOdrDetailItemSum = Enumerable.Empty<ItemSumModel>();
                 List<ItemSumModel> santeiItemSum = new();
                 #endregion
@@ -588,26 +554,17 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         orderItemList.Add(itemCd);
                     }
 
-                    //var listOrderInf = odrInfs.ToList();
-                    //var listRaiinNo = listOrderInf.Select(item => item.RaiinNo).Distinct().ToList();
-                    var reces = receInfs.Select(r => r.SinYm).Distinct().ToList();
-                    //var listRpNo = listOrderInf.Select(item => item.RpNo).Distinct().ToList();
-
-                    var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                    var odrDetails = NoTrackingDataContext.OdrInfDetails
+                                                                        .Where(item => item.HpId == hpId
                                                                                        && item.SinDate <= maxSinYm
                                                                                        && item.SinDate >= minSinYm
-                                                                                       //&& listRaiinNo.Contains(item.RaiinNo)
-                                                                                       //&& listRpNo.Contains(item.RpNo)
                                                                                        && listPtIds.Contains(item.PtId)
                                                                                        && listSinYm.Contains(item.SinDate / 100)
-                                                                                       &&
-                                                                                       (item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
-                                                                                       ||
-                                                                                                                      (item.ItemCd == null // For free comment
+                                                                                       && (item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
+                                                                                       || (item.ItemCd == null // For free comment
                                                                                        && item.ItemName != null
                                                                                        //&& listFreeComment.Any(str => item.ItemName.Contains(str))
-                                                                                       )
-                                                                                       )
+                                                                                       ))
                                                                         .Select(item => new OrdInfDetailModel(
                                                                             item.HpId,
                                                                             item.SinDate,
@@ -617,8 +574,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                             item.PtId,
                                                                             item.ItemCd,
                                                                             item.Suryo, item.ItemName));
-
-                    //var itemOdrDetails = odrDetails.Where(od => reces.Contains(od.SinDate / 100)).ToList();
 
                     enumOdrDetailItemSum = (from odrDetail in odrDetails.AsEnumerable()
                                             join rece in receInfs on new { odrDetail.HpId, odrDetail.PtId, odrDetail.SinYm } equals new { rece.HpId, rece.PtId, rece.SinYm }
@@ -641,9 +596,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                             })
                                         .GroupBy(item => new { item.PtId, item.ItemCd, item.ItemName, item.SinYm, item.HokenId })
                                         .Select(item => new ItemSumModel(item.Key.PtId, item.Key.ItemCd, item.Key.ItemName, item.Sum(x => x.Suryo), item.Key.SinYm, item.Key.HokenId));
+
                     var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
                     var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
-                    enumOdrDetailItemSum = enumOdrDetailItemSum.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm)));
+                    enumOdrDetailItemSum = enumOdrDetailItemSum.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm))).ToList();
                     #endregion
                 }
 
@@ -795,6 +751,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     }
                     index++;
                 }
+
                 // Add correct list for filter later
                 sinYmPtIdForFilterList.AddRange(sinYmPtIdList.Select(s => new ItemSumModel(s.PtId, s.SinYm, s.HokenId)).ToList());
             }
@@ -860,8 +817,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 }
 
                 var ptByomeiTempList = ptByomeiTemp.ToList();
-
-                List<ReceInf> receInfFilters = new List<ReceInf>();
                 var lockObj = new object();
                 var receInfToList = receInfs.ToList();
                 Parallel.ForEach(ptByomeiTempList, byomei =>
@@ -871,37 +826,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                      && byomei.StartDate / 100 <= item.SinYm
                                                                      && (byomei.TenkiKbn == TenkiKbnConst.Continued
                                                                          || (byomei.TenkiDate / 100 >= item.SinYm)));
-                    if (receInf != null) {
+                    if (receInf != null)
+                    {
                         lock (lockObj)
                         {
                             receInfFilters.Add(receInf);
                         }
                     }
                 });
-                receInfs = receInfFilters.AsQueryable();
             }
         }
         #endregion
 
-        var test1 = receInfs.ToList();
-        var test2 = receInfEdits.ToList();
-        var test3 = receStatuses.ToList();
-        var test4 = receCheckCmts.ToList();
-        var test5 = receCheckErrors.ToList();
-        var test6 = receSeikyus.ToList();
-        var test7 = syoukiInfs.ToList();
-        var test8 = syobyokeikas.ToList();
-        var test9 = ptInfs.ToList();
-        var test10 = ptHokenInfs.ToList();
-        var test11 = ptLastVisitDates.ToList();
-        var test12 = kaikeiInfs.ToList();
-        var test13 = ptKyuseis.ToList();
-        var test14 = kaMsts.ToList();
-        var test15 = userMsts.ToList();
-        var test16 = ptKohis.ToList();
-        //return new List<ReceiptListModel>();
         #region main query
-        var query = from receInf in receInfs.AsEnumerable()
+        var listReceInfs = receInfFilters.Any() ? receInfFilters : receInfs.ToList();
+        var query = from receInf in listReceInfs
                     join receInfEdit in receInfEdits on new { receInf.HpId, receInf.SeikyuYm, receInf.PtId, receInf.HokenId, receInf.SinYm }
                                                 equals new { receInfEdit.HpId, receInfEdit.SeikyuYm, receInfEdit.PtId, receInfEdit.HokenId, receInfEdit.SinYm } into receInfEditLeft
                     from receInfEdit in receInfEditLeft.DefaultIfEmpty()
