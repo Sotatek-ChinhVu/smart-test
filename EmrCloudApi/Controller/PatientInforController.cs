@@ -84,6 +84,7 @@ using EmrCloudApi.Responses.MaxMoney;
 using EmrCloudApi.Requests.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using EmrCloudApi.Presenters.MaxMoney;
+using UseCase.SwapHoken.Validate;
 
 namespace EmrCloudApi.Controller
 {
@@ -802,6 +803,21 @@ namespace EmrCloudApi.Controller
             var presenter = new GetMaxMoneyByPtIdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.ValidateSwapHoken)]
+        public ActionResult<Response<ValidateSwapHokenResponse>> ValidateSwapHoken([FromBody] ValidateSwapHokenRequest request)
+        {
+            var input = new ValidateSwapHokenInputData(HpId,
+               request.PtId,
+               request.HokenPid,
+               request.StartDate,
+               request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new ValidateSwapHokenPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidateSwapHokenResponse>>(presenter.Result);
         }
     }
 }
