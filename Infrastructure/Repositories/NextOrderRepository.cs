@@ -827,7 +827,7 @@ namespace Infrastructure.Repositories
 
         public List<NextOrderFileInfModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
         {
-            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
+            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId, rsvkrtNo);
             var result = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item =>
                                                                                 item.HpId == hpId
                                                                                 && item.PtId == ptId
@@ -846,6 +846,12 @@ namespace Infrastructure.Repositories
         public long GetLastNextOrderSeqNo(int hpId, long ptId)
         {
             var lastItem = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList()?.MaxBy(item => item.SeqNo);
+            return lastItem != null ? lastItem.SeqNo : 0;
+        }
+
+        private long GetLastNextOrderSeqNo(int hpId, long ptId, long rsvkrtNo)
+        {
+            var lastItem = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RsvkrtNo == rsvkrtNo).ToList()?.MaxBy(item => item.SeqNo);
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 
