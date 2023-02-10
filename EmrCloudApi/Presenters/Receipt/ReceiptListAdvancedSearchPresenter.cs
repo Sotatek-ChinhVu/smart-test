@@ -19,7 +19,6 @@ public class ReceiptListAdvancedSearchPresenter : IReceiptListAdvancedSearchOutp
     private string GetMessage(ReceiptListAdvancedSearchStatus status) => status switch
     {
         ReceiptListAdvancedSearchStatus.Successed => ResponseMessage.Success,
-        ReceiptListAdvancedSearchStatus.Failed => ResponseMessage.Failed,
         _ => string.Empty
     };
 }

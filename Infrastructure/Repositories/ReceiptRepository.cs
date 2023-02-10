@@ -1295,9 +1295,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                  && item.PtId == ptId
                                                                  && item.HokenId == hokenId
                                                                  && item.IsDeleted == DeleteTypes.None)
-                                                     .Select(item => ConvertToReceCmtModel(item))
                                                      .ToList();
-        return receCmts;
+
+        var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
+        return result;
     }
     #endregion
 
