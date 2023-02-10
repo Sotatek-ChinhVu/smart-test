@@ -9,6 +9,5 @@ public enum UpsertUketukeSbtMstStatus
     InvalidKbnName,
     InvalidSortNo,
     InvalidIsDeleted,
-    UketukeListExistedInputData,
-    UketukeListInvalidExistedKbnId,
+    InputDataDuplicateKbnId
 }

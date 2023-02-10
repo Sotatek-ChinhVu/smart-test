@@ -35,16 +35,12 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
             var checkInputKbnId = inputdata.UketukeSbtMsts.Where(x => x.KbnId > 0).Select(x => x.KbnId);
             if(checkInputKbnId.Count() != checkInputKbnId.Distinct().Count())
             {
-                return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.UketukeListExistedInputData);
+                return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.InputDataDuplicateKbnId);
             }
 
             _uketukeSbtMstRepository.Upsert(inputdata.ToList(), inputdata.UserId, inputdata.HpId);
 
             return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.Success);
-        }
-        catch
-        {
-            return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.Failed);
         }
         finally
         {
@@ -63,10 +59,8 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
             return UpsertUketukeSbtMstStatus.InvalidIsDeleted;
         if (status == ValidationStatus.InputNoData)
             return UpsertUketukeSbtMstStatus.InputNoData;
-        if (status == ValidationStatus.UketukeListInvalidNoExistedKbnId)
-            return UpsertUketukeSbtMstStatus.UketukeListInvalidExistedKbnId;
-        if (status == ValidationStatus.UketukeListExistedInputData)
-            return UpsertUketukeSbtMstStatus.UketukeListExistedInputData;
+        if (status == ValidationStatus.InputDataDuplicateKbnId)
+            return UpsertUketukeSbtMstStatus.InputDataDuplicateKbnId;
 
         return UpsertUketukeSbtMstStatus.Success;
     }

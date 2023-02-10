@@ -32,7 +32,7 @@ public class UpsertUketukeSbtMstListPresenter : IUpsertUketukeSbtMstOutputPort
         UpsertUketukeSbtMstStatus.InputNoData => ResponseMessage.InputNoData,
         UpsertUketukeSbtMstStatus.InvalidSortNo => ResponseMessage.InvalidSortNo,
         UpsertUketukeSbtMstStatus.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
-        UpsertUketukeSbtMstStatus.UketukeListExistedInputData => ResponseMessage.UketukeListExistedInputData,
+        UpsertUketukeSbtMstStatus.InputDataDuplicateKbnId => ResponseMessage.InputDataDuplicateKbnId,
         _ => string.Empty
     };
 }

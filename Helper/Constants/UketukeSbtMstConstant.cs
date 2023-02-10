@@ -15,9 +15,8 @@ public static class UketukeSbtMstConstant
         InvalidKbnId,
         InvalidKbnName,
         InvalidSortNo,
-        InvalidIsDeleted,
-        UketukeListExistedInputData,
-        UketukeListInvalidNoExistedKbnId,
+        InvalidIsDeleted, 
+        InputDataDuplicateKbnId,
         InputNoData,
         Valid,
     }

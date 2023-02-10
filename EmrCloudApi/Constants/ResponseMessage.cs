@@ -530,10 +530,10 @@
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
         //UketukeMst
-        public static readonly string InvalidKbnId = "InvalidKbnId";
-        public static readonly string InvalidKbnName = "InvalidKbnName";
-        public static readonly string InputNoData = "InputNoData";
-        public static readonly string UketukeListExistedInputData = "UketukeListExistedInputData";
+        public static readonly string InvalidKbnId = "Invalid KbnId";
+        public static readonly string InvalidKbnName = "Invalid KbnName";
+        public static readonly string InputNoData = "Input No Data";
+        public static readonly string InputDataDuplicateKbnId = "InputData Duplicate KbnId";
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";

@@ -5,7 +5,7 @@ namespace Domain.Models.UketukeSbtMst;
 
 public interface IUketukeSbtMstRepository : IRepositoryBase
 {
-    UketukeSbtMstModel? GetByKbnId(int kbnId);
+    UketukeSbtMstModel GetByKbnId(int kbnId);
 
     List<UketukeSbtMstModel> GetList();
 
