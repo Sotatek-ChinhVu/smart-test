@@ -1,6 +1,6 @@
 ﻿using Helper.Enum;
 
-namespace Domain.Models.Receipt;
+namespace Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListAdvancedSearchInput
 {

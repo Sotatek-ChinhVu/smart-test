@@ -1,4 +1,4 @@
-﻿namespace UseCase.Receipt;
+﻿namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
 public enum ReceiptListAdvancedSearchStatus : byte
 {

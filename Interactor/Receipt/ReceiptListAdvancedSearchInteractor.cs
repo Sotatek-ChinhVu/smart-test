@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Receipt;
+using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Helper.Enum;
-using UseCase.Receipt;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace Interactor.Receipt;
 

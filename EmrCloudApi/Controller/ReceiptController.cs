@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Controller;
 

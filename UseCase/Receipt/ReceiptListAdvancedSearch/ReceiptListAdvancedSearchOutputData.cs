@@ -1,7 +1,7 @@
-﻿using Domain.Models.Receipt;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt;
+namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListAdvancedSearchOutputData : IOutputData
 {
