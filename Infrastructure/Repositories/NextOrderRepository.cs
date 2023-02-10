@@ -261,7 +261,7 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
+            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
             var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
             var maxSeqNo = allOldByomeis.Count > 0 ? allOldByomeis.Max(a => a.SeqNo) : 0;
             foreach (var byomei in byomeis)
