@@ -1,6 +1,6 @@
-﻿using Domain.Models.Receipt;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
-namespace UseCase.Receipt;
+namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListAdvancedSearchOutputItem
 {
