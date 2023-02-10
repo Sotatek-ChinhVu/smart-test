@@ -3,11 +3,13 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PtCmtInf;
+using Domain.Models.RaiinCmtInf;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Helper.Extension;
 using System.Text;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
@@ -26,8 +28,10 @@ namespace Interactor.MedicalExamination
         private readonly IPtCmtInfRepository _ptCmtInfRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IFamilyRepository _familyRepository;
+        private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
+        private Dictionary<string, string> _relationship = new();
 
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository)
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
@@ -35,23 +39,28 @@ namespace Interactor.MedicalExamination
             _santeiInfRepository = santeiInfRepository;
             _ptCmtInfRepository = ptCmtInfRepository;
             _insuranceRepository = insuranceRepository;
+            _raiinCmtInfRepository = raiinCmtInfRepository;
         }
 
-        public CheckedAfter327ScreenOutputData Handle(CheckedAfter327ScreenInputData inputData)
+        public SummaryInfOutputData Handle(SummaryInfInputData inputData)
         {
             try
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidHpId, new(), new());
+                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidPtId, new(), new());
+                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidPtId);
                 }
                 if (inputData.SinDate < 0)
                 {
-                    return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.InvalidSinDate, new(), new());
+                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidSinDate);
+                }
+                if (inputData.RaiinNo < 0)
+                {
+                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidRaiinNo);
                 }
 
                 var data = _medicalExaminationRepository.GetCheckedAfter327Screen(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.CheckedOrderModels, inputData.IsTokysyoOrder, inputData.IsTokysyosenOrder);
@@ -589,6 +598,7 @@ namespace Interactor.MedicalExamination
         {
             int grpItemCd = 14;
             string headerName = "◆家族歴";
+            string headerInf = "";
             var ptFamilyList = _familyRepository.GetFamilyListByPtId(hpId, ptId, sinDate);
             if (ptFamilyList != null)
             {
@@ -608,9 +618,56 @@ namespace Interactor.MedicalExamination
 
                 if (!string.IsNullOrEmpty(headerInfo))
                 {
-                    ptHeaderInfoModel.HeaderInfo = headerInfo;
+                    headerInf = headerInfo;
                 }
             }
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private string GetRelationshipName(string zokugaraCd)
+        {
+            var relationshipName = string.Empty;
+
+            if (_relationship.Count == 0)
+            {
+                _relationship = new Dictionary<string, string>()
+                {
+                    {nameof(RelationshipEnum.BR), "血縁"},
+                    {nameof(RelationshipEnum.MA), "配偶者"},
+                    {nameof(RelationshipEnum.FA), "父"},
+                    {nameof(RelationshipEnum.MO), "母"},
+
+                    {nameof(RelationshipEnum.GF1), "祖父(父方)"},
+                    {nameof(RelationshipEnum.GM1), "祖母(父方)"},
+                    {nameof(RelationshipEnum.GF2), "祖父(母方)"},
+                    {nameof(RelationshipEnum.GM2), "祖母(母方)"},
+
+                    {nameof(RelationshipEnum.SO), "息子"},
+                    {nameof(RelationshipEnum.DA), "娘"},
+                    {nameof(RelationshipEnum.BB), "兄"},
+                    {nameof(RelationshipEnum.LB), "弟"},
+
+                    {nameof(RelationshipEnum.BS), "姉"},
+                    {nameof(RelationshipEnum.LS), "妹"},
+                    {nameof(RelationshipEnum.GC), "孫"},
+                    {nameof(RelationshipEnum.OT), "非血縁"},
+                };
+            }
+
+            if (_relationship.Keys.Contains(zokugaraCd))
+            {
+                relationshipName = _relationship[zokugaraCd];
+            }
+
+            return relationshipName;
+        }
+
+        private void GetReceptionComment(int hpId, long ptId, int sinDate, long raiinNo, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 13;
+            string headerName = "◆来院コメント";
+            string textRaiinCmtInf = _raiinCmtInfRepository.GetRaiinCmtByPtId(hpId, ptId, sinDate, raiinNo);
+            summaryInfItem = new SummaryInfItem(textRaiinCmtInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
         public void SetDiseaseName(FamilyModel ptFamilyModel)

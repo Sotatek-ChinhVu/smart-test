@@ -6,6 +6,7 @@
         InvalidHpId = 2,
         InvalidPtId = 3,
         InvalidSinDate = 4,
+        InvalidRaiinNo = 5,
         Failed
     }
 }

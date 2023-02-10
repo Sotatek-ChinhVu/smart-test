@@ -1,18 +1,15 @@
-﻿using Domain.Models.MedicalExamination;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.SummaryInf
 {
     public class SummaryInfInputData : IInputData<SummaryInfOutputData>
     {
-        public SummaryInfInputData(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedOrderModels, bool isTokysyoOrder, bool isTokysyosenOrder)
+        public SummaryInfInputData(int hpId, long ptId, int sinDate, long raiinNo)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
-            CheckedOrderModels = checkedOrderModels;
-            IsTokysyoOrder = isTokysyoOrder;
-            IsTokysyosenOrder = isTokysyosenOrder;
+            RaiinNo = raiinNo;
         }
 
         public int HpId { get; private set; }
@@ -21,10 +18,6 @@ namespace UseCase.MedicalExamination.SummaryInf
 
         public int SinDate { get; private set; }
 
-        public List<CheckedOrderModel> CheckedOrderModels { get; private set; }
-
-        public bool IsTokysyoOrder { get; private set; }
-
-        public bool IsTokysyosenOrder { get; private set; }
+        public long RaiinNo { get; private set; }
     }
 }
