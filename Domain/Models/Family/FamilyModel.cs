@@ -2,7 +2,7 @@
 
 public class FamilyModel
 {
-    public FamilyModel(long seqNo, string zokugaraCd, long familyPtNum, string name, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis)
+    public FamilyModel(long seqNo, string zokugaraCd, long familyPtNum, string name, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis, string diseaseName)
     {
         SeqNo = seqNo;
         ZokugaraCd = zokugaraCd;
@@ -17,6 +17,7 @@ public class FamilyModel
         SortNo = sortNo;
         ListPtFamilyRekis = listPtFamilyRekis;
         IsDeleted = false;
+        DiseaseName = diseaseName;
     }
 
     public long SeqNo { get; private set; }
@@ -44,4 +45,6 @@ public class FamilyModel
     public List<PtFamilyRekiModel> ListPtFamilyRekis { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public string DiseaseName { get; private set; }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
-using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -38,7 +37,10 @@ namespace Infrastructure.Repositories.SpecialNote
                                             item.IsDeleted,
                                             item.CmtCd1 ?? string.Empty,
                                             item.CmtCd2 ?? string.Empty,
-                                            item.UpdateDate
+                                            item.UpdateDate,
+                                            string.Empty,
+                                            string.Empty,
+                                            0
                                         )).ToList();
             }
             return new();
@@ -93,7 +95,10 @@ namespace Infrastructure.Repositories.SpecialNote
                         kd?.IsDeleted ?? 0,
                         kd?.CmtCd1 ?? String.Empty,
                         kd?.CmtCd2 ?? String.Empty,
-                        kd?.UpdateDate ?? DateTime.MinValue
+                        kd?.UpdateDate ?? DateTime.MinValue,
+                        string.Empty,
+                        string.Empty,
+                        0
                       )).ToList()
                     );
                 physicals.Add(physical);
@@ -118,9 +123,33 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.IsDeleted,
                 x.UpdateDate,
                 x.UpdateId,
-                x.UpdateMachine ?? String.Empty
+                x.UpdateMachine ?? String.Empty,
+                0
             ));
             return ptPregnancys.ToList();
+        }
+
+        public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId, int sinDate)
+        {
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0 && x.StartDate <= sinDate && x.EndDate >= sinDate)
+              .Select(x => new PtPregnancyModel(
+                x.Id,
+                x.HpId,
+                x.PtId,
+                x.SeqNo,
+                x.StartDate,
+                x.EndDate,
+                x.PeriodDate,
+                x.PeriodDueDate,
+                x.OvulationDate,
+                x.OvulationDueDate,
+                x.IsDeleted,
+                x.UpdateDate,
+                x.UpdateId,
+                x.UpdateMachine ?? String.Empty,
+                sinDate
+            ));
+            return ptPregnancys.OrderByDescending(item => item.StartDate).ToList();
         }
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)

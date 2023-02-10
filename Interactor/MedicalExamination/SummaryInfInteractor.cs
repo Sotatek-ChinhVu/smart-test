@@ -1,5 +1,8 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using Domain.Models.Family;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
+using Domain.Models.PtCmtInf;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
@@ -20,12 +23,18 @@ namespace Interactor.MedicalExamination
         private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfRepository;
         private readonly IImportantNoteRepository _importantNoteRepository;
         private readonly ISanteiInfRepository _santeiInfRepository;
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository)
+        private readonly IPtCmtInfRepository _ptCmtInfRepository;
+        private readonly IInsuranceRepository _insuranceRepository;
+        private readonly IFamilyRepository _familyRepository;
+
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
             _importantNoteRepository = importantNoteRepository;
             _santeiInfRepository = santeiInfRepository;
+            _ptCmtInfRepository = ptCmtInfRepository;
+            _insuranceRepository = insuranceRepository;
         }
 
         public CheckedAfter327ScreenOutputData Handle(CheckedAfter327ScreenInputData inputData)
@@ -296,13 +305,14 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private void GetReproductionInfo(SummaryInfItem ptHeaderInfoModel)
+        private void GetReproductionInfo(long ptId, int sinDate, SummaryInfItem summaryInfItem)
         {
             int grpItemCd = 6;
             string headerName = "■出産予定";
+            StringBuilder headerInf = new StringBuilder();
             List<PtPregnancyModel> listPtPregnancyModels = new List<PtPregnancyModel>();
 
-            listPtPregnancyModels = _masterFinder.GetPtPregnancyCollecion(_ptId, _sinDate);
+            listPtPregnancyModels = _specialNotePatientInfRepository.GetPregnancyList(ptId, sinDate);
 
             if (listPtPregnancyModels.Count > 0)
             {
@@ -315,33 +325,238 @@ namespace Interactor.MedicalExamination
                     return CIUtil.SDateToShowSDate(CIUtil.DateTimeToInt((DateTime)dateTime));
                 };
 
-                PtPregnancyModel ptPregnancyModel = listPtPregnancyModels.FirstOrDefault();
-                if (ptPregnancyModel.PeriodDate != null)
+                PtPregnancyModel ptPregnancyModel = listPtPregnancyModels.FirstOrDefault() ?? new();
+                if (ptPregnancyModel.PeriodDate != 0)
                 {
-                    ptHeaderInfoModel.HeaderInfo += "月経日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDate) + ")" + Space + "/";
+                    headerInf.Append("月経日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDate)) + ")" + Space + "/");
                 }
                 if (!string.IsNullOrEmpty(ptPregnancyModel.PeriodWeek) && ptPregnancyModel.PeriodWeek != "0W0D")
                 {
-                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + Space + "/";
+                    headerInf.Append("妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + Space + "/");
                 }
-                if (ptPregnancyModel.PeriodDueDate != null)
+                if (ptPregnancyModel.PeriodDueDate != 0)
                 {
-                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDueDate) + ")" + Space + "/";
+                    headerInf.Append("予定日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDueDate)) + ")" + Space + "/");
                 }
-                if (ptPregnancyModel.OvulationDate != null)
+                if (ptPregnancyModel.OvulationDate != 0)
                 {
-                    ptHeaderInfoModel.HeaderInfo += "排卵日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDate) + ")" + Space + "/";
+                    headerInf.Append("排卵日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.OvulationDate)) + ")" + Space + "/");
                 }
                 if (!string.IsNullOrEmpty(ptPregnancyModel.OvulationWeek) && ptPregnancyModel.OvulationWeek != "0W0D")
                 {
-                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + Space + "/";
+                    headerInf.Append("妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + Space + "/");
                 }
-                if (ptPregnancyModel.OvulationDueDate != null)
+                if (ptPregnancyModel.OvulationDueDate != 0)
                 {
-                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDueDate) + ")";
+                    headerInf.Append("予定日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.OvulationDueDate)) + ")");
                 }
-                ptHeaderInfoModel.HeaderInfo = ptHeaderInfoModel.HeaderInfo?.TrimEnd('/');
+                string strHeaderInfo = headerInf.ToString().TrimEnd('/');
+                summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
             }
+        }
+
+        private void GetReservationInf(SummaryInfItem summaryInfItem)
+        {
+            int today = DateTime.Now.ToString("yyyyMMdd").AsInteger();
+            int grpItemCd = 7;
+            string headerName = "■予約情報";
+            List<RsvInfModel> listRsvInfModel = _masterFinder.GetRsvInfoByRsvInf(_ptId, today);
+            List<RaiinInfModel> listRaiinInfModel = _masterFinder.GetRsvInfoByRaiinInf(_ptId, today);
+            listRaiinInfModel = listRaiinInfModel.Where(u => !listRsvInfModel.Any(r => r.RaiinNo == u.RaiinNo)).ToList();
+            foreach (RaiinInfModel raiinInf in listRaiinInfModel)
+            {
+                listRsvInfModel.Add(new RsvInfModel(null, null, null, raiinInf));
+            }
+
+            if (listRsvInfModel.Count > 0)
+            {
+                listRsvInfModel = listRsvInfModel.OrderBy(u => u.SinDate).ToList();
+                foreach (RsvInfModel rsvInfModel in listRsvInfModel)
+                {
+                    if (rsvInfModel.RsvInf != null)
+                    {
+                        //formart for RsvInf
+                        string startTime = rsvInfModel.StartTime > 0 ? Space + CIUtil.TimeToShowTime(rsvInfModel.StartTime) + Space : Space;
+                        string rsvFrameName = string.IsNullOrEmpty(rsvInfModel.RsvFrameName) ? string.Empty : "[" + rsvInfModel.RsvFrameName + "]";
+                        summaryInfItem.HeaderInfo += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + Space + rsvFrameName + Environment.NewLine;
+                    }
+                    else
+                    {
+                        //formart for raiinInf
+                        string kaName = string.IsNullOrEmpty(rsvInfModel.RaiinInfModel.KaSname) ? Space : Space + "[" + rsvInfModel.RaiinInfModel.KaSname + "]" + Space;
+                        summaryInfItem.HeaderInfo += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + Space
+                                                        + FormatTime(rsvInfModel.RaiinInfModel.YoyakuTime)
+                                                        + kaName
+                                                        + rsvInfModel.RaiinInfModel.TantoName + Space
+                                                        + (!string.IsNullOrEmpty(rsvInfModel.RaiinInfModel.RaiinCmt) ? "(" + rsvInfModel.RaiinInfModel.RaiinCmt + ")" : string.Empty)
+                                                        + Environment.NewLine;
+                    }
+                }
+            }
+            summaryInfItem.HeaderInfo = summaryInfItem.HeaderInfo?.TrimEnd(Environment.NewLine.ToCharArray());
+        }
+
+        private void GetComment(int hpId, long ptId, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 8;
+            string headerName = "■コメント";
+            string headerInf = "";
+            PtCmtInfModel ptCmtInfModel = _ptCmtInfRepository.GetPtCmtInfo(hpId, ptId);
+            if (ptCmtInfModel != null && !string.IsNullOrEmpty(ptCmtInfModel.Text))
+            {
+                headerInf += ptCmtInfModel.Text + Environment.NewLine;
+            }
+            headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private void GetAddress(int hpId, long ptId, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 9;
+            string headerName = "◆住所";
+            string headerInf = "";
+            var ptInfModel = _patientInfRepository.GetPtInf(hpId, ptId);
+            if (ptInfModel != null && !string.IsNullOrEmpty(ptInfModel.HomeAddress1 + ptInfModel.HomeAddress2))
+            {
+                headerInf = ptInfModel.HomeAddress1 + Space + ptInfModel.HomeAddress2;
+            }
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private void GetInsuranceInfo(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 10;
+            string headerName = "◆保険情報";
+            var ptHoken = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
+            var ptHokenInfs = ptHoken.ListInsurance;
+            if (ptHokenInfs.Count == 0) return;
+            StringBuilder futanInfo = new StringBuilder();
+            StringBuilder kohiInf = new StringBuilder();
+            string headerInf = "";
+            foreach (var ptHokenInfoModel in ptHokenInfs)
+            {
+                kohiInf.Clear();
+                if (!ptHokenInfoModel.IsEmptyKohi1)
+                {
+                    kohiInf.Append(GetFutanInfo(ptHokenInfoModel.Kohi1));
+                }
+                if (!ptHokenInfoModel.IsEmptyKohi2)
+                {
+                    kohiInf.Append(GetFutanInfo(ptHokenInfoModel.Kohi2));
+                }
+                if (!ptHokenInfoModel.IsEmptyKohi3)
+                {
+                    kohiInf.Append(GetFutanInfo(ptHokenInfoModel.Kohi3));
+                }
+                if (!ptHokenInfoModel.IsEmptyKohi4)
+                {
+                    kohiInf.Append(GetFutanInfo(ptHokenInfoModel.Kohi4));
+                }
+                if (string.IsNullOrEmpty(kohiInf.ToString()))
+                {
+                    continue;
+                }
+                string strKohiInf = kohiInf.ToString();
+                strKohiInf = strKohiInf.TrimEnd();
+                strKohiInf = strKohiInf.TrimEnd('　');
+                strKohiInf = strKohiInf.TrimEnd(',');
+                futanInfo.Append(ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ");
+                futanInfo.Append(strKohiInf);
+                futanInfo.Append(Environment.NewLine);
+            }
+            string strFutanInfo = futanInfo.ToString();
+            strFutanInfo = strFutanInfo.TrimEnd();
+            if (!string.IsNullOrEmpty(strFutanInfo?.Trim()))
+            {
+                headerInf = strFutanInfo;
+            }
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+        }
+
+        private string GetFutanInfo(KohiInfModel ptKohi)
+        {
+            HokenMstModel hokenMst = ptKohi.HokenMstModel;
+            int gokenGaku = ptKohi.GendoGaku;
+            StringBuilder futanInfo = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(ptKohi.FutansyaNo))
+            {
+                futanInfo.Append("[" + ptKohi.FutansyaNo + "]");
+            }
+            else
+            {
+                if (hokenMst == null)
+                {
+                    return string.Empty;
+                }
+                futanInfo.Append("[" + hokenMst.Houbetu + "]");
+            }
+
+            if (hokenMst == null && !string.IsNullOrEmpty(ptKohi.FutansyaNo))
+            {
+                return futanInfo + "," + Space;
+            }
+            if (hokenMst.FutanKbn == 0)
+            {
+                //負担なし
+                futanInfo.Append("0円");
+            }
+            else
+            {
+                if (hokenMst.KaiLimitFutan > 0)
+                {
+                    if (hokenMst.DayLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo.Append(gokenGaku.AsString() + "円/回・");
+                    }
+                    else
+                    {
+                        futanInfo.Append(hokenMst.KaiLimitFutan.AsString() + "円/回・");
+                    }
+                }
+
+                if (hokenMst.DayLimitFutan > 0)
+                {
+                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo.Append(gokenGaku.AsString() + "円/日・");
+                    }
+                    else
+                    {
+                        futanInfo.Append(hokenMst.DayLimitFutan.AsString() + "円/日・");
+                    }
+                }
+
+                if (hokenMst.DayLimitCount > 0)
+                {
+                    futanInfo.Append(hokenMst.DayLimitCount.AsString() + "回/日・");
+                }
+
+                if (hokenMst.MonthLimitFutan > 0)
+                {
+                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.DayLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo.Append(gokenGaku.AsString() + "円/月・");
+                    }
+                    else
+                    {
+                        futanInfo.Append(hokenMst.MonthLimitFutan.AsString() + "円/月・");
+                    }
+                }
+
+                if (hokenMst.MonthLimitCount > 0)
+                {
+                    futanInfo.Append(hokenMst.MonthLimitCount.AsString() + "回/月");
+                }
+            }
+            string strFutanInfo = futanInfo.ToString();
+            if (!string.IsNullOrEmpty(strFutanInfo))
+            {
+                strFutanInfo = strFutanInfo.TrimEnd('・');
+                strFutanInfo = strFutanInfo + "," + Space;
+            }
+
+            return strFutanInfo;
         }
 
         private void GetPhoneNumber(int hpId, long ptId, SummaryInfItem summaryInfItem)
@@ -370,6 +585,66 @@ namespace Interactor.MedicalExamination
             summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
+        private void GetFamilyList(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
+        {
+            int grpItemCd = 14;
+            string headerName = "◆家族歴";
+            var ptFamilyList = _familyRepository.GetFamilyListByPtId(hpId, ptId, sinDate);
+            if (ptFamilyList != null)
+            {
+                string headerInfo = string.Empty;
+                foreach (var ptFamilyModel in ptFamilyList)
+                {
+                    SetDiseaseName(ptFamilyModel);
+                    if (!string.IsNullOrWhiteSpace(ptFamilyModel.DiseaseName))
+                    {
+                        if (!string.IsNullOrEmpty(headerInfo))
+                        {
+                            headerInfo += Environment.NewLine;
+                        }
+                        headerInfo += $"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}";
+                    }
+                }
 
+                if (!string.IsNullOrEmpty(headerInfo))
+                {
+                    ptHeaderInfoModel.HeaderInfo = headerInfo;
+                }
+            }
+        }
+
+        public void SetDiseaseName(FamilyModel ptFamilyModel)
+        {
+            string diseaseName = string.Empty;
+            if (ptFamilyModel.ListPtFamilyRekis != null && ptFamilyModel.ListPtFamilyRekis.Count > 0)
+            {
+                foreach (PtFamilyRekiModel ptByomeiMode in ptFamilyModel.ListPtFamilyRekis)
+                {
+                    if (!ptByomeiMode.IsDeleted)
+                    {
+                        if (!string.IsNullOrEmpty(ptFamilyModel.DiseaseName))
+                        {
+                            diseaseName += "・";
+                        }
+                        diseaseName += ptByomeiMode.Byomei;
+                    }
+                }
+            }
+            ptFamilyModel = new FamilyModel(
+                    ptFamilyModel.SeqNo,
+                    ptFamilyModel.ZokugaraCd,
+                    ptFamilyModel.FamilyPtNum,
+                    ptFamilyModel.Name,
+                    ptFamilyModel.Sex,
+                    ptFamilyModel.Birthday,
+                    ptFamilyModel.Age,
+                    ptFamilyModel.IsDead,
+                    ptFamilyModel.IsSeparated,
+                    ptFamilyModel.Biko,
+                    ptFamilyModel.SortNo,
+                    ptFamilyModel.ListPtFamilyRekis ?? new(),
+                    diseaseName
+                );
+        }
     }
 }
