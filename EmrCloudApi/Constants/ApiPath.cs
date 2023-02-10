@@ -123,6 +123,7 @@
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
+        public const string ValidateSwapHoken = "ValidateSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
