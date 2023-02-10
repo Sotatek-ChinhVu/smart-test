@@ -1,6 +1,7 @@
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -118,7 +119,7 @@ namespace Infrastructure.Repositories
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
                     CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 };
@@ -133,10 +134,10 @@ namespace Infrastructure.Repositories
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
                     CmtKbn = CmtKbns.Comment,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     Text = text,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId
                 };
             }
@@ -149,11 +150,11 @@ namespace Infrastructure.Repositories
                     PtId = raiinInf.PtId,
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow()   ,
                     UpdateId = userId,
                     GrpId = dto.GrpId,
                     KbnCd = dto.KbnCd,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId
                 };
             }
@@ -224,7 +225,7 @@ namespace Infrastructure.Repositories
                     entity.SyosaisinKbn = model.SyosaisinKbn;
                     entity.JikanKbn = model.JikanKbn;
                     entity.SanteiKbn = model.SanteiKbn;
-                    entity.UpdateDate = DateTime.UtcNow;
+                    entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     entity.UpdateId = userId;
                 }
             }
@@ -246,16 +247,16 @@ namespace Infrastructure.Repositories
                         RaiinNo = raiinInf.RaiinNo,
                         CmtKbn = CmtKbns.Comment,
                         Text = text,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     });
                 }
                 else if (raiinCmtInf.Text != text)
                 {
                     raiinCmtInf.Text = text;
-                    raiinCmtInf.UpdateDate = DateTime.UtcNow;
+                    raiinCmtInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     raiinCmtInf.UpdateId = userId;
                 }
             }
@@ -294,8 +295,8 @@ namespace Infrastructure.Repositories
                                 RaiinNo = raiinInf.RaiinNo,
                                 GrpId = kbnInfDto.GrpId,
                                 KbnCd = kbnInfDto.KbnCd,
-                                CreateDate = DateTime.UtcNow,
-                                UpdateDate = DateTime.UtcNow,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateId = userId,
                                 CreateId = userId
                             });
@@ -359,7 +360,7 @@ namespace Infrastructure.Repositories
                         var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                         if (hokenCheckItem != null)
                         {
-                            hokenCheckItem.UpdateDate = DateTime.UtcNow;
+                            hokenCheckItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             hokenCheckItem.UpdateId = userId;
 
                             /// <summary>
@@ -412,9 +413,9 @@ namespace Infrastructure.Repositories
                                 CheckDate = checkDatetime,
                                 CheckCmt = item.Comment,
                                 CheckId = userId,
-                                CreateDate = DateTime.UtcNow,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
                                 CreateId = userId,
-                                UpdateDate = DateTime.UtcNow,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                 UpdateId = userId
                             });
                         }
@@ -439,7 +440,7 @@ namespace Infrastructure.Repositories
                 {
                     ptByomei.TenkiKbn = disease.TenkiKbn;
                     ptByomei.TenkiDate = disease.TenkiDate;
-                    ptByomei.UpdateDate = DateTime.UtcNow;
+                    ptByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     ptByomei.UpdateId = userId;
                 }
             }
@@ -805,7 +806,7 @@ namespace Infrastructure.Repositories
             }
 
             updateEntity(raiinInf);
-            raiinInf.UpdateDate = DateTime.UtcNow;
+            raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             raiinInf.UpdateId = userId;
             NoTrackingDataContext.SaveChanges();
             return true;

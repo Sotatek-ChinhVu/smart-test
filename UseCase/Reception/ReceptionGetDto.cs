@@ -1,11 +1,11 @@
 ﻿using Domain.Constant;
 using Helper.Common;
 
-namespace UseCase.Reception.GetListRaiinInfs
+namespace UseCase.Reception
 {
-    public class GetListRaiinInfInputItem
+    public class ReceptionGetDto
     {
-        public GetListRaiinInfInputItem(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
+        public ReceptionGetDto(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -21,10 +21,6 @@ namespace UseCase.Reception.GetListRaiinInfs
             HokenPid = hokenPid;
             RaiinNo = raiinNo;
         }
-
-        public int HpId { get; private set; }
-
-        public long PtId { get; private set; }
 
         public string SinDateLabel
         {
@@ -72,8 +68,6 @@ namespace UseCase.Reception.GetListRaiinInfs
         public string KaSname { get; private set; }
 
         public string SName { get; private set; }
-
-        public int SinDate { get; private set; }
 
         public string HokenKbnName
         {
@@ -131,6 +125,8 @@ namespace UseCase.Reception.GetListRaiinInfs
             }
         }
 
+        public int SinDate { get; private set; }
+
         public int Status { get; private set; }
 
         public string Houbetu { get; private set; }
@@ -149,5 +145,9 @@ namespace UseCase.Reception.GetListRaiinInfs
         public long RaiinNo { get; private set; }
 
         public int HokenPid { get; private set; }
+
+        public int HpId { get; private set; }
+
+        public long PtId { get; private set; }
     }
 }

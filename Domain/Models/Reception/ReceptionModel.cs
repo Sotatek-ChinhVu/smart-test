@@ -44,8 +44,6 @@ namespace Domain.Models.Reception
 
         public int UketukeId { get; private set; }
 
-        public int UketukeNo { get; private set; }
-
         public string SinStartTime { get; private set; }
 
         public string SinEndTime { get; private set; }
@@ -63,6 +61,8 @@ namespace Domain.Models.Reception
         public int JikanKbn { get; private set; }
 
         public string Comment { get; private set; }
+
+        public int HokenId { get; private set; }
 
         [JsonConstructor]
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)

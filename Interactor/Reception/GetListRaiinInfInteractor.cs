@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Reception;
+using UseCase.Reception;
 using UseCase.Reception.GetListRaiinInfs;
 
 namespace Interactor.RaiinFilterMst;
@@ -35,7 +36,7 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
                 return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPageSize);
             }
 
-            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfInputItem(
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new ReceptionGetDto(
                                                             item.HpId,
                                                             item.PtId,
                                                             item.SinDate,
