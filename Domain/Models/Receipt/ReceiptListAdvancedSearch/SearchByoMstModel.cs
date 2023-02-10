@@ -1,8 +1,8 @@
-﻿namespace UseCase.Receipt;
+﻿namespace Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
-public class SearchByoMstInputItem
+public class SearchByoMstModel
 {
-    public SearchByoMstInputItem(string byomeiCd, string inputName, bool isComment)
+    public SearchByoMstModel(string byomeiCd, string inputName, bool isComment)
     {
         ByomeiCd = byomeiCd;
         InputName = inputName;

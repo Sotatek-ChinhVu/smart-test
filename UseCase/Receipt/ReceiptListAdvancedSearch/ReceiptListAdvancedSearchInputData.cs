@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt;
+namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListAdvancedSearchInputData : IInputData<ReceiptListAdvancedSearchOutputData>
 {

@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
-using UseCase.Receipt;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Presenters.Receipt;
 

@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
+using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Entity.Tenant;
 using Helper.Constants;
 using Helper.Enum;

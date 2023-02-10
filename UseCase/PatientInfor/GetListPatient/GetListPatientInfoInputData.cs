@@ -6,9 +6,9 @@ using UseCase.Diseases.Upsert;
 
 namespace UseCase.PatientInfor.GetListPatient;
 
-public class GetPatientInfoInputData : IInputData<GetPatientInfoOutputData>
+public class GetListPatientInfoInputData : IInputData<GetListPatientInfoOutputData>
 {
-    public GetPatientInfoInputData(int hpId, long ptId, int pageIndex, int pageSize)
+    public GetListPatientInfoInputData(int hpId, long ptId, int pageIndex, int pageSize)
     {
         HpId = hpId;
         PtId = ptId;

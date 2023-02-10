@@ -1,4 +1,4 @@
-﻿using UseCase.Receipt;
+﻿using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Responses.Receipt;
 

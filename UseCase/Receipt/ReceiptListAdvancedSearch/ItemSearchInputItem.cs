@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.Receipt;
+﻿namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
-public class ItemSearchModel
+public class ItemSearchInputItem
 {
-    public ItemSearchModel(string itemCd, string inputName, string rangeSeach, int amount, int orderStatus, bool isComment)
+    public ItemSearchInputItem(string itemCd, string inputName, string rangeSeach, int amount, int orderStatus, bool isComment)
     {
         ItemCd = itemCd;
         InputName = inputName;
