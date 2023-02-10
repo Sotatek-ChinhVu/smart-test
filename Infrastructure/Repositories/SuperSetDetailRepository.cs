@@ -810,6 +810,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 entity.HpId = model.HpId;
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
                 entity.IsDeleted = 0;
+                entity.KarteKbn = 1;
                 entity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
