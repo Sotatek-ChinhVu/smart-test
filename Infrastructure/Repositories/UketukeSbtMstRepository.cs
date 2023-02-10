@@ -14,7 +14,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     {
     }
 
-    public UketukeSbtMstModel? GetByKbnId(int kbnId)
+    public UketukeSbtMstModel GetByKbnId(int kbnId)
     {
         var entity = NoTrackingDataContext.UketukeSbtMsts.Where(u => u.KbnId == kbnId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
         return entity is null ? null : ToModel(entity);
@@ -51,12 +51,10 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
             }
             else
             {
-                if (uketukeSbtMsts != null && uketukeSbtMsts.KbnId == inputData.KbnId)
+                if (uketukeSbtMsts != null)
                 {
-                    uketukeSbtMsts.KbnId = inputData.KbnId;
                     uketukeSbtMsts.KbnName = inputData.KbnName;
                     uketukeSbtMsts.SortNo = inputData.SortNo;
-                    uketukeSbtMsts.IsDeleted = inputData.IsDeleted;
                     uketukeSbtMsts.UpdateMachine = string.Empty;
                     uketukeSbtMsts.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     uketukeSbtMsts.UpdateId = userId;

@@ -532,8 +532,8 @@
         //UketukeMst
         public static readonly string InvalidKbnId = "Invalid KbnId";
         public static readonly string InvalidKbnName = "Invalid KbnName";
-        public static readonly string InputNoData = "Input No Data";
-        public static readonly string InputDataDuplicateKbnId = "InputData Duplicate KbnId";
+        public static readonly string InputNoData = "Input no data";
+        public static readonly string InputDataDuplicateKbnId = "InputData duplicate KbnId";
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
