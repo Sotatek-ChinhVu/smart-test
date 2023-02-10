@@ -611,14 +611,19 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
             var input = new SaveSwapHokenInputData(HpId,
-               request.PtId,
-               request.HokenIdBefore,
-               request.HokenIdAfter,
-               request.HokenPidBefore,
-               request.HokenPidAfter,
-               request.StartDate,
-               request.EndDate,
-               UserId);
+                                                   request.PtId,
+                                                   request.HokenIdBefore,
+                                                   request.HokenNameBefore,
+                                                   request.HokenIdAfter,
+                                                   request.HokenNameAfter,
+                                                   request.HokenPidBefore,
+                                                   request.HokenPidAfter, 
+                                                   request.StartDate,
+                                                   request.EndDate,
+                                                   request.IsHokenPatternUsed,
+                                                   request.ConfirmInvalidIsShowConversionCondition,
+                                                   request.ConfirmSwapHoken,
+                                                   UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
