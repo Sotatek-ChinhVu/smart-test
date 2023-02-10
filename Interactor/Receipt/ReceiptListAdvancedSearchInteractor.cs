@@ -17,7 +17,7 @@ public class ReceiptListAdvancedSearchInteractor : IReceiptListAdvancedSearchInp
     {
         try
         {
-            var result = _receiptRepository.GetData(inputData.HpId, inputData.SeikyuYm, ConvertToInputAdvancedSearch(inputData));
+            var result = _receiptRepository.GetListReceipt(inputData.HpId, inputData.SeikyuYm, ConvertToInputAdvancedSearch(inputData));
             return new ReceiptListAdvancedSearchOutputData(result, ReceiptListAdvancedSearchStatus.Successed);
         }
         finally

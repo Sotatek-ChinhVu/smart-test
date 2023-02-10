@@ -18,7 +18,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
     }
 
-    public List<ReceiptListModel> GetData(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
+    public List<ReceiptListModel> GetListReceipt(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
     {
         if (seikyuYm == 0)
         {
@@ -1284,6 +1284,38 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                && p.GrpEdaNo == grpEdaNo);
         return systemConf?.Param ?? string.Empty;
     }
+
+    #region Rece check screeen
+    public List<ReceCmtModel> GetListReceCmt(int hpId, int sinDate, long ptId, int hokenId)
+    {
+        int sinYM = CIUtil.Copy(sinDate.AsString(), 1, 6).AsInteger();
+        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                 && item.SinYm == sinYM
+                                                                 && item.PtId == ptId
+                                                                 && item.HokenId == hokenId
+                                                                 && item.IsDeleted == DeleteTypes.None)
+                                                     .Select(item => ConvertToReceCmtModel(item))
+                                                     .ToList();
+        return receCmts;
+    }
+    #endregion
+
+    #region Private function
+    private ReceCmtModel ConvertToReceCmtModel(ReceCmt receCmt)
+    {
+        return new ReceCmtModel(
+                receCmt.Id,
+                receCmt.PtId,
+                receCmt.SeqNo,
+                receCmt.SinYm,
+                receCmt.HokenId,
+                receCmt.CmtKbn,
+                receCmt.CmtSbt,
+                receCmt.Cmt ?? string.Empty,
+                receCmt.ItemCd ?? string.Empty
+            );
+    }
+    #endregion
 
     public void ReleaseResource()
     {
