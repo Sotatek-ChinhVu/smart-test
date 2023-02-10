@@ -4,11 +4,28 @@ namespace Domain.Models.HokenMst
 {
     public class PtHokenPatternModel
     {
-        
+
 
         public PtHokenPatternModel()
         {
             HokenMemo = string.Empty;
+        }
+
+        public PtHokenPatternModel(int hpId, long ptId, int hokenPid, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int startDate, int endDate)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+            HokenSbtCd = hokenSbtCd;
+            HokenId = hokenId;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
+            HokenMemo = hokenMemo;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
         public PtHokenPatternModel(int hpId, long ptId, int hokenPid, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int startDate, int endDate, HokenInfModel hokenInfModel)

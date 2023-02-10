@@ -20,16 +20,16 @@ namespace Interactor.Accounting
 
                 if (!syunoSeikyu.Any())
                 {
-                    return new GetAccountingOutputData(new AccountingInfModel(), GetAccountingStatus.NoData);
+                    return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.NoData);
                 }
                 var accountingInf = GetAccountingInfAllRaiinNo(syunoSeikyu);
 
-                return new GetAccountingOutputData(accountingInf, GetAccountingStatus.Successed);
+                return new GetAccountingOutputData(syunoSeikyu, accountingInf, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new AccountingInfModel(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.Failed);
             }
         }
 
