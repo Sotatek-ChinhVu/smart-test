@@ -10,24 +10,32 @@ using UseCase.PatientInfor.GetListPatient;
 
 namespace Interactor.PatientInfor;
 
-public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
+public class GetListPatientInfoInteractor : IGetListPatientInfoInputPort
 {
     private readonly IPatientInforRepository _patientInforRepository;
     public GetListPatientInfoInteractor(IPatientInforRepository patientInfoRepository)
     {
         _patientInforRepository = patientInfoRepository;
     }
-    public GetPatientInfoOutputData Handle(GetPatientInfoInputData input)
+    public GetListPatientInfoOutputData Handle(GetListPatientInfoInputData input)
     {
         try
         {
             if (input.HpId <= 0)
             {
-                return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidHpId, new());
+                return new GetListPatientInfoOutputData(GetListPatientInfoStatus.InvalidHpId, new());
             }
             if(input.PtId <= 0)
             {
-                return new GetPatientInfoOutputData(GetPatientInfoStatus.InvalidPtId, new());
+                return new GetListPatientInfoOutputData(GetListPatientInfoStatus.InvalidPtId, new());
+            }
+            if (input.PageIndex < 1)
+            {
+                return new GetListPatientInfoOutputData(GetListPatientInfoStatus.InvalidPageIndex, new());
+            }
+            if (input.PageSize < 0)
+            {
+                return new GetListPatientInfoOutputData(GetListPatientInfoStatus.InvalidPageSize, new());
             }
             var listPatientInfs = GetListPatientInfos(input.HpId, input.PtId, input.PageIndex, input.PageSize).Select(item => new GetListPatientInfoInputItem(
                                                                                      item.HpId, 
@@ -38,7 +46,7 @@ public class GetListPatientInfoInteractor : IGetPatientInfoInputPort
                                                                                      item.Birthday, 
                                                                                      item.LastVisitDate)).ToList();
 
-            return new GetPatientInfoOutputData(GetPatientInfoStatus.Success, listPatientInfs);
+            return new GetListPatientInfoOutputData(GetListPatientInfoStatus.Success, listPatientInfs);
         }
         finally
         {

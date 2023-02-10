@@ -70,7 +70,7 @@ namespace Interactor.PatientInfor
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
             string message = string.Empty;
-            if (!isPatientTempotary)
+            if (!isPatientTempotary || isUpdate)
             {
                 if (model.Patient.Birthday == 0)
                 {
