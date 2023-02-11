@@ -1,6 +1,6 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
-using Domain.Models.ReceptionSameVisit;
+using Domain.Models.HokenMst;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -14,6 +14,118 @@ namespace Infrastructure.Repositories
         {
 
         }
+
+        public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            try
+            {
+                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.Where(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0).FirstOrDefault();
+
+                if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+                {
+                    return new List<RaiinInfModel>();
+                }
+
+                var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
+                   item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > 3).ToList();
+
+                var listKaId = listRaiinInf.Select(item => item.KaId).ToList();
+
+                var listRaiinNo = listRaiinInf.Select(item => item.RaiinNo).ToList();
+
+                var listKaikeiInf = NoTrackingDataContext.KaikeiInfs.Where(item =>
+                    item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                    listRaiinNo.Contains(item.RaiinNo));
+
+                var listKaMst = NoTrackingDataContext.KaMsts.Where(item =>
+                item.HpId == hpId && item.IsDeleted == 0 && listKaId.Contains(item.KaId));
+
+                var listHokenPattern = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId && item.PtId == ptId && item.IsDeleted == 0);
+
+                var listRaiin = from raiinInf in listRaiinInf
+                                join kaikeiInf in listKaikeiInf on
+                                    raiinInf.RaiinNo equals kaikeiInf.RaiinNo into listKaikei
+                                select new
+                                {
+                                    ListKaikeiInf = listKaikei,
+                                    RaiinInf = raiinInf
+                                };
+
+                return listRaiin
+                .Select(
+                    item => new RaiinInfModel(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
+                        listKaMst.FirstOrDefault(itemKaMst => itemKaMst.KaId == item.RaiinInf.KaId)?.KaSname ?? string.Empty,
+                        listHokenPattern.Where(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid)
+                                        .Select(p => new PtHokenPatternModel(
+                                                p.HpId,
+                                                p.PtId,
+                                                p.HokenPid,
+                                                p.HokenKbn,
+                                                p.HokenSbtCd,
+                                                p.HokenId,
+                                                p.Kohi1Id,
+                                                p.Kohi2Id,
+                                                p.Kohi3Id,
+                                                p.Kohi4Id,
+                                                p.HokenMemo ?? string.Empty,
+                                                p.StartDate,
+                                                p.EndDate)).FirstOrDefault() ?? new(),
+                        item.ListKaikeiInf.Select(k => new KaikeiInfModel(
+                                                    k.HpId,
+                                                    k.PtId,
+                                                    k.SinDate,
+                                                    k.RaiinNo,
+                                                    k.HokenId,
+                                                    k.Kohi1Id,
+                                                    k.Kohi2Id,
+                                                    k.Kohi3Id,
+                                                    k.Kohi4Id,
+                                                    k.HokenKbn,
+                                                    k.HokenSbtCd,
+                                                    k.ReceSbt,
+                                                    k.Houbetu,
+                                                    k.Kohi1Houbetu,
+                                                    k.Kohi2Houbetu,
+                                                    k.Kohi3Houbetu,
+                                                    k.Kohi4Houbetu,
+                                                    k.HonkeKbn,
+                                                    k.HokenRate,
+                                                    k.PtRate,
+                                                    k.DispRate,
+                                                    k.Tensu,
+                                                    k.TotalIryohi,
+                                                    k.PtFutan,
+                                                    k.JihiFutan,
+                                                    k.JihiTax,
+                                                    k.JihiOuttax,
+                                                    k.JihiFutanTaxfree,
+                                                    k.JihiFutanTaxNr,
+                                                    k.JihiFutanTaxGen,
+                                                    k.JihiFutanOuttaxNr,
+                                                    k.JihiFutanOuttaxGen,
+                                                    k.JihiTaxNr,
+                                                    k.JihiTaxGen,
+                                                    k.JihiOuttaxNr,
+                                                    k.JihiOuttaxGen,
+                                                    k.AdjustFutan,
+                                                    k.AdjustRound,
+                                                    k.TotalPtFutan,
+                                                    k.AdjustFutanVal,
+                                                    k.AdjustFutanRange,
+                                                    k.AdjustRateVal,
+                                                    k.AdjustRateRange)).ToList()
+                                                ))
+                .ToList();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
 
         public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false)
         {
@@ -85,7 +197,7 @@ namespace Infrastructure.Repositories
                                 new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo } into
                                 listKaikeInf
                             select ConvertToModel(syuno.SyunoSeikyu, syuno.RaiinInf, listSyunoNyukin.ToList(), listKaikeInf.ToList(), listHokenPattern.ToList());
-                            
+
                 return query.ToList();
             }
             catch (Exception)
@@ -196,6 +308,5 @@ namespace Infrastructure.Repositories
         {
             DisposeDataContext();
         }
-
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Accounting;
+using Entity.Tenant;
+using Helper.Extension;
 using UseCase.Accounting;
 
 namespace Interactor.Accounting
@@ -16,20 +18,22 @@ namespace Interactor.Accounting
         {
             try
             {
+                var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
+                
                 var syunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
 
                 if (!syunoSeikyu.Any())
                 {
-                    return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.NoData);
+                    return new GetAccountingOutputData(new List<RaiinInfModel>(),new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.NoData);
                 }
                 var accountingInf = GetAccountingInfAllRaiinNo(syunoSeikyu);
 
-                return new GetAccountingOutputData(syunoSeikyu, accountingInf, GetAccountingStatus.Successed);
+                return new GetAccountingOutputData(raiinInf,syunoSeikyu, accountingInf, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), GetAccountingStatus.Failed);
             }
         }
 
