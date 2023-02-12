@@ -125,8 +125,13 @@ namespace Interactor.Accounting
                 if (raiin.HokenPatternModel.PtHokenInfModel != null &&
                     raiin.HokenPatternModel.PtHokenInfModel.HokenId > 0)
                 {
-                    WarningMemoModel.Add(CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel));
-                    WarningMemoModel.Add(CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel));
+                    var checkExpirated = CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel);
+                    if (!string.IsNullOrEmpty(checkExpirated.Memo))
+                        WarningMemoModel.Add(checkExpirated);
+
+                    var checkHasDateConfirm = CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel);
+                    if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
+                        WarningMemoModel.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi1 != null &&
@@ -134,8 +139,13 @@ namespace Interactor.Accounting
                     !CheckIdIsExits(listKohiId, raiin.HokenPatternModel.Kohi1.HokenId))
                 {
                     listKohiId.Add(raiin.HokenPatternModel.Kohi1.HokenId);
-                    WarningMemoModel.Add(CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1));
-                    WarningMemoModel.Add(CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1));
+                    var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
+                    if (!string.IsNullOrEmpty(checkKohi.Memo))
+                        WarningMemoModel.Add(checkKohi);
+
+                    var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
+                    if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
+                        WarningMemoModel.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi2 != null &&
@@ -143,8 +153,13 @@ namespace Interactor.Accounting
                     !CheckIdIsExits(listKohiId, raiin.HokenPatternModel.Kohi2.HokenId))
                 {
                     listKohiId.Add(raiin.HokenPatternModel.Kohi2.HokenId);
-                    WarningMemoModel.Add(CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2));
-                    WarningMemoModel.Add(CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2));
+                    var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
+                    if (!string.IsNullOrEmpty(checkKohi.Memo))
+                        WarningMemoModel.Add(checkKohi);
+
+                    var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
+                    if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
+                        WarningMemoModel.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi3 != null &&
@@ -152,8 +167,13 @@ namespace Interactor.Accounting
                     !CheckIdIsExits(listKohiId, raiin.HokenPatternModel.Kohi3.HokenId))
                 {
                     listKohiId.Add(raiin.HokenPatternModel.Kohi3.HokenId);
-                    WarningMemoModel.Add(CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3));
-                    WarningMemoModel.Add(CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3));
+                    var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
+                    if (!string.IsNullOrEmpty(checkKohi.Memo))
+                        WarningMemoModel.Add(checkKohi);
+
+                    var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
+                    if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
+                        WarningMemoModel.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi4 != null &&
@@ -161,8 +181,13 @@ namespace Interactor.Accounting
                     !CheckIdIsExits(listKohiId, raiin.HokenPatternModel.Kohi4.HokenId))
                 {
                     listKohiId.Add(raiin.HokenPatternModel.Kohi4.HokenId);
-                    WarningMemoModel.Add(CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4));
-                    WarningMemoModel.Add(CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4));
+                    var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
+                    if (!string.IsNullOrEmpty(checkKohi.Memo))
+                        WarningMemoModel.Add(checkKohi);
+
+                    var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
+                    if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
+                        WarningMemoModel.Add(checkHasDateConfirm);
                 }
             }
 
@@ -172,7 +197,8 @@ namespace Interactor.Accounting
             {
                 foreach (var calcLog in listCalcLog)
                 {
-                    WarningMemoModel.Add(new WarningMemoModel(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
+                    if (!string.IsNullOrEmpty(calcLog.Text))
+                        WarningMemoModel.Add(new WarningMemoModel(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
                 }
             }
             return WarningMemoModel;

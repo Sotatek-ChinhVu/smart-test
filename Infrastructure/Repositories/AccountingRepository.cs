@@ -320,31 +320,6 @@ namespace Infrastructure.Repositories
                 : null;
         }
 
-        private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<int> listKohiId)
-        {
-            var param = Expression.Parameter(typeof(PtKohi));
-            Expression expression = null;
-
-            if (listKohiId != null && listKohiId.Count > 0)
-            {
-                foreach (var kohiId in listKohiId)
-                {
-                    if (kohiId > 0)
-                    {
-                        var valHokenId = Expression.Constant(kohiId);
-                        var memberHokenId = Expression.Property(param, nameof(PtKohi.HokenId));
-                        Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
-
-                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
-                    }
-                }
-            }
-
-            return expression != null
-                ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
-        }
-
         private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
         {
             if (listKohiId != null && listKohiId.Count > 0)
@@ -387,20 +362,6 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-
-            return expression != null
-                ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
-        }
-
-        private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtKohi> listPtKohi)
-        {
-            var param = Expression.Parameter(typeof(PtHokenCheck));
-            Expression expression = null;
-
-            var listKohiId = listPtKohi.Select(item => item.HokenId).ToList();
-
-            CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)

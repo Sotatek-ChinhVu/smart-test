@@ -16,15 +16,15 @@ namespace Domain.Models.Accounting
             KaikeiInfModels = kaikeiInfModels;
         }
 
-        public long RaiinNo { get; set; }
+        public long RaiinNo { get; private set; }
 
-        public int UketukeNo { get; set; }
+        public int UketukeNo { get; private set; }
 
-        public string DepartmentSName { get; set; }
+        public string DepartmentSName { get; private set; }
 
-        public HokenPatternModel HokenPatternModel { get; set; }
+        public HokenPatternModel HokenPatternModel { get; private set; }
 
-        public List<KaikeiInfModel> KaikeiInfModels { get; set; }
+        public List<KaikeiInfModel> KaikeiInfModels { get; private set; }
 
         public string RaiinBinding => RaiinNo > 0 ? GetRaiinName() : "(すべて)";
 
