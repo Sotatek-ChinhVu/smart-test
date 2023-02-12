@@ -4,6 +4,7 @@ using Domain.Models.Accounting;
 using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
+using Domain.Models.MstItem;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
@@ -889,6 +890,19 @@ namespace Infrastructure.Repositories
             }
 
             return ptByomeiModels;
+        }
+
+        public List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId)
+        {
+            return NoTrackingDataContext.PaymentMethodMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == 0)
+                .OrderBy(item => item.SortNo)
+                .Select(item => new PaymentMethodMstModel(
+                    item.PaymentMethodCd,
+                    item.PayName ?? string.Empty,
+                    item.PaySname ?? string.Empty,
+                    item.SortNo,
+                    item.IsDeleted)).ToList();
         }
     }
 }

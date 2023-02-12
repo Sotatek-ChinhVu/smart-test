@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
+using Domain.Models.MstItem;
 using Helper.Common;
 using UseCase.Accounting;
 
@@ -27,7 +28,7 @@ namespace Interactor.Accounting
 
                 if (!syunoSeikyu.Any())
                 {
-                    return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), GetAccountingStatus.NoData);
+                    return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), new List<PaymentMethodMstModel>(), GetAccountingStatus.NoData);
                 }
                 var accountingInf = GetAccountingInfAllRaiinNo(syunoSeikyu);
 
@@ -36,12 +37,15 @@ namespace Interactor.Accounting
 
                 //Get GetPtByoMeiList
                 var ptByoMei = _accountingRepository.GetPtByoMeiList(inputData.HpId, inputData.PtId, inputData.SinDate);
-                return new GetAccountingOutputData(raiinInf, syunoSeikyu, accountingInf, warning, ptByoMei, GetAccountingStatus.Successed);
+
+                //Get Payment Method
+                var paymentList = _accountingRepository.GetListPaymentMethodMst(inputData.HpId);
+                return new GetAccountingOutputData(raiinInf, syunoSeikyu, accountingInf, warning, ptByoMei, paymentList, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), new List<PaymentMethodMstModel>(), GetAccountingStatus.Failed);
             }
         }
 
