@@ -2,17 +2,21 @@
 {
     public class WarningMemoModel
     {
-        public WarningMemoModel(string memo, int color)
-        {
-            Memo = memo;
-            Color = color;
-        }
+
 
         public WarningMemoModel()
         {
             Memo = string.Empty;
         }
 
+        public WarningMemoModel(long raiinNo, string memo, int color)
+        {
+            RaiinNo = raiinNo;
+            Memo = memo;
+            Color = color;
+        }
+
+        public long RaiinNo { get; private set; }
         public string Memo { get; private set; }
         public int Color { get; private set; }
     }

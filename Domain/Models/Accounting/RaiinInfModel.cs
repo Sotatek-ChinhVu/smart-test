@@ -1,5 +1,5 @@
 ﻿using Domain.Constant;
-using Domain.Models.HokenMst;
+using Domain.Models.ReceptionSameVisit;
 using Helper.Common;
 using Helper.Extension;
 
@@ -7,12 +7,12 @@ namespace Domain.Models.Accounting
 {
     public class RaiinInfModel
     {
-        public RaiinInfModel(long raiinNo, int uketukeNo, string departmentSName, PtHokenPatternModel ptHokenPatternModel, List<KaikeiInfModel> kaikeiInfModels)
+        public RaiinInfModel(long raiinNo, int uketukeNo, string departmentSName, HokenPatternModel hokenPatternModel, List<KaikeiInfModel> kaikeiInfModels)
         {
             RaiinNo = raiinNo;
             UketukeNo = uketukeNo;
             DepartmentSName = departmentSName;
-            PtHokenPatternModel = ptHokenPatternModel;
+            HokenPatternModel = hokenPatternModel;
             KaikeiInfModels = kaikeiInfModels;
         }
 
@@ -22,7 +22,7 @@ namespace Domain.Models.Accounting
 
         public string DepartmentSName { get; set; }
 
-        public PtHokenPatternModel PtHokenPatternModel { get; set; }
+        public HokenPatternModel HokenPatternModel { get; set; }
 
         public List<KaikeiInfModel> KaikeiInfModels { get; set; }
 
@@ -45,7 +45,7 @@ namespace Domain.Models.Accounting
 
         public string GetPatternName()
         {
-            int hokenId = PtHokenPatternModel?.HokenId ?? 0;
+            int hokenId = HokenPatternModel?.HokenId ?? 0;
 
             var kaikeInf = KaikeiInfModels?.FirstOrDefault(item => item.HokenId == hokenId);
 

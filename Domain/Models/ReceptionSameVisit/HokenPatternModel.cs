@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Helper.Common;
 using System;
@@ -34,12 +35,34 @@ namespace Domain.Models.ReceptionSameVisit
             RaiinInfSyosaisinKbn = raiinInfSyosaisinKbn;
             RaiinInfSanteiKbn = raiinInfSanteiKbn;
             RaiinInfJikanKbn = raiinInfJikanKbn;
-            
+
+        }
+
+        public HokenPatternModel(long ptId, int hokenPid, int hokenId, int startDate, int endDate, int hokenSbtCd, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, PtHokenInfModel ptHokenInfModel, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
+        {
+            PtId = ptId;
+            HokenPid = hokenPid;
+            HokenId = hokenId;
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenSbtCd = hokenSbtCd;
+            HokenKbn = hokenKbn;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
+            PtHokenInfModel = ptHokenInfModel;
+            Kohi1 = kohi1;
+            Kohi2 = kohi2;
+            Kohi3 = kohi3;
+            Kohi4 = kohi4;
         }
 
         public long PtId { get; private set; }
 
         public int HokenPid { get; private set; }
+
+        public int HokenId { get; private set; }
 
         public int StartDate { get; private set; }
 
@@ -57,6 +80,8 @@ namespace Domain.Models.ReceptionSameVisit
 
         public int Kohi4Id { get; private set; }
 
+        public PtHokenInfModel PtHokenInfModel { get; private set; }
+
         public KohiInfModel Kohi1 { get; private set; }
 
         public KohiInfModel Kohi2 { get; private set; }
@@ -70,7 +95,7 @@ namespace Domain.Models.ReceptionSameVisit
         public string HokenMstHoubetu { get; private set; }
 
         public int HokenMstFutanRate { get; private set; }
-        
+
         public long RaiinNo { get; private set; }
 
         public int RaiinInfSyosaisinKbn { get; private set; }
