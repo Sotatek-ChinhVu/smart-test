@@ -1,10 +1,13 @@
-﻿using Domain.Models.AccountDue;
+﻿using Domain.Constant;
+using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
 using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
+using Helper.Common;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Linq.Dynamic.Core;
@@ -426,25 +429,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf,
+        private Expression<Func<HokenMst, bool>>? CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf,
             List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(HokenMst));
             Expression expression = null;
 
             CreateHokenMstExpression(listPtHokenInf, ref expression, ref param);
-            CreateHokenMstExpression(listPtKohi, ref expression, ref param);
-
-            return expression != null
-                ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : null;
-        }
-
-        private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
-        {
-            var param = Expression.Parameter(typeof(HokenMst));
-            Expression expression = null;
-
             CreateHokenMstExpression(listPtKohi, ref expression, ref param);
 
             return expression != null
@@ -771,7 +762,133 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.CalcLogs.Where(item =>
                     item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
                     raiinNoList.Contains(item.RaiinNo)).OrderBy(item => item.UpdateDate)
-                .Select(item => new CalcLogModel(item.RaiinNo,item.LogSbt, item.Text ?? string.Empty)).ToList();
+                .Select(item => new CalcLogModel(item.RaiinNo, item.LogSbt, item.Text ?? string.Empty)).ToList();
+        }
+
+        public List<PtByomeiModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0)
+        {
+            int year = sinDate / 10000;
+            int month = sinDate / 100 % 100;
+            int firstDay = 1;
+            int lastDay = DateTime.DaysInMonth(year, month);
+            int firstDate = year * 10000 + month * 100 + firstDay;
+            int lastDate = year * 10000 + month * 100 + lastDay;
+
+            List<int> tenkiKbn = new List<int> { TenkiKbnConst.Cured, TenkiKbnConst.Dead, TenkiKbnConst.Canceled, TenkiKbnConst.InMonth, TenkiKbnConst.Other };
+
+            var listPtByoMei = GetPtByomeiModels(hpId, ptId, sinDate)
+                                             .Where(u => (u.StartDate <= lastDate &&
+                                                          u.IsNodspRece == 0 &&
+                                                         (u.TenkiKbn == TenkiKbnConst.Continued ||
+                                                          tenkiKbn.Contains(u.TenkiKbn) && u.TenkiDate >= firstDate)))
+                                             .ToList();
+
+            if (listPtByoMei == null || listPtByoMei.Count == 0)
+                return new List<PtByomeiModel>();
+
+            return listPtByoMei.Select(data => new PtByomeiModel(data.Byomei, data.StartDate, data.TenkiDate))
+                .OrderBy(data => data.TenkiKbn)
+                .ThenBy(data => data.SortNo)
+                .ThenByDescending(data => data.StartDate)
+                .ThenByDescending(data => data.TenkiDate)
+                .ThenBy(data => data.SeqNo)
+                .ToList();
+        }
+
+        private List<PtByomeiModel> GetPtByomeiModels(int hpId, long ptId, int sinDate)
+        {
+            List<PtByomei> ptByomeis;
+
+            ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
+                                                                   p.PtId == ptId &&
+                                                                   p.IsDeleted != 1 &&
+                                                                   (p.TenkiKbn == TenkiKbnConst.Continued ||
+                                                                   (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).ToList();
+
+            var ptByomeiModels = ptByomeis.Select(p => new PtByomeiModel(p.Byomei, p.StartDate, p.TenkiDate)).ToList();
+
+            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == 1)
+                                                             .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.SikkanCd, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 }).ToList();
+            var byomeiQueryNoTrack = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == 1 &&
+                                                                              p.PtId == ptId &&
+                                                                              p.IsDeleted != 1 &&
+                                                                              (p.TenkiKbn == TenkiKbnConst.Continued ||
+                                                                              (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).ToList();
+
+            var SyusyokuCdList = ptByomeiModels.Select(item => item.SyusyokuCd1)
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd2))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd3))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd4))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd5))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd6))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd7))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd8))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd9))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd10))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd11))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd12))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd13))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd14))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd15))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd16))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd17))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd18))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd19))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd20))
+                                 .Union(ptByomeiModels.Select(item => item.SyusyokuCd21))
+                                 .Distinct().ToList();
+
+            var byomeiMstList = (from ptByomei in byomeiQueryNoTrack
+                                 join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
+                                 select ptByomeiMst).ToList(); ;
+
+            var byomeiMstForSyusyokuList = byomeiMstQuery.Where(item => SyusyokuCdList.Contains(item.ByomeiCd)).ToList();
+
+            foreach (var ptByomeiModel in ptByomeiModels)
+            {
+
+                if (ptByomeiModel.IsFreeWord)
+                {
+                    ptByomeiModel.Byomei = ptByomeiModel.FullByomei;
+                    continue;
+                }
+
+                var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomeiModel.ByomeiCd);
+                if (byomeiMst != null)
+                {
+                    ptByomeiModel.Byomei = byomeiMst.Sbyomei;
+                    ptByomeiModel.Icd10 = byomeiMst.Icd101;
+                    ptByomeiModel.SikkanCd = byomeiMst.SikkanCd;
+                    if (!string.IsNullOrEmpty(byomeiMst.Icd102))
+                    {
+                        ptByomeiModel.Icd10 += "/" + byomeiMst.Icd102;
+                    }
+                    ptByomeiModel.Icd102013 = byomeiMst.Icd1012013;
+                    if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
+                    {
+                        ptByomeiModel.Icd102013 += "/" + byomeiMst.Icd1022013;
+                    }
+
+                    ptByomeiModel.Icd1012013 = byomeiMst.Icd1012013;
+                    ptByomeiModel.Icd1022013 = byomeiMst.Icd1022013;
+                }
+                else
+                {
+                    ptByomeiModel.Icd1012013 = string.Empty;
+                    ptByomeiModel.Icd1022013 = string.Empty;
+                }
+                for (int i = 1; i <= 21; i++)
+                {
+                    string byoCd = ptByomeiModel.GetMemberValue("SyusyokuCd" + i).AsString();
+                    if (string.IsNullOrEmpty(byoCd))
+                    {
+                        break;
+                    }
+                    ptByomeiModel.SetMemberValue("SyusyokuName" + i, byomeiMstForSyusyokuList.FirstOrDefault(item => item.ByomeiCd == byoCd)?.Sbyomei);
+                }
+            }
+
+            return ptByomeiModels;
         }
     }
 }

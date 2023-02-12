@@ -8,5 +8,6 @@ namespace Domain.Models.Accounting
         public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo);
         public List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, List<int> listPatternId);
         public List<CalcLogModel> GetCalcLog(int hpId, long ptId, int sinDate, List<long> raiinNoList);
+        public List<PtByomeiModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0);
     }
 }

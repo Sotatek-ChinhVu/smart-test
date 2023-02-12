@@ -27,19 +27,21 @@ namespace Interactor.Accounting
 
                 if (!syunoSeikyu.Any())
                 {
-                    return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), GetAccountingStatus.NoData);
+                    return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), GetAccountingStatus.NoData);
                 }
                 var accountingInf = GetAccountingInfAllRaiinNo(syunoSeikyu);
 
                 //Get Warning Memo
                 var warning = GetWarningMemo(inputData.HpId, inputData.PtId, inputData.SinDate, raiinInf);
 
-                return new GetAccountingOutputData(raiinInf, syunoSeikyu, accountingInf, warning, GetAccountingStatus.Successed);
+                //Get GetPtByoMeiList
+                var ptByoMei = _accountingRepository.GetPtByoMeiList(inputData.HpId, inputData.PtId, inputData.SinDate);
+                return new GetAccountingOutputData(raiinInf, syunoSeikyu, accountingInf, warning, ptByoMei, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), GetAccountingStatus.Failed);
             }
         }
 

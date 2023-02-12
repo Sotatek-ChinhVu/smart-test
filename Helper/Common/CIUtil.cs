@@ -15,6 +15,78 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        public static object GetMemberValue(this object obj, string memberName)
+        {
+            var memInf = GetMemberInfo(obj, memberName);
+
+            if (memInf == null)
+                throw new System.Exception("memberName");
+
+            if (memInf is System.Reflection.PropertyInfo)
+                return memInf.As<System.Reflection.PropertyInfo>().GetValue(obj, null);
+
+            if (memInf is System.Reflection.FieldInfo)
+                return memInf.As<System.Reflection.FieldInfo>().GetValue(obj);
+
+            throw new System.Exception();
+        }
+
+        public static object SetMemberValue(this object obj, string memberName, object newValue)
+        {
+            var memInf = GetMemberInfo(obj, memberName);
+
+
+            if (memInf == null)
+                throw new System.Exception("memberName");
+
+            var oldValue = obj.GetMemberValue(memberName);
+
+            if (memInf is System.Reflection.PropertyInfo)
+                memInf.As<System.Reflection.PropertyInfo>().SetValue(obj, newValue, null);
+            else if (memInf is System.Reflection.FieldInfo)
+                memInf.As<System.Reflection.FieldInfo>().SetValue(obj, newValue);
+            else
+                throw new System.Exception();
+
+            return oldValue;
+        }
+
+        private static System.Reflection.MemberInfo GetMemberInfo(object obj, string memberName)
+        {
+            var prps = new System.Collections.Generic.List<System.Reflection.PropertyInfo>();
+
+#pragma warning disable CS8604 // Possible null reference argument.
+            prps.Add(obj.GetType().GetProperty(memberName,
+                                               System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance |
+                                               System.Reflection.BindingFlags.FlattenHierarchy));
+#pragma warning restore CS8604 // Possible null reference argument.
+            prps = System.Linq.Enumerable.ToList(System.Linq.Enumerable.Where(prps, i => !ReferenceEquals(i, null)));
+            if (prps.Count != 0)
+                return prps[0];
+
+            var flds = new System.Collections.Generic.List<System.Reflection.FieldInfo>();
+
+#pragma warning disable CS8604 // Possible null reference argument.
+            flds.Add(obj.GetType().GetField(memberName,
+                                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance |
+                                            System.Reflection.BindingFlags.FlattenHierarchy));
+#pragma warning restore CS8604 // Possible null reference argument.
+
+            //to add more types of properties
+
+            flds = System.Linq.Enumerable.ToList(System.Linq.Enumerable.Where(flds, i => !ReferenceEquals(i, null)));
+
+            if (flds.Count != 0)
+                return flds[0];
+
+            return null;
+        }
+
+        private static T As<T>(this object obj)
+        {
+            return (T)obj;
+        }
+
         public static int FullStartDate(int startDate)
         {
             if (startDate == 0) return 0;
@@ -2492,7 +2564,7 @@ namespace Helper.Common
 
             return Result;
         }
-        
+
 
         //----------------------------------------------------------------------------//
         // 機能      ： ＪＩＳコードチェック
@@ -2665,7 +2737,7 @@ namespace Helper.Common
 
             return ret;
         }
-        
+
         /// <summary>
         /// ひらがなの濁点を結合
         /// </summary>
