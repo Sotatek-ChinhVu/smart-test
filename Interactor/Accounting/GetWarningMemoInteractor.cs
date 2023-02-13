@@ -61,14 +61,14 @@ namespace Interactor.Accounting
             {
                 if (raiin.HokenPatternModel == null) continue;
 
-                if (raiin.HokenPatternModel.PtHokenInfModel != null &&
-                    raiin.HokenPatternModel.PtHokenInfModel.HokenId > 0)
+                if (raiin.HokenPatternModel.HokenInfModels != null &&
+                    raiin.HokenPatternModel.HokenInfModels.HokenId > 0)
                 {
-                    var checkExpirated = CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel);
+                    var checkExpirated = CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkExpirated.Memo))
                         WarningMemoModel.Add(checkExpirated);
 
-                    var checkHasDateConfirm = CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.PtHokenInfModel);
+                    var checkHasDateConfirm = CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
                         WarningMemoModel.Add(checkHasDateConfirm);
                 }
@@ -142,7 +142,7 @@ namespace Interactor.Accounting
             }
             return WarningMemoModel;
         }
-        private WarningMemoModel CheckHokenIsExpirated(long raiinNo, PtHokenInfModel ptHokenInf, int alertFg = 1)
+        private WarningMemoModel CheckHokenIsExpirated(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 1)
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 
@@ -170,7 +170,7 @@ namespace Interactor.Accounting
             return new();
         }
 
-        private WarningMemoModel CheckHokenHasDateConfirmed(long raiinNo, PtHokenInfModel ptHokenInf, int alertFg = 0)
+        private WarningMemoModel CheckHokenHasDateConfirmed(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 0)
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 

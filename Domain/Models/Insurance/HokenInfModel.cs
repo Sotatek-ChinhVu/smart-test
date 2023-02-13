@@ -1,5 +1,8 @@
 ﻿using Domain.Constant;
+using Domain.Models.HokenMst;
 using Domain.Models.InsuranceMst;
+using Helper.Common;
+using Helper.Extension;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
@@ -95,6 +98,22 @@ namespace Domain.Models.Insurance
             HokenMst = new HokenMstModel();
             HokensyaMst = new HokensyaMstModel();
         }
+
+        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMasterModel hokenMasterModels, List<ConfirmDateModel> confirmDateModels)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
+            Houbetu = houbetu;
+            StartDate = startDate;
+            EndDate = endDate;
+            SinDate = sinDate;
+            HokenMasterModels = hokenMasterModels;
+            ConfirmDateList = confirmDateModels;
+        }
+
+        public HokenMasterModel HokenMasterModels { get; private set; }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
@@ -346,6 +365,19 @@ namespace Domain.Models.Insurance
                 }
 
                 return false;
+            }
+        }
+
+        public int LastDateConfirmed
+        {
+            get
+            {
+                if (ConfirmDateList == null || ConfirmDateList.Count <= 0) return 0;
+
+                return CIUtil
+                    .Copy(
+                        CIUtil.DateTimeToInt(ConfirmDateList.OrderByDescending(item => item.CheckDate).First().CheckDate)
+                            .AsString(), 1, 8).AsInteger();
             }
         }
     }

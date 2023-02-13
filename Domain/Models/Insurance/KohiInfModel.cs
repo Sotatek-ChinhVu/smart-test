@@ -1,5 +1,4 @@
-﻿using Domain.Models.HokenMst;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
 using Helper.Common;
 using Helper.Extension;
 using System.Text.Json.Serialization;
@@ -75,7 +74,7 @@ namespace Domain.Models.Insurance
             IsAddNew = isAddNew;
         }
 
-        public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<PtHokenCheckModel> ptHokenCheckModels)
+        public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
         {
             HokenId = hokenId;
             PrefNo = prefNo;
@@ -86,7 +85,7 @@ namespace Domain.Models.Insurance
             EndDate = endDate;
             SinDate = sinDate;
             HokenMstModel = hokenMstModel;
-            PtHokenCheckModels = ptHokenCheckModels;
+            ConfirmDateModels = confirmDateModels;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
@@ -132,7 +131,7 @@ namespace Domain.Models.Insurance
         public int IsDeleted { get; private set; }
         public long SeqNo { get; private set; }
 
-        public List<PtHokenCheckModel> PtHokenCheckModels { get; private set; }
+        public List<ConfirmDateModel> ConfirmDateModels { get; private set; }
 
         public bool IsEmptyModel => HokenId == 0;
 
@@ -156,17 +155,17 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (PtHokenCheckModels == null) return false;
-                if (PtHokenCheckModels.Count == 0)
+                if (ConfirmDateModels == null) return false;
+                if (ConfirmDateModels.Count == 0)
                 {
                     return false;
                 }
-                List<PtHokenCheckModel> isValidHokenChecks = PtHokenCheckModels
+                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateModels
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.CheckDate)
                     .ToList();
                 int SinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
-                foreach (PtHokenCheckModel ptHokenCheck in isValidHokenChecks)
+                foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
                 {
                     int currentConfirmYM = CIUtil.Copy(CIUtil.DateTimeToInt(ptHokenCheck.CheckDate).AsString(), 1, 6).AsInteger();
                     if (currentConfirmYM == SinYM)
@@ -182,11 +181,11 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (PtHokenCheckModels == null || PtHokenCheckModels.Count <= 0) return 0;
+                if (ConfirmDateModels == null || ConfirmDateModels.Count <= 0) return 0;
 
                 return CIUtil
                     .Copy(
-                        CIUtil.DateTimeToInt(PtHokenCheckModels.OrderByDescending(item => item.CheckDate).First().CheckDate)
+                        CIUtil.DateTimeToInt(ConfirmDateModels.OrderByDescending(item => item.CheckDate).First().CheckDate)
                             .AsString(), 1, 8).AsInteger();
             }
         }

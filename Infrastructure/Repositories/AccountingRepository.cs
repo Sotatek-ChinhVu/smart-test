@@ -2,7 +2,6 @@
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
 using Domain.Models.Diseases;
-using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MstItem;
@@ -206,15 +205,15 @@ namespace Infrastructure.Repositories
                         ptHokenPattern.PtId, ptHokenPattern.HokenPid, ptHokenPattern.HokenId, ptHokenPattern.StartDate, ptHokenPattern.EndDate, ptHokenPattern.HokenSbtCd, ptHokenPattern.HokenKbn, ptHokenPattern.Kohi1Id, ptHokenPattern.Kohi2Id, ptHokenPattern.Kohi3Id, ptHokenPattern.Kohi4Id,
                         ptHokenInf == null
                             ? null
-                            : CreatePtHokenInfModel(ptHokenInf,
+                            : CreateHokenInfModel(ptHokenInf,
                                 hokenMstList.Where(item =>
                                     item.HokenNo == ptHokenInf.HokenNo &&
                                     item.HokenEdaNo == ptHokenInf.HokenEdaNo).ToList(),
                                 ptHokenCheckList.Where(item =>
                                     item.HokenGrp == 1 &&
                                     item.HokenId == ptHokenInf.HokenId)
-                                    .Select(item => new PtHokenCheckModel(
-                                        item.HpId, item.PtID, item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
+                                    .Select(item => new ConfirmDateModel(
+                                         item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
                         ptKohi1 == null
                             ? null
                             : CreatePtKohiModel(ptKohi1,
@@ -224,8 +223,8 @@ namespace Infrastructure.Repositories
                                 ptHokenCheckList.Where(item =>
                                     item.HokenGrp == 2 &&
                                     item.HokenId == ptKohi1.HokenId)
-                                    .Select(item => new PtHokenCheckModel(
-                                        item.HpId, item.PtID, item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
+                                    .Select(item => new ConfirmDateModel(
+                                         item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
                         ptKohi2 == null
                             ? null
                             : CreatePtKohiModel(ptKohi2,
@@ -235,8 +234,8 @@ namespace Infrastructure.Repositories
                                 ptHokenCheckList.Where(item =>
                                     item.HokenGrp == 2 &&
                                     item.HokenId == ptKohi2.HokenId)
-                                    .Select(item => new PtHokenCheckModel(
-                                       item.HpId, item.PtID, item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
+                                    .Select(item => new ConfirmDateModel(
+                                        item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
                         ptKohi3 == null
                             ? null
                             : CreatePtKohiModel(ptKohi3,
@@ -246,8 +245,8 @@ namespace Infrastructure.Repositories
                                 ptHokenCheckList.Where(item =>
                                     item.HokenGrp == 2 &&
                                     item.HokenId == ptKohi3.HokenId)
-                                    .Select(item => new PtHokenCheckModel(
-                                        item.HpId, item.PtID, item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
+                                    .Select(item => new ConfirmDateModel(
+                                        item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay),
                         ptKohi4 == null
                             ? null
                             : CreatePtKohiModel(ptKohi4,
@@ -257,8 +256,8 @@ namespace Infrastructure.Repositories
                                 ptHokenCheckList.Where(item =>
                                     item.HokenGrp == 2 &&
                                     item.HokenId == ptKohi4.HokenId)
-                                    .Select(item => new PtHokenCheckModel(
-                                        item.HpId, item.PtID, item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay)
+                                    .Select(item => new ConfirmDateModel(
+                                       item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine, item.CheckCmt, item.IsDeleted)).ToList(), sinDay)
 
                     ));
                 }
@@ -453,9 +452,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public PtHokenInfModel CreatePtHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<PtHokenCheckModel> ptHokenCheckModelList, int sinDay)
+        public HokenInfModel CreateHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
         {
-            PtHokenInfModel hokenInfModel = null;
+            HokenInfModel hokenInfModel = null;
             if (ePtHokenInf != null)
             {
                 HokenMst hokenMst;
@@ -490,13 +489,13 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                hokenInfModel = new PtHokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ptHokenCheckModelList.Select(p => new PtHokenCheckModel(p.HpId, p.PtID, p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckCmt, p.IsDeleted)).ToList());
+                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return hokenInfModel;
         }
 
-        public KohiInfModel CreatePtKohiModel(PtKohi eKohiInf, List<HokenMst> hokenMstLists, List<PtHokenCheckModel> ptHokenCheckModelList, int sinDay)
+        public KohiInfModel CreatePtKohiModel(PtKohi eKohiInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
         {
             KohiInfModel kohiInfModel = null;
             if (eKohiInf != null)
@@ -533,7 +532,7 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ptHokenCheckModelList.Select(p => new PtHokenCheckModel(p.HpId, p.PtID, p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckCmt, p.IsDeleted)).ToList());
+                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return kohiInfModel;
