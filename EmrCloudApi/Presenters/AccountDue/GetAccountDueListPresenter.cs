@@ -28,8 +28,6 @@ public class GetAccountDueListPresenter : IGetAccountDueListOutputPort
         GetAccountDueListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetAccountDueListStatus.InvalidPtId => ResponseMessage.PtInfNotFound,
         GetAccountDueListStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
-        GetAccountDueListStatus.InvalidpageSize => ResponseMessage.InvalidPageSize,
-        GetAccountDueListStatus.InvalidpageIndex => ResponseMessage.InvalidPageIndex,
         _ => string.Empty
     };
 }

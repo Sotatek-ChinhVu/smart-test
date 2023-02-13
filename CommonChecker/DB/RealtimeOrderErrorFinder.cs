@@ -1,21 +1,20 @@
-﻿using Infrastructure.Interfaces;
-using PostgreDataContext;
+﻿using Infrastructure.Base;
+using Infrastructure.Interfaces;
 
 namespace CommonChecker.DB
 {
-    public class RealtimeOrderErrorFinder : IRealtimeOrderErrorFinder
+    public class RealtimeOrderErrorFinder : RepositoryBase, IRealtimeOrderErrorFinder
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
-        public RealtimeOrderErrorFinder(ITenantProvider tenantProvider)
+        public RealtimeOrderErrorFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+
         }
 
         public string FindAgeComment(string commentCode)
         {
             string ageComment = string.Empty;
-            var ageCommentInfo = _tenantNoTrackingDataContext.M14CmtCode.FirstOrDefault(i => i.AttentionCmtCd == commentCode);
+            var ageCommentInfo = NoTrackingDataContext.M14CmtCode.FirstOrDefault(i => i.AttentionCmtCd == commentCode);
             if (ageCommentInfo != null)
             {
                 ageComment = ageCommentInfo.AttentionCmt;
@@ -26,7 +25,7 @@ namespace CommonChecker.DB
         public string FindAnalogueName(string analogueCode)
         {
             string analogueName = string.Empty;
-            var analogueInfo = _tenantNoTrackingDataContext.M56AnalogueCd.FirstOrDefault(i => i.AnalogueCd == analogueCode);
+            var analogueInfo = NoTrackingDataContext.M56AnalogueCd.FirstOrDefault(i => i.AnalogueCd == analogueCode);
             if (analogueInfo != null)
             {
                 analogueName = analogueInfo.AnalogueName;
@@ -37,7 +36,7 @@ namespace CommonChecker.DB
         public string FindClassName(string classCd)
         {
             string className = string.Empty;
-            var classInfo = _tenantNoTrackingDataContext.M56DrugClass.FirstOrDefault(i => i.ClassCd == classCd);
+            var classInfo = NoTrackingDataContext.M56DrugClass.FirstOrDefault(i => i.ClassCd == classCd);
             if (classInfo != null)
             {
                 className = classInfo.ClassName;
@@ -48,7 +47,7 @@ namespace CommonChecker.DB
         public string FindComponentName(string conponentCode)
         {
             string componentName = string.Empty;
-            var componentInfo = _tenantNoTrackingDataContext.M56ExIngCode.FirstOrDefault(i => i.SeibunCd == conponentCode && i.SeibunIndexCd == "000");
+            var componentInfo = NoTrackingDataContext.M56ExIngCode.FirstOrDefault(i => i.SeibunCd == conponentCode && i.SeibunIndexCd == "000");
             if (componentInfo != null)
             {
                 componentName = componentInfo.SeibunName;
@@ -59,7 +58,7 @@ namespace CommonChecker.DB
         public string FindDiseaseComment(string commentCode)
         {
             string diseaseComment = string.Empty;
-            var diseaseCommentInfo = _tenantNoTrackingDataContext.M42ContraCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var diseaseCommentInfo = NoTrackingDataContext.M42ContraCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (diseaseCommentInfo != null)
             {
                 diseaseComment = diseaseCommentInfo.Cmt;
@@ -70,7 +69,7 @@ namespace CommonChecker.DB
         public string FindDiseaseName(string byotaiCd)
         {
             string diseaseName = string.Empty;
-            var diseaseInfo = _tenantNoTrackingDataContext.M42ContraindiDisCon.FirstOrDefault(i => i.ByotaiCd == byotaiCd);
+            var diseaseInfo = NoTrackingDataContext.M42ContraindiDisCon.FirstOrDefault(i => i.ByotaiCd == byotaiCd);
             if (diseaseInfo != null)
             {
                 diseaseName = diseaseInfo.Byomei;
@@ -81,7 +80,7 @@ namespace CommonChecker.DB
         public string FindDrvalrgyName(string drvalrgyCode)
         {
             string drvalrgyName = string.Empty;
-            var drvalrgyInfo = _tenantNoTrackingDataContext.M56DrvalrgyCode.FirstOrDefault(i => i.DrvalrgyCd == drvalrgyCode);
+            var drvalrgyInfo = NoTrackingDataContext.M56DrvalrgyCode.FirstOrDefault(i => i.DrvalrgyCd == drvalrgyCode);
             if (drvalrgyInfo != null)
             {
                 drvalrgyName = drvalrgyInfo.DrvalrgyName;
@@ -92,7 +91,7 @@ namespace CommonChecker.DB
         public string FindFoodName(string foodCode)
         {
             string foodName = string.Empty;
-            var foodInfo = _tenantNoTrackingDataContext.M12FoodAlrgyKbn.FirstOrDefault(i => i.FoodKbn == foodCode);
+            var foodInfo = NoTrackingDataContext.M12FoodAlrgyKbn.FirstOrDefault(i => i.FoodKbn == foodCode);
             if (foodInfo != null)
             {
                 foodName = foodInfo.FoodName;
@@ -102,26 +101,26 @@ namespace CommonChecker.DB
 
         public string FindIppanNameByIppanCode(string ippanCode)
         {
-            var ippanInfo = _tenantNoTrackingDataContext.IpnNameMsts.FirstOrDefault(i => i.IpnNameCd == ippanCode);
+            var ippanInfo = NoTrackingDataContext.IpnNameMsts.FirstOrDefault(i => i.IpnNameCd == ippanCode);
             return ippanInfo == null ? string.Empty : ippanInfo.IpnName;
         }
 
         public string FindItemName(string yjCd, int sinday)
         {
-            var itemInfo = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(d => d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
+            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(d => d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
             return itemInfo != null ? itemInfo.Name : string.Empty;
         }
 
         public string FindItemNameByItemCode(string itemCd, int sinday)
         {
-            var itemInfo = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinday && sinday <= t.EndDate);
+            var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinday && sinday <= t.EndDate);
             return itemInfo != null ? itemInfo.Name : string.Empty;
         }
 
         public string FindKijyoComment(string commentCode)
         {
             string kijyoComment = string.Empty;
-            var kijyoCommentInfo = _tenantNoTrackingDataContext.M01KijyoCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (kijyoCommentInfo != null)
             {
                 kijyoComment = kijyoCommentInfo.Cmt;
@@ -132,7 +131,7 @@ namespace CommonChecker.DB
         public string FindKinkiComment(string commentCode)
         {
             string kinkiComment = string.Empty;
-            var kinkiCommentInfo = _tenantNoTrackingDataContext.M01KinkiCmt.FirstOrDefault(i => i.CmtCd == commentCode);
+            var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (kinkiCommentInfo != null)
             {
                 kinkiComment = kinkiCommentInfo.Cmt;
@@ -143,7 +142,7 @@ namespace CommonChecker.DB
         public string FindOTCItemName(int serialNum)
         {
             string oTCITemName = string.Empty;
-            var oTCITemNameInfo = _tenantNoTrackingDataContext.M38OtcMain.FirstOrDefault(i => i.SerialNum == serialNum);
+            var oTCITemNameInfo = NoTrackingDataContext.M38OtcMain.FirstOrDefault(i => i.SerialNum == serialNum);
             if (oTCITemNameInfo != null)
             {
                 oTCITemName = oTCITemNameInfo.TradeName;
@@ -154,7 +153,7 @@ namespace CommonChecker.DB
         public string FindSuppleItemName(string seibunCd)
         {
             string suppleItemName = string.Empty;
-            var suppleItemNameInfo = _tenantNoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var suppleItemNameInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
             if (suppleItemNameInfo != null)
             {
                 suppleItemName = suppleItemNameInfo.Seibun;
@@ -164,21 +163,21 @@ namespace CommonChecker.DB
 
         public string GetOTCComponentInfo(string seibunCd)
         {
-            var otcComponentInfo = _tenantNoTrackingDataContext.M38IngCode.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var otcComponentInfo = NoTrackingDataContext.M38IngCode.FirstOrDefault(i => i.SeibunCd == seibunCd);
             return otcComponentInfo != null ? otcComponentInfo.Seibun : string.Empty;
         }
 
         public string GetSupplementComponentInfo(string seibunCd)
         {
-            var supplementComponentInfo = _tenantNoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
+            var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
             return supplementComponentInfo != null ? supplementComponentInfo.Seibun : string.Empty;
         }
 
         public string GetUsageDosage(string yjCd)
         {
             var dosageInfo =
-                  (from dosageDrug in _tenantNoTrackingDataContext.DosageDrugs.Where(d => d.YjCd == yjCd)
-                   join dosageDosage in _tenantNoTrackingDataContext.DosageDosages.Where(d => !string.IsNullOrEmpty(d.UsageDosage))
+                  (from dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.YjCd == yjCd)
+                   join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => !string.IsNullOrEmpty(d.UsageDosage))
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
                    {
@@ -190,7 +189,7 @@ namespace CommonChecker.DB
 
         public bool IsNoMasterData()
         {
-            return _tenantNoTrackingDataContext.M56ExEdIngredients.Count() == 0;
+            return NoTrackingDataContext.M56ExEdIngredients.Count() == 0;
         }
     }
 }

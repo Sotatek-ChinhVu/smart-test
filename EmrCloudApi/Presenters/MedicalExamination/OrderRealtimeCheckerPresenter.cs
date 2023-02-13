@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
 
         public void Complete(GetOrderCheckerOutputData outputData)
         {
-            Result.Data = new OrderRealtimeCheckerResponse(outputData.UnitCheckInfoModel, outputData.Status);
+            Result.Data = new OrderRealtimeCheckerResponse(outputData.ErrorInfoModels, outputData.Status);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

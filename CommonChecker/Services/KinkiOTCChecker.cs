@@ -31,7 +31,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
+            List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
             List<KinkiResultModel> checkedResult = Finder.CheckKinkiOTC(HpID, PtID, Sinday, settingLevel, listItemCode, ListPtOtcDrug);
 
