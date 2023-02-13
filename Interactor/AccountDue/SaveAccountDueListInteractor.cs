@@ -175,10 +175,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidAdjustFutan;
         }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinGaku < 0))
-        {
-            return SaveAccountDueListStatus.InvalidNyukinGaku;
-        }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.PaymentMethodCd < 0))
         {
             return SaveAccountDueListStatus.InvalidPaymentMethodCd;
@@ -186,10 +182,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinDate < 0))
         {
             return SaveAccountDueListStatus.InvalidNyukinDate;
-        }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.UketukeSbt < 0))
-        {
-            return SaveAccountDueListStatus.InvalidUketukeSbt;
         }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinCmt.Length > 100))
         {
