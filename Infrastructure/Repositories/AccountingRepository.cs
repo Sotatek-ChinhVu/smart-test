@@ -6,6 +6,7 @@ using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MstItem;
+using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
@@ -24,7 +25,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace Infrastructure.Repositories
 
                 if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
                 {
-                    return new List<RaiinInfModel>();
+                    return new List<ReceptionDto>();
                 }
 
                 var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
@@ -61,7 +62,7 @@ namespace Infrastructure.Repositories
 
                 return listRaiin
                 .Select(
-                    item => new RaiinInfModel(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
+                    item => new ReceptionDto(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
                         listKaMst.FirstOrDefault(itemKaMst => itemKaMst.KaId == item.RaiinInf.KaId)?.KaSname ?? string.Empty,
                         listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid),
                         item.ListKaikeiInf.Select(k => new KaikeiInfModel(

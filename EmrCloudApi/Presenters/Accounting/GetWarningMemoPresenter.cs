@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Accounting
 
         public void Complete(GetWarningMemoOutputData outputData)
         {
-            Result.Data = new GetWarningMemoResponse(outputData.WarningMemoModels, outputData.RaiinInfModels);
+            Result.Data = new GetWarningMemoResponse(outputData.WarningMemoModels, outputData.ReceptionDtos);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

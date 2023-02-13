@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
+using Domain.Models.Reception;
 using Helper.Common;
 using UseCase.Accounting.WarningMemo;
 
@@ -22,19 +23,19 @@ namespace Interactor.Accounting
                 //Get Raiin Inf
                 var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
                 if (!raiinInf.Any())
-                    return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<RaiinInfModel>(), GetWarningMemoStatus.NoData);
+                    return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.NoData);
 
                 //Get Warning Memo
                 var warning = GetWarningMemo(inputData.HpId, inputData.PtId, inputData.SinDate, raiinInf);
 
                 if (!warning.Any())
-                    return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<RaiinInfModel>(), GetWarningMemoStatus.NoData);
+                    return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.NoData);
                 return new GetWarningMemoOutputData(warning, raiinInf, GetWarningMemoStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<RaiinInfModel>(), GetWarningMemoStatus.Failed);
+                return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.Failed);
             }
             finally
             {
@@ -42,7 +43,7 @@ namespace Interactor.Accounting
             }
         }
 
-        private List<WarningMemoModel> GetWarningMemo(int hpId, long ptId, int sinDate, List<RaiinInfModel> raiinInfModels)
+        private List<WarningMemoModel> GetWarningMemo(int hpId, long ptId, int sinDate, List<ReceptionDto> raiinInfModels)
         {
             List<WarningMemoModel> WarningMemoModel = new List<WarningMemoModel>();
             bool CheckIdIsExits(List<int> idList, int idCheck)
