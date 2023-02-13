@@ -19,59 +19,59 @@ namespace Domain.Models.Accounting
 
         public string Byomei { get; set; }
 
-        public int StartDate { get; set; }
+        public int StartDate { get; private set; }
 
-        public int TenkiDate { get; set; }
+        public int TenkiDate { get; private set; }
 
-        public string HosokuCmt { get; set; }
+        public string HosokuCmt { get; private set; }
 
-        public int SortNo { get; set; }
+        public int SortNo { get; private set; }
 
-        public int SeqNo { get; set; }
+        public int SeqNo { get; private set; }
 
-        public string SyusyokuCd1 { get; set; }
+        public string SyusyokuCd1 { get; private set; }
 
-        public string SyusyokuCd2 { get; set; }
+        public string SyusyokuCd2 { get; private set; }
 
-        public string SyusyokuCd3 { get; set; }
+        public string SyusyokuCd3 { get; private set; }
 
-        public string SyusyokuCd4 { get; set; }
+        public string SyusyokuCd4 { get; private set; }
 
-        public string SyusyokuCd5 { get; set; }
+        public string SyusyokuCd5 { get; private set; }
 
-        public string SyusyokuCd6 { get; set; }
+        public string SyusyokuCd6 { get; private set; }
 
-        public string SyusyokuCd7 { get; set; }
+        public string SyusyokuCd7 { get; private set; }
 
-        public string SyusyokuCd8 { get; set; }
+        public string SyusyokuCd8 { get; private set; }
 
-        public string SyusyokuCd9 { get; set; }
+        public string SyusyokuCd9 { get; private set; }
 
-        public string SyusyokuCd10 { get; set; }
+        public string SyusyokuCd10 { get; private set; }
 
-        public string SyusyokuCd11 { get; set; }
+        public string SyusyokuCd11 { get; private set; }
 
-        public string SyusyokuCd12 { get; set; }
+        public string SyusyokuCd12 { get; private set; }
 
-        public string SyusyokuCd13 { get; set; }
+        public string SyusyokuCd13 { get; private set; }
 
-        public string SyusyokuCd14 { get; set; }
+        public string SyusyokuCd14 { get; private set; }
 
-        public string SyusyokuCd15 { get; set; }
+        public string SyusyokuCd15 { get; private set; }
 
-        public string SyusyokuCd16 { get; set; }
+        public string SyusyokuCd16 { get; private set; }
 
-        public string SyusyokuCd17 { get; set; }
+        public string SyusyokuCd17 { get; private set; }
 
-        public string SyusyokuCd18 { get; set; }
+        public string SyusyokuCd18 { get; private set; }
 
-        public string SyusyokuCd19 { get; set; }
+        public string SyusyokuCd19 { get; private set; }
 
-        public string SyusyokuCd20 { get; set; }
+        public string SyusyokuCd20 { get; private set; }
 
-        public string SyusyokuCd21 { get; set; }
+        public string SyusyokuCd21 { get; private set; }
 
-        public string ByomeiCd { get; set; }
+        public string ByomeiCd { get; private set; }
 
         public string Icd10 { get; set; }
 
