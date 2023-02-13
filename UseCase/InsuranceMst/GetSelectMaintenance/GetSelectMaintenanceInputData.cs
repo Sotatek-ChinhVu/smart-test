@@ -22,6 +22,5 @@ namespace UseCase.InsuranceMst.GetSelectMaintenance
         public int PrefNo { get; private set; }
 
         public int StartDate { get; private set; }
-
     }
 }
