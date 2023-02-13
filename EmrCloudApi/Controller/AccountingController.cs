@@ -6,6 +6,8 @@ using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting;
+using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Controller
@@ -31,6 +33,32 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetAccountingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.PaymentMethod)]
+        public ActionResult<Response<GetPaymentMethodResponse>> GetList([FromQuery] GetPaymentMethodRequest request)
+        {
+
+            var input = new GetPaymentMethodInputData(request.HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetPaymentMethodPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetPaymentMethodResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.WarningMemo)]
+        public ActionResult<Response<GetWarningMemoResponse>> GetList([FromQuery] GetWarningMemoRequest request)
+        {
+
+            var input = new GetWarningMemoInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetWarningMemoPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetWarningMemoResponse>>(presenter.Result);
         }
     }
 }

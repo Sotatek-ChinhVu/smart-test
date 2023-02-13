@@ -1,9 +1,10 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Common;
+using Domain.Models.MstItem;
 using Domain.Models.ReceptionSameVisit;
 
 namespace Domain.Models.Accounting
 {
-    public interface IAccountingRepository
+    public interface IAccountingRepository : IRepositoryBase
     {
         public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false);
         public List<RaiinInfModel> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo);

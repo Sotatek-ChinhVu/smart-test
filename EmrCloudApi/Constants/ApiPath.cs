@@ -167,8 +167,12 @@
 
         //Order RealtimeChecker
         public const string OrderRealtimeChecker = "OrderRealtimeChecker";
-        
+
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
+
+        //Accounting
+        public const string PaymentMethod = "PaymentMethod";
+        public const string WarningMemo = "WarningMemo";
     }
 }
