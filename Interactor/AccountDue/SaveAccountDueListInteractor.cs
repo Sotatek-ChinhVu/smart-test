@@ -108,11 +108,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         }
 
         int unPaid = seikyuGakuDB - nyukinGakuDB - adjustFutanDB - sumAdjustFutanInput - sumNyukinGakuInput;
-        if (accountDue.NyukinKbn == 0 && (accountDue.NyukinGaku != 0 || accountDue.AdjustFutan != 0 || listSyunoNyukinDB.Count(item => item.RaiinNo == accountDue.RaiinNo) > 1))
-        {
-            return SaveAccountDueListStatus.InvalidNyukinKbn;
-        }
-        else if ((accountDue.NyukinKbn == 1 && unPaid == 0))
+        if (accountDue.NyukinKbn == 1 && unPaid == 0)
         {
             return SaveAccountDueListStatus.InvalidNyukinKbn;
         }
