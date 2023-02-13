@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using Domain.Models.Diseases;
 using UseCase.Accounting.GetPtByoMei;
 
 namespace Interactor.Accounting
@@ -21,7 +22,7 @@ namespace Interactor.Accounting
 
                 if (!ptByoMei.Any())
                 {
-                    return new GetPtByoMeiOutputData(new List<PtByomeiModel>(), GetPtByoMeiStatus.Failed);
+                    return new GetPtByoMeiOutputData(new List<PtDiseaseModel>(), GetPtByoMeiStatus.Failed);
                 }
                 return new GetPtByoMeiOutputData(ptByoMei, GetPtByoMeiStatus.Successed);
 
@@ -29,7 +30,7 @@ namespace Interactor.Accounting
             catch (Exception)
             {
 
-                return new GetPtByoMeiOutputData(new List<PtByomeiModel>(), GetPtByoMeiStatus.Failed);
+                return new GetPtByoMeiOutputData(new List<PtDiseaseModel>(), GetPtByoMeiStatus.Failed);
             }
             finally
             {

@@ -1,17 +1,17 @@
-﻿using Domain.Models.Accounting;
+﻿using Domain.Models.Diseases;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.Accounting.GetPtByoMei
 {
     public class GetPtByoMeiOutputData : IOutputData
     {
-        public GetPtByoMeiOutputData(List<PtByomeiModel> ptByomeiModels, GetPtByoMeiStatus status)
+        public GetPtByoMeiOutputData(List<PtDiseaseModel> ptDiseaseModels, GetPtByoMeiStatus status)
         {
-            PtByomeiModels = ptByomeiModels;
+            PtDiseaseModels = ptDiseaseModels;
             Status = status;
         }
 
-        public List<PtByomeiModel> PtByomeiModels { get; private set; }
+        public List<PtDiseaseModel> PtDiseaseModels { get; private set; }
         public GetPtByoMeiStatus Status { get; private set; }
     }
 }

@@ -1,14 +1,14 @@
-﻿using Domain.Models.Accounting;
+﻿using Domain.Models.Diseases;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetPtByoMeiResponse
     {
-        public GetPtByoMeiResponse(List<PtByomeiModel> ptByomeiModels)
+        public GetPtByoMeiResponse(List<PtDiseaseModel> ptDiseaseModels)
         {
-            PtByomeiModels = ptByomeiModels;
+            PtDiseaseModels = ptDiseaseModels;
         }
 
-        public List<PtByomeiModel> PtByomeiModels { get; private set; }
+        public List<PtDiseaseModel> PtDiseaseModels { get; private set; }
     }
 }

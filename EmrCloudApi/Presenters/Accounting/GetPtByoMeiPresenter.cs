@@ -10,8 +10,8 @@ namespace EmrCloudApi.Presenters.Accounting
         public Response<GetPtByoMeiResponse> Result { get; private set; } = new();
         public void Complete(GetPtByoMeiOutputData outputData)
         {
-            Result.Data = new GetPtByoMeiResponse(outputData.PtByomeiModels);
-            Result.Message = GetMessage(outputData.PtByomeiModels);
+            Result.Data = new GetPtByoMeiResponse(outputData.PtDiseaseModels);
+            Result.Message = GetMessage(outputData.PtDiseaseModels);
             Result.Status = (int)outputData.Status;
         }
 
