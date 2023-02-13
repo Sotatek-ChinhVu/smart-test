@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.Where(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0).FirstOrDefault();
+                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
 
                 if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
                 {
@@ -38,14 +38,11 @@ namespace Infrastructure.Repositories
                 var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
                    item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > 3).ToList();
 
-                var listKaId = listRaiinInf.Select(item => item.KaId).ToList();
-
-                var listRaiinNo = listRaiinInf.Select(item => item.RaiinNo).ToList();
+                var listKaId = listRaiinInf.Select(item => item.KaId).Distinct().ToList();
 
                 var listKaikeiInf = NoTrackingDataContext.KaikeiInfs.Where(item =>
-                    item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
-                    listRaiinNo.Contains(item.RaiinNo));
-
+                    item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate);
+               
                 var listKaMst = NoTrackingDataContext.KaMsts.Where(item =>
                 item.HpId == hpId && item.IsDeleted == 0 && listKaId.Contains(item.KaId));
 
@@ -62,7 +59,7 @@ namespace Infrastructure.Repositories
                 return listRaiin
                 .Select(
                     item => new ReceptionDto(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
-                        listKaMst.FirstOrDefault(itemKaMst => itemKaMst.KaId == item.RaiinInf.KaId)?.KaSname ?? string.Empty,
+                        listKaMst.FirstOrDefault(itemKaMst => itemKaMst.KaId == item.RaiinInf.KaId).KaSname ?? string.Empty,
                         listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid),
                         item.ListKaikeiInf.Select(k => new KaikeiInfModel(
                                                     k.HpId,
