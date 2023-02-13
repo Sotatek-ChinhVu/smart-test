@@ -87,6 +87,7 @@ using EmrCloudApi.Presenters.MaxMoney;
 using UseCase.SwapHoken.Validate;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Messages;
+using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -829,6 +830,16 @@ namespace EmrCloudApi.Controller
             var presenter = new ValidateSwapHokenPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ValidateSwapHokenResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetGroupNameMst)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
+        {
+            var input = new GetGroupNameMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
         }
     }
 }
