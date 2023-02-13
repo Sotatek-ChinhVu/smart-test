@@ -1783,10 +1783,9 @@ namespace Infrastructure.Repositories
             return query.AsEnumerable().ToDictionary(u => u.ItemCd, u => u.IsGetYaka);
         }
 
-        public OrdInfModel FromNextOrder(int hpId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels, int sinDate)
+        public List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels)
         {
-            int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
-            int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
+            List<OrdInfModel> ordInfs = new();
             List<string> itemCds = new();
             List<string> ipNameCds = new();
             foreach (var rsvkrtOdrInfModel in rsvkrtOdrInfModels)
@@ -1797,181 +1796,225 @@ namespace Infrastructure.Repositories
             itemCds = itemCds.Distinct().ToList();
             ipNameCds = itemCds.Distinct().ToList();
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && itemCds.Contains(t.ItemCd)).ToList();
+            var kensaItemCds = tenMsts.Select(t => t.KensaItemCd).ToList();
+            var kensaItemSeqNos = tenMsts.Select(t => t.KensaItemSeqNo).ToList();
             var ipns = NoTrackingDataContext.IpnNameMsts.Where(ipn =>
                    ipn.HpId == hpId &&
                    ipn.StartDate <= sinDate &&
                    ipn.EndDate >= sinDate &&
-                   ipNameCds.Contains(ipn.IpnNameCd))
-               .FirstOrDefault();
+                   ipNameCds.Contains(ipn.IpnNameCd)).ToList();
+            var kensMsts = NoTrackingDataContext.KensaMsts.Where(e =>
+                e.HpId == hpId &&
+                kensaItemCds.Contains(e.KensaItemCd) &&
+                kensaItemSeqNos.Contains(e.KensaItemSeqNo))
+                .ToList();
+            var ipnMinYakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   ipNameCds.Contains(p.IpnNameCd)).ToList();
 
+            ordInfs = ConvertToDetailModel(hpId, raiinNo, sinDate, userId, rsvkrtOdrInfModels, ipns, tenMsts, kensMsts, ipnMinYakkas);
+
+            return ordInfs;
+        }
+
+        public List<OrdInfModel> ConvertToDetailModel(int hpId, long raiinNo, int sinDate, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels, List<IpnNameMst> ipns, List<TenMst> tenMsts, List<KensaMst> kensMsts, List<IpnMinYakkaMst> ipnMinYakkas)
+        {
+            int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
+            int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
+            int autoSetSyohoKbnKohatuDrug = (int)_systemConf.GetSettingValue(2020, 0, hpId);
+            int autoSetSyohoLimitKohatuDrug = (int)_systemConf.GetSettingValue(2020, 1, hpId);
+            int autoSetSyohoKbnSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 0, hpId);
+            int autoSetSyohoLimitSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 1, hpId);
+
+            List<OrdInfModel> ordInfs = new();
             foreach (var rsvkrtOdrInfModel in rsvkrtOdrInfModels)
             {
-
-                OdrInf odrInf = new OdrInf();
-                odrInf.OdrKouiKbn = rsvkrtOdrInfModel.OdrKouiKbn;
-
-                odrInf.InoutKbn = rsvkrtOdrInfModel.InoutKbn;
-                odrInf.SikyuKbn = rsvkrtOdrInfModel.SikyuKbn;
-                odrInf.TosekiKbn = rsvkrtOdrInfModel.TosekiKbn;
-                odrInf.SyohoSbt = rsvkrtOdrInfModel.SyohoSbt;
-                odrInf.SanteiKbn = rsvkrtOdrInfModel.SanteiKbn;
-
-                List<RsvKrtOrderInfDetailModel> odrInfDetails = new();
+                List<OrdInfDetailModel> odrInfDetails = new();
                 int rowNo = 0;
                 foreach (var odrDetail in rsvkrtOdrInfModel.OrdInfDetails)
                 {
-                    OdrInfDetail detail = new OdrInfDetail();
-                    detail.SinKouiKbn = odrDetail.SinKouiKbn;
-                    detail.ItemCd = odrDetail.ItemCd;
-                    detail.ItemName = odrDetail.ItemName;
-                    detail.Suryo = odrDetail.Suryo;
-                    detail.UnitName = odrDetail.UnitName;
-                    detail.UnitSBT = odrDetail.UnitSbt;
-                    detail.TermVal = odrDetail.TermVal;
-                    detail.Bunkatu = odrDetail.Bunkatu;
+                    int sinKouiKbn = odrDetail.SinKouiKbn;
+                    string itemCd = odrDetail.ItemCd;
+                    string itemName = odrDetail.ItemName;
+                    double suryo = odrDetail.Suryo;
+                    string unitName = odrDetail.UnitName;
+                    int unitSBT = odrDetail.UnitSbt;
+                    double termVal = odrDetail.TermVal;
+                    string bunkatu = odrDetail.Bunkatu;
 
-                    detail.KohatuKbn = odrDetail.KohatuKbn;
-                    detail.DrugKbn = odrDetail.DrugKbn;
-                    detail.YohoKbn = odrDetail.YohoKbn;
-                    detail.IsNodspRece = odrDetail.IsNodspRece;
+                    int kohatuKbn = odrDetail.KohatuKbn;
+                    int drugKbn = odrDetail.DrugKbn;
+                    int yohoKbn = odrDetail.YohoKbn;
+                    int isNodspRece = odrDetail.IsNodspRece;
+                    string ipnName = "";
                     TenMst? tenMst = new();
-                    if (!string.IsNullOrEmpty(detail.ItemCd))
+                    if (!string.IsNullOrEmpty(itemCd))
                     {
-                        tenMst = tenMsts.FirstOrDefault(od => od.ItemCd == detail.ItemCd);
+                        tenMst = tenMsts.FirstOrDefault(od => od.ItemCd == itemCd);
                     }
-                    detail.IpnCd = tenMst == null ? "" : tenMst.IpnNameCd;
-                    if (!string.IsNullOrEmpty(detail.IpnCd))
+                    string ipnCd = tenMst == null ? "" : tenMst.IpnNameCd ?? string.Empty;
+                    if (!string.IsNullOrEmpty(ipnCd))
                     {
-                        detail.IpnName = masterFinder.FindIpnNameMst(detail.IpnCd, sinDate)?.IpnName;
+                        ipnName = ipns.FirstOrDefault(od => od.IpnNameCd == ipnCd)?.IpnName ?? string.Empty;
                     }
                     else
                     {
-                        detail.IpnName = string.Empty;
+                        ipnName = string.Empty;
                     }
-                    detail.Kokuji1 = tenMst == null ? "" : tenMst.Kokuji1;
-                    detail.Kokiji2 = tenMst == null ? "" : tenMst.Kokuji2;
+                    string kokuji1 = tenMst == null ? "" : tenMst.Kokuji1 ?? string.Empty;
+                    string kokuji2 = tenMst == null ? "" : tenMst.Kokuji2 ?? string.Empty;
 
-                    detail.CmtName = odrDetail.CmtName;
-                    detail.CmtOpt = odrDetail.CmtOpt;
-                    detail.FontColor = odrDetail.FontColor;
-                    detail.CommentNewline = odrDetail.CommentNewline;
-                    if ((odrDetail.SinKouiKbn == 20 && odrDetail.DrugKbn > 0) || (odrDetail.IsInDrugOdr && odrDetail.IsInjection))
-                    {
-                        bool isChangeKouhatu = tenMst != null && odrDetail.KohatuKbn != tenMst.KohatuKbn;
-                        if (isChangeKouhatu)
-                        {
-                            switch (tenMst.KohatuKbn)
-                            {
-                                case 0:
-                                    // 先発品
-                                    odrDetail.SyohoKbn = 0;
-                                    odrDetail.SyohoLimitKbn = 0;
-                                    break;
-                                case 1:
-                                    // 後発品
-                                    odrDetail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnKohatuDrug + 1;
-                                    odrDetail.SyohoLimitKbn = SystemConfig.Instance.AutoSetSyohoLimitKohatuDrug;
-                                    break;
-                                case 2:
-                                    // 後発品のある先発品
-                                    odrDetail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnSenpatuDrug + 1;
-                                    odrDetail.SyohoLimitKbn = SystemConfig.Instance.AutoSetSyohoLimitSenpatuDrug;
-                                    break;
-                            }
-                            if (odrDetail.SyohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
-                            {
-                                // 一般名マスタに登録がない
-                                odrDetail.SyohoKbn = 2;
-                            }
-                        }
-                    }
-                    detail.KohatuKbn = tenMst == null ? detail.KohatuKbn : tenMst.KohatuKbn;
-
-                    if ((detail.SinKouiKbn == 20 && detail.DrugKbn > 0) || (odrDetail.IsInDrugOdr && odrDetail.IsInjection))
-                    {
-                        switch (detail.KohatuKbn)
-                        {
-                            case 0:
-                                // 先発品
-                                detail.SyohoKbn = 0;
-                                detail.SyohoLimitKbn = 0;
-                                break;
-                            case 1:
-                                // 後発品
-                                if (autoSetKohatu == 0)
-                                {
-                                    //マスタ設定に準じる
-                                    detail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnKohatuDrug + 1;
-                                    detail.SyohoLimitKbn = SystemConfig.Instance.AutoSetSyohoLimitKohatuDrug;
-                                }
-                                else
-                                {
-                                    //各セットの設定に準じる
-                                    detail.SyohoKbn = odrDetail.SyohoKbn;
-                                    detail.SyohoLimitKbn = odrDetail.SyohoLimitKbn;
-                                }
-                                if (detail.SyohoKbn == 0 && SystemConfig.Instance.AutoSetSyohoKbnKohatuDrug == 2 && !string.IsNullOrEmpty(detail.IpnName))
-                                {
-                                    detail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnKohatuDrug + 1;
-                                }
-                                break;
-                            case 2:
-                                // 後発品のある先発品
-                                if (autoSetSenpatu == 0)
-                                {
-                                    //マスタ設定に準じる
-                                    detail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnSenpatuDrug + 1;
-                                    detail.SyohoLimitKbn = SystemConfig.Instance.AutoSetSyohoLimitSenpatuDrug;
-                                }
-                                else
-                                {
-                                    //各セットの設定に準じる
-                                    detail.SyohoKbn = odrDetail.SyohoKbn;
-                                    detail.SyohoLimitKbn = odrDetail.SyohoLimitKbn;
-                                }
-                                if (detail.SyohoKbn == 0 && SystemConfig.Instance.AutoSetSyohoKbnSenpatuDrug == 2 && !string.IsNullOrEmpty(detail.IpnName))
-                                {
-                                    detail.SyohoKbn = SystemConfig.Instance.AutoSetSyohoKbnSenpatuDrug + 1;
-                                }
-                                break;
-                        }
-
-                        if (tenMst != null && detail.SyohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
-                        {
-                            // 一般名マスタに登録がない
-                            detail.SyohoKbn = 2;
-                        }
-                    }
+                    string cmtName = odrDetail.CmtName;
+                    string cmtOpt = odrDetail.CmtOpt;
+                    string fontColor = odrDetail.FontColor;
+                    int commentNewline = odrDetail.CommentNewline;
+                    kohatuKbn = tenMst == null ? kohatuKbn : tenMst.KohatuKbn;
+                    var syosai = CaculateSyosai(sinKouiKbn, autoSetKohatu, autoSetSyohoKbnKohatuDrug, autoSetSyohoLimitKohatuDrug, autoSetSyohoLimitSenpatuDrug, autoSetSyohoKbnSenpatuDrug, autoSetSenpatu, drugKbn, kohatuKbn, itemName, ipnName, odrDetail, tenMst ?? new());
 
                     // Correct TermVal
-                    detail.TermVal = CorrectOdrSettingUtil.CorrectTermVal(detail.UnitSBT, tenMst, detail.TermVal);
+                    termVal = CorrectTermVal(unitSBT, tenMst ?? new(), termVal);
+                    var kensMst = tenMst == null ? null : kensMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
+                    var ipnMinYakka = tenMst == null ? null : ipnMinYakkas.FirstOrDefault(k => k.IpnNameCd == tenMst.IpnNameCd);
+                    var isGetPriceInYakka = CheckIsGetYakkaPrice(hpId, tenMst ?? new(), sinDate);
+                    double ten = tenMst == null ? 0 : tenMst.Ten;
+                    var masterSbt = tenMst == null ? "" : tenMst.MasterSbt;
+                    var cmtCol1 = tenMst == null ? 0 : tenMst.CmtCol1;
+                    var cmtCol2 = tenMst == null ? 0 : tenMst.CmtCol2;
+                    var cmtCol3 = tenMst == null ? 0 : tenMst.CmtCol3;
+                    var cmtCol4 = tenMst == null ? 0 : tenMst.CmtCol4;
+                    var cmtColKeta1 = tenMst == null ? 0 : tenMst.CmtColKeta1;
+                    var cmtColKeta2 = tenMst == null ? 0 : tenMst.CmtColKeta2;
+                    var cmtColKeta3 = tenMst == null ? 0 : tenMst.CmtColKeta3;
+                    var cmtColKeta4 = tenMst == null ? 0 : tenMst.CmtColKeta4;
 
-                    detail.RowNo = ++rowNo;
-                    odrInfDetails.Add(new TodayOdrInfDetailModel(detail)
-                    {
-                        KensaMstModel = tenMst == null ? null : masterFinder.FindKensaMst(tenMst.KensaItemCd, tenMst.KensaItemSeqNo),
-                        IpnMinYakkaMstModel = tenMst == null ? null : masterFinder.FindIpnMinYakkaMst(tenMst.IpnNameCd, sinDate),
-                        IsGetPriceInYakka = masterFinder.CheckIsGetYakkaPrice(tenMst, sinDate),
-                        Ten = tenMst == null ? 0 : tenMst.Ten,
-                        HandanGrpKbn = tenMst == null ? 0 : tenMst.HandanGrpKbn,
-                        MasterSbt = tenMst == null ? "" : tenMst.MasterSbt,
-                        CmtCol1 = tenMst == null ? 0 : tenMst.CmtCol1,
-                        CmtCol2 = tenMst == null ? 0 : tenMst.CmtCol2,
-                        CmtCol3 = tenMst == null ? 0 : tenMst.CmtCol3,
-                        CmtCol4 = tenMst == null ? 0 : tenMst.CmtCol4,
-                        CmtColKeta1 = tenMst == null ? 0 : tenMst.CmtColKeta1,
-                        CmtColKeta2 = tenMst == null ? 0 : tenMst.CmtColKeta2,
-                        CmtColKeta3 = tenMst == null ? 0 : tenMst.CmtColKeta3,
-                        CmtColKeta4 = tenMst == null ? 0 : tenMst.CmtColKeta4,
-                    });
+                    int currenRowNo = ++rowNo;
+                    var odrInfDetail = new OrdInfDetailModel(
+                           odrDetail.HpId, raiinNo, 0, 0, currenRowNo, odrDetail.PtId, sinDate, sinKouiKbn, itemCd, itemName, suryo, unitName, unitSBT, termVal, kohatuKbn, syosai.Item1, syosai.Item2, drugKbn, yohoKbn, kokuji1, kokuji2, isNodspRece, ipnCd, ipnName, 0, DateTime.MinValue, 0, string.Empty, string.Empty, bunkatu, cmtName, cmtOpt, fontColor, commentNewline, masterSbt ?? string.Empty, 0, ipnMinYakka?.Yakka ?? 0, isGetPriceInYakka, 0, cmtCol1, ten, 0, 0, 0, 0, 0, string.Empty, new(), 0, 0, string.Empty, string.Empty, kensMst?.CenterItemCd1 ?? string.Empty, kensMst?.CenterItemCd2 ?? string.Empty
+                        );
+                    odrInfDetails.Add(odrInfDetail);
                 }
-                TodayOdrInfModel newTodayOdrInfModel = new TodayOdrInfModel(odrInf, odrInfDetails)
-                {
-                    RpName = rsvkrtOdrInfModel.RpName
-                };
-
-                return newTodayOdrInfModel;
+                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty);
+                ordInfs.Add(odrInf);
             }
+            return ordInfs;
+        }
+
+        public (int, int) CaculateSyosai(int sinKouiKbn, int autoSetKohatu, int autoSetSyohoKbnKohatuDrug, int autoSetSyohoLimitKohatuDrug, int autoSetSyohoLimitSenpatuDrug, int autoSetSyohoKbnSenpatuDrug, int autoSetSenpatu, int drugKbn, int kohatuKbn, string itemName, string ipnName, RsvKrtOrderInfDetailModel odrDetail, TenMst tenMst)
+        {
+            int syohoKbn = 0;
+            int syohoLimitKbn = 0;
+            if ((odrDetail.SinKouiKbn == 20 && odrDetail.DrugKbn > 0) || (odrDetail.IsInDrugOdr && odrDetail.IsInjection))
+            {
+                bool isChangeKouhatu = tenMst != null && odrDetail.KohatuKbn != tenMst.KohatuKbn;
+                if (isChangeKouhatu && tenMst != null)
+                {
+                    switch (tenMst.KohatuKbn)
+                    {
+                        case 0:
+                            // 先発品
+                            syohoKbn = 0;
+                            syohoLimitKbn = 0;
+                            break;
+                        case 1:
+                            // 後発品
+                            syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                            syohoLimitKbn = autoSetSyohoLimitKohatuDrug;
+                            break;
+                        case 2:
+                            // 後発品のある先発品
+                            syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                            syohoLimitKbn = autoSetSyohoLimitSenpatuDrug;
+                            break;
+                    }
+                    if (odrDetail.SyohoKbn == 3 && string.IsNullOrEmpty(ipnName))
+                    {
+                        // 一般名マスタに登録がない
+                        syohoKbn = 2;
+                    }
+                }
+            }
+
+            if ((sinKouiKbn == 20 && drugKbn > 0) || (odrDetail.IsInDrugOdr && odrDetail.IsInjection))
+            {
+                switch (kohatuKbn)
+                {
+                    case 0:
+                        // 先発品
+                        syohoKbn = 0;
+                        syohoLimitKbn = 0;
+                        break;
+                    case 1:
+                        // 後発品
+                        if (autoSetKohatu == 0)
+                        {
+                            //マスタ設定に準じる
+                            syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                            syohoLimitKbn = autoSetSyohoLimitKohatuDrug;
+                        }
+                        else
+                        {
+                            //各セットの設定に準じる
+                            syohoKbn = odrDetail.SyohoKbn;
+                            syohoLimitKbn = odrDetail.SyohoLimitKbn;
+                        }
+                        if (syohoKbn == 0 && autoSetSyohoKbnKohatuDrug == 2 && !string.IsNullOrEmpty(ipnName))
+                        {
+                            syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                        }
+                        break;
+                    case 2:
+                        // 後発品のある先発品
+                        if (autoSetSenpatu == 0)
+                        {
+                            //マスタ設定に準じる
+                            syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                            syohoLimitKbn = autoSetSyohoLimitSenpatuDrug;
+                        }
+                        else
+                        {
+                            //各セットの設定に準じる
+                            syohoKbn = odrDetail.SyohoKbn;
+                            syohoLimitKbn = odrDetail.SyohoLimitKbn;
+                        }
+                        if (syohoKbn == 0 && autoSetSyohoKbnSenpatuDrug == 2 && !string.IsNullOrEmpty(ipnName))
+                        {
+                            syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                        }
+                        break;
+                }
+
+                if (tenMst != null && syohoKbn == 3 && string.IsNullOrEmpty(ipnName))
+                {
+                    // 一般名マスタに登録がない
+                    syohoKbn = 2;
+                }
+            }
+            return (syohoKbn, syohoLimitKbn);
+        }
+        public static double CorrectTermVal(int unitSbt, TenMst tenMst, double originTermVal)
+        {
+            if (tenMst == null || (string.IsNullOrEmpty(tenMst.ItemCd) && tenMst.StartDate == 0 && tenMst.HpId == 0)) return 0;
+            double termVal = originTermVal;
+            if (unitSbt == UnitSbtConst.BASIC)
+            {
+                termVal = tenMst.OdrTermVal;
+            }
+            else if (unitSbt == UnitSbtConst.CONVERT)
+            {
+                termVal = tenMst.CnvTermVal;
+            }
+            return termVal;
+        }
+
+        private bool CheckIsGetYakkaPrice(int hpId, TenMst tenMst, int sinDate)
+        {
+            if (tenMst == null) return false;
+            var ipnKasanExclude = NoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+            var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
     }
 }

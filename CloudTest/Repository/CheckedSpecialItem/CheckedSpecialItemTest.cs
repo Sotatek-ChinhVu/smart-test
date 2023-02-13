@@ -1,5 +1,4 @@
 ﻿using CloudUnitTest.SampleData;
-using Entity.Tenant;
 using Infrastructure.Repositories;
 
 namespace CloudUnitTest.Repository.CheckedSpecialItem;
@@ -39,7 +38,8 @@ public class CheckedSpecialItemTest : BaseUT
         var sampleData = CheckedSpecialItemData.ReadDensiSanteiKaisu();
         tenant.DensiSanteiKaisus.AddRange(sampleData);
         tenant.SaveChanges();
-        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider, systemConfRepository);
         // Act
         var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
             "W12334"
@@ -146,9 +146,10 @@ public class CheckedSpecialItemTest : BaseUT
         tenant.SinKouiCounts.AddRange(sinKouiCounts);
         tenant.SinKouiDetails.AddRange(sinKouiDetails);
         tenant.SaveChanges();
-        TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider);
+        SystemConfRepository systemConf = new SystemConfRepository(TenantProvider);
+        TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider, systemConf);
         // Act
-        var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> {1}, new List<int> {10});
+        var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> { 1 }, new List<int> { 10 });
         // Assert
         Assert.True(santeiCount == 1);
 
