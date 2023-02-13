@@ -15,5 +15,7 @@ namespace Domain.Models.SwapHoken
         bool ExistRaiinInfUsedOldHokenId(int hpId, long ptId, List<int> sinYms, int oldHokenPId);
 
         bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId, int userId);
+
+        bool IsPtHokenPatternUsed(int hpId, long ptId, int hokenPid);
     }
 }

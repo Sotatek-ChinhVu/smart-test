@@ -46,6 +46,14 @@ namespace Interactor.CommonChecker
             _masterFinder = masterFinder;
             _systemConfig = systemConfig;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
+            _listPtAlrgyDrug = new();
+            _listPtAlrgyFood = new();
+            _listPtOtherDrug = new();
+            _listPtOtcDrug = new();
+            _listPtSupple = new();
+            _listPtKioReki = new();
+            _listDiseaseCode = new();
+            _listPtAlrgyDrugCode = new();
         }
 
         public List<string> ListPtAlrgyDrugCode
@@ -88,7 +96,7 @@ namespace Interactor.CommonChecker
 
                 var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
 
-                 GetErrorDetails(checkedResult);
+                var result = GetErrorDetails(checkedResult);
 
                 if (checkedResult == null || checkedResult.Count == 0)
                 {
@@ -96,13 +104,13 @@ namespace Interactor.CommonChecker
                 }
                 else
                 {
-                    return new GetOrderCheckerOutputData(checkedResult ?? new(), GetOrderCheckerStatus.Error);
+                    return new GetOrderCheckerOutputData(result ?? new(), GetOrderCheckerStatus.Error);
                 }
             }
             catch (Exception)
             {
 
-                return new GetOrderCheckerOutputData(new(),GetOrderCheckerStatus.Failed);
+                return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Failed);
             }
 
         }
@@ -446,7 +454,7 @@ namespace Interactor.CommonChecker
         #endregion
 
         #region Get Error Details
-        private void GetErrorDetails(List<UnitCheckInfoModel> listErrorInfo)
+        private List<ErrorInfoModel> GetErrorDetails(List<UnitCheckInfoModel> listErrorInfo)
         {
             List<ErrorInfoModel> listErrorInfoModel = new List<ErrorInfoModel>();
             listErrorInfo.ForEach((errorInfo) =>
@@ -458,7 +466,6 @@ namespace Interactor.CommonChecker
                         if (drugAllergyInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(drugAllergyInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.FoodAllergy:
@@ -466,7 +473,6 @@ namespace Interactor.CommonChecker
                         if (foodAllergyInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForFoodAllergy(foodAllergyInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Age:
@@ -474,7 +480,6 @@ namespace Interactor.CommonChecker
                         if (ageErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForAge(ageErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Disease:
@@ -482,7 +487,6 @@ namespace Interactor.CommonChecker
                         if (diseaseErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDisease(diseaseErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Kinki:
@@ -493,7 +497,6 @@ namespace Interactor.CommonChecker
                         if (kinkiErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForKinki(errorInfo.CheckerType, kinkiErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.KinkiUser:
@@ -501,7 +504,6 @@ namespace Interactor.CommonChecker
                         if (kinkiUserErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForKinkiUser(kinkiUserErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Days:
@@ -509,7 +511,6 @@ namespace Interactor.CommonChecker
                         if (dayLimitErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDayLimit(dayLimitErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Dosage:
@@ -517,7 +518,6 @@ namespace Interactor.CommonChecker
                         if (dosageErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDosage(dosageErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                     case RealtimeCheckerType.Duplication:
@@ -525,11 +525,12 @@ namespace Interactor.CommonChecker
                         if (duplicationErrorInfo != null)
                         {
                             listErrorInfoModel.AddRange(ProcessDataForDuplication(duplicationErrorInfo));
-                            errorInfo.ErrorDetails = listErrorInfoModel;
                         }
                         break;
                 }
             });
+
+            return listErrorInfoModel;
         }
         #endregion
 
@@ -862,9 +863,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd }
+                                 group a by new { a.AYjCd, a.BYjCd ,a.ItemCd, a.KinkiItemCd}
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd }
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd , gcs.Key.ItemCd, gcs.Key.KinkiItemCd}
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
@@ -909,7 +910,9 @@ namespace Interactor.CommonChecker
                 {
                     FirstCellContent = GetCheckingTitle(),
                     ThridCellContent = itemAName,
-                    FourthCellContent = itemBName
+                    FourthCellContent = itemBName,
+                    CurrentItemCd = kikinCode.ItemCd,
+                    CheckingItemCd = kikinCode.KinkiItemCd,
                 };
                 result.Add(tempModel);
 
@@ -1156,9 +1159,12 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
+                errorInfoModel.Id = duplicationError.Id;
                 errorInfoModel.FirstCellContent = duplicationError.IsComponentDuplicated ? "成分重複" : "同一薬剤";
                 errorInfoModel.SecondCellContent = "ー";
                 errorInfoModel.ThridCellContent = itemName;
+                errorInfoModel.CheckingItemCd = duplicationError.ItemCd;
+                errorInfoModel.CurrentItemCd = duplicationError.DuplicatedItemCd;
                 if (duplicationError.IsIppanCdDuplicated || duplicationError.IsComponentDuplicated)
                 {
                     errorInfoModel.FourthCellContent = duplicatedItemName;

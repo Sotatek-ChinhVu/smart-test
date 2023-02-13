@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
 using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
+using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 
 namespace EmrCloudApi.Controller;
@@ -70,4 +71,17 @@ public class UserConfController : AuthorizeControllerBase
 
         return new ActionResult<Response<SagakuResponse>>(presenter.Result);
     }
+
+    [HttpGet(ApiPath.GetListMedicalExaminationConfig)]
+    public ActionResult<Response<GetListMedicalExaminationConfigResponse>> GetListMedicalExaminationConfig()
+    {
+        var input = new GetListMedicalExaminationConfigInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListMedicalExaminationConfigPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListMedicalExaminationConfigResponse>>(presenter.Result);
+    }
+
 }

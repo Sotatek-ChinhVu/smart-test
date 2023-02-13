@@ -39,6 +39,7 @@
         public static readonly string InvalidFrameId = "Invalid FrameId";
         public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
+        public static readonly string InvalidDetailInfs = "Invalid Details";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -528,6 +529,12 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
+        //UketukeMst
+        public static readonly string InvalidKbnId = "Invalid KbnId";
+        public static readonly string InvalidKbnName = "Invalid KbnName";
+        public static readonly string InputNoData = "Input no data";
+        public static readonly string InputDataDuplicateKbnId = "InputData duplicate KbnId";
+
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
@@ -888,6 +895,7 @@
         //Insurance Mst Detail
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
+        public static readonly string InvalidPrefNo = "PrefNo is in valid";
 
         // Family
         public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";

@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -14,7 +15,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Collections.Generic;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -59,6 +60,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
                 where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                orderby p.PtNum descending
                 select new
                 {
                     ptInf = p,
@@ -759,6 +761,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 (from p in NoTrackingDataContext.PtInfs
                  where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 orderby p.PtNum descending
                  select new
                  {
                      ptInf = p,
@@ -792,6 +795,7 @@ namespace Infrastructure.Repositories
             where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
                                       p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -825,6 +829,7 @@ namespace Infrastructure.Repositories
             from p in NoTrackingDataContext.PtInfs
             where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
                                       p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -1171,7 +1176,7 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInsert.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
@@ -1876,6 +1881,46 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            string keyword = ptId.ToString();
+
+            var result = new List<PatientInforModel>();
+            var ptInfs = NoTrackingDataContext.PtInfs
+                .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
+                .OrderBy(x => x.PtNum)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var ptIdList = ptInfs.Select(p => p.PtId).ToList();
+
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0 &&
+                    ptIdList.Contains(x.PtId))
+                .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
+                .Select(grp => new
+                {
+                    grp.Key.PtId,
+                    SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
+                })
+                .ToList();
+
+            result = ptInfs.Select((x) => new PatientInforModel(
+                            x.HpId,
+                            x.PtId,
+                            x.PtNum,
+                            x.KanaName ?? string.Empty,
+                            x.Name ?? string.Empty,
+                            x.Birthday,
+                            raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
+                            ))
+                            .ToList();
+            return result;
         }
     }
 }

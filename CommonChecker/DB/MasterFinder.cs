@@ -3,23 +3,21 @@ using CommonChecker.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class MasterFinder : IMasterFinder
+    public class MasterFinder : RepositoryBase, IMasterFinder
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
-        public MasterFinder(ITenantProvider tenantProvider)
+        public MasterFinder(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)
         {
-            var entity = _tenantNoTrackingDataContext.IpnNameMsts.Where(p =>
+            var entity = NoTrackingDataContext.IpnNameMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
@@ -31,7 +29,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public SanteiCntCheckModel FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
         {
-            var entity = _tenantNoTrackingDataContext.SanteiCntChecks.Where(e =>
+            var entity = NoTrackingDataContext.SanteiCntChecks.Where(e =>
                  e.HpId == hpId &&
                  e.SanteiGrpCd == santeiGrpCd &&
                  e.StartDate <= sinDate &&
@@ -43,7 +41,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public SanteiGrpDetailModel FindSanteiGrpDetail(int hpId, string itemCd)
         {
-            var entity = _tenantNoTrackingDataContext.SanteiGrpDetails.Where(e =>
+            var entity = NoTrackingDataContext.SanteiGrpDetails.Where(e =>
                  e.HpId == hpId &&
                  e.ItemCd == itemCd)
                  .FirstOrDefault();
@@ -54,7 +52,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public TenMstModel FindTenMst(int hpId, string itemCd, int sinDate)
         {
-            var entity = _tenantNoTrackingDataContext.TenMsts.Where(p =>
+            var entity = NoTrackingDataContext.TenMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
@@ -72,9 +70,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             DateTime lastDayOfPrevMonthDateTime = firstDaySinDateDateTime.AddDays(-1);
             int lastDayOfPrevMonth = CIUtil.DateTimeToInt(lastDayOfPrevMonthDateTime);
 
-            var odrInfQuery = _tenantNoTrackingDataContext.OdrInfs
+            var odrInfQuery = NoTrackingDataContext.OdrInfs
                .Where(odr => odr.PtId == ptId && odr.SinDate > lastDayOfPrevMonth && odr.SinDate <= sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0);
-            var odrInfDetailQuery = _tenantNoTrackingDataContext.OdrInfDetails
+            var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
               .Where(odrDetail => odrDetail.PtId == ptId
               && odrDetail.SinDate > lastDayOfPrevMonth
               && odrDetail.SinDate <= sinDate
