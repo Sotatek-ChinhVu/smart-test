@@ -22,7 +22,7 @@ public interface IDocumentRepository : IRepositoryBase
 
     DocInfModel GetDocInfDetail(int hpId, long ptId, int sinDate, long raiinNo, int seqNo);
 
-    bool SaveDocInf(int userId, DocInfModel model);
+    bool SaveDocInf(int userId, DocInfModel model, bool overwriteFile);
 
     bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo);
 
