@@ -37,11 +37,12 @@ namespace Domain.Models.Reception
             Comment = comment;
         }
 
-        public ReceptionDto(long raiinNo, int uketukeNo, string departmentSName, HokenPatternModel hokenPatternModel, List<KaikeiInfModel> kaikeiInfModels)
+        public ReceptionDto(long raiinNo, int uketukeNo, string departmentSName, int personNumber, HokenPatternModel hokenPatternModel, List<KaikeiInfModel> kaikeiInfModels)
         {
             RaiinNo = raiinNo;
             UketukeNo = uketukeNo;
             DepartmentSName = departmentSName;
+            PersonNumber = personNumber;
             HokenPatternModel = hokenPatternModel;
             KaikeiInfModels = kaikeiInfModels;
         }
@@ -94,6 +95,8 @@ namespace Domain.Models.Reception
         public string Comment { get; private set; }
 
         public string DepartmentSName { get; private set; }
+
+        public int PersonNumber { get; private set; }
 
         public HokenPatternModel HokenPatternModel { get; private set; }
 

@@ -9,6 +9,7 @@ using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -56,10 +57,27 @@ namespace Infrastructure.Repositories
                                     RaiinInf = raiinInf
                                 };
 
+                var countAcc = NoTrackingDataContext.RaiinInfs.Count(item =>
+                    item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == DeleteTypes.None &&
+                    (item.Status == RaiinState.Calculate || item.Status == RaiinState.Waiting));
+                var lastRaiinInf = listRaiinInf.Last();
+
+                if (lastRaiinInf.Status < RaiinState.Settled)
+                {
+                    if (listRaiinInf.Count > 1)
+                    {
+                        countAcc = countAcc - listRaiinInf.Count();
+                    }
+                    else
+                    {
+                        countAcc--;
+                    }
+                }
                 return listRaiin
                 .Select(
                     item => new ReceptionDto(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
                         listKaMst.FirstOrDefault(itemKaMst => itemKaMst.KaId == item.RaiinInf.KaId).KaSname ?? string.Empty,
+                        countAcc,
                         listHokenPattern.FirstOrDefault(itemPattern => itemPattern.HokenPid == item.RaiinInf.HokenPid),
                         item.ListKaikeiInf.Select(k => new KaikeiInfModel(
                                                     k.HpId,

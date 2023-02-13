@@ -86,10 +86,6 @@ namespace Interactor.Accounting
                    listSyunoSeikyu.SelectMany(x => x.SyunoNyukinModels).Sum(itemNyukin => itemNyukin.NyukinGaku);
                 thisWari =
                    listSyunoSeikyu.SelectMany(x => x.SyunoNyukinModels).Sum(itemNyukin => itemNyukin.AdjustFutan);
-                var payType = listSyunoSeikyu.Where(item => item.SyunoNyukinModels.Count > 0)
-                    .Select(item => item.SyunoNyukinModels.Where(itemNyukin => itemNyukin.PaymentMethodCd > 0)
-                        .Select(itemNyukin => itemNyukin.PaymentMethodCd).FirstOrDefault())
-                    .FirstOrDefault();
             }
             else
             {
