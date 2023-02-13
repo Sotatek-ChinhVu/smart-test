@@ -165,7 +165,7 @@ namespace Interactor.MedicalExamination
                 {
                     checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, tenMsts ?? new(), allOdrInfDetailModel));
                     checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, tenMsts ?? new(), allOdrInfDetailModel));
-                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels, tenMsts ?? new(), allOdrInfDetailModel, itemGrpMsts, hokenPids));
+                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels ?? new(), tenMsts ?? new(), allOdrInfDetailModel, itemGrpMsts, hokenPids));
                     checkSpecialItemList.AddRange(DuplicateCheck(tenMsts ?? new(), allOdrInfDetailModel));
                 }
 

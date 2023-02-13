@@ -1,9 +1,9 @@
 ﻿using Domain.Models.ApprovalInfo;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
@@ -107,9 +107,9 @@ namespace Infrastructure.Repositories
                 if (inputData.Id == approvalInfo?.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate)
                 {
                     approvalInfo.CreateId = userId;
-                    approvalInfo.CreateDate = DateTime.UtcNow;
+                    approvalInfo.CreateDate = CIUtil.GetJapanDateTimeNow();
                     approvalInfo.UpdateId = userId;
-                    approvalInfo.UpdateDate = DateTime.UtcNow;
+                    approvalInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     approvalInfo.SeqNo = approvalInfo.SeqNo + 1;
                 }
 

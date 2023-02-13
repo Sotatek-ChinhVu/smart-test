@@ -1,6 +1,8 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class DiseaseResultModel
+    public class DiseaseResultModel : OrderInforResultModel
     {
         public int DiseaseType { get; set; } //0:現疾患 1:既往歴 2:家族歴
 

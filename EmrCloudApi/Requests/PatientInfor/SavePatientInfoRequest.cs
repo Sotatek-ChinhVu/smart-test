@@ -1,6 +1,5 @@
-﻿
-using Domain.Models.CalculationInf;
-using Domain.Models.GroupInf;
+﻿using Domain.Models.CalculationInf;
+using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
 using EmrCloudApi.Requests.GroupInf;
 using EmrCloudApi.Requests.Insurance;
@@ -9,7 +8,7 @@ namespace EmrCloudApi.Requests.PatientInfor
 {
     public class SavePatientInfoRequest
     {
-        public SavePatientInfoRequest(PatientInforDto patient, List<HokenPartternDto> insurances, List<HokenInfDto> hokenInfs, List<HokenKohiDto> hokenKohis, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<GroupInfDto> ptGrps, ReactSavePatientInfo reactSave)
+        public SavePatientInfoRequest(PatientInforDto patient, List<HokenPartternDto> insurances, List<HokenInfDto> hokenInfs, List<HokenKohiDto> hokenKohis, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<GroupInfDto> ptGrps, List<LimitListModel> maxMoneys, ReactSavePatientInfo reactSave)
         {
             Patient = patient;
             Insurances = insurances;
@@ -18,6 +17,7 @@ namespace EmrCloudApi.Requests.PatientInfor
             PtKyuseis = ptKyuseis;
             PtSanteis = ptSanteis;
             PtGrps = ptGrps;
+            MaxMoneys = maxMoneys;
             ReactSave = reactSave;
         }
 
@@ -34,6 +34,8 @@ namespace EmrCloudApi.Requests.PatientInfor
         public List<CalculationInfModel> PtSanteis { get; private set; }
 
         public List<GroupInfDto> PtGrps { get; private set; }
+
+        public List<LimitListModel> MaxMoneys { get; private set; }
 
         public ReactSavePatientInfo ReactSave { get; private set; }
     }

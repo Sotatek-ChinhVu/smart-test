@@ -1,6 +1,8 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿using CommonChecker.Models;
+
+namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    public class DuplicationResultModel
+    public class DuplicationResultModel : OrderInforResultModel
     {
         public int Level { get; set; }
 

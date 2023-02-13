@@ -2998,6 +2998,11 @@ namespace Helper.Common
             }
             return monthDiff;
         }
+
+        public static DateTime GetJapanDateTimeNow()
+        {
+            return DateTime.UtcNow.AddHours(9);
+        }
     }
     public struct WarekiYmd
     {
