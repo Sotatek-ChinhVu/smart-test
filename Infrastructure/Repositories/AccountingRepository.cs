@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
 
                 var listKaikeiInf = NoTrackingDataContext.KaikeiInfs.Where(item =>
                     item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate);
-               
+
                 var listKaMst = NoTrackingDataContext.KaMsts.Where(item =>
                 item.HpId == hpId && item.IsDeleted == 0 && listKaId.Contains(item.KaId));
 
@@ -535,28 +535,18 @@ namespace Infrastructure.Repositories
             return kohiInfModel;
         }
 
-        public List<AccountingModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, long raiinNo, bool getAll = false)
+        public List<SyunoSeikyuModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> listRaiinNo, bool getAll = false)
         {
             try
             {
                 IEnumerable<SyunoSeikyu> syunoSeikyuRepo;
-
-                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.Where(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0).FirstOrDefault();
-
-                if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
-                {
-                    return new List<AccountingModel>();
-                }
-
-                var listRaiinNo = NoTrackingDataContext.RaiinInfs.Where(
-                    item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > 3).ToList();
 
                 if (getAll == true)
                 {
                     syunoSeikyuRepo = NoTrackingDataContext.SyunoSeikyus
                         .Where(item =>
                             item.HpId == hpId && item.PtId == ptId &&
-                            item.NyukinKbn == 1 && !listRaiinNo.Select(item => item.RaiinNo).Contains(item.RaiinNo))
+                            item.NyukinKbn == 1 && !listRaiinNo.Contains(item.RaiinNo))
                         .OrderBy(item => item.SinDate).ThenBy(item => item.RaiinNo);
                 }
                 else
@@ -564,7 +554,7 @@ namespace Infrastructure.Repositories
                     syunoSeikyuRepo = NoTrackingDataContext.SyunoSeikyus
                         .Where(item =>
                             item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
-                            listRaiinNo.Select(item => item.RaiinNo).Contains(item.RaiinNo)).OrderBy(item => item.RaiinNo);
+                            listRaiinNo.Contains(item.RaiinNo)).OrderBy(item => item.RaiinNo);
                 }
 
                 var raiinInfRepo = NoTrackingDataContext.RaiinInfs.Where(item =>
@@ -616,11 +606,10 @@ namespace Infrastructure.Repositories
 
         }
 
-        private AccountingModel ConvertToModel(SyunoSeikyu syunoSeikyu, RaiinInf raiinInf, List<SyunoNyukin> syunoNyukin, List<KaikeiInf> kaikeiInf, List<PtHokenPattern> listHokenPattern)
+        private SyunoSeikyuModel ConvertToModel(SyunoSeikyu syunoSeikyu, RaiinInf raiinInf, List<SyunoNyukin> syunoNyukin, List<KaikeiInf> kaikeiInf, List<PtHokenPattern> listHokenPattern)
         {
-            return new AccountingModel
+            return new SyunoSeikyuModel
                 (
-                    new SyunoSeikyuModel(
                              syunoSeikyu.HpId,
                              syunoSeikyu.PtId,
                              syunoSeikyu.SinDate,
@@ -633,8 +622,8 @@ namespace Infrastructure.Repositories
                              syunoSeikyu.NewSeikyuTensu,
                              syunoSeikyu.NewAdjustFutan,
                              syunoSeikyu.NewSeikyuGaku,
-                             syunoSeikyu.NewSeikyuDetail ?? string.Empty
-                        ),
+                             syunoSeikyu.NewSeikyuDetail ?? string.Empty,
+
                         new SyunoRaiinInfModel(
                              raiinInf.Status,
                              raiinInf.KaikeiTime ?? string.Empty,

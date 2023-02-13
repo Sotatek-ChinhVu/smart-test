@@ -1,12 +1,12 @@
-﻿using Domain.Models.Accounting;
+﻿using Domain.Models.AccountDue;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingResponse
     {
-        public GetAccountingResponse(List<AccountingModel> accountingModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari)
+        public GetAccountingResponse(List<SyunoSeikyuModel> syunoSeikyuModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari)
         {
-            AccountingModels = accountingModels;
+            SyunoSeikyuModels = syunoSeikyuModels;
             TotalPoint = totalPoint;
             KanFutan = kanFutan;
             TotalSelfExpense = totalSelfExpense;
@@ -19,7 +19,7 @@ namespace EmrCloudApi.Responses.Accounting
             ThisWari = thisWari;
         }
 
-        public List<AccountingModel> AccountingModels { get; private set; }
+        public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
         public int TotalPoint { get; private set; }
         public int KanFutan { get; private set; }
         public int TotalSelfExpense { get; private set; }
