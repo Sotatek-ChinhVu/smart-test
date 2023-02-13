@@ -80,16 +80,17 @@ namespace Interactor.NextOrder
                     {
                         rsvkrtNos.Add(byomei.RsvkrtNo);
                     }
-                }
+                    if (rsvkrtNos.Distinct().Count() > 1)
+                    {
+                        return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
+                    }
 
-                if (rsvkrtNos.Distinct().Count() > 1)
-                {
-                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
-                }
-
-                if (rsvkrtDates.Distinct().Count() > 1)
-                {
-                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                    if (rsvkrtDates.Distinct().Count() > 1)
+                    {
+                        return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                    }
+                    rsvkrtNos.Clear();
+                    rsvkrtDates.Clear();
                 }
 
                 var nextOrderModels = inputData.NextOrderItems.Select(n => NextOrderCommon.ConvertNextOrderToModel(inputData.HpId, inputData.PtId, ipnCds, n)).ToList();
