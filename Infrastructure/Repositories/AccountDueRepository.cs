@@ -197,6 +197,8 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         if (seikyu != null)
         {
             seikyu.NyukinKbn = model.NyukinKbn;
+            seikyu.SeikyuGaku = model.SeikyuGaku;
+            seikyu.AdjustFutan = model.SeikyuAdjustFutan;
             seikyu.UpdateDate = dateTimeNow;
             seikyu.UpdateId = userId;
         }
