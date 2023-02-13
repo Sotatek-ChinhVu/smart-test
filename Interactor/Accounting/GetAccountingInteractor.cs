@@ -23,19 +23,19 @@ namespace Interactor.Accounting
 
                 if (!syunoSeikyu.Any())
                 {
-                    return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), new List<PtByomeiModel>(), GetAccountingStatus.NoData);
+                    return new GetAccountingOutputData(new List<AccountingModel>(),  new List<PtByomeiModel>(), GetAccountingStatus.NoData);
                 }
-                var accountingInf = GetAccountingInfAllRaiinNo(syunoSeikyu);
+               //GetAccountingInfAllRaiinNo(syunoSeikyu);
 
                 //Get GetPtByoMeiList
                 var ptByoMei = _accountingRepository.GetPtByoMeiList(inputData.HpId, inputData.PtId, inputData.SinDate);
 
-                return new GetAccountingOutputData(syunoSeikyu, accountingInf, ptByoMei, GetAccountingStatus.Successed);
+                return new GetAccountingOutputData(syunoSeikyu, ptByoMei, GetAccountingStatus.Successed);
 
             }
             catch (Exception)
             {
-                return new GetAccountingOutputData(new List<AccountingModel>(), new AccountingInfModel(), new List<PtByomeiModel>(), GetAccountingStatus.Failed);
+                return new GetAccountingOutputData(new List<AccountingModel>(),  new List<PtByomeiModel>(), GetAccountingStatus.Failed);
             }
             finally
             {
@@ -43,13 +43,13 @@ namespace Interactor.Accounting
             }
         }
 
-        public AccountingInfModel GetAccountingInfAllRaiinNo(List<AccountingModel> accountingModels)
+        public void GetAccountingInfAllRaiinNo(List<AccountingModel> accountingModels)
         {
             try
             {
                 var isSettled = accountingModels.Select(item => item.SyunoSeikyu.NyukinKbn != 0).FirstOrDefault();
 
-                var TotalPoint = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuTensu);
+                var totalPoint = accountingModels.Sum(item => item.SyunoSeikyu.SeikyuTensu);
 
                 var KanFutan = accountingModels.Sum(item => item.PtFutan + item.AdjustRound);
 
@@ -88,11 +88,10 @@ namespace Interactor.Accounting
 
                     ThisCredit = SumAdjust;
                 }
-                return new AccountingInfModel(TotalPoint, KanFutan, TotalSelfExpense, Tax, DebitBalance, SumAdjust, SumAdjustView, ThisCredit, ThisWari, PayType, AdjustFutan);
+               // return new AccountingModel(TotalPoint, KanFutan, TotalSelfExpense, Tax, DebitBalance, SumAdjust, SumAdjustView, ThisCredit, ThisWari, PayType, AdjustFutan);
             }
             catch (Exception)
             {
-
                 throw;
             }
 

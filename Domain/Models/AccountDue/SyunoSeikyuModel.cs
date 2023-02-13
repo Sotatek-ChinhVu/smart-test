@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.AccountDue;
+﻿using Domain.Models.SpecialNote.SummaryInf;
+
+namespace Domain.Models.AccountDue;
 
 public class SyunoSeikyuModel
 {
