@@ -34,6 +34,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     {
         try
         {
+            bool overwriteFile = false;
             var resultValidate = ValidateInputData(inputData);
             if (resultValidate != SaveDocInfStatus.ValidateSuccess)
             {
@@ -61,9 +62,10 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                 if (response.Result.Length > 0)
                 {
                     inputData.SetFileName(fileName);
+                    overwriteFile = true;
                 }
             }
-            if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData)))
+            if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
             }
