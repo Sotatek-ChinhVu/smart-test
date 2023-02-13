@@ -554,8 +554,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         orderItemList.Add(itemCd);
                     }
 
-                    var odrDetails = NoTrackingDataContext.OdrInfDetails
-                                                                        .Where(item => item.HpId == hpId
+                    var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
                                                                                        && item.SinDate <= maxSinYm
                                                                                        && item.SinDate >= minSinYm
                                                                                        && listPtIds.Contains(item.PtId)
@@ -563,7 +562,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                        && (item.ItemCd != null && orderItemList.Contains(item.ItemCd)) // For normal item
                                                                                        || (item.ItemCd == null // For free comment
                                                                                        && item.ItemName != null
-                                                                                       //&& listFreeComment.Any(str => item.ItemName.Contains(str))
                                                                                        ))
                                                                         .Select(item => new OrdInfDetailModel(
                                                                             item.HpId,
@@ -599,7 +597,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
                     var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
                     var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
-                    enumOdrDetailItemSum = enumOdrDetailItemSum.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm))).ToList();
+                    enumOdrDetailItemSum = enumOdrDetailItemSum.Where(item => sinYmPtIdList != null
+                                                                              && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm))
+                                                                //&& listFreeComment.Any(str => item.ItemName.Contains(str))
+                                                                ).ToList();
                     #endregion
                 }
 
@@ -612,13 +613,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
                                                                                             && listPtIds.Contains(item.PtId)
-                                                                                            && listSinYm.Contains(item.SinYm)
+                                                                                            && item.SinYm <= maxSinYm
+                                                                                            && item.SinYm >= minSinYm
                                                                                             && (santeiItemList.Contains(item.ItemCd) && !string.IsNullOrEmpty(item.ItemCd)) // for santei item
-                                                                                            || ((string.IsNullOrEmpty(item.ItemCd) || ItemCdConst.CommentFree == item.ItemCd) // For free comment
-                                                                                                && !string.IsNullOrEmpty(item.ItemName)
+                                                                                            || ((item.ItemCd == null || ItemCdConst.CommentFree == item.ItemCd) // For free comment
+                                                                                                && item.ItemName != null
                                                                                                 && listFreeComment.Any()
                                                                                                 && listFreeComment.Any(str => item.ItemName.Contains(str))
-                                                                                    ))
+                                                                                                )
+                                                                                    )
                                                                               .Select(item => new { item.HpId, item.PtId, item.SinYm, item.SeqNo, item.RpNo, item.Suryo, item.ItemCd, item.ItemName });
 
                     var sinKouis = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
@@ -634,32 +637,34 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                           )
                                                                            .Select(item => new { item.HpId, item.PtId, item.SinYm, item.SeqNo, item.RpNo, item.Count });
 
-                    santeiItemSum = (from detail in sinkouiDetails.AsEnumerable()
-                                     join rece in receInfs on new { detail.PtId, detail.SinYm } equals new { rece.PtId, rece.SinYm }
-                                     join sinkoui in sinKouis on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
-                                                             equals new { sinkoui.HpId, sinkoui.PtId, sinkoui.SinYm, sinkoui.SeqNo, sinkoui.RpNo }
-                                     join count in sinkouiCounts on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
-                                                                 equals new { count.HpId, count.PtId, count.SinYm, count.SeqNo, count.RpNo }
-                                     join tenMst in tenMstSanteis on new { detail.ItemCd } equals new { ItemCd = tenMst.SanteiItemCd } into tenMstLeft
-                                     from tenMst in tenMstLeft.Where(item => item.StartDate / 100 <= detail.SinYm && item.EndDate / 100 >= detail.SinYm).DefaultIfEmpty()
-                                     where detail.SinYm <= maxSinYm
-                                         && detail.SinYm >= minSinYm
-                                         && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
-                                     select new
-                                     {
-                                         detail.HpId,
-                                         detail.SinYm,
-                                         detail.PtId,
-                                         sinkoui.HokenId,
-                                         ItemCd = tenMst != null ? tenMst.ItemCd : detail.ItemCd,
-                                         Count = count.Count > 0 ? count.Count : 1,
-                                         detail.ItemName,
-                                     })
+                    var santeiItemSumQuery = (from detail in sinkouiDetails.AsEnumerable()
+                                              join rece in receInfs on new { detail.PtId, detail.SinYm } equals new { rece.PtId, rece.SinYm }
+                                              join sinkoui in sinKouis on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
+                                                                      equals new { sinkoui.HpId, sinkoui.PtId, sinkoui.SinYm, sinkoui.SeqNo, sinkoui.RpNo }
+                                              join count in sinkouiCounts on new { detail.HpId, detail.PtId, detail.SinYm, detail.SeqNo, detail.RpNo }
+                                                                          equals new { count.HpId, count.PtId, count.SinYm, count.SeqNo, count.RpNo }
+                                              join tenMst in tenMstSanteis on new { detail.ItemCd } equals new { ItemCd = tenMst.SanteiItemCd } into tenMstLeft
+                                              from tenMst in tenMstLeft.Where(item => item.StartDate / 100 <= detail.SinYm && item.EndDate / 100 >= detail.SinYm).DefaultIfEmpty()
+                                              where detail.SinYm <= maxSinYm
+                                                  && detail.SinYm >= minSinYm
+                                                  && ((sinkoui.InoutKbn != 1 && tenMst != null) || detail.ItemCd == ItemCdConst.CommentFree)
+                                              select new
+                                              {
+                                                  detail.HpId,
+                                                  detail.SinYm,
+                                                  detail.PtId,
+                                                  sinkoui.HokenId,
+                                                  ItemCd = tenMst != null ? tenMst.ItemCd : detail.ItemCd,
+                                                  Count = count.Count > 0 ? count.Count : 1,
+                                                  detail.ItemName,
+                                              })
                                     .GroupBy(item => new { item.HpId, item.ItemCd, item.ItemName, item.PtId, item.SinYm, item.HokenId })
                                     .Select(item => new { item.Key.SinYm, item.Key.PtId, item.Key.HokenId, item.Key.ItemCd, item.Key.ItemName, Sum = item.Sum(c => c.Count) })
-                                    .Select(item => new ItemSumModel(item.PtId, item.ItemCd, item.ItemName, item.Sum, item.SinYm, item.HokenId))
-                                    .ToList();
-                    santeiItemSum = santeiItemSum.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => r.PtId == item.PtId && r.SinYm == item.SinYm)).ToList();
+                                    .Select(item => new ItemSumModel(item.PtId, item.ItemCd, item.ItemName, item.Sum, item.SinYm, item.HokenId));
+
+                    var ptIds = sinYmPtIdList.Select(r => r.PtId).Distinct().ToList();
+                    var sinYms = sinYmPtIdList.Select(r => r.SinYm).Distinct().ToList();
+                    santeiItemSum = santeiItemSumQuery.Where(item => sinYmPtIdList != null && sinYmPtIdList.Any(r => ptIds.Contains(r.PtId) && sinYms.Contains(r.SinYm))).ToList();
                     #endregion
                 }
 
@@ -704,7 +709,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     }
 
                     // Process next item if query = OR and list-item empty
-                    if (searchModel.ItemQuery == QuerySearchEnum.OR && itemSumList.Count() == 0) continue;
+                    if (searchModel.ItemQuery == QuerySearchEnum.OR && itemSumList?.Count() == 0) continue;
 
                     // Search by range
                     if (!string.IsNullOrEmpty(model.RangeSeach))
@@ -712,19 +717,19 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                         switch (model.RangeSeach)
                         {
                             case "=":
-                                itemSumList = itemSumList.Where(item => item.ItemCd == itemCd && item.Sum == model.Amount).ToList();
+                                itemSumList = itemSumList!.Where(item => item.ItemCd == itemCd && item.Sum == model.Amount).ToList();
                                 break;
                             case ">":
-                                itemSumList = itemSumList.Where(item => item.ItemCd == itemCd && item.Sum > model.Amount).ToList();
+                                itemSumList = itemSumList!.Where(item => item.ItemCd == itemCd && item.Sum > model.Amount).ToList();
                                 break;
                             case "<":
-                                itemSumList = itemSumList.Where(item => item.ItemCd == itemCd && item.Sum < model.Amount).ToList();
+                                itemSumList = itemSumList!.Where(item => item.ItemCd == itemCd && item.Sum < model.Amount).ToList();
                                 break;
                             case ">=":
-                                itemSumList = itemSumList.Where(item => item.ItemCd == itemCd && item.Sum >= model.Amount).ToList();
+                                itemSumList = itemSumList!.Where(item => item.ItemCd == itemCd && item.Sum >= model.Amount).ToList();
                                 break;
                             case "<=":
-                                itemSumList = itemSumList.Where(item => item.ItemCd == itemCd && item.Sum <= model.Amount).ToList();
+                                itemSumList = itemSumList!.Where(item => item.ItemCd == itemCd && item.Sum <= model.Amount).ToList();
                                 break;
                         }
                     }
@@ -732,12 +737,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     // Search OR AND condition
                     if (searchModel.ItemQuery == QuerySearchEnum.OR)
                     {
-                        sinYmPtIdList.AddRange(itemSumList.Select(sum => new { sum.PtId, sum.SinYm, sum.HokenId }).ToList());
+                        sinYmPtIdList.AddRange(itemSumList!.Select(sum => new { sum.PtId, sum.SinYm, sum.HokenId }).ToList());
                         sinYmPtIdList = sinYmPtIdList.Distinct().ToList();
                     }
                     else
                     {
-                        sinYmPtIdList.AddRange(itemSumList.Select(sum => new { sum.PtId, sum.SinYm, sum.HokenId }).ToList());
+                        sinYmPtIdList.AddRange(itemSumList!.Select(sum => new { sum.PtId, sum.SinYm, sum.HokenId }).ToList());
                         if (index > 0)
                         {
                             sinYmPtIdList = sinYmPtIdList.GroupBy(l => l)
