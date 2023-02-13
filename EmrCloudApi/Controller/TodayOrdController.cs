@@ -112,7 +112,7 @@ namespace EmrCloudApi.Controller
 
             if (output.Status == UpsertTodayOrdStatus.Successed)
             {
-                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
+                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
                     new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
             }
 
