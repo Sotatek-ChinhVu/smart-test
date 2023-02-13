@@ -5,7 +5,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.Accounting;
+using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;

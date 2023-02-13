@@ -1,4 +1,4 @@
-﻿namespace UseCase.Accounting
+﻿namespace UseCase.Accounting.GetAccountingInf
 {
     public enum GetAccountingStatus
     {

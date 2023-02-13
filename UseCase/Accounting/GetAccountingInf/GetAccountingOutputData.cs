@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Accounting;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.Accounting
+namespace UseCase.Accounting.GetAccountingInf
 {
     public class GetAccountingOutputData : IOutputData
     {

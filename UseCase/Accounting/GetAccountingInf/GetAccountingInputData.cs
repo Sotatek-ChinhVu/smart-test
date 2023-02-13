@@ -1,8 +1,8 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Accounting
+namespace UseCase.Accounting.GetAccountingInf
 {
-    public class GetAccountingInputData:IInputData<GetAccountingOutputData>
+    public class GetAccountingInputData : IInputData<GetAccountingOutputData>
     {
         public GetAccountingInputData(int hpId, long ptId, int sinDate, long raiinNo)
         {

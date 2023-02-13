@@ -132,7 +132,7 @@ using Reporting.Service;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
-using UseCase.Accounting;
+using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;

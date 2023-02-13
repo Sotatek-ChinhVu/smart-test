@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Accounting;
-using UseCase.Accounting;
+using UseCase.Accounting.GetAccountingInf;
 
 namespace Interactor.Accounting
 {

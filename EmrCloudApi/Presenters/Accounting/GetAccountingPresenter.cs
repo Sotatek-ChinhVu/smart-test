@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
-using UseCase.Accounting;
+using UseCase.Accounting.GetAccountingInf;
 
 namespace EmrCloudApi.Presenters.Accounting
 {
