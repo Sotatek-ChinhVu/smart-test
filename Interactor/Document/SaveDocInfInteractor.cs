@@ -34,6 +34,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
     {
         try
         {
+            bool overwriteFile = false;
             var resultValidate = ValidateInputData(inputData);
             if (resultValidate != SaveDocInfStatus.ValidateSuccess)
             {
@@ -46,7 +47,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.InvalidFileInput);
             }
-            else if (memoryStream.Length > 0 && inputData.SeqNo <= 0)
+            else if (memoryStream.Length > 0)
             {
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
@@ -61,9 +62,10 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
                 if (response.Result.Length > 0)
                 {
                     inputData.SetFileName(fileName);
+                    overwriteFile = true;
                 }
             }
-            if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData)))
+            if (_documentRepository.SaveDocInf(inputData.UserId, ConvertToDocInfModel(inputData), overwriteFile))
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.Successed);
             }
@@ -97,7 +99,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX|doc|DOC)$";
+        var regxFile = @"^.*\.(docx|DOCX|xlsx|XLSX)$";
         var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {
