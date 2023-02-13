@@ -23,6 +23,10 @@ namespace Interactor.Accounting
                 //Get Raiin Inf
                 var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
 
+                if (!raiinInf.Any())
+                {
+                    return new GetAccountingOutputData(new List<RaiinInfModel>(), new List<AccountingModel>(), new AccountingInfModel(), new List<WarningMemoModel>(), new List<PtByomeiModel>(), new List<PaymentMethodMstModel>(), GetAccountingStatus.NoData);
+                }
                 //Get Accounting Inf
                 var syunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
 
