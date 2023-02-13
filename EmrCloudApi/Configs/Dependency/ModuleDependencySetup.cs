@@ -142,6 +142,7 @@ using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;
@@ -713,6 +714,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAccountingInputData, GetAccountingInteractor>();
             busBuilder.RegisterUseCase<GetPaymentMethodInputData, GetPaymentMethodInteractor>();
             busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
+            busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();

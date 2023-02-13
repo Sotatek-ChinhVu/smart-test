@@ -5,10 +5,9 @@ namespace UseCase.Accounting.GetAccountingInf
 {
     public class GetAccountingOutputData : IOutputData
     {
-        public GetAccountingOutputData(List<AccountingModel> accountingModel, List<PtByomeiModel> ptByomeiModels, GetAccountingStatus getAccountingStatus)
+        public GetAccountingOutputData(List<AccountingModel> accountingModel, GetAccountingStatus getAccountingStatus)
         {
             AccountingModel = accountingModel;
-            PtByomeiModels = ptByomeiModels;
             GetAccountingStatus = getAccountingStatus;
             TotalPoint = GetToTalPoint();
             KanFutan = GetKanFutan();
@@ -23,7 +22,6 @@ namespace UseCase.Accounting.GetAccountingInf
         }
 
         public List<AccountingModel> AccountingModel { get; private set; }
-        public List<PtByomeiModel> PtByomeiModels { get; private set; }
         public GetAccountingStatus GetAccountingStatus { get; private set; }
 
         public int TotalPoint { get; private set; }

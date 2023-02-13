@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;
@@ -59,6 +60,19 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetWarningMemoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.PtByoMei)]
+        public ActionResult<Response<GetPtByoMeiResponse>> GetList([FromQuery] GetPtByoMeiRequest request)
+        {
+
+            var input = new GetPtByoMeiInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetPtByoMeiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetPtByoMeiResponse>>(presenter.Result);
         }
     }
 }
