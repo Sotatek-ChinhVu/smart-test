@@ -1,5 +1,4 @@
-﻿using Domain.Models.ApprovalInfo;
-using Domain.Models.UketukeSbtMst;
+﻿using Domain.Models.UketukeSbtMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -17,7 +16,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     public UketukeSbtMstModel GetByKbnId(int kbnId)
     {
         var entity = NoTrackingDataContext.UketukeSbtMsts.Where(u => u.KbnId == kbnId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
-        return entity is null ? null : ToModel(entity);
+        return entity is null ? new() : ToModel(entity);
     }
 
     public List<UketukeSbtMstModel> GetList()
@@ -41,7 +40,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
     {
         foreach (var inputData in upsertUketukeList)
         {
-            var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId);
+            var uketukeSbtMsts = TrackingDataContext.UketukeSbtMsts.FirstOrDefault(x => x.KbnId == inputData.KbnId && x.IsDeleted == DeleteTypes.None);
             if (inputData.IsDeleted == DeleteTypes.Deleted)
             {
                 if (uketukeSbtMsts != null)
@@ -61,15 +60,15 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
                 }
                 else
                 {
-                    TrackingDataContext.UketukeSbtMsts.AddRange(CreateUketukeSbtMst(inputData, userId, hpId));
+                    TrackingDataContext.UketukeSbtMsts.AddRange(ConvertToUketukeSbtMst(inputData, userId, hpId));
                 }
             }
-            
+
         }
         TrackingDataContext.SaveChanges();
     }
 
-    private UketukeSbtMst CreateUketukeSbtMst(UketukeSbtMstModel u, int userId, int hpId)
+    private UketukeSbtMst ConvertToUketukeSbtMst(UketukeSbtMstModel u, int userId, int hpId)
     {
         return new UketukeSbtMst
         {

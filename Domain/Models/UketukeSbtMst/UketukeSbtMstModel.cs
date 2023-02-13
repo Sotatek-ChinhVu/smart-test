@@ -11,6 +11,11 @@ public class UketukeSbtMstModel
         IsDeleted = isDeleted;
     }
 
+    public UketukeSbtMstModel()
+    {
+        KbnName = string.Empty;
+    }
+
     public int KbnId { get; private set; }
 
     public string KbnName { get; private set; }
