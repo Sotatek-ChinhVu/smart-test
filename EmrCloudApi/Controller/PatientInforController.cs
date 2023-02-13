@@ -80,10 +80,14 @@ using EmrCloudApi.Tenant.Requests.PatientInfor;
 using UseCase.PatientInfor.GetListPatient;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using Domain.Models.PtGroupMst;
-using EmrCloudApi.Presenters.MaxMoney;
-using EmrCloudApi.Requests.MaxMoney;
 using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
+using EmrCloudApi.Presenters.MaxMoney;
+using UseCase.SwapHoken.Validate;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Messages;
+using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -91,9 +95,11 @@ namespace EmrCloudApi.Controller
     public class PatientInforController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public PatientInforController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
@@ -399,7 +405,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SavePatientInfo)]
-        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
             PatientInforSaveModel patient = new PatientInforSaveModel(HpId,
                       request.Patient.PtId,
@@ -582,6 +588,13 @@ namespace EmrCloudApi.Controller
                  request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
+
+            if (output.Status == SavePatientInfoStatus.Successful)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
+                    new CommonMessage { PtId = input.Patient.PtId });
+            }
+
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
@@ -787,7 +800,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {
-            var input = new GetPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
+            var input = new GetListPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
             var output = _bus.Handle(input);
             var presenter = new GetListPatientInfoPresenter();
             presenter.Complete(output);
@@ -802,6 +815,31 @@ namespace EmrCloudApi.Controller
             var presenter = new GetMaxMoneyByPtIdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.ValidateSwapHoken)]
+        public ActionResult<Response<ValidateSwapHokenResponse>> ValidateSwapHoken([FromBody] ValidateSwapHokenRequest request)
+        {
+            var input = new ValidateSwapHokenInputData(HpId,
+               request.PtId,
+               request.HokenPid,
+               request.StartDate,
+               request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new ValidateSwapHokenPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidateSwapHokenResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetGroupNameMst)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
+        {
+            var input = new GetGroupNameMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
         }
     }
 }

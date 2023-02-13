@@ -141,9 +141,9 @@ namespace Infrastructure.Repositories
                                     oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                     oldNextOrder.UpdateId = userId;
                                     rsvkrtNo = oldNextOrder.RsvkrtNo;
-                                    UpsertByomei(userId, nextOrderModel.RsvkrtByomeis);
-                                    UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf);
-                                    UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs);
+                                    UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                                    UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                                    UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
                                 }
                                 else
                                 {
@@ -158,7 +158,7 @@ namespace Infrastructure.Repositories
                                 SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
                             }
                         }
-
+                        TrackingDataContext.SaveChanges();
                         transaction.Commit();
 
                         return rsvkrtNo;
@@ -173,11 +173,11 @@ namespace Infrastructure.Repositories
 
         private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
         {
-            var oldOrderInfs = TrackingDataContext.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && rsvkrtOrderInfModels.Select(o => o.RsvkrtNo).Contains(o.RsvkrtNo) && rsvkrtOrderInfModels.Select(o => o.RsvDate).Contains(o.RsvDate) && o.IsDeleted == DeleteTypes.None);
+            var oldOrderInfs = TrackingDataContext.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
 
             foreach (var orderInf in rsvkrtOrderInfModels)
             {
-                var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == orderInf.RsvkrtNo && o.RsvDate == orderInf.RsvDate && o.IsDeleted == DeleteTypes.None);
+                var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == rsvkrtNo && o.RpNo == orderInf.RpNo && o.RpEdaNo == orderInf.RpEdaNo && o.IsDeleted == DeleteTypes.None);
                 if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
                 {
                     if (oldOrderInf != null)
@@ -194,35 +194,28 @@ namespace Infrastructure.Repositories
                         oldOrderInf.IsDeleted = DeleteTypes.Deleted;
                         oldOrderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         oldOrderInf.CreateId = userId;
-                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf, orderInf.RpEdaNo + 1);
-                        TrackingDataContext.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
-                        {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo, orderInf.RpEdaNo + 1));
-                            TrackingDataContext.AddRange(orderInfDetailEntity);
-                        }
+                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, oldOrderInf.RpNo, orderInf, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1);
+                        TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
+                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(oldOrderInf.RpNo, od, oldOrderInf.RsvkrtNo, oldOrderInf.RpEdaNo + 1));
+                        TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
                     }
                     else
                     {
                         maxRpNo++;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
-                        TrackingDataContext.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
-                        {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
-                            TrackingDataContext.AddRange(orderInfDetailEntity);
-                        }
+                        TrackingDataContext.RsvkrtOdrInfs.Add(orderInfEntity);
+                        var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
+                        TrackingDataContext.RsvkrtOdrInfDetails.AddRange(orderInfDetailEntity);
                     }
                 }
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private void UpsertKarteInf(int userId, long seqNo, RsvkrtKarteInfModel karteInf, long rsvkrtNo = 0)
         {
-
-            var oldKarteInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == karteInf.HpId && o.PtId == karteInf.PtId && o.RsvkrtNo == karteInf.RsvkrtNo && o.RsvDate == karteInf.RsvDate && o.IsDeleted == DeleteTypes.None);
+            var oldKarteInf = TrackingDataContext.RsvkrtKarteInfs.FirstOrDefault(o => o.HpId == karteInf.HpId && o.PtId == karteInf.PtId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
             if (karteInf.IsDeleted == DeleteTypes.Deleted || karteInf.IsDeleted == DeleteTypes.Confirm)
             {
                 if (oldKarteInf != null)
@@ -256,7 +249,7 @@ namespace Infrastructure.Repositories
                 img.RsvkrtNo = karteInf.RsvkrtNo;
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private long GetMaxSeqNo(long ptId, int hpId, long rsvkrtNo)
@@ -268,11 +261,12 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
-            var oldByomeis = TrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo) && o.IsDeleted == DeleteTypes.None);
-
+            var allOldByomeis = NoTrackingDataContext.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.HpId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && o.RsvkrtNo == rsvkrtNo).ToList();
+            var oldByomeis = allOldByomeis.Where(o => o.IsDeleted == DeleteTypes.None);
+            var maxSeqNo = allOldByomeis.Count > 0 ? allOldByomeis.Max(a => a.SeqNo) : 0;
             foreach (var byomei in byomeis)
             {
-                var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == byomei.RsvkrtNo && o.IsDeleted == DeleteTypes.None);
+                var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None);
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
                     if (oldByomei != null)
@@ -322,13 +316,13 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, rsvkrtNo);
+                        var orderInfEntity = ConvertModelToRsvkrtByomei(userId, byomei, ++maxSeqNo, rsvkrtNo);
                         TrackingDataContext.Add(orderInfEntity);
                     }
                 }
             }
 
-            TrackingDataContext.SaveChanges();
+            //TrackingDataContext.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
@@ -687,7 +681,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long rsvkrtNo = 0)
+        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel byomei, long seqNo, long rsvkrtNo = 0)
         {
             return new RsvkrtByomei
             {
@@ -833,7 +827,7 @@ namespace Infrastructure.Repositories
 
         public List<NextOrderFileInfModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
         {
-            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
+            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId, rsvkrtNo);
             var result = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item =>
                                                                                 item.HpId == hpId
                                                                                 && item.PtId == ptId
@@ -852,6 +846,12 @@ namespace Infrastructure.Repositories
         public long GetLastNextOrderSeqNo(int hpId, long ptId)
         {
             var lastItem = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList()?.MaxBy(item => item.SeqNo);
+            return lastItem != null ? lastItem.SeqNo : 0;
+        }
+
+        private long GetLastNextOrderSeqNo(int hpId, long ptId, long rsvkrtNo)
+        {
+            var lastItem = NoTrackingDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RsvkrtNo == rsvkrtNo).ToList()?.MaxBy(item => item.SeqNo);
             return lastItem != null ? lastItem.SeqNo : 0;
         }
 

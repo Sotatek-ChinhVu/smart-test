@@ -12,4 +12,5 @@ public static class FunctionCodes
     public const string RaiinCmtChanged = "RaiinCmtChanged";
     public const string PatientCmtChanged = "PatientCmtChanged";
     public const string ReservationChanged = "ReservationChanged";
+    public const string MedicalChanged = "MedicalChanged";
 }

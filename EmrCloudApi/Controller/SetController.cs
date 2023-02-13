@@ -2,7 +2,6 @@
 using EmrCloudApi.Presenters.SetMst;
 using EmrCloudApi.Requests.SetMst;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Responses.SetMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -110,7 +109,7 @@ public class SetController : AuthorizeControllerBase
                         UserId,
                         HpId,
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
+                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText, request.SaveSetKarteRequestItem.Text),
                         ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems),
                         new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems)
                     );

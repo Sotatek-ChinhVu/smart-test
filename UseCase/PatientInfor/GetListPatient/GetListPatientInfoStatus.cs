@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace UseCase.PatientInfor.GetListPatient
 {
-    public enum GetPatientInfoStatus
+    public enum GetListPatientInfoStatus
     {
         Success = 1,
         InvalidPtId,
         InvalidHpId,
+        InvalidPageIndex,
+        InvalidPageSize
     }
 }

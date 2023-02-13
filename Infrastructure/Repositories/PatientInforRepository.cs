@@ -60,6 +60,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
                 where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                orderby p.PtNum descending
                 select new
                 {
                     ptInf = p,
@@ -760,6 +761,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 (from p in NoTrackingDataContext.PtInfs
                  where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 orderby p.PtNum descending
                  select new
                  {
                      ptInf = p,
@@ -793,6 +795,7 @@ namespace Infrastructure.Repositories
             where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
                                       p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -826,6 +829,7 @@ namespace Infrastructure.Repositories
             from p in NoTrackingDataContext.PtInfs
             where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
                                       p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
