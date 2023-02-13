@@ -35,7 +35,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListReceCmt)]
     public ActionResult<Response<GetListReceCmtResponse>> GetListReceCmt([FromQuery] GetListReceCmtRequest request)
     {
-        var input = new GetListReceCmtInputData(HpId, request.SinDate, request.PtId, request.HokenId);
+        var input = new GetListReceCmtInputData(HpId, request.SinYm, request.PtId, request.HokenId);
         var output = _bus.Handle(input);
 
         var presenter = new GetListReceCmtPresenter();

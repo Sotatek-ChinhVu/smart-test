@@ -1234,11 +1234,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     }
 
     #region Rece check screeen
-    public List<ReceCmtModel> GetListReceCmt(int hpId, int sinDate, long ptId, int hokenId)
+    public List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId)
     {
-        int sinYM = CIUtil.Copy(sinDate.AsString(), 1, 6).AsInteger();
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.SinYm == sinYM
+                                                                 && item.SinYm == sinYm
                                                                  && item.PtId == ptId
                                                                  && item.HokenId == hokenId
                                                                  && item.IsDeleted == DeleteTypes.None)

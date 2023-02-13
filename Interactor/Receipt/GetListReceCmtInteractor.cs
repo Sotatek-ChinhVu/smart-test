@@ -16,7 +16,7 @@ public class GetListReceCmtInteractor : IGetListReceCmtInputPort
     {
         try
         {
-            var result = _receiptRepository.GetListReceCmt(inputData.HpId, inputData.SinDate, inputData.PtId, inputData.HokenId);
+            var result = _receiptRepository.GetListReceCmt(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
             return new GetListReceCmtOutputData(result, GetListReceCmtStatus.Successed);
         }
         finally

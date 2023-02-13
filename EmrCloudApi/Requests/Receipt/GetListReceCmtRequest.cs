@@ -2,7 +2,7 @@
 
 public class GetListReceCmtRequest
 {
-    public int SinDate { get; set; }
+    public int SinYm { get; set; }
 
     public long PtId { get; set; }
 
