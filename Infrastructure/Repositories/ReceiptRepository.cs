@@ -3,6 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
