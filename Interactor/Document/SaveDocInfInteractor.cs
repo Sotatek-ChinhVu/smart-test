@@ -46,7 +46,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.InvalidFileInput);
             }
-            else if (memoryStream.Length > 0 && inputData.SeqNo <= 0)
+            else if (memoryStream.Length > 0)
             {
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
@@ -97,7 +97,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX|doc|DOC)$";
+        var regxFile = @"^.*\.(docx|DOCX|xlsx|XLSX)$";
         var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {
