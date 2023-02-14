@@ -39,8 +39,11 @@ namespace Interactor.Accounting
             }
             catch (Exception)
             {
-
-                throw;
+                return new GetAccountingHistoryOrderOutputData(0, new List<HistoryOrderModel>(), GetAccountingHistoryOrderStatus.Failed);
+            }
+            finally
+            {
+                _historyOrderRepository.ReleaseResource();
             }
         }
 
