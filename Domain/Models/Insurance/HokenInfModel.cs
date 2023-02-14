@@ -372,12 +372,9 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (ConfirmDateList == null || ConfirmDateList.Count <= 0) return 0;
+                if (!ConfirmDateList.Any()) return 0;
 
-                return CIUtil
-                    .Copy(
-                        CIUtil.DateTimeToInt(ConfirmDateList.OrderByDescending(item => item.CheckDate).First().CheckDate)
-                            .AsString(), 1, 8).AsInteger();
+                return ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate;
             }
         }
     }

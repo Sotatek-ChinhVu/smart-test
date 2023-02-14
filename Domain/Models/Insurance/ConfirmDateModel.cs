@@ -18,17 +18,15 @@ namespace Domain.Models.Insurance
 
         public int ConfirmDate { get; private set; }
 
-        public DateTime CheckDate { get; private set; }
-
         public string CheckMachine { get; private set; }
 
         public int IsDeleted { get; private set; }
 
-        public ConfirmDateModel(int hokenGrp, int hokenId, DateTime checkDate, int checkId, string checkMachine, string checkComment, int isDeleted)
+        public ConfirmDateModel(int hokenGrp, int hokenId, DateTime confirmDate, int checkId, string checkMachine, string checkComment, int isDeleted)
         {
             HokenGrp = hokenGrp;
             HokenId = hokenId;
-            CheckDate = checkDate;
+            ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
             CheckId = checkId;
             CheckMachine = checkMachine;
             CheckComment = checkComment;

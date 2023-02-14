@@ -504,7 +504,7 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
+                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return hokenInfModel;
@@ -547,7 +547,7 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.CheckDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
+                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return kohiInfModel;
@@ -790,22 +790,9 @@ namespace Infrastructure.Repositories
                                                                               (p.TenkiKbn == TenkiKbnConst.Continued ||
                                                                               (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
 
-            //var SyusyokuCdList = ;
-                //PtDiseaseModels
-                //                .SelectMany(item => new[] { item.SyusyokuCd1, item.SyusyokuCd2, item.SyusyokuCd3, item.SyusyokuCd4,
-                //                                            item.SyusyokuCd5, item.SyusyokuCd6, item.SyusyokuCd7, item.SyusyokuCd8,
-                //                                            item.SyusyokuCd9, item.SyusyokuCd10, item.SyusyokuCd11, item.SyusyokuCd12,
-                //                                            item.SyusyokuCd13, item.SyusyokuCd14, item.SyusyokuCd15, item.SyusyokuCd16,
-                //                                            item.SyusyokuCd17, item.SyusyokuCd18, item.SyusyokuCd19, item.SyusyokuCd20,
-                //                                            item.SyusyokuCd21 })
-                                //.Distinct()
-                                //.ToList();
-
             var byomeiMstList = (from ptByomei in byomeiQueryNoTrack
                                  join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
                                  select ptByomeiMst).ToList();
-
-          //  var byomeiMstForSyusyokuList = byomeiMstQuery.Where(item => PtDiseaseModels.Select(x=>x.PrefixSuffixList.SelectMany(c => c.Code)).Contains(item.ByomeiCd)).ToList();
 
             foreach (var PtDiseaseModel in PtDiseaseModels)
             {

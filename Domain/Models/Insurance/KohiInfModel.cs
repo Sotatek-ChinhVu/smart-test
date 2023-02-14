@@ -162,12 +162,12 @@ namespace Domain.Models.Insurance
                 }
                 List<ConfirmDateModel> isValidHokenChecks = ConfirmDateModels
                     .Where(x => x.IsDeleted == 0)
-                    .OrderByDescending(x => x.CheckDate)
+                    .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
                 int SinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
                 foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
                 {
-                    int currentConfirmYM = CIUtil.Copy(CIUtil.DateTimeToInt(ptHokenCheck.CheckDate).AsString(), 1, 6).AsInteger();
+                    int currentConfirmYM = ptHokenCheck.ConfirmDate;
                     if (currentConfirmYM == SinYM)
                     {
                         return true;
@@ -181,12 +181,9 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (ConfirmDateModels == null || ConfirmDateModels.Count <= 0) return 0;
+                if (!ConfirmDateModels.Any()) return 0;
 
-                return CIUtil
-                    .Copy(
-                        CIUtil.DateTimeToInt(ConfirmDateModels.OrderByDescending(item => item.CheckDate).First().CheckDate)
-                            .AsString(), 1, 8).AsInteger();
+                return CIUtil.Copy(ConfirmDateModels.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate.AsString(), 1, 6).AsInteger();
             }
         }
     }
