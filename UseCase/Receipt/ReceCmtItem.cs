@@ -16,6 +16,22 @@ public class ReceCmtItem
         Cmt = model.Cmt;
         CmtData = model.CmtData;
         ItemCd = model.ItemCd;
+        IsDeleted = false;
+    }
+
+    public ReceCmtItem(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, bool isDeleted)
+    {
+        Id = id;
+        PtId = ptId;
+        SeqNo = seqNo;
+        SinYm = sinYm;
+        HokenId = hokenId;
+        CmtKbn = cmtKbn;
+        CmtSbt = cmtSbt;
+        Cmt = cmt;
+        CmtData = cmtData;
+        ItemCd = itemCd;
+        IsDeleted = isDeleted;
     }
 
     public long Id { get; private set; }
@@ -37,4 +53,6 @@ public class ReceCmtItem
     public string CmtData { get; private set; }
 
     public string ItemCd { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 }
