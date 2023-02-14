@@ -183,13 +183,15 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
         }
 
-        public PtDiseaseModel(string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei)
+        public PtDiseaseModel(string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
         {
             Byomei = byomei;
             StartDate = startDate;
             TenkiDate = tenkiDate;
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            PrefixSuffixList.AddRange(prefixList);
         }
 
         public ValidationStatus Validation()
@@ -321,11 +323,11 @@ namespace Domain.Models.Diseases
 
         public string Icd10 { get; set; }
 
-        public string Icd102013 { get;  set; }
+        public string Icd102013 { get; set; }
 
-        public string Icd1012013 { get;  set; }
+        public string Icd1012013 { get; set; }
 
-        public string Icd1022013 { get;  set; }
+        public string Icd1022013 { get; set; }
 
         public int HpId { get; private set; }
 
@@ -370,48 +372,6 @@ namespace Domain.Models.Diseases
         public string HosokuCmt { get; private set; }
 
         public int TogetuByomei { get; private set; }
-
-        public string SyusyokuCd1 { get; private set; }
-
-        public string SyusyokuCd2 { get; private set; }
-
-        public string SyusyokuCd3 { get; private set; }
-
-        public string SyusyokuCd4 { get; private set; }
-
-        public string SyusyokuCd5 { get; private set; }
-
-        public string SyusyokuCd6 { get; private set; }
-
-        public string SyusyokuCd7 { get; private set; }
-
-        public string SyusyokuCd8 { get; private set; }
-
-        public string SyusyokuCd9 { get; private set; }
-
-        public string SyusyokuCd10 { get; private set; }
-
-        public string SyusyokuCd11 { get; private set; }
-
-        public string SyusyokuCd12 { get; private set; }
-
-        public string SyusyokuCd13 { get; private set; }
-
-        public string SyusyokuCd14 { get; private set; }
-
-        public string SyusyokuCd15 { get; private set; }
-
-        public string SyusyokuCd16 { get; private set; }
-
-        public string SyusyokuCd17 { get; private set; }
-
-        public string SyusyokuCd18 { get; private set; }
-
-        public string SyusyokuCd19 { get; private set; }
-
-        public string SyusyokuCd20 { get; private set; }
-
-        public string SyusyokuCd21 { get; private set; }
 
         public int SikkanCd { get; set; }
 

@@ -753,7 +753,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>()))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -772,7 +772,15 @@ namespace Infrastructure.Repositories
                                                                    (p.TenkiKbn == TenkiKbnConst.Continued ||
                                                                    (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).ToList();
 
-            var PtDiseaseModels = ptByomeis.Select(p => new PtDiseaseModel(p.Byomei ?? string.Empty, p.StartDate, p.TenkiDate, p.HosokuCmt ?? string.Empty, p.TogetuByomei)).ToList();
+            var PtDiseaseModels = ptByomeis.Select(p => new PtDiseaseModel(
+                                                        p.Byomei ?? string.Empty,
+                                                        p.StartDate,
+                                                        p.TenkiDate,
+                                                        p.HosokuCmt ?? string.Empty,
+                                                        p.TogetuByomei,
+                                                        SyusyokuCdToList(p)
+                                                        ))
+                                            .ToList();
 
             var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == 1)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.SikkanCd, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
@@ -782,21 +790,22 @@ namespace Infrastructure.Repositories
                                                                               (p.TenkiKbn == TenkiKbnConst.Continued ||
                                                                               (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
 
-            var SyusyokuCdList = PtDiseaseModels
-                                .SelectMany(item => new[] { item.SyusyokuCd1, item.SyusyokuCd2, item.SyusyokuCd3, item.SyusyokuCd4,
-                                                            item.SyusyokuCd5, item.SyusyokuCd6, item.SyusyokuCd7, item.SyusyokuCd8,
-                                                            item.SyusyokuCd9, item.SyusyokuCd10, item.SyusyokuCd11, item.SyusyokuCd12,
-                                                            item.SyusyokuCd13, item.SyusyokuCd14, item.SyusyokuCd15, item.SyusyokuCd16,
-                                                            item.SyusyokuCd17, item.SyusyokuCd18, item.SyusyokuCd19, item.SyusyokuCd20,
-                                                            item.SyusyokuCd21 })
-                                .Distinct()
-                                .ToList();
+            //var SyusyokuCdList = ;
+                //PtDiseaseModels
+                //                .SelectMany(item => new[] { item.SyusyokuCd1, item.SyusyokuCd2, item.SyusyokuCd3, item.SyusyokuCd4,
+                //                                            item.SyusyokuCd5, item.SyusyokuCd6, item.SyusyokuCd7, item.SyusyokuCd8,
+                //                                            item.SyusyokuCd9, item.SyusyokuCd10, item.SyusyokuCd11, item.SyusyokuCd12,
+                //                                            item.SyusyokuCd13, item.SyusyokuCd14, item.SyusyokuCd15, item.SyusyokuCd16,
+                //                                            item.SyusyokuCd17, item.SyusyokuCd18, item.SyusyokuCd19, item.SyusyokuCd20,
+                //                                            item.SyusyokuCd21 })
+                                //.Distinct()
+                                //.ToList();
 
             var byomeiMstList = (from ptByomei in byomeiQueryNoTrack
                                  join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
-                                 select ptByomeiMst).ToList(); ;
+                                 select ptByomeiMst).ToList();
 
-            var byomeiMstForSyusyokuList = byomeiMstQuery.Where(item => SyusyokuCdList.Contains(item.ByomeiCd)).ToList();
+          //  var byomeiMstForSyusyokuList = byomeiMstQuery.Where(item => PtDiseaseModels.Select(x=>x.PrefixSuffixList.SelectMany(c => c.Code)).Contains(item.ByomeiCd)).ToList();
 
             foreach (var PtDiseaseModel in PtDiseaseModels)
             {
@@ -831,18 +840,58 @@ namespace Infrastructure.Repositories
                     PtDiseaseModel.Icd1012013 = string.Empty;
                     PtDiseaseModel.Icd1022013 = string.Empty;
                 }
-                for (int i = 1; i <= 21; i++)
-                {
-                    string byoCd = PtDiseaseModel.GetMemberValue("SyusyokuCd" + i).AsString();
-                    if (string.IsNullOrEmpty(byoCd))
-                    {
-                        break;
-                    }
-                    PtDiseaseModel.SetMemberValue("SyusyokuName" + i, byomeiMstForSyusyokuList.FirstOrDefault(item => item.ByomeiCd == byoCd)?.Sbyomei);
-                }
             }
 
             return PtDiseaseModels;
+        }
+
+        private List<PrefixSuffixModel> SyusyokuCdToList(PtByomei ptByomei)
+        {
+            List<string> codeList = new()
+            {
+                ptByomei.SyusyokuCd1 ?? string.Empty,
+                ptByomei.SyusyokuCd2 ?? string.Empty,
+                ptByomei.SyusyokuCd3 ?? string.Empty,
+                ptByomei.SyusyokuCd4 ?? string.Empty,
+                ptByomei.SyusyokuCd5 ?? string.Empty,
+                ptByomei.SyusyokuCd6 ?? string.Empty,
+                ptByomei.SyusyokuCd7 ?? string.Empty,
+                ptByomei.SyusyokuCd8 ?? string.Empty,
+                ptByomei.SyusyokuCd9 ?? string.Empty,
+                ptByomei.SyusyokuCd10 ?? string.Empty,
+                ptByomei.SyusyokuCd11 ?? string.Empty,
+                ptByomei.SyusyokuCd12 ?? string.Empty,
+                ptByomei.SyusyokuCd13 ?? string.Empty,
+                ptByomei.SyusyokuCd14 ?? string.Empty,
+                ptByomei.SyusyokuCd15 ?? string.Empty,
+                ptByomei.SyusyokuCd16 ?? string.Empty,
+                ptByomei.SyusyokuCd17 ?? string.Empty,
+                ptByomei.SyusyokuCd18 ?? string.Empty,
+                ptByomei.SyusyokuCd19 ?? string.Empty,
+                ptByomei.SyusyokuCd20 ?? string.Empty,
+                ptByomei.SyusyokuCd21 ?? string.Empty
+            };
+            codeList = codeList.Where(c => c != string.Empty).ToList();
+
+            if (codeList.Count == 0)
+            {
+                return new List<PrefixSuffixModel>();
+            }
+
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+
+            List<PrefixSuffixModel> result = new();
+            foreach (var code in codeList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(b => b.ByomeiCd == code);
+                if (byomeiMst == null)
+                {
+                    continue;
+                }
+                result.Add(new PrefixSuffixModel(code, byomeiMst.Byomei ?? string.Empty));
+            }
+
+            return result;
         }
 
         public List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId)
