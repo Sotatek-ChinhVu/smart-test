@@ -1,13 +1,16 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Receipt;
 using EmrCloudApi.Requests.Receipt;
+using EmrCloudApi.Requests.Receipt.RequestItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Receipt;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
+using UseCase.Receipt.SaveListReceCmt;
 
 namespace EmrCloudApi.Controller;
 
@@ -44,6 +47,20 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetListReceCmtResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.SaveListReceCmt)]
+    public ActionResult<Response<SaveListReceCmtResponse>> SaveListReceCmt([FromBody] SaveListReceCmtRequest request)
+    {
+        var listReceCmtItem = request.ListReceCmt.Select(item => ConvertToReceCmtItem(item)).ToList();
+        var input = new SaveListReceCmtInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceCmtItem);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveListReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveListReceCmtResponse>>(presenter.Result);
+    }
+
+    #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
         var itemList = request.ItemList.Select(item => new ItemSearchInputItem(
@@ -116,4 +133,19 @@ public class ReceiptController : AuthorizeControllerBase
                 request.SeikyuKbnPaper
             );
     }
+
+    private ReceCmtItem ConvertToReceCmtItem(SaveListReceCmtRequestItem requestItem)
+    {
+        return new ReceCmtItem(
+                                    requestItem.Id,
+                                    requestItem.SeqNo,
+                                    requestItem.CmtKbn,
+                                    requestItem.CmtSbt,
+                                    requestItem.Cmt,
+                                    requestItem.CmtData,
+                                    requestItem.ItemCd,
+                                    requestItem.IsDeleted
+                               );
+    }
+    #endregion
 }

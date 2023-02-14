@@ -1251,9 +1251,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
         var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
         var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.IsDeleted == DeleteTypes.None
-                                                                 && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
-                                                         .ToList();
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
+                                                              .ToList();
 
         var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
                                            .Select(item => ConvertToNewReceCmt(hpId, userId, item))
@@ -1278,13 +1278,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             entity.Cmt = model.Cmt;
         }
         return TrackingDataContext.SaveChanges() > 0;
-    }
-
-    public bool CheckExistReceCmt(int hpId, List<long> listReceCmtId)
-    {
-        listReceCmtId = (List<long>)listReceCmtId.Distinct();
-        var countReceCmt = NoTrackingDataContext.ReceCmts.Count(item => listReceCmtId.Contains(item.Id));
-        return countReceCmt > listReceCmtId.Count;
     }
     #endregion
 

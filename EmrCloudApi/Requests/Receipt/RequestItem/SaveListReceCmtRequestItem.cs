@@ -10,11 +10,11 @@ public class SaveListReceCmtRequestItem
 
     public int CmtSbt { get; set; }
 
-    public string Cmt { get; set; }
+    public string Cmt { get; set; } = string.Empty;
 
-    public string CmtData { get; set; }
+    public string CmtData { get; set; } = string.Empty;
 
-    public string ItemCd { get; set; }
+    public string ItemCd { get; set; } = string.Empty;
 
     public bool IsDeleted { get; set; }
 }

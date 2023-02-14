@@ -37,7 +37,9 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
             {
                 return new SaveListReceCmtOutputData(responseValidate);
             }
-            List<ReceCmtModel> listReceCmtModel = inputData.ListReceCmt.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item)).ToList();
+            var listReceCmtModel = inputData.ListReceCmt.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
+                                                        .ToList();
+
             if (_receiptRepository.SaveListReceCmt(inputData.HpId, inputData.UserId, listReceCmtModel))
             {
                 return new SaveListReceCmtOutputData(SaveListReceCmtStatus.Successed);
@@ -81,22 +83,71 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
         {
             return SaveListReceCmtStatus.ValidateSuccess;
         }
+        return ValidateReceCmtItem(inputData);
+    }
+
+    private SaveListReceCmtStatus ValidateReceCmtItem(SaveListReceCmtInputData inputData)
+    {
+        var listReceCmtDB = _receiptRepository.GetListReceCmt(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
         var listItemCds = inputData.ListReceCmt.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveListReceCmtStatus.InvalidItemCd;
         }
         var listReceCmtIds = inputData.ListReceCmt.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
-        if (listReceCmtIds.Any() && !_receiptRepository.CheckExistReceCmt(inputData.HpId, listReceCmtIds))
+        var countReceCmt = listReceCmtDB.Count(item => listReceCmtIds.Contains(item.Id));
+        if (listReceCmtIds.Any() && countReceCmt != listReceCmtIds.Count)
         {
             return SaveListReceCmtStatus.InvalidReceCmtId;
         }
-        else if (inputData.ListReceCmt.Any(item => item.CmtKbn > 1 || item.CmtKbn < 0))
+        else if (inputData.ListReceCmt.Any(item => item.CmtKbn > 2 || item.CmtKbn < 1))
         {
             return SaveListReceCmtStatus.InvalidCmtKbn;
         }
         else if (inputData.ListReceCmt.Any(item => item.CmtSbt > 1 || item.CmtSbt < 0))
         {
+            return SaveListReceCmtStatus.InvalidCmtSbt;
+        }
+        else if (inputData.ListReceCmt.Any(item => item.Cmt == string.Empty))
+        {
+            return SaveListReceCmtStatus.InvalidCmt;
+        }
+
+        // validate Cmt detail
+        foreach (var cmtInput in inputData.ListReceCmt)
+        {
+            if ((cmtInput.CmtKbn == 2 && cmtInput.CmtSbt == 0) || (cmtInput.CmtKbn == 1 && cmtInput.CmtSbt == 0))
+            {
+                if (cmtInput.ItemCd == string.Empty)
+                {
+                    return SaveListReceCmtStatus.InvalidCmt;
+                }
+                continue;
+            }
+            if ((cmtInput.CmtKbn == 1 && cmtInput.CmtSbt == 1) || (cmtInput.CmtKbn == 2 && cmtInput.CmtSbt == 1))
+            {
+                if (cmtInput.ItemCd != string.Empty)
+                {
+                    return SaveListReceCmtStatus.InvalidItemCd;
+                }else if (cmtInput.CmtData != string.Empty)
+                {
+                    return SaveListReceCmtStatus.InvalidCmtData;
+                }
+                var cmtDB = listReceCmtDB.FirstOrDefault(item => item.CmtKbn == cmtInput.CmtKbn && item.CmtSbt == cmtInput.CmtSbt);
+                if (cmtDB == null)
+                {
+                    if (cmtInput.Id != 0)
+                    {
+                        return SaveListReceCmtStatus.InvalidReceCmtId;
+                    }
+                    continue;
+                }
+                if (cmtDB.Id != cmtInput.Id)
+                {
+                    return SaveListReceCmtStatus.InvalidReceCmtId;
+                }
+                continue;
+            }
             return SaveListReceCmtStatus.InvalidCmtSbt;
         }
         return SaveListReceCmtStatus.ValidateSuccess;

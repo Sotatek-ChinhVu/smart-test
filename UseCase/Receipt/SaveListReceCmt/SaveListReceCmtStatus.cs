@@ -13,4 +13,6 @@ public enum SaveListReceCmtStatus : byte
     InvalidReceCmtId = 8,
     InvalidCmtKbn = 9,
     InvalidCmtSbt = 10,
+    InvalidCmt = 11,
+    InvalidCmtData = 12,
 }

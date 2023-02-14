@@ -184,6 +184,7 @@
 
         // Rece check
         public const string GetListReceCmt = "GetListReceCmt";
+        public const string SaveListReceCmt = "SaveListReceCmt";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";

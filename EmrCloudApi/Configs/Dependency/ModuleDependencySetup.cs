@@ -272,6 +272,7 @@ using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
+using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -777,6 +778,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Rece check
             busBuilder.RegisterUseCase<GetListReceCmtInputData, GetListReceCmtInteractor>();
+            busBuilder.RegisterUseCase<SaveListReceCmtInputData, SaveListReceCmtInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
