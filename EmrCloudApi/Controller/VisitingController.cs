@@ -104,7 +104,7 @@ public class VisitingController : AuthorizeControllerBase
                 break;
             case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
                 await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
-                    new CommonMessage { PtId = input.PtId, PtId = req.PtId, SinDate = req.SinDate });
+                    new CommonMessage { PtId = input.PtId, RaiinNo = req.RaiinNo, SinDate = req.SinDate });
                 break;
         }
 
