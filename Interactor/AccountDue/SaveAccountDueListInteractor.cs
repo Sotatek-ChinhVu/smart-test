@@ -84,11 +84,11 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         var accountDueByRaiinNo = listAccountDueModel.Where(item => item.RaiinNo == accountDue.RaiinNo && !item.IsDelete);
         var seikyuAdjustFutanListInput = accountDueByRaiinNo.Select(item => item.SeikyuAdjustFutan).Distinct().ToList();
         var seikyuGakuListInput = accountDueByRaiinNo.Select(item => item.SeikyuGaku).Distinct().ToList();
-        if (seikyuAdjustFutanListInput.Count != 1)
+        if (seikyuAdjustFutanListInput.Count != 1 && !accountDue.IsDelete)
         {
             return SaveAccountDueListStatus.InvalidSeikyuAdjustFutan;
         }
-        if (seikyuGakuListInput.Count != 1)
+        if (seikyuGakuListInput.Count != 1 && !accountDue.IsDelete)
         {
             return SaveAccountDueListStatus.InvalidSeikyuGaku;
         }
@@ -100,7 +100,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         int adjustFutanDB = listSyunoNyukinDB.Where(item => !listSeqNos.Contains(item.SeqNo) && item.RaiinNo == accountDue.RaiinNo).Sum(item => item.AdjustFutan);
         int seikyuGakuDB = syunoSeikyuRaiins.FirstOrDefault()?.SeikyuGaku ?? 0;
         int newSeikyuGakuDB = syunoSeikyuRaiins.FirstOrDefault()?.NewSeikyuGaku ?? 0;
-        int seikyuGakuInput = seikyuGakuListInput.First();
+        int seikyuGakuInput = seikyuGakuListInput.FirstOrDefault();
 
         if (seikyuGakuInput != seikyuGakuDB && newSeikyuGakuDB == seikyuGakuInput)
         {
