@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
@@ -58,6 +59,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveListReceCmtResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListSyoukiInf)]
+    public ActionResult<Response<GetListSyoukiInfResponse>> GetListSyoukiInf([FromQuery] GetListSyoukiInfRequest request)
+    {
+        var input = new GetListSyoukiInfInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSyoukiInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSyoukiInfResponse>>(presenter.Result);
     }
 
     #region Private function

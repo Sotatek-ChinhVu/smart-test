@@ -1279,6 +1279,30 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var listSyoukiInf = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+                                                                           && item.SinYm == sinYm
+                                                                           && item.PtId == ptId
+                                                                           && item.HokenId == hokenId
+                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                            .OrderBy(item => item.SortNo)
+                                                            .ToList();
+
+        var result = listSyoukiInf.Select(item => ConvertToSyoukiInfModel(item)).ToList();
+        return result;
+    }
+
+    public List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm)
+    {
+        var listSyoukiKbnMst = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
+                                                                  .OrderBy(p => p.SyoukiKbn)
+                                                                  .ToList();
+
+        var result = listSyoukiKbnMst.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
+        return result;
+    }
     #endregion
 
     #region Private function
@@ -1319,11 +1343,33 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         entity.UpdateId = userId;
         return entity;
     }
+
+    private SyoukiInfModel ConvertToSyoukiInfModel(SyoukiInf syoukiInf)
+    {
+        return new SyoukiInfModel(
+                                    syoukiInf.PtId,
+                                    syoukiInf.SinYm,
+                                    syoukiInf.HokenId,
+                                    syoukiInf.SeqNo,
+                                    syoukiInf.SortNo,
+                                    syoukiInf.SyoukiKbn,
+                                    syoukiInf.Syouki ?? string.Empty
+                                );
+    }
+
+    private SyoukiKbnMstModel ConvertToSyoukiKbnMstModel(SyoukiKbnMst item)
+    {
+        return new SyoukiKbnMstModel(
+                                        item.SyoukiKbn,
+                                        item.StartYm,
+                                        item.EndYm,
+                                        item.Name ?? string.Empty
+                                    );
+    }
     #endregion
 
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
-
 }
