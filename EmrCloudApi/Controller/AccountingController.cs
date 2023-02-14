@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
@@ -73,6 +74,19 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtByoMeiResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.HistoryOrder)]
+        public ActionResult<Response<GetAccountingHistoryOrderResponse>> GetList([FromQuery] GetAccountingHistoryOrderRequest request)
+        {
+
+            var input = new GetAccountingHistoryOrderInputData(request.PtId, request.HpId, request.UserId, request.SinDate, request.Offset, request.Limit, request.DeleteConditon, request.FilterId, request.IsShowApproval, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAccountingHistoryOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAccountingHistoryOrderResponse>>(presenter.Result);
         }
     }
 }

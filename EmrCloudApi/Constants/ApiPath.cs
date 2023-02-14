@@ -189,6 +189,7 @@
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
+        public const string HistoryOrder = "HistoryOrder";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";
