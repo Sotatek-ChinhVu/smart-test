@@ -156,7 +156,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                 UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
 
                 // Update right table SyunoNyukin
-                UpdateSyunoNyukin(hpId, ptId, userId, sinDate, dateTimeNow, model, nyukinLists);
+                UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
             }
 
             TrackingDataContext.SaveChanges();
@@ -204,7 +204,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
         }
     }
 
-    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, int sinDate, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
+    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
     {
         if (model.SeqNo == 0) // Create new SyunoNyukin
         {
@@ -218,7 +218,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
             nyukin.AdjustFutan = model.AdjustFutan;
             nyukin.NyukinGaku = model.NyukinGaku;
             nyukin.PaymentMethodCd = model.PaymentMethodCd;
-            nyukin.NyukinDate = sinDate;
+            nyukin.NyukinDate = model.NyukinDate;
             nyukin.UketukeSbt = model.UketukeSbt;
             nyukin.NyukinCmt = model.NyukinCmt;
             nyukin.NyukinjiSeikyu = model.SeikyuGaku;
@@ -240,7 +240,7 @@ public class AccountDueRepository : RepositoryBase, IAccountDueRepository
                 nyukin.AdjustFutan = model.AdjustFutan;
                 nyukin.NyukinGaku = model.NyukinGaku;
                 nyukin.PaymentMethodCd = model.PaymentMethodCd;
-                nyukin.NyukinDate = sinDate;
+                nyukin.NyukinDate = model.NyukinDate;
                 nyukin.UketukeSbt = model.UketukeSbt;
                 nyukin.NyukinCmt = model.NyukinCmt;
                 nyukin.NyukinjiSeikyu = model.SeikyuGaku;
