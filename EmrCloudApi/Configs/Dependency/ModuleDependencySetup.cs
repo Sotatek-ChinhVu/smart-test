@@ -7,6 +7,7 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
+using Domain.Models.Accounting;
 using Domain.Models.ApprovalInfo;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
@@ -77,6 +78,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
 using Interactor.AccountDue;
+using Interactor.Accounting;
 using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
@@ -141,6 +143,10 @@ using Reporting.Interface;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
+using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
@@ -447,6 +453,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
+            services.AddTransient<IAccountingRepository, AccountingRepository>();
             services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
             services.AddTransient<IMasterFinder, MasterFinder>();
             services.AddTransient<ISystemConfig, SystemConfig>();
@@ -708,6 +715,12 @@ namespace EmrCloudApi.Configs.Dependency
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
             busBuilder.RegisterUseCase<SaveAccountDueListInputData, SaveAccountDueListInteractor>();
+
+            //Accounting
+            busBuilder.RegisterUseCase<GetAccountingInputData, GetAccountingInteractor>();
+            busBuilder.RegisterUseCase<GetPaymentMethodInputData, GetPaymentMethodInteractor>();
+            busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
+            busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();

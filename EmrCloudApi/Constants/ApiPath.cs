@@ -186,6 +186,11 @@
         public const string GetListReceCmt = "GetListReceCmt";
         public const string SaveListReceCmt = "SaveListReceCmt";
 
+        //Accounting
+        public const string PaymentMethod = "PaymentMethod";
+        public const string WarningMemo = "WarningMemo";
+        public const string PtByoMei = "PtByoMei";
+
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";
     }
