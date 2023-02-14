@@ -9,5 +9,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId);
 
-    bool SaveListReceCmt(int hpId, int userId, int sinYm, long ptId, int hokenId, List<ReceCmtModel> listReceCmt);
+    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt);
+
+    bool CheckExistReceCmt(int hpId, List<long> listReceCmtId);
 }

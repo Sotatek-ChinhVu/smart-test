@@ -1,12 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.SaveListReceCmt
+namespace UseCase.Receipt.SaveListReceCmt;
+
+public class SaveListReceCmtInputData : IInputData<SaveListReceCmtOutputData>
 {
-    internal class SaveListReceCmtInputData
+    public SaveListReceCmtInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCmtItem> listReceCmt)
     {
+        HpId = hpId;
+        UserId = userId;
+        PtId = ptId;
+        SinYm = sinYm;
+        HokenId = hokenId;
+        ListReceCmt = listReceCmt;
     }
+
+    public int HpId { get; private set; }
+
+    public int UserId { get; private set; }
+
+    public long PtId { get; private set; }
+
+    public int SinYm { get; private set; }
+
+    public int HokenId { get; private set; }
+
+    public List<ReceCmtItem> ListReceCmt { get; private set; }
 }

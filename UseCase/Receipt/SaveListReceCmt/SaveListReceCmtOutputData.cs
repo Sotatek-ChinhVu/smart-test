@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.SaveListReceCmt
+namespace UseCase.Receipt.SaveListReceCmt;
+
+public class SaveListReceCmtOutputData : IOutputData
 {
-    internal class SaveListReceCmtOutputData
+    public SaveListReceCmtOutputData(SaveListReceCmtStatus status)
     {
+        Status = status;
     }
+
+    public SaveListReceCmtStatus Status { get; private set; }
 }

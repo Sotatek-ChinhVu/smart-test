@@ -1247,19 +1247,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public bool SaveListReceCmt(int hpId, int userId, int sinYm, long ptId, int hokenId, List<ReceCmtModel> listReceCmt)
+    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt)
     {
         var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
         var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.SinYm == sinYm
-                                                                 && item.PtId == ptId
-                                                                 && item.HokenId == hokenId
                                                                  && item.IsDeleted == DeleteTypes.None
                                                                  && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
                                                          .ToList();
 
         var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
-                                           .Select(item => ConvertToNewReceCmt(hpId, userId, sinYm, ptId, hokenId, item))
+                                           .Select(item => ConvertToNewReceCmt(hpId, userId, item))
                                            .ToList();
         TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
         foreach (var model in listReceCmtUpdate)
@@ -1282,6 +1279,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public bool CheckExistReceCmt(int hpId, List<long> listReceCmtId)
+    {
+        listReceCmtId = (List<long>)listReceCmtId.Distinct();
+        var countReceCmt = NoTrackingDataContext.ReceCmts.Count(item => listReceCmtId.Contains(item.Id));
+        return countReceCmt > listReceCmtId.Count;
+    }
     #endregion
 
     #region Private function
@@ -1301,13 +1305,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             );
     }
 
-    private ReceCmt ConvertToNewReceCmt(int hpId, int userId, int sinYm, long ptId, int hokenId, ReceCmtModel model)
+    private ReceCmt ConvertToNewReceCmt(int hpId, int userId, ReceCmtModel model)
     {
         ReceCmt entity = new();
         entity.HpId = hpId;
-        entity.PtId = ptId;
-        entity.SinYm = sinYm;
-        entity.HokenId = hokenId;
+        entity.PtId = model.PtId;
+        entity.SinYm = model.SinYm;
+        entity.HokenId = model.HokenId;
         entity.CmtKbn = model.CmtKbn;
         entity.CmtSbt = model.CmtSbt;
         entity.Id = 0;

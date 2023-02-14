@@ -19,19 +19,19 @@ public class ReceCmtItem
         IsDeleted = false;
     }
 
-    public ReceCmtItem(long id, long ptId, int seqNo, int sinYm, int hokenId, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, bool isDeleted)
+    public ReceCmtItem(long id, int seqNo, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, bool isDeleted)
     {
         Id = id;
-        PtId = ptId;
         SeqNo = seqNo;
-        SinYm = sinYm;
-        HokenId = hokenId;
         CmtKbn = cmtKbn;
         CmtSbt = cmtSbt;
         Cmt = cmt;
         CmtData = cmtData;
         ItemCd = itemCd;
         IsDeleted = isDeleted;
+        PtId = 0;
+        SinYm = 0;
+        HokenId = 0;
     }
 
     public long Id { get; private set; }
