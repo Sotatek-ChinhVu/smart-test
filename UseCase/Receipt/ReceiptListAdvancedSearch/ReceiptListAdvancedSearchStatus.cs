@@ -2,6 +2,5 @@
 
 public enum ReceiptListAdvancedSearchStatus : byte
 {
-    Successed = 1,
-    Failed = 2,
+    Successed = 1
 }

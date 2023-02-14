@@ -182,6 +182,9 @@
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
+        // Rece check
+        public const string GetListReceCmt = "GetListReceCmt";
+
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";

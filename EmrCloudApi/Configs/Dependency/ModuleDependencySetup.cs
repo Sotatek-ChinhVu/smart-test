@@ -276,6 +276,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
@@ -783,9 +784,12 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
-       
+
             //Convert Input Item to Today Order
             busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();
+
+            // Rece check
+            busBuilder.RegisterUseCase<GetListReceCmtInputData, GetListReceCmtInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -3,6 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
@@ -18,7 +19,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
     }
 
-    public List<ReceiptListModel> GetData(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
+    public List<ReceiptListModel> GetListReceipt(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
     {
         if (seikyuYm == 0)
         {
@@ -1231,6 +1232,38 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                && p.GrpEdaNo == grpEdaNo);
         return systemConf?.Param ?? string.Empty;
     }
+
+    #region Rece check screeen
+    public List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.PtId == ptId
+                                                                 && item.HokenId == hokenId
+                                                                 && item.IsDeleted == DeleteTypes.None)
+                                                     .ToList();
+
+        var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
+        return result;
+    }
+    #endregion
+
+    #region Private function
+    private ReceCmtModel ConvertToReceCmtModel(ReceCmt receCmt)
+    {
+        return new ReceCmtModel(
+                receCmt.Id,
+                receCmt.PtId,
+                receCmt.SeqNo,
+                receCmt.SinYm,
+                receCmt.HokenId,
+                receCmt.CmtKbn,
+                receCmt.CmtSbt,
+                receCmt.Cmt ?? string.Empty,
+                receCmt.ItemCd ?? string.Empty
+            );
+    }
+    #endregion
 
     public void ReleaseResource()
     {
