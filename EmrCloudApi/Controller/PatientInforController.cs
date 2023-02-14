@@ -588,11 +588,11 @@ namespace EmrCloudApi.Controller
                  request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
-
+            
             if (output.Status == SavePatientInfoStatus.Successful)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
-                    new CommonMessage { PtId = input.Patient.PtId, RaiinNo = 0, SinDate = 0 });
+                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
             }
 
             var presenter = new SavePatientInfoPresenter();

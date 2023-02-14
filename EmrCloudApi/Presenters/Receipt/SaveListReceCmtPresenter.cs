@@ -20,8 +20,6 @@ public class SaveListReceCmtPresenter : ISaveListReceCmtOutputPort
     {
         SaveListReceCmtStatus.Successed => ResponseMessage.Success,
         SaveListReceCmtStatus.Failed => ResponseMessage.Failed,
-        SaveListReceCmtStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-        SaveListReceCmtStatus.InvalidUserId => ResponseMessage.InvalidUserId,
         SaveListReceCmtStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         SaveListReceCmtStatus.InvalidSinYm => ResponseMessage.InvalidSinYm,
         SaveListReceCmtStatus.InvalidItemCd => ResponseMessage.InvalidItemCd,

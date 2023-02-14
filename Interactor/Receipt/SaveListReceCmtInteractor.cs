@@ -12,18 +12,14 @@ namespace Interactor.Receipt;
 public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
-    private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IMstItemRepository _mstItemRepository;
 
-    public SaveListReceCmtInteractor(IReceiptRepository receiptRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+    public SaveListReceCmtInteractor(IReceiptRepository receiptRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
     {
         _receiptRepository = receiptRepository;
-        _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
-        _userRepository = userRepository;
         _insuranceRepository = insuranceRepository;
         _mstItemRepository = mstItemRepository;
     }
@@ -49,9 +45,7 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
         finally
         {
             _receiptRepository.ReleaseResource();
-            _hpInfRepository.ReleaseResource();
             _patientInforRepository.ReleaseResource();
-            _userRepository.ReleaseResource();
             _insuranceRepository.ReleaseResource();
             _mstItemRepository.ReleaseResource();
         }
@@ -59,15 +53,7 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
 
     private SaveListReceCmtStatus ValidateInput(SaveListReceCmtInputData inputData)
     {
-        if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
-        {
-            return SaveListReceCmtStatus.InvalidHpId;
-        }
-        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
-        {
-            return SaveListReceCmtStatus.InvalidUserId;
-        }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
         {
             return SaveListReceCmtStatus.InvalidPtId;
         }
