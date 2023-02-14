@@ -184,6 +184,7 @@
 
         // Rece check
         public const string GetListReceCmt = "GetListReceCmt";
+        public const string SaveListReceCmt = "SaveListReceCmt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
