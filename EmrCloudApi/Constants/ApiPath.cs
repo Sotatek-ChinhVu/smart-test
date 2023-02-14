@@ -182,6 +182,11 @@
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
+        //Accounting
+        public const string PaymentMethod = "PaymentMethod";
+        public const string WarningMemo = "WarningMemo";
+        public const string PtByoMei = "PtByoMei";
+
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";
     }
