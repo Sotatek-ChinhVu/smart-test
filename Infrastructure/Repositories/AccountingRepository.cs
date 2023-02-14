@@ -893,5 +893,86 @@ namespace Infrastructure.Repositories
                     item.SortNo,
                     item.IsDeleted)).ToList();
         }
+
+        public bool SaveAccounting(List<SyunoSeikyuModel> syunoSeikyuModels, int sumAdjust, int thisWari, int thisCredit,
+                                   int payType, string comment, int uketukeSbt)
+        {
+            try
+            {
+
+                int allSeikyuGaku = sumAdjust;
+                int adjustFutan = thisWari;
+                int nyukinGaku = thisCredit;
+                int outAdjustFutan = 0;
+                int outNyukinGaku = 0;
+                int outNyukinKbn = 0;
+
+                for (int i = 0; i < syunoSeikyuModels.Count; i++)
+                {
+                    var item = syunoSeikyuModels[i];
+                    int thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                    bool isLastRecord = i == syunoSeikyuModels.Count - 1;
+
+                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                        out outNyukinKbn, isLastRecord);
+
+                    allSeikyuGaku -= thisSeikyuGaku;
+
+                    if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
+                        item.SyunoNyukinModels[0].NyukinGaku != 0)
+                    {
+                        TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
+                        {
+                            HpId = item.HpId,
+                            PtId = item.PtId,
+                            RaiinNo = item.RaiinNo,
+                            SinDate = item.SinDate,
+                            SortNo = 1,
+                            AdjustFutan = outAdjustFutan,
+                            NyukinGaku = outNyukinGaku,
+                            PaymentMethodCd = payType,
+                            UketukeSbt = uketukeSbt,
+                            NyukinCmt = comment,
+                            NyukinjiTensu = item.SeikyuTensu,
+                            NyukinjiDetail = item.SeikyuDetail,
+                            NyukinjiSeikyu = item.SeikyuGaku
+                        });
+                    }
+                    else
+                    {
+                        //TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
+                        //{
+                        //    item.ListSyunoNyukin[0].AdjustFutan = outAdjustFutan,
+                        //    item.ListSyunoNyukin[0].NyukinGaku = outNyukinGaku,
+                        //    item.ListSyunoNyukin[0].PaymentMethodCd = AccountingInf.PayType,
+                        //    item.ListSyunoNyukin[0].UketukeSbt = uketukeSbt,
+                        //    item.ListSyunoNyukin[0].NyukinCmt = AccountingInf.Comment,
+                        //    item.ListSyunoNyukin[0].NyukinjiTensu = item.SeikyuTensu,
+                        //    item.ListSyunoNyukin[0].NyukinjiDetail = item.SeikyuDetail,
+                        //    item.ListSyunoNyukin[0].NyukinjiSeikyu = item.SeikyuGaku,
+                        //    item.ListSyunoNyukin[0].ModelModified = true,
+                        //});
+
+                    }
+
+                    item.NyukinKbn = outNyukinKbn;
+                }
+
+                _listSyunoSeikyuSave.AddRange(ListSyunoSeikyu);
+
+                if (AccountingInf.AccDue != 0 && nyukinGaku != 0)
+                {
+                    AdjustWariExecute(nyukinGaku, isIgnoreDateNotVerify);
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
