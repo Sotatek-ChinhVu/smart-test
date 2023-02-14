@@ -45,6 +45,7 @@ using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionLock;
 using Domain.Models.ReceptionSameVisit;
+using Domain.Models.RsvInf;
 using Domain.Models.Santei;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
@@ -216,6 +217,7 @@ using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SearchHistory;
+using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -445,6 +447,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
             services.AddTransient<IFamilyRepository, FamilyRepository>();
+            services.AddTransient<IRsvInfRepository, RsvInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -553,6 +556,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
+            busBuilder.RegisterUseCase<SummaryInfInputData, SummaryInfInteractor>();
 
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();

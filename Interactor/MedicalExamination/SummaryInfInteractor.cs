@@ -1,29 +1,27 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.Family;
+﻿using Domain.Models.Family;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
+using Domain.Models.RsvInf;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
-using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.UserConf;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using System.Text;
-using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.SummaryInf;
 using SpecialNotePatienInfDomain = Domain.Models.SpecialNote.PatientInfo;
 
 namespace Interactor.MedicalExamination
 {
-    public class SummaryInfInteractor
+    public class SummaryInfInteractor : ISummaryInfInputPort
     {
-        private const string Space = " ";
+        private const string space = " ";
         private readonly IPatientInforRepository _patientInfRepository;
         private readonly SpecialNotePatienInfDomain.IPatientInfoRepository _specialNotePatientInfRepository;
         private readonly IImportantNoteRepository _importantNoteRepository;
@@ -33,9 +31,14 @@ namespace Interactor.MedicalExamination
         private readonly IFamilyRepository _familyRepository;
         private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
         private readonly IUserConfRepository _userConfRepository;
+        private readonly IRsvInfRepository _rsvInfRepository;
         private Dictionary<string, string> _relationship = new();
+        private List<SummaryInfItem> _header1Infos = new();
+        private List<SummaryInfItem> _header2Infos = new();
+        private List<SummaryInfItem> _notifications = new();
+        private List<PopUpNotificationItem> _notificationPopUps = new();
 
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository)
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
@@ -46,6 +49,7 @@ namespace Interactor.MedicalExamination
             _raiinCmtInfRepository = raiinCmtInfRepository;
             _userConfRepository = userConfRepository;
             _familyRepository = familyRepository;
+            _rsvInfRepository = rsvInfRepository;
         }
 
         public SummaryInfOutputData Handle(SummaryInfInputData inputData)
@@ -54,80 +58,261 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidHpId);
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidPtId);
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidPtId);
                 }
                 if (inputData.SinDate < 0)
                 {
-                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidSinDate);
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidSinDate);
                 }
                 if (inputData.RaiinNo < 0)
                 {
-                    return new SummaryInfOutputData(new(), SummaryInfStatus.InvalidRaiinNo);
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidRaiinNo);
+                }
+                if (inputData.UserId < 0)
+                {
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidUserId);
+                }
+                if (inputData.InfoType < 0)
+                {
+                    return new SummaryInfOutputData(new(), new(), new(), new(), SummaryInfStatus.InvalidInfoType);
                 }
 
-                var data = _medicalExaminationRepository.GetCheckedAfter327Screen(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.CheckedOrderModels, inputData.IsTokysyoOrder, inputData.IsTokysyosenOrder);
+                FormatData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.UserId, inputData.RaiinNo, inputData.InfoType);
 
-                return new CheckedAfter327ScreenOutputData(CheckedAfter327ScreenStatus.Successed, data.Item1, data.Item2);
+                return new SummaryInfOutputData(_header1Infos, _header2Infos, _notifications, _notificationPopUps, SummaryInfStatus.Successed);
             }
             finally
             {
-                _medicalExaminationRepository.ReleaseResource();
+                _patientInfRepository.ReleaseResource();
+                _specialNotePatientInfRepository.ReleaseResource();
+                _importantNoteRepository.ReleaseResource();
+                _santeiInfRepository.ReleaseResource();
+                _ptCmtInfRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _familyRepository.ReleaseResource();
+                _raiinCmtInfRepository.ReleaseResource();
+                _userConfRepository.ReleaseResource();
+                _rsvInfRepository.ReleaseResource();
             }
         }
-        private SummaryInfItem GetNotificationInfoToList(UserConfModel userConfNoti)
+
+        private void SetForeground(UserConfModel userConfigurationModel, List<SummaryInfItem> listHeader1InfoModels, List<SummaryInfItem> listHeader2InfoModels)
         {
-            SummaryInfItem ptInfNotificationModel = new SummaryInfItem();
+            var ptHeaderInfoModel = listHeader1InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault() != null ?
+                                                  listHeader1InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault() :
+                                                  listHeader2InfoModels.Where(u => u.GrpItemCd == userConfigurationModel.GrpItemCd).FirstOrDefault();
+            if (ptHeaderInfoModel != null)
+            {
+                ptHeaderInfoModel = ptHeaderInfoModel.ChangePropertyColor(userConfigurationModel.Param);
+            }
+        }
+
+        /// <summary>
+        /// infoType : 
+        ///     0 : PtHeaderInfo
+        ///     1 : SumaryInfo
+        ///     2 : NotificationInfo
+        /// </summary>
+        /// <param name="infoType"></param>
+        private void FormatData(int hpId, long ptId, int sinDate, int userId, long raiinNo, InfoType infoType)
+        {
+            var newTempListNotification = new List<SummaryInfItem>();
+            string header1Property = string.Empty;
+            string header2Property = string.Empty;
+            var listUserconfig = new List<UserConfModel>();
+
+            if (infoType == InfoType.PtHeaderInfo)
+            {
+                header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
+                header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
+                listUserconfig = _userConfRepository.GetList(hpId, userId, 912).ToList();
+                _notifications = GetNotification(hpId, ptId, sinDate, userId);
+                _notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
+            }
+
+            foreach (char propertyCd in header1Property)
+            {
+                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), 1, raiinNo, infoType);
+                if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
+                {
+                    if (infoType == InfoType.PtHeaderInfo || infoType == InfoType.SumaryInfo)
+                    {
+                        _header1Infos.Add(ptHeaderInfoModel);
+                    }
+                    else
+                    {
+                        _header2Infos.Add(ptHeaderInfoModel);
+                    }
+                }
+            }
+
+            foreach (char propertyCd in header2Property)
+            {
+                var ptHeaderInfoModel = GetSummaryInfo(hpId, ptId, sinDate, propertyCd.AsString(), 2, raiinNo, infoType);
+                if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
+                {
+                    _header2Infos.Add(ptHeaderInfoModel);
+                }
+            }
+
+            foreach (UserConfModel userConfigurationModel in listUserconfig)
+            {
+                SetForeground(userConfigurationModel, _header1Infos, _header2Infos);
+            }
+
+            var listNotifiProperty = _userConfRepository.GetListUserConf(hpId, userId, 915).Where(x => x.Val != 0).ToList();
+            foreach (var item in _notifications)
+            {
+
+                var userConfNoti = listNotifiProperty.Where(u => u.GrpItemCd == item.GrpItemCd).FirstOrDefault();
+                if (userConfNoti != null && userConfNoti.Val == 1)
+                {
+                    var newItem = item.ChangeHeader(item.HeaderName.Replace("】", "あり】"), string.Empty);
+                    newTempListNotification.Add(newItem);
+                }
+                else
+                {
+                    newTempListNotification.Add(item);
+                }
+            }
+            _notifications = newTempListNotification;
+        }
+
+        private List<PopUpNotificationItem> GetPopUpNotification(int hpId, int userId, List<SummaryInfItem> listNotification)
+        {
+            var listNotificationPopup = new List<PopUpNotificationItem>();
+            var listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
+            foreach (var item in listNotification)
+            {
+                var headerInfo = item.HeaderInfo;
+                headerInfo = headerInfo?.Trim();
+                if (headerInfo?.Contains(") /") == true)
+                {
+                    headerInfo = headerInfo.Replace(") /", ") " + Environment.NewLine);
+                }
+                else if (headerInfo?.Contains(" ・ ") == true)
+                {
+                    headerInfo = headerInfo.Replace(" ・ ", Environment.NewLine);
+                }
+                else
+                {
+                    headerInfo = headerInfo?.Replace("    ", Environment.NewLine);
+                }
+                if (headerInfo?.Contains("kg ") == true)
+                {
+                    headerInfo = headerInfo.Replace("kg ", "kg    ");
+                }
+                if (headerInfo?.Contains("BMI:" + space) == true)
+                {
+                    headerInfo = headerInfo.Replace(" /", Environment.NewLine);
+                }
+
+                var popUpNotificationModel = new PopUpNotificationItem(headerInfo ?? string.Empty, item?.HeaderName ?? string.Empty);
+                listNotificationPopup.Add(popUpNotificationModel);
+            }
+            return listNotificationPopup;
+        }
+
+
+        private List<SummaryInfItem> GetNotification(int hpId, long ptId, int sinDate, int userId)
+        {
+            List<SummaryInfItem> listNotification = GetNotificationContent(hpId, ptId, userId, sinDate);
+            SummaryInfItem? changedLast = null;
+            if (listNotification.Count >= 1)
+            {
+                changedLast = listNotification.Last().ChangeSpaceHeaderInf(0);
+            }
+            if (changedLast != null)
+            {
+                listNotification.Remove(listNotification.Last());
+                listNotification.Add(changedLast);
+            }
+            return listNotification;
+        }
+
+
+        private List<SummaryInfItem> GetNotificationContent(int hpId, long ptId, int userId, int sinDate)
+        {
+            List<SummaryInfItem> listNotification = new();
+            var listNotifiProperty = _userConfRepository.GetList(hpId, userId, 915).Where(x => x.Val != 0).ToList();
+            var listNotifiSort = _userConfRepository.GetList(hpId, userId, 916).OrderBy(x => x.Val).ToList();
+            foreach (var sort in listNotifiSort)
+            {
+                var userConfiguration = listNotifiProperty.FirstOrDefault(item => item.GrpItemCd == sort.GrpItemCd);
+                if (userConfiguration != null)
+                {
+                    var summaryInfItem = GetNotificationInfoToList(hpId, ptId, sinDate, userId, userConfiguration);
+                    if (summaryInfItem != null)
+                    {
+                        listNotification.Add(summaryInfItem);
+                    }
+                }
+            }
+
+            return listNotification;
+        }
+
+        private SummaryInfItem GetNotificationInfoToList(int hpId, long ptId, int sinDate, int userId, UserConfModel userConfNoti)
+        {
+            SummaryInfItem summaryInfItem = new SummaryInfItem();
+            int grpItemCd = 0;
+            string propertyColor = "";
+            string headerName = summaryInfItem.HeaderName;
+            string headerInfo = summaryInfItem.HeaderInfo;
+            double spaceHeaderName = 0;
+            double spaceHeaderInfo = 0;
+
             switch (userConfNoti.GrpItemCd.AsString())
             {
                 case "1":
                     //身体情報
-                    GetPhysicalInfo(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 1;
+                    GetPhysicalInfo(hpId, ptId, sinDate, summaryInfItem);
+                    grpItemCd = 1;
                     break;
                 case "2":
                     //アレルギー 
-                    GetDrugInfo(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 2;
+                    GetDrugInfo(ptId, sinDate, summaryInfItem);
+                    grpItemCd = 2;
                     break;
                 case "3":
                     // 病歴
-                    GetPathologicalStatus(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 3;
+                    GetPathologicalStatus(ptId, summaryInfItem);
+                    grpItemCd = 3;
                     break;
                 case "4":
                     // 服薬情報
-                    GetInteraction(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 4;
+                    GetInteraction(ptId, sinDate, summaryInfItem);
+                    grpItemCd = 4;
                     break;
                 case "5":
                     //生活歴
-                    GetLifeHistory(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 5;
+                    GetLifeHistory(hpId, ptId, summaryInfItem);
+                    grpItemCd = 5;
                     break;
                 case "6":
                     //コメント
-                    GetComment(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 6;
+                    GetComment(hpId, ptId, summaryInfItem);
+                    grpItemCd = 6;
                     break;
                 case "7":
                     //経過日数
-                    GetCalculationInfo(ptInfNotificationModel);
-                    ptInfNotificationModel.HeaderName = "◆経過日数";
-                    ptInfNotificationModel.GrpItemCd = 7;
+                    GetCalculationInfo(hpId, ptId, sinDate, summaryInfItem);
+                    headerName = "◆経過日数";
+                    grpItemCd = 7;
                     break;
                 case "8":
                     //出産予定
-                    GetReproductionInfo(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 8;
+                    GetReproductionInfo(ptId, sinDate, summaryInfItem);
+                    grpItemCd = 8;
                     break;
                 case "9":
                     //予約情報
-                    GetReservationInf(ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 9;
+                    GetReservationInf(hpId, ptId, sinDate, summaryInfItem);
+                    grpItemCd = 9;
                     break;
                     //case "0":
                     //    //検査結果速報
@@ -135,45 +320,46 @@ namespace Interactor.MedicalExamination
                     //    ptInfNotificationModel.GrpItemCd = 0;
                     //    break;
             }
-            if (!string.IsNullOrEmpty(ptInfNotificationModel.HeaderInfo))
+            if (!string.IsNullOrEmpty(headerInfo))
             {
 
-                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Replace("◆", "【");
-                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Replace("■", "【");
-                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Insert(ptInfNotificationModel.HeaderName.Length, "】");
-                if (ptInfNotificationModel.HeaderName.Contains("【コメント】"))
+                headerName = headerName.Replace("◆", "【");
+                headerName = headerName.Replace("■", "【");
+                headerName = headerName.Insert(headerName.Length, "】");
+                if (headerName.Contains("【コメント】"))
                 {
-                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo.Replace(Environment.NewLine, " ・ ");
-                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.Trim();
-                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.TrimEnd('・');
+                    headerInfo = headerInfo.Replace(Environment.NewLine, " ・ ");
+                    headerInfo = headerInfo.Trim();
+                    headerInfo = headerInfo.TrimEnd('・');
                 }
                 else
                 {
-                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo.Replace(Environment.NewLine, "    ");
+                    headerInfo = headerInfo.Replace(Environment.NewLine, "    ");
                 }
-                ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.Trim();
+                headerInfo = headerInfo.Trim();
 
-                if (!string.IsNullOrEmpty(ptInfNotificationModel.HeaderInfo))
+                if (!string.IsNullOrEmpty(headerInfo))
                 {
-                    var colorTextNotifi = UserConfCommon.Instance.GetListUserConf(917, true).Where(x => x.GrpItemCd == userConfNoti.GrpItemCd).FirstOrDefault();
+                    var colorTextNotifi = _userConfRepository.GetListUserConf(hpId, userId, 917).Where(x => x.GrpItemCd == userConfNoti.GrpItemCd).FirstOrDefault();
                     if (colorTextNotifi != null)
                     {
-                        ptInfNotificationModel.PropertyColor = colorTextNotifi.Param;
+                        propertyColor = colorTextNotifi.Param;
                     }
 
-                    ptInfNotificationModel.SpaceHeaderName = 5.0;
-                    ptInfNotificationModel.SpaceHeaderInfo = 30.0;
-                    return ptInfNotificationModel;
+                    spaceHeaderName = 5.0;
+                    spaceHeaderInfo = 30.0;
+                    var result = new SummaryInfItem(headerInfo, headerName, propertyColor, spaceHeaderName, spaceHeaderInfo, summaryInfItem.HeaderNameSize, grpItemCd, summaryInfItem.Text);
+                    return summaryInfItem;
                 }
             }
-            return null;
+            return new();
         }
 
-        private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate,string propertyCd, int headerType, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
+        private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate, string propertyCd, int headerType, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
         {
             SummaryInfItem summaryInfItem = new SummaryInfItem();
-          
-            GetData(hpId, ptId, sinDate,propertyCd, ref summaryInfItem);
+
+            GetData(hpId, ptId, sinDate, propertyCd, ref summaryInfItem);
 
             if (infoType == InfoType.PtHeaderInfo)
             {
@@ -184,7 +370,7 @@ namespace Interactor.MedicalExamination
                         //電話番号
                         break;
                     case "D":
-                        GetReceptionComment(hpId, ptId,sinDate, raiinNo, summaryInfItem);
+                        GetReceptionComment(hpId, ptId, sinDate, raiinNo, summaryInfItem);
                         //受付コメント
                         break;
                     case "E":
@@ -194,7 +380,7 @@ namespace Interactor.MedicalExamination
                 }
             }
 
-            summaryInfItem.ChangePropertyColor("000000");
+            summaryInfItem = summaryInfItem.ChangePropertyColor("000000");
 
             return summaryInfItem;
         }
@@ -229,7 +415,7 @@ namespace Interactor.MedicalExamination
                     break;
                 case "7":
                     //予約情報
-                    GetReservationInf(summaryInfItem);
+                    GetReservationInf(hpId, ptId, sinDate, summaryInfItem);
                     break;
                 case "8":
                     //コメント
@@ -315,7 +501,7 @@ namespace Interactor.MedicalExamination
                 }
                 if (!string.IsNullOrEmpty(kensaDetailModel.ResultVal))
                 {
-                    headerInfo += (string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + Space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + Space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + Space + "/";
+                    headerInfo += (string.IsNullOrEmpty(kensaName) ? string.Empty : kensaName + ":" + space) + kensaDetailModel.ResultVal + kensaDetailModel.Unit + space + (string.IsNullOrEmpty(sSate) ? string.Empty : "(" + sSate + ")") + space + "/";
                 }
             }
             headerInfo = headerInfo.TrimEnd('/') ?? string.Empty;
@@ -513,23 +699,23 @@ namespace Interactor.MedicalExamination
                 PtPregnancyModel ptPregnancyModel = listPtPregnancyModels.FirstOrDefault() ?? new();
                 if (ptPregnancyModel.PeriodDate != 0)
                 {
-                    headerInf.Append("月経日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDate)) + ")" + Space + "/");
+                    headerInf.Append("月経日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDate)) + ")" + space + "/");
                 }
                 if (!string.IsNullOrEmpty(ptPregnancyModel.PeriodWeek) && ptPregnancyModel.PeriodWeek != "0W0D")
                 {
-                    headerInf.Append("妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + Space + "/");
+                    headerInf.Append("妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + space + "/");
                 }
                 if (ptPregnancyModel.PeriodDueDate != 0)
                 {
-                    headerInf.Append("予定日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDueDate)) + ")" + Space + "/");
+                    headerInf.Append("予定日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.PeriodDueDate)) + ")" + space + "/");
                 }
                 if (ptPregnancyModel.OvulationDate != 0)
                 {
-                    headerInf.Append("排卵日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.OvulationDate)) + ")" + Space + "/");
+                    headerInf.Append("排卵日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.OvulationDate)) + ")" + space + "/");
                 }
                 if (!string.IsNullOrEmpty(ptPregnancyModel.OvulationWeek) && ptPregnancyModel.OvulationWeek != "0W0D")
                 {
-                    headerInf.Append("妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + Space + "/");
+                    headerInf.Append("妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + space + "/");
                 }
                 if (ptPregnancyModel.OvulationDueDate != 0)
                 {
@@ -540,45 +726,41 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private void GetReservationInf(SummaryInfItem summaryInfItem)
+        private void GetReservationInf(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
         {
             int today = DateTime.Now.ToString("yyyyMMdd").AsInteger();
             int grpItemCd = 7;
             string headerName = "■予約情報";
-            List<RsvInfModel> listRsvInfModel = _masterFinder.GetRsvInfoByRsvInf(_ptId, today);
-            List<RaiinInfModel> listRaiinInfModel = _masterFinder.GetRsvInfoByRaiinInf(_ptId, today);
-            listRaiinInfModel = listRaiinInfModel.Where(u => !listRsvInfModel.Any(r => r.RaiinNo == u.RaiinNo)).ToList();
-            foreach (RaiinInfModel raiinInf in listRaiinInfModel)
-            {
-                listRsvInfModel.Add(new RsvInfModel(null, null, null, raiinInf));
-            }
+            string headerInf = "";
+            var listRsvInfModel = _rsvInfRepository.GetList(hpId, ptId, sinDate);
 
             if (listRsvInfModel.Count > 0)
             {
                 listRsvInfModel = listRsvInfModel.OrderBy(u => u.SinDate).ToList();
                 foreach (RsvInfModel rsvInfModel in listRsvInfModel)
                 {
-                    if (rsvInfModel.RsvInf != null)
+                    if (rsvInfModel.PtId == 0 && rsvInfModel.HpId == 0 && rsvInfModel.RsvFrameId == 0)
                     {
                         //formart for RsvInf
-                        string startTime = rsvInfModel.StartTime > 0 ? Space + CIUtil.TimeToShowTime(rsvInfModel.StartTime) + Space : Space;
+                        string startTime = rsvInfModel.StartTime > 0 ? space + CIUtil.TimeToShowTime(rsvInfModel.StartTime) + space : space;
                         string rsvFrameName = string.IsNullOrEmpty(rsvInfModel.RsvFrameName) ? string.Empty : "[" + rsvInfModel.RsvFrameName + "]";
-                        summaryInfItem.HeaderInfo += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + Space + rsvFrameName + Environment.NewLine;
+                        headerInf += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + space + rsvFrameName + Environment.NewLine;
                     }
                     else
                     {
                         //formart for raiinInf
-                        string kaName = string.IsNullOrEmpty(rsvInfModel.RaiinInfModel.KaSname) ? Space : Space + "[" + rsvInfModel.RaiinInfModel.KaSname + "]" + Space;
-                        summaryInfItem.HeaderInfo += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + Space
-                                                        + FormatTime(rsvInfModel.RaiinInfModel.YoyakuTime)
+                        string kaName = string.IsNullOrEmpty(rsvInfModel.KaSName) ? space : space + "[" + rsvInfModel.KaSName + "]" + space;
+                        headerInf += CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + space
+                                                        + FormatTime(rsvInfModel.YoyakuTime)
                                                         + kaName
-                                                        + rsvInfModel.RaiinInfModel.TantoName + Space
-                                                        + (!string.IsNullOrEmpty(rsvInfModel.RaiinInfModel.RaiinCmt) ? "(" + rsvInfModel.RaiinInfModel.RaiinCmt + ")" : string.Empty)
+                                                        + rsvInfModel.TantoName + space
+                                                        + (!string.IsNullOrEmpty(rsvInfModel.RaiinCmt) ? "(" + rsvInfModel.RaiinCmt + ")" : string.Empty)
                                                         + Environment.NewLine;
                     }
                 }
             }
-            summaryInfItem.HeaderInfo = summaryInfItem.HeaderInfo?.TrimEnd(Environment.NewLine.ToCharArray());
+            headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
+            summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
         private void GetComment(int hpId, long ptId, SummaryInfItem summaryInfItem)
@@ -603,7 +785,7 @@ namespace Interactor.MedicalExamination
             var ptInfModel = _patientInfRepository.GetPtInf(hpId, ptId);
             if (ptInfModel != null && !string.IsNullOrEmpty(ptInfModel.HomeAddress1 + ptInfModel.HomeAddress2))
             {
-                headerInf = ptInfModel.HomeAddress1 + Space + ptInfModel.HomeAddress2;
+                headerInf = ptInfModel.HomeAddress1 + space + ptInfModel.HomeAddress2;
             }
             summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
@@ -679,7 +861,7 @@ namespace Interactor.MedicalExamination
 
             if (hokenMst == null && !string.IsNullOrEmpty(ptKohi.FutansyaNo))
             {
-                return futanInfo + "," + Space;
+                return futanInfo + "," + space;
             }
             if (hokenMst.FutanKbn == 0)
             {
@@ -738,7 +920,7 @@ namespace Interactor.MedicalExamination
             if (!string.IsNullOrEmpty(strFutanInfo))
             {
                 strFutanInfo = strFutanInfo.TrimEnd('・');
-                strFutanInfo = strFutanInfo + "," + Space;
+                strFutanInfo = strFutanInfo + "," + space;
             }
 
             return strFutanInfo;
@@ -846,6 +1028,33 @@ namespace Interactor.MedicalExamination
             summaryInfItem = new SummaryInfItem(textRaiinCmtInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
         }
 
+        //convert string to HH:mm
+        private string FormatTime(string time)
+        {
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(time))
+            {
+                if (time.Length > 4)
+                {
+                    result = time.Substring(0, 4);
+                }
+                else if (time.Length < 4)
+                {
+                    result = time.PadLeft(4, '0');
+                }
+                else
+                {
+                    result = time;
+                }
+                result = result.Insert(2, ":");
+            }
+            if (result == "00:00")
+            {
+                result = string.Empty;
+            }
+            return result;
+        }
+
         public void SetDiseaseName(FamilyModel ptFamilyModel)
         {
             string diseaseName = string.Empty;
@@ -878,14 +1087,6 @@ namespace Interactor.MedicalExamination
                     ptFamilyModel.ListPtFamilyRekis ?? new(),
                     diseaseName
                 );
-        }
-
-        public enum InfoType
-        {
-            PtHeaderInfo = 0,
-            SumaryInfo,
-            NotificationInfo,
-            Popup
         }
     }
 }

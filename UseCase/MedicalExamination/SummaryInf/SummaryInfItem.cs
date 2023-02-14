@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UseCase.MedicalExamination.SummaryInf
+﻿namespace UseCase.MedicalExamination.SummaryInf
 {
     public class SummaryInfItem
     {
@@ -31,6 +25,19 @@ namespace UseCase.MedicalExamination.SummaryInf
         public SummaryInfItem ChangePropertyColor(string propertyColor)
         {
             PropertyColor = propertyColor;
+            return this;
+        }
+
+        public SummaryInfItem ChangeSpaceHeaderInf(double spaceHeaderInfo)
+        {
+            SpaceHeaderInfo = spaceHeaderInfo;
+            return this;
+        }
+
+        public SummaryInfItem ChangeHeader(string headerName, string headerInf)
+        {
+            HeaderInfo = headerInf;
+            HeaderName = headerName;
             return this;
         }
 

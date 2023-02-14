@@ -78,4 +78,12 @@
         BR,
         OT
     }
+
+    public enum InfoType
+    {
+        PtHeaderInfo = 0,
+        SumaryInfo,
+        NotificationInfo,
+        Popup
+    }
 }

@@ -2931,6 +2931,32 @@ namespace Helper.Common
         {
             return DateTime.UtcNow.AddHours(9);
         }
+
+        //西暦を表示用西暦(yyyy/mm/dd (ddd))に変換
+        //Convert format yyyymmdd to yyyy/mm/dd(//Convert format yyyymmdd to yyyy/mm/ddd)
+        public static string SDateToShowSDate2(int Ymd)
+        {
+            if (Ymd <= 0)
+            {
+                return string.Empty;
+            }
+
+            // Must use ja-JP culture info here
+            // We need format date time as 2019/12/08(月)
+            // instead of 2019/12/08(Mon)
+            // Omit this culture info will cause wrong date/time format
+            CultureInfo jaJP = new CultureInfo("ja-JP");
+
+            // Zero padding
+            string WrkStr = Ymd.ToString("D8");
+
+            if (DateTime.TryParseExact(WrkStr, "yyyyMMdd", jaJP, DateTimeStyles.None, out DateTime WrkDate))
+            {
+                return WrkDate.ToString("yyyy/MM/dd(ddd)", jaJP);
+            }
+
+            return string.Empty;
+        }
     }
     public struct WarekiYmd
     {
