@@ -1,4 +1,5 @@
-﻿using Domain.Models.Family;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.Family;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -7,6 +8,8 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.UserConf;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
@@ -29,9 +32,10 @@ namespace Interactor.MedicalExamination
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IFamilyRepository _familyRepository;
         private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
+        private readonly IUserConfRepository _userConfRepository;
         private Dictionary<string, string> _relationship = new();
 
-        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository)
+        public SummaryInfInteractor(IPatientInforRepository patientInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfRepository, IImportantNoteRepository importantNoteRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository)
         {
             _patientInfRepository = patientInfRepository;
             _specialNotePatientInfRepository = specialNotePatientInfRepository;
@@ -40,6 +44,8 @@ namespace Interactor.MedicalExamination
             _ptCmtInfRepository = ptCmtInfRepository;
             _insuranceRepository = insuranceRepository;
             _raiinCmtInfRepository = raiinCmtInfRepository;
+            _userConfRepository = userConfRepository;
+            _familyRepository = familyRepository;
         }
 
         public SummaryInfOutputData Handle(SummaryInfInputData inputData)
@@ -72,7 +78,177 @@ namespace Interactor.MedicalExamination
                 _medicalExaminationRepository.ReleaseResource();
             }
         }
+        private SummaryInfItem GetNotificationInfoToList(UserConfModel userConfNoti)
+        {
+            SummaryInfItem ptInfNotificationModel = new SummaryInfItem();
+            switch (userConfNoti.GrpItemCd.AsString())
+            {
+                case "1":
+                    //身体情報
+                    GetPhysicalInfo(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 1;
+                    break;
+                case "2":
+                    //アレルギー 
+                    GetDrugInfo(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 2;
+                    break;
+                case "3":
+                    // 病歴
+                    GetPathologicalStatus(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 3;
+                    break;
+                case "4":
+                    // 服薬情報
+                    GetInteraction(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 4;
+                    break;
+                case "5":
+                    //生活歴
+                    GetLifeHistory(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 5;
+                    break;
+                case "6":
+                    //コメント
+                    GetComment(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 6;
+                    break;
+                case "7":
+                    //経過日数
+                    GetCalculationInfo(ptInfNotificationModel);
+                    ptInfNotificationModel.HeaderName = "◆経過日数";
+                    ptInfNotificationModel.GrpItemCd = 7;
+                    break;
+                case "8":
+                    //出産予定
+                    GetReproductionInfo(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 8;
+                    break;
+                case "9":
+                    //予約情報
+                    GetReservationInf(ptInfNotificationModel);
+                    ptInfNotificationModel.GrpItemCd = 9;
+                    break;
+                    //case "0":
+                    //    //検査結果速報
+                    //    ptInfNotificationModel.HeaderName = "■検査結果速報";
+                    //    ptInfNotificationModel.GrpItemCd = 0;
+                    //    break;
+            }
+            if (!string.IsNullOrEmpty(ptInfNotificationModel.HeaderInfo))
+            {
 
+                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Replace("◆", "【");
+                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Replace("■", "【");
+                ptInfNotificationModel.HeaderName = ptInfNotificationModel.HeaderName.Insert(ptInfNotificationModel.HeaderName.Length, "】");
+                if (ptInfNotificationModel.HeaderName.Contains("【コメント】"))
+                {
+                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo.Replace(Environment.NewLine, " ・ ");
+                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.Trim();
+                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.TrimEnd('・');
+                }
+                else
+                {
+                    ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo.Replace(Environment.NewLine, "    ");
+                }
+                ptInfNotificationModel.HeaderInfo = ptInfNotificationModel.HeaderInfo?.Trim();
+
+                if (!string.IsNullOrEmpty(ptInfNotificationModel.HeaderInfo))
+                {
+                    var colorTextNotifi = UserConfCommon.Instance.GetListUserConf(917, true).Where(x => x.GrpItemCd == userConfNoti.GrpItemCd).FirstOrDefault();
+                    if (colorTextNotifi != null)
+                    {
+                        ptInfNotificationModel.PropertyColor = colorTextNotifi.Param;
+                    }
+
+                    ptInfNotificationModel.SpaceHeaderName = 5.0;
+                    ptInfNotificationModel.SpaceHeaderInfo = 30.0;
+                    return ptInfNotificationModel;
+                }
+            }
+            return null;
+        }
+
+        private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate,string propertyCd, int headerType, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
+        {
+            SummaryInfItem summaryInfItem = new SummaryInfItem();
+          
+            GetData(hpId, ptId, sinDate,propertyCd, ref summaryInfItem);
+
+            if (infoType == InfoType.PtHeaderInfo)
+            {
+                switch (propertyCd)
+                {
+                    case "C":
+                        GetPhoneNumber(hpId, ptId, summaryInfItem);
+                        //電話番号
+                        break;
+                    case "D":
+                        GetReceptionComment(hpId, ptId,sinDate, raiinNo, summaryInfItem);
+                        //受付コメント
+                        break;
+                    case "E":
+                        GetFamilyList(hpId, ptId, sinDate, summaryInfItem);
+                        //家族歴
+                        break;
+                }
+            }
+
+            summaryInfItem.ChangePropertyColor("000000");
+
+            return summaryInfItem;
+        }
+
+        private void GetData(int hpId, long ptId, int sinDate, string propertyCd, ref SummaryInfItem summaryInfItem)
+        {
+            switch (propertyCd)
+            {
+                case "1":
+                    //身体情報
+                    GetPhysicalInfo(hpId, ptId, sinDate, summaryInfItem);
+                    break;
+                case "2":
+                    //アレルギー 
+                    GetDrugInfo(ptId, sinDate, summaryInfItem);
+                    break;
+                case "3":
+                    // 病歴
+                    GetPathologicalStatus(ptId, summaryInfItem);
+                    break;
+                case "4":
+                    // 服薬情報
+                    GetInteraction(ptId, sinDate, summaryInfItem);
+                    break;
+                case "5":
+                    //算定情報
+                    GetCalculationInfo(hpId, ptId, sinDate, summaryInfItem);
+                    break;
+                case "6":
+                    //出産予定
+                    GetReproductionInfo(ptId, sinDate, summaryInfItem);
+                    break;
+                case "7":
+                    //予約情報
+                    GetReservationInf(summaryInfItem);
+                    break;
+                case "8":
+                    //コメント
+                    GetComment(hpId, ptId, summaryInfItem);
+                    break;
+                case "9":
+                    //住所
+                    GetAddress(hpId, ptId, summaryInfItem);
+                    break;
+                case "A":
+                    //保険情報
+                    GetInsuranceInfo(hpId, ptId, sinDate, summaryInfItem);
+                    break;
+                case "B":
+                    //生活歴
+                    GetLifeHistory(hpId, ptId, summaryInfItem);
+                    break;
+            }
+        }
 
         private void GetPhysicalInfo(int hpId, long ptId, int sinDate, SummaryInfItem summaryInfItem)
         {
@@ -702,6 +878,14 @@ namespace Interactor.MedicalExamination
                     ptFamilyModel.ListPtFamilyRekis ?? new(),
                     diseaseName
                 );
+        }
+
+        public enum InfoType
+        {
+            PtHeaderInfo = 0,
+            SumaryInfo,
+            NotificationInfo,
+            Popup
         }
     }
 }

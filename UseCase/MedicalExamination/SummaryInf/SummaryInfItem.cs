@@ -20,6 +20,20 @@ namespace UseCase.MedicalExamination.SummaryInf
             Text = text;
         }
 
+        public SummaryInfItem()
+        {
+            HeaderInfo = string.Empty;
+            HeaderName = string.Empty;
+            PropertyColor = string.Empty;
+            Text = string.Empty;
+        }
+
+        public SummaryInfItem ChangePropertyColor(string propertyColor)
+        {
+            PropertyColor = propertyColor;
+            return this;
+        }
+
         public string HeaderInfo { get; private set; }
 
         public string HeaderName { get; private set; }
