@@ -96,15 +96,15 @@ public class VisitingController : AuthorizeControllerBase
         {
             case UpdateReceptionStaticCellStatus.RaiinInfUpdated:
                 await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
-                    new CommonMessage { RaiinNo = input.RaiinNo });
+                    new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
                 break;
             case UpdateReceptionStaticCellStatus.RaiinCmtUpdated:
                 await _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
-                    new CommonMessage { RaiinNo = input.RaiinNo });
+                    new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
                 break;
             case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
                 await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
-                    new CommonMessage { PtId = input.PtId });
+                    new CommonMessage { PtId = input.PtId, PtId = req.PtId, SinDate = req.SinDate });
                 break;
         }
 
@@ -121,7 +121,7 @@ public class VisitingController : AuthorizeControllerBase
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
             await _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
-                new CommonMessage { RaiinNo = input.RaiinNo });
+                new CommonMessage { RaiinNo = input.RaiinNo, PtId = req.PtId, SinDate = req.SinDate });
         }
 
         var presenter = new UpdateReceptionDynamicCellPresenter();
