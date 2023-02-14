@@ -14,6 +14,7 @@ public class ReceCmtItem
         CmtKbn = model.CmtKbn;
         CmtSbt = model.CmtSbt;
         Cmt = model.Cmt;
+        CmtData = model.CmtData;
         ItemCd = model.ItemCd;
     }
 
@@ -32,6 +33,8 @@ public class ReceCmtItem
     public int CmtSbt { get; private set; }
 
     public string Cmt { get; private set; }
+
+    public string CmtData { get; private set; }
 
     public string ItemCd { get; private set; }
 }

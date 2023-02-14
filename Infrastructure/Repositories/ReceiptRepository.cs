@@ -1246,6 +1246,42 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
         return result;
     }
+
+    public bool SaveListReceCmt(int hpId, int userId, int sinYm, long ptId, int hokenId, List<ReceCmtModel> listReceCmt)
+    {
+        var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
+        var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                 && item.SinYm == sinYm
+                                                                 && item.PtId == ptId
+                                                                 && item.HokenId == hokenId
+                                                                 && item.IsDeleted == DeleteTypes.None
+                                                                 && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
+                                                         .ToList();
+
+        var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
+                                           .Select(item => ConvertToNewReceCmt(hpId, userId, sinYm, ptId, hokenId, item))
+                                           .ToList();
+        TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
+        foreach (var model in listReceCmtUpdate)
+        {
+            var entity = listReceCmtUpdateDB.FirstOrDefault(item => item.Id == model.Id);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.SeqNo = model.SeqNo;
+            entity.CmtData = model.CmtData;
+            entity.Cmt = model.Cmt;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
     #endregion
 
     #region Private function
@@ -1260,8 +1296,31 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receCmt.CmtKbn,
                 receCmt.CmtSbt,
                 receCmt.Cmt ?? string.Empty,
+                receCmt.CmtData ?? string.Empty,
                 receCmt.ItemCd ?? string.Empty
             );
+    }
+
+    private ReceCmt ConvertToNewReceCmt(int hpId, int userId, int sinYm, long ptId, int hokenId, ReceCmtModel model)
+    {
+        ReceCmt entity = new();
+        entity.HpId = hpId;
+        entity.PtId = ptId;
+        entity.SinYm = sinYm;
+        entity.HokenId = hokenId;
+        entity.CmtKbn = model.CmtKbn;
+        entity.CmtSbt = model.CmtSbt;
+        entity.Id = 0;
+        entity.SeqNo = model.SeqNo;
+        entity.ItemCd = model.ItemCd;
+        entity.Cmt = model.Cmt;
+        entity.CmtData = model.CmtData;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
     }
     #endregion
 
@@ -1269,4 +1328,5 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
         DisposeDataContext();
     }
+
 }
