@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.PatientInfor
+﻿using Helper.Common;
+using Helper.Extension;
+
+namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
@@ -186,21 +189,54 @@
             Comment = string.Empty;
         }
 
-        public int LastVisitDate { get; private set; }
+        public PatientInforModel(int hpId, long ptId, long ptNum, string kanaName, string name, int birthday, int lastVisitDate)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Birthday = birthday;
+            LastVisitDate = lastVisitDate;
+            HomePost = string.Empty;
+            HomeAddress1 = string.Empty;
+            HomeAddress2 = string.Empty;
+            Tel1 = string.Empty;
+            Tel2 = string.Empty;
+            Mail = string.Empty;
+            Setanusi = string.Empty;
+            Zokugara = string.Empty;
+            Job = string.Empty;
+            RenrakuName = string.Empty;
+            RenrakuPost = string.Empty;
+            RenrakuAddress1 = string.Empty;
+            RenrakuAddress2 = string.Empty;
+            RenrakuTel = string.Empty;
+            RenrakuMemo = string.Empty;
+            OfficeName = string.Empty;
+            OfficePost = string.Empty;
+            OfficeAddress1 = string.Empty;
+            OfficeAddress2 = string.Empty;
+            OfficeTel = string.Empty;
+            OfficeMemo = string.Empty;
+            Memo = string.Empty;
+            RainCount = string.Empty;
+            Comment = string.Empty;
+        }
 
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
-
-        public long SeqNo { get; private set; }
-
-        public long ReferenceNo { get; private set; }
 
         public long PtNum { get; private set; }
 
         public string KanaName { get; private set; }
 
         public string Name { get; private set; }
+
+        public long SeqNo { get; private set; }
+
+        public long ReferenceNo { get; private set; }
 
         public int Sex { get; private set; }
 
@@ -269,5 +305,7 @@
         public string RainCount { get; private set; }
 
         public string Comment { get; private set; }
+
+        public int LastVisitDate { get; private set; }
     }
 }

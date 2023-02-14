@@ -132,10 +132,11 @@ using Interactor.User;
 using Interactor.UserConf;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
+using KarteReport;
+using KarteReport.Interface;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Reporting.Service;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
@@ -186,6 +187,7 @@ using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.Insurance.ValidPatternOther;
+using UseCase.InsuranceMst.DeleteHokenMaster;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.GetMasterDetails;
@@ -249,6 +251,7 @@ using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
+using UseCase.PatientInfor.GetListPatient;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -302,11 +305,13 @@ using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
+using UseCase.SwapHoken.Validate;
 using UseCase.SystemConf;
 using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
+using UseCase.UketukeSbtMst.Upsert;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetByLoginId;
@@ -345,7 +350,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupInterfaces(services);
             SetupUseCase(services);
             SetupLogger(services);
-            SetupReporting(services);
         }
 
         private void SetupLogger(IServiceCollection services)
@@ -369,6 +373,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IReportServices, ReportServices>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -523,6 +528,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
             busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
             busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
+            busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -570,6 +576,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultSelectPatternInputData, GetDefaultSelectPatternInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceMasterDetailInputData, GetInsuranceMasterDetailInteractor>();
             busBuilder.RegisterUseCase<GetSelectMaintenanceInputData, GetSelectMaintenanceInteractor>();
+            busBuilder.RegisterUseCase<DeleteHokenMasterInputData, DeleteHokenMasterInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
@@ -584,6 +591,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
             busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
             busBuilder.RegisterUseCase<GetNextUketukeSbtMstInputData, GetNextUketukeSbtMstInteractor>();
+            busBuilder.RegisterUseCase<UpsertUketukeSbtMstInputData, UpsertUketukeSbtMstInteractor>();
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
@@ -712,6 +720,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
+            busBuilder.RegisterUseCase<ValidateSwapHokenInputData, ValidateSwapHokenInteractor>();
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
@@ -764,11 +773,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
-        }
-
-        private void SetupReporting(IServiceCollection services)
-        {
-            services.AddTransient<IExportKarte1, ExportKarte1>();
         }
     }
 }

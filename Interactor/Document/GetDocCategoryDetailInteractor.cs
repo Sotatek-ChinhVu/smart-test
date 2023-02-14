@@ -82,6 +82,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             domainUrl.Append(_options.BaseAccessUrl + "/");
             var listFileItem = listOutputData
                                         .Select(file => new FileDocumentModel(
+                                                categoryId,
                                                 file.Replace(path, string.Empty).Replace(categoryId + "/", string.Empty),
                                                 domainUrl + file
                                             )).ToList();

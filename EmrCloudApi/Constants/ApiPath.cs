@@ -75,6 +75,7 @@
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
+        public const string GetListPatient = "GetListPatient";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -122,6 +123,7 @@
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
+        public const string ValidateSwapHoken = "ValidateSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";

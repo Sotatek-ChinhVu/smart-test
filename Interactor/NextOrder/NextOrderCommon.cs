@@ -91,7 +91,8 @@ namespace Interactor.NextOrder
                     nextOrderItem.SortNo,
                     nextOrderItem.RsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
                     ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.RsvkrtKarteInf),
-                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
+                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList(),
+                    new FileItemModel(nextOrderItem.FileItem.IsUpdateFile, nextOrderItem.FileItem.ListFileItems)
                 );
         }
 

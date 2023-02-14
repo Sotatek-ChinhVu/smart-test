@@ -1,51 +1,152 @@
-﻿using System.Text;
+using KarteReport.Interface;
+using System.Reflection;
+using System.Text;
+
 
 namespace KarteReport.Utility
 {
-    public static class TemplateGenerator
+    public class TemplateGenerator
     {
-        public static string GetHTMLString()
+        private readonly IReportServices _reportService;
+
+        public TemplateGenerator(IReportServices reportService)
+        {
+            _reportService = reportService;
+        }
+
+        private string GetTemplate(string fileName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            if (assembly == null)
+            {
+                return string.Empty;
+            }
+            var resourceStream = assembly.GetManifestResourceStream(@"KarteReport.Templates." + fileName);
+            if (resourceStream == null)
+            {
+                return string.Empty;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                while (!reader.EndOfStream)
+                {
+                    string? splitMe = reader.ReadLine();
+                    if (splitMe == null)
+                    {
+                        continue;
+                    }
+                    stringBuilder.Append(splitMe);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public string GetHTMLString(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
         {
             var sb = new StringBuilder();
-            sb.Append(@"
-                        <html>
-                            <head>
-                            </head>
-                            <body>
-                                <div class='header'><h1>診 療 録</h1></div>
-                                    <p><span dir=""ltr"" role=""presentation"">患 者 番 号 883</span></p>
-                                   <table style=""border-collapse: collapse; width: 49.2899%; height: 26px;"" border=""1"">
-                                    <tbody>
-                                    <tr style=""height: 26px;"">
-                                    <td style=""width: 37.1287%; height: 26px;""><span dir=""ltr"" role=""presentation"">公費負担者番号</span></td>
-                                    <td style=""width: 2.88184%; height: 26px;"">2</td>
-                                    <td style=""width: 11.2106%; height: 26px;"">8</td>
-                                    <td style=""width: 10.0214%; height: 26px;"">2</td>
-                                    <td style=""width: 8.9466%; height: 26px;"">7</td>
-                                    <td style=""width: 11.1111%; height: 26px;"">1</td>
-                                    <td style=""width: 11.1111%; height: 26px;"">5</td>
-                                    <td style=""width: 11.1111%; height: 26px;"">0</td>
-                                    <td style=""width: 33.0823%; height: 26px;"">0</td>
-                                    </tr>
-                                    </tbody>
-                                    </table>
-                                    <table style=""border-collapse: collapse; width: 49.858%; height: 43px;"" border=""1"">
-                                    <tbody>
-                                    <tr style=""height: 43px;"">
-                                    <td style=""width: 34.1658%; height: 43px;""><span dir=""ltr"" role=""presentation"">公 費 負 担 医 療</span><br role=""presentation"" /><span dir=""ltr"" role=""presentation"">の 受 給 者 番 号</span></td>
-                                    <td style=""width: 5.4755%; height: 43px;"">9</td>
-                                    <td style=""width: 7.3647%; height: 43px;"">9</td>
-                                    <td style=""width: 11.1111%; height: 43px;"">9</td>
-                                    <td style=""width: 11.1111%; height: 43px;"">9</td>
-                                    <td style=""width: 11.1111%; height: 43px;"">9</td>
-                                    <td style=""width: 11.1111%; height: 43px;"">9</td>
-                                    <td style=""width: 11.1111%; height: 43px;"">9</td>
-                                    <td style=""width: 12.2638%; height: 43px;"">6</td>
-                                    </tr>
-                                    </tbody>
-                                 </table>
-                            </body>
-                        </html>");
+            string template = GetTemplate("Karte1.Karte1Template.txt");
+            sb.Append(template);
+
+            var rootPath = Environment.CurrentDirectory;
+            string fileName = Path.Combine(rootPath, "print1.jpg");
+            sb.Replace("{{fileName}}", fileName);
+
+            var karte1Data = _reportService.GetKarte1ReportingData(hpId, ptId, sinDate, hokenPid, tenkiByomei, syuByomei);
+            var bmCount = karte1Data.ListByomeis.Count;
+
+            for (int i = 0; i < bmCount; i++)
+            {
+                sb.Replace(string.Concat("{isByomei_", (i + 1).ToString(), "}"), karte1Data.ListByomeis[i].Byomei);
+                sb.Replace(string.Concat("{isByomeiStartDateW", (i + 1).ToString(), "}"), karte1Data.ListByomeis[i].ByomeiStartDateWFormat);
+                sb.Replace(string.Concat("{isByomeiTenkiDate", (i + 1).ToString(), "}"), karte1Data.ListByomeis[i].ByomeiTenkiDateWFormat);
+                if (karte1Data.ListByomeis[i].TenkiTiyuMaru)
+                {
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), " O");
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), string.Empty);
+                }
+                else if (karte1Data.ListByomeis[i].TenkiSiboMaru)
+                {
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), " O");
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), string.Empty);
+                }
+                else if (karte1Data.ListByomeis[i].TenkiChusiMaru)
+                {
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), " O");
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), string.Empty);
+                }
+                else if (karte1Data.ListByomeis[i].TenkiSonota)
+                {
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), " O");
+                }
+                else
+                {
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), string.Empty);
+                }
+
+            }
+
+            if (bmCount < 10)
+            {
+                for (int i = bmCount; i < 10; i++)
+                {
+                    sb.Replace(string.Concat("{isByomei_", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{isByomeiStartDateW", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{isByomeiTenkiDate", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiTiyuMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSiboMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiChusMaru", (i + 1).ToString(), "}"), string.Empty);
+                    sb.Replace(string.Concat("{IsTenkiSonoTa", (i + 1).ToString(), "}"), string.Empty);
+                }
+            }
+
+
+
+            sb.Replace("{dfJob}", karte1Data.Job);
+            sb.Replace("{dfZokugara}", karte1Data.Zokugara);
+            sb.Replace("{dfHokensyaName}", karte1Data.HokensyaName);
+            sb.Replace("{dfHokensyaAddress}", karte1Data.HokensyaAddress);
+            sb.Replace("{dfHokensyaTel}", karte1Data.HokensyaTel);
+            sb.Replace("{dfOffice}", karte1Data.OfficeName);
+            sb.Replace("{dfOfficeTel}", karte1Data.OfficeTel);
+            sb.Replace("{dfOfficeAddress}", karte1Data.OfficeAddress);
+            sb.Replace("{dfHokenSyutokuW}", karte1Data.HokenSyutokuW);
+            sb.Replace("{dfSetainusi}", karte1Data.SetaiNusi);
+            sb.Replace("{dfHokenKigenW}", karte1Data.HokenKigenW);
+            sb.Replace("{dfKigoBango}", karte1Data.KigoBango);
+            sb.Replace("{dfHokensyaNo}", karte1Data.HokensyaNo);
+            sb.Replace("{dfPtRennakuTel}", karte1Data.PtRenrakuTel);
+            sb.Replace("{dfPtTel}", karte1Data.PtTel);
+            sb.Replace("{dfPtPostCode}", karte1Data.PtPostCd);
+            sb.Replace("{dfPtAddress1}", karte1Data.PtHomeAddress1);
+            sb.Replace("{dfPtAddress2}", karte1Data.PtHomeAddress2);
+            sb.Replace("{dfPtPostCode}", karte1Data.PtPostCd);
+            sb.Replace("{dfBirthDateW}", karte1Data.BirthDateW);
+            sb.Replace("{dfAge}", karte1Data.Age.ToString());
+            var gender = "男";
+            if (karte1Data.Sex == 0) gender = "女";
+            sb.Replace("{Sex}", gender);
+            sb.Replace("{dfPtKanaName}", karte1Data.PtKanaName);
+            sb.Replace("{dfPtName}", karte1Data.PtName);
+            sb.Replace("{dfFutansyaNo_K1}", karte1Data.FutansyaNo_K1);
+            sb.Replace("{dfJukyusyaNo_K1}", karte1Data.JyukyusyaNo_K1);
+            sb.Replace("{dfFutansyaNo_K2}", karte1Data.FutansyaNo_K2);
+            sb.Replace("{dfJyukyusyaNo_K2}", karte1Data.JyukyusyaNo_K2);
+            sb.Replace("{dfPtNum}", karte1Data.PtNum.ToString());
+            sb.Replace("{dfSysDateTimeS}", karte1Data.SysDateTimeS);
             return sb.ToString();
         }
     }

@@ -530,6 +530,12 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
+        //UketukeMst
+        public static readonly string InvalidKbnId = "Invalid KbnId";
+        public static readonly string InvalidKbnName = "Invalid KbnName";
+        public static readonly string InputNoData = "Input no data";
+        public static readonly string InputDataDuplicateKbnId = "InputData duplicate KbnId";
+
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
