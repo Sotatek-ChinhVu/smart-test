@@ -6,7 +6,7 @@ using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Receipt;
+using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Controller;
@@ -30,6 +30,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<ReceiptListAdvancedSearchResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListReceCmt)]
+    public ActionResult<Response<GetListReceCmtResponse>> GetListReceCmt([FromQuery] GetListReceCmtRequest request)
+    {
+        var input = new GetListReceCmtInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListReceCmtResponse>>(presenter.Result);
     }
 
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)

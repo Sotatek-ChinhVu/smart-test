@@ -1,6 +1,6 @@
 ﻿using UseCase.Receipt.ReceiptListAdvancedSearch;
 
-namespace EmrCloudApi.Responses.Receipt;
+namespace EmrCloudApi.Responses.Receipt.Dto;
 
 public class ReceiptListModelDto
 {

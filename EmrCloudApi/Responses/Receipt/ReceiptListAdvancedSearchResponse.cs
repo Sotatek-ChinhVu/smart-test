@@ -1,4 +1,5 @@
-﻿using UseCase.Receipt.ReceiptListAdvancedSearch;
+﻿using EmrCloudApi.Responses.Receipt.Dto;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Responses.Receipt;
 
