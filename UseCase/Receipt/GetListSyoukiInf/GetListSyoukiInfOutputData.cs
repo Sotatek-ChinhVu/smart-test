@@ -5,16 +5,16 @@ namespace UseCase.Receipt.GetListSyoukiInf;
 
 public class GetListSyoukiInfOutputData : IOutputData
 {
-    public GetListSyoukiInfOutputData(List<SyoukiInfModel> listSyoukiInf, List<SyoukiKbnMstModel> listSyoukiKbnMstItem, GetListSyoukiInfStatus status)
+    public GetListSyoukiInfOutputData(List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnMstItemList, GetListSyoukiInfStatus status)
     {
-        ListSyoukiInf = listSyoukiInf.Select(item => new SyoukiInfItem(item)).ToList();
-        ListSyoukiKbnMst = listSyoukiKbnMstItem.Select(item => new SyoukiKbnMstItem(item)).ToList();
+        SyoukiInfList = syoukiInfList.Select(item => new SyoukiInfItem(item)).ToList();
+        SyoukiKbnMstList = syoukiKbnMstItemList.Select(item => new SyoukiKbnMstItem(item)).ToList();
         Status = status;
     }
 
-    public List<SyoukiInfItem> ListSyoukiInf { get; private set; }
+    public List<SyoukiInfItem> SyoukiInfList { get; private set; }
 
-    public List<SyoukiKbnMstItem> ListSyoukiKbnMst { get; private set; }
+    public List<SyoukiKbnMstItem> SyoukiKbnMstList { get; private set; }
 
     public GetListSyoukiInfStatus Status { get; private set; }
 }

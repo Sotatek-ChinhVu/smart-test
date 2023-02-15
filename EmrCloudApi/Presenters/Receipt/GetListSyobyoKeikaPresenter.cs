@@ -11,7 +11,7 @@ public class GetListSyobyoKeikaPresenter : IGetListSyobyoKeikaOutputPort
 
     public void Complete(GetListSyobyoKeikaOutputData outputData)
     {
-        Result.Data = new GetListSyobyoKeikaResponse(outputData.ListSyobyoKeika);
+        Result.Data = new GetListSyobyoKeikaResponse(outputData.SyobyoKeikaList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

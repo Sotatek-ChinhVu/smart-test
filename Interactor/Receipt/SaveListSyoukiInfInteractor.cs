@@ -31,7 +31,7 @@ public class SaveListSyoukiInfInteractor : ISaveListSyoukiInfInputPort
             {
                 return new SaveListSyoukiInfOutputData(responseValidate);
             }
-            var listReceCmtModel = inputData.ListSyoukiInf.Select(item => ConvertToSyoukiInfModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
+            var listReceCmtModel = inputData.SyoukiInfList.Select(item => ConvertToSyoukiInfModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                           .ToList();
 
             if (_receiptRepository.SaveListSyoukiInf(inputData.HpId, inputData.UserId, listReceCmtModel))
@@ -63,18 +63,18 @@ public class SaveListSyoukiInfInteractor : ISaveListSyoukiInfInputPort
         {
             return SaveListSyoukiInfStatus.InvalidSinYm;
         }
-        if (!inputData.ListSyoukiInf.Any())
+        if (!inputData.SyoukiInfList.Any())
         {
             return SaveListSyoukiInfStatus.ValidateSuccess;
         }
         var listSyoukiInfDB = _receiptRepository.GetListSyoukiInf(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listSeqNo = inputData.ListSyoukiInf.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
+        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
         var countSyoukiInf = listSyoukiInfDB.Count(item => listSeqNo.Contains(item.SeqNo));
         if (listSeqNo.Any() && countSyoukiInf != listSeqNo.Count)
         {
             return SaveListSyoukiInfStatus.InvalidSeqNo;
         }
-        var listSyoukiKbn = inputData.ListSyoukiInf.Select(item => new SyoukiKbnMstModel(item.SyoukiKbn, item.SyoukiKbnStartYm)).ToList();
+        var listSyoukiKbn = inputData.SyoukiInfList.Select(item => new SyoukiKbnMstModel(item.SyoukiKbn, item.SyoukiKbnStartYm)).ToList();
         if (listSyoukiKbn.Any() && !_receiptRepository.CheckExistSyoukiKbn(inputData.SinYm, listSyoukiKbn))
         {
             return SaveListSyoukiInfStatus.InvalidSyoukiKbn;

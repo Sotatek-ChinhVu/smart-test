@@ -10,5 +10,5 @@ public class SaveListReceCmtRequest
 
     public int HokenId { get; set; }
 
-    public List<SaveListReceCmtRequestItem> ListReceCmt { get; set; } = new();
+    public List<SaveListReceCmtRequestItem> ReceCmtList { get; set; } = new();
 }

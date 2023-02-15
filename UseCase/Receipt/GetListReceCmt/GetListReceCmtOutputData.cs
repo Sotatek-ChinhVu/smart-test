@@ -5,13 +5,13 @@ namespace UseCase.Receipt.GetReceCmt;
 
 public class GetListReceCmtOutputData : IOutputData
 {
-    public GetListReceCmtOutputData(List<ReceCmtModel> listReceCmt, GetListReceCmtStatus status)
+    public GetListReceCmtOutputData(List<ReceCmtModel> receCmtList, GetListReceCmtStatus status)
     {
-        ListReceCmt = listReceCmt.Select(item => new ReceCmtItem(item)).ToList();
+        ReceCmtList = receCmtList.Select(item => new ReceCmtItem(item)).ToList();
         Status = status;
     }
 
-    public List<ReceCmtItem> ListReceCmt { get; private set; }
+    public List<ReceCmtItem> ReceCmtList { get; private set; }
 
     public GetListReceCmtStatus Status { get; private set; }
 }

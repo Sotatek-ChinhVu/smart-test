@@ -11,7 +11,7 @@ public class GetListReceCmtPresenter : IGetListReceCmtOutputPort
 
     public void Complete(GetListReceCmtOutputData outputData)
     {
-        Result.Data = new GetListReceCmtResponse(outputData.ListReceCmt);
+        Result.Data = new GetListReceCmtResponse(outputData.ReceCmtList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

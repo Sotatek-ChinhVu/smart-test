@@ -9,7 +9,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId);
 
-    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt);
+    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
     List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId);
 
@@ -17,7 +17,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm);
 
-    bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> listSyoukiKbn);
+    bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
-    bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> listSyoukiInf);
+    bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 }

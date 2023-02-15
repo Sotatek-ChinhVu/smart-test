@@ -4,14 +4,14 @@ namespace UseCase.Receipt.SaveListSyoukiInf;
 
 public class SaveListSyoukiInfInputData : IInputData<SaveListSyoukiInfOutputData>
 {
-    public SaveListSyoukiInfInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<SyoukiInfItem> listSyoukiInf)
+    public SaveListSyoukiInfInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<SyoukiInfItem> syoukiInfList)
     {
         HpId = hpId;
         UserId = userId;
         PtId = ptId;
         SinYm = sinYm;
         HokenId = hokenId;
-        ListSyoukiInf = listSyoukiInf;
+        SyoukiInfList = syoukiInfList;
     }
 
     public int HpId { get; private set; }
@@ -24,5 +24,5 @@ public class SaveListSyoukiInfInputData : IInputData<SaveListSyoukiInfOutputData
 
     public int HokenId { get; private set; }
 
-    public List<SyoukiInfItem> ListSyoukiInf { get; private set; }
+    public List<SyoukiInfItem> SyoukiInfList { get; private set; }
 }

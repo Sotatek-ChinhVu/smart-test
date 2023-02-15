@@ -5,13 +5,13 @@ namespace EmrCloudApi.Responses.Receipt;
 
 public class GetListSyoukiInfResponse
 {
-    public GetListSyoukiInfResponse(List<SyoukiInfItem> listSyoukiInf, List<SyoukiKbnMstItem> listSyoukiKbnMst)
+    public GetListSyoukiInfResponse(List<SyoukiInfItem> syoukiInfList, List<SyoukiKbnMstItem> syoukiKbnMstList)
     {
-        ListSyoukiInf = listSyoukiInf.Select(item => new SyoukiInfDto(item)).ToList();
-        ListSyoukiKbnMst = listSyoukiKbnMst.Select(item => new SyoukiKbnMstDto(item)).ToList();
+        SyoukiInfList = syoukiInfList.Select(item => new SyoukiInfDto(item)).ToList();
+        SyoukiKbnMstList = syoukiKbnMstList.Select(item => new SyoukiKbnMstDto(item)).ToList();
     }
 
-    public List<SyoukiInfDto> ListSyoukiInf { get; private set; }
+    public List<SyoukiInfDto> SyoukiInfList { get; private set; }
 
-    public List<SyoukiKbnMstDto> ListSyoukiKbnMst { get; private set; }
+    public List<SyoukiKbnMstDto> SyoukiKbnMstList { get; private set; }
 }
