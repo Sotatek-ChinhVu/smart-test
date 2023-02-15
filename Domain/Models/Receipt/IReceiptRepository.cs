@@ -20,4 +20,6 @@ public interface IReceiptRepository : IRepositoryBase
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
     bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
+
+    bool SaveListSyobyoKeika(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
 }

@@ -1359,6 +1359,38 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
         return countSyoukiKbn == syoukiKbnList.Count;
     }
+
+    public bool SaveListSyobyoKeika(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList)
+    {
+        var listSyobyoKeikaUpdate = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        var listSyobyoKeikaUpdateDB = TrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                                   && item.IsDeleted == DeleteTypes.None
+                                                                                   && listSyobyoKeikaUpdate.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                                      .ToList();
+
+        var listSyobyoKeikaAddNew = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+                                                 .Select(item => ConvertToNewSyobyoKeika(hpId, userId, item))
+                                                 .ToList();
+        TrackingDataContext.SyobyoKeikas.AddRange(listSyobyoKeikaAddNew);
+        foreach (var model in listSyobyoKeikaUpdate)
+        {
+            var entity = listSyobyoKeikaUpdateDB.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.SinDay = model.SinDay;
+            entity.Keika = model.Keika;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
     #endregion
 
     #region Private function
@@ -1452,6 +1484,24 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                         syobyoKeika.SeqNo,
                                         syobyoKeika.Keika ?? string.Empty
                                     );
+    }
+
+    private SyobyoKeika ConvertToNewSyobyoKeika(int hpId, int userId, SyobyoKeikaModel item)
+    {
+        SyobyoKeika entity = new();
+        entity.HpId = hpId;
+        entity.PtId = item.PtId;
+        entity.SinYm = item.SinYm;
+        entity.HokenId = item.HokenId;
+        entity.SeqNo = 0;
+        entity.SinDay = item.SinDay;
+        entity.Keika = item.Keika;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
     }
     #endregion
 
