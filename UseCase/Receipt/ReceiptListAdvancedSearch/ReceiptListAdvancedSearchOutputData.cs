@@ -5,19 +5,19 @@ namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListAdvancedSearchOutputData : IOutputData
 {
-    public ReceiptListAdvancedSearchOutputData(List<ReceiptListModel> listReceipt, ReceiptListAdvancedSearchStatus status)
+    public ReceiptListAdvancedSearchOutputData(List<ReceiptListModel> receiptList, ReceiptListAdvancedSearchStatus status)
     {
-        ListReceipt = listReceipt.Select(item => new ReceiptListAdvancedSearchOutputItem(item)).ToList();
+        ReceiptList = receiptList.Select(item => new ReceiptListAdvancedSearchOutputItem(item)).ToList();
         Status = status;
     }
 
     public ReceiptListAdvancedSearchOutputData(ReceiptListAdvancedSearchStatus status)
     {
-        ListReceipt = new();
+        ReceiptList = new();
         Status = status;
     }
 
-    public List<ReceiptListAdvancedSearchOutputItem> ListReceipt { get; private set; }
+    public List<ReceiptListAdvancedSearchOutputItem> ReceiptList { get; private set; }
 
     public ReceiptListAdvancedSearchStatus Status { get; private set; }
 }

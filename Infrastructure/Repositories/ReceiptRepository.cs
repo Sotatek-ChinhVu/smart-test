@@ -1247,15 +1247,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt)
+    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> receCmtList)
     {
-        var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
+        var listReceCmtUpdate = receCmtList.Where(item => item.Id > 0).ToList();
         var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
                                                                              && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
                                                               .ToList();
 
-        var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
+        var listReceCmtAddNew = receCmtList.Where(item => item.Id == 0 && !item.IsDeleted)
                                            .Select(item => ConvertToNewReceCmt(hpId, userId, item))
                                            .ToList();
         TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
@@ -1302,6 +1302,62 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
         var result = listSyoukiKbnMst.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
         return result;
+    }
+
+    public List<SyobyoKeikaModel> GetListSyobyoKeika(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var listSyobyoKeika = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                               && item.SinYm == sinYm
+                                                                               && item.PtId == ptId
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .OrderBy(item => item.SinDay)
+                                                                .ThenByDescending(item => item.SeqNo)
+                                                                .ToList();
+
+        var result = listSyobyoKeika.Select(item => ConvertToSyobyoKeikaModel(item)).ToList();
+        return result;
+    }
+
+    public bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList)
+    {
+        var listSyoukiInfUpdate = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        var listSyoukiInfUpdateDB = TrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && listSyoukiInfUpdate.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                              .ToList();
+
+        var listSyoukiInfAddNew = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+                                               .Select(item => ConvertToNewSyoukiInf(hpId, userId, item))
+                                               .ToList();
+        TrackingDataContext.SyoukiInfs.AddRange(listSyoukiInfAddNew);
+        foreach (var model in listSyoukiInfUpdate)
+        {
+            var entity = listSyoukiInfUpdateDB.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.Syouki = model.Syouki;
+            entity.SyoukiKbn = model.SyoukiKbn;
+            entity.SortNo = model.SortNo;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
+    {
+        var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
+                                                                               && entity.EndYm >= sinYm
+                                                                               && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
+        return countSyoukiKbn == syoukiKbnList.Count;
     }
     #endregion
 
@@ -1364,6 +1420,37 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                         item.StartYm,
                                         item.EndYm,
                                         item.Name ?? string.Empty
+                                    );
+    }
+
+    private SyoukiInf ConvertToNewSyoukiInf(int hpId, int userId, SyoukiInfModel item)
+    {
+        SyoukiInf entity = new();
+        entity.HpId = hpId;
+        entity.PtId = item.PtId;
+        entity.SinYm = item.SinYm;
+        entity.HokenId = item.HokenId;
+        entity.SeqNo = 0;
+        entity.SortNo = item.SortNo;
+        entity.SyoukiKbn = item.SyoukiKbn;
+        entity.Syouki = item.Syouki;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
+    }
+
+    private SyobyoKeikaModel ConvertToSyobyoKeikaModel(SyobyoKeika syobyoKeika)
+    {
+        return new SyobyoKeikaModel(
+                                        syobyoKeika.PtId,
+                                        syobyoKeika.SinYm,
+                                        syobyoKeika.SinDay,
+                                        syobyoKeika.HokenId,
+                                        syobyoKeika.SeqNo,
+                                        syobyoKeika.Keika ?? string.Empty
                                     );
     }
     #endregion

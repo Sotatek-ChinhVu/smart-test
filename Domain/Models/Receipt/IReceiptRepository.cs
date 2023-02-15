@@ -9,9 +9,15 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId);
 
-    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt);
+    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
     List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId);
 
+    List<SyobyoKeikaModel> GetListSyobyoKeika(int hpId, int sinYm, long ptId, int hokenId);
+
     List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm);
+
+    bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
+
+    bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 }
