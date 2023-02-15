@@ -91,6 +91,8 @@
             OdrNoMapOdrDetail,
             InvalidKokuji1,
             InvalidKokuji2,
+            InvalidHasDrug,
+            InvalidHasUsage,
             Valid
         };
 
