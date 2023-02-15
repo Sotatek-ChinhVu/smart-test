@@ -1860,9 +1860,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo 
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 
