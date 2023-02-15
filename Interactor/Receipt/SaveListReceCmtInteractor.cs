@@ -1,9 +1,7 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.Insurance;
+﻿using Domain.Models.Insurance;
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
-using Domain.Models.User;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListReceCmt;
 
