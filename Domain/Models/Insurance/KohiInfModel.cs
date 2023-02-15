@@ -1,4 +1,6 @@
 ﻿using Domain.Models.InsuranceMst;
+using Helper.Common;
+using Helper.Extension;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
@@ -72,6 +74,20 @@ namespace Domain.Models.Insurance
             IsAddNew = isAddNew;
         }
 
+        public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
+        {
+            HokenId = hokenId;
+            PrefNo = prefNo;
+            HokenNo = hokenNo;
+            HokenEdaNo = hokenEdaNo;
+            FutansyaNo = futansyaNo;
+            StartDate = startDate;
+            EndDate = endDate;
+            SinDate = sinDate;
+            HokenMstModel = hokenMstModel;
+            ConfirmDateModels = confirmDateModels;
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public string FutansyaNo { get; private set; }
@@ -115,6 +131,8 @@ namespace Domain.Models.Insurance
         public int IsDeleted { get; private set; }
         public long SeqNo { get; private set; }
 
+        public List<ConfirmDateModel> ConfirmDateModels { get; private set; }
+
         public bool IsEmptyModel => HokenId == 0;
 
         public bool IsExpirated
@@ -132,5 +150,41 @@ namespace Domain.Models.Insurance
         public int CalcSpKbn { get => HokenMstModel.CalcSpKbn; }
 
         public string PrefNoMst { get => HokenMstModel.PrefactureName; }
+
+        public bool HasDateConfirmed
+        {
+            get
+            {
+                if (ConfirmDateModels == null) return false;
+                if (ConfirmDateModels.Count == 0)
+                {
+                    return false;
+                }
+                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateModels
+                    .Where(x => x.IsDeleted == 0)
+                    .OrderByDescending(x => x.ConfirmDate)
+                    .ToList();
+                int SinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
+                foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
+                {
+                    int currentConfirmYM = ptHokenCheck.ConfirmDate;
+                    if (currentConfirmYM == SinYM)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public int LastDateConfirmed
+        {
+            get
+            {
+                if (!ConfirmDateModels.Any()) return 0;
+
+                return CIUtil.Copy(ConfirmDateModels.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate.AsString(), 1, 6).AsInteger();
+            }
+        }
     }
 }

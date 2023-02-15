@@ -7,6 +7,7 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
+using Domain.Models.Accounting;
 using Domain.Models.ApprovalInfo;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
@@ -41,6 +42,7 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.RainListTag;
+using Domain.Models.Receipt;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionLock;
@@ -76,6 +78,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
 using Interactor.AccountDue;
+using Interactor.Accounting;
 using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
@@ -111,6 +114,7 @@ using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
+using Interactor.Receipt;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
@@ -139,6 +143,10 @@ using Reporting.Interface;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
+using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
@@ -268,6 +276,10 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.GetListSyoukiInf;
+using UseCase.Receipt.GetReceCmt;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
+using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -442,6 +454,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
+            services.AddTransient<IAccountingRepository, AccountingRepository>();
             services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
             services.AddTransient<IMasterFinder, MasterFinder>();
             services.AddTransient<ISystemConfig, SystemConfig>();
@@ -450,6 +463,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
             services.AddTransient<IFamilyRepository, FamilyRepository>();
+            services.AddTransient<IReceiptRepository, ReceiptRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -703,6 +717,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
             busBuilder.RegisterUseCase<SaveAccountDueListInputData, SaveAccountDueListInteractor>();
 
+            //Accounting
+            busBuilder.RegisterUseCase<GetAccountingInputData, GetAccountingInteractor>();
+            busBuilder.RegisterUseCase<GetPaymentMethodInputData, GetPaymentMethodInteractor>();
+            busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
+            busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
+
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();
             busBuilder.RegisterUseCase<UpdateTimeZoneDayInfInputData, UpdateTimeZoneDayInfInteractor>();
@@ -764,8 +784,16 @@ namespace EmrCloudApi.Configs.Dependency
             //Family
             busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
 
+            //Receipt
+            busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
+
             //Convert Input Item to Today Order
             busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();
+
+            // Rece check
+            busBuilder.RegisterUseCase<GetListReceCmtInputData, GetListReceCmtInteractor>();
+            busBuilder.RegisterUseCase<SaveListReceCmtInputData, SaveListReceCmtInteractor>();
+            busBuilder.RegisterUseCase<GetListSyoukiInfInputData, GetListSyoukiInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
