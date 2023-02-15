@@ -793,11 +793,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();
 
             // Rece check
-            busBuilder.RegisterUseCase<GetListReceCmtInputData, GetListReceCmtInteractor>();
-            busBuilder.RegisterUseCase<SaveListReceCmtInputData, SaveListReceCmtInteractor>();
-            busBuilder.RegisterUseCase<GetListSyoukiInfInputData, GetListSyoukiInfInteractor>();
-            busBuilder.RegisterUseCase<SaveListSyoukiInfInputData, SaveListSyoukiInfInteractor>();
-            busBuilder.RegisterUseCase<GetListSyobyoKeikaInputData, GetListSyobyoKeikaInteractor>();
+            busBuilder.RegisterUseCase<GetReceCmtListInputData, GetReceCmtListInteractor>();
+            busBuilder.RegisterUseCase<SaveReceCmtListInputData, SaveReceCmtListInteractor>();
+            busBuilder.RegisterUseCase<GetSyoukiInfListInputData, GetSyoukiInfListInteractor>();
+            busBuilder.RegisterUseCase<SaveSyoukiInfListInputData, SaveSyoukiInfListInteractor>();
+            busBuilder.RegisterUseCase<GetSyobyoKeikaListInputData, GetSyobyoKeikaListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
