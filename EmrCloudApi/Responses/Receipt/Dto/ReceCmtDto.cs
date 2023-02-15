@@ -14,6 +14,7 @@ public class ReceCmtDto
         CmtKbn = output.CmtKbn;
         CmtSbt = output.CmtSbt;
         Cmt = output.Cmt;
+        CmtData = output.CmtData;
         ItemCd = output.ItemCd;
     }
 
@@ -32,6 +33,8 @@ public class ReceCmtDto
     public int CmtSbt { get; private set; }
 
     public string Cmt { get; private set; }
+
+    public string CmtData { get; private set; }
 
     public string ItemCd { get; private set; }
 }

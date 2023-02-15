@@ -1246,6 +1246,63 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
         return result;
     }
+
+    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt)
+    {
+        var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
+        var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
+                                                              .ToList();
+
+        var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
+                                           .Select(item => ConvertToNewReceCmt(hpId, userId, item))
+                                           .ToList();
+        TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
+        foreach (var model in listReceCmtUpdate)
+        {
+            var entity = listReceCmtUpdateDB.FirstOrDefault(item => item.Id == model.Id);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.SeqNo = model.SeqNo;
+            entity.CmtData = model.CmtData;
+            entity.Cmt = model.Cmt;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var listSyoukiInf = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+                                                                           && item.SinYm == sinYm
+                                                                           && item.PtId == ptId
+                                                                           && item.HokenId == hokenId
+                                                                           && item.IsDeleted == DeleteTypes.None)
+                                                            .OrderBy(item => item.SortNo)
+                                                            .ToList();
+
+        var result = listSyoukiInf.Select(item => ConvertToSyoukiInfModel(item)).ToList();
+        return result;
+    }
+
+    public List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm)
+    {
+        var listSyoukiKbnMst = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
+                                                                  .OrderBy(p => p.SyoukiKbn)
+                                                                  .ToList();
+
+        var result = listSyoukiKbnMst.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
+        return result;
+    }
     #endregion
 
     #region Private function
@@ -1260,8 +1317,54 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receCmt.CmtKbn,
                 receCmt.CmtSbt,
                 receCmt.Cmt ?? string.Empty,
+                receCmt.CmtData ?? string.Empty,
                 receCmt.ItemCd ?? string.Empty
             );
+    }
+
+    private ReceCmt ConvertToNewReceCmt(int hpId, int userId, ReceCmtModel model)
+    {
+        ReceCmt entity = new();
+        entity.HpId = hpId;
+        entity.PtId = model.PtId;
+        entity.SinYm = model.SinYm;
+        entity.HokenId = model.HokenId;
+        entity.CmtKbn = model.CmtKbn;
+        entity.CmtSbt = model.CmtSbt;
+        entity.Id = 0;
+        entity.SeqNo = model.SeqNo;
+        entity.ItemCd = model.ItemCd;
+        entity.Cmt = model.Cmt;
+        entity.CmtData = model.CmtData;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
+    }
+
+    private SyoukiInfModel ConvertToSyoukiInfModel(SyoukiInf syoukiInf)
+    {
+        return new SyoukiInfModel(
+                                    syoukiInf.PtId,
+                                    syoukiInf.SinYm,
+                                    syoukiInf.HokenId,
+                                    syoukiInf.SeqNo,
+                                    syoukiInf.SortNo,
+                                    syoukiInf.SyoukiKbn,
+                                    syoukiInf.Syouki ?? string.Empty
+                                );
+    }
+
+    private SyoukiKbnMstModel ConvertToSyoukiKbnMstModel(SyoukiKbnMst item)
+    {
+        return new SyoukiKbnMstModel(
+                                        item.SyoukiKbn,
+                                        item.StartYm,
+                                        item.EndYm,
+                                        item.Name ?? string.Empty
+                                    );
     }
     #endregion
 

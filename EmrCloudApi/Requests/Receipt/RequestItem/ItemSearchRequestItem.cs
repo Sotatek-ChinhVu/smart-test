@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.Receipt;
+﻿namespace EmrCloudApi.Requests.Receipt.RequestItem;
 
 public class ItemSearchRequestItem
 {
