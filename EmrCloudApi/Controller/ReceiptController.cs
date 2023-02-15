@@ -13,6 +13,7 @@ using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
+using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 
 namespace EmrCloudApi.Controller;
@@ -98,6 +99,19 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveListSyoukiInfResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveListSyobyoKeika)]
+    public ActionResult<Response<SaveListSyobyoKeikaResponse>> SaveListSyobyoKeika([FromBody] SaveListSyobyoKeikaRequest request)
+    {
+        var listReceSyoukiInf = request.SyobyoKeikaList.Select(item => ConvertToSyobyoKeikaItem(item)).ToList();
+        var input = new SaveListSyobyoKeikaInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveListSyobyoKeikaPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveListSyobyoKeikaResponse>>(presenter.Result);
     }
 
     #region Private function
@@ -198,6 +212,16 @@ public class ReceiptController : AuthorizeControllerBase
                                     requestItem.Syouki,
                                     requestItem.IsDeleted
                                );
+    }
+
+    private SyobyoKeikaItem ConvertToSyobyoKeikaItem(SaveListSyobyoKeikaRequestItem item)
+    {
+        return new SyobyoKeikaItem(
+                                      item.SinDay,
+                                      item.SeqNo,
+                                      item.Keika,
+                                      item.IsDeleted
+                                  );
     }
     #endregion
 }

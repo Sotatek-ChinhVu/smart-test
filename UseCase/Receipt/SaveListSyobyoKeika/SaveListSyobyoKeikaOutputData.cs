@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.SaveListSyobyoKeika
+namespace UseCase.Receipt.SaveListSyobyoKeika;
+
+public class SaveListSyobyoKeikaOutputData : IOutputData
 {
-    internal class SaveListSyobyoKeikaOutputData
+    public SaveListSyobyoKeikaOutputData(SaveListSyobyoKeikaStatus status)
     {
+        Status = status;
     }
+
+    public SaveListSyobyoKeikaStatus Status { get;private set; }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.SaveListSyobyoKeika
+namespace UseCase.Receipt.SaveListSyobyoKeika;
+
+public interface ISaveListSyobyoKeikaInputPort : IInputPort<SaveListSyobyoKeikaInputData, SaveListSyobyoKeikaOutputData>
 {
-    internal interface ISaveListSyobyoKeikaInputPort
-    {
-    }
 }

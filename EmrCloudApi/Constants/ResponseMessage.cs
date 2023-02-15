@@ -904,6 +904,7 @@
         public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
         public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
         public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
-
+        public static readonly string InvalidKeika = "Invalid Keika!";
+        public static readonly string InvalidSinDay = "Invalid SinDay!";
     }
 }
