@@ -10,11 +10,6 @@ public class GetListReceCmtOutputData : IOutputData
         ListReceCmt = listReceCmt.Select(item => new ReceCmtItem(item)).ToList();
         Status = status;
     }
-    public GetListReceCmtOutputData(GetListReceCmtStatus status)
-    {
-        ListReceCmt = new();
-        Status = status;
-    }
 
     public List<ReceCmtItem> ListReceCmt { get; private set; }
 

@@ -13,6 +13,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId);
 
+    List<SyobyoKeikaModel> GetListSyobyoKeika(int hpId, int sinYm, long ptId, int hokenId);
+
     List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm);
 
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> listSyoukiKbn);

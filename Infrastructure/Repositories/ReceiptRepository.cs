@@ -1304,6 +1304,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
+    public List<SyobyoKeikaModel> GetListSyobyoKeika(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var listSyobyoKeika = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                               && item.SinYm == sinYm
+                                                                               && item.PtId == ptId
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .OrderBy(item => item.SinDay)
+                                                                .ThenByDescending(item => item.SeqNo)
+                                                                .ToList();
+
+        var result = listSyobyoKeika.Select(item => ConvertToSyobyoKeikaModel(item)).ToList();
+        return result;
+    }
+
     public bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> listSyoukiInf)
     {
         var listSyoukiInfUpdate = listSyoukiInf.Where(item => item.SeqNo > 0).ToList();
@@ -1425,6 +1440,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
         entity.UpdateId = userId;
         return entity;
+    }
+
+    private SyobyoKeikaModel ConvertToSyobyoKeikaModel(SyobyoKeika syobyoKeika)
+    {
+        return new SyobyoKeikaModel(
+                                        syobyoKeika.PtId,
+                                        syobyoKeika.SinYm,
+                                        syobyoKeika.SinDay,
+                                        syobyoKeika.HokenId,
+                                        syobyoKeika.SeqNo,
+                                        syobyoKeika.Keika ?? string.Empty
+                                    );
     }
     #endregion
 

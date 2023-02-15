@@ -276,6 +276,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
@@ -796,6 +797,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListReceCmtInputData, SaveListReceCmtInteractor>();
             busBuilder.RegisterUseCase<GetListSyoukiInfInputData, GetListSyoukiInfInteractor>();
             busBuilder.RegisterUseCase<SaveListSyoukiInfInputData, SaveListSyoukiInfInteractor>();
+            busBuilder.RegisterUseCase<GetListSyobyoKeikaInputData, GetListSyobyoKeikaInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

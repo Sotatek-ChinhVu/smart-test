@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
@@ -72,6 +73,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetListSyoukiInfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListSyobyoKeika)]
+    public ActionResult<Response<GetListSyobyoKeikaResponse>> GetListSyobyoKeika([FromQuery] GetListSyobyoKeikaRequest request)
+    {
+        var input = new GetListSyobyoKeikaInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListSyobyoKeikaPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListSyobyoKeikaResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveListSyoukiInf)]
