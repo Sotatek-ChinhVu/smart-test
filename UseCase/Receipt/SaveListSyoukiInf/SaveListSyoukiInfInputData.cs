@@ -1,17 +1,17 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.SaveListReceCmt;
+namespace UseCase.Receipt.SaveListSyoukiInf;
 
-public class SaveListReceCmtInputData : IInputData<SaveListReceCmtOutputData>
+public class SaveListSyoukiInfInputData : IInputData<SaveListSyoukiInfOutputData>
 {
-    public SaveListReceCmtInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCmtItem> receCmtList)
+    public SaveListSyoukiInfInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<SyoukiInfItem> syoukiInfList)
     {
         HpId = hpId;
         UserId = userId;
         PtId = ptId;
         SinYm = sinYm;
         HokenId = hokenId;
-        ReceCmtList = receCmtList;
+        SyoukiInfList = syoukiInfList;
     }
 
     public int HpId { get; private set; }
@@ -24,5 +24,5 @@ public class SaveListReceCmtInputData : IInputData<SaveListReceCmtOutputData>
 
     public int HokenId { get; private set; }
 
-    public List<ReceCmtItem> ReceCmtList { get; private set; }
+    public List<SyoukiInfItem> SyoukiInfList { get; private set; }
 }

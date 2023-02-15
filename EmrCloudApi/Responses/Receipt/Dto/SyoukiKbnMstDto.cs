@@ -8,11 +8,14 @@ public class SyoukiKbnMstDto
     {
         SyoukiKbn = output.SyoukiKbn;
         Name = output.Name;
+        StartYm = output.StartYm;
     }
 
     public int SyoukiKbn { get; private set; }
 
     public string Name { get; private set; }
+
+    public int StartYm { get; private set; }
 
     public string SyoukiKbnDisplay
     {

@@ -5,10 +5,10 @@ namespace EmrCloudApi.Responses.Receipt;
 
 public class GetListReceCmtResponse
 {
-    public GetListReceCmtResponse(List<ReceCmtItem> listReceCmt)
+    public GetListReceCmtResponse(List<ReceCmtItem> receCmtList)
     {
-        ListReceCmt = listReceCmt.Select(item => new ReceCmtDto(item)).ToList();
+        ReceCmtList = receCmtList.Select(item => new ReceCmtDto(item)).ToList();
     }
 
-    public List<ReceCmtDto> ListReceCmt { get; private set; }
+    public List<ReceCmtDto> ReceCmtList { get; private set; }
 }

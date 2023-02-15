@@ -903,6 +903,7 @@
         public static readonly string InvalidCmtSbt = "Invalid ReceCmt CmtSbt!";
         public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
         public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
+        public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
 
     }
 }

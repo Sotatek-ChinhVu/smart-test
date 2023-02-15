@@ -1,9 +1,7 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.Insurance;
+﻿using Domain.Models.Insurance;
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
-using Domain.Models.User;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListReceCmt;
 
@@ -33,7 +31,7 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
             {
                 return new SaveListReceCmtOutputData(responseValidate);
             }
-            var listReceCmtModel = inputData.ListReceCmt.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
+            var listReceCmtModel = inputData.ReceCmtList.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                         .ToList();
 
             if (_receiptRepository.SaveListReceCmt(inputData.HpId, inputData.UserId, listReceCmtModel))
@@ -65,7 +63,7 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
         {
             return SaveListReceCmtStatus.InvalidSinYm;
         }
-        if (!inputData.ListReceCmt.Any())
+        if (!inputData.ReceCmtList.Any())
         {
             return SaveListReceCmtStatus.ValidateSuccess;
         }
@@ -75,32 +73,32 @@ public class SaveListReceCmtInteractor : ISaveListReceCmtInputPort
     private SaveListReceCmtStatus ValidateReceCmtItem(SaveListReceCmtInputData inputData)
     {
         var listReceCmtDB = _receiptRepository.GetListReceCmt(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listItemCds = inputData.ListReceCmt.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
+        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveListReceCmtStatus.InvalidItemCd;
         }
-        var listReceCmtIds = inputData.ListReceCmt.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
+        var listReceCmtIds = inputData.ReceCmtList.Where(item => item.Id > 0).Select(item => item.Id).Distinct().ToList();
         var countReceCmt = listReceCmtDB.Count(item => listReceCmtIds.Contains(item.Id));
         if (listReceCmtIds.Any() && countReceCmt != listReceCmtIds.Count)
         {
             return SaveListReceCmtStatus.InvalidReceCmtId;
         }
-        else if (inputData.ListReceCmt.Any(item => item.CmtKbn > 2 || item.CmtKbn < 1))
+        else if (inputData.ReceCmtList.Any(item => item.CmtKbn > 2 || item.CmtKbn < 1))
         {
             return SaveListReceCmtStatus.InvalidCmtKbn;
         }
-        else if (inputData.ListReceCmt.Any(item => item.CmtSbt > 1 || item.CmtSbt < 0))
+        else if (inputData.ReceCmtList.Any(item => item.CmtSbt > 1 || item.CmtSbt < 0))
         {
             return SaveListReceCmtStatus.InvalidCmtSbt;
         }
-        else if (inputData.ListReceCmt.Any(item => item.Cmt == string.Empty))
+        else if (inputData.ReceCmtList.Any(item => item.Cmt == string.Empty))
         {
             return SaveListReceCmtStatus.InvalidCmt;
         }
 
         // validate Cmt detail
-        foreach (var cmtInput in inputData.ListReceCmt)
+        foreach (var cmtInput in inputData.ReceCmtList)
         {
             if ((cmtInput.CmtKbn == 2 && cmtInput.CmtSbt == 0) || (cmtInput.CmtKbn == 1 && cmtInput.CmtSbt == 0))
             {

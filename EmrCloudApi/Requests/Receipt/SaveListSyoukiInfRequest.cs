@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.Receipt;
 
-public class SaveListReceCmtRequest
+public class SaveListSyoukiInfRequest
 {
     public long PtId { get; set; }
 
@@ -10,5 +10,5 @@ public class SaveListReceCmtRequest
 
     public int HokenId { get; set; }
 
-    public List<SaveListReceCmtRequestItem> ReceCmtList { get; set; } = new();
+    public List<SaveListSyoukiInfRequestItem> SyoukiInfList { get; set; } = new();
 }
