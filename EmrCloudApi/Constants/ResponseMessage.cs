@@ -758,6 +758,10 @@
         public static readonly string MNoInputData = "数量を入力してください。";
         public static readonly string MNoInputDataCmt = "数字情報を入力してください。";
 
+        //Message full
+        public static readonly string ErrorHasDrug = "行為や加算が登録されているため、薬剤は登録できません。";
+        public static readonly string ErrorHasUsage = "行為や加算が登録されているため、用法は登録できません。";
+
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
 
