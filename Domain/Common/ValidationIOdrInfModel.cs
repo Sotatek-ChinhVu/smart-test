@@ -31,6 +31,28 @@ namespace Domain.Common
                 }
             }
 
+            //Check Refill
+            if (odrInf.OdrKouiKbn == 20)
+            {
+                // 用法
+                var checkRefill = odrInf.OrdInfDetails.Any(o => o.ItemCd == ItemCdConst.Con_Refill);
+                var checkOther = odrInf.OrdInfDetails.Any(o => o.SinKouiKbn == 20 && o.MasterSbt == "S" && o.DrugKbn == 0);
+                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
+                var checkUsageOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrugUsage);
+                if (checkRefill && !checkDrugOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                }
+                if (checkOther && checkDrugOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrug);
+                }
+                if (checkOther && checkUsageOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsage);
+                }
+            }
+
             //Check has not Injection 
             if (odrInf.IsInjection)
             {
