@@ -71,7 +71,7 @@ namespace Infrastructure.Repositories.SpecialNote
                x.Cmt ?? String.Empty,
                x.IsDeleted
             ));
-            return ptAlrgyDrugs.Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
+            return ptAlrgyDrugs.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
         public List<PtAlrgyElseModel> GetAlrgyElseList(long ptId)
@@ -103,7 +103,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
-            return ptAlrgyElses.Where(x=> x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
+            return ptAlrgyElses.AsEnumerable().Where(x => x.FullStartDate <= sinDate && sinDate <= x.FullEndDate).OrderBy(x => x.SortNo).ToList();
         }
 
         public List<PtAlrgyFoodModel> GetAlrgyFoodList(long ptId)
@@ -149,7 +149,7 @@ namespace Infrastructure.Repositories.SpecialNote
                               mst.FoodName ?? String.Empty
                         );
 
-            return query.Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
+            return query.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
                                             .OrderBy(p => p.SortNo).ToList();
         }
 
@@ -219,7 +219,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
-            return ptOtcDrugs.Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
+            return ptOtcDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
                     .OrderBy(p => p.SortNo).ToList();
         }
 
@@ -254,7 +254,7 @@ namespace Infrastructure.Repositories.SpecialNote
               x.Cmt ?? String.Empty,
               x.IsDeleted
             ));
-            return ptOtherDrugs.Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.SortNo).ToList();
+            return ptOtherDrugs.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.SortNo).ToList();
         }
 
         public List<PtSuppleModel> GetSuppleList(long ptId)
@@ -288,7 +288,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
-            return ptSupples.Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).ToList();
+            return ptSupples.AsEnumerable().Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).ToList();
         }
 
         public void ReleaseResource()

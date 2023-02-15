@@ -36,14 +36,14 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                                                                                       u.IsDeleted == 0);
         var rsvGrpMsts = NoTrackingDataContext.RsvGrpMsts.Where(u => u.HpId == hpId &&
                                                                                      u.IsDeleted == 0);
-        var rsvDetailInfs = from rsvFrmMstItem in rsvFrmMsts
+        var rsvDetailInfs = from rsvFrmMstItem in rsvFrmMsts.AsEnumerable()
                             join rsvGrpMstItem in rsvGrpMsts on rsvFrmMstItem.RsvGrpId equals rsvGrpMstItem.RsvGrpId
                             select new
                             {
                                 RsvFrmMst = rsvFrmMstItem,
                                 RsvGrpMst = rsvGrpMstItem
                             };
-        var query = from rsvInfItem in rsvInfs
+        var query = from rsvInfItem in rsvInfs.AsEnumerable()
                     join rsvDetailInfItem in rsvDetailInfs on rsvInfItem.RsvFrameId equals rsvDetailInfItem.RsvFrmMst.RsvFrameId into listDetail
                     from detail in listDetail.DefaultIfEmpty()
                     select new
@@ -51,7 +51,7 @@ public class RsvInfRepository : RepositoryBase, IRsvInfRepository
                         RsvInf = rsvInfItem,
                         Detail = listDetail.FirstOrDefault(),
                     };
-        result = query.AsEnumerable().Select(u => new RsvInfModel(u.RsvInf.HpId, u.RsvInf.RsvFrameId, u.RsvInf.SinDate, u.RsvInf.StartTime, u.RsvInf.RaiinNo, u.RsvInf.PtId, u.RsvInf.RsvSbt, u.RsvInf.TantoId, u.RsvInf.KaId, u.Detail?.RsvFrmMst.RsvFrameName ?? string.Empty, u.Detail?.RsvGrpMst.RsvGrpName ?? string.Empty)).OrderBy(r => r.SinDate).ToList();
+        result = query.Select(u => new RsvInfModel(u.RsvInf.HpId, u.RsvInf.RsvFrameId, u.RsvInf.SinDate, u.RsvInf.StartTime, u.RsvInf.RaiinNo, u.RsvInf.PtId, u.RsvInf.RsvSbt, u.RsvInf.TantoId, u.RsvInf.KaId, u.Detail?.RsvFrmMst.RsvFrameName ?? string.Empty, u.Detail?.RsvGrpMst.RsvGrpName ?? string.Empty)).OrderBy(r => r.SinDate).ToList();
         return result;
     }
 

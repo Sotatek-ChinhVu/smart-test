@@ -131,7 +131,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     public List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd)
     {
         return NoTrackingDataContext.UserConfs.Where(p =>
-            p.HpId == hpId && p.GrpCd == groupCd && p.UserId == userId).Select(u => ToModel(u)).ToList();
+            p.HpId == hpId && p.GrpCd == groupCd && p.UserId == userId).AsEnumerable().Select(u => ToModel(u)).ToList();
     }
 
     public int Sagaku(bool fromRece)

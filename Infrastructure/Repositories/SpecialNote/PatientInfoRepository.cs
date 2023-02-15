@@ -149,7 +149,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.UpdateMachine ?? String.Empty,
                 sinDate
             ));
-            return ptPregnancys.OrderByDescending(item => item.StartDate).ToList();
+            return ptPregnancys.AsEnumerable().OrderByDescending(item => item.StartDate).ToList();
         }
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)

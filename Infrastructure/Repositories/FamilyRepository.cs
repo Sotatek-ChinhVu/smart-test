@@ -79,7 +79,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                 r.Cmt ?? string.Empty,
                                 r.SortNo
                             )
-                ).ToList()
+                ).ToList(),
+                string.Empty
             )).OrderBy(item => item.SortNo).ToList();
     }
 
@@ -108,7 +109,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                     ptFamily.IsSeparated,
                                     ptFamily.Biko ?? string.Empty,
                                     ptFamily.SortNo,
-                                    ptFamilyRekiFilter
+                                    ptFamilyRekiFilter,
+                                    string.Empty
                                );
     }
 
