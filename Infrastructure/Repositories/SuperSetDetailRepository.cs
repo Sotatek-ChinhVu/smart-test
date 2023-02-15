@@ -802,7 +802,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         try
         {
             // update SetKarte
-            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
             if (entity == null)
             {
                 entity = new();
