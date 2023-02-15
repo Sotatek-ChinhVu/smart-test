@@ -5,10 +5,10 @@ namespace EmrCloudApi.Responses.Receipt;
 
 public class GetListSyobyoKeikaResponse
 {
-    public GetListSyobyoKeikaResponse(List<SyobyoKeikaItem> listSyobyoKeika)
+    public GetListSyobyoKeikaResponse(List<SyobyoKeikaItem> syobyoKeikaList)
     {
-        ListSyobyoKeika = listSyobyoKeika.Select(item => new SyobyoKeikaDto(item)).ToList();
+        SyobyoKeikaList = syobyoKeikaList.Select(item => new SyobyoKeikaDto(item)).ToList();
     }
 
-    public List<SyobyoKeikaDto> ListSyobyoKeika { get; private set; }
+    public List<SyobyoKeikaDto> SyobyoKeikaList { get; private set; }
 }

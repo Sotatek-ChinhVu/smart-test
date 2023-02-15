@@ -11,7 +11,7 @@ public class GetListSyoukiInfPresenter : IGetListSyoukiInfOutputPort
 
     public void Complete(GetListSyoukiInfOutputData output)
     {
-        Result.Data = new GetListSyoukiInfResponse(output.ListSyoukiInf, output.ListSyoukiKbnMst);
+        Result.Data = new GetListSyoukiInfResponse(output.SyoukiInfList, output.SyoukiKbnMstList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

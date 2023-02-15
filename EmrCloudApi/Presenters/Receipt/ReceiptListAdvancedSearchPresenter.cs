@@ -11,7 +11,7 @@ public class ReceiptListAdvancedSearchPresenter : IReceiptListAdvancedSearchOutp
 
     public void Complete(ReceiptListAdvancedSearchOutputData outputData)
     {
-        Result.Data = new ReceiptListAdvancedSearchResponse(outputData.ListReceipt);
+        Result.Data = new ReceiptListAdvancedSearchResponse(outputData.ReceiptList);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
