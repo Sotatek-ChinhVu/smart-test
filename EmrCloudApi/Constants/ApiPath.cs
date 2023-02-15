@@ -187,6 +187,7 @@
         public const string SaveListReceCmt = "SaveListReceCmt";
         public const string GetListSyoukiInf = "GetListSyoukiInf";
         public const string SaveListSyoukiInf = "SaveListSyoukiInf";
+        public const string GetListSyobyoKeika = "GetListSyobyoKeika";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

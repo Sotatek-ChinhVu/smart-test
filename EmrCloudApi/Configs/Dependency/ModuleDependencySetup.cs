@@ -274,6 +274,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
@@ -789,10 +790,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConvertInputItemToTodayOrdInputData, ConvertInputItemToTodayOrderInteractor>();
 
             // Rece check
-            busBuilder.RegisterUseCase<GetListReceCmtInputData, GetListReceCmtInteractor>();
-            busBuilder.RegisterUseCase<SaveListReceCmtInputData, SaveListReceCmtInteractor>();
-            busBuilder.RegisterUseCase<GetListSyoukiInfInputData, GetListSyoukiInfInteractor>();
-            busBuilder.RegisterUseCase<SaveListSyoukiInfInputData, SaveListSyoukiInfInteractor>();
+            busBuilder.RegisterUseCase<GetReceCmtListInputData, GetReceCmtListInteractor>();
+            busBuilder.RegisterUseCase<SaveReceCmtListInputData, SaveReceCmtListInteractor>();
+            busBuilder.RegisterUseCase<GetSyoukiInfListInputData, GetSyoukiInfListInteractor>();
+            busBuilder.RegisterUseCase<SaveSyoukiInfListInputData, SaveSyoukiInfListInteractor>();
+            busBuilder.RegisterUseCase<GetSyobyoKeikaListInputData, GetSyobyoKeikaListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
