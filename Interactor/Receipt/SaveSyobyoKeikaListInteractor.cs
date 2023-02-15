@@ -34,7 +34,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             var listSyobyoKeikaModel = inputData.SyobyoKeikaList.Select(item => ConvertToSyobyoKeikaModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                                 .ToList();
 
-            if (_receiptRepository.SaveListSyobyoKeika(inputData.HpId, inputData.UserId, listSyobyoKeikaModel))
+            if (_receiptRepository.SaveSyobyoKeikaList(inputData.HpId, inputData.UserId, listSyobyoKeikaModel))
             {
                 return new SaveSyobyoKeikaListOutputData(SaveSyobyoKeikaListStatus.Successed);
             }
@@ -88,7 +88,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.InvalidKeika;
         }
-        var syobyoKeikaDBList = _receiptRepository.GetListSyobyoKeika(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+        var syobyoKeikaDBList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
         var seqNoList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
         var syobyoKeikaCount = syobyoKeikaDBList.Count(item => seqNoList.Contains(item.SeqNo));
         if (seqNoList.Any() && syobyoKeikaCount != seqNoList.Count)

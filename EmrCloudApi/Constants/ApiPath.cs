@@ -183,12 +183,13 @@
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
         // Rece check
-        public const string GetListReceCmt = "GetListReceCmt";
-        public const string SaveListReceCmt = "SaveListReceCmt";
-        public const string GetListSyoukiInf = "GetListSyoukiInf";
-        public const string SaveListSyoukiInf = "SaveListSyoukiInf";
-        public const string GetListSyobyoKeika = "GetListSyobyoKeika";
-        public const string SaveListSyobyoKeika = "SaveListSyobyoKeika";
+        public const string GetReceCmtList = "GetReceCmtList";
+        public const string SaveReceCmtList = "SaveReceCmtList";
+        public const string GetSyoukiInfList = "GetSyoukiInfList";
+        public const string SaveSyoukiInfList = "SaveSyoukiInfList";
+        public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
+        public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
+        public const string GetReceHenReason = "GetReceHenReason";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
