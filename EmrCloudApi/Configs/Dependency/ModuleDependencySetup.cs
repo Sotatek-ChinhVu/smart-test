@@ -135,8 +135,6 @@ using Interactor.User;
 using Interactor.UserConf;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
-using KarteReport;
-using KarteReport.Interface;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
@@ -384,7 +382,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
-            services.AddTransient<IReportServices, ReportServices>();
         }
 
         private void SetupRepositories(IServiceCollection services)
