@@ -798,6 +798,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListSyoukiInfInputData, GetListSyoukiInfInteractor>();
             busBuilder.RegisterUseCase<SaveListSyoukiInfInputData, SaveListSyoukiInfInteractor>();
             busBuilder.RegisterUseCase<GetListSyobyoKeikaInputData, GetListSyobyoKeikaInteractor>();
+            //busBuilder.RegisterUseCase<SaveListSyobyoKeikaInputData, SaveListSyobyoKeikaInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
