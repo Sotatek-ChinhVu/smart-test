@@ -10,5 +10,7 @@ namespace Domain.Models.Diseases
         List<PtDiseaseModel> GetListPatientDiseaseForReport(int hpId, long ptId, int hokenPid, int sinDate, bool tenkiByomei);
 
         List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId);
+
+        List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate);
     }
 }

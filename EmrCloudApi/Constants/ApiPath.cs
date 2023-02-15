@@ -184,5 +184,8 @@
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";
+
+        //TreeSet Byomei
+        public const string GetTreeSetByomei = "GetTreeSetByomei";
     }
 }

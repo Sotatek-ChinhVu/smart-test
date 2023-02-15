@@ -2,7 +2,7 @@
 {
     public class ByomeiSetMstModel
     {
-        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType, bool isExpanded, bool isSelected)
+        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType)
         {
             GenerationId = generationId;
             SeqNo = seqNo;
@@ -20,8 +20,6 @@
             SetName = setName;
             IsTitle = isTitle;
             SelectType = selectType;
-            IsExpanded = isExpanded;
-            IsSelected = isSelected;
         }
 
         public int GenerationId { get; private set; }
@@ -80,10 +78,6 @@
             }
         }
 
-        public bool IsExpanded { get; private set; }
-
-        public bool IsSelected { get; private set; }
-
         public int Level
         {
             get
@@ -95,6 +89,8 @@
                 return 5;
             }
         }
+
+        public List<ByomeiSetMstModel> Childrens { get; set; } = new List<ByomeiSetMstModel>();
     }
 
     public enum ByomeiType
