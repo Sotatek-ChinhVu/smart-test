@@ -892,10 +892,18 @@
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
 
-
         //Insurance Mst Detail
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
+
+        // Rece
+        public static readonly string InvalidSinYm = "Invalid SinYm!";
+        public static readonly string InvalidReceCmtId = "Invalid ReceCmt Id!";
+        public static readonly string InvalidCmtKbn = "Invalid ReceCmt CmtKbn!";
+        public static readonly string InvalidCmtSbt = "Invalid ReceCmt CmtSbt!";
+        public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
+        public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
+
     }
 }

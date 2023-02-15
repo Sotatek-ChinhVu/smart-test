@@ -15,6 +15,11 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        private static T As<T>(this object obj)
+        {
+            return (T)obj;
+        }
+
         public static int FullStartDate(int startDate)
         {
             if (startDate == 0) return 0;

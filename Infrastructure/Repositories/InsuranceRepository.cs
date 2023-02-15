@@ -485,9 +485,9 @@ namespace Infrastructure.Repositories
             return countPtHokens == hokenPIds.Count;
         }
 
-        public bool CheckExistHokenPid(int hokenPId)
+        public bool CheckExistHokenId(int hokenId)
         {
-            var check = NoTrackingDataContext.PtHokenInfs.Any(h => h.HokenId == hokenPId && h.IsDeleted == 0);
+            var check = NoTrackingDataContext.PtHokenInfs.Any(h => h.HokenId == hokenId && h.IsDeleted == 0);
             return check;
         }
 
