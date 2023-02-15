@@ -4,14 +4,14 @@ namespace UseCase.Receipt.SaveListReceCmt;
 
 public class SaveListReceCmtInputData : IInputData<SaveListReceCmtOutputData>
 {
-    public SaveListReceCmtInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCmtItem> listReceCmt)
+    public SaveListReceCmtInputData(int hpId, int userId, long ptId, int sinYm, int hokenId, List<ReceCmtItem> receCmtList)
     {
         HpId = hpId;
         UserId = userId;
         PtId = ptId;
         SinYm = sinYm;
         HokenId = hokenId;
-        ListReceCmt = listReceCmt;
+        ReceCmtList = receCmtList;
     }
 
     public int HpId { get; private set; }
@@ -24,5 +24,5 @@ public class SaveListReceCmtInputData : IInputData<SaveListReceCmtOutputData>
 
     public int HokenId { get; private set; }
 
-    public List<ReceCmtItem> ListReceCmt { get; private set; }
+    public List<ReceCmtItem> ReceCmtList { get; private set; }
 }

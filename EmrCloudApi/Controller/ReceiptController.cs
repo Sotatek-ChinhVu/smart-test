@@ -52,7 +52,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveListReceCmt)]
     public ActionResult<Response<SaveListReceCmtResponse>> SaveListReceCmt([FromBody] SaveListReceCmtRequest request)
     {
-        var listReceCmtItem = request.ListReceCmt.Select(item => ConvertToReceCmtItem(item)).ToList();
+        var listReceCmtItem = request.ReceCmtList.Select(item => ConvertToReceCmtItem(item)).ToList();
         var input = new SaveListReceCmtInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceCmtItem);
         var output = _bus.Handle(input);
 
@@ -77,7 +77,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveListSyoukiInf)]
     public ActionResult<Response<SaveListSyoukiInfResponse>> SaveListSyoukiInf([FromBody] SaveListSyoukiInfRequest request)
     {
-        var listReceSyoukiInf = request.ListSyoukiInf.Select(item => ConvertToSyoukiInfItem(item)).ToList();
+        var listReceSyoukiInf = request.SyoukiInfList.Select(item => ConvertToSyoukiInfItem(item)).ToList();
         var input = new SaveListSyoukiInfInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
         var output = _bus.Handle(input);
 

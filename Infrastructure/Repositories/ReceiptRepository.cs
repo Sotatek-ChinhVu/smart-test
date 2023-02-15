@@ -1247,15 +1247,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt)
+    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> receCmtList)
     {
-        var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
+        var listReceCmtUpdate = receCmtList.Where(item => item.Id > 0).ToList();
         var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
                                                                              && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
                                                               .ToList();
 
-        var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
+        var listReceCmtAddNew = receCmtList.Where(item => item.Id == 0 && !item.IsDeleted)
                                            .Select(item => ConvertToNewReceCmt(hpId, userId, item))
                                            .ToList();
         TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
@@ -1304,15 +1304,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> listSyoukiInf)
+    public bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList)
     {
-        var listSyoukiInfUpdate = listSyoukiInf.Where(item => item.SeqNo > 0).ToList();
+        var listSyoukiInfUpdate = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
         var listSyoukiInfUpdateDB = TrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
                                                                              && listSyoukiInfUpdate.Select(item => item.SeqNo).Contains(item.SeqNo))
                                                               .ToList();
 
-        var listSyoukiInfAddNew = listSyoukiInf.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+        var listSyoukiInfAddNew = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
                                                .Select(item => ConvertToNewSyoukiInf(hpId, userId, item))
                                                .ToList();
         TrackingDataContext.SyoukiInfs.AddRange(listSyoukiInfAddNew);
@@ -1337,12 +1337,12 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> listSyoukiKbn)
+    public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
     {
         var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
                                                                                && entity.EndYm >= sinYm
-                                                                               && listSyoukiKbn.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
-        return countSyoukiKbn == listSyoukiKbn.Count;
+                                                                               && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
+        return countSyoukiKbn == syoukiKbnList.Count;
     }
     #endregion
 
