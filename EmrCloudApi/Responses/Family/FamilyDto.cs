@@ -1,10 +1,10 @@
-﻿using UseCase.Family.GetListFamily;
+﻿using UseCase.Family;
 
 namespace EmrCloudApi.Responses.Family;
 
 public class FamilyDto
 {
-    public FamilyDto(FamilyOutputItem model)
+    public FamilyDto(FamilyItem model)
     {
         FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;

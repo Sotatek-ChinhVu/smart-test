@@ -1,4 +1,4 @@
-﻿namespace UseCase.Family.SaveListFamily;
+﻿namespace UseCase.Family.SaveFamilyList;
 
 public enum SaveFamilyListStatus : byte
 {

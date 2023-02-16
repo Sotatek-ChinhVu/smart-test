@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.SaveListFamily;
+namespace UseCase.Family.SaveFamilyList;
 
 public class SaveFamilyListInputData : IInputData<SaveFamilyListOutputData>
 {
-    public SaveFamilyListInputData(int hpId, int userId, long ptId, List<FamilyInputItem> listFamily)
+    public SaveFamilyListInputData(int hpId, int userId, long ptId, List<FamilyItem> listFamily)
     {
         HpId = hpId;
         UserId = userId;
@@ -18,5 +18,5 @@ public class SaveFamilyListInputData : IInputData<SaveFamilyListOutputData>
 
     public long PtId { get; private set; }
 
-    public List<FamilyInputItem> ListFamily { get; private set; }
+    public List<FamilyItem> ListFamily { get; private set; }
 }

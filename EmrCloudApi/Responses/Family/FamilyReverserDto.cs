@@ -1,10 +1,10 @@
-﻿using UseCase.Family.GetListFamilyReverser;
+﻿using UseCase.Family;
 
 namespace EmrCloudApi.Responses.Family;
 
 public class FamilyReverserDto
 {
-    public FamilyReverserDto(FamilyReverserOutputItem ouputItem)
+    public FamilyReverserDto(FamilyReverserItem ouputItem)
     {
         PtId = ouputItem.PtId;
         PtNum = ouputItem.PtNum;

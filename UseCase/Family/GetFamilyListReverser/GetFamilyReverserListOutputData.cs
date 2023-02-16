@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.GetListFamilyReverser;
+namespace UseCase.Family.GetFamilyReverserList;
 
 public class GetFamilyReverserListOutputData : IOutputData
 {
-    public GetFamilyReverserListOutputData(List<FamilyReverserOutputItem> familyList, GetFamilyReverserListStatus status)
+    public GetFamilyReverserListOutputData(List<FamilyReverserItem> familyList, GetFamilyReverserListStatus status)
     {
         FamilyList = familyList;
         Status = status;
@@ -16,7 +16,7 @@ public class GetFamilyReverserListOutputData : IOutputData
         Status = status;
     }
 
-    public List<FamilyReverserOutputItem> FamilyList { get; private set; }
+    public List<FamilyReverserItem> FamilyList { get; private set; }
 
     public GetFamilyReverserListStatus Status { get; private set; }
 }

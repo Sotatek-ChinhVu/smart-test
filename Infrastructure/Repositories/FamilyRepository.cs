@@ -204,8 +204,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 }
             }
         }
-        TrackingDataContext.SaveChanges();
-        return true;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private PtFamily ConvertToNewPtFamily(int hpId, int userId, FamilyModel model)

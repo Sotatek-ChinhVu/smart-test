@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.SaveListFamily;
+namespace UseCase.Family.SaveFamilyList;
 
 public class SaveFamilyListOutputData : IOutputData
 {

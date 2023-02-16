@@ -1,11 +1,28 @@
 ﻿using Domain.Models.Family;
-using Helper.Common;
 
-namespace UseCase.Family.GetListFamily;
+namespace UseCase.Family;
 
-public class FamilyOutputItem
+public class FamilyItem
 {
-    public FamilyOutputItem(FamilyModel model)
+    public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> listPtFamilyReki)
+    {
+        FamilyId = familyId;
+        PtId = ptId;
+        ZokugaraCd = zokugaraCd;
+        FamilyPtId = familyPtId;
+        Name = name;
+        KanaName = kanaName;
+        Sex = sex;
+        Birthday = birthday;
+        IsDead = isDead;
+        IsSeparated = isSeparated;
+        Biko = biko;
+        SortNo = sortNo;
+        IsDeleted = isDeleted;
+        ListPtFamilyReki = listPtFamilyReki;
+    }
+
+    public FamilyItem(FamilyModel model)
     {
         FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
@@ -20,10 +37,12 @@ public class FamilyOutputItem
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
-        ListPtFamilyReki = model.ListPtFamilyRekis.Select(item => new PtFamilyRekiOutputItem(item)).ToList();
+        ListPtFamilyReki = model.ListPtFamilyRekis.Select(item => new FamilyRekiItem(item)).ToList();
     }
 
     public long FamilyId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 
@@ -49,5 +68,7 @@ public class FamilyOutputItem
 
     public int SortNo { get; private set; }
 
-    public List<PtFamilyRekiOutputItem> ListPtFamilyReki { get; private set; }
+    public bool IsDeleted { get; private set; }
+
+    public List<FamilyRekiItem> ListPtFamilyReki { get; private set; }
 }

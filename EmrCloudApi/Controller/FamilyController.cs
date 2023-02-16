@@ -6,9 +6,10 @@ using EmrCloudApi.Responses.Family;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Family.GetListFamily;
-using UseCase.Family.GetListFamilyReverser;
-using UseCase.Family.SaveListFamily;
+using UseCase.Family;
+using UseCase.Family.GetFamilyList;
+using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.SaveFamilyList;
 
 namespace EmrCloudApi.Controller;
 
@@ -58,9 +59,9 @@ public class FamilyController : AuthorizeControllerBase
         return new ActionResult<Response<SaveFamilyListResponse>>(presenter.Result);
     }
 
-    private List<FamilyInputItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
+    private List<FamilyItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
     {
-        var result = listFamilyRequest.Select(family => new FamilyInputItem(
+        var result = listFamilyRequest.Select(family => new FamilyItem(
                                                                                 family.FamilyId,
                                                                                 family.PtId,
                                                                                 family.ZokugaraCd,
@@ -74,7 +75,7 @@ public class FamilyController : AuthorizeControllerBase
                                                                                 family.Biko,
                                                                                 family.SortNo,
                                                                                 family.IsDeleted,
-                                                                                family.ListPtFamilyReki.Select(reki => new FamilyRekiInputItem(
+                                                                                family.ListPtFamilyReki.Select(reki => new FamilyRekiItem(
                                                                                                                                                     reki.Id,
                                                                                                                                                     reki.ByomeiCd,
                                                                                                                                                     reki.Byomei,

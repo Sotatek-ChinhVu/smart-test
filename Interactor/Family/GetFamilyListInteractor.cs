@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Family;
-using UseCase.Family.GetListFamily;
+using UseCase.Family;
+using UseCase.Family.GetFamilyList;
 
 namespace Interactor.Family;
 
@@ -24,7 +25,7 @@ public class GetFamilyListInteractor : IGetFamilyListInputPort
             {
                 return new GetFamilyListOutputData(GetFamilyListStatus.InvalidPtId);
             }
-            return new GetFamilyListOutputData(GetListFamilyOutputItem(inputData), GetFamilyListStatus.Successed);
+            return new GetFamilyListOutputData(GetListFamilyItem(inputData), GetFamilyListStatus.Successed);
         }
         finally
         {
@@ -32,9 +33,9 @@ public class GetFamilyListInteractor : IGetFamilyListInputPort
         }
     }
 
-    private List<FamilyOutputItem> GetListFamilyOutputItem(GetFamilyListInputData inputData)
+    private List<FamilyItem> GetListFamilyItem(GetFamilyListInputData inputData)
     {
         var listData = _familyRepository.GetFamilyList(inputData.HpId, inputData.PtId, inputData.SinDate);
-        return listData.Select(item => new FamilyOutputItem(item)).ToList();
+        return listData.Select(item => new FamilyItem(item)).ToList();
     }
 }

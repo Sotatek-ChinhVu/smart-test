@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Family;
-using UseCase.Family.GetListFamilyReverser;
+using UseCase.Family;
+using UseCase.Family.GetFamilyReverserList;
 
 namespace Interactor.Family;
 
@@ -66,9 +67,9 @@ public class GetFamilyReverserListInteractor : IGetFamilyReverserListInputPort
         }
     }
 
-    private List<FamilyReverserOutputItem> GetDataFamilyReverser(GetFamilyReverserListInputData inputData)
+    private List<FamilyReverserItem> GetDataFamilyReverser(GetFamilyReverserListInputData inputData)
     {
-        List<FamilyReverserOutputItem> result = new();
+        List<FamilyReverserItem> result = new();
         var ptInfList = _familyRepository.GetFamilyReverserList(inputData.HpId, inputData.FamilyPtId, inputData.ListPtInf.Keys.ToList());
         foreach (var item in ptInfList)
         {
@@ -85,7 +86,7 @@ public class GetFamilyReverserListInteractor : IGetFamilyReverserListInputPort
             {
                 zokugaraCd = RelationshipReverserFDic[zokugaraCd];
             }
-            result.Add(new FamilyReverserOutputItem(item, zokugaraCd));
+            result.Add(new FamilyReverserItem(item, zokugaraCd));
         }
         return result;
     }

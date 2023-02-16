@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.GetListFamily;
+namespace UseCase.Family.GetFamilyList;
 
 public interface IGetFamilyListInputPort : IInputPort<GetFamilyListInputData, GetFamilyListOutputData>
 {

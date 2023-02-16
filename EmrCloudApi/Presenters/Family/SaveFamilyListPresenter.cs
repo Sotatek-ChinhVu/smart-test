@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Family;
-using UseCase.Family.SaveListFamily;
+using UseCase.Family.SaveFamilyList;
 
 namespace EmrCloudApi.Presenters.Family;
 

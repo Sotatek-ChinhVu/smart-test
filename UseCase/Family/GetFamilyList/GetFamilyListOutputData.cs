@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.GetListFamily;
+namespace UseCase.Family.GetFamilyList;
 
 public class GetFamilyListOutputData : IOutputData
 {
-    public GetFamilyListOutputData(List<FamilyOutputItem> familyList, GetFamilyListStatus status)
+    public GetFamilyListOutputData(List<FamilyItem> familyList, GetFamilyListStatus status)
     {
         FamilyList = familyList;
         Status = status;
@@ -16,7 +16,7 @@ public class GetFamilyListOutputData : IOutputData
         Status = status;
     }
 
-    public List<FamilyOutputItem> FamilyList { get; private set; }
+    public List<FamilyItem> FamilyList { get; private set; }
 
     public GetFamilyListStatus Status { get; private set; }
 }

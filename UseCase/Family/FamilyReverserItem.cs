@@ -1,10 +1,10 @@
 ﻿using Domain.Models.Family;
 
-namespace UseCase.Family.GetListFamilyReverser;
+namespace UseCase.Family;
 
-public class FamilyReverserOutputItem
+public class FamilyReverserItem
 {
-    public FamilyReverserOutputItem(FamilyModel model, string zokugaraCd)
+    public FamilyReverserItem(FamilyModel model, string zokugaraCd)
     {
         PtId = model.PtId;
         PtNum = model.FamilyPtNum;

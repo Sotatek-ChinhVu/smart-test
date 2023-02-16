@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Family;
-using UseCase.Family.GetListFamilyReverser;
+using UseCase.Family.GetFamilyReverserList;
 
 namespace EmrCloudApi.Presenters.Family;
 

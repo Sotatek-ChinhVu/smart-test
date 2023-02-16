@@ -1,4 +1,4 @@
-﻿namespace UseCase.Family.GetListFamily;
+﻿namespace UseCase.Family.GetFamilyList;
 
 public enum GetFamilyListStatus : byte
 {

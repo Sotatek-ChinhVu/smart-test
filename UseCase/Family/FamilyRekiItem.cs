@@ -1,8 +1,10 @@
-﻿namespace UseCase.Family.SaveListFamily;
+﻿using Domain.Models.Family;
 
-public class FamilyRekiInputItem
+namespace UseCase.Family;
+
+public class FamilyRekiItem
 {
-    public FamilyRekiInputItem(long id, string byomeiCd, string byomei, string cmt, int sortNo, bool isDeleted)
+    public FamilyRekiItem(long id, string byomeiCd, string byomei, string cmt, int sortNo, bool isDeleted)
     {
         Id = id;
         ByomeiCd = byomeiCd;
@@ -10,6 +12,16 @@ public class FamilyRekiInputItem
         Cmt = cmt;
         SortNo = sortNo;
         IsDeleted = isDeleted;
+    }
+
+    public FamilyRekiItem(PtFamilyRekiModel model)
+    {
+        Id = model.Id;
+        ByomeiCd = model.ByomeiCd;
+        Byomei = model.Byomei;
+        Cmt = model.Cmt;
+        SortNo = model.SortNo;
+        IsDeleted = false;
     }
 
     public long Id { get; private set; }

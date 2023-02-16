@@ -4,7 +4,8 @@ using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
 using Helper.Common;
-using UseCase.Family.SaveListFamily;
+using UseCase.Family;
+using UseCase.Family.SaveFamilyList;
 
 namespace Interactor.Family;
 
@@ -70,7 +71,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         }
     }
 
-    private List<FamilyModel> ConvertToFamilyList(List<FamilyInputItem> familyInputList)
+    private List<FamilyModel> ConvertToFamilyList(List<FamilyItem> familyInputList)
     {
         List<FamilyModel> result = new();
         foreach (var family in familyInputList)
@@ -128,9 +129,9 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         return ValidateFamilyListInputItem(input.HpId, input.PtId, input.ListFamily);
     }
 
-    private SaveFamilyListStatus ValidateFamilyListInputItem(int hpId, long ptId, List<FamilyInputItem> listFamily)
+    private SaveFamilyListStatus ValidateFamilyListInputItem(int hpId, long ptId, List<FamilyItem> listFamily)
     {
-        List<FamilyRekiInputItem> listFamilyReki = new();
+        List<FamilyRekiItem> listFamilyReki = new();
         // validate familyId
         var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).ToList();
         var listOnlyFamlily = _familyRepository.GetListByPtId(hpId, ptId);
@@ -211,7 +212,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         return ValidateListFamilyRekiInputItem(hpId, listFamilyReki);
     }
 
-    private SaveFamilyListStatus ValidateListFamilyRekiInputItem(int hpId, List<FamilyRekiInputItem> listFamilyReki)
+    private SaveFamilyListStatus ValidateListFamilyRekiInputItem(int hpId, List<FamilyRekiItem> listFamilyReki)
     {
         // validate familyRekiId
         var listFamilyRekiId = listFamilyReki.Where(item => item.Id > 0).Select(item => item.Id).ToList();

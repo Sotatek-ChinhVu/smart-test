@@ -1,4 +1,4 @@
-﻿namespace UseCase.Family.GetListFamilyReverser;
+﻿namespace UseCase.Family.GetFamilyReverserList;
 
 public enum GetFamilyReverserListStatus : byte
 {
