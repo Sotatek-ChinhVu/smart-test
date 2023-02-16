@@ -190,6 +190,7 @@
         public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
         public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
         public const string GetReceHenReason = "GetReceHenReason";
+        public const string GetReceiCheckList = "GetReceiCheckList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

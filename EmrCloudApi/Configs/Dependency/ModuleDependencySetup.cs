@@ -278,6 +278,7 @@ using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
+using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -799,6 +800,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSyobyoKeikaListInputData, GetSyobyoKeikaListInteractor>();
             busBuilder.RegisterUseCase<SaveSyobyoKeikaListInputData, SaveSyobyoKeikaListInteractor>();
             busBuilder.RegisterUseCase<GetReceHenReasonInputData, GetReceHenReasonInteractor>();
+            busBuilder.RegisterUseCase<GetReceiCheckListInputData, GetReceiCheckListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
