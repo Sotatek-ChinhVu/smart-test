@@ -40,6 +40,12 @@
         public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
+        public static readonly string InvalidUserConfs = "Invalid UserConfs";
+        public static readonly string DuplicateUserConf = "Duplicate UserConf";
+        public static readonly string InvalidGrpItemCd = "Invalid GrpItemCd";
+        public static readonly string InvalidGrpItemEdaNo = "Invalid GrpItemEdaNo";
+        public static readonly string InvalidParam = "Invalid Param";
+
 
         //Common
         public static readonly string NotFound = "Not found";

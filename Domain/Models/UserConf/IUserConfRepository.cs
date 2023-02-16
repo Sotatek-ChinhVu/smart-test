@@ -17,4 +17,6 @@ public interface IUserConfRepository : IRepositoryBase
     int Sagaku(bool fromRece);
 
     int GetDefaultValue(int groupCd, int groupItemCd = 0);
+
+    bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs);
 }
