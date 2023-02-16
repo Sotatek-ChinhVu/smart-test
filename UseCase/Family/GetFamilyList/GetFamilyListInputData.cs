@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Family.GetListFamily;
+namespace UseCase.Family.GetFamilyList;
 
-public class GetListFamilyInputData : IInputData<GetListFamilyOutputData>
+public class GetFamilyListInputData : IInputData<GetFamilyListOutputData>
 {
-    public GetListFamilyInputData(int hpId, long ptId, int sinDate)
+    public GetFamilyListInputData(int hpId, long ptId, int sinDate)
     {
         HpId = hpId;
         PtId = ptId;

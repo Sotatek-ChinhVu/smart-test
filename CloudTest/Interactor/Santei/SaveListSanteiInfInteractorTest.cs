@@ -111,7 +111,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -192,7 +192,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(false);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -232,7 +232,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -351,7 +351,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -456,7 +456,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -526,7 +526,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -648,7 +648,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -1207,7 +1207,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
@@ -1301,7 +1301,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         .Returns(true);
 
         var mockPatientInforRepo = new Mock<IPatientInforRepository>();
-        mockPatientInforRepo.Setup(repo => repo.CheckExistListId(new List<long> { ptId }))
+        mockPatientInforRepo.Setup(repo => repo.CheckExistIdList(new List<long> { ptId }))
         .Returns(true);
 
         var mockUserRepo = new Mock<IUserRepository>();
