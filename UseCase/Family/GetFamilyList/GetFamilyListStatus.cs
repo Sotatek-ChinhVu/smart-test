@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Family.GetListFamily;
 
-public enum GetListFamilyStatus : byte
+public enum GetFamilyListStatus : byte
 {
     Successed = 1,
     InvalidPtId = 2,

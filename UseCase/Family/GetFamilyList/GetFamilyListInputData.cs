@@ -2,9 +2,9 @@
 
 namespace UseCase.Family.GetListFamily;
 
-public class GetListFamilyInputData : IInputData<GetListFamilyOutputData>
+public class GetFamilyListInputData : IInputData<GetFamilyListOutputData>
 {
-    public GetListFamilyInputData(int hpId, long ptId, int sinDate)
+    public GetFamilyListInputData(int hpId, long ptId, int sinDate)
     {
         HpId = hpId;
         PtId = ptId;

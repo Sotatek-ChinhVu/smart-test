@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Responses.Family;
 
-public class SaveListFamilyResponse
+public class SaveFamilyListResponse
 {
-    public SaveListFamilyResponse(bool success)
+    public SaveFamilyListResponse(bool success)
     {
         Success = success;
     }

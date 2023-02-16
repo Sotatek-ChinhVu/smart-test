@@ -2,9 +2,9 @@
 
 namespace UseCase.Family.SaveListFamily;
 
-public class SaveListFamilyInputData : IInputData<SaveListFamilyOutputData>
+public class SaveFamilyListInputData : IInputData<SaveFamilyListOutputData>
 {
-    public SaveListFamilyInputData(int hpId, int userId, long ptId, List<FamilyInputItem> listFamily)
+    public SaveFamilyListInputData(int hpId, int userId, long ptId, List<FamilyInputItem> listFamily)
     {
         HpId = hpId;
         UserId = userId;

@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Family.SaveListFamily;
 
-public enum SaveListFamilyStatus : byte
+public enum SaveFamilyListStatus : byte
 {
     ValidateSuccess = 0,
     Successed = 1,

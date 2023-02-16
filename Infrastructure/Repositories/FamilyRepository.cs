@@ -4,7 +4,6 @@ using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace Infrastructure.Repositories;
 
@@ -12,23 +11,23 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 {
     public FamilyRepository(ITenantProvider tenantProvider) : base(tenantProvider) { }
 
-    public List<FamilyModel> GetListFamily(int hpId, long ptId, int sinDate)
+    public List<FamilyModel> GetFamilyList(int hpId, long ptId, int sinDate)
     {
         var ptFamilys = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
                                                                         && item.PtId == ptId
                                                                         && item.IsDeleted != 1)
                                                         .ToList();
 
-        var listFamilyPtIds = ptFamilys.Select(item => item.FamilyPtId).ToList();
-        var listFamilyIds = ptFamilys.Select(item => item.FamilyId).ToList();
+        var familyPtIdLists = ptFamilys.Select(item => item.FamilyPtId).ToList();
+        var familyIdLists = ptFamilys.Select(item => item.FamilyId).ToList();
 
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
-                                                                && listFamilyPtIds.Contains(item.PtId)
+                                                                && familyPtIdLists.Contains(item.PtId)
                                                                 && item.IsDelete != 1)
                                                  .ToList();
 
         var ptFamilyRekis = NoTrackingDataContext.PtFamilyRekis.Where(u => u.HpId == hpId
-                                                                            && listFamilyIds.Contains(u.FamilyId)
+                                                                            && familyIdLists.Contains(u.FamilyId)
                                                                             && !string.IsNullOrEmpty(u.Byomei)
                                                                             && u.IsDeleted != 1)
                                                                .OrderBy(u => u.SortNo)
@@ -39,22 +38,22 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                         .ToList();
     }
 
-    public List<FamilyModel> GetListFamilyReverser(int hpId, long familyPtId, List<long> listPtIdInput)
+    public List<FamilyModel> GetFamilyReverserList(int hpId, long familyPtId, List<long> ptIdInputList)
     {
-        var listPtIdExist = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
-                                                                    && listPtIdInput.Contains(item.PtId)
+        var ptIdExistList = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
+                                                                    && ptIdInputList.Contains(item.PtId)
                                                                     && item.FamilyPtId == familyPtId
                                                                     && item.IsDeleted != 1)
                                                         .Select(item => item.PtId)
                                                         .ToList();
 
-        var listPtInf = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
-                                                                && listPtIdInput.Contains(item.PtId)
-                                                                && !listPtIdExist.Contains(item.PtId)
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                && ptIdInputList.Contains(item.PtId)
+                                                                && !ptIdExistList.Contains(item.PtId)
                                                                 && item.IsDelete != 1)
                                                  .ToList();
 
-        return listPtInf.Select(item => new FamilyModel(
+        return ptInfList.Select(item => new FamilyModel(
                                                             item.PtId,
                                                             item.PtNum,
                                                             item.Name ?? string.Empty,
@@ -65,7 +64,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                         )).ToList();
     }
 
-    public bool SaveListFamily(int hpId, int userId, List<FamilyModel> listFamily)
+    public bool SaveFamilyList(int hpId, int userId, List<FamilyModel> familyList)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         return executionStrategy.Execute(
@@ -74,7 +73,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 using var transaction = TrackingDataContext.Database.BeginTransaction();
                 try
                 {
-                    if (SaveListFamilyAction(hpId, userId, listFamily))
+                    if (SaveFamilyListAction(hpId, userId, familyList))
                     {
                         transaction.Commit();
                         return true;
@@ -104,10 +103,10 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                               .ToList();
     }
 
-    public bool CheckExistListFamilyReki(int hpId, List<long> listFamilyRekiId)
+    public bool CheckExistFamilyRekiList(int hpId, List<long> familyRekiIdList)
     {
-        var countFromDB = NoTrackingDataContext.PtFamilyRekis.Count(x => x.HpId == hpId && listFamilyRekiId.Contains(x.Id) && x.IsDeleted != 1);
-        return listFamilyRekiId.Count == countFromDB;
+        var countFromDB = NoTrackingDataContext.PtFamilyRekis.Count(x => x.HpId == hpId && familyRekiIdList.Contains(x.Id) && x.IsDeleted != 1);
+        return familyRekiIdList.Count == countFromDB;
     }
 
     #region private function
@@ -153,7 +152,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                     );
     }
 
-    private bool SaveListFamilyAction(int hpId, int userId, List<FamilyModel> listFamily)
+    private bool SaveFamilyListAction(int hpId, int userId, List<FamilyModel> listFamily)
     {
         var listFamilyPtId = listFamily.Where(item => item.FamilyPtId > 0 && !item.IsDeleted).Select(item => item.FamilyPtId).ToList();
         var listFamilyId = listFamily.Select(item => item.FamilyId).ToList();
@@ -169,7 +168,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 TrackingDataContext.PtFamilys.Add(ptFamilyEntity);
                 TrackingDataContext.SaveChanges();
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
-                if (!SaveListFamilyReki(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
+                if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
                     return false;
                 }
@@ -199,7 +198,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ptFamilyEntity.IsSeparated = familyModel.IsSeparated;
                 ptFamilyEntity.Biko = familyModel.Biko;
                 UpdatePtInf(listPtInf, familyModel.FamilyPtId, familyModel.IsDead);
-                if (!SaveListFamilyReki(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
+                if (!SaveFamilyRekiList(hpId, userId, ptFamilyEntity.FamilyPtId, ptFamilyEntity.FamilyId, listFamilyRekiDB, familyModel.ListPtFamilyRekis))
                 {
                     return false;
                 }
@@ -233,7 +232,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         return ptFamily;
     }
 
-    private bool SaveListFamilyReki(int hpId, int userId, long familyPtId, long familyId, List<PtFamilyReki> listPtFamilyRekiEntity, List<PtFamilyRekiModel> listPtFamilyRekiModel)
+    private bool SaveFamilyRekiList(int hpId, int userId, long familyPtId, long familyId, List<PtFamilyReki> listPtFamilyRekiEntity, List<PtFamilyRekiModel> listPtFamilyRekiModel)
     {
         foreach (var familyRekiModel in listPtFamilyRekiModel)
         {

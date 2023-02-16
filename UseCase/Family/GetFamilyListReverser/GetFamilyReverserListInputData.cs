@@ -2,9 +2,9 @@
 
 namespace UseCase.Family.GetListFamilyReverser;
 
-public class GetListFamilyReverserInputData : IInputData<GetListFamilyReverserOutputData>
+public class GetFamilyReverserListInputData : IInputData<GetFamilyReverserListOutputData>
 {
-    public GetListFamilyReverserInputData(int hpId, long familyPtId, Dictionary<long, string> listPtInf)
+    public GetFamilyReverserListInputData(int hpId, long familyPtId, Dictionary<long, string> listPtInf)
     {
         HpId = hpId;
         FamilyPtId = familyPtId;

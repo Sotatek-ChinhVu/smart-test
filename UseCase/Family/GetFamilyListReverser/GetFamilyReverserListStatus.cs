@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Family.GetListFamilyReverser;
 
-public enum GetListFamilyReverserStatus : byte
+public enum GetFamilyReverserListStatus : byte
 {
     Successed = 1,
     InvalidPtId = 2,

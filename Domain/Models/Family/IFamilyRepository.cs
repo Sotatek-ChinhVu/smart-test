@@ -4,13 +4,13 @@ namespace Domain.Models.Family;
 
 public interface IFamilyRepository : IRepositoryBase
 {
-    List<FamilyModel> GetListFamily(int hpId, long ptId, int sinDate);
+    List<FamilyModel> GetFamilyList(int hpId, long ptId, int sinDate);
 
-    List<FamilyModel> GetListFamilyReverser(int hpId, long familyPtId, List<long> listPtIdInput);
+    List<FamilyModel> GetFamilyReverserList(int hpId, long familyPtId, List<long> ptIdInputList);
 
-    bool SaveListFamily(int hpId, int userId, List<FamilyModel> listFamily);
+    bool SaveFamilyList(int hpId, int userId, List<FamilyModel> familyList);
 
     List<FamilyModel> GetListByPtId(int hpId, long ptId);
 
-    bool CheckExistListFamilyReki(int hpId, List<long> listFamilyRekiId);
+    bool CheckExistFamilyRekiList(int hpId, List<long> familyRekiIdList);
 }

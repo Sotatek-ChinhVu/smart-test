@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Family;
 
-public class GetListFamilyReverserRequest
+public class GetFamilyReverserListRequest
 {
     public long FamilyPtId { get; set; }
 

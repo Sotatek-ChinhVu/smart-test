@@ -3,7 +3,7 @@ using UseCase.Family.GetListFamilyReverser;
 
 namespace Interactor.Family;
 
-public class GetListFamilyReverserInteractor : IGetListFamilyReverserInputPort
+public class GetFamilyReverserListInteractor : IGetFamilyReverserListInputPort
 {
     private readonly IFamilyRepository _familyRepository;
     private readonly Dictionary<string, string> RelationshipReverserMDic = new Dictionary<string, string>()
@@ -45,20 +45,20 @@ public class GetListFamilyReverserInteractor : IGetListFamilyReverserInputPort
                                                                                                                 { "OT","OT"},
                                                                                                             };
 
-    public GetListFamilyReverserInteractor(IFamilyRepository familyRepository)
+    public GetFamilyReverserListInteractor(IFamilyRepository familyRepository)
     {
         _familyRepository = familyRepository;
     }
 
-    public GetListFamilyReverserOutputData Handle(GetListFamilyReverserInputData inputData)
+    public GetFamilyReverserListOutputData Handle(GetFamilyReverserListInputData inputData)
     {
         try
         {
             if (inputData.FamilyPtId <= 0)
             {
-                return new GetListFamilyReverserOutputData(GetListFamilyReverserStatus.InvalidPtId);
+                return new GetFamilyReverserListOutputData(GetFamilyReverserListStatus.InvalidPtId);
             }
-            return new GetListFamilyReverserOutputData(GetDataFamilyReverser(inputData), GetListFamilyReverserStatus.Successed);
+            return new GetFamilyReverserListOutputData(GetDataFamilyReverser(inputData), GetFamilyReverserListStatus.Successed);
         }
         finally
         {
@@ -66,11 +66,11 @@ public class GetListFamilyReverserInteractor : IGetListFamilyReverserInputPort
         }
     }
 
-    private List<FamilyReverserOutputItem> GetDataFamilyReverser(GetListFamilyReverserInputData inputData)
+    private List<FamilyReverserOutputItem> GetDataFamilyReverser(GetFamilyReverserListInputData inputData)
     {
         List<FamilyReverserOutputItem> result = new();
-        var listPtInf = _familyRepository.GetListFamilyReverser(inputData.HpId, inputData.FamilyPtId, inputData.ListPtInf.Keys.ToList());
-        foreach (var item in listPtInf)
+        var ptInfList = _familyRepository.GetFamilyReverserList(inputData.HpId, inputData.FamilyPtId, inputData.ListPtInf.Keys.ToList());
+        foreach (var item in ptInfList)
         {
             var zokugaraCd = inputData.ListPtInf[item.PtId];
             if (zokugaraCd == null)

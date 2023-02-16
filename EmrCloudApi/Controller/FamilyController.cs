@@ -22,40 +22,40 @@ public class FamilyController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetListFamilyResponse>> GetList([FromQuery] GetListFamilyRequest request)
+    public ActionResult<Response<GetFamilyListResponse>> GetList([FromQuery] GetFamilyListRequest request)
     {
-        var input = new GetListFamilyInputData(HpId, request.PtId, request.SinDate);
+        var input = new GetFamilyListInputData(HpId, request.PtId, request.SinDate);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListFamilyPresenter();
+        var presenter = new GetFamilyListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListFamilyResponse>>(presenter.Result);
+        return new ActionResult<Response<GetFamilyListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.GetListFamilyReverser)]
-    public ActionResult<Response<GetListFamilyReverserResponse>> GetListFamilyReverser([FromBody] GetListFamilyReverserRequest request)
+    [HttpPost(ApiPath.GetFamilyReverserList)]
+    public ActionResult<Response<GetFamilyReverserListResponse>> GetListFamilyReverser([FromBody] GetFamilyReverserListRequest request)
     {
-        var input = new GetListFamilyReverserInputData(HpId, request.FamilyPtId, request.DicPtInf);
+        var input = new GetFamilyReverserListInputData(HpId, request.FamilyPtId, request.DicPtInf);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListFamilyReverserPresenter();
+        var presenter = new GetFamilyReverserListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListFamilyReverserResponse>>(presenter.Result);
+        return new ActionResult<Response<GetFamilyReverserListResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public ActionResult<Response<SaveListFamilyResponse>> SaveList([FromBody] SaveListFamilyRequest request)
+    public ActionResult<Response<SaveFamilyListResponse>> SaveList([FromBody] SaveFamilyListRequest request)
     {
-        var listFamilyInputData = ConvertToFamilyInputItem(request.ListFamily);
-        var input = new SaveListFamilyInputData(HpId, UserId, request.PtId, listFamilyInputData);
+        var listFamilyInputData = ConvertToFamilyInputItem(request.FamilyList);
+        var input = new SaveFamilyListInputData(HpId, UserId, request.PtId, listFamilyInputData);
         var output = _bus.Handle(input);
 
-        var presenter = new SaveListFamilyPresenter();
+        var presenter = new SaveFamilyListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveListFamilyResponse>>(presenter.Result);
+        return new ActionResult<Response<SaveFamilyListResponse>>(presenter.Result);
     }
 
     private List<FamilyInputItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)

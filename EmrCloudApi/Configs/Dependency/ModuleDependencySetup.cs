@@ -784,9 +784,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListSanteiInfInputData, SaveListSanteiInfInteractor>();
 
             //Family
-            busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
-            busBuilder.RegisterUseCase<SaveListFamilyInputData, SaveListFamilyInteractor>();
-            busBuilder.RegisterUseCase<GetListFamilyReverserInputData, GetListFamilyReverserInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyListInputData, GetFamilyListInteractor>();
+            busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
