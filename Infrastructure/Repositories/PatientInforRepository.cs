@@ -502,7 +502,7 @@ namespace Infrastructure.Repositories
             {
                 var groupIdList = groupKeyList.Select(g => g.GroupId).ToList();
                 var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
-                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId))
+                    .Where(p => p.IsDeleted == DeleteTypes.None && p.GroupCode != null && groupIdList.Contains(p.GroupId))
                     .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
                     .ToList();
 
@@ -510,7 +510,12 @@ namespace Infrastructure.Repositories
                 int index = 1;
                 foreach (var groupId in groupIdList)
                 {
-                    string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
+                    var grpItem = groupKeyList.FirstOrDefault(g => g.GroupId == groupId);
+                    if (grpItem == null)
+                    {
+                        break;
+                    }
+                    string groupCode = grpItem.GroupCode;
                     var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
                     if (index == 1)
                     {
