@@ -19,7 +19,6 @@ namespace EmrCloudApi.Presenters.InsuranceMst
             };
             switch (outputData.Status)
             {
-
                 case GetInfoCloneInsuranceMstStatus.InvalidPrefNo:
                     Result.Message = ResponseMessage.InvalidPrefNo;
                     break;

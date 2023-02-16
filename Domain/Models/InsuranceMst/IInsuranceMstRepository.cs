@@ -20,6 +20,6 @@ namespace Domain.Models.InsuranceMst
 
         bool DeleteHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate);
 
-        (int, int) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate);
+        (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate);
     }
 }

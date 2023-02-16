@@ -865,7 +865,7 @@ namespace Infrastructure.Repositories
         /// <param name="prefNo"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        public (int, int) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
+        public (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
         {
             int sortNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
                                                                u.HokenNo == hokenNo &&

@@ -11,9 +11,9 @@ namespace UseCase.InsuranceMst.GetInfoCloneInsuranceMst
             Status = status;
         }
 
-        public int HokenEdaNo { get; set; }
+        public int HokenEdaNo { get; private set; }
 
-        public int SortNo { get; set; }
+        public int SortNo { get; private set; }
 
         public GetInfoCloneInsuranceMstStatus Status { get; private set; }
     }
