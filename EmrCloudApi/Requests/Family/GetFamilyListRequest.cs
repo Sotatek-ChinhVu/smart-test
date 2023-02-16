@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Family;
 
-public class GetListFamilyRequest
+public class GetFamilyListRequest
 {
     public int SinDate { get; set; }
 

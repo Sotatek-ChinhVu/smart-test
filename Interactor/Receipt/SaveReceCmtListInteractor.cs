@@ -51,7 +51,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
 
     private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
             return SaveReceCmtListStatus.InvalidPtId;
         }
