@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
 using EmrCloudApi.Requests.ExportPDF;
+using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Interface;
 using System.Text;
@@ -13,9 +14,11 @@ namespace EmrCloudApi.Controller
     {
         private static HttpClient _httpClient = new HttpClient();
         private readonly IReportService _reportService;
-        public PdfCreatorController(IReportService reportService)
+        private readonly IConfiguration _configuration;
+        public PdfCreatorController(IReportService reportService, IConfiguration configuration)
         {
             _reportService = reportService;
+            _configuration = configuration;
         }
 
         [HttpGet("ExportKarte1")]
@@ -23,17 +26,28 @@ namespace EmrCloudApi.Controller
         {
             var karte1Data = _reportService.GetKarte1ReportingData(1, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
 
-            return await RenderPdf(karte1Data);
+            return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
-        private async Task<IActionResult> RenderPdf(object data)
+        private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
             StringContent jsonContent = new StringContent(
                 JsonSerializer.Serialize(data),
                 Encoding.UTF8,
                 "application/json");
 
-            using (HttpResponseMessage response = await _httpClient.PostAsync("https://smartkarte-report.sotatek.works/api/reporting-fmKarte1", jsonContent))
+            string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
+            string functionName = string.Empty;
+            switch (reportType)
+            {
+                case ReportType.Karte1:
+                    functionName = "reporting-fmKarte1";
+                    break;
+                default:
+                    throw new NotImplementedException("The reportType is incorrect: " + reportType.ToString());
+            }
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
             {
                 response.EnsureSuccessStatusCode();
 
