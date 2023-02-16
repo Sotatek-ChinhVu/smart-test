@@ -25,7 +25,7 @@ public class GetFamilyListInteractor : IGetFamilyListInputPort
             {
                 return new GetFamilyListOutputData(GetFamilyListStatus.InvalidPtId);
             }
-            return new GetFamilyListOutputData(GetListFamilyItem(inputData), GetFamilyListStatus.Successed);
+            return new GetFamilyListOutputData(GetFamilyItemList(inputData), GetFamilyListStatus.Successed);
         }
         finally
         {
@@ -33,7 +33,7 @@ public class GetFamilyListInteractor : IGetFamilyListInputPort
         }
     }
 
-    private List<FamilyItem> GetListFamilyItem(GetFamilyListInputData inputData)
+    private List<FamilyItem> GetFamilyItemList(GetFamilyListInputData inputData)
     {
         var listData = _familyRepository.GetFamilyList(inputData.HpId, inputData.PtId, inputData.SinDate);
         return listData.Select(item => new FamilyItem(item)).ToList();

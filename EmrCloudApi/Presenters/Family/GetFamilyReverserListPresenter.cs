@@ -19,7 +19,7 @@ public class GetFamilyReverserListPresenter : IGetFamilyReverserListOutputPort
     private string GetMessage(GetFamilyReverserListStatus status) => status switch
     {
         GetFamilyReverserListStatus.Successed => ResponseMessage.Success,
-        GetFamilyReverserListStatus.InvalidPtId => ResponseMessage.PtInfNotFound,
+        GetFamilyReverserListStatus.InvalidPtId => ResponseMessage.NotFoundPtInf,
         _ => string.Empty
     };
 }

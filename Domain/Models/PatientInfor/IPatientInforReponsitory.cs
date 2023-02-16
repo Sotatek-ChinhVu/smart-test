@@ -32,7 +32,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
-        bool CheckExistListId(List<long> ptIds);
+        bool CheckExistIdList(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 

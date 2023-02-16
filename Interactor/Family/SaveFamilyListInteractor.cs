@@ -90,7 +90,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                                             family.Biko,
                                             family.SortNo,
                                             family.IsDeleted,
-                                            family.ListPtFamilyReki
+                                            family.PtFamilyRekiList
                                             .Select(reki => new PtFamilyRekiModel(
                                                                                     reki.Id,
                                                                                     reki.ByomeiCd,
@@ -117,12 +117,12 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         }
 
         // validate data
-        var listPtId = input.ListFamily.Select(item => item.PtId).ToList();
-        var listFamilyPtId = input.ListFamily.Where(item => item.FamilyPtId > 0).Select(item => item.FamilyPtId).ToList();
-        listFamilyPtId.AddRange(listPtId);
-        listFamilyPtId.Add(input.PtId);
-        listFamilyPtId = listFamilyPtId.Distinct().ToList();
-        if (listPtId.Any(id => id <= 0) || input.PtId <= 0 || !_patientInforRepository.CheckExistListId(listFamilyPtId))
+        var ptIdList = input.ListFamily.Select(item => item.PtId).ToList();
+        var familyPtIdList = input.ListFamily.Where(item => item.FamilyPtId > 0).Select(item => item.FamilyPtId).ToList();
+        familyPtIdList.AddRange(ptIdList);
+        familyPtIdList.Add(input.PtId);
+        familyPtIdList = familyPtIdList.Distinct().ToList();
+        if (ptIdList.Any(id => id <= 0) || input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(familyPtIdList))
         {
             return SaveFamilyListStatus.InvalidPtIdOrFamilyPtId;
         }
@@ -131,11 +131,11 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
 
     private SaveFamilyListStatus ValidateFamilyListInputItem(int hpId, long ptId, List<FamilyItem> listFamily)
     {
-        List<FamilyRekiItem> listFamilyReki = new();
+        List<FamilyRekiItem> familyRekiList = new();
         // validate familyId
         var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).ToList();
-        var listOnlyFamlily = _familyRepository.GetListByPtId(hpId, ptId);
-        if (listOnlyFamlily.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
+        var onlyFamlilyList = _familyRepository.GetListByPtId(hpId, ptId);
+        if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
         {
             return SaveFamilyListStatus.InvalidFamilyId;
         }
@@ -143,7 +143,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         foreach (var familyItem in listFamily)
         {
             // check duplicate family member
-            if (listOnlyFamlily.Any(item => (familyItem.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
+            if (onlyFamlilyList.Any(item => (familyItem.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
                                             && item.PtId == familyItem.PtId
                                             && item.FamilyPtId != 0
                                             && item.FamilyPtId == familyItem.FamilyPtId))
@@ -158,7 +158,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                 {
                     return SaveFamilyListStatus.InvalidZokugaraCd;
                 }
-                var totalItemSameZokugaraCd = listOnlyFamlily.Count(item => (item.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
+                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => (item.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
                                                                             && item.ZokugaraCd.Equals(familyItem.ZokugaraCd)) + 1;
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd])
                 {
@@ -167,7 +167,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             }
 
             // if family exist in database have ptId not equal ptId input => return false
-            var familyItemUpdate = listOnlyFamlily.FirstOrDefault(item => item.FamilyId == familyItem.FamilyId);
+            var familyItemUpdate = onlyFamlilyList.FirstOrDefault(item => item.FamilyId == familyItem.FamilyId);
             if (familyItemUpdate != null && familyItemUpdate.PtId != familyItem.PtId)
             {
                 return SaveFamilyListStatus.InvalidPtIdOrFamilyPtId;
@@ -206,30 +206,30 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             {
                 return SaveFamilyListStatus.InvalidSortNo;
             }
-            listFamilyReki.AddRange(familyItem.ListPtFamilyReki);
+            familyRekiList.AddRange(familyItem.PtFamilyRekiList);
         }
         // validate FamilyRekiInputItem
-        return ValidateListFamilyRekiInputItem(hpId, listFamilyReki);
+        return ValidateFamilyRekiListInputItem(hpId, familyRekiList);
     }
 
-    private SaveFamilyListStatus ValidateListFamilyRekiInputItem(int hpId, List<FamilyRekiItem> listFamilyReki)
+    private SaveFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
     {
         // validate familyRekiId
-        var listFamilyRekiId = listFamilyReki.Where(item => item.Id > 0).Select(item => item.Id).ToList();
+        var listFamilyRekiId = familyRekiList.Where(item => item.Id > 0).Select(item => item.Id).ToList();
         if (!_familyRepository.CheckExistFamilyRekiList(hpId, listFamilyRekiId))
         {
             return SaveFamilyListStatus.InvalidFamilyRekiId;
         }
 
         // validate byomei
-        var listByomeiCd = listFamilyReki.Select(item => item.ByomeiCd).ToList();
-        var listByomei = _mstItemRepository.DiseaseSearch(listByomeiCd);
-        foreach (var input in listFamilyReki)
+        var byomeiCdList = familyRekiList.Select(item => item.ByomeiCd).ToList();
+        var byomeiList = _mstItemRepository.DiseaseSearch(byomeiCdList);
+        foreach (var input in familyRekiList)
         {
             // validate byomeiCd and byomei
             if (!input.ByomeiCd.Equals(FREE_WORD))
             {
-                var byomeiItem = listByomei.FirstOrDefault(item => item.ByomeiCd.Equals(input.ByomeiCd));
+                var byomeiItem = byomeiList.FirstOrDefault(item => item.ByomeiCd.Equals(input.ByomeiCd));
                 if (byomeiItem == null)
                 {
                     return SaveFamilyListStatus.InvalidByomeiCd;

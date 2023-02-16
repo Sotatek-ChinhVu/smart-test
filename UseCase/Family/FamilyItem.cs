@@ -4,7 +4,7 @@ namespace UseCase.Family;
 
 public class FamilyItem
 {
-    public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> listPtFamilyReki)
+    public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> ptFamilyRekiList)
     {
         FamilyId = familyId;
         PtId = ptId;
@@ -19,7 +19,7 @@ public class FamilyItem
         Biko = biko;
         SortNo = sortNo;
         IsDeleted = isDeleted;
-        ListPtFamilyReki = listPtFamilyReki;
+        PtFamilyRekiList = ptFamilyRekiList;
     }
 
     public FamilyItem(FamilyModel model)
@@ -37,7 +37,7 @@ public class FamilyItem
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
-        ListPtFamilyReki = model.ListPtFamilyRekis.Select(item => new FamilyRekiItem(item)).ToList();
+        PtFamilyRekiList = model.ListPtFamilyRekis.Select(item => new FamilyRekiItem(item)).ToList();
     }
 
     public long FamilyId { get; private set; }
@@ -70,5 +70,5 @@ public class FamilyItem
 
     public bool IsDeleted { get; private set; }
 
-    public List<FamilyRekiItem> ListPtFamilyReki { get; private set; }
+    public List<FamilyRekiItem> PtFamilyRekiList { get; private set; }
 }

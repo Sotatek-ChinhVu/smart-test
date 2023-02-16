@@ -75,7 +75,7 @@ public class FamilyController : AuthorizeControllerBase
                                                                                 family.Biko,
                                                                                 family.SortNo,
                                                                                 family.IsDeleted,
-                                                                                family.ListPtFamilyReki.Select(reki => new FamilyRekiItem(
+                                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
                                                                                                                                                     reki.Id,
                                                                                                                                                     reki.ByomeiCd,
                                                                                                                                                     reki.Byomei,
