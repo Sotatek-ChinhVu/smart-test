@@ -506,15 +506,25 @@ namespace Infrastructure.Repositories
                     .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
                     .ToList();
 
-                List<long> ptIds = new List<long>();
+                List<long> ptIds = new();
+                int index = 1;
                 foreach (var groupId in groupIdList)
                 {
                     string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
-                    ptIds.AddRange(groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList());
+                    var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
+                    if (index == 1)
+                    {
+                        ptIds.AddRange(ptIdItems);
+                    }
+                    else
+                    {
+                        ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
+                    }
+                    index++;
                 }
 
                 if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
+                ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
 
             // Orders
@@ -646,7 +656,6 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-
             return ptInfWithLastVisitDateQuery
                                             .AsEnumerable()
                                             .Skip((pageIndex - 1) * pageSize)
@@ -1187,7 +1196,7 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             #region Maxmoney
-            if(maxMoneys != null && maxMoneys.Any())
+            if (maxMoneys != null && maxMoneys.Any())
             {
                 TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
@@ -1646,7 +1655,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x => x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -1862,7 +1871,7 @@ namespace Infrastructure.Repositories
 
         public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo 
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
                                                                         && x.HokenEdaNo == hokenEdaNo
                                                                         && x.StartDate <= sinDate
                                                                         && sinDate <= x.EndDate);
