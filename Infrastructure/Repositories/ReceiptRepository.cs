@@ -1127,7 +1127,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi2ReceKisai,
                                 data.Kohi3ReceKisai,
                                 data.Kohi4ReceKisai,
-                                data.Tokki
+                                data.Tokki,
+                                data.HokenNissu ?? 0,
+                                data.Kohi1Nissu ?? 0
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)

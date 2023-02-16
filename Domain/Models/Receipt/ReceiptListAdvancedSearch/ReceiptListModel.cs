@@ -4,7 +4,7 @@ namespace Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
 public class ReceiptListModel
 {
-    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki)
+    public ReceiptListModel(int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, int isPending, long ptId, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int hokenSbtCd, int kohi1Nissu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki, int hokenNissu, int hoken1Nissu)
     {
         SeikyuKbn = seikyuKbn;
         SinYm = sinYm;
@@ -47,6 +47,7 @@ public class ReceiptListModel
         Kohi3ReceKisai = kohi3ReceKisai;
         Kohi4ReceKisai = kohi4ReceKisai;
         Tokki = tokki;
+        HokenNissu = hokenNissu;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -130,4 +131,6 @@ public class ReceiptListModel
     public int Kohi4ReceKisai { get; private set; }
 
     public string Tokki { get; private set; }
+
+    public int HokenNissu { get; private set; }
 }

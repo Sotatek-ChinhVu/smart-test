@@ -1,4 +1,5 @@
-﻿using UseCase.Receipt.ReceiptListAdvancedSearch;
+﻿using Helper.Common;
+using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Responses.Receipt.Dto;
 
@@ -16,6 +17,7 @@ public class ReceiptListModelDto
         StatusKbn = output.StatusKbn;
         IsPending = output.IsPending;
         PtNum = output.PtNum;
+        PtId = output.PtId;
         KanaName = output.KanaName;
         Name = output.Name;
         Sex = output.Sex;
@@ -40,6 +42,7 @@ public class ReceiptListModelDto
         FutansyaNoKohi3 = output.FutansyaNoKohi3;
         FutansyaNoKohi4 = output.FutansyaNoKohi4;
         IsPtTest = output.IsPtTest;
+        HokenNissu = output.HokenNissu;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -59,6 +62,8 @@ public class ReceiptListModelDto
     public int StatusKbn { get; private set; }
 
     public int IsPending { get; private set; }
+
+    public long PtId { get; private set; }
 
     public long PtNum { get; private set; }
 
@@ -109,4 +114,18 @@ public class ReceiptListModelDto
     public string FutansyaNoKohi4 { get; private set; }
 
     public bool IsPtTest { get; private set; }
+
+    public int HokenNissu { get; private set; }
+
+    #region Other param
+    public string BirthDayDisplay
+    {
+        get => CIUtil.SDateToShowSWDate(BirthDay);
+    }
+
+    public string LastVisitDateDisplay
+    {
+        get => CIUtil.SDateToShowSDate(LastVisitDate);
+    }
+    #endregion
 }
