@@ -3,8 +3,6 @@ using CommonChecker.DB;
 using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
@@ -360,13 +358,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
-            SetupLogger(services);
-        }
-
-        private void SetupLogger(IServiceCollection services)
-        {
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            var serviceProvider = services.BuildServiceProvider();
         }
 
         private void SetupInterfaces(IServiceCollection services)
