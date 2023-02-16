@@ -1,9 +1,9 @@
 ﻿using Domain.Models.Family;
-using UseCase.Family.GetListRaiinInf;
+using UseCase.Family.GetRaiinInfList;
 
 namespace Interactor.Family;
 
-public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
+public class GetListRaiinInfInteractor : IGetRaiinInfListInputPort
 {
     private readonly IFamilyRepository _familyRepository;
 
@@ -12,16 +12,16 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
         _familyRepository = familyRepository;
     }
 
-    public GetListRaiinInfOutputData Handle(GetListRaiinInfInputData inputData)
+    public GetRaiinInfListOutputData Handle(GetRaiinInfListInputData inputData)
     {
         try
         {
             if (inputData.PtId <= 0)
             {
-                return new GetListRaiinInfOutputData(GetListRaiinInfStatus.InvalidPtId);
+                return new GetRaiinInfListOutputData(GetRaiinInfListStatus.InvalidPtId);
             }
-            var listRaiinInf = _familyRepository.GetListRaiinInfByPtId(inputData.HpId, inputData.PtId);
-            return new GetListRaiinInfOutputData(listRaiinInf.Select(item => new RaiinInfOutputItem(item)).ToList(), GetListRaiinInfStatus.Successed);
+            var raiinInfList = _familyRepository.GetRaiinInfListByPtId(inputData.HpId, inputData.PtId);
+            return new GetRaiinInfListOutputData(raiinInfList.Select(item => new RaiinInfOutputItem(item)).ToList(), GetRaiinInfListStatus.Successed);
         }
         finally
         {

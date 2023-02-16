@@ -32,7 +32,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
-        bool CheckExistListId(List<long> ptIds);
+        bool CheckExistIdList(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 
@@ -48,7 +48,7 @@ namespace Domain.Models.PatientInfor
         bool DeletePatientInfo(long ptId, int hpId, int userId);
         bool IsAllowDeletePatient(int hpId, long ptId);
 
-        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo);
+        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo ,int sinDate);
 
         HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya);
 

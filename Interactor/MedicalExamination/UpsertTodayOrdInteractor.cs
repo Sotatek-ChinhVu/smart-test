@@ -376,7 +376,7 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistListId(new List<long> { ptId });
+                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
 
                 if (!checkHpId)
@@ -441,7 +441,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.HokenPid > 0)
             {
-                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
+                var checkHokenId = _insuranceInforRepository.CheckExistHokenId(inputDatas.HokenPid);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;

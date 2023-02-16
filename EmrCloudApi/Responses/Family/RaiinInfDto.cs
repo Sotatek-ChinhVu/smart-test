@@ -1,4 +1,4 @@
-﻿using UseCase.Family.GetListRaiinInf;
+﻿using UseCase.Family.GetRaiinInfList;
 
 namespace EmrCloudApi.Responses.Family;
 

@@ -235,7 +235,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
@@ -1860,9 +1860,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo 
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 

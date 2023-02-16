@@ -630,7 +630,7 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string NotFoundPtInf = "Invalid PtId, PtInf Not Found.";
         public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
@@ -757,6 +757,10 @@
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
         public static readonly string MNoInputData = "数量を入力してください。";
         public static readonly string MNoInputDataCmt = "数字情報を入力してください。";
+
+        //Message full
+        public static readonly string ErrorHasDrug = "行為や加算が登録されているため、薬剤は登録できません。";
+        public static readonly string ErrorHasUsage = "行為や加算が登録されているため、用法は登録できません。";
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
@@ -891,7 +895,6 @@
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
 
-
         //Insurance Mst Detail
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
@@ -912,5 +915,16 @@
         public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
         public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
         public static readonly string DuplicateFamily = "Duplicate Family";
+
+        // Rece
+        public static readonly string InvalidSinYm = "Invalid SinYm!";
+        public static readonly string InvalidReceCmtId = "Invalid ReceCmt Id!";
+        public static readonly string InvalidCmtKbn = "Invalid ReceCmt CmtKbn!";
+        public static readonly string InvalidCmtSbt = "Invalid ReceCmt CmtSbt!";
+        public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
+        public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
+        public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
+        public static readonly string InvalidKeika = "Invalid Keika!";
+        public static readonly string InvalidSinDay = "Invalid SinDay!";
     }
 }

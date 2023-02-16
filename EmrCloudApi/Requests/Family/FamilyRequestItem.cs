@@ -28,5 +28,5 @@ public class FamilyRequestItem
 
     public bool IsDeleted { get; set; }
 
-    public List<FamilyRekiRequestItem> ListPtFamilyReki { get; set; } = new();
+    public List<FamilyRekiRequestItem> PtFamilyRekiList { get; set; } = new();
 }

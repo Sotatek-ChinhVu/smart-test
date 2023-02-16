@@ -81,22 +81,42 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
 
     private SaveAccountDueListStatus ValidateInvalidNyukinKbn(AccountDueModel accountDue, List<long> listSeqNos, List<SyunoSeikyuModel> listSyunoSeikyuDB, List<SyunoNyukinModel> listSyunoNyukinDB, List<AccountDueModel> listAccountDueModel)
     {
-        var accountDueByRaiino = listAccountDueModel.Where(item => item.RaiinNo == accountDue.RaiinNo && !item.IsDelete);
-        var sumNyukinGakuInput = accountDueByRaiino.Sum(item => item.NyukinGaku);
-        var sumAdjustFutanInput = accountDueByRaiino.Sum(item => item.AdjustFutan);
+        var accountDueByRaiinNo = listAccountDueModel.Where(item => item.RaiinNo == accountDue.RaiinNo && !item.IsDelete);
+        var seikyuAdjustFutanListInput = accountDueByRaiinNo.Select(item => item.SeikyuAdjustFutan).Distinct().ToList();
+        var seikyuGakuListInput = accountDueByRaiinNo.Select(item => item.SeikyuGaku).Distinct().ToList();
+        if (seikyuAdjustFutanListInput.Count != 1 && !accountDue.IsDelete)
+        {
+            return SaveAccountDueListStatus.InvalidSeikyuAdjustFutan;
+        }
+        if (seikyuGakuListInput.Count != 1 && !accountDue.IsDelete)
+        {
+            return SaveAccountDueListStatus.InvalidSeikyuGaku;
+        }
+
+        int sumNyukinGakuInput = accountDueByRaiinNo.Sum(item => item.NyukinGaku);
+        int sumAdjustFutanInput = accountDueByRaiinNo.Sum(item => item.AdjustFutan);
         var syunoSeikyuRaiins = listSyunoSeikyuDB.Where(item => item.RaiinNo == accountDue.RaiinNo).ToList();
-        var nyukinGakuDB = listSyunoNyukinDB.Where(item => !listSeqNos.Contains(item.SeqNo) && item.RaiinNo == accountDue.RaiinNo).Sum(item => item.NyukinGaku);
-        var adjustFutanDB = listSyunoNyukinDB.Where(item => !listSeqNos.Contains(item.SeqNo) && item.RaiinNo == accountDue.RaiinNo).Sum(item => item.AdjustFutan);
-        var unPaid = syunoSeikyuRaiins.FirstOrDefault()?.SeikyuGaku - nyukinGakuDB - adjustFutanDB - sumAdjustFutanInput - sumNyukinGakuInput;
-        if (accountDue.NyukinKbn == 0 && (accountDue.NyukinGaku != 0 || accountDue.AdjustFutan != 0 || listSyunoNyukinDB.Count(item => item.RaiinNo == accountDue.RaiinNo) > 1))
+        int nyukinGakuDB = listSyunoNyukinDB.Where(item => !listSeqNos.Contains(item.SeqNo) && item.RaiinNo == accountDue.RaiinNo).Sum(item => item.NyukinGaku);
+        int adjustFutanDB = listSyunoNyukinDB.Where(item => !listSeqNos.Contains(item.SeqNo) && item.RaiinNo == accountDue.RaiinNo).Sum(item => item.AdjustFutan);
+        int seikyuGakuDB = syunoSeikyuRaiins.FirstOrDefault()?.SeikyuGaku ?? 0;
+        int newSeikyuGakuDB = syunoSeikyuRaiins.FirstOrDefault()?.NewSeikyuGaku ?? 0;
+        int seikyuGakuInput = seikyuGakuListInput.FirstOrDefault();
+
+        if (seikyuGakuInput != seikyuGakuDB && newSeikyuGakuDB == seikyuGakuInput)
+        {
+            seikyuGakuDB = seikyuGakuInput;
+        }
+
+        int unPaid = seikyuGakuDB - nyukinGakuDB - adjustFutanDB - sumAdjustFutanInput - sumNyukinGakuInput;
+        if (accountDue.NyukinKbn == 1 && unPaid == 0)
         {
             return SaveAccountDueListStatus.InvalidNyukinKbn;
         }
-        else if (accountDue.NyukinKbn == 1 && (unPaid == 0))
-        {
-            return SaveAccountDueListStatus.InvalidNyukinKbn;
-        }
-        else if (accountDue.NyukinKbn == 2 && (unPaid != 0 || listSyunoNyukinDB.Count(item => item.RaiinNo == accountDue.RaiinNo) > 1 || accountDue.NyukinGaku != 0 || accountDue.AdjustFutan != 0))
+        else if (accountDue.NyukinKbn == 2
+                && (unPaid != (seikyuGakuDB - nyukinGakuDB - adjustFutanDB)
+                    || listSyunoNyukinDB.Count(item => item.RaiinNo == accountDue.RaiinNo) - accountDueByRaiinNo.Count() > 1
+                    || sumNyukinGakuInput != 0
+                    || sumAdjustFutanInput != 0))
         {
             return SaveAccountDueListStatus.InvalidNyukinKbn;
         }
@@ -151,7 +171,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long> { inputData.PtId }))
+        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }
@@ -175,10 +195,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidAdjustFutan;
         }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinGaku < 0))
-        {
-            return SaveAccountDueListStatus.InvalidNyukinGaku;
-        }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.PaymentMethodCd < 0))
         {
             return SaveAccountDueListStatus.InvalidPaymentMethodCd;
@@ -186,10 +202,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinDate < 0))
         {
             return SaveAccountDueListStatus.InvalidNyukinDate;
-        }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.UketukeSbt < 0))
-        {
-            return SaveAccountDueListStatus.InvalidUketukeSbt;
         }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.NyukinCmt.Length > 100))
         {

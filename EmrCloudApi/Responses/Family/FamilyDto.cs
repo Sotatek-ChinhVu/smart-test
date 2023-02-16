@@ -1,10 +1,10 @@
-﻿using UseCase.Family.GetListFamily;
+﻿using UseCase.Family;
 
 namespace EmrCloudApi.Responses.Family;
 
 public class FamilyDto
 {
-    public FamilyDto(FamilyOutputItem model)
+    public FamilyDto(FamilyItem model)
     {
         FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
@@ -19,7 +19,7 @@ public class FamilyDto
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
-        ListPtFamilyReki = model.ListPtFamilyReki.Select(item => new PtFamilyRekiDto(item)).ToList();
+        PtFamilyRekiList = model.PtFamilyRekiList.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
     public long FamilyId { get; private set; }
@@ -48,5 +48,5 @@ public class FamilyDto
 
     public int SortNo { get; private set; }
 
-    public List<PtFamilyRekiDto> ListPtFamilyReki { get; private set; }
+    public List<PtFamilyRekiDto> PtFamilyRekiList { get; private set; }
 }

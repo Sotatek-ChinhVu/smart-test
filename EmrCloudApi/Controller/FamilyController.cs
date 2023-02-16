@@ -6,10 +6,11 @@ using EmrCloudApi.Responses.Family;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Family.GetListFamily;
-using UseCase.Family.GetListFamilyReverser;
-using UseCase.Family.GetListRaiinInf;
-using UseCase.Family.SaveListFamily;
+using UseCase.Family;
+using UseCase.Family.GetFamilyList;
+using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.GetRaiinInfList;
+using UseCase.Family.SaveFamilyList;
 
 namespace EmrCloudApi.Controller;
 
@@ -23,57 +24,56 @@ public class FamilyController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetListFamilyResponse>> GetList([FromQuery] GetListFamilyRequest request)
+    public ActionResult<Response<GetFamilyListResponse>> GetList([FromQuery] GetFamilyListRequest request)
     {
-        var input = new GetListFamilyInputData(HpId, request.PtId, request.SinDate);
+        var input = new GetFamilyListInputData(HpId, request.PtId, request.SinDate);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListFamilyPresenter();
+        var presenter = new GetFamilyListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListFamilyResponse>>(presenter.Result);
+        return new ActionResult<Response<GetFamilyListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.GetListFamilyReverser)]
-    public ActionResult<Response<GetListFamilyReverserResponse>> GetListFamilyReverser([FromBody] GetListFamilyReverserRequest request)
+    [HttpPost(ApiPath.GetFamilyReverserList)]
+    public ActionResult<Response<GetFamilyReverserListResponse>> GetListFamilyReverser([FromBody] GetFamilyReverserListRequest request)
     {
-        var input = new GetListFamilyReverserInputData(HpId, request.FamilyPtId, request.DicPtInf);
+        var input = new GetFamilyReverserListInputData(HpId, request.FamilyPtId, request.DicPtInf);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListFamilyReverserPresenter();
+        var presenter = new GetFamilyReverserListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListFamilyReverserResponse>>(presenter.Result);
+        return new ActionResult<Response<GetFamilyReverserListResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public ActionResult<Response<SaveListFamilyResponse>> SaveList([FromBody] SaveListFamilyRequest request)
+    public ActionResult<Response<SaveFamilyListResponse>> SaveList([FromBody] SaveFamilyListRequest request)
     {
-        var listFamilyInputData = ConvertToFamilyInputItem(request.ListFamily);
-        var input = new SaveListFamilyInputData(HpId, UserId, request.PtId, listFamilyInputData);
+        var listFamilyInputData = ConvertToFamilyInputItem(request.FamilyList);
+        var input = new SaveFamilyListInputData(HpId, UserId, request.PtId, listFamilyInputData);
         var output = _bus.Handle(input);
 
-        var presenter = new SaveListFamilyPresenter();
+        var presenter = new SaveFamilyListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveListFamilyResponse>>(presenter.Result);
+        return new ActionResult<Response<SaveFamilyListResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListRaiinInf)]
-    public ActionResult<Response<GetListRaiinInfResponse>> GetListRaiinInf([FromQuery] GetListRaiinInfRequest request)
+    [HttpGet(ApiPath.GetRaiinInfList)]
+    public ActionResult<Response<GetRaiinInfListResponse>> GetListRaiinInf([FromQuery] GetRaiinInfListRequest request)
     {
-        var input = new GetListRaiinInfInputData(HpId, request.PtId);
+        var input = new GetRaiinInfListInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListRaiinInfPresenter();
+        var presenter = new GetRaiinInfListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListRaiinInfResponse>>(presenter.Result);
+        return new ActionResult<Response<GetRaiinInfListResponse>>(presenter.Result);
     }
-
-    private List<FamilyInputItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
+    private List<FamilyItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
     {
-        var result = listFamilyRequest.Select(family => new FamilyInputItem(
+        var result = listFamilyRequest.Select(family => new FamilyItem(
                                                                                 family.FamilyId,
                                                                                 family.PtId,
                                                                                 family.ZokugaraCd,
@@ -87,7 +87,7 @@ public class FamilyController : AuthorizeControllerBase
                                                                                 family.Biko,
                                                                                 family.SortNo,
                                                                                 family.IsDeleted,
-                                                                                family.ListPtFamilyReki.Select(reki => new FamilyRekiInputItem(
+                                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
                                                                                                                                                     reki.Id,
                                                                                                                                                     reki.ByomeiCd,
                                                                                                                                                     reki.Byomei,
