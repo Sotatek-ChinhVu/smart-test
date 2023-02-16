@@ -818,17 +818,18 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(originKeyword) ||
+                string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
                 return new List<PatientInforModel>();
             }
 
             var ptInfWithLastVisitDate =
             from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
             orderby p.PtNum descending
             select new
             {

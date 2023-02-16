@@ -22,7 +22,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
-        List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
