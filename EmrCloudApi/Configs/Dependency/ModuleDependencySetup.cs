@@ -360,12 +360,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
-            SetupLogger(services);
-        }
-
-        private void SetupLogger(IServiceCollection services)
-        {
-
         }
 
         private void SetupInterfaces(IServiceCollection services)
