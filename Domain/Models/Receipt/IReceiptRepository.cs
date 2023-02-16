@@ -5,21 +5,23 @@ namespace Domain.Models.Receipt;
 
 public interface IReceiptRepository : IRepositoryBase
 {
-    List<ReceiptListModel> GetListReceipt(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
+    List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
-    List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId);
+    List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId);
 
-    bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> receCmtList);
+    bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
-    List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId);
+    List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<SyobyoKeikaModel> GetListSyobyoKeika(int hpId, int sinYm, long ptId, int hokenId);
+    List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm);
+    List<ReceReasonModel> GetReceReasonList(int hpId, int seikyuYm, int sinDate, long ptId, int hokenId);
+
+    List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
 
-    bool SaveListSyoukiInf(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
+    bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 
-    bool SaveListSyobyoKeika(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
+    bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
 }

@@ -11,6 +11,7 @@ using UseCase.Receipt;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
+using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -39,7 +40,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<ReceiptListAdvancedSearchResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListReceCmt)]
+    [HttpGet(ApiPath.GetReceCmtList)]
     public ActionResult<Response<GetReceCmtListResponse>> GetListReceCmt([FromQuery] GetReceCmtListRequest request)
     {
         var input = new GetReceCmtListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
@@ -51,7 +52,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetReceCmtListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.SaveListReceCmt)]
+    [HttpPost(ApiPath.SaveReceCmtList)]
     public ActionResult<Response<SaveReceCmtListResponse>> SaveListReceCmt([FromBody] SaveReceCmtListRequest request)
     {
         var listReceCmtItem = request.ReceCmtList.Select(item => ConvertToReceCmtItem(item)).ToList();
@@ -64,7 +65,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveReceCmtListResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListSyoukiInf)]
+    [HttpGet(ApiPath.GetSyoukiInfList)]
     public ActionResult<Response<GetSyoukiInfListResponse>> GetListSyoukiInf([FromQuery] GetSyoukiInfListRequest request)
     {
         var input = new GetSyoukiInfListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
@@ -76,7 +77,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetSyoukiInfListResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListSyobyoKeika)]
+    [HttpGet(ApiPath.GetSyobyoKeikaList)]
     public ActionResult<Response<GetSyobyoKeikaListResponse>> GetListSyobyoKeika([FromQuery] GetSyobyoKeikaListRequest request)
     {
         var input = new GetSyobyoKeikaListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
@@ -88,7 +89,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetSyobyoKeikaListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.SaveListSyoukiInf)]
+    [HttpPost(ApiPath.SaveSyoukiInfList)]
     public ActionResult<Response<SaveSyoukiInfListResponse>> SaveListSyoukiInf([FromBody] SaveSyoukiInfListRequest request)
     {
         var listReceSyoukiInf = request.SyoukiInfList.Select(item => ConvertToSyoukiInfItem(item)).ToList();
@@ -101,7 +102,7 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveSyoukiInfListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.SaveListSyobyoKeika)]
+    [HttpPost(ApiPath.SaveSyobyoKeikaList)]
     public ActionResult<Response<SaveSyobyoKeikaListResponse>> SaveListSyobyoKeika([FromBody] SaveSyobyoKeikaListRequest request)
     {
         var listReceSyoukiInf = request.SyobyoKeikaList.Select(item => ConvertToSyobyoKeikaItem(item)).ToList();
@@ -112,6 +113,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveSyobyoKeikaListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceHenReason)]
+    public ActionResult<Response<GetReceHenReasonResponse>> GetReceHenReason([FromQuery] GetReceHenReasonRequest request)
+    {
+        var input = new GetReceHenReasonInputData(HpId,  request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceHenReasonPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceHenReasonResponse>>(presenter.Result);
     }
 
     #region Private function
