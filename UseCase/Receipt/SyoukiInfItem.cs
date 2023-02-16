@@ -16,6 +16,19 @@ public class SyoukiInfItem
         IsDeleted = false;
     }
 
+    public SyoukiInfItem(int seqNo, int sortNo, int syoukiKbn, int syoukiKbnStartYm, string syouki, bool isDeleted)
+    {
+        SeqNo = seqNo;
+        SortNo = sortNo;
+        SyoukiKbn = syoukiKbn;
+        SyoukiKbnStartYm = syoukiKbnStartYm;
+        Syouki = syouki;
+        IsDeleted = isDeleted;
+        PtId = 0;
+        SinYm = 0;
+        HokenId = 0;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }
@@ -27,6 +40,8 @@ public class SyoukiInfItem
     public int SortNo { get; private set; }
 
     public int SyoukiKbn { get; private set; }
+
+    public int SyoukiKbnStartYm { get; private set; }
 
     public string Syouki { get; private set; }
 

@@ -8,10 +8,14 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
+using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
+using UseCase.Receipt.SaveListSyobyoKeika;
+using UseCase.Receipt.SaveListSyoukiInf;
 
 namespace EmrCloudApi.Controller;
 
@@ -36,41 +40,91 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<ReceiptListAdvancedSearchResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListReceCmt)]
-    public ActionResult<Response<GetListReceCmtResponse>> GetListReceCmt([FromQuery] GetListReceCmtRequest request)
+    [HttpGet(ApiPath.GetReceCmtList)]
+    public ActionResult<Response<GetReceCmtListResponse>> GetListReceCmt([FromQuery] GetReceCmtListRequest request)
     {
-        var input = new GetListReceCmtInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var input = new GetReceCmtListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListReceCmtPresenter();
+        var presenter = new GetReceCmtListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListReceCmtResponse>>(presenter.Result);
+        return new ActionResult<Response<GetReceCmtListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.SaveListReceCmt)]
-    public ActionResult<Response<SaveListReceCmtResponse>> SaveListReceCmt([FromBody] SaveListReceCmtRequest request)
+    [HttpPost(ApiPath.SaveReceCmtList)]
+    public ActionResult<Response<SaveReceCmtListResponse>> SaveListReceCmt([FromBody] SaveReceCmtListRequest request)
     {
-        var listReceCmtItem = request.ListReceCmt.Select(item => ConvertToReceCmtItem(item)).ToList();
-        var input = new SaveListReceCmtInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceCmtItem);
+        var listReceCmtItem = request.ReceCmtList.Select(item => ConvertToReceCmtItem(item)).ToList();
+        var input = new SaveReceCmtListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceCmtItem);
         var output = _bus.Handle(input);
 
-        var presenter = new SaveListReceCmtPresenter();
+        var presenter = new SaveReceCmtListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveListReceCmtResponse>>(presenter.Result);
+        return new ActionResult<Response<SaveReceCmtListResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetListSyoukiInf)]
-    public ActionResult<Response<GetListSyoukiInfResponse>> GetListSyoukiInf([FromQuery] GetListSyoukiInfRequest request)
+    [HttpGet(ApiPath.GetSyoukiInfList)]
+    public ActionResult<Response<GetSyoukiInfListResponse>> GetListSyoukiInf([FromQuery] GetSyoukiInfListRequest request)
     {
-        var input = new GetListSyoukiInfInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var input = new GetSyoukiInfListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
         var output = _bus.Handle(input);
 
-        var presenter = new GetListSyoukiInfPresenter();
+        var presenter = new GetSyoukiInfListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetListSyoukiInfResponse>>(presenter.Result);
+        return new ActionResult<Response<GetSyoukiInfListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSyobyoKeikaList)]
+    public ActionResult<Response<GetSyobyoKeikaListResponse>> GetListSyobyoKeika([FromQuery] GetSyobyoKeikaListRequest request)
+    {
+        var input = new GetSyobyoKeikaListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSyobyoKeikaListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSyobyoKeikaListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveSyoukiInfList)]
+    public ActionResult<Response<SaveSyoukiInfListResponse>> SaveListSyoukiInf([FromBody] SaveSyoukiInfListRequest request)
+    {
+        var listReceSyoukiInf = request.SyoukiInfList.Select(item => ConvertToSyoukiInfItem(item)).ToList();
+        var input = new SaveSyoukiInfListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveSyoukiInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveSyoukiInfListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveSyobyoKeikaList)]
+    public ActionResult<Response<SaveSyobyoKeikaListResponse>> SaveListSyobyoKeika([FromBody] SaveSyobyoKeikaListRequest request)
+    {
+        var listReceSyoukiInf = request.SyobyoKeikaList.Select(item => ConvertToSyobyoKeikaItem(item)).ToList();
+        var input = new SaveSyobyoKeikaListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveSyobyoKeikaListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveSyobyoKeikaListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceHenReason)]
+    public ActionResult<Response<GetReceHenReasonResponse>> GetReceHenReason([FromQuery] GetReceHenReasonRequest request)
+    {
+        var input = new GetReceHenReasonInputData(HpId,  request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceHenReasonPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceHenReasonResponse>>(presenter.Result);
     }
 
     #region Private function
@@ -147,7 +201,7 @@ public class ReceiptController : AuthorizeControllerBase
             );
     }
 
-    private ReceCmtItem ConvertToReceCmtItem(SaveListReceCmtRequestItem requestItem)
+    private ReceCmtItem ConvertToReceCmtItem(SaveReceCmtRequestItem requestItem)
     {
         return new ReceCmtItem(
                                     requestItem.Id,
@@ -159,6 +213,28 @@ public class ReceiptController : AuthorizeControllerBase
                                     requestItem.ItemCd,
                                     requestItem.IsDeleted
                                );
+    }
+
+    private SyoukiInfItem ConvertToSyoukiInfItem(SaveSyoukiInfRequestItem requestItem)
+    {
+        return new SyoukiInfItem(
+                                    requestItem.SeqNo,
+                                    requestItem.SortNo,
+                                    requestItem.SyoukiKbn,
+                                    requestItem.SyoukiKbnStartYm,
+                                    requestItem.Syouki,
+                                    requestItem.IsDeleted
+                               );
+    }
+
+    private SyobyoKeikaItem ConvertToSyobyoKeikaItem(SaveSyobyoKeikaRequestItem item)
+    {
+        return new SyobyoKeikaItem(
+                                      item.SinDay,
+                                      item.SeqNo,
+                                      item.Keika,
+                                      item.IsDeleted
+                                  );
     }
     #endregion
 }
