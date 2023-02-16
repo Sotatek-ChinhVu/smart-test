@@ -422,7 +422,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<HpInf>().HasKey(h => new { h.HpId, h.StartDate });
             modelBuilder.Entity<IpnKasanMst>().HasKey(i => new { i.HpId, i.StartDate, i.IpnNameCd, i.SeqNo });
             modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.AnalogueCd });
-            modelBuilder.Entity<PtFamily>().HasKey(p => new { p.PtId });
+            modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
             modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
         }

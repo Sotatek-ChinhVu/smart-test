@@ -173,7 +173,9 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
-using UseCase.Family.GetListFamily;
+using UseCase.Family.GetFamilyList;
+using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.SaveFamilyList;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -773,7 +775,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListSanteiInfInputData, SaveListSanteiInfInteractor>();
 
             //Family
-            busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyListInputData, GetFamilyListInteractor>();
+            busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();

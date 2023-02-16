@@ -235,7 +235,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
