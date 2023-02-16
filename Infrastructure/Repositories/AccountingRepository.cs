@@ -8,6 +8,7 @@ using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -892,11 +893,24 @@ namespace Infrastructure.Repositories
                     item.IsDeleted)).ToList();
         }
 
-        public bool SaveAccounting(List<SyunoSeikyuModel> syunoSeikyuModels, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment, int uketukeSbt)
+        public bool SaveAccounting(List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int sumAdjust, int thisWari, int thisCredit,
+                                   int payType, string comment)
         {
             try
             {
+                var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
+                var raiinLists = TrackingDataContext.RaiinInfs
+                                        .Where(item => item.HpId == hpId
+                                                            && item.PtId == ptId
+                                                            && item.IsDeleted == DeleteTypes.None
+                                                            && item.Status > RaiinState.TempSave
+                                                            && listRaiinNo.Contains(item.RaiinNo))
+                                        .ToList();
+                var seikyuLists = TrackingDataContext.SyunoSeikyus
+                            .Where(item => item.HpId == hpId
+                                                && item.PtId == ptId
+                                                && listRaiinNo.Contains(item.RaiinNo))
+                            .ToList();
 
                 int allSeikyuGaku = sumAdjust;
                 int adjustFutan = thisWari;
@@ -923,29 +937,112 @@ namespace Infrastructure.Repositories
                         TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
                         {
                             HpId = item.HpId,
-                            PtId = item.PtId,
                             RaiinNo = item.RaiinNo,
+                            PtId = item.PtId,
                             SinDate = item.SinDate,
-                            SortNo = i++,
                             AdjustFutan = outAdjustFutan,
                             NyukinGaku = outNyukinGaku,
+                            SortNo = i += 1,
                             PaymentMethodCd = payType,
-                            UketukeSbt = uketukeSbt,
+                            UketukeSbt = item.RaiinInfModel.UketukeSbt,
                             NyukinCmt = comment,
                             IsDeleted = 0,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            NyukinDate = item.SinDate,
                             NyukinjiTensu = item.SeikyuTensu,
                             NyukinjiDetail = item.SeikyuDetail,
                             NyukinjiSeikyu = item.SeikyuGaku
                         });
+
+                        UpdateStatusRaiinInf(userId, item, raiinLists);
+                        UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                     }
 
                 }
+
                 TrackingDataContext.SaveChanges();
+
                 return true;
             }
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        private void AdjustWariExecute(int nyukinGakuEarmarked, bool isIgnoreDateNotVerify, int debitBalance, List<SyunoSeikyuModel> listAllSyunoSeikyu)
+        {
+            int nyukinGaku = nyukinGakuEarmarked;
+            int outAdjustFutan = 0;
+            int outNyukinGaku = 0;
+            int outNyukinKbn = 0;
+            bool isSettled = nyukinGakuEarmarked == debitBalance;
+
+            if (isIgnoreDateNotVerify == true)
+            {
+                listAllSyunoSeikyu = listAllSyunoSeikyu
+                    .Where(item => !(item.SeikyuGaku != item.NewSeikyuGaku && item.NewSeikyuGaku > 0))
+                    .ToList();
+            }
+
+            foreach (var item in listAllSyunoSeikyu)
+            {
+                if (nyukinGaku == 0) return;
+
+                int thisSeikyuGaku = item.SeikyuGaku - item.ListSyunoNyukin.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                     item.ListSyunoNyukin.Sum(itemNyukin => itemNyukin.AdjustFutan);
+
+                ParseEarmarkedValueUpdate(thisSeikyuGaku, ref nyukinGaku, out outNyukinGaku,
+                    out outNyukinKbn, isSettled);
+
+                int sort = item.ListSyunoNyukin.Max(itemNyukin => itemNyukin.SortNo) + 1;
+
+                item.ListSyunoNyukin.Add(new SyunoNyukinModel(new SyunoNyukin())
+                {
+                    PtId = PtId,
+                    RaiinNo = item.RaiinNo,
+                    SinDate = item.SinDate,
+                    SortNo = sort,
+                    AdjustFutan = outAdjustFutan,
+                    NyukinGaku = outNyukinGaku,
+                    PaymentMethodCd = AccountingInf.PayType,
+                    UketukeSbt = _raiinUketukeSbt,
+                    NyukinCmt = AccountingInf.Comment,
+                    NyukinjiTensu = item.SeikyuTensu,
+                    NyukinjiDetail = item.SeikyuDetail,
+                    NyukinjiSeikyu = item.SeikyuGaku
+                });
+
+                item.NyukinKbn = outNyukinKbn;
+
+                _listSyunoSeikyuSave.Add(item);
+            }
+        }
+
+        private void UpdateStatusRaiinInf(int userId, SyunoSeikyuModel syunoSeikyu, List<RaiinInf> raiinLists)
+        {
+            var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == syunoSeikyu.RaiinNo);
+
+            if (raiin != null)
+            {
+                raiin.Status = RaiinState.Settled;
+                raiin.KaikeiTime = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                raiin.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiin.UpdateId = userId;
+            }
+        }
+
+        private void UpdateStatusSyunoSeikyu(int userId, long raiinNo, int nyuKinKbn, List<SyunoSeikyu> seikyuLists)
+        {
+            var seikyu = seikyuLists.FirstOrDefault(item => item.RaiinNo == raiinNo);
+            if (seikyu != null)
+            {
+                seikyu.NyukinKbn = nyuKinKbn;
+                seikyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                seikyu.UpdateId = userId;
             }
         }
 

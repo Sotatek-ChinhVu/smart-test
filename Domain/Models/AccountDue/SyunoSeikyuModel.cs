@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.AccountDue;
 
@@ -19,14 +20,21 @@ public class SyunoSeikyuModel
         NewAdjustFutan = newAdjustFutan;
         NewSeikyuGaku = newSeikyuGaku;
         NewSeikyuDetail = newSeikyuDetail;
+        RaiinInfModel = new();
+        SyunoNyukinModels = new();
+        KaikeiInfModels = new();
     }
 
     public SyunoSeikyuModel()
     {
         SeikyuDetail = string.Empty;
         NewSeikyuDetail = string.Empty;
+        RaiinInfModel = new();
+        SyunoNyukinModels = new();
+        KaikeiInfModels = new();
     }
 
+    [JsonConstructor]
     public SyunoSeikyuModel(int hpId, long ptId, int sinDate, long raiinNo, int nyukinKbn, int seikyuTensu, int adjustFutan, int seikyuGaku, string seikyuDetail, int newSeikyuTensu, int newAdjustFutan, int newSeikyuGaku, string newSeikyuDetail, SyunoRaiinInfModel raiinInfModel, List<SyunoNyukinModel> syunoNyukinModels, List<KaikeiInfModel> kaikeiInfModels, int hokenId)
     {
         HpId = hpId;

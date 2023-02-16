@@ -49,6 +49,16 @@
             AdjustRateRange = adjustRateRange;
         }
 
+        public KaikeiInfModel()
+        {
+            ReceSbt = string.Empty;
+            Houbetu = string.Empty;
+            Kohi1Houbetu = string.Empty;
+            Kohi2Houbetu = string.Empty;
+            Kohi3Houbetu = string.Empty;
+            Kohi4Houbetu = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
