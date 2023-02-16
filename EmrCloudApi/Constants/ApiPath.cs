@@ -194,5 +194,6 @@
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
     }
 }
