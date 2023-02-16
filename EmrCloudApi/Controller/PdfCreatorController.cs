@@ -41,7 +41,7 @@ namespace EmrCloudApi.Controller
             switch (reportType)
             {
                 case ReportType.Karte1:
-                    functionName = "reporting-fmKarte1";
+                    functionName = "reporting-fm-karte1";
                     break;
                 default:
                     throw new NotImplementedException("The reportType is incorrect: " + reportType.ToString());
