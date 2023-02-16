@@ -84,9 +84,30 @@ public class SyunoSeikyuModel
 
     #region BindData
     public int TotalPointOne { get => SeikyuTensu; }
-    public int KanFutanOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.PtFutan + item.AdjustRound); }
-    public int TotalSelfExpenseOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiFutan + item.JihiOuttax); }
-    public int TaxOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiTax + item.JihiOuttax); }
+    public int KanFutanOne
+    {
+        get
+        {
+            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo)?.Sum(item => item.PtFutan + item.AdjustRound);
+            return result ?? 0;
+        }
+    }
+    public int TotalSelfExpenseOne
+    {
+        get
+        {
+            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiFutan + item.JihiOuttax);
+            return result ?? 0;
+        }
+    }
+    public int TaxOne
+    {
+        get
+        {
+            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiTax + item.JihiOuttax);
+            return result ?? 0;
+        }
+    }
     public int AdjustFutanOne { get => AdjustFutan; }
     public int SumAdjustOne { get => SeikyuGaku; }
     #endregion

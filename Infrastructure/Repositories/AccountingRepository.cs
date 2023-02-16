@@ -8,9 +8,7 @@ using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Linq.Dynamic.Core;
@@ -928,51 +926,72 @@ namespace Infrastructure.Repositories
                             PtId = item.PtId,
                             RaiinNo = item.RaiinNo,
                             SinDate = item.SinDate,
-                            SortNo = 1,
+                            SortNo = i++,
                             AdjustFutan = outAdjustFutan,
                             NyukinGaku = outNyukinGaku,
                             PaymentMethodCd = payType,
                             UketukeSbt = uketukeSbt,
                             NyukinCmt = comment,
+                            IsDeleted = 0,
                             NyukinjiTensu = item.SeikyuTensu,
                             NyukinjiDetail = item.SeikyuDetail,
                             NyukinjiSeikyu = item.SeikyuGaku
                         });
                     }
-                    else
-                    {
-                        //TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
-                        //{
-                        //    item.ListSyunoNyukin[0].AdjustFutan = outAdjustFutan,
-                        //    item.ListSyunoNyukin[0].NyukinGaku = outNyukinGaku,
-                        //    item.ListSyunoNyukin[0].PaymentMethodCd = AccountingInf.PayType,
-                        //    item.ListSyunoNyukin[0].UketukeSbt = uketukeSbt,
-                        //    item.ListSyunoNyukin[0].NyukinCmt = AccountingInf.Comment,
-                        //    item.ListSyunoNyukin[0].NyukinjiTensu = item.SeikyuTensu,
-                        //    item.ListSyunoNyukin[0].NyukinjiDetail = item.SeikyuDetail,
-                        //    item.ListSyunoNyukin[0].NyukinjiSeikyu = item.SeikyuGaku,
-                        //    item.ListSyunoNyukin[0].ModelModified = true,
-                        //});
 
-                    }
-
-                    item.NyukinKbn = outNyukinKbn;
                 }
-
-                _listSyunoSeikyuSave.AddRange(ListSyunoSeikyu);
-
-                if (AccountingInf.AccDue != 0 && nyukinGaku != 0)
-                {
-                    AdjustWariExecute(nyukinGaku, isIgnoreDateNotVerify);
-                }
-
+                TrackingDataContext.SaveChanges();
                 return true;
             }
             catch (Exception)
             {
-
-                throw;
+                return false;
             }
+        }
+
+        public void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
+        {
+            int credit = adjustFutan + nyukinGaku;
+
+            if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
+            {
+                if (isLastRecord == true)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
+                {
+                    outAdjustFutan = thisSeikyuGaku;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+            }
+            else
+            {
+                outAdjustFutan = adjustFutan;
+                outNyukinGaku = nyukinGaku;
+
+                adjustFutan -= outAdjustFutan;
+                nyukinGaku -= outNyukinGaku;
+            }
+
+            thisSeikyuGaku = thisSeikyuGaku - outAdjustFutan - outNyukinGaku;
+            outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
         }
     }
 }

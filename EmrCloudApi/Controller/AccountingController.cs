@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;
 
@@ -73,6 +74,19 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtByoMeiResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveAccounting)]
+        public ActionResult<Response<SaveAccountingResponse>> SaveList([FromBody] SaveAccountingRequest request)
+        {
+
+            var input = new SaveAccountingInputData(request.SumAdjust, request.ThisWari, request.ThisCredit, request.PayType, request.Comment, request.UketukeSbt, request.SyunoSeikyuModels);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveAccountingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveAccountingResponse>>(presenter.Result);
         }
     }
 }
