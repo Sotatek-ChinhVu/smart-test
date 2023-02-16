@@ -630,7 +630,7 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string NotFoundPtInf = "Invalid PtId, PtInf Not Found.";
         public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
@@ -899,6 +899,22 @@
         public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
+
+        // Family
+        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
+        public static readonly string InvalidFamilyId = "Invalid FamilyId";
+        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
+        public static readonly string InvalidFamilyName = "Invalid Family Name";
+        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
+        public static readonly string InvalidFamilySex = "Invalid Family Sex";
+        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
+        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
+        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
+        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
+        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
+        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
+        public static readonly string DuplicateFamily = "Duplicate Family";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";

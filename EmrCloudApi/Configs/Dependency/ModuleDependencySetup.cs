@@ -3,8 +3,6 @@ using CommonChecker.DB;
 using CommonChecker.Services;
 using CommonCheckers;
 using CommonCheckers.OrderRealtimeChecker.DB;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
@@ -175,7 +173,9 @@ using UseCase.DrugDetailData.ShowKanjaMuke;
 using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
-using UseCase.Family.GetListFamily;
+using UseCase.Family.GetFamilyList;
+using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.SaveFamilyList;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -362,13 +362,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
-            SetupLogger(services);
-        }
-
-        private void SetupLogger(IServiceCollection services)
-        {
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            var serviceProvider = services.BuildServiceProvider();
         }
 
         private void SetupInterfaces(IServiceCollection services)
@@ -784,7 +777,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListSanteiInfInputData, SaveListSanteiInfInteractor>();
 
             //Family
-            busBuilder.RegisterUseCase<GetListFamilyInputData, GetListFamilyInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyListInputData, GetFamilyListInteractor>();
+            busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
+            busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
