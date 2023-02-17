@@ -1,10 +1,11 @@
 ﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Helper.Common;
 
 namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
-public class ReceiptListAdvancedSearchOutputItem
+public class ReceiptListAdvancedSearchItem
 {
-    public ReceiptListAdvancedSearchOutputItem(ReceiptListModel model)
+    public ReceiptListAdvancedSearchItem(ReceiptListModel model)
     {
         SeikyuKbn = model.SeikyuKbn;
         SinYm = model.SinYm;
@@ -16,6 +17,7 @@ public class ReceiptListAdvancedSearchOutputItem
         StatusKbn = model.StatusKbn;
         IsPending = model.IsPending;
         PtNum = model.PtNum;
+        PtId = model.PtId;
         KanaName = model.KanaName;
         Name = model.Name;
         Sex = model.Sex;
@@ -40,6 +42,8 @@ public class ReceiptListAdvancedSearchOutputItem
         FutansyaNoKohi3 = model.FutansyaNoKohi3;
         FutansyaNoKohi4 = model.FutansyaNoKohi4;
         IsPtTest = model.IsPtTest;
+        HokenNissu = model.HokenNissu;
+        ReceCheckCmt = model.ReceCheckCmt;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -61,6 +65,8 @@ public class ReceiptListAdvancedSearchOutputItem
     public int IsPending { get; private set; }
 
     public long PtNum { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string KanaName { get; private set; }
 
@@ -109,4 +115,21 @@ public class ReceiptListAdvancedSearchOutputItem
     public string FutansyaNoKohi4 { get; private set; }
 
     public bool IsPtTest { get; private set; }
+
+    public int HokenNissu { get; private set; }
+
+    public string ReceCheckCmt { get; private set; }
+
+
+    #region Other param
+    public string BirthDayDisplay
+    {
+        get => CIUtil.SDateToShowSWDate(BirthDay);
+    }
+
+    public string LastVisitDateDisplay
+    {
+        get => CIUtil.SDateToShowSDate(LastVisitDate);
+    }
+    #endregion
 }

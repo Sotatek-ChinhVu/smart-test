@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
 
 namespace EmrCloudApi.Controller
@@ -24,8 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetPtDiseaseListResponse>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
         {
-
-            var input = new GetPtDiseaseListInputData(HpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom);
+            var input = new GetPtDiseaseListInputData(HpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom, request.IsContiFiltered, request.IsInMonthFiltered);
             var output = _bus.Handle(input);
 
             var presenter = new GetPtDiseaseListPresenter();
@@ -72,5 +72,14 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.GetSetByomeiTree)]
+        public ActionResult<Response<GetSetByomeiTreeResponse>> GetSetByomeiTree([FromQuery] GetSetByomeiTreeRequest request)
+        {
+            var input = new GetSetByomeiTreeInputData(HpId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetSetByomeiTreePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSetByomeiTreeResponse>>(presenter.Result);
+        }
     }
 }
