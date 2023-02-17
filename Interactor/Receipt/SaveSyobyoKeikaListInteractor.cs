@@ -74,7 +74,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         }
         else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
         {
-            return SaveSyobyoKeikaListStatus.InvalidSinYm;
+            return SaveSyobyoKeikaListStatus.InvalidHokenId;
         }
         else if (!inputData.SyobyoKeikaList.Any())
         {

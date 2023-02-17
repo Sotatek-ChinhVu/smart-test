@@ -28,4 +28,6 @@ public interface IReceiptRepository : IRepositoryBase
     bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList);
 
     bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList);
+
+    bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList);
 }
