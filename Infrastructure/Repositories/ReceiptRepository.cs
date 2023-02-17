@@ -77,8 +77,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                               && listPtIds.Contains(item.PtId))
                                                                 .AsEnumerable()
                                                                 .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
-                                                                .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt())
-                                                                .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Cmt, item.IsPending });
+                                                                .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt());
 
         var receCheckErrors = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
                                                                                 && item.IsChecked == 0
@@ -87,8 +86,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && listPtIds.Contains(item.PtId))
                                                                   .AsEnumerable()
                                                                   .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
-                                                                  .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr())
-                                                                  .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Message1, item.Message2 });
+                                                                  .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr());
 
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.IsDeleted == 0
                                                                     && item.HpId == hpId
@@ -1129,7 +1127,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi4ReceKisai,
                                 data.Tokki,
                                 data.HokenNissu ?? 0,
-                                data.Kohi1Nissu ?? 0
+                                data.ReceCheckCmt
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)
