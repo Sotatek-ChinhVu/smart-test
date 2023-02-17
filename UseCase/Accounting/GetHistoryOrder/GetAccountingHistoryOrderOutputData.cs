@@ -13,7 +13,9 @@ namespace UseCase.Accounting.GetHistoryOrder
         }
 
         public int Total { get; private set; }
+
         public List<HistoryOrderModel> HistoryOrderModels { get; private set; }
+
         public GetAccountingHistoryOrderStatus Status { get; private set; }
     }
 }

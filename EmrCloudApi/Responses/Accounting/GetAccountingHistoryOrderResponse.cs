@@ -11,6 +11,7 @@ namespace EmrCloudApi.Responses.Accounting
         }
 
         public int Total { get; private set; }
+
         public List<HistoryOrderModel> HistoryOrderModels { get; private set; }
     }
 }
