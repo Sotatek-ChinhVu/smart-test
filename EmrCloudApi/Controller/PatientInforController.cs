@@ -89,6 +89,7 @@ using EmrCloudApi.Realtime;
 using EmrCloudApi.Messages;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.CheckAllowDelete;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -137,10 +138,11 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetListGroupInfResponse>>(present.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet("InsuranceListByPtId")]
         public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
-            var input = new GetInsuranceListInputData(HpId, request.PtId, request.SinDate);
+            var input = new GetInsuranceListInputData(1, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceListPresenter();

@@ -370,7 +370,15 @@ namespace Infrastructure.Repositories
             {
                 var ptRousaiTenkis = NoTrackingDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId && item.IsDeleted == DeleteStatus.None).OrderBy(x => x.EndDate)
                     .Select(x => new RousaiTenkiModel(x.Sinkei, x.Tenki, x.EndDate, x.IsDeleted, x.SeqNo)).ToList();
-                var hokenMst = NoTrackingDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo);
+
+
+                var hokenMst = NoTrackingDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo && h.StartDate <= sinDate && sinDate <= h.EndDate);
+                if (hokenMst is null)
+                {
+                    hokenMst = NoTrackingDataContext.HokenMsts.Where(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo)
+                                            .OrderByDescending(x => x.StartDate).FirstOrDefault();
+                }
+
                 var dataHokenCheckHoken = NoTrackingDataContext.PtHokenChecks.FirstOrDefault(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenId == item.HokenId);
                 //get FindHokensyaMstByNoNotrack
                 string houbetuNo = string.Empty;
@@ -478,7 +486,14 @@ namespace Infrastructure.Repositories
                                 .Where(x => x.HokenId == item.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
                                 .OrderByDescending(x => x.CheckDate).FirstOrDefault();
 
-                var hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo);
+                var hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo && h.StartDate <= sinDate && sinDate <= h.EndDate);
+
+                if (hokenMst is null)
+                {
+                    hokenMst = NoTrackingDataContext.HokenMsts.Where(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo)
+                                            .OrderByDescending(x => x.StartDate).FirstOrDefault();
+                }
+
                 var prefName = string.Empty;
                 if (hokenMst != null)
                 {
