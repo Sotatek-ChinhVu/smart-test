@@ -6,6 +6,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -210,6 +211,47 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId ,int sinDate)
+        {
+            var genarationMst = NoTrackingDataContext.ByomeiSetGenerationMsts
+                                         .Where(p => p.IsDeleted == DeleteTypes.None)
+                                         .OrderByDescending(p => p.StartDate)
+                                         .FirstOrDefault(q => q.StartDate <= sinDate);
+
+            if (genarationMst == null) return new List<ByomeiSetMstModel>();
+
+            var byomeiSetMst = NoTrackingDataContext.ByomeiSetMsts
+                                        .Where(p => p.HpId == hpId &&
+                                               p.IsDeleted == DeleteTypes.None &&
+                                               p.GenerationId == genarationMst.GenerationId);
+
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+
+
+            var query = from byomeiSet in byomeiSetMst
+                        join byomeiMst in byomeiMsts
+                        on byomeiSet.ByomeiCd equals byomeiMst.ByomeiCd into ps
+                        from p in ps.DefaultIfEmpty()
+                        select new { byomeiSet = byomeiSet, byomeiMst = p };
+
+            return query.Select(x => new ByomeiSetMstModel(x.byomeiSet.GenerationId,
+                                                                x.byomeiSet.SeqNo,
+                                                                x.byomeiSet.Level1,
+                                                                x.byomeiSet.Level2,
+                                                                x.byomeiSet.Level3,
+                                                                x.byomeiSet.Level4,
+                                                                x.byomeiSet.Level5,
+                                                                x.byomeiSet.ByomeiCd ?? string.Empty,
+                                                                x.byomeiMst.Byomei ?? string.Empty,
+                                                                x.byomeiMst.Icd101 ?? string.Empty,
+                                                                x.byomeiMst.Icd102 ?? string.Empty,
+                                                                x.byomeiMst.Icd1012013 ?? string.Empty,
+                                                                x.byomeiMst.Icd1022013 ?? string.Empty,
+                                                                x.byomeiSet.SetName ?? string.Empty,
+                                                                x.byomeiSet.IsTitle,
+                                                                x.byomeiSet.SelectType)).ToList();
         }
 
         public void ReleaseResource()

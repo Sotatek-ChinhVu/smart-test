@@ -151,6 +151,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.ConfirmReplaceDocParam;
@@ -654,6 +655,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
+            busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
