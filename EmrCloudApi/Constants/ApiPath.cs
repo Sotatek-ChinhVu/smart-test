@@ -203,6 +203,6 @@
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
 
         //TreeSet Byomei
-        public const string GetTreeSetByomei = "GetSetByomeiTree";
+        public const string GetSetByomeiTree = "GetSetByomeiTree";
     }
 }

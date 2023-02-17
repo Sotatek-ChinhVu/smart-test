@@ -73,8 +73,8 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetTreeSetByomei)]
-        public ActionResult<Response<GetTreeSetByomeiResponse>> GetTreeSetByomei([FromQuery] GetTreeSetByomeiRequest request)
+        [HttpGet(ApiPath.GetSetByomeiTree)]
+        public ActionResult<Response<GetTreeSetByomeiResponse>> GetSetByomeiTree([FromQuery] GetTreeSetByomeiRequest request)
         {
             var input = new GetTreeSetByomeiInputData(HpId, request.SinDate);
             var output = _bus.Handle(input);
