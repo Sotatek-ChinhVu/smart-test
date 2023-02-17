@@ -2,10 +2,10 @@
 
 public class ReceCheckCmtItem
 {
-    public ReceCheckCmtItem(int seqNo, int isPending, string cmt, int isChecked, int sortNo, bool isDeleted)
+    public ReceCheckCmtItem(int seqNo, int statusColor, string cmt, int isChecked, int sortNo, bool isDeleted)
     {
         SeqNo = seqNo;
-        IsPending = isPending;
+        StatusColor = statusColor;
         Cmt = cmt;
         IsChecked = isChecked;
         SortNo = sortNo;
@@ -14,7 +14,7 @@ public class ReceCheckCmtItem
 
     public int SeqNo { get; private set; }
 
-    public int IsPending { get; private set; }
+    public int StatusColor { get; private set; }
 
     public string Cmt { get; private set; }
 

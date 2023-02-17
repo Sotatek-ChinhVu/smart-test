@@ -910,5 +910,6 @@
         public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
         public static readonly string InvalidKeika = "Invalid Keika!";
         public static readonly string InvalidSinDay = "Invalid SinDay!";
+        public static readonly string InvalidStatusColor = "Invalid StatusColor!";
     }
 }

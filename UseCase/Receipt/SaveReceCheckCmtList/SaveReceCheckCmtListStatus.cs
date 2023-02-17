@@ -8,4 +8,7 @@ public enum SaveReceCheckCmtListStatus : byte
     InvalidPtId = 3,
     InvalidSinYm = 4,
     InvalidHokenId = 5,
+    InvalidStatusColor = 6,
+    InvalidSeqNo = 7,
+    InvalidCmt = 8,
 }

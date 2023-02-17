@@ -36,6 +36,7 @@ public class GetReceiCheckListInteractor : IGetReceiCheckListInputPort
         foreach (var cmt in receCheckCmtList)
         {
             var receCheckCmtItem = new ReceiptCheckCmtErrListItem(
+                                                                      cmt.SeqNo,
                                                                       cmt.IsPending,
                                                                       cmt.SortNo,
                                                                       cmt.IsChecked == 1,

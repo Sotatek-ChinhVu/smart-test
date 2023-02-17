@@ -1355,8 +1355,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
     {
         var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
-                                                                               && entity.EndYm >= sinYm
-                                                                               && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
+                                                                                                && entity.EndYm >= sinYm
+                                                                                                && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
         return countSyoukiKbn == syoukiKbnList.Count;
     }
 
@@ -1478,6 +1478,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             entity.SortNo = model.SortNo;
         }
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistSeqNoReceCheckCmtList(int hpId, int hokenId, int sinYm, long ptId, List<int> seqNoList)
+    {
+        var seqNoListQuery = seqNoList.Distinct().ToList();
+        var receCheckCmtCount = NoTrackingDataContext.ReceCheckCmts.Count(item => item.HpId == hpId
+                                                                                  && item.SinYm == sinYm
+                                                                                  && item.PtId == ptId
+                                                                                  && item.HokenId == hokenId
+                                                                                  && seqNoListQuery.Contains(item.SeqNo)
+                                                                                  && item.IsDeleted == DeleteTypes.None);
+        return receCheckCmtCount == seqNoList.Count;
     }
     #endregion
 

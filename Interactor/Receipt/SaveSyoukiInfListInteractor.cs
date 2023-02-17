@@ -63,13 +63,14 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         {
             return SaveSyoukiInfListStatus.InvalidHokenId;
         }
-        if (!inputData.SyoukiInfList.Any())
+        else if (!inputData.SyoukiInfList.Any())
         {
-            return SaveSyoukiInfListStatus.ValidateSuccess;
+            return SaveSyoukiInfListStatus.Failed;
         }
         var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
-        var countSyoukiInf = listSyoukiInfDB.Count(item => listSeqNo.Contains(item.SeqNo));
+        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).ToList();
+        var seqNoListQuery = listSeqNo.Distinct().ToList();
+        var countSyoukiInf = listSyoukiInfDB.Count(item => seqNoListQuery.Contains(item.SeqNo));
         if (listSeqNo.Any() && countSyoukiInf != listSeqNo.Count)
         {
             return SaveSyoukiInfListStatus.InvalidSeqNo;
