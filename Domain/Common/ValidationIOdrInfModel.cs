@@ -31,6 +31,28 @@ namespace Domain.Common
                 }
             }
 
+            //Check Refill
+            if (odrInf.OdrKouiKbn == 20)
+            {
+                // 用法
+                var checkRefill = odrInf.OrdInfDetails.Any(o => o.ItemCd == ItemCdConst.Con_Refill);
+                var checkOther = odrInf.OrdInfDetails.Any(o => o.SinKouiKbn == 20 && o.MasterSbt == "S" && o.DrugKbn == 0);
+                var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
+                var checkUsageOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrugUsage);
+                if (checkRefill && !checkDrugOfDetail)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
+                }
+                if (checkOther && checkDrugOfDetail && !checkRefill)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrug);
+                }
+                if (checkOther && checkUsageOfDetail && !checkRefill)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsage);
+                }
+            }
+
             //Check has not Injection 
             if (odrInf.IsInjection)
             {
@@ -309,14 +331,11 @@ namespace Domain.Common
 
         private static KeyValuePair<string, OrdInfValidationStatus> ValidateInputItemBussiness(TOdrInf odrInf)
         {
-            if (odrInf.OrdInfDetails?.Count == 1)
+            var checkGazoDensibaitaiHozon = odrInf.OrdInfDetails?.Any(item => item.ItemCd == ItemCdConst.GazoDensibaitaiHozon);
+            var checkOtherCategory = odrInf.OrdInfDetails?.Any(item => item.ItemCd != ItemCdConst.GazoDensibaitaiHozon);
+            if (checkGazoDensibaitaiHozon == true && checkOtherCategory != true)
             {
-                var item = odrInf.OrdInfDetails[0];
-
-                if (item.ItemCd == ItemCdConst.GazoDensibaitaiHozon)
-                {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidGazoDensibaitaiHozon);
-                }
+                return new(odrValidateCode, OrdInfValidationStatus.InvalidGazoDensibaitaiHozon);
             }
 
             var specialItems = odrInf.OrdInfDetails?.Where(item => item.IsSpecialItem && item.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu);

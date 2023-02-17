@@ -4,7 +4,7 @@ namespace Domain.Models.NextOrder
 {
     public class NextOrderModel
     {
-        public NextOrderModel(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int isDeleted, int sortNo, List<RsvkrtByomeiModel> rsvkrtByomeis, RsvkrtKarteInfModel rsvkrtKarteInf, List<RsvkrtOrderInfModel> rsvkrtOrderInfs)
+        public NextOrderModel(int hpId, long ptId, long rsvkrtNo, int rsvkrtKbn, int rsvDate, string rsvName, int isDeleted, int sortNo, List<RsvkrtByomeiModel> rsvkrtByomeis, RsvkrtKarteInfModel rsvkrtKarteInf, List<RsvkrtOrderInfModel> rsvkrtOrderInfs, FileItemModel fileItem)
         {
             HpId = hpId;
             PtId = ptId;
@@ -17,6 +17,7 @@ namespace Domain.Models.NextOrder
             RsvkrtByomeis = rsvkrtByomeis;
             RsvkrtKarteInf = rsvkrtKarteInf;
             RsvkrtOrderInfs = rsvkrtOrderInfs;
+            FileItem = fileItem;
         }
         public NextOrderStatus Validation()
         {
@@ -28,7 +29,7 @@ namespace Domain.Models.NextOrder
             {
                 return NextOrderStatus.InvalidRsvkrtKbn;
             }
-            if (RsvDate <= 0)
+            if (RsvDate < 0)
             {
                 return NextOrderStatus.InvalidRsvDate;
             }
@@ -68,5 +69,7 @@ namespace Domain.Models.NextOrder
         public RsvkrtKarteInfModel RsvkrtKarteInf { get; private set; }
 
         public List<RsvkrtOrderInfModel> RsvkrtOrderInfs { get; private set; }
+
+        public FileItemModel FileItem { get; private set; }
     }
 }

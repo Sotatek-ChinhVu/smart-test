@@ -145,7 +145,7 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
         return ConvertToDocInfModel(docInfDB, new List<DocCategoryModel> { docCategory });
     }
 
-    public bool SaveDocInf(int userId, DocInfModel model)
+    public bool SaveDocInf(int userId, DocInfModel model, bool overwriteFile)
     {
         if (model.SeqNo <= 0)
         {
@@ -167,6 +167,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             }
             docInfDB.CategoryCd = model.CategoryCd;
             docInfDB.DspFileName = model.DisplayFileName;
+            if (overwriteFile)
+            {
+                docInfDB.FileName = model.FileName;
+            }
             docInfDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
             docInfDB.UpdateId = userId;
         }

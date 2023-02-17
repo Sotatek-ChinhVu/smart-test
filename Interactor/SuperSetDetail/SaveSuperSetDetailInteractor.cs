@@ -157,7 +157,8 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         return new SetKarteInfModel(
                 inputItem.HpId,
                 inputItem.SetCd,
-                inputItem.RichText
+                inputItem.RichText,
+                inputItem.Text
             );
     }
 

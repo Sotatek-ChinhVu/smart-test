@@ -1419,7 +1419,7 @@ namespace Infrastructure.Repositories
 
         private void CheckNameChanged(OrdInfModel odrInfModel, ref Dictionary<string, string> nameChanged)
         {
-            foreach (var detail in odrInfModel.OrdInfDetails)
+            foreach (var detail in odrInfModel.OrdInfDetails.Where(o => !o.ItemCd.StartsWith("CO")))
             {
                 if (string.IsNullOrEmpty(detail.ItemCd) || detail.IsDrugUsage || detail.IsNormalComment)
                 {
@@ -1429,7 +1429,7 @@ namespace Infrastructure.Repositories
                 if (!string.IsNullOrEmpty(newName))
                 {
                     string oldName;
-                    if (detail.HasCmtName)
+                    if (detail.HasCmtName && !detail.Is831Cmt)
                     {
                         oldName = detail.CmtName;
                     }
@@ -1466,7 +1466,7 @@ namespace Infrastructure.Repositories
             {
                 string oldName;
 
-                if (detail.HasCmtName)
+                if (detail.HasCmtName && !detail.Is831Cmt)
                 {
                     oldName = detail.CmtName?.Trim() ?? string.Empty;
                 }
