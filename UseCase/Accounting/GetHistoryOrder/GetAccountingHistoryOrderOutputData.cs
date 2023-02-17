@@ -5,15 +5,15 @@ namespace UseCase.Accounting.GetHistoryOrder
 {
     public class GetAccountingHistoryOrderOutputData : IOutputData
     {
-        public GetAccountingHistoryOrderOutputData(int total, List<HistoryOrderDtoModel> historyOrderDtoModels, GetAccountingHistoryOrderStatus status)
+        public GetAccountingHistoryOrderOutputData(int total, List<HistoryOrderDto> historyOrderDtos, GetAccountingHistoryOrderStatus status)
         {
             Total = total;
-            HistoryOrderDtoModels = historyOrderDtoModels;
+            HistoryOrderDtos = historyOrderDtos;
             Status = status;
         }
 
         public int Total { get; private set; }
-        public List<HistoryOrderDtoModel> HistoryOrderDtoModels { get; private set; }
+        public List<HistoryOrderDto> HistoryOrderDtos { get; private set; }
         public GetAccountingHistoryOrderStatus Status { get; private set; }
     }
 }

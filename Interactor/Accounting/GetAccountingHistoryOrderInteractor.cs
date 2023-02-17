@@ -1,7 +1,4 @@
 ﻿using Domain.Models.HistoryOrder;
-using Domain.Models.OrdInfs;
-using Domain.Models.Reception;
-using System.Security.Cryptography.X509Certificates;
 using UseCase.Accounting.GetHistoryOrder;
 
 namespace Interactor.Accounting
@@ -19,7 +16,6 @@ namespace Interactor.Accounting
         {
             try
             {
-
                 (int, List<HistoryOrderModel>) historyList = _historyOrderRepository.GetList(
                    inputData.HpId,
                    inputData.UserId,
@@ -27,7 +23,7 @@ namespace Interactor.Accounting
                    inputData.SinDate,
                    inputData.Offset,
                    inputData.Limit,
-                   (int)inputData.FilterId,
+                   0,
                    inputData.DeleteConditon,
                    inputData.RaiinNo
                    );
@@ -39,19 +35,17 @@ namespace Interactor.Accounting
             }
         }
 
-        private List<HistoryOrderDtoModel> ConvertToHistoryOrderDtoModel(List<HistoryOrderModel> models)
+        private List<HistoryOrderDto> ConvertToHistoryOrderDtoModel(List<HistoryOrderModel> models)
         {
-            List<HistoryOrderDtoModel> historyOrderDtoModelList = new List<HistoryOrderDtoModel>();
+            List<HistoryOrderDto> historyOrderDtoModelList = new List<HistoryOrderDto>();
             foreach (var item in models)
             {
-                historyOrderDtoModelList.Add(new HistoryOrderDtoModel(item.RaiinNo, item.SinDate, item.HokenPid, item.HokenTitle, item.HokenRate,
+                historyOrderDtoModelList.Add(new HistoryOrderDto(item.RaiinNo, item.SinDate, item.HokenPid, item.HokenTitle, item.HokenRate,
                     item.HokenType, item.SyosaisinKbn, item.JikanKbn, item.KaId, item.TantoId, item.KaName, item.TantoName, item.SanteiKbn,
                     item.TagNo, item.SinryoTitle, item.OrderInfList, item.KarteInfModels));
             }
 
             return historyOrderDtoModelList;
         }
-
-
     }
 }

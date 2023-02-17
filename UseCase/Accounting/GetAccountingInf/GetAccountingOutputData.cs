@@ -23,7 +23,6 @@ namespace UseCase.Accounting.GetAccountingInf
 
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
         public GetAccountingStatus GetAccountingStatus { get; private set; }
-
         public int TotalPoint { get; private set; }
         public int KanFutan { get; private set; }
         public int TotalSelfExpense { get; private set; }
@@ -34,6 +33,5 @@ namespace UseCase.Accounting.GetAccountingInf
         public int SumAdjustView { get; private set; }
         public int ThisCredit { get; private set; }
         public int ThisWari { get; private set; }
-
     }
 }

@@ -4,7 +4,7 @@ using Helper.Constants;
 
 namespace Domain.Models.HistoryOrder
 {
-    public class HistoryOrderDtoModel
+    public class HistoryOrderDto
     {
         public long RaiinNo { get; private set; }
 
@@ -52,7 +52,7 @@ namespace Domain.Models.HistoryOrder
             {2,"自費" }
         };
 
-        public HistoryOrderDtoModel(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int hokenType, int syosaisinKbn, int jikanKbn, int kaId, int tantoId, string kaName, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, List<OrdInfModel> orderInfList, List<KarteInfModel> karteInfModels)
+        public HistoryOrderDto(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int hokenType, int syosaisinKbn, int jikanKbn, int kaId, int tantoId, string kaName, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, List<OrdInfModel> orderInfList, List<KarteInfModel> karteInfModels)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
