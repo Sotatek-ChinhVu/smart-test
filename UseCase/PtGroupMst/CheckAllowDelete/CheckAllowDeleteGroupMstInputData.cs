@@ -20,8 +20,6 @@ namespace UseCase.PtGroupMst.CheckAllowDelete
 
         /// <summary>
         /// true if check GroupName . else is groupItem
-        /// GroupName required GroupId,GroupCode
-        /// GroupItem reqired GroupId,GroupCode,SeqNo
         /// </summary>
         public bool CheckAllowDeleteGroupName { get; private set; }
     }

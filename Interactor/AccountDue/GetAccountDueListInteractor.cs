@@ -26,7 +26,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             {
                 return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidHpId);
             }
-            else if (!_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+            else if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
             {
                 return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidPtId);
             }

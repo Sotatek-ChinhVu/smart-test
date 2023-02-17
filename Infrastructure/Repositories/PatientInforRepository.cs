@@ -235,7 +235,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
@@ -818,17 +818,18 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(originKeyword) ||
+                string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
                 return new List<PatientInforModel>();
             }
 
             var ptInfWithLastVisitDate =
             from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
             orderby p.PtNum descending
             select new
             {
@@ -1860,9 +1861,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo 
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 

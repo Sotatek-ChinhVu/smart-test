@@ -135,7 +135,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return SaveDocInfStatus.InvalidHpId;
             }
-            else if (!_patientInforRepository.CheckExistListId(new List<long> { inputData.PtId }))
+            else if (!_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
             {
                 return SaveDocInfStatus.InvalidPtId;
             }
