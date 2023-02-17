@@ -10,10 +10,7 @@ namespace EmrCloudApi.Presenters.InsuranceMst
         public Response<SaveHokenMasterResponse> Result { get; private set; } = new Response<SaveHokenMasterResponse>();
         public void Complete(SaveHokenMasterOutputData outputData)
         {
-            Result.Data = new SaveHokenMasterResponse()
-            {
-                State = outputData.Status
-            };
+            Result.Data = new SaveHokenMasterResponse(outputData.Status);
             Result.Status = (int)outputData.Status;
             Result.Message = outputData.Message ?? GetMessage(outputData.Status);
         }

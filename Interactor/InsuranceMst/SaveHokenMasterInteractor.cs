@@ -74,10 +74,6 @@ namespace Interactor.InsuranceMst
                 else
                     return new SaveHokenMasterOutputData(SaveHokenMasterStatus.Failed, string.Empty);
             }
-            catch
-            {
-                return new SaveHokenMasterOutputData(SaveHokenMasterStatus.Exception, string.Empty);
-            }
             finally
             {
                 _insuranceMstReponsitory.ReleaseResource();
