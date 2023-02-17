@@ -28,6 +28,7 @@ public class SaveReceCmtListPresenter : ISaveReceCmtListOutputPort
         SaveReceCmtListStatus.InvalidCmtSbt => ResponseMessage.InvalidCmtSbt,
         SaveReceCmtListStatus.InvalidCmt => ResponseMessage.InvalidCmt,
         SaveReceCmtListStatus.InvalidCmtData => ResponseMessage.InvalidCmtData,
+        SaveReceCmtListStatus.InvalidHokenId => ResponseMessage.InvalidHokenId,
         _ => string.Empty
     };
 }

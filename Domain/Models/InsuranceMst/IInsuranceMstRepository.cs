@@ -20,6 +20,8 @@ namespace Domain.Models.InsuranceMst
 
         bool DeleteHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate);
 
+        (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate);
+
         bool CheckDuplicateKey(int hpId, HokenMstModel model);
 
         bool CreateHokenMaster(int hpId, int userId, HokenMstModel insurance);

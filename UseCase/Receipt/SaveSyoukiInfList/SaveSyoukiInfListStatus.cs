@@ -9,4 +9,5 @@ public enum SaveSyoukiInfListStatus : byte
     InvalidSinYm = 4,
     InvalidSeqNo = 5,
     InvalidSyoukiKbn = 6,
+    InvalidHokenId = 7,
 }

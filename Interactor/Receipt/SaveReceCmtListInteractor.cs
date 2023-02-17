@@ -61,11 +61,11 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         }
         else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
         {
-            return SaveReceCmtListStatus.InvalidSinYm;
+            return SaveReceCmtListStatus.InvalidHokenId;
         }
-        if (!inputData.ReceCmtList.Any())
+        else if (!inputData.ReceCmtList.Any())
         {
-            return SaveReceCmtListStatus.ValidateSuccess;
+            return SaveReceCmtListStatus.Failed;
         }
         return ValidateReceCmtItem(inputData);
     }
@@ -73,7 +73,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
     {
         var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
+        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;

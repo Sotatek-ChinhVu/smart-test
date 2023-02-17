@@ -190,6 +190,8 @@
         public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
         public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
         public const string GetReceHenReason = "GetReceHenReason";
+        public const string GetReceiCheckList = "GetReceiCheckList";
+        public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -201,5 +203,8 @@
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+
+        //TreeSet Byomei
+        public const string GetSetByomeiTree = "GetSetByomeiTree";
     }
 }

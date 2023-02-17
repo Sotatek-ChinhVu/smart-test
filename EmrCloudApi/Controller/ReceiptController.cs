@@ -12,10 +12,12 @@ using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
+using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
+using UseCase.Receipt.SaveReceCheckCmtList;
 
 namespace EmrCloudApi.Controller;
 
@@ -118,13 +120,38 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetReceHenReason)]
     public ActionResult<Response<GetReceHenReasonResponse>> GetReceHenReason([FromQuery] GetReceHenReasonRequest request)
     {
-        var input = new GetReceHenReasonInputData(HpId,  request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
+        var input = new GetReceHenReasonInputData(HpId, request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
         var output = _bus.Handle(input);
 
         var presenter = new GetReceHenReasonPresenter();
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceHenReasonResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceiCheckList)]
+    public ActionResult<Response<GetReceiCheckListResponse>> GetReceiCheckList([FromQuery] GetReceiCheckListRequest request)
+    {
+        var input = new GetReceiCheckListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceiCheckListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceiCheckListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceCheckCmtList)]
+    public ActionResult<Response<SaveReceCheckCmtListResponse>> SaveReceCheckCmtList([FromBody] SaveReceCheckCmtListRequest request)
+    {
+        var listReceSyoukiInf = request.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtItem(item)).ToList();
+        var input = new SaveReceCheckCmtListInputData(HpId, UserId, request.PtId, request.SinYm, request.HokenId, listReceSyoukiInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceCheckCmtListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceCheckCmtListResponse>>(presenter.Result);
     }
 
     #region Private function
@@ -230,11 +257,23 @@ public class ReceiptController : AuthorizeControllerBase
     private SyobyoKeikaItem ConvertToSyobyoKeikaItem(SaveSyobyoKeikaRequestItem item)
     {
         return new SyobyoKeikaItem(
-                                      item.SinDay,
-                                      item.SeqNo,
-                                      item.Keika,
-                                      item.IsDeleted
-                                  );
+                    item.SinDay,
+                    item.SeqNo,
+                    item.Keika,
+                    item.IsDeleted
+                );
+    }
+
+    private ReceCheckCmtItem ConvertToReceCheckCmtItem(SaveReceCheckCmtListRequestItem item)
+    {
+        return new ReceCheckCmtItem(
+                item.SeqNo,
+                item.StatusColor,
+                item.Cmt,
+                item.IsChecked ? 1 : 0,
+                item.SortNo,
+                item.IsDeleted
+            );
     }
     #endregion
 }

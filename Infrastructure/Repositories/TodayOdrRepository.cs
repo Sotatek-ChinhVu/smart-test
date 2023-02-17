@@ -1431,11 +1431,19 @@ namespace Infrastructure.Repositories
                     string oldName;
                     if (detail.HasCmtName && !detail.Is831Cmt)
                     {
-                        oldName = detail.CmtName;
+                        oldName = detail.CmtName.Trim();
                     }
                     else
                     {
-                        oldName = detail.ItemName;
+                        if (!detail.Is831Cmt)
+                        {
+                            oldName = detail.ItemName.Trim();
+                        }
+                        else
+                        {
+                            var tempOldName = detail.ItemName.Trim().Split("；").FirstOrDefault();
+                            oldName = tempOldName != null ? tempOldName + "；" : string.Empty;
+                        }
                     }
                     if (string.IsNullOrEmpty(oldName))
                     {
@@ -1468,11 +1476,19 @@ namespace Infrastructure.Repositories
 
                 if (detail.HasCmtName && !detail.Is831Cmt)
                 {
-                    oldName = detail.CmtName?.Trim() ?? string.Empty;
+                    oldName = detail.CmtName.Trim() ?? string.Empty;
                 }
                 else
                 {
-                    oldName = detail.ItemName?.Trim() ?? string.Empty;
+                    if (detail.Is831Cmt)
+                    {
+                        var tempOldName = detail.ItemName.Trim().Split("；").FirstOrDefault();
+                        oldName = tempOldName != null ? tempOldName + "；" : string.Empty;
+                    }
+                    else
+                    {
+                        oldName = detail.ItemName?.Trim() ?? string.Empty;
+                    }
                 }
                 if (string.IsNullOrEmpty(oldName))
                 {
