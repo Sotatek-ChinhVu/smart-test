@@ -158,100 +158,97 @@ public class ReceiptController : AuthorizeControllerBase
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
         var itemList = request.ItemList.Select(item => new ItemSearchInputItem(
-                                                                                    item.ItemCd,
-                                                                                    item.InputName,
-                                                                                    item.RangeSeach,
-                                                                                    item.Amount,
-                                                                                    item.OrderStatus,
-                                                                                    item.IsComment
-                                                                               )).ToList();
+                                                            item.ItemCd,
+                                                            item.InputName,
+                                                            item.RangeSeach,
+                                                            item.Amount,
+                                                            item.OrderStatus,
+                                                            item.IsComment
+                                        )).ToList();
 
         var byomeiCdList = request.ByomeiCdList.Select(item => new SearchByoMstInputItem(
-                                                                                            item.ByomeiCd,
-                                                                                            item.InputName,
-                                                                                            item.IsComment
-                                                                                        )).ToList();
+                                                                    item.ByomeiCd,
+                                                                    item.InputName,
+                                                                    item.IsComment
+                                               )).ToList();
 
         return new ReceiptListAdvancedSearchInputData(
-                hpId,
-                request.SeikyuYm,
-                request.Tokki,
-                request.IsAdvanceSearch,
-                request.HokenSbts,
-                request.IsAll,
-                request.IsNoSetting,
-                request.IsSystemSave,
-                request.IsSave1,
-                request.IsSave2,
-                request.IsSave3,
-                request.IsTempSave,
-                request.IsDone,
-                request.ReceSbtCenter,
-                request.ReceSbtRight,
-                request.HokenHoubetu,
-                request.Kohi1Houbetu,
-                request.Kohi2Houbetu,
-                request.Kohi3Houbetu,
-                request.Kohi4Houbetu,
-                request.IsIncludeSingle,
-                request.HokensyaNoFrom,
-                request.HokensyaNoTo,
-                request.HokensyaNoFromLong,
-                request.HokensyaNoToLong,
-                request.PtId,
-                request.PtIdFrom,
-                request.PtIdTo,
-                request.PtSearchOption,
-                request.TensuFrom,
-                request.TensuTo,
-                request.LastRaiinDateFrom,
-                request.LastRaiinDateTo,
-                request.BirthDayFrom,
-                request.BirthDayTo,
-                itemList,
-                request.ItemQuery,
-                request.IsOnlySuspectedDisease,
-                request.ByomeiQuery,
-                byomeiCdList,
-                request.IsFutanIncludeSingle,
-                request.FutansyaNoFromLong,
-                request.FutansyaNoToLong,
-                request.KaId,
-                request.DoctorId,
-                request.Name,
-                request.IsTestPatientSearch,
-                request.IsNotDisplayPrinted,
-                request.GroupSearchModels,
-                request.SeikyuKbnAll,
-                request.SeikyuKbnDenshi,
-                request.SeikyuKbnPaper
-            );
+                   hpId,
+                   request.SeikyuYm,
+                   request.Tokki,
+                   request.IsAdvanceSearch,
+                   request.HokenSbts,
+                   request.IsAll,
+                   request.IsNoSetting,
+                   request.IsSystemSave,
+                   request.IsSave1,
+                   request.IsSave2,
+                   request.IsSave3,
+                   request.IsTempSave,
+                   request.IsDone,
+                   request.ReceSbtCenter,
+                   request.ReceSbtRight,
+                   request.HokenHoubetu,
+                   request.Kohi1Houbetu,
+                   request.Kohi2Houbetu,
+                   request.Kohi3Houbetu,
+                   request.Kohi4Houbetu,
+                   request.IsIncludeSingle,
+                   request.HokensyaNoFrom,
+                   request.HokensyaNoTo,
+                   request.HokensyaNoFromLong,
+                   request.HokensyaNoToLong,
+                   request.PtId,
+                   request.PtIdFrom,
+                   request.PtIdTo,
+                   request.PtSearchOption,
+                   request.TensuFrom,
+                   request.TensuTo,
+                   request.LastRaiinDateFrom,
+                   request.LastRaiinDateTo,
+                   request.BirthDayFrom,
+                   request.BirthDayTo,
+                   itemList,
+                   request.ItemQuery,
+                   request.IsOnlySuspectedDisease,
+                   request.ByomeiQuery,
+                   byomeiCdList,
+                   request.IsFutanIncludeSingle,
+                   request.FutansyaNoFromLong,
+                   request.FutansyaNoToLong,
+                   request.KaId,
+                   request.DoctorId,
+                   request.Name,
+                   request.IsTestPatientSearch,
+                   request.IsNotDisplayPrinted,
+                   request.GroupSearchModels,
+                   request.SeikyuKbnAll,
+                   request.SeikyuKbnDenshi,
+                   request.SeikyuKbnPaper);
     }
 
     private ReceCmtItem ConvertToReceCmtItem(SaveReceCmtRequestItem requestItem)
     {
         return new ReceCmtItem(
-                                    requestItem.Id,
-                                    requestItem.SeqNo,
-                                    requestItem.CmtKbn,
-                                    requestItem.CmtSbt,
-                                    requestItem.Cmt,
-                                    requestItem.CmtData,
-                                    requestItem.ItemCd,
-                                    requestItem.IsDeleted
-                               );
+                    requestItem.Id,
+                    requestItem.SeqNo,
+                    requestItem.CmtKbn,
+                    requestItem.CmtSbt,
+                    requestItem.Cmt,
+                    requestItem.CmtData,
+                    requestItem.ItemCd,
+                    requestItem.IsDeleted);
     }
 
     private SyoukiInfItem ConvertToSyoukiInfItem(SaveSyoukiInfRequestItem requestItem)
     {
         return new SyoukiInfItem(
-                                    requestItem.SeqNo,
-                                    requestItem.SortNo,
-                                    requestItem.SyoukiKbn,
-                                    requestItem.SyoukiKbnStartYm,
-                                    requestItem.Syouki,
-                                    requestItem.IsDeleted
-                               );
+                    requestItem.SeqNo,
+                    requestItem.SortNo,
+                    requestItem.SyoukiKbn,
+                    requestItem.SyoukiKbnStartYm,
+                    requestItem.Syouki,
+                    requestItem.IsDeleted);
     }
 
     private SyobyoKeikaItem ConvertToSyobyoKeikaItem(SaveSyobyoKeikaRequestItem item)
@@ -267,13 +264,12 @@ public class ReceiptController : AuthorizeControllerBase
     private ReceCheckCmtItem ConvertToReceCheckCmtItem(SaveReceCheckCmtListRequestItem item)
     {
         return new ReceCheckCmtItem(
-                item.SeqNo,
-                item.StatusColor,
-                item.Cmt,
-                item.IsChecked ? 1 : 0,
-                item.SortNo,
-                item.IsDeleted
-            );
+                    item.SeqNo,
+                    item.StatusColor,
+                    item.Cmt,
+                    item.IsChecked ? 1 : 0,
+                    item.SortNo,
+                    item.IsDeleted);
     }
     #endregion
 }
