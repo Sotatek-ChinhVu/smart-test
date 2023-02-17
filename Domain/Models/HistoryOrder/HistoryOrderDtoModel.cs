@@ -1,7 +1,5 @@
-﻿using Domain.Models.InsuranceInfor;
-using Domain.Models.KarteInfs;
+﻿using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
-using Domain.Models.Reception;
 using Helper.Constants;
 
 namespace Domain.Models.HistoryOrder
