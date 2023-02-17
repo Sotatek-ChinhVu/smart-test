@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.WarningMemo;
@@ -26,7 +27,6 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetAccountingResponse>> GetList([FromQuery] GetAccountingRequest request)
         {
-
             var input = new GetAccountingInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
@@ -39,7 +39,6 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.PaymentMethod)]
         public ActionResult<Response<GetPaymentMethodResponse>> GetList([FromQuery] GetPaymentMethodRequest request)
         {
-
             var input = new GetPaymentMethodInputData(request.HpId);
             var output = _bus.Handle(input);
 
@@ -52,7 +51,6 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.WarningMemo)]
         public ActionResult<Response<GetWarningMemoResponse>> GetList([FromQuery] GetWarningMemoRequest request)
         {
-
             var input = new GetWarningMemoInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
@@ -65,7 +63,6 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.PtByoMei)]
         public ActionResult<Response<GetPtByoMeiResponse>> GetList([FromQuery] GetPtByoMeiRequest request)
         {
-
             var input = new GetPtByoMeiInputData(request.HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
@@ -73,6 +70,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtByoMeiResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.HistoryOrder)]
+        public ActionResult<Response<GetAccountingHistoryOrderResponse>> GetList([FromQuery] GetAccountingHistoryOrderRequest request)
+        {
+            var input = new GetAccountingHistoryOrderInputData(request.PtId, request.HpId, request.UserId, request.SinDate, request.Offset, request.Limit, request.DeleteConditon, request.IsShowApproval, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAccountingHistoryOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAccountingHistoryOrderResponse>>(presenter.Result);
         }
     }
 }
