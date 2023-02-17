@@ -36,11 +36,11 @@ public class GetReceiCheckListInteractor : IGetReceiCheckListInputPort
         foreach (var cmt in receCheckCmtList)
         {
             var receCheckCmtItem = new ReceiptCheckCmtErrListItem(
-                                                                      cmt.IsPending,
-                                                                      cmt.SortNo,
-                                                                      cmt.IsChecked == 1,
-                                                                      cmt.Cmt
-                                                                 );
+                                        cmt.IsPending,
+                                        cmt.SortNo,
+                                        cmt.IsChecked == 1,
+                                        cmt.Cmt
+                                       );
             result.Add(receCheckCmtItem);
         }
 
@@ -48,10 +48,10 @@ public class GetReceiCheckListInteractor : IGetReceiCheckListInputPort
         foreach (var err in receCheckErrList)
         {
             var receCheckErrItem = new ReceiptCheckCmtErrListItem(
-                                                                      err.IsChecked == 1,
-                                                                      err.Message1,
-                                                                      err.Message2
-                                                                  );
+                                        err.IsChecked == 1,
+                                        err.Message1,
+                                        err.Message2
+                                       );
             result.Add(receCheckErrItem);
         }
 

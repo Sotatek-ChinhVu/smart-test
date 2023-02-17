@@ -1558,31 +1558,31 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     private ReceCheckCmtModel ConvertToReceCheckCmtModel(ReceCheckCmt receCheckCmt)
     {
         return new ReceCheckCmtModel(
-                                        receCheckCmt.PtId,
-                                        receCheckCmt.SeqNo,
-                                        receCheckCmt.SinYm,
-                                        receCheckCmt.HokenId,
-                                        receCheckCmt.IsPending,
-                                        receCheckCmt.Cmt ?? string.Empty,
-                                        receCheckCmt.IsChecked,
-                                        receCheckCmt.SortNo
-                                    );
+                    receCheckCmt.PtId,
+                    receCheckCmt.SeqNo,
+                    receCheckCmt.SinYm,
+                    receCheckCmt.HokenId,
+                    receCheckCmt.IsPending,
+                    receCheckCmt.Cmt ?? string.Empty,
+                    receCheckCmt.IsChecked,
+                    receCheckCmt.SortNo
+                   );
     }
 
     private ReceCheckErrModel ConvertToReceCheckErrModel(ReceCheckErr receCheckErr)
     {
         return new ReceCheckErrModel(
-                                        receCheckErr.PtId,
-                                        receCheckErr.SinYm,
-                                        receCheckErr.HokenId,
-                                        receCheckErr.ErrCd,
-                                        receCheckErr.SinDate,
-                                        receCheckErr.ACd,
-                                        receCheckErr.BCd,
-                                        receCheckErr.Message1,
-                                        receCheckErr.Message2,
-                                        receCheckErr.IsChecked
-                                    );
+                    receCheckErr.PtId,
+                    receCheckErr.SinYm,
+                    receCheckErr.HokenId,
+                    receCheckErr.ErrCd,
+                    receCheckErr.SinDate,
+                    receCheckErr.ACd,
+                    receCheckErr.BCd,
+                    receCheckErr.Message1 ?? string.Empty,
+                    receCheckErr.Message2 ?? string.Empty,
+                    receCheckErr.IsChecked
+                   );
     }
 
     #endregion
