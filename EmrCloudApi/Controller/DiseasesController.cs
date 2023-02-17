@@ -25,8 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetPtDiseaseListResponse>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
         {
-
-            var input = new GetPtDiseaseListInputData(HpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom);
+            var input = new GetPtDiseaseListInputData(HpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom, request.IsContiFiltered, request.IsInMonthFiltered);
             var output = _bus.Handle(input);
 
             var presenter = new GetPtDiseaseListPresenter();
