@@ -182,7 +182,23 @@
         // Karte
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
+        // Rece check
+        public const string GetReceCmtList = "GetReceCmtList";
+        public const string SaveReceCmtList = "SaveReceCmtList";
+        public const string GetSyoukiInfList = "GetSyoukiInfList";
+        public const string SaveSyoukiInfList = "SaveSyoukiInfList";
+        public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
+        public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
+        public const string GetReceHenReason = "GetReceHenReason";
+
+        //Accounting
+        public const string PaymentMethod = "PaymentMethod";
+        public const string WarningMemo = "WarningMemo";
+        public const string PtByoMei = "PtByoMei";
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
+
+        // Family
+        public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
 
         //TreeSet Byomei

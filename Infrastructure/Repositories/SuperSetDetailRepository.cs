@@ -238,7 +238,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     #region GetSetKarteInfModelList
     private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
     {
-        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1) ?? new SetKarteInf();
+        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1) ?? new SetKarteInf();
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
@@ -802,7 +802,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         try
         {
             // update SetKarte
-            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
             if (entity == null)
             {
                 entity = new();

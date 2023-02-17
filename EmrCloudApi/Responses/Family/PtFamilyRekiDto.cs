@@ -1,10 +1,10 @@
-﻿using UseCase.Family.GetListFamily;
+﻿using UseCase.Family;
 
 namespace EmrCloudApi.Responses.Family;
 
 public class PtFamilyRekiDto
 {
-    public PtFamilyRekiDto(PtFamilyRekiOutputItem model)
+    public PtFamilyRekiDto(FamilyRekiItem model)
     {
         Id = model.Id;
         ByomeiCd = model.ByomeiCd;

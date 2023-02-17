@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Entity.Tenant;
 using Helper.Constants;
 using PostgreDataContext;
 using Reporting.Karte1.Model;
@@ -252,6 +253,11 @@ public class CoKarte1Finder
                 )
             )
             .ToList();
+
+        if (!entities.Any())
+        {
+            return new CoPtHokenInfModel(new PtHokenInf(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst());
+        }
 
         return entities?.FirstOrDefault();
 
