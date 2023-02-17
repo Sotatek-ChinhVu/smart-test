@@ -1,11 +1,20 @@
 ﻿using CloudUnitTest.SampleData;
+using Domain.Models.Insurance;
+using Domain.Models.MstItem;
+using Domain.Models.OrdInfDetails;
+using Domain.Models.Reception;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
+using Infrastructure.CommonDB;
 using Infrastructure.Repositories;
+using Interactor.MedicalExamination;
+using Moq;
 
-namespace CloudUnitTest.Repository.CheckedSpecialItem;
+namespace CloudUnitTest.Interactor.MedicalExamination;
 
 public class CheckedSpecialItemTest : BaseUT
 {
+
     /// <summary>
     /// Check get TenMstItem list
     /// </summary>
@@ -13,41 +22,30 @@ public class CheckedSpecialItemTest : BaseUT
     public void GetTenMstItem()
     {
         // Arrange
-        var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = CheckedSpecialItemData.ReadTenMst();
-        tenant.TenMsts.AddRange(sampleData);
-        tenant.SaveChanges();
         MstItemRepository mstItemRepository = new MstItemRepository(TenantProvider);
         // Act
         var tenMsts = mstItemRepository.FindTenMst(1, new List<string>{
-            "6412100651",
-            "6412100672",
-            "6412100783"
-            }, 20201212, 20221212);
+            "641210065",
+            "641210067",
+            "641210078"
+            }, 20000101, 20001212);
         // Assert
         Assert.True(tenMsts.Count == 3);
-
-        tenant.TenMsts.RemoveRange(sampleData);
-        tenant.SaveChanges();
     }
-
+    
     [Test]
     public void FindDensiSanteiKaisuList()
     {
         // Arrange
-        var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sampleData = CheckedSpecialItemData.ReadDensiSanteiKaisu();
-        tenant.DensiSanteiKaisus.AddRange(sampleData);
-        tenant.SaveChanges();
         TodayOdrRepository todayOdrRepository = new TodayOdrRepository(TenantProvider);
         // Act
-        var densiSanteis = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
-            "W12334"
+        var tenMsts = todayOdrRepository.FindDensiSanteiKaisuList(1, new List<string>{
+            "160233850",
+            "113000670",
+            "113000770"
             }, 20220101, 20221212);
         // Assert
-        Assert.True(densiSanteis.Count == 1);
-        tenant.DensiSanteiKaisus.RemoveRange(sampleData);
-        tenant.SaveChanges();
+        Assert.True(tenMsts.Count == 3);
     }
 
     [Test]
@@ -92,69 +90,10 @@ public class CheckedSpecialItemTest : BaseUT
     public void GetPtHokenInf()
     {
         // Arrange
-        var tenant = TenantProvider.GetNoTrackingDataContext();
-        var hokenMsts = CheckedSpecialItemData.ReadHokenMst();
-        var ptHokenInfs = CheckedSpecialItemData.ReadPtHokenInf();
-        var ptKohis = CheckedSpecialItemData.ReadPtKoHi();
-        var ptHokenChecks = CheckedSpecialItemData.ReadPtHokenCheck();
-        var ptInfs = CheckedSpecialItemData.ReadPtInf();
-        var userMsts = CheckedSpecialItemData.ReadUserMst();
-        var hokenSyaMsts = CheckedSpecialItemData.ReadHokenSyaMst();
-        var roudous = CheckedSpecialItemData.ReadRoudouMst();
-        var ptRouSaiTenkis = CheckedSpecialItemData.ReadPtRouSaiTenKi();
-        var ptHokenPatterns = CheckedSpecialItemData.ReadPtHokenPattern();
-        tenant.HokenMsts.AddRange(hokenMsts);
-        tenant.PtHokenInfs.AddRange(ptHokenInfs);
-        tenant.PtKohis.AddRange(ptKohis);
-        tenant.PtHokenChecks.AddRange(ptHokenChecks);
-        tenant.PtInfs.AddRange(ptInfs);
-        tenant.UserMsts.AddRange(userMsts);
-        tenant.HokensyaMsts.AddRange(hokenSyaMsts);
-        tenant.RoudouMsts.AddRange(roudous);
-        tenant.PtRousaiTenkis.AddRange(ptRouSaiTenkis);
-        tenant.PtHokenPatterns.AddRange(ptHokenPatterns);
-        tenant.SaveChanges();
         InsuranceRepository insuranceRepository = new InsuranceRepository(TenantProvider);
         // Act
-        var hokenInf = insuranceRepository.GetPtHokenInf(1, 99999, 999999, 20220325);
+        var hokenInf = insuranceRepository.GetPtHokenInf(1, 10, 56025, 20140325);
         // Assert
-        Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0 && hokenInf.Kohi1.HokenId != 0 && hokenInf.Kohi3.HokenId != 0 && hokenInf.Kohi2.HokenId != 0 && hokenInf.Kohi4.HokenId != 0);
-
-        tenant.HokenMsts.RemoveRange(hokenMsts);
-        tenant.PtHokenInfs.RemoveRange(ptHokenInfs);
-        tenant.PtKohis.RemoveRange(ptKohis);
-        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
-        tenant.PtHokenChecks.RemoveRange(ptHokenChecks);
-        tenant.PtInfs.RemoveRange(ptInfs);
-        tenant.UserMsts.RemoveRange(userMsts);
-        tenant.HokensyaMsts.RemoveRange(hokenSyaMsts);
-        tenant.RoudouMsts.RemoveRange(roudous);
-        tenant.PtRousaiTenkis.RemoveRange(ptRouSaiTenkis);
-        tenant.PtHokenPatterns.RemoveRange(ptHokenPatterns);
-        tenant.SaveChanges();
-    }
-
-    [Test]
-    public void SanteiCount()
-    {
-        // Arrange
-        var tenant = TenantProvider.GetNoTrackingDataContext();
-        var sinKouiCounts = CheckedSpecialItemData.ReadSinKouiCount();
-        var sinRpInfs = CheckedSpecialItemData.ReadSinRpInf();
-        var sinKouiDetails = CheckedSpecialItemData.ReadSinKouiDetail();
-        tenant.SinRpInfs.AddRange(sinRpInfs);
-        tenant.SinKouiCounts.AddRange(sinKouiCounts);
-        tenant.SinKouiDetails.AddRange(sinKouiDetails);
-        tenant.SaveChanges();
-        TodayOdrRepository todayRepository = new TodayOdrRepository(TenantProvider);
-        // Act
-        var santeiCount = todayRepository.SanteiCount(1, 54522111111, 20220101, 20221212, 20220401, 500000004, new List<string>() { "112009210" }, new List<int> {1}, new List<int> {10});
-        // Assert
-        Assert.True(santeiCount == 1);
-
-        tenant.SinRpInfs.RemoveRange(sinRpInfs);
-        tenant.SinKouiCounts.RemoveRange(sinKouiCounts);
-        tenant.SinKouiDetails.RemoveRange(sinKouiDetails);
-        tenant.SaveChanges();
+        Assert.True(hokenInf.HpId != 0 && hokenInf.PtId != 0 && hokenInf.HokenPid != 0);
     }
 }

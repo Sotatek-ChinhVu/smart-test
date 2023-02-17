@@ -839,6 +839,23 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public bool DeleteHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate)
+        {
+            var hokenMaster = TrackingDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
+                                                                             u.HokenNo == hokenNo &&
+                                                                             u.HokenEdaNo == hokenEdaNo &&
+                                                                             u.PrefNo == prefNo &&
+                                                                             u.StartDate == startDate);
+
+            if (hokenMaster is null)
+                return false;
+            else
+            {
+                TrackingDataContext.HokenMsts.Remove(hokenMaster);
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
+
         /// <summary>
         /// Item 1 is sortNO
         /// Item 2 is HokenEdaNo
@@ -848,7 +865,7 @@ namespace Infrastructure.Repositories
         /// <param name="prefNo"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        public (int, int) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
+        public (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
         {
             int sortNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
                                                                u.HokenNo == hokenNo &&

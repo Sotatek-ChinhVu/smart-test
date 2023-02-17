@@ -2,10 +2,8 @@
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
-using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
@@ -68,8 +66,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
     {
         var listByomeis = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
-        var listKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1).ToList();
-        var listKarteNames = listKarteInfs.Where(item => item.RichText != null && Encoding.UTF8.GetString(item.RichText) != String.Empty).Select(item => item.RichText != null ? Encoding.UTF8.GetString(item.RichText) : String.Empty).ToList();
+        var listKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.KarteKbn == 1).ToList();
+        var listKarteNames = listKarteInfs.Where(item => !string.IsNullOrEmpty(item.Text)).Select(item => item.Text ?? string.Empty).ToList();
         var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
         var allOrderDetails = NoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).ToList();
         var listOrders = new List<OrderTooltipModel>();
@@ -289,7 +287,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return status;
     }
 
-    public int PasteSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
+    public int PasteSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int copyGenerationId, int copySetKbnEdaNo, int copySetKbn, int pasteGenerationId, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         if (pasteSetKbnEdaNo <= 0 && pasteSetKbn <= 0)
         {
@@ -300,11 +298,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         {
             if (pasteToOtherGroup && setCdCopyItem == 0 && setCdPasteItem == 0)
             {
-                return CopyPasteGroupSetMst(hpId, userId, copySetKbnEdaNo, copySetKbn, pasteSetKbnEdaNo, pasteSetKbn);
+                return CopyPasteGroupSetMst(hpId, userId, copyGenerationId, copySetKbnEdaNo, copySetKbn, pasteGenerationId, pasteSetKbnEdaNo, pasteSetKbn);
             }
             else if (setCdCopyItem > 0)
             {
-                return CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, pasteSetKbnEdaNo, pasteSetKbn);
+                return CopyPasteItemSetMst(hpId, userId, setCdCopyItem, setCdPasteItem, pasteToOtherGroup, pasteGenerationId, pasteSetKbnEdaNo, pasteSetKbn);
             }
         }
         finally
@@ -331,8 +329,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
     {
         int generationId = 0;
         var generation = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0)
-                                                               .OrderByDescending(x => x.StartDate)
-                                                               .FirstOrDefault();
+                                                                .OrderByDescending(x => x.StartDate)
+                                                                .FirstOrDefault();
         if (generation != null)
         {
             generationId = generation.GenerationId;
@@ -358,7 +356,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMst;
     }
 
-    private int CopyPasteItemSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int pasteSetKbnEdaNo, int pasteSetKbn)
+    private int CopyPasteItemSetMst(int hpId, int userId, int setCdCopyItem, int setCdPasteItem, bool pasteToOtherGroup, int pasteGenerationId, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         int setCd = -1;
         pasteSetKbnEdaNo = pasteSetKbnEdaNo - 1;
@@ -382,18 +380,17 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
 
         // if group of copy item is same group of paste item
-        var listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+        var listSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == copyItem.GenerationId && mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
         // if is paste to other group and paste item is not null
         if (pasteToOtherGroup && pasteItem != null)
         {
-            listSetMsts.AddRange(NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == pasteItem.SetKbn && mst.SetKbnEdaNo == pasteItem.SetKbnEdaNo && mst.HpId == pasteItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList());
+            listSetMsts.AddRange(NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == pasteItem.GenerationId && mst.SetKbn == pasteItem.SetKbn && mst.SetKbnEdaNo == pasteItem.SetKbnEdaNo && mst.HpId == pasteItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList());
         }
         // if is paste to other group and paste item is not null
         else if (pasteToOtherGroup && pasteItem == null)
         {
-            listSetMsts.AddRange(NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.HpId == hpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList());
+            listSetMsts.AddRange(NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == pasteGenerationId && mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.HpId == hpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList());
         }
-        listSetMsts.Distinct();
         if (pasteItem != null)
         {
             if (CountLevelItem(copyItem, listSetMsts) + GetLevelItem(pasteItem) > 3)
@@ -430,17 +427,17 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setCd;
     }
 
-    private int CopyPasteGroupSetMst(int hpId, int userId, int copySetKbnEdaNo, int copySetKbn, int pasteSetKbnEdaNo, int pasteSetKbn)
+    private int CopyPasteGroupSetMst(int hpId, int userId, int copyGenerationId, int copySetKbnEdaNo, int copySetKbn, int pasteGenerationId, int pasteSetKbnEdaNo, int pasteSetKbn)
     {
         int setCd = -1;
         copySetKbnEdaNo = copySetKbnEdaNo - 1;
         pasteSetKbnEdaNo = pasteSetKbnEdaNo - 1;
-        var listCopySetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copySetKbn && mst.SetKbnEdaNo == copySetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId).ToList();
+        var listCopySetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == copyGenerationId && mst.SetKbn == copySetKbn && mst.SetKbnEdaNo == copySetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId).ToList();
         if (!listCopySetMsts.Any())
         {
             return setCd;
         }
-        var listPasteSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId);
+        var listPasteSetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == pasteGenerationId && mst.SetKbn == pasteSetKbn && mst.SetKbnEdaNo == pasteSetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId);
         var lastItemLevel1 = listPasteSetMsts.Where(item => item.Level2 == 0 && item.Level3 == 0 && item.SetKbn == pasteSetKbn && item.SetKbnEdaNo == pasteSetKbnEdaNo).OrderByDescending(item => item.Level1).FirstOrDefault();
         int indexPaste = (lastItemLevel1 != null ? lastItemLevel1.Level1 : 0) + 1;
         return PasteGroupAction(userId, indexPaste, pasteSetKbnEdaNo, pasteSetKbn, listCopySetMsts);
@@ -463,13 +460,13 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         switch (GetLevelItem(copyItem))
                         {
                             case 1:
-                                listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
+                                listCopyItems = listSetMsts.Where(item => item.GenerationId == copyItem.GenerationId && item.Level1 == copyItem.Level1 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
                                 break;
                             case 2:
-                                listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
+                                listCopyItems = listSetMsts.Where(item => item.GenerationId == copyItem.GenerationId && item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
                                 break;
                             case 3:
-                                listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2 && item.Level3 == copyItem.Level3 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
+                                listCopyItems = listSetMsts.Where(item => item.GenerationId == copyItem.GenerationId && item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2 && item.Level3 == copyItem.Level3 && item.SetKbnEdaNo == copyItem.SetKbnEdaNo && item.SetKbn == copyItem.SetKbn).ToList();
                                 break;
                         }
 
@@ -567,9 +564,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             setMst.Level1 = dicLevel1Updates[item.Level1];
                             setMst.SetKbn = pasteSetKbn;
                             setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
-                            setMst.CreateDate = DateTime.UtcNow;
+                            setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                             setMst.CreateId = userId;
-                            setMst.UpdateDate = DateTime.UtcNow;
+                            setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             setMst.UpdateId = userId;
                             listPasteItems.Add(setMst);
                         }

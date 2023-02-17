@@ -8,7 +8,7 @@ namespace Domain.Models.NextOrder
 {
     public class RsvKrtOrderInfDetailModel : IOdrInfDetailModel
     {
-        public RsvKrtOrderInfDetailModel(int hpId, long ptId, long rsvkrtNo, long rpNo, long rpEdaNo, int rowNo, int rsvDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, int refillSetting, int cmtCol1, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        public RsvKrtOrderInfDetailModel(int hpId, long ptId, long rsvkrtNo, long rpNo, long rpEdaNo, int rowNo, int rsvDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, int refillSetting, int cmtCol1, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string centerItemCd1, string centerItemCd2, int handanGrpKbn)
         {
             HpId = hpId;
             PtId = ptId;
@@ -55,6 +55,9 @@ namespace Domain.Models.NextOrder
             YohoSets = yohoSets;
             Kasan1 = kasan1;
             Kasan2 = kasan2;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
+            HandanGrpKbn = handanGrpKbn;
         }
 
         public OrdInfValidationStatus Validation(int flag)
@@ -177,6 +180,12 @@ namespace Domain.Models.NextOrder
         public int Kasan1 { get; private set; }
 
         public int Kasan2 { get; private set; }
+
+        public string CenterItemCd1 { get; private set; }
+
+        public string CenterItemCd2 { get; private set; }
+
+        public int HandanGrpKbn { get; private set; }
 
         public string DisplayedQuantity
         {
