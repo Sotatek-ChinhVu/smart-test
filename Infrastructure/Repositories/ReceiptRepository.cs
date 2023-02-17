@@ -1698,7 +1698,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
     }
 
-    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf? hokenInf, PtKohi? ptKohi1, PtKohi? ptKohi2, PtKohi? ptKohi3, PtKohi? ptKohi4)
+    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
     {
         return new InsuranceReceInfModel(
                 receInf.SeikyuYm,
@@ -1754,10 +1754,15 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receInf.JibaiCFutan,
                 receInf.JibaiDFutan,
                 receInf.JibaiKenpoFutan,
-                FutansyaNoKohi1 = ptKohi1 != null ? ptKohi1.FutansyaNo : string.Empty,
-                FutansyaNoKohi2 = ptKohi2 != null ? ptKohi2.FutansyaNo : string.Empty,
-                FutansyaNoKohi3 = ptKohi3 != null ? ptKohi3.FutansyaNo : string.Empty,
-                FutansyaNoKohi4 = ptKohi4 != null ? ptKohi4.FutansyaNo : string.Empty,
+                ptKohi1.FutansyaNo ?? string.Empty,
+                ptKohi2.FutansyaNo ?? string.Empty,
+                ptKohi3.FutansyaNo ?? string.Empty,
+                ptKohi4.FutansyaNo ?? string.Empty,
+                ptKohi1.JyukyusyaNo ?? string.Empty,
+                ptKohi2.JyukyusyaNo ?? string.Empty,
+                ptKohi3.JyukyusyaNo ?? string.Empty,
+                ptKohi4.JyukyusyaNo ?? string.Empty,
+                hokenInf.RousaiKofuNo ?? string.Empty
             );
     }
     #endregion

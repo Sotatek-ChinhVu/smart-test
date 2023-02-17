@@ -2,63 +2,6 @@
 
 public class InsuranceReceInfModel
 {
-    public InsuranceReceInfModel(int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, string receSbt, string hokensyaNo, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi1ReceKyufu, int kohi2ReceTensu, int kohi2ReceFutan, int kohi2ReceKyufu, int kohi3ReceTensu, int kohi3ReceFutan, int kohi3ReceKyufu, int kohi4ReceTensu, int kohi4ReceFutan, int kohi4ReceKyufu, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu, int jibaiHaFutan, int jibaiNiFutan, int jibaiHoSindan, int jibaiHeMeisai, int jibaiAFutan, int jibaiBFutan, int jibaiCFutan, int jibaiDFutan, int jibaiKenpoFutan)
-    {
-        SeikyuYm = seikyuYm;
-        PtId = ptId;
-        SinYm = sinYm;
-        HokenId = hokenId;
-        HokenId2 = hokenId2;
-        Kohi1Id = kohi1Id;
-        Kohi2Id = kohi2Id;
-        Kohi3Id = kohi3Id;
-        Kohi4Id = kohi4Id;
-        HokenKbn = hokenKbn;
-        ReceSbt = receSbt;
-        HokensyaNo = hokensyaNo;
-        HokenReceTensu = hokenReceTensu;
-        HokenReceFutan = hokenReceFutan;
-        Kohi1ReceTensu = kohi1ReceTensu;
-        Kohi1ReceFutan = kohi1ReceFutan;
-        Kohi1ReceKyufu = kohi1ReceKyufu;
-        Kohi2ReceTensu = kohi2ReceTensu;
-        Kohi2ReceFutan = kohi2ReceFutan;
-        Kohi2ReceKyufu = kohi2ReceKyufu;
-        Kohi3ReceTensu = kohi3ReceTensu;
-        Kohi3ReceFutan = kohi3ReceFutan;
-        Kohi3ReceKyufu = kohi3ReceKyufu;
-        Kohi4ReceTensu = kohi4ReceTensu;
-        Kohi4ReceFutan = kohi4ReceFutan;
-        Kohi4ReceKyufu = kohi4ReceKyufu;
-        HokenNissu = hokenNissu;
-        Kohi1Nissu = kohi1Nissu;
-        Kohi2Nissu = kohi2Nissu;
-        Kohi3Nissu = kohi3Nissu;
-        Kohi4Nissu = kohi4Nissu;
-        Kohi1ReceKisai = kohi1ReceKisai;
-        Kohi2ReceKisai = kohi2ReceKisai;
-        Kohi3ReceKisai = kohi3ReceKisai;
-        Kohi4ReceKisai = kohi4ReceKisai;
-        Tokki1 = tokki1;
-        Tokki2 = tokki2;
-        Tokki3 = tokki3;
-        Tokki4 = tokki4;
-        Tokki5 = tokki5;
-        RousaiIFutan = rousaiIFutan;
-        RousaiRoFutan = rousaiRoFutan;
-        JibaiITensu = jibaiITensu;
-        JibaiRoTensu = jibaiRoTensu;
-        JibaiHaFutan = jibaiHaFutan;
-        JibaiNiFutan = jibaiNiFutan;
-        JibaiHoSindan = jibaiHoSindan;
-        JibaiHeMeisai = jibaiHeMeisai;
-        JibaiAFutan = jibaiAFutan;
-        JibaiBFutan = jibaiBFutan;
-        JibaiCFutan = jibaiCFutan;
-        JibaiDFutan = jibaiDFutan;
-        JibaiKenpoFutan = jibaiKenpoFutan;
-    }
-
     public InsuranceReceInfModel()
     {
         SeikyuYm = 0;
@@ -114,6 +57,81 @@ public class InsuranceReceInfModel
         JibaiCFutan = 0;
         JibaiDFutan = 0;
         JibaiKenpoFutan = 0;
+        FutansyaNoKohi1 = string.Empty;
+        FutansyaNoKohi2 = string.Empty;
+        FutansyaNoKohi3 = string.Empty;
+        FutansyaNoKohi4 = string.Empty;
+        JyukyusyaNoKohi1 = string.Empty;
+        JyukyusyaNoKohi2 = string.Empty;
+        JyukyusyaNoKohi3 = string.Empty;
+        JyukyusyaNoKohi4 = string.Empty;
+        HokenInfRousaiKofuNo = string.Empty;
+    }
+
+    public InsuranceReceInfModel(int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, string receSbt, string hokensyaNo, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi1ReceKyufu, int kohi2ReceTensu, int kohi2ReceFutan, int kohi2ReceKyufu, int kohi3ReceTensu, int kohi3ReceFutan, int kohi3ReceKyufu, int kohi4ReceTensu, int kohi4ReceFutan, int kohi4ReceKyufu, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu, int jibaiHaFutan, int jibaiNiFutan, int jibaiHoSindan, int jibaiHeMeisai, int jibaiAFutan, int jibaiBFutan, int jibaiCFutan, int jibaiDFutan, int jibaiKenpoFutan, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi1, string jyukyusyaNoKohi2, string jyukyusyaNoKohi3, string jyukyusyaNoKohi4, string hokenInfRousaiKofuNo)
+    {
+        SeikyuYm = seikyuYm;
+        PtId = ptId;
+        SinYm = sinYm;
+        HokenId = hokenId;
+        HokenId2 = hokenId2;
+        Kohi1Id = kohi1Id;
+        Kohi2Id = kohi2Id;
+        Kohi3Id = kohi3Id;
+        Kohi4Id = kohi4Id;
+        HokenKbn = hokenKbn;
+        ReceSbt = receSbt;
+        HokensyaNo = hokensyaNo;
+        HokenReceTensu = hokenReceTensu;
+        HokenReceFutan = hokenReceFutan;
+        Kohi1ReceTensu = kohi1ReceTensu;
+        Kohi1ReceFutan = kohi1ReceFutan;
+        Kohi1ReceKyufu = kohi1ReceKyufu;
+        Kohi2ReceTensu = kohi2ReceTensu;
+        Kohi2ReceFutan = kohi2ReceFutan;
+        Kohi2ReceKyufu = kohi2ReceKyufu;
+        Kohi3ReceTensu = kohi3ReceTensu;
+        Kohi3ReceFutan = kohi3ReceFutan;
+        Kohi3ReceKyufu = kohi3ReceKyufu;
+        Kohi4ReceTensu = kohi4ReceTensu;
+        Kohi4ReceFutan = kohi4ReceFutan;
+        Kohi4ReceKyufu = kohi4ReceKyufu;
+        HokenNissu = hokenNissu;
+        Kohi1Nissu = kohi1Nissu;
+        Kohi2Nissu = kohi2Nissu;
+        Kohi3Nissu = kohi3Nissu;
+        Kohi4Nissu = kohi4Nissu;
+        Kohi1ReceKisai = kohi1ReceKisai;
+        Kohi2ReceKisai = kohi2ReceKisai;
+        Kohi3ReceKisai = kohi3ReceKisai;
+        Kohi4ReceKisai = kohi4ReceKisai;
+        Tokki1 = tokki1;
+        Tokki2 = tokki2;
+        Tokki3 = tokki3;
+        Tokki4 = tokki4;
+        Tokki5 = tokki5;
+        RousaiIFutan = rousaiIFutan;
+        RousaiRoFutan = rousaiRoFutan;
+        JibaiITensu = jibaiITensu;
+        JibaiRoTensu = jibaiRoTensu;
+        JibaiHaFutan = jibaiHaFutan;
+        JibaiNiFutan = jibaiNiFutan;
+        JibaiHoSindan = jibaiHoSindan;
+        JibaiHeMeisai = jibaiHeMeisai;
+        JibaiAFutan = jibaiAFutan;
+        JibaiBFutan = jibaiBFutan;
+        JibaiCFutan = jibaiCFutan;
+        JibaiDFutan = jibaiDFutan;
+        JibaiKenpoFutan = jibaiKenpoFutan;
+        FutansyaNoKohi1 = futansyaNoKohi1;
+        FutansyaNoKohi2 = futansyaNoKohi2;
+        FutansyaNoKohi3 = futansyaNoKohi3;
+        FutansyaNoKohi4 = futansyaNoKohi4;
+        JyukyusyaNoKohi1 = jyukyusyaNoKohi1;
+        JyukyusyaNoKohi2 = jyukyusyaNoKohi2;
+        JyukyusyaNoKohi3 = jyukyusyaNoKohi3;
+        JyukyusyaNoKohi4 = jyukyusyaNoKohi4;
+        HokenInfRousaiKofuNo = hokenInfRousaiKofuNo;
     }
 
     public int SeikyuYm { get; private set; }
@@ -223,18 +241,20 @@ public class InsuranceReceInfModel
     public int JibaiKenpoFutan { get; private set; }
 
     public string FutansyaNoKohi1 { get; private set; }
-    
+
     public string FutansyaNoKohi2 { get; private set; }
-    
+
     public string FutansyaNoKohi3 { get; private set; }
-    
+
     public string FutansyaNoKohi4 { get; private set; }
-    
+
     public string JyukyusyaNoKohi1 { get; private set; }
-    
+
     public string JyukyusyaNoKohi2 { get; private set; }
-    
+
     public string JyukyusyaNoKohi3 { get; private set; }
-    
+
     public string JyukyusyaNoKohi4 { get; private set; }
+
+    public string HokenInfRousaiKofuNo { get; private set; }
 }

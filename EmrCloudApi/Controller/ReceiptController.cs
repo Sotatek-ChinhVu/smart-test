@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
@@ -154,6 +155,17 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveReceCheckCmtListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetInsuranceReceInfList)]
+    public ActionResult<Response<GetInsuranceReceInfListResponse>> GetInsuranceReceInfList([FromQuery] GetInsuranceReceInfListRequest request)
+    {
+        var input = new GetInsuranceReceInfListInputData(HpId, request.SeikyuYm, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetInsuranceReceInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetInsuranceReceInfListResponse>>(presenter.Result);
+    }
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
