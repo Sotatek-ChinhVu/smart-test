@@ -25,7 +25,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
-COPY *.ttf /usr/share/fonts
+COPY *.ttf /usr/share/fonts/
 #RUN rm -rf EmrCloudApi.runtimeconfig.json
 #COPY --from=build-env /app/EmrCloudApi.runtimeconfig.json .
 RUN ls /usr/share/fonts
