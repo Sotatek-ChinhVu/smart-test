@@ -13,10 +13,7 @@ namespace EmrCloudApi.Presenters.Diseases
         {
             Result = new Response<GetTreeSetByomeiResponse>()
             {
-                Data = new GetTreeSetByomeiResponse()
-                {
-                    Datas = outputData.Datas
-                },
+                Data = new GetTreeSetByomeiResponse(outputData.Datas),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)

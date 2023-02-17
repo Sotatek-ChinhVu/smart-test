@@ -202,6 +202,6 @@
         public const string GetGroupNameMst = "GetGroupNameMst";
 
         //TreeSet Byomei
-        public const string GetTreeSetByomei = "GetTreeSetByomei";
+        public const string GetTreeSetByomei = "GetSetByomeiTree";
     }
 }

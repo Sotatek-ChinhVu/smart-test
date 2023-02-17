@@ -222,7 +222,6 @@ namespace Infrastructure.Repositories
 
             if (genarationMst == null) return new List<ByomeiSetMstModel>();
 
-            List<ByomeiSetMstModel> result = new List<ByomeiSetMstModel>();
             var byomeiSetMst = NoTrackingDataContext.ByomeiSetMsts
                                         .Where(p => p.HpId == hpId &&
                                                p.IsDeleted == DeleteTypes.None &&
