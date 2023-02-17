@@ -1,6 +1,5 @@
 ﻿using Domain.Models.HistoryOrder;
 using UseCase.Accounting.GetHistoryOrder;
-using UseCase.MedicalExamination.GetHistory;
 
 namespace Interactor.Accounting
 {
@@ -17,12 +16,6 @@ namespace Interactor.Accounting
         {
             try
             {
-                var validate = Validate(inputData);
-                if (validate != GetAccountingHistoryOrderStatus.Successed)
-                {
-                    return new GetAccountingHistoryOrderOutputData(0, new List<HistoryOrderModel>(), GetAccountingHistoryOrderStatus.NoData);
-                }
-
                 (int, List<HistoryOrderModel>) historyList = _historyOrderRepository.GetList(
                    inputData.HpId,
                    inputData.UserId,
@@ -30,16 +23,11 @@ namespace Interactor.Accounting
                    inputData.SinDate,
                    inputData.Offset,
                    inputData.Limit,
-                   (int)inputData.FilterId,
+                   0,
                    inputData.DeleteConditon,
-                   inputData.RaiinNo,
-                   false
+                   inputData.RaiinNo
                    );
-                return new GetAccountingHistoryOrderOutputData(historyList.Item1, historyList.Item2, GetAccountingHistoryOrderStatus.Successed);
-            }
-            catch (Exception)
-            {
-                return new GetAccountingHistoryOrderOutputData(0, new List<HistoryOrderModel>(), GetAccountingHistoryOrderStatus.Failed);
+                return new GetAccountingHistoryOrderOutputData(historyList.Item1, ConvertToHistoryOrderDtoModel(historyList.Item2), GetAccountingHistoryOrderStatus.Successed);
             }
             finally
             {
@@ -47,52 +35,17 @@ namespace Interactor.Accounting
             }
         }
 
-        /// <summary>
-        /// Validate
-        /// </summary>
-        /// <param name="inputData"></param>
-        /// <returns></returns>
-        private static GetAccountingHistoryOrderStatus Validate(GetAccountingHistoryOrderInputData inputData)
+        private List<HistoryOrderDto> ConvertToHistoryOrderDtoModel(List<HistoryOrderModel> models)
         {
-            if (inputData.Offset < 0)
+            List<HistoryOrderDto> historyOrderDtoModelList = new List<HistoryOrderDto>();
+            foreach (var item in models)
             {
-                return GetAccountingHistoryOrderStatus.InvalidStartPage;
-            }
-            if (inputData.PtId <= 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidPtId;
-            }
-            if (inputData.SinDate <= 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidSinDate;
-            }
-            if (inputData.Limit <= 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidPageSize;
+                historyOrderDtoModelList.Add(new HistoryOrderDto(item.RaiinNo, item.SinDate, item.HokenPid, item.HokenTitle, item.HokenRate,
+                    item.HokenType, item.SyosaisinKbn, item.JikanKbn, item.KaId, item.TantoId, item.KaName, item.TantoName, item.SanteiKbn,
+                    item.TagNo, item.SinryoTitle, item.OrderInfList, item.KarteInfModels));
             }
 
-            if (!(inputData.DeleteConditon >= 0 && inputData.DeleteConditon <= 2))
-            {
-                return GetAccountingHistoryOrderStatus.InvalidDeleteCondition;
-            }
-
-            if (inputData.UserId <= 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidUserId;
-            }
-
-            if (inputData.FilterId < 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidFilterId;
-            }
-
-            if (inputData.RaiinNo <= 0)
-            {
-                return GetAccountingHistoryOrderStatus.InvalidRaiinNo;
-            }
-
-            return GetAccountingHistoryOrderStatus.Successed;
+            return historyOrderDtoModelList;
         }
-
     }
 }

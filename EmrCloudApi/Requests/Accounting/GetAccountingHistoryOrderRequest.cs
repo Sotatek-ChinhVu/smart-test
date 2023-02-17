@@ -15,9 +15,6 @@
         public int Limit { get; set; }
 
         public int DeleteConditon { get; set; }
-
-        public long FilterId { get; set; }
-
         public int IsShowApproval { get; set; }
 
         public long RaiinNo { get; set; }

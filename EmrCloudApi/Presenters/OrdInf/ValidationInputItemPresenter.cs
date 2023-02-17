@@ -266,7 +266,12 @@ namespace EmrCloudApi.Presenters.OrdInfs
                     case OrderInfConst.OrdInfValidationStatus.InvalidTokuzaiDrugOrInjection:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
                         break;
-
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasDrug:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasDrug, string.Empty));
+                        break;
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
+                        break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));
                         break;

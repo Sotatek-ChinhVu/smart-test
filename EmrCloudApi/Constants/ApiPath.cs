@@ -183,7 +183,15 @@
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
         // Rece check
-        public const string GetListReceCmt = "GetListReceCmt";
+        public const string GetReceCmtList = "GetReceCmtList";
+        public const string SaveReceCmtList = "SaveReceCmtList";
+        public const string GetSyoukiInfList = "GetSyoukiInfList";
+        public const string SaveSyoukiInfList = "SaveSyoukiInfList";
+        public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
+        public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
+        public const string GetReceHenReason = "GetReceHenReason";
+        public const string GetReceiCheckList = "GetReceiCheckList";
+        public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -192,6 +200,13 @@
         public const string HistoryOrder = "HistoryOrder";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
+
+        // Family
+        public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+
+        //TreeSet Byomei
+        public const string GetSetByomeiTree = "GetSetByomeiTree";
     }
 }

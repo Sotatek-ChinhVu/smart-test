@@ -4,14 +4,13 @@ namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingHistoryOrderResponse
     {
-        public GetAccountingHistoryOrderResponse(int total, List<HistoryOrderModel> historyOrderModels)
+        public GetAccountingHistoryOrderResponse(int total, List<HistoryOrderDto> historyOrderDtos)
         {
             Total = total;
-            HistoryOrderModels = historyOrderModels;
+            HistoryOrderDtos = historyOrderDtos;
         }
-
         public int Total { get; private set; }
 
-        public List<HistoryOrderModel> HistoryOrderModels { get; private set; }
+        public List<HistoryOrderDto> HistoryOrderDtos { get; private set; }
     }
 }

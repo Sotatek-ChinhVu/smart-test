@@ -6,7 +6,7 @@ namespace Domain.Models.Reception;
 
 public class ReceptionRowModel
 {
-    public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus,
+    public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus, int isDeleted,
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
@@ -17,6 +17,7 @@ public class ReceptionRowModel
         int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu,
         UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
+        IsDeleted = isDeleted;
         RaiinNo = raiinNo;
         PtId = ptId;
         SinDate = sinDate;
@@ -57,8 +58,13 @@ public class ReceptionRowModel
     }
 
     public long PtId { get; private set; }
+
     public int SinDate { get; private set; }
+    
+    public int IsDeleted { get; private set; }
+    
     public long RaiinNo { get; private set; }
+    
     // 順番
     public int UketukeNo { get; private set; }
     // 同一来院

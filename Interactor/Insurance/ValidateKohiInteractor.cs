@@ -28,9 +28,7 @@ namespace Interactor.Insurance
                     validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidPtBirthday, string.Empty, TypeMessage.TypeMessageError));
 
                 // Get HokenMst Kohi1
-                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo);
-                if (hokenMstKohi is null)
-                    hokenMstKohi = new HokenMstModel();
+                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo, inputData.SinDate);
 
                 //IsValidKohi1
                 IsValidKohi(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiJyukyusyaNo, inputData.SelectedKohiTokusyuNo, inputData.SelectedKohiStartDate, inputData.SelectedKohiEndDate, inputData.SelectedKohiConfirmDate, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsTokusyuNoCheck, hokenMstKohi.StartDate, hokenMstKohi.EndDate, hokenMstKohi.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew, inputData.SelectedHokenPatternIsExpirated);

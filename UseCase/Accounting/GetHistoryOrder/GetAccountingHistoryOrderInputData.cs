@@ -4,7 +4,7 @@ namespace UseCase.Accounting.GetHistoryOrder
 {
     public class GetAccountingHistoryOrderInputData : IInputData<GetAccountingHistoryOrderOutputData>
     {
-        public GetAccountingHistoryOrderInputData(long ptId, int hpId, int userId, int sinDate, int offset, int limit, int deleteConditon, long filterId, int isShowApproval, long raiinNo)
+        public GetAccountingHistoryOrderInputData(long ptId, int hpId, int userId, int sinDate, int offset, int limit, int deleteConditon, int isShowApproval, long raiinNo)
         {
             PtId = ptId;
             HpId = hpId;
@@ -13,7 +13,6 @@ namespace UseCase.Accounting.GetHistoryOrder
             Offset = offset;
             Limit = limit;
             DeleteConditon = deleteConditon;
-            FilterId = filterId;
             IsShowApproval = isShowApproval;
             RaiinNo = raiinNo;
         }
@@ -31,9 +30,6 @@ namespace UseCase.Accounting.GetHistoryOrder
         public int Limit { get; private set; }
 
         public int DeleteConditon { get; private set; }
-
-        public long FilterId { get; private set; }
-
         public int IsShowApproval { get; private set; }
 
         public long RaiinNo { get; private set; }
