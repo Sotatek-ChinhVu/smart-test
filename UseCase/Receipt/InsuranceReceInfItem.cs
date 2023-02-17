@@ -1,73 +1,77 @@
-﻿using UseCase.Receipt.GetInsuranceReceInfList;
+﻿using Domain.Models.Receipt;
 
-namespace EmrCloudApi.Responses.Receipt.Dto;
+namespace UseCase.Receipt;
 
-public class InsuranceReceInfDto
+public class InsuranceReceInfItem
 {
-    public InsuranceReceInfDto(GetInsuranceReceInfListOutputData output)
+    public InsuranceReceInfItem(InsuranceReceInfModel model, string insuranceName)
     {
-        SeikyuYm = output.SeikyuYm;
-        PtId = output.PtId;
-        SinYm = output.SinYm;
-        HokenId = output.HokenId;
-        HokenId2 = output.HokenId2;
-        Kohi1Id = output.Kohi1Id;
-        Kohi2Id = output.Kohi2Id;
-        Kohi3Id = output.Kohi3Id;
-        Kohi4Id = output.Kohi4Id;
-        HokenKbn = output.HokenKbn;
-        ReceSbt = output.ReceSbt;
-        HokensyaNo = output.HokensyaNo;
-        HokenReceTensu = output.HokenReceTensu;
-        HokenReceFutan = output.HokenReceFutan;
-        Kohi1ReceTensu = output.Kohi1ReceTensu;
-        Kohi1ReceFutan = output.Kohi1ReceFutan;
-        Kohi1ReceKyufu = output.Kohi1ReceKyufu;
-        Kohi2ReceTensu = output.Kohi2ReceTensu;
-        Kohi2ReceFutan = output.Kohi2ReceFutan;
-        Kohi2ReceKyufu = output.Kohi2ReceKyufu;
-        Kohi3ReceTensu = output.Kohi3ReceTensu;
-        Kohi3ReceFutan = output.Kohi3ReceFutan;
-        Kohi3ReceKyufu = output.Kohi3ReceKyufu;
-        Kohi4ReceTensu = output.Kohi4ReceTensu;
-        Kohi4ReceFutan = output.Kohi4ReceFutan;
-        Kohi4ReceKyufu = output.Kohi4ReceKyufu;
-        HokenNissu = output.HokenNissu;
-        Kohi1Nissu = output.Kohi1Nissu;
-        Kohi2Nissu = output.Kohi2Nissu;
-        Kohi3Nissu = output.Kohi3Nissu;
-        Kohi4Nissu = output.Kohi4Nissu;
-        Kohi1ReceKisai = output.Kohi1ReceKisai;
-        Kohi2ReceKisai = output.Kohi2ReceKisai;
-        Kohi3ReceKisai = output.Kohi3ReceKisai;
-        Kohi4ReceKisai = output.Kohi4ReceKisai;
-        Tokki1 = output.Tokki1;
-        Tokki2 = output.Tokki2;
-        Tokki3 = output.Tokki3;
-        Tokki4 = output.Tokki4;
-        Tokki5 = output.Tokki5;
-        RousaiIFutan = output.RousaiIFutan;
-        RousaiRoFutan = output.RousaiRoFutan;
-        JibaiITensu = output.JibaiITensu;
-        JibaiRoTensu = output.JibaiRoTensu;
-        JibaiHaFutan = output.JibaiHaFutan;
-        JibaiNiFutan = output.JibaiNiFutan;
-        JibaiHoSindan = output.JibaiHoSindan;
-        JibaiHeMeisai = output.JibaiHeMeisai;
-        JibaiAFutan = output.JibaiAFutan;
-        JibaiBFutan = output.JibaiBFutan;
-        JibaiCFutan = output.JibaiCFutan;
-        JibaiDFutan = output.JibaiDFutan;
-        JibaiKenpoFutan = output.JibaiKenpoFutan;
-        FutansyaNoKohi1 = output.FutansyaNoKohi1;
-        FutansyaNoKohi2 = output.FutansyaNoKohi2;
-        FutansyaNoKohi3 = output.FutansyaNoKohi3;
-        FutansyaNoKohi4 = output.FutansyaNoKohi4;
-        JyukyusyaNoKohi1 = output.JyukyusyaNoKohi1;
-        JyukyusyaNoKohi2 = output.JyukyusyaNoKohi2;
-        JyukyusyaNoKohi3 = output.JyukyusyaNoKohi3;
-        JyukyusyaNoKohi4 = output.JyukyusyaNoKohi4;
-        HokenInfRousaiKofuNo = output.HokenInfRousaiKofuNo;
+        SeikyuYm = model.SeikyuYm;
+        PtId = model.PtId;
+        SinYm = model.SinYm;
+        HokenId = model.HokenId;
+        HokenId2 = model.HokenId2;
+        Kohi1Id = model.Kohi1Id;
+        Kohi2Id = model.Kohi2Id;
+        Kohi3Id = model.Kohi3Id;
+        Kohi4Id = model.Kohi4Id;
+        HokenKbn = model.HokenKbn;
+        ReceSbt = model.ReceSbt;
+        HokensyaNo = model.HokensyaNo;
+        HokenReceTensu = model.HokenReceTensu;
+        HokenReceFutan = model.HokenReceFutan;
+        Kohi1ReceTensu = model.Kohi1ReceTensu;
+        Kohi1ReceFutan = model.Kohi1ReceFutan;
+        Kohi1ReceKyufu = model.Kohi1ReceKyufu;
+        Kohi2ReceTensu = model.Kohi2ReceTensu;
+        Kohi2ReceFutan = model.Kohi2ReceFutan;
+        Kohi2ReceKyufu = model.Kohi2ReceKyufu;
+        Kohi3ReceTensu = model.Kohi3ReceTensu;
+        Kohi3ReceFutan = model.Kohi3ReceFutan;
+        Kohi3ReceKyufu = model.Kohi3ReceKyufu;
+        Kohi4ReceTensu = model.Kohi4ReceTensu;
+        Kohi4ReceFutan = model.Kohi4ReceFutan;
+        Kohi4ReceKyufu = model.Kohi4ReceKyufu;
+        HokenNissu = model.HokenNissu;
+        Kohi1Nissu = model.Kohi1Nissu;
+        Kohi2Nissu = model.Kohi2Nissu;
+        Kohi3Nissu = model.Kohi3Nissu;
+        Kohi4Nissu = model.Kohi4Nissu;
+        Kohi1ReceKisai = model.Kohi1ReceKisai;
+        Kohi2ReceKisai = model.Kohi2ReceKisai;
+        Kohi3ReceKisai = model.Kohi3ReceKisai;
+        Kohi4ReceKisai = model.Kohi4ReceKisai;
+        Tokki1 = model.Tokki1;
+        Tokki2 = model.Tokki2;
+        Tokki3 = model.Tokki3;
+        Tokki4 = model.Tokki4;
+        Tokki5 = model.Tokki5;
+        RousaiIFutan = model.RousaiIFutan;
+        RousaiRoFutan = model.RousaiRoFutan;
+        JibaiITensu = model.JibaiITensu;
+        JibaiRoTensu = model.JibaiRoTensu;
+        JibaiHaFutan = model.JibaiHaFutan;
+        JibaiNiFutan = model.JibaiNiFutan;
+        JibaiHoSindan = model.JibaiHoSindan;
+        JibaiHeMeisai = model.JibaiHeMeisai;
+        JibaiAFutan = model.JibaiAFutan;
+        JibaiBFutan = model.JibaiBFutan;
+        JibaiCFutan = model.JibaiCFutan;
+        JibaiDFutan = model.JibaiDFutan;
+        JibaiKenpoFutan = model.JibaiKenpoFutan;
+        FutansyaNoKohi1 = model.FutansyaNoKohi1;
+        FutansyaNoKohi2 = model.FutansyaNoKohi2;
+        FutansyaNoKohi3 = model.FutansyaNoKohi3;
+        FutansyaNoKohi4 = model.FutansyaNoKohi4;
+        JyukyusyaNoKohi1 = model.JyukyusyaNoKohi1;
+        JyukyusyaNoKohi2 = model.JyukyusyaNoKohi2;
+        JyukyusyaNoKohi3 = model.JyukyusyaNoKohi3;
+        JyukyusyaNoKohi4 = model.JyukyusyaNoKohi4;
+        HokenInfRousaiKofuNo = model.HokenInfRousaiKofuNo;
+        InsuranceName = insuranceName;
+        Kigo = model.Kigo;
+        Bango = model.Bango;
+        EdaNo = (HokenKbn > 0 && (HokenKbn < 11 || HokenKbn > 14)) ? model.EdaNo : string.Empty;
     }
 
     public int SeikyuYm { get; private set; }
@@ -193,4 +197,12 @@ public class InsuranceReceInfDto
     public string JyukyusyaNoKohi4 { get; private set; }
 
     public string HokenInfRousaiKofuNo { get; private set; }
+
+    public string InsuranceName { get; private set; }
+
+    public string Kigo { get; private set; }
+
+    public string Bango { get; private set; }
+
+    public string EdaNo { get; private set; }
 }

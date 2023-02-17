@@ -11,7 +11,7 @@ public class GetInsuranceReceInfListPresenter : IGetInsuranceReceInfListOutputPo
 
     public void Complete(GetInsuranceReceInfListOutputData outputData)
     {
-        Result.Data = new GetInsuranceReceInfListResponse(outputData);
+        Result.Data = new GetInsuranceReceInfListResponse(outputData.InsuranceReceInf);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

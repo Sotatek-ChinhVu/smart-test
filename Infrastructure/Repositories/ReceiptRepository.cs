@@ -1524,7 +1524,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi2 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi2Id);
         var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
-        return ConvertToInsuranceReceInfModel(receInf, hokenInf, ptKohi1, ptKohi2, ptKohi3, ptKohi4);
+        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
     }
     #endregion
 
@@ -1754,15 +1754,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receInf.JibaiCFutan,
                 receInf.JibaiDFutan,
                 receInf.JibaiKenpoFutan,
-                ptKohi1.FutansyaNo ?? string.Empty,
-                ptKohi2.FutansyaNo ?? string.Empty,
-                ptKohi3.FutansyaNo ?? string.Empty,
-                ptKohi4.FutansyaNo ?? string.Empty,
-                ptKohi1.JyukyusyaNo ?? string.Empty,
-                ptKohi2.JyukyusyaNo ?? string.Empty,
-                ptKohi3.JyukyusyaNo ?? string.Empty,
-                ptKohi4.JyukyusyaNo ?? string.Empty,
-                hokenInf.RousaiKofuNo ?? string.Empty
+                ptKohi1?.FutansyaNo ?? string.Empty,
+                ptKohi2?.FutansyaNo ?? string.Empty,
+                ptKohi3?.FutansyaNo ?? string.Empty,
+                ptKohi4?.FutansyaNo ?? string.Empty,
+                ptKohi1?.JyukyusyaNo ?? string.Empty,
+                ptKohi2?.JyukyusyaNo ?? string.Empty,
+                ptKohi3?.JyukyusyaNo ?? string.Empty,
+                ptKohi4?.JyukyusyaNo ?? string.Empty,
+                hokenInf?.RousaiKofuNo ?? string.Empty,
+                hokenInf?.Kigo ?? string.Empty,
+                hokenInf?.Bango ?? string.Empty,
+                hokenInf?.EdaNo ?? string.Empty
             );
     }
     #endregion

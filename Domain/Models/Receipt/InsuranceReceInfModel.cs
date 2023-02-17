@@ -66,9 +66,12 @@ public class InsuranceReceInfModel
         JyukyusyaNoKohi3 = string.Empty;
         JyukyusyaNoKohi4 = string.Empty;
         HokenInfRousaiKofuNo = string.Empty;
+        Kigo = string.Empty;
+        Bango = string.Empty;
+        EdaNo = string.Empty;
     }
 
-    public InsuranceReceInfModel(int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, string receSbt, string hokensyaNo, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi1ReceKyufu, int kohi2ReceTensu, int kohi2ReceFutan, int kohi2ReceKyufu, int kohi3ReceTensu, int kohi3ReceFutan, int kohi3ReceKyufu, int kohi4ReceTensu, int kohi4ReceFutan, int kohi4ReceKyufu, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu, int jibaiHaFutan, int jibaiNiFutan, int jibaiHoSindan, int jibaiHeMeisai, int jibaiAFutan, int jibaiBFutan, int jibaiCFutan, int jibaiDFutan, int jibaiKenpoFutan, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi1, string jyukyusyaNoKohi2, string jyukyusyaNoKohi3, string jyukyusyaNoKohi4, string hokenInfRousaiKofuNo)
+    public InsuranceReceInfModel(int seikyuYm, long ptId, int sinYm, int hokenId, int hokenId2, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, string receSbt, string hokensyaNo, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi1ReceKyufu, int kohi2ReceTensu, int kohi2ReceFutan, int kohi2ReceKyufu, int kohi3ReceTensu, int kohi3ReceFutan, int kohi3ReceKyufu, int kohi4ReceTensu, int kohi4ReceFutan, int kohi4ReceKyufu, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKisai, int kohi2ReceKisai, int kohi3ReceKisai, int kohi4ReceKisai, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int rousaiIFutan, int rousaiRoFutan, int jibaiITensu, int jibaiRoTensu, int jibaiHaFutan, int jibaiNiFutan, int jibaiHoSindan, int jibaiHeMeisai, int jibaiAFutan, int jibaiBFutan, int jibaiCFutan, int jibaiDFutan, int jibaiKenpoFutan, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, string jyukyusyaNoKohi1, string jyukyusyaNoKohi2, string jyukyusyaNoKohi3, string jyukyusyaNoKohi4, string hokenInfRousaiKofuNo, string kigo, string bango, string edaNo)
     {
         SeikyuYm = seikyuYm;
         PtId = ptId;
@@ -132,6 +135,9 @@ public class InsuranceReceInfModel
         JyukyusyaNoKohi3 = jyukyusyaNoKohi3;
         JyukyusyaNoKohi4 = jyukyusyaNoKohi4;
         HokenInfRousaiKofuNo = hokenInfRousaiKofuNo;
+        Kigo = kigo;
+        Bango = bango;
+        EdaNo = edaNo;
     }
 
     public int SeikyuYm { get; private set; }
@@ -257,4 +263,10 @@ public class InsuranceReceInfModel
     public string JyukyusyaNoKohi4 { get; private set; }
 
     public string HokenInfRousaiKofuNo { get; private set; }
+
+    public string Kigo { get; private set; }
+
+    public string Bango { get; private set; }
+
+    public string EdaNo { get; private set; }
 }

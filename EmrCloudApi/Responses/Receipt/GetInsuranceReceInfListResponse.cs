@@ -1,14 +1,13 @@
-﻿using EmrCloudApi.Responses.Receipt.Dto;
-using UseCase.Receipt.GetInsuranceReceInfList;
+﻿using UseCase.Receipt;
 
 namespace EmrCloudApi.Responses.Receipt;
 
 public class GetInsuranceReceInfListResponse
 {
-    public GetInsuranceReceInfListResponse(GetInsuranceReceInfListOutputData outputData)
+    public GetInsuranceReceInfListResponse(InsuranceReceInfItem insuranceReceInf)
     {
-        OutputData = new InsuranceReceInfDto(outputData);
+        InsuranceReceInf = insuranceReceInf;
     }
 
-    public InsuranceReceInfDto OutputData { get; private set; }
+    public InsuranceReceInfItem InsuranceReceInf { get; private set; }
 }
