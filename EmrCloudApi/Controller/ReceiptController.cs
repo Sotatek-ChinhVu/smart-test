@@ -12,6 +12,7 @@ using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
+using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -118,13 +119,25 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetReceHenReason)]
     public ActionResult<Response<GetReceHenReasonResponse>> GetReceHenReason([FromQuery] GetReceHenReasonRequest request)
     {
-        var input = new GetReceHenReasonInputData(HpId,  request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
+        var input = new GetReceHenReasonInputData(HpId, request.SeikyuYm, request.SinDate, request.PtId, request.HokenId);
         var output = _bus.Handle(input);
 
         var presenter = new GetReceHenReasonPresenter();
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceHenReasonResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceiCheckList)]
+    public ActionResult<Response<GetReceiCheckListResponse>> GetReceiCheckList([FromQuery] GetReceiCheckListRequest request)
+    {
+        var input = new GetReceiCheckListInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceiCheckListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceiCheckListResponse>>(presenter.Result);
     }
 
     #region Private function

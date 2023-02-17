@@ -1419,6 +1419,29 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                );
         return query.ToList();
     }
+
+    public List<ReceCheckCmtModel> GetReceCheckCmtList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var receCheckCmts = NoTrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.HokenId == hokenId
+                                                                              && item.IsDeleted == DeleteTypes.None)
+                                                                .OrderByDescending(item => item.SortNo)
+                                                                .ToList();
+        return receCheckCmts.Select(item => ConvertToReceCheckCmtModel(item)).ToList();
+    }
+
+    public List<ReceCheckErrModel> GetReceCheckErrList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var receCheckErrs = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.HokenId == hokenId)
+                                                                .OrderBy(item => item.ErrCd)
+                                                                .ToList();
+        return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
+    }
     #endregion
 
     #region Private function
@@ -1531,6 +1554,37 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         entity.UpdateId = userId;
         return entity;
     }
+
+    private ReceCheckCmtModel ConvertToReceCheckCmtModel(ReceCheckCmt receCheckCmt)
+    {
+        return new ReceCheckCmtModel(
+                    receCheckCmt.PtId,
+                    receCheckCmt.SeqNo,
+                    receCheckCmt.SinYm,
+                    receCheckCmt.HokenId,
+                    receCheckCmt.IsPending,
+                    receCheckCmt.Cmt ?? string.Empty,
+                    receCheckCmt.IsChecked,
+                    receCheckCmt.SortNo
+                   );
+    }
+
+    private ReceCheckErrModel ConvertToReceCheckErrModel(ReceCheckErr receCheckErr)
+    {
+        return new ReceCheckErrModel(
+                    receCheckErr.PtId,
+                    receCheckErr.SinYm,
+                    receCheckErr.HokenId,
+                    receCheckErr.ErrCd,
+                    receCheckErr.SinDate,
+                    receCheckErr.ACd,
+                    receCheckErr.BCd,
+                    receCheckErr.Message1 ?? string.Empty,
+                    receCheckErr.Message2 ?? string.Empty,
+                    receCheckErr.IsChecked
+                   );
+    }
+
     #endregion
 
     public void ReleaseResource()

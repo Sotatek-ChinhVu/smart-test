@@ -17,6 +17,10 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceReasonModel> GetReceReasonList(int hpId, int seikyuYm, int sinDate, long ptId, int hokenId);
 
+    List<ReceCheckCmtModel> GetReceCheckCmtList(int hpId, int sinYm, long ptId, int hokenId);
+
+    List<ReceCheckErrModel> GetReceCheckErrList(int hpId, int sinYm, long ptId, int hokenId);
+
     List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
