@@ -494,6 +494,12 @@ namespace Infrastructure.Repositories
             return check;
         }
 
+        public bool CheckExistHokenPid(int hokenPid)
+        {
+            var check = NoTrackingDataContext.PtHokenPatterns.Any(h => h.HokenPid == hokenPid && h.IsDeleted == 0);
+            return check;
+        }
+
         public List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids)
         {
             var result = NoTrackingDataContext.PtHokenPatterns.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenPid) && h.PtId == ptId && h.IsDeleted == 0);
