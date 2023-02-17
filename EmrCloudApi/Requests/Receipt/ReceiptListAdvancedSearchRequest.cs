@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.Receipt;
+﻿using EmrCloudApi.Requests.Receipt.RequestItem;
+
+namespace EmrCloudApi.Requests.Receipt;
 
 public class ReceiptListAdvancedSearchRequest
 {

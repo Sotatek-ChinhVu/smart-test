@@ -401,7 +401,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         return SaveListSanteiInfDetail(hpId, userId, listSanteiInfDetailUpdates);
     }
 
-    private bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
+    public bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
     {
         var listSanteiInfDetailId = listSanteiInfDetailModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
         var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => listSanteiInfDetailId.Contains(item.Id)).ToList();
@@ -434,6 +434,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 }
             }
         }
+        TrackingDataContext.SaveChanges();
         return true;
     }
 

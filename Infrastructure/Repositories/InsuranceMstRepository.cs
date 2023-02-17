@@ -855,6 +855,31 @@ namespace Infrastructure.Repositories
                 return TrackingDataContext.SaveChanges() > 0;
             }
         }
+
+        /// <summary>
+        /// Item 1 is sortNO
+        /// Item 2 is HokenEdaNo
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="hokenNo"></param>
+        /// <param name="prefNo"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
+        public (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
+        {
+            int sortNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+                                                               u.HokenNo == hokenNo &&
+                                                               u.PrefNo == prefNo &&
+                                                               u.StartDate == startDate).Max(u => u.SortNo) + 1;
+
+
+            int hokenEdaNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+                                                                   u.HokenNo == hokenNo &&
+                                                                   u.PrefNo == prefNo &&
+                                                                   u.StartDate == startDate).Max(u => u.HokenEdaNo) + 1;
+
+            return (sortNo, hokenEdaNo);
+        }
     }
 }
 

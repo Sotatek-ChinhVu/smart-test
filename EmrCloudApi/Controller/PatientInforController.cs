@@ -88,6 +88,7 @@ using UseCase.SwapHoken.Validate;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Messages;
 using UseCase.PtGroupMst.GetGroupNameMst;
+using UseCase.PtGroupMst.CheckAllowDelete;
 
 namespace EmrCloudApi.Controller
 {
@@ -588,11 +589,11 @@ namespace EmrCloudApi.Controller
                  request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
-
+            
             if (output.Status == SavePatientInfoStatus.Successful)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
-                    new CommonMessage { PtId = input.Patient.PtId });
+                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
             }
 
             var presenter = new SavePatientInfoPresenter();
@@ -840,6 +841,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetGroupNameMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckAllowDeleteGroupMst)]
+        public ActionResult<Response<CheckAllowDeleteGroupMstResponse>> CheckAllowDeleteGroupMst([FromBody] CheckAllowDeleteGroupMstRequest request)
+        {
+            var input = new CheckAllowDeleteGroupMstInputData(HpId, request.GroupId, request.GroupCode, request.CheckAllowDeleteGroupName);
+            var output = _bus.Handle(input);
+            var presenter = new CheckAllowDeleteGroupMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckAllowDeleteGroupMstResponse>>(presenter.Result);
         }
     }
 }

@@ -2,8 +2,10 @@
 using Reporting.Interface;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Model;
+using Reporting.Mappers;
 using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Models;
+using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
 
 namespace Reporting
 {
@@ -16,7 +18,7 @@ namespace Reporting
             _tenantProvider = tenantProvider;
         }
 
-        public CoKarte1Model GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
+        public Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
         {
             using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
             {
@@ -25,27 +27,27 @@ namespace Reporting
                 if (ptId == 0) return null;
 
                 // 患者情報
-                Karte1.Model.CoPtInfModel ptInf = finder.FindPtInf(ptId, sinDate);
+                CoPtInfModel ptInf = finder.FindPtInf(ptId, sinDate);
 
                 // 病名情報
                 List<CoPtByomeiModel> ptByomeis = finder.FindPtByomei(ptId, hokenPid, tenkiByomei);
-                if (syuByomei)
-                {
-                    foreach (var item in ptByomeis)
-                    {
-                        if (item.SyobyoKbn == 1)
-                        {
-                            item.Byomei = "（主）" + item.Byomei;
-                        }
-                    }
-                }
+                //if (syuByomei)
+                //{
+                //    foreach (var item in ptByomeis)
+                //    {
+                //        if (item.SyobyoKbn == 1)
+                //        {
+                //            item.Byomei = "（主）" + item.Byomei;
+                //        }
+                //    }
+                //}
 
                 // 患者保険情報
                 CoPtHokenInfModel ptHokenInf = finder.FindPtHokenInf(ptId, hokenPid, sinDate);
 
-                var result = new CoKarte1Model(ptInf, ptByomeis, ptHokenInf);
+                CoKarte1Model coKarte1Model = new CoKarte1Model(ptInf, ptByomeis, ptHokenInf);
 
-                return result;
+                return new Karte1Mapper(coKarte1Model);
             }
         }
 
