@@ -78,7 +78,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                 .AsEnumerable()
                                                                 .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                                 .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt())
-                                                                .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Cmt, item.IsPending });
+                                                                .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, Cmt = item.Cmt ?? string.Empty, item.IsPending });
 
         var receCheckErrors = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
                                                                                 && item.IsChecked == 0
@@ -88,7 +88,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                   .AsEnumerable()
                                                                   .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
                                                                   .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr())
-                                                                  .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Message1, item.Message2 });
+                                                                  .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, Message1 = item.Message1 ?? string.Empty, Message2 = item.Message2 ?? string.Empty });
 
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.IsDeleted == 0
                                                                     && item.HpId == hpId
