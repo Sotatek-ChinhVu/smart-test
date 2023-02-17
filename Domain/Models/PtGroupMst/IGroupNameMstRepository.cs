@@ -7,5 +7,9 @@ namespace Domain.Models.PtGroupMst
         bool SaveGroupNameMst(List<GroupNameMstModel> groupNameMsts, int hpId, int userId);
 
         List<GroupNameMstModel> GetListGroupNameMst(int hpId);
+
+        bool IsInUseGroupName(int groupId, string groupCode);
+
+        bool IsInUseGroupItem(int groupId, string groupCode);
     }
 }

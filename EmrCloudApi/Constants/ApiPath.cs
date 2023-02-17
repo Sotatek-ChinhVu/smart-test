@@ -200,6 +200,7 @@
         // Family
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
 
         //TreeSet Byomei
         public const string GetTreeSetByomei = "GetSetByomeiTree";
