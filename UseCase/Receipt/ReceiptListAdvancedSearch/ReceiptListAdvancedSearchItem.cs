@@ -1,48 +1,49 @@
-﻿using Helper.Common;
-using UseCase.Receipt.ReceiptListAdvancedSearch;
+﻿using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Helper.Common;
 
-namespace EmrCloudApi.Responses.Receipt.Dto;
+namespace UseCase.Receipt.ReceiptListAdvancedSearch;
 
-public class ReceiptListModelDto
+public class ReceiptListAdvancedSearchItem
 {
-    public ReceiptListModelDto(ReceiptListAdvancedSearchOutputItem output)
+    public ReceiptListAdvancedSearchItem(ReceiptListModel model)
     {
-        SeikyuKbn = output.SeikyuKbn;
-        SinYm = output.SinYm;
-        IsReceInfDetailExist = output.IsReceInfDetailExist;
-        IsPaperRece = output.IsPaperRece;
-        HokenKbn = output.HokenKbn;
-        Output = output.Output;
-        FusenKbn = output.FusenKbn;
-        StatusKbn = output.StatusKbn;
-        IsPending = output.IsPending;
-        PtNum = output.PtNum;
-        PtId = output.PtId;
-        KanaName = output.KanaName;
-        Name = output.Name;
-        Sex = output.Sex;
-        Age = output.Age;
-        LastSinDateByHokenId = output.LastSinDateByHokenId;
-        BirthDay = output.BirthDay;
-        ReceSbt = output.ReceSbt;
-        HokensyaNo = output.HokensyaNo;
-        Tensu = output.Tensu;
-        HokenSbtCd = output.HokenSbtCd;
-        Kohi1Nissu = output.Kohi1Nissu;
-        IsSyoukiInfExist = output.IsSyoukiInfExist;
-        IsReceCmtExist = output.IsReceCmtExist;
-        IsSyobyoKeikaExist = output.IsSyobyoKeikaExist;
-        ReceSeikyuCmt = output.ReceSeikyuCmt;
-        LastVisitDate = output.LastVisitDate;
-        KaName = output.KaName;
-        SName = output.SName;
-        IsPtKyuseiExist = output.IsPtKyuseiExist;
-        FutansyaNoKohi1 = output.FutansyaNoKohi1;
-        FutansyaNoKohi2 = output.FutansyaNoKohi2;
-        FutansyaNoKohi3 = output.FutansyaNoKohi3;
-        FutansyaNoKohi4 = output.FutansyaNoKohi4;
-        IsPtTest = output.IsPtTest;
-        HokenNissu = output.HokenNissu;
+        SeikyuKbn = model.SeikyuKbn;
+        SinYm = model.SinYm;
+        IsReceInfDetailExist = model.IsReceInfDetailExist;
+        IsPaperRece = model.IsPaperRece;
+        HokenKbn = model.HokenKbn;
+        Output = model.Output;
+        FusenKbn = model.FusenKbn;
+        StatusKbn = model.StatusKbn;
+        IsPending = model.IsPending;
+        PtNum = model.PtNum;
+        PtId = model.PtId;
+        KanaName = model.KanaName;
+        Name = model.Name;
+        Sex = model.Sex;
+        Age = model.Age;
+        LastSinDateByHokenId = model.LastSinDateByHokenId;
+        BirthDay = model.BirthDay;
+        ReceSbt = model.ReceSbt;
+        HokensyaNo = model.HokensyaNo;
+        Tensu = model.Tensu;
+        HokenSbtCd = model.HokenSbtCd;
+        Kohi1Nissu = model.Kohi1Nissu;
+        IsSyoukiInfExist = model.IsSyoukiInfExist;
+        IsReceCmtExist = model.IsReceCmtExist;
+        IsSyobyoKeikaExist = model.IsSyobyoKeikaExist;
+        ReceSeikyuCmt = model.ReceSeikyuCmt;
+        LastVisitDate = model.LastVisitDate;
+        KaName = model.KaName;
+        SName = model.SName;
+        IsPtKyuseiExist = model.IsPtKyuseiExist;
+        FutansyaNoKohi1 = model.FutansyaNoKohi1;
+        FutansyaNoKohi2 = model.FutansyaNoKohi2;
+        FutansyaNoKohi3 = model.FutansyaNoKohi3;
+        FutansyaNoKohi4 = model.FutansyaNoKohi4;
+        IsPtTest = model.IsPtTest;
+        HokenNissu = model.HokenNissu;
+        ReceCheckCmt = model.ReceCheckCmt;
     }
 
     public int SeikyuKbn { get; private set; }
@@ -63,9 +64,9 @@ public class ReceiptListModelDto
 
     public int IsPending { get; private set; }
 
-    public long PtId { get; private set; }
-
     public long PtNum { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string KanaName { get; private set; }
 
@@ -116,6 +117,9 @@ public class ReceiptListModelDto
     public bool IsPtTest { get; private set; }
 
     public int HokenNissu { get; private set; }
+
+    public string ReceCheckCmt { get; private set; }
+
 
     #region Other param
     public string BirthDayDisplay
