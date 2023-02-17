@@ -7,7 +7,7 @@ public class ReceiptListAdvancedSearchOutputData : IOutputData
 {
     public ReceiptListAdvancedSearchOutputData(List<ReceiptListModel> receiptList, ReceiptListAdvancedSearchStatus status)
     {
-        ReceiptList = receiptList.Select(item => new ReceiptListAdvancedSearchOutputItem(item)).ToList();
+        ReceiptList = receiptList.Select(item => new ReceiptListAdvancedSearchItem(item)).ToList();
         Status = status;
     }
 
@@ -17,7 +17,7 @@ public class ReceiptListAdvancedSearchOutputData : IOutputData
         Status = status;
     }
 
-    public List<ReceiptListAdvancedSearchOutputItem> ReceiptList { get; private set; }
+    public List<ReceiptListAdvancedSearchItem> ReceiptList { get; private set; }
 
     public ReceiptListAdvancedSearchStatus Status { get; private set; }
 }

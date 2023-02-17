@@ -1,14 +1,13 @@
-﻿using EmrCloudApi.Responses.Receipt.Dto;
-using UseCase.Receipt.ReceiptListAdvancedSearch;
+﻿using UseCase.Receipt.ReceiptListAdvancedSearch;
 
 namespace EmrCloudApi.Responses.Receipt;
 
 public class ReceiptListAdvancedSearchResponse
 {
-    public ReceiptListAdvancedSearchResponse(List<ReceiptListAdvancedSearchOutputItem> receiptList)
+    public ReceiptListAdvancedSearchResponse(List<ReceiptListAdvancedSearchItem> receiptList)
     {
-        ReceiptList = receiptList.Select(item => new ReceiptListModelDto(item)).ToList();
+        ReceiptList = receiptList;
     }
 
-    public List<ReceiptListModelDto> ReceiptList { get; private set; }
+    public List<ReceiptListAdvancedSearchItem> ReceiptList { get; private set; }
 }
