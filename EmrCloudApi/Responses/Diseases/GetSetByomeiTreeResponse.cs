@@ -2,9 +2,9 @@
 
 namespace EmrCloudApi.Responses.Diseases
 {
-    public class GetTreeSetByomeiResponse
+    public class GetSetByomeiTreeResponse
     {
-        public GetTreeSetByomeiResponse(IEnumerable<ByomeiSetMstModel> datas)
+        public GetSetByomeiTreeResponse(IEnumerable<ByomeiSetMstModel> datas)
         {
             Datas = datas;
         }

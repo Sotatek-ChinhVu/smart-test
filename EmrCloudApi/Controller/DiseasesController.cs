@@ -8,7 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetDiseaseList;
-using UseCase.Diseases.GetTreeSetByomei;
+using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
 
 namespace EmrCloudApi.Controller
@@ -74,13 +74,13 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetSetByomeiTree)]
-        public ActionResult<Response<GetTreeSetByomeiResponse>> GetSetByomeiTree([FromQuery] GetTreeSetByomeiRequest request)
+        public ActionResult<Response<GetSetByomeiTreeResponse>> GetSetByomeiTree([FromQuery] GetSetByomeiTreeRequest request)
         {
-            var input = new GetTreeSetByomeiInputData(HpId, request.SinDate);
+            var input = new GetSetByomeiTreeInputData(HpId, request.SinDate);
             var output = _bus.Handle(input);
-            var presenter = new GetTreeSetByomeiPresenter();
+            var presenter = new GetSetByomeiTreePresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<GetTreeSetByomeiResponse>>(presenter.Result);
+            return new ActionResult<Response<GetSetByomeiTreeResponse>>(presenter.Result);
         }
     }
 }

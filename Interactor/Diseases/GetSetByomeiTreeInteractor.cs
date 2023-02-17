@@ -1,29 +1,29 @@
 ﻿using Domain.Models.Diseases;
-using UseCase.Diseases.GetTreeSetByomei;
+using UseCase.Diseases.GetSetByomeiTree;
 
 namespace Interactor.Diseases
 {
-    public class GetTreeSetByomeiInteractor : IGetTreeSetByomeiInputPort
+    public class GetSetByomeiTreeInteractor : IGetSetByomeiTreeInputPort
     {
         private readonly IPtDiseaseRepository _diseaseRepository;
-        public GetTreeSetByomeiInteractor(IPtDiseaseRepository diseaseRepository)
+        public GetSetByomeiTreeInteractor(IPtDiseaseRepository diseaseRepository)
         {
             _diseaseRepository = diseaseRepository;
         }
 
-        public GetTreeSetByomeiOutputData Handle(GetTreeSetByomeiInputData inputData)
+        public GetSetByomeiTreeOutputData Handle(GetSetByomeiTreeInputData inputData)
         {
             try
             {
                 if (inputData.HpId < 0)
-                    return new GetTreeSetByomeiOutputData(new List<ByomeiSetMstModel>(), GetTreeSetByomeiStatus.InvalidHpId);
+                    return new GetSetByomeiTreeOutputData(new List<ByomeiSetMstModel>(), GetSetByomeiTreeStatus.InvalidHpId);
 
                 if(inputData.SinDate < 0)
-                    return new GetTreeSetByomeiOutputData(new List<ByomeiSetMstModel>(), GetTreeSetByomeiStatus.InvalidSinDate);
+                    return new GetSetByomeiTreeOutputData(new List<ByomeiSetMstModel>(), GetSetByomeiTreeStatus.InvalidSinDate);
 
                 var datas = _diseaseRepository.GetDataTreeSetByomei(inputData.HpId, inputData.SinDate);
                 if (!datas.Any())
-                    return new GetTreeSetByomeiOutputData(new List<ByomeiSetMstModel>(), GetTreeSetByomeiStatus.NoData);
+                    return new GetSetByomeiTreeOutputData(new List<ByomeiSetMstModel>(), GetSetByomeiTreeStatus.NoData);
                 else
                 {
                     var rootNodes = datas.FindAll(p => p.Level == 1).OrderBy(p => p.Level1).ToList();
@@ -43,7 +43,7 @@ namespace Interactor.Diseases
                             }
                         }
                     }
-                    return new GetTreeSetByomeiOutputData(rootNodes, GetTreeSetByomeiStatus.Successful);
+                    return new GetSetByomeiTreeOutputData(rootNodes, GetSetByomeiTreeStatus.Successful);
                 }
             }
             finally

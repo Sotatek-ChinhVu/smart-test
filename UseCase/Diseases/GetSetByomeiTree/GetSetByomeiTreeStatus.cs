@@ -1,6 +1,6 @@
-﻿namespace UseCase.Diseases.GetTreeSetByomei
+﻿namespace UseCase.Diseases.GetSetByomeiTree
 {
-    public enum GetTreeSetByomeiStatus
+    public enum GetSetByomeiTreeStatus
     {
         Successful,
         NoData,

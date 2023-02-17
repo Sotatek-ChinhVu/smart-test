@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Diseases.GetTreeSetByomei
+namespace UseCase.Diseases.GetSetByomeiTree
 {
-    public class GetTreeSetByomeiInputData : IInputData<GetTreeSetByomeiOutputData>
+    public class GetSetByomeiTreeInputData : IInputData<GetSetByomeiTreeOutputData>
     {
-        public GetTreeSetByomeiInputData(int hpId, int sinDate)
+        public GetSetByomeiTreeInputData(int hpId, int sinDate)
         {
             HpId = hpId;
             SinDate = sinDate;

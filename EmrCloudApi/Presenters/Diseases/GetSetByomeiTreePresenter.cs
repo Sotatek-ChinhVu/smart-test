@@ -1,33 +1,33 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses.Diseases;
 using EmrCloudApi.Responses;
-using UseCase.Diseases.GetTreeSetByomei;
+using UseCase.Diseases.GetSetByomeiTree;
 
 namespace EmrCloudApi.Presenters.Diseases
 {
-    public class GetTreeSetByomeiPresenter : IGetTreeSetByomeiOutputPort
+    public class GetSetByomeiTreePresenter : IGetSetByomeiTreeOutputPort
     {
-        public Response<GetTreeSetByomeiResponse> Result { get; private set; } = new Response<GetTreeSetByomeiResponse>();
+        public Response<GetSetByomeiTreeResponse> Result { get; private set; } = new Response<GetSetByomeiTreeResponse>();
 
-        public void Complete(GetTreeSetByomeiOutputData outputData)
+        public void Complete(GetSetByomeiTreeOutputData outputData)
         {
-            Result = new Response<GetTreeSetByomeiResponse>()
+            Result = new Response<GetSetByomeiTreeResponse>()
             {
-                Data = new GetTreeSetByomeiResponse(outputData.Datas),
+                Data = new GetSetByomeiTreeResponse(outputData.Datas),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)
             {
-                case GetTreeSetByomeiStatus.NoData:
+                case GetSetByomeiTreeStatus.NoData:
                     Result.Message = ResponseMessage.NoData;
                     break;
-                case GetTreeSetByomeiStatus.Successful:
+                case GetSetByomeiTreeStatus.Successful:
                     Result.Message = ResponseMessage.Success;
                     break;
-                case GetTreeSetByomeiStatus.InvalidSinDate:
+                case GetSetByomeiTreeStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
-                case GetTreeSetByomeiStatus.InvalidHpId:
+                case GetSetByomeiTreeStatus.InvalidHpId:
                     Result.Message = ResponseMessage.InvalidHpId;
                     break;
             }

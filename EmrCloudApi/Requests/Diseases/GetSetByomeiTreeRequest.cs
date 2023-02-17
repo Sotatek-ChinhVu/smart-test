@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Diseases
 {
-    public class GetTreeSetByomeiRequest
+    public class GetSetByomeiTreeRequest
     {
         public int SinDate { get; set; }
     }
