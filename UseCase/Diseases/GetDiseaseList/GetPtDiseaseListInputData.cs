@@ -15,14 +15,18 @@ namespace UseCase.Diseases.GetDiseaseList
         public int SinDate { get; private set; }
         public int HokenId { get; private set; }
         public DiseaseViewType RequestFrom { get; private set; }
+        public bool IsContiFiltered { get; private set; }
+        public bool IsInMonthFiltered { get; private set; }
 
-        public GetPtDiseaseListInputData(int hpId, long ptId, int sinDate, int hokenId, int diseaseRequestFrom)
+        public GetPtDiseaseListInputData(int hpId, long ptId, int sinDate, int hokenId, int diseaseRequestFrom, bool isContiFiltered, bool isInMonthFiltered)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             HokenId = hokenId;
             RequestFrom = (DiseaseViewType) Enum.Parse(typeof(DiseaseViewType), diseaseRequestFrom.ToString());
+            IsContiFiltered = isContiFiltered;
+            IsInMonthFiltered = isInMonthFiltered;
         }
     }
 }

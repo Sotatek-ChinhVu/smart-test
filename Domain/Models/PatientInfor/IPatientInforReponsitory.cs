@@ -22,7 +22,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
-        List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
@@ -32,7 +32,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
-        bool CheckExistListId(List<long> ptIds);
+        bool CheckExistIdList(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 

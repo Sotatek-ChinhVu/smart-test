@@ -64,7 +64,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
 
     private SaveSyobyoKeikaListStatus ValidateInput(SaveSyobyoKeikaListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
             return SaveSyobyoKeikaListStatus.InvalidPtId;
         }

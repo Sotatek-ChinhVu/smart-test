@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.InsuranceMst.DeleteHokenMaster;
+using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
 
@@ -17,7 +18,7 @@ namespace EmrCloudApi.Controller
     public class InsuranceMstController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public InsuranceMstController(UseCaseBus bus, IUserService userService) : base(userService) =>_bus = bus;
+        public InsuranceMstController(UseCaseBus bus, IUserService userService) : base(userService) => _bus = bus;
 
         [HttpGet(ApiPath.GetList + "InsuranceMstDetail")]
         public ActionResult<Response<GetInsuranceMasterDetailResponse>> GetList([FromQuery] GetInsuranceMasterDetailRequest request)
@@ -45,6 +46,16 @@ namespace EmrCloudApi.Controller
             var input = new DeleteHokenMasterInputData(HpId, request.PrefNo, request.HokenNo, request.HokenEdaNo,  request.StartDate);
             var output = _bus.Handle(input);
             var presenter = new DeleteHokenMasterPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.Get + "InfoCloneInsuranceMst")]
+        public ActionResult<Response<GetInfoCloneInsuranceMstResponse>> GetInfoCloneInsuranceMst([FromQuery] GetInfoCloneInsuranceMstRequest request)
+        {
+            var input = new GetInfoCloneInsuranceMstInputData(HpId, request.HokenNo, request.PrefNo, request.StartDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetInfoCloneInsuranceMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

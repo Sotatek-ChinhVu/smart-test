@@ -564,9 +564,9 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             setMst.Level1 = dicLevel1Updates[item.Level1];
                             setMst.SetKbn = pasteSetKbn;
                             setMst.SetKbnEdaNo = pasteSetKbnEdaNo;
-                            setMst.CreateDate = DateTime.UtcNow;
+                            setMst.CreateDate = CIUtil.GetJapanDateTimeNow();
                             setMst.CreateId = userId;
-                            setMst.UpdateDate = DateTime.UtcNow;
+                            setMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             setMst.UpdateId = userId;
                             listPasteItems.Add(setMst);
                         }
