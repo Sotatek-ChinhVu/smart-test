@@ -151,6 +151,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.ConfirmReplaceDocParam;
@@ -264,6 +265,7 @@ using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.RaiinFilterMst.GetList;
@@ -340,6 +342,9 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using UseCase.PtGroupMst.GetGroupNameMst;
+using Reporting;
+using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -582,6 +587,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceMasterDetailInputData, GetInsuranceMasterDetailInteractor>();
             busBuilder.RegisterUseCase<GetSelectMaintenanceInputData, GetSelectMaintenanceInteractor>();
             busBuilder.RegisterUseCase<DeleteHokenMasterInputData, DeleteHokenMasterInteractor>();
+            busBuilder.RegisterUseCase<GetInfoCloneInsuranceMstInputData, GetInfoCloneInsuranceMstInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
@@ -654,6 +660,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
             busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
+            busBuilder.RegisterUseCase<GetSetByomeiTreeInputData, GetSetByomeiTreeInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -771,6 +778,7 @@ namespace EmrCloudApi.Configs.Dependency
             //PtGroupMaster
             busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
             busBuilder.RegisterUseCase<GetGroupNameMstInputData, GetGroupNameMstInteractor>();
+            busBuilder.RegisterUseCase<CheckAllowDeleteGroupMstInputData, CheckAllowDeleteGroupMstInteractor>();
 
             //SanteiInf
             busBuilder.RegisterUseCase<GetListSanteiInfInputData, GetListSanteiInfInteractor>();
