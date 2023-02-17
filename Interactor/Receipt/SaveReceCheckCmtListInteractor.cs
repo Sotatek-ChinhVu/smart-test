@@ -31,10 +31,10 @@ public class SaveReceCheckCmtListInteractor : ISaveReceCheckCmtListInputPort
             {
                 return new SaveReceCheckCmtListOutputData(responseValidate);
             }
-            var listReceCheckCmtModel = inputData.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtModel(item))
+            var receCheckCmtList = inputData.ReceCheckCmtList.Select(item => ConvertToReceCheckCmtModel(item))
                                                                   .ToList();
 
-            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, listReceCheckCmtModel))
+            if (_receiptRepository.SaveReceCheckCmtList(inputData.HpId, inputData.UserId, inputData.HokenId, inputData.SinYm, inputData.PtId, receCheckCmtList))
             {
                 return new SaveReceCheckCmtListOutputData(SaveReceCheckCmtListStatus.Successed);
             }
