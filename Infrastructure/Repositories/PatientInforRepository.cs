@@ -500,32 +500,24 @@ namespace Infrastructure.Repositories
             var groupKeyList = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).Select(p => new { p.GroupId, p.GroupCode });
             if (groupKeyList.Any())
             {
-                var groupIdList = groupKeyList.Select(g => g.GroupId).ToList();
+                var groupIdList = groupKeyList.Select(g => g.GroupId).Distinct().ToList();
                 var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
-                    .Where(p => p.IsDeleted == DeleteTypes.None && p.GroupCode != null && groupIdList.Contains(p.GroupId))
+                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId) && p.GroupCode != null)
                     .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
                     .ToList();
 
-                List<long> ptIds = new();
-                int index = 1;
-                foreach (var groupId in groupIdList)
+                if (groupPtByIdList == null)
                 {
-                    var grpItem = groupKeyList.FirstOrDefault(g => g.GroupId == groupId);
-                    if (grpItem == null)
-                    {
-                        break;
-                    }
-                    string groupCode = grpItem.GroupCode;
+                    return new();
+                }
+
+                string firstGroupCode = groupKeyList.First(g => g.GroupId == groupIdList.First()).GroupCode;
+                var ptIds = groupPtByIdList.Where(g => g.GroupId == groupIdList.First() && g.GroupCode == firstGroupCode).Select(g => g.PtId).ToList();
+                foreach (var groupId in groupIdList.Skip(1))
+                {
+                    string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
                     var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
-                    if (index == 1)
-                    {
-                        ptIds.AddRange(ptIdItems);
-                    }
-                    else
-                    {
-                        ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
-                    }
-                    index++;
+                    ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
                 }
 
                 if (ptIds.Count == 0) return new();
