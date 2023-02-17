@@ -1,15 +1,17 @@
-﻿using UseCase.Family.GetListFamily;
+﻿using UseCase.Family;
 
 namespace EmrCloudApi.Responses.Family;
 
 public class FamilyDto
 {
-    public FamilyDto(FamilyOutputItem model)
+    public FamilyDto(FamilyItem model)
     {
-        SeqNo = model.SeqNo;
+        FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
+        FamilyPtId = model.FamilyPtId;
         FamilyPtNum = model.FamilyPtNum;
         Name = model.Name;
+        KanaName = model.KanaName;
         Sex = model.Sex;
         Birthday = model.Birthday;
         Age = model.Age;
@@ -17,16 +19,20 @@ public class FamilyDto
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
-        ListPtFamilyReki = model.ListPtFamilyReki.Select(item => new PtFamilyRekiDto(item)).ToList();
+        PtFamilyRekiList = model.PtFamilyRekiList.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
-    public long SeqNo { get; private set; }
+    public long FamilyId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
+
+    public long FamilyPtId { get; private set; }
 
     public long FamilyPtNum { get; private set; }
 
     public string Name { get; private set; }
+
+    public string KanaName { get; private set; }
 
     public int Sex { get; private set; }
 
@@ -42,5 +48,5 @@ public class FamilyDto
 
     public int SortNo { get; private set; }
 
-    public List<PtFamilyRekiDto> ListPtFamilyReki { get; private set; }
+    public List<PtFamilyRekiDto> PtFamilyRekiList { get; private set; }
 }

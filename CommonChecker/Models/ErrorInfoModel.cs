@@ -1,6 +1,4 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Enums;
-
-namespace CommonChecker.Models
+﻿namespace CommonChecker.Models
 {
     public class ErrorInfoModel
     {
@@ -15,6 +13,10 @@ namespace CommonChecker.Models
         public string FourthCellContent { get; set; }
 
         public string SuggestedContent { get; set; }
+
+        public string CheckingItemCd { get; set; }
+
+        public string CurrentItemCd { get; set; }
 
         public List<LevelInfoModel> ListLevelInfo { get; set; }
 

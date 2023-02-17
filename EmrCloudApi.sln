@@ -49,7 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "8.Reporting", "8.Reporting"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting", "Reporting\Reporting.csproj", "{DED7973A-ABF1-49FC-8D1D-EA16B37C626E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudUnitTest", "CloudTest\CloudUnitTest.csproj", "{C4536CC1-02D1-406E-961B-DA1D6B1F595B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudUnitTest", "CloudTest\CloudUnitTest.csproj", "{C4536CC1-02D1-406E-961B-DA1D6B1F595B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

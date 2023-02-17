@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.GetHistoryIndex;
 using UseCase.MedicalExamination.SearchHistory;
 
 namespace EmrCloudApi.Controller
@@ -40,6 +41,19 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
 
             var presenter = new SearchHistoryPresenter();
+            presenter.Complete(output);
+
+            var result = Ok(presenter.Result);
+            return result;
+        }
+
+        [HttpGet(ApiPath.GetHistoryIndex)]
+        public ActionResult<Response<GetHistoryIndexResponse>> GetHistoryIndex([FromQuery] GetHistoryIndexRequest request)
+        {
+            var input = new GetHistoryIndexInputData(HpId, UserId, request.PtId, request.FilterId, request.IsDeleted, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHistoryIndexPresenter();
             presenter.Complete(output);
 
             var result = Ok(presenter.Result);

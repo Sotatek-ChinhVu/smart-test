@@ -974,6 +974,23 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public bool DeleteHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate)
+        {
+            var hokenMaster = TrackingDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
+                                                                             u.HokenNo == hokenNo &&
+                                                                             u.HokenEdaNo == hokenEdaNo &&
+                                                                             u.PrefNo == prefNo &&
+                                                                             u.StartDate == startDate);
+
+            if (hokenMaster is null)
+                return false;
+            else
+            {
+                TrackingDataContext.HokenMsts.Remove(hokenMaster);
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
     }
 }
 
