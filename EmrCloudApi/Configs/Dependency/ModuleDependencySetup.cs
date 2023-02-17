@@ -456,9 +456,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
             services.AddTransient<IAccountingRepository, AccountingRepository>();
-            services.AddTransient<IRealtimeCheckerFinder, RealtimeCheckerFinder>();
-            services.AddTransient<IMasterFinder, MasterFinder>();
-            services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ISanteiInfRepository, SanteiInfRepository>();
             services.AddTransient<IMedicalExaminationRepository, MedicalExaminationRepository>();
             services.AddTransient<ISystemConfigRepository, SystemConfRepostitory>();
