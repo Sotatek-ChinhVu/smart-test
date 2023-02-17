@@ -15,12 +15,12 @@ public class ReceCheckCmtModel
         IsDeleted = false;
     }
 
-    public ReceCheckCmtModel(long ptId, int seqNo, int sinYm, int hokenId, int isPending, string cmt, int isChecked, int sortNo, bool isDeleted)
+    public ReceCheckCmtModel(int seqNo, int isPending, string cmt, int isChecked, int sortNo, bool isDeleted)
     {
-        PtId = ptId;
+        PtId = 0;
         SeqNo = seqNo;
-        SinYm = sinYm;
-        HokenId = hokenId;
+        SinYm = 0;
+        HokenId = 0;
         IsPending = isPending;
         Cmt = cmt;
         IsChecked = isChecked;

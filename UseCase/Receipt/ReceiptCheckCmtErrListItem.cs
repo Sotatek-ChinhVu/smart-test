@@ -4,9 +4,9 @@ namespace UseCase.Receipt;
 
 public class ReceiptCheckCmtErrListItem
 {
-    public ReceiptCheckCmtErrListItem(int isPending, int sortNo, bool isChecked, string textDisplay1)
+    public ReceiptCheckCmtErrListItem(int seqNo, int isPending, int sortNo, bool isChecked, string textDisplay1)
     {
-        IsPending = isPending;
+        SeqNo = seqNo;
         SortNo = sortNo;
         IsChecked = isChecked;
         TextDisplay1 = textDisplay1;
@@ -17,7 +17,7 @@ public class ReceiptCheckCmtErrListItem
 
     public ReceiptCheckCmtErrListItem(bool isChecked, string textDisplay1, string textDisplay2)
     {
-        IsPending = -1;
+        SeqNo = 0;
         SortNo = 0;
         IsChecked = isChecked;
         TextDisplay1 = textDisplay1;
@@ -26,7 +26,7 @@ public class ReceiptCheckCmtErrListItem
         ReceiptCheckIsErrItem = true;
     }
 
-    public int IsPending { get; private set; }
+    public int SeqNo { get; private set; }
 
     public int SortNo { get; private set; }
 

@@ -6,7 +6,7 @@ public class ReceiptCheckCmtErrDto
 {
     public ReceiptCheckCmtErrDto(ReceiptCheckCmtErrListItem output)
     {
-        IsPending = output.IsPending;
+        SeqNo = output.SeqNo;
         SortNo = output.SortNo;
         IsChecked = output.IsChecked;
         TextDisplay1 = output.TextDisplay1;
@@ -15,7 +15,7 @@ public class ReceiptCheckCmtErrDto
         ReceiptCheckIsErrItem = output.ReceiptCheckIsErrItem;
     }
 
-    public int IsPending { get; private set; }
+    public int SeqNo { get; private set; }
 
     public int SortNo { get; private set; }
 

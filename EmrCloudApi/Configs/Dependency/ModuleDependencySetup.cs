@@ -285,6 +285,7 @@ using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
+using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -804,6 +805,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSyobyoKeikaListInputData, SaveSyobyoKeikaListInteractor>();
             busBuilder.RegisterUseCase<GetReceHenReasonInputData, GetReceHenReasonInteractor>();
             busBuilder.RegisterUseCase<GetReceiCheckListInputData, GetReceiCheckListInteractor>();
+            busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
