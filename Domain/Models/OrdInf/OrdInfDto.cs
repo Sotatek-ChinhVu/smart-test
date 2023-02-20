@@ -6,19 +6,33 @@ namespace Domain.Models.OrdInf
     public class OrdInfDto
     {
         public long RaiinNo { get; private set; }
+
         public long RpNo { get; private set; }
+
         public long RpEdaNo { get; private set; }
+
         public int SinDate { get; private set; }
+
         public int HokenPid { get; private set; }
+
         public int OdrKouiKbn { get; private set; }
+
         public string RpName { get; private set; }
+
         public int InoutKbn { get; private set; }
+
         public int SikyuKbn { get; private set; }
+
         public int SyohoSbt { get; private set; }
+
         public int SanteiKbn { get; private set; }
+
         public int TosekiKbn { get; private set; }
+
         public int DaysCnt { get; private set; }
+
         public int SortNo { get; private set; }
+
         public long Id { get; private set; }
 
         public GroupKoui GroupKoui { get; private set; }

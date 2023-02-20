@@ -3,38 +3,71 @@
     public class OrdInfDetailDto
     {
         public long RaiinNo { get; private set; }
+
         public long RpNo { get; private set; }
+
         public long RpEdaNo { get; private set; }
+
         public int RowNo { get; private set; }
+
         public int SinDate { get; private set; }
+
         public int SinKouiKbn { get; private set; }
+
         public string ItemCd { get; private set; }
+
         public string ItemName { get; private set; }
+
         public double Suryo { get; private set; }
+
         public string UnitName { get; private set; }
+
         public int UnitSbt { get; private set; }
+
         public double TermVal { get; private set; }
+
         public int KohatuKbn { get; private set; }
+
         public int SyohoKbn { get; private set; }
+
         public int SyohoLimitKbn { get; private set; }
+
         public int DrugKbn { get; private set; }
+
         public int YohoKbn { get; private set; }
+
         public string Kokuji1 { get; private set; }
+
         public string Kokuji2 { get; private set; }
+
         public int IsNodspRece { get; private set; }
+
         public string IpnCd { get; private set; }
+
         public string IpnName { get; private set; }
+
         public string ReqCd { get; private set; }
+
         public int InOutKbn { get; private set; }
+
         public double Yakka { get; private set; }
+
         public bool IsGetPriceInYakka { get; private set; }
+
         public double Ten { get; private set; }
+
         public int AlternationIndex { get; private set; }
+
         public int KensaGaichu { get; private set; }
+
         public int RefillSetting { get; private set; }
+
         public double OdrTermVal { get; private set; }
+
         public double CnvTermVal { get; private set; }
+
         public string YjCd { get; private set; }
+
         public int SinYm
         {
             get
