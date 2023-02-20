@@ -347,6 +347,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using Reporting;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
+using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -576,6 +577,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
             busBuilder.RegisterUseCase<GetHistoryIndexInputData, GetHistoryIndexInteractor>();
+            busBuilder.RegisterUseCase<GetMaxAuditTrailLogDateForPrintInputData, GetMaxAuditTrailLogDateForPrintInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

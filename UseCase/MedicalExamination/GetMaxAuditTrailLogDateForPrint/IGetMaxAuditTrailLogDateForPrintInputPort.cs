@@ -2,7 +2,7 @@
 
 namespace UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint
 {
-    public interface IGetMaxAuditTrailLogDateForPrintInputPort : IInputPort<CheckedItemNameInputData, GetMaxAuditTrailLogDateForPrintOutputData>
+    public interface IGetMaxAuditTrailLogDateForPrintInputPort : IInputPort<GetMaxAuditTrailLogDateForPrintInputData, GetMaxAuditTrailLogDateForPrintOutputData>
     {
     }
 }

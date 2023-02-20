@@ -4,13 +4,14 @@ namespace UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint
 {
     public class GetMaxAuditTrailLogDateForPrintOutputData : IOutputData
     {
-        public GetMaxAuditTrailLogDateForPrintOutputData(GetMaxAuditTrailLogDateForPrintStatus status, Dictionary<string, string> checkedItemNames)
+        public GetMaxAuditTrailLogDateForPrintOutputData(Dictionary<string, DateTime> values, GetMaxAuditTrailLogDateForPrintStatus status)
         {
+            Values = values;
             Status = status;
-            CheckedItemNames = checkedItemNames;
         }
 
+        public Dictionary<string, DateTime> Values { get; private set; }
+
         public GetMaxAuditTrailLogDateForPrintStatus Status { get; private set; }
-        public Dictionary<string, string> CheckedItemNames { get; private set; }
     }
 }

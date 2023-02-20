@@ -3,7 +3,8 @@
     public enum GetMaxAuditTrailLogDateForPrintStatus : byte
     {
         Successed = 1,
-        InputNotData,
-        Failed
+        InvalidPtId = 2,
+        InvalidRaiinNo = 3,
+        InvalidSinDate = 4
     }
 }

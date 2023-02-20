@@ -1,15 +1,20 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint
 {
     public class GetMaxAuditTrailLogDateForPrintInputData : IInputData<GetMaxAuditTrailLogDateForPrintOutputData>
     {
-        public GetMaxAuditTrailLogDateForPrintInputData(List<OdrInfItemInputData> odrInfs)
+        public GetMaxAuditTrailLogDateForPrintInputData(long ptId, int sinDate, long raiinNo)
         {
-            OdrInfs = odrInfs;
+            PtId = ptId;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
         }
 
-        public List<OdrInfItemInputData> OdrInfs { get; private set; }
+        public long PtId { get; private set; }
+
+        public int SinDate { get; private set; }
+
+        public long RaiinNo { get; private set; }
     }
 }
