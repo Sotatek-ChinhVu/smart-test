@@ -218,6 +218,7 @@ using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
+using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
@@ -573,6 +574,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
+            busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
 
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();

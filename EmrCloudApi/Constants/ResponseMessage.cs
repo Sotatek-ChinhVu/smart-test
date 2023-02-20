@@ -40,6 +40,7 @@
         public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
+        public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
 
         //Common
         public static readonly string NotFound = "Not found";
