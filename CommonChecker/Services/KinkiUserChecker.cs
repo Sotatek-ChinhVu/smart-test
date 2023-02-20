@@ -29,6 +29,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<ItemCodeModel> listDrugItemCode = GetAllOdrDetailCodeByOrderList(CurrentListOrder);
             checkedResult.AddRange(Finder.CheckKinkiUser(HpID, settingLevel, Sinday, listDrugItemCode, listItemCode));
 
+            if (checkedResult.Count > 0)
+            {
+                unitCheckerResult.IsError = true;
+                unitCheckerResult.ErrorInfo = checkedResult;
+            }
+
             return unitCheckerResult;
         }
 
