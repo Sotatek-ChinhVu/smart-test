@@ -64,4 +64,12 @@ namespace Helper.Enum
         PrintRaiinInf,
         RaiinView
     }
+
+    public enum OrderTypeForPrinter
+    {
+        None,
+        AllOrder,
+        InDrug,
+        OutDrug
+    }
 }

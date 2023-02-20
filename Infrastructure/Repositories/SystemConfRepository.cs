@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Collections;
 
 namespace Infrastructure.Repositories;
 
@@ -18,6 +19,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             .Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd)
             .AsEnumerable().Select(s => ToModel(s)).ToList();
     }
+
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
         var data = NoTrackingDataContext.SystemConfs
@@ -45,6 +47,27 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
 
         return defaultParam;
+    }
+
+    public Hashtable GetConfigForPrintFunction(int hpId)
+    {
+        Hashtable config = new Hashtable();
+        config.Add("OrderLabelCheckMachineParam", GetSettingParams(92001, 9, hpId, "KrtRenkei,TKImport"));
+        config.Add("InnaishohosenCheckMachineParam", GetSettingParams(92002, 2, hpId, "KrtRenkei,TKImport"));
+        config.Add("IngaiShohosenCheckMachineParam", GetSettingParams(92003, 8, hpId, "KrtRenkei,TKImport"));
+        config.Add("KusurijoCheckMachineParam", GetSettingParams(92004, 16, hpId, "KrtRenkei,TKImport"));
+        config.Add("PrintDrgLabelCheckMachineParam", GetSettingParams(92005, 30, hpId, "KrtRenkei,TKImport"));
+        config.Add("PrintDrgNoteCheckMachineParam", GetSettingParams(92006, 1, hpId, "KrtRenkei,TKImport"));
+        config.Add("SijisenCheckMachineParam", GetSettingParams(92008, 5, hpId, "KrtRenkei,TKImport"));
+        config.Add("OrderLabelCheckMachine", GetSettingValue(92001, 9, hpId));
+        config.Add("InnaishohosenCheckMachine", GetSettingValue(92002, 2, hpId));
+        config.Add("IngaiShohosenCheckMachine", GetSettingValue(92003, 8, hpId));
+        config.Add("KusurijoCheckMachine", GetSettingValue(92004, 16, hpId));
+        config.Add("PrintDrgLabelCheckMachine", GetSettingValue(92005, 50, hpId));
+        config.Add("PrintDrgNoteCheckMachine", GetSettingValue(92006, 1, hpId));
+        config.Add("SijisenCheckMachine", GetSettingValue(92008, 5, hpId));
+
+        return config;
     }
 
     private SystemConfModel ToModel(SystemConf s)

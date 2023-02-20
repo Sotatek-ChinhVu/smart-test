@@ -8,8 +8,10 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -1409,7 +1411,7 @@ namespace Infrastructure.Repositories
 
             return new(msgs, lastSanteiInMonth);
         }
-
+     
         string BuildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
         {
             StringBuilder msg = new StringBuilder();
@@ -1471,6 +1473,18 @@ namespace Infrastructure.Repositories
             }
             return new List<SinKouiCountModel>();
         }
+
+        public DateTime GetMaxAuditTrailLogDate(string eventCd, long ptID, int sinDate, long raiinNo)
+        {
+            var auditTrailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
+                            x.EventCd == eventCd &&
+                            x.PtId == ptID &&
+                            x.SinDay == sinDate &&
+                            x.RaiinNo == raiinNo).ToList();
+            return auditTrailLogs.Count == 0 ? DateTime.MinValue : auditTrailLogs.Max(x => x.LogDate);
+        }
+        
+
 
         public void ReleaseResource()
         {
