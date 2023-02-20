@@ -28,7 +28,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
-            List<FoodAllergyResultModel> checkingResult = Finder.CheckFoodAllergy(HpID, PtID, Sinday, listItemCode, settingLevel, ListPtAlrgyFoods);
+            List<FoodAllergyResultModel> checkingResult = Finder!.CheckFoodAllergy(HpID, PtID, Sinday, listItemCode, settingLevel, ListPtAlrgyFoods);
             if (!(checkingResult == null || checkingResult.Count == 0))
             {
                 unitCheckerForOrderListResult.ErrorInfo = checkingResult;
