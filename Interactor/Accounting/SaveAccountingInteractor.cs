@@ -16,7 +16,6 @@ namespace Interactor.Accounting
         {
             try
             {
-
                 var save = _accountingRepository.SaveAccounting(inputData.SyunoSeikyuModels, inputData.HpId, inputData.PtId, inputData.UserId, inputData.SumAdjust, inputData.ThisWari, inputData.ThisCredit,
                                                                 inputData.PayType, inputData.Comment);
                 if (save)

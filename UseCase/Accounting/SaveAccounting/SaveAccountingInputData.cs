@@ -5,11 +5,13 @@ namespace UseCase.Accounting.SaveAccounting
 {
     public class SaveAccountingInputData : IInputData<SaveAccountingOutputData>
     {
-        public SaveAccountingInputData(int hpId, long ptId, int userId, int sumAdjust, int thisWari, int thisCredit, int payType, string comment, List<SyunoSeikyuModel> syunoSeikyuModels)
+        public SaveAccountingInputData(int hpId, long ptId, int userId, int sinDate, long raiinNo, int sumAdjust, int thisWari, int thisCredit, int payType, string comment, List<SyunoSeikyuModel> syunoSeikyuModels)
         {
             HpId = hpId;
             PtId = ptId;
             UserId = userId;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
             SumAdjust = sumAdjust;
             ThisWari = thisWari;
             ThisCredit = thisCredit;
@@ -20,7 +22,9 @@ namespace UseCase.Accounting.SaveAccounting
 
         public int HpId { get; private set; }
         public long PtId { get; private set; }
-        public int UserId { get; set; }
+        public int UserId { get; private set; }
+        public int SinDate { get; private set; }
+        public long RaiinNo { get; private set; }
         public int SumAdjust { get; private set; }
         public int ThisWari { get; private set; }
         public int ThisCredit { get; private set; }

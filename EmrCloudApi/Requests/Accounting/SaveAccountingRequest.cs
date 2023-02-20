@@ -7,6 +7,8 @@ namespace EmrCloudApi.Requests.Accounting
         public int HpId { get; set; }
         public long PtId { get; set; }
         public int UserId { get; set; }
+        public int SinDate { get; set; }
+        public long RaiinNo { get; set; }
         public int SumAdjust { get; set; }
         public int ThisWari { get; set; }
         public int ThisCredit { get; set; }
