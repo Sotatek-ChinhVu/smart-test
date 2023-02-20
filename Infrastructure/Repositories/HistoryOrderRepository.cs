@@ -4,6 +4,9 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
+using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetail;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
@@ -286,10 +289,37 @@ namespace Infrastructure.Repositories
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
-                historyOrderModelList.Add(new HistoryOrderDto(receptionModel, insuranceModel, orderInfList, kaName, tantoName, tagModel.TagNo, string.Empty));
+                historyOrderModelList.Add(new HistoryOrderDto(receptionModel, insuranceModel, ConvertOrdInfToDto(orderInfList), kaName, tantoName, tagModel.TagNo, string.Empty));
             }
 
             return historyOrderModelList;
+        }
+
+        private List<OrdInfDto> ConvertOrdInfToDto(List<OrdInfModel> ordInfModels)
+        {
+            List<OrdInfDto> ordInfDtos = new List<OrdInfDto>();
+            foreach (var item in ordInfModels)
+            {
+                ordInfDtos.Add(new OrdInfDto(item.RaiinNo, item.RpNo, item.RpEdaNo, item.SinDate, item.HokenPid, item.OdrKouiKbn, item.RpName, item.InoutKbn,
+                    item.SikyuKbn, item.SyohoSbt, item.SanteiKbn, item.TosekiKbn, item.DaysCnt, item.SortNo, item.Id, ConvertOrdInfDetailToDto(item.OrdInfDetails)));
+            }
+
+            return ordInfDtos;
+        }
+
+        private List<OrdInfDetailDto> ConvertOrdInfDetailToDto(List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            List<OrdInfDetailDto> ordInfDetailDtos = new List<OrdInfDetailDto>();
+            foreach (var item in ordInfDetailModels)
+            {
+                ordInfDetailDtos.Add(
+                    new OrdInfDetailDto(
+                    item.RaiinNo, item.RpNo, item.RpEdaNo, item.RowNo, item.SinDate, item.SinKouiKbn, item.ItemCd, item.ItemName,
+                    item.Suryo, item.UnitName, item.UnitSbt, item.TermVal, item.KohatuKbn, item.SyohoKbn, item.SyohoLimitKbn, item.DrugKbn, item.YohoKbn,
+                    item.Kokuji1, item.Kokuji2, item.IsNodspRece, item.IpnCd, item.IpnName, item.ReqCd, item.InOutKbn, item.Yakka, item.IsGetPriceInYakka,
+                    item.RefillSetting, item.Ten, item.AlternationIndex, item.KensaGaichu, item.OdrTermVal, item.CnvTermVal, item.YjCd));
+            }
+            return ordInfDetailDtos;
         }
 
         public bool CheckExistedFilter(int hpId, int userId, int filterId)

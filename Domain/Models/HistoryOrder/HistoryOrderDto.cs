@@ -1,6 +1,5 @@
 ﻿using Domain.Models.InsuranceInfor;
-using Domain.Models.KarteInfs;
-using Domain.Models.OrdInfs;
+using Domain.Models.OrdInf;
 using Domain.Models.Reception;
 using Helper.Constants;
 
@@ -38,7 +37,7 @@ namespace Domain.Models.HistoryOrder
 
         public string SinryoTitle { get; private set; }
 
-        public List<OrdInfModel> OrderInfList { get; private set; }
+        public List<OrdInfDto> OrdInfDtos { get; private set; }
 
         public string SanteiKbnDisplay { get => _jihiSanteiDict.FirstOrDefault(x => x.Key == SanteiKbn).Value; }
 
@@ -52,7 +51,7 @@ namespace Domain.Models.HistoryOrder
             {2,"自費" }
         };
 
-        public HistoryOrderDto(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, string kaName, string tantoName, int tagNo, string sinryoTitle)
+        public HistoryOrderDto(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfDto> ordInfDtos, string kaName, string tantoName, int tagNo, string sinryoTitle)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
@@ -68,7 +67,7 @@ namespace Domain.Models.HistoryOrder
             TantoName = tantoName;
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
-            OrderInfList = orderList;
+            OrdInfDtos = ordInfDtos;
         }
     }
 }
