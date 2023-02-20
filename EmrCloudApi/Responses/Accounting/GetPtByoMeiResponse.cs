@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.Accounting
 {
     public class GetPtByoMeiResponse
     {
-        public GetPtByoMeiResponse(List<PtDiseaseModel> ptDiseaseModels)
+        public GetPtByoMeiResponse(List<PtDiseaseDto> ptDiseaseDtos)
         {
-            PtDiseaseModels = ptDiseaseModels;
+            PtDiseaseDtos = ptDiseaseDtos;
         }
 
-        public List<PtDiseaseModel> PtDiseaseModels { get; private set; }
+        public List<PtDiseaseDto> PtDiseaseDtos { get; private set; }
     }
 }

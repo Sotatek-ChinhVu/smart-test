@@ -22,20 +22,31 @@ namespace Interactor.Accounting
 
                 if (!ptByoMei.Any())
                 {
-                    return new GetPtByoMeiOutputData(new List<PtDiseaseModel>(), GetPtByoMeiStatus.Failed);
+                    return new GetPtByoMeiOutputData(new(), GetPtByoMeiStatus.NoData);
                 }
-                return new GetPtByoMeiOutputData(ptByoMei, GetPtByoMeiStatus.Successed);
+                return new GetPtByoMeiOutputData(ConvertToPtDiseaseDto(ptByoMei), GetPtByoMeiStatus.Successed);
 
             }
             catch (Exception)
             {
 
-                return new GetPtByoMeiOutputData(new List<PtDiseaseModel>(), GetPtByoMeiStatus.Failed);
+                return new GetPtByoMeiOutputData(new(), GetPtByoMeiStatus.Failed);
             }
             finally
             {
                 _accountingRepository.ReleaseResource();
             }
+        }
+
+        private List<PtDiseaseDto> ConvertToPtDiseaseDto(List<PtDiseaseModel> models)
+        {
+            List<PtDiseaseDto> ptDiseaseDto = new List<PtDiseaseDto>();
+
+            foreach (var item in models)
+            {
+                ptDiseaseDto.Add(new PtDiseaseDto(item.FullByomei, item.StartDate, item.TenKiBinding, item.TenkiDate));
+            }
+            return ptDiseaseDto;
         }
     }
 }
