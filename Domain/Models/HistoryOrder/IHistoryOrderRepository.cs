@@ -15,5 +15,7 @@ namespace Domain.Models.HistoryOrder
         bool CheckExistedFilter(int hpId, int userId, int filterId);
 
         long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted);
+
+        List<HistoryOrderDto> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiinNo);
     }
 }

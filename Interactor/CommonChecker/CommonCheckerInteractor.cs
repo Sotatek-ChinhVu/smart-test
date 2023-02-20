@@ -29,15 +29,6 @@ namespace Interactor.CommonChecker
         private bool _termLimitCheckingOnly;
         private IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
 
-        private readonly List<PtAlrgyDrugModel> _listPtAlrgyDrug = new();
-        private readonly List<PtAlrgyFoodModel> _listPtAlrgyFood = new();
-        private readonly List<PtOtherDrugModel> _listPtOtherDrug = new();
-        private readonly List<PtOtcDrugModel> _listPtOtcDrug = new();
-        private readonly List<PtSuppleModel> _listPtSupple = new();
-        private readonly List<PtKioRekiModel> _listPtKioReki = new();
-        private readonly List<string> _listDiseaseCode = new();
-        private List<string> _listPtAlrgyDrugCode = new();
-
         private readonly double _currentHeight = 0;
         private readonly double _currentWeight = 0;
 
@@ -47,30 +38,6 @@ namespace Interactor.CommonChecker
         {
             _tenantProvider = tenantProvider;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
-        }
-
-        public List<string> ListPtAlrgyDrugCode
-        {
-            get
-            {
-                if (_listPtAlrgyDrugCode == null)
-                {
-                    if (_listPtAlrgyDrug != null)
-                    {
-                        _listPtAlrgyDrugCode = _listPtAlrgyDrug.Select(p => p.ItemCd).ToList();
-                    }
-                    else
-                    {
-                        using (var dataContext = _tenantProvider.CreateNewNoTrackingDataContext())
-                        {
-                            RealtimeCheckerFinder finder = new RealtimeCheckerFinder(dataContext);
-                            List<PtAlrgyDrugModel> drugAllergyAsPatient = finder.GetDrugAllergyByPtId(_hpID, _ptID, _sinday);
-                            _listPtAlrgyDrugCode = drugAllergyAsPatient.Select(dr => dr.ItemCd).ToList();
-                        }
-                    }
-                }
-                return _listPtAlrgyDrugCode;
-            }
         }
 
         public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
@@ -329,8 +296,7 @@ namespace Interactor.CommonChecker
             using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> foodAllergyChecker =
                 new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.FoodAllergy,
-                    ListPtAlrgyFoods = _listPtAlrgyFood
+                    CheckType = RealtimeCheckerType.FoodAllergy
                 })
             {
                 InitUnitCheck(foodAllergyChecker);
@@ -343,8 +309,7 @@ namespace Interactor.CommonChecker
             using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> drugAllergyChecker =
                 new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.DrugAllergy,
-                    ListPtAlrgyDrugCode = ListPtAlrgyDrugCode
+                    CheckType = RealtimeCheckerType.DrugAllergy
                 })
             {
                 InitUnitCheck(drugAllergyChecker);
@@ -404,8 +369,6 @@ namespace Interactor.CommonChecker
                 new DiseaseChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CheckType = RealtimeCheckerType.Disease,
-                    ListDiseaseCode = _listDiseaseCode,
-                    ListPtKioReki = _listPtKioReki,
                 })
             {
                 InitUnitCheck(diseaseChecker);
@@ -419,8 +382,7 @@ namespace Interactor.CommonChecker
             using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiOTCChecker =
                 new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiOTC,
-                    ListPtOtcDrug = _listPtOtcDrug
+                    CheckType = RealtimeCheckerType.KinkiOTC
                 })
             {
                 InitUnitCheck(kinkiOTCChecker);
@@ -434,8 +396,7 @@ namespace Interactor.CommonChecker
             using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiTainChecker =
                 new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiTain,
-                    ListPtOtherDrug = _listPtOtherDrug
+                    CheckType = RealtimeCheckerType.KinkiTain
                 })
             {
                 InitUnitCheck(kinkiTainChecker);
@@ -449,8 +410,7 @@ namespace Interactor.CommonChecker
             using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiSuppleChecker =
                 new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiSupplement,
-                    ListPtSupple = _listPtSupple
+                    CheckType = RealtimeCheckerType.KinkiSupplement
                 })
             {
                 InitUnitCheck(kinkiSuppleChecker);
