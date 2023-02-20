@@ -45,7 +45,7 @@ namespace Interactor.FlowSheet
                         return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
                     }
                 }
-                if (!_patientRepository.CheckExistListId(inputData.Items.Select(i => i.PtId).Distinct().ToList()))
+                if (!_patientRepository.CheckExistIdList(inputData.Items.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoExist);
                 }

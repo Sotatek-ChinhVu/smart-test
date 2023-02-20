@@ -28,9 +28,9 @@ namespace Interactor.PatientInfor
                     return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.InvalidKeyword);
                 }
 
-                string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+                string halfSizekeyword = CIUtil.ToHalfsize(inputData.Keyword);
                 bool isContainMode = inputData.ContainMode;
-                bool isNum = int.TryParse(keyword, out int ptNum);
+                bool isNum = int.TryParse(halfSizekeyword, out int ptNum);
 
                 if (!inputData.ContainMode)
                 {
@@ -52,7 +52,7 @@ namespace Interactor.PatientInfor
                 switch (searchType)
                 {
                     case 0:
-                        patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, halfSizekeyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -60,7 +60,7 @@ namespace Interactor.PatientInfor
 
                         return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                     case 1:
-                        int sindate = keyword.AsInteger();
+                        int sindate = halfSizekeyword.AsInteger();
                         patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                         if (patientInfoList.Count == 0)
                         {
@@ -76,7 +76,7 @@ namespace Interactor.PatientInfor
                         }
                         return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                     case 3:
-                        patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
+                        patientInfoList = _patientInforRepository.SearchName(inputData.Keyword, halfSizekeyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                         if (patientInfoList.Count == 0)
                         {
                             return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);

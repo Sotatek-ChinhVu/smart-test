@@ -19,7 +19,13 @@ namespace Interactor.Diseases
         {
             try
             {
-                var ptDiseaseListModel = _diseaseRepository.GetPatientDiseaseList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HokenId, inputData.RequestFrom).ToList();
+                var ptDiseaseListModel = _diseaseRepository.GetPatientDiseaseList(inputData.HpId, 
+                                                                                  inputData.PtId, 
+                                                                                  inputData.SinDate, 
+                                                                                  inputData.HokenId, 
+                                                                                  inputData.RequestFrom,
+                                                                                  inputData.IsContiFiltered, 
+                                                                                  inputData.IsInMonthFiltered);
                 if (!ptDiseaseListModel.Any())
                 {
                     return new GetPtDiseaseListOutputData(new List<PtDiseaseModel>(), GetPtDiseaseListStatus.PtDiseaseListNotExisted);

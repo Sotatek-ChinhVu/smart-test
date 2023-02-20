@@ -51,14 +51,14 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         }
     }
 
-    private SaveListSanteiInfStatus ValidateInput(SaveListSanteiInfInputData input)
+    public SaveListSanteiInfStatus ValidateInput(SaveListSanteiInfInputData input)
     {
         // validate simple param
         if (input.HpId <= 0 || !_hpInfRepository.CheckHpId(input.HpId))
         {
             return SaveListSanteiInfStatus.InvalidHpId;
         }
-        else if (input.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { input.PtId }))
+        else if (input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { input.PtId }))
         {
             return SaveListSanteiInfStatus.InvalidPtId;
         }
@@ -66,7 +66,6 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         {
             return SaveListSanteiInfStatus.InvalidUserId;
         }
-
         // Check itemCd is exist in TenMst
         else if (!_santeiInfRepository.CheckExistItemCd(input.HpId, input.ListSanteiInfs.Select(item => item.ItemCd).ToList()))
         {
@@ -114,7 +113,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
             }
 
             // validate AlertDays
-            else if (santeiInf.AlertDays < 0 && santeiInf.AlertDays > int.MaxValue)
+            else if (santeiInf.AlertDays < 0 || santeiInf.AlertDays > int.MaxValue)
             {
                 return SaveListSanteiInfStatus.InvalidAlertDays;
             }
@@ -138,7 +137,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         return SaveListSanteiInfStatus.ValidateSuccess;
     }
 
-    private SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails, List<string> listByomeis)
+    public SaveListSanteiInfStatus ValidateSanteiInfDetail(string itemCd, SanteiInfDetailInputItem santeiInfDetail, List<SanteiInfDetailModel> listSanteiInfDetails, List<string> listByomeis)
     {
         // validate KisanSbt, KisanSbt must exist in dictionary
         //{ 0, string.Empty },
@@ -185,7 +184,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         return SaveListSanteiInfStatus.ValidateSuccess;
     }
 
-    private List<SanteiInfModel> ConvertToSanteiInfModel(long ptId, List<SanteiInfInputItem> listSanteiInfInputs)
+    public List<SanteiInfModel> ConvertToSanteiInfModel(long ptId, List<SanteiInfInputItem> listSanteiInfInputs)
     {
         return listSanteiInfInputs.Select(santaiInf => new SanteiInfModel(
                                                                         santaiInf.Id,

@@ -5,14 +5,16 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using PostgreDataContext;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class MasterFinder : RepositoryBase, IMasterFinder
+    public class MasterFinder: IMasterFinder
     {
-
-        public MasterFinder(ITenantProvider tenantProvider) : base(tenantProvider)
+        public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
+        public MasterFinder(TenantNoTrackingDataContext noTrackingDataContext)
         {
+            NoTrackingDataContext = noTrackingDataContext;
         }
 
         public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)

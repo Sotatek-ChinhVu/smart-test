@@ -1,37 +1,38 @@
 ﻿using Domain.Constant;
 
-namespace Reporting.Karte1.Model;
-
-public class CoKarte1PrintDataModel
+namespace Reporting.Karte1.Model
 {
-    public string Byomei { get; set; }
-    public int StartDate { get; set; }
-    public int TenkiKbn { get; set; }
-    public int TenkiDate { get; set; }
-
-    public string Tenki
+    class CoKarte1PrintDataModel
     {
-        get
+        public string Byomei { get; set; }
+        public int StartDate { get; set; }
+        public int TenkiKbn { get; set; }
+        public int TenkiDate { get; set; }
+
+        public string Tenki
         {
-            string ret = "";
-
-            switch (TenkiKbn)
+            get
             {
-                case TenkiKbnConst.Cured:
-                    ret = "治ゆ";
-                    break;
-                case TenkiKbnConst.Dead:
-                    ret = "死亡";
-                    break;
-                case TenkiKbnConst.Canceled:
-                    ret = "中止";
-                    break;
-                case TenkiKbnConst.Other:
-                    ret = "その他";
-                    break;
-            }
+                string ret = "";
 
-            return ret;
+                switch (TenkiKbn)
+                {
+                    case TenkiKbnConst.Cured:
+                        ret = "治ゆ";
+                        break;
+                    case TenkiKbnConst.Dead:
+                        ret = "死亡";
+                        break;
+                    case TenkiKbnConst.Canceled:
+                        ret = "中止";
+                        break;
+                    case TenkiKbnConst.Other:
+                        ret = "その他";
+                        break;
+                }
+
+                return ret;
+            }
         }
     }
 }

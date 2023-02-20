@@ -818,6 +818,7 @@ namespace Infrastructure.Repositories
 
         public List<string> GetCheckItemCds(List<string> itemCds)
         {
+            itemCds = itemCds.Distinct().ToList();
             return NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
         }
 
@@ -1120,14 +1121,15 @@ namespace Infrastructure.Repositories
         {
             return new ByomeiMstModel(
                     mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
                     ConvertByomeiCdDisplay(mst.ByomeiCd),
-                    mst.Sbyomei ?? String.Empty,
-                    mst.KanaName1 ?? String.Empty,
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
                     mst.SikkanCd,
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
-                    ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
                     mst.IsAdopted == 1
                 );
         }

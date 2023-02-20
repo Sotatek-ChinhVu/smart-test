@@ -8,12 +8,28 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public struct WarekiYmd
+        {
+            public string Ymd;
+            public string GYmd;
+            public string Gengo;
+            public int GengoId;
+            public int Year;
+            public int Month;
+            public int Day;
+        }
+
         //Calculate age from yyyymmdd format
         private const int HEISEI_START_YEAR = 1989;
         private const int SHOWA_START_YEAR = 1926;
         private const int TAISHO_START_YEAR = 1912;
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
+
+        private static T As<T>(this object obj)
+        {
+            return (T)obj;
+        }
 
         public static int FullStartDate(int startDate)
         {
@@ -2932,18 +2948,4 @@ namespace Helper.Common
             return DateTime.UtcNow.AddHours(9);
         }
     }
-    public struct WarekiYmd
-    {
-#pragma warning disable S1104 // Fields should not have public accessibility
-        public string Ymd;
-        public string GYmd;
-        public string Gengo;
-        public int GengoId;
-        public int Year;
-        public int Month;
-        public int Day;
-#pragma warning restore S1104 // Fields should not have public accessibility
-    }
-
-
 }
