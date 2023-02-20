@@ -146,7 +146,7 @@ namespace Infrastructure.Repositories
                                         z.KbnCd,
                                         z.SortNo,
                                         z.KbnName ?? string.Empty,
-                                        z.ColorCd ?? String.Empty,
+                                        z.ColorCd?.Length > 0 ? "#" + z.ColorCd : string.Empty,
                                         z.IsConfirmed == 1,
                                         z.IsAuto,
                                         z.IsAutoDelete,
