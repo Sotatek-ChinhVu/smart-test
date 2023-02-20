@@ -1,6 +1,4 @@
-﻿using Domain.Models.AccountDue;
-
-namespace EmrCloudApi.Requests.Accounting
+﻿namespace EmrCloudApi.Requests.Accounting
 {
     public class SaveAccountingRequest
     {
@@ -14,5 +12,6 @@ namespace EmrCloudApi.Requests.Accounting
         public int ThisCredit { get; set; }
         public int PayType { get; set; }
         public string Comment { get; set; } = string.Empty;
+        public bool isDisCharged { get; set; }
     }
 }

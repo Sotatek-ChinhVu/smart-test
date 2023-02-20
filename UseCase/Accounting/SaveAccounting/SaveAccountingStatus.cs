@@ -4,5 +4,6 @@
     {
         Success = 1,
         Failed = 2,
+        InputDataNull = 3,
     }
 }

@@ -19,6 +19,7 @@ namespace Interactor.Accounting
         {
             try
             {
+
                 var listRaiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
                 var listRaiinNo = listRaiinInf.Select(r => r.RaiinNo).ToList();
@@ -29,7 +30,7 @@ namespace Interactor.Accounting
 
                 if (syunoSeikyu == null)
                 {
-                    return new SaveAccountingOutputData(SaveAccountingStatus.Failed);
+                    return new SaveAccountingOutputData(SaveAccountingStatus.InputDataNull);
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -45,20 +46,23 @@ namespace Interactor.Accounting
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
-                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 0); 
+                var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 0);
 
-                if(accDue == 0)
+                if (accDue == 0)
                 {
                     accDue = debitBalance;
                 }
 
                 var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.ThisCredit,
-                                                                inputData.PayType, inputData.Comment);
+                                                                inputData.PayType, inputData.Comment, inputData.IsDisCharged);
                 if (save)
                 {
                     return new SaveAccountingOutputData(SaveAccountingStatus.Success);
                 }
-                return new SaveAccountingOutputData(SaveAccountingStatus.Failed);
+                else
+                {
+                    return new SaveAccountingOutputData(SaveAccountingStatus.Failed);
+                }
             }
             catch (Exception)
             {

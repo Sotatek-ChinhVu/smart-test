@@ -79,7 +79,8 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SaveAccounting)]
         public ActionResult<Response<SaveAccountingResponse>> SaveList([FromBody] SaveAccountingRequest request)
         {
-            var input = new SaveAccountingInputData(request.HpId, request.PtId, request.UserId, request.SinDate, request.RaiinNo, request.SumAdjust, request.ThisWari, request.ThisCredit, request.PayType, request.Comment);
+            var input = new SaveAccountingInputData(request.HpId, request.PtId, request.UserId, request.SinDate, request.RaiinNo,
+                request.SumAdjust, request.ThisWari, request.ThisCredit, request.PayType, request.Comment, request.isDisCharged);
             var output = _bus.Handle(input);
 
             var presenter = new SaveAccountingPresenter();

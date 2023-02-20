@@ -18,6 +18,7 @@ namespace EmrCloudApi.Presenters.Accounting
         {
             SaveAccountingStatus.Success => ResponseMessage.Success,
             SaveAccountingStatus.Failed => ResponseMessage.Failed,
+            SaveAccountingStatus.InputDataNull => ResponseMessage.InputDataNull,
             _ => string.Empty
         };
     }

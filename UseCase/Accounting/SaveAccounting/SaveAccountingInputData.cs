@@ -4,7 +4,7 @@ namespace UseCase.Accounting.SaveAccounting
 {
     public class SaveAccountingInputData : IInputData<SaveAccountingOutputData>
     {
-        public SaveAccountingInputData(int hpId, long ptId, int userId, int sinDate, long raiinNo, int sumAdjust, int thisWari, int thisCredit, int payType, string comment)
+        public SaveAccountingInputData(int hpId, long ptId, int userId, int sinDate, long raiinNo, int sumAdjust, int thisWari, int thisCredit, int payType, string comment, bool isDisCharged)
         {
             HpId = hpId;
             PtId = ptId;
@@ -16,6 +16,7 @@ namespace UseCase.Accounting.SaveAccounting
             ThisCredit = thisCredit;
             PayType = payType;
             Comment = comment;
+            IsDisCharged = isDisCharged;
         }
 
         public int HpId { get; private set; }
@@ -28,5 +29,6 @@ namespace UseCase.Accounting.SaveAccounting
         public int ThisCredit { get; private set; }
         public int PayType { get; private set; }
         public string Comment { get; private set; }
+        public bool IsDisCharged { get; private set; }
     }
 }

@@ -894,7 +894,7 @@ namespace Infrastructure.Repositories
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
-                                   int payType, string comment)
+                                   int payType, string comment, bool isDisCharged)
         {
             try
             {
@@ -926,10 +926,16 @@ namespace Infrastructure.Repositories
                                      item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
                     bool isLastRecord = i == syunoSeikyuModels.Count - 1;
 
-                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                    if (!isDisCharged)
+                    {
+                        ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
                         out outNyukinKbn, isLastRecord);
-
-                    allSeikyuGaku -= thisSeikyuGaku;
+                        allSeikyuGaku -= thisSeikyuGaku;
+                    }
+                    else
+                    {
+                        outNyukinKbn = 2;
+                    }
 
                     if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
                         item.SyunoNyukinModels[0].NyukinGaku != 0)
@@ -942,7 +948,7 @@ namespace Infrastructure.Repositories
                             SinDate = item.SinDate,
                             AdjustFutan = outAdjustFutan,
                             NyukinGaku = outNyukinGaku,
-                            SortNo = i += 1,
+                            SortNo = 1,
                             PaymentMethodCd = payType,
                             UketukeSbt = item.RaiinInfModel.UketukeSbt,
                             NyukinCmt = comment,
@@ -964,7 +970,7 @@ namespace Infrastructure.Repositories
                 }
                 if (accDue != 0 && thisCredit != 0)
                 {
-                    AdjustWariExecute(hpId, ptId, userId, thisCredit, true, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
+                    AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
                 }
 
                 TrackingDataContext.SaveChanges();
@@ -977,7 +983,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, bool isIgnoreDateNotVerify, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
+        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
         {
             var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
 
@@ -993,12 +999,9 @@ namespace Infrastructure.Repositories
             int outNyukinKbn = 0;
             bool isSettled = nyukinGakuEarmarked == accDue;
 
-            if (isIgnoreDateNotVerify == true)
-            {
-                listAllSyunoSeikyu = listAllSyunoSeikyu
-                    .Where(item => !(item.SeikyuGaku != item.NewSeikyuGaku && item.NewSeikyuGaku > 0))
-                    .ToList();
-            }
+            listAllSyunoSeikyu = listAllSyunoSeikyu
+                .Where(item => !(item.SeikyuGaku != item.NewSeikyuGaku && item.NewSeikyuGaku > 0))
+                .ToList();
 
             foreach (var item in listAllSyunoSeikyu)
             {
@@ -1088,7 +1091,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
+        private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
             out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
         {
             int credit = adjustFutan + nyukinGaku;
