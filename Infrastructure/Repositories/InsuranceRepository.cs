@@ -1462,7 +1462,6 @@ namespace Infrastructure.Repositories
                                         prefactureName,
                                         hokenMst.PrefNo,
                                         hokenMst.SortNo,
-                                        hokenMst.JyukyuCheckDigit,
                                         hokenMst.SeikyuYm,
                                         hokenMst.ReceFutanHide,
                                         hokenMst.ReceFutanKbn,
