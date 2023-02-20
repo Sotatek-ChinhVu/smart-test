@@ -20,7 +20,7 @@ namespace EmrCloudApi.Requests.RaiinKubun
 
         public int IsAuto { get; set; }
 
-        public bool IsAutoDeleted { get; set; }
+        public int IsAutoDeleted { get; set; }
 
         public bool IsDeleted { get; set; }
 
