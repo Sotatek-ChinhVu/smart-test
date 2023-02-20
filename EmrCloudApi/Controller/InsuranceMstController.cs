@@ -112,7 +112,6 @@ namespace EmrCloudApi.Controller
                                                           string.Empty,
                                                           request.Insurance.PrefNo,
                                                           request.Insurance.SortNo,
-                                                          request.Insurance.JyukyuCheckDigit,
                                                           request.Insurance.SeikyuYm,
                                                           request.Insurance.ReceFutanHide,
                                                           request.Insurance.ReceFutanKbn,

@@ -95,7 +95,6 @@ namespace Infrastructure.Repositories
                                         prefName == null ? string.Empty : prefName,
                                         item.PrefNo,
                                         item.SortNo,
-                                        item.JyukyuCheckDigit,
                                         item.SeikyuYm,
                                         item.ReceFutanHide,
                                         item.ReceFutanKbn,
@@ -297,7 +296,6 @@ namespace Infrastructure.Repositories
                                             prefName == null ? string.Empty : prefName,
                                             h.PrefNo,
                                             h.SortNo,
-                                            h.JyukyuCheckDigit,
                                             h.SeikyuYm,
                                             h.ReceFutanHide,
                                             h.ReceFutanKbn,
@@ -433,7 +431,6 @@ namespace Infrastructure.Repositories
                                             string.Empty,
                                             h.PrefNo,
                                             h.SortNo,
-                                            h.JyukyuCheckDigit,
                                             h.SeikyuYm,
                                             h.ReceFutanHide,
                                             h.ReceFutanKbn,
@@ -651,7 +648,6 @@ namespace Infrastructure.Repositories
                                                           string.Empty,
                                                           mst.PrefNo,
                                                           mst.SortNo,
-                                                          mst.JyukyuCheckDigit,
                                                           mst.SeikyuYm,
                                                           mst.ReceFutanHide,
                                                           mst.ReceFutanKbn,
@@ -703,7 +699,6 @@ namespace Infrastructure.Repositories
                                                           string.Empty,
                                                           x.PrefNo,
                                                           x.SortNo,
-                                                          x.JyukyuCheckDigit,
                                                           x.SeikyuYm,
                                                           x.ReceFutanHide,
                                                           x.ReceFutanKbn,
@@ -764,7 +759,7 @@ namespace Infrastructure.Repositories
                 model.HokenName = insurance.HokenName;
                 model.HokenNameCd = insurance.HokenNameCd;
                 model.CheckDigit = insurance.CheckDigit;
-                model.JyukyuCheckDigit = insurance.JyukyuCheckDigit;
+                model.JyukyuCheckDigit = insurance.JyuKyuCheckDigit;
                 model.IsFutansyaNoCheck = insurance.IsFutansyaNoCheck;
                 model.IsJyukyusyaNoCheck = insurance.IsJyukyusyaNoCheck;
                 model.IsTokusyuNoCheck = insurance.IsTokusyuNoCheck;
@@ -886,7 +881,6 @@ namespace Infrastructure.Repositories
                                                                                                          string.Empty,
                                                                                                          x.PrefNo,
                                                                                                          x.SortNo,
-                                                                                                         x.JyukyuCheckDigit,
                                                                                                          x.SeikyuYm,
                                                                                                          x.ReceFutanHide,
                                                                                                          x.ReceFutanKbn,
@@ -964,7 +958,6 @@ namespace Infrastructure.Repositories
                                                                             string.Empty,
                                                                             hokenMaster.PrefNo,
                                                                             hokenMaster.SortNo,
-                                                                            hokenMaster.JyukyuCheckDigit,
                                                                             hokenMaster.SeikyuYm,
                                                                             hokenMaster.ReceFutanHide,
                                                                             hokenMaster.ReceFutanKbn,
