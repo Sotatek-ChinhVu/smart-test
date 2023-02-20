@@ -1,15 +1,13 @@
-﻿using Helper.Extension;
-
-namespace Domain.Models.InsuranceMst
+﻿namespace EmrCloudApi.Requests.InsuranceMst
 {
-    public class HokenMstModel
+    public class HokenMasterDto
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName,int prefNo, int sortNo, int jyukyuCheckDigit, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, bool isAdded)
+        public HokenMasterDto(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, int prefNo, int sortNo, int jyukyuCheckDigit, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, int kogakuTotalExcFutan, int kaiFutangaku, int dayLimitCount, bool isAdded)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
             StartDate = startDate;
-            EndDate = endDate == 0 ? 99999999 : endDate;
+            EndDate = endDate;
             HokenNo = hokenNo;
             HokenEdaNo = hokenEdaNo;
             HokenSName = hokenSName;
@@ -49,7 +47,6 @@ namespace Domain.Models.InsuranceMst
             ReceFutanRound = receFutanRound;
             ReceZeroKisai = receZeroKisai;
             ReceSpKbn = receSpKbn;
-            PrefactureName = prefactureName;
             PrefNo = prefNo;
             SortNo = sortNo;
             JyukyuCheckDigit = jyukyuCheckDigit;
@@ -57,17 +54,10 @@ namespace Domain.Models.InsuranceMst
             ReceFutanHide = receFutanHide;
             ReceFutanKbn = receFutanKbn;
             KogakuTotalAll = kogakuTotalAll;
+            KogakuTotalExcFutan = kogakuTotalExcFutan;
+            KaiFutangaku = kaiFutangaku;
+            DayLimitCount = dayLimitCount;
             IsAdded = isAdded;
-        }
-
-        public HokenMstModel()
-        {
-            HokenSName = string.Empty;
-            Houbetu = string.Empty;
-            HokenName = string.Empty;
-            HokenNameCd = string.Empty;
-            PrefactureName = string.Empty;
-            EndDate = 99999999;
         }
 
         public int FutanKbn { get; private set; }
@@ -156,8 +146,6 @@ namespace Domain.Models.InsuranceMst
 
         public int ReceSpKbn { get; private set; }
 
-        public string PrefactureName { get; private set; }
-
         public int PrefNo { get; private set; }
 
         public int SortNo { get; private set; }
@@ -179,48 +167,5 @@ namespace Domain.Models.InsuranceMst
         public int DayLimitCount { get; private set; }
 
         public bool IsAdded { get; private set; }
-
-        public string SelectedValueMaster
-        {
-            get
-            {
-                string result = string.Empty;
-                if (HokenEdaNo == 0)
-                {
-                    result = HokenNo.ToString().PadLeft(3, '0');
-                }
-                else
-                {
-                    result = HokenNo.ToString().PadLeft(3, '0') + HokenEdaNo;
-                }
-
-                return result;
-            }
-        }
-
-        public string DisplayTextMaster
-        {
-            get
-            {
-                string DisplayText = SelectedValueMaster + " " + HokenSName;
-                if (IsOtherPrefValid == 1 && !string.IsNullOrEmpty(PrefactureName))
-                {
-
-                    DisplayText += "（" + PrefactureName + "）";
-                }
-                return DisplayText;
-            }
-        }
-
-        public string DisplayHokenNo
-        {
-            get => CheckDefaultValue() ? string.Empty : HokenNo.AsString().PadLeft(3, '0');
-        }
-
-
-        public bool CheckDefaultValue()
-        {
-            return HokenNo == 0;
-        }
     }
 }
