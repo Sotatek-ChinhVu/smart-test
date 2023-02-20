@@ -19,7 +19,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return SystemConfig.DiseaseLevelSetting;
+            return SystemConfig!.DiseaseLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
@@ -37,7 +37,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             List<DiseaseResultModel> checkedResult = new List<DiseaseResultModel>();
 
-            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder.CheckContraindicationForCurrentDisease(HpID, settingLevel, Sinday, listItemCode, ListDiseaseCode);
+            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder!.CheckContraindicationForCurrentDisease(HpID, settingLevel, Sinday, listItemCode, ListDiseaseCode);
             if (checkedResultForCurrentDisease != null)
             {
                 checkedResult.AddRange(checkedResultForCurrentDisease);

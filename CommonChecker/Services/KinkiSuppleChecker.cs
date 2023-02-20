@@ -18,7 +18,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return SystemConfig.KinkiLevelSetting;
+            return SystemConfig!.KinkiLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
@@ -34,7 +34,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
-            List<KinkiResultModel> checkedResult = Finder.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode, ListPtSupple);
+            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode, ListPtSupple);
 
             if (checkedResult != null && checkedResult.Count > 0)
             {
