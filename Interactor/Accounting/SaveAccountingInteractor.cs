@@ -47,8 +47,12 @@ namespace Interactor.Accounting
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
                 var accDue = (int)_systemConfRepository.GetSettingValue(3020, 0, 0); 
 
-                accDue ? 0 : debitBalance;
-                var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, inputData.SumAdjust, inputData.ThisWari, inputData.ThisCredit,
+                if(accDue == 0)
+                {
+                    accDue = debitBalance;
+                }
+
+                var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.ThisWari, inputData.ThisCredit,
                                                                 inputData.PayType, inputData.Comment);
                 if (save)
                 {
