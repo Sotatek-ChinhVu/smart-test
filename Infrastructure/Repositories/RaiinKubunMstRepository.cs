@@ -152,12 +152,12 @@ namespace Infrastructure.Repositories
                                         z.IsAutoDelete,
                                         z.IsDeleted == 1,
                                         raiinKbnKouiList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
-                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
+                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().OrderBy(item => item.SortNo).ToList(),
                                         rsvFrameMstList,
                                         rsvGrpMstList,
                                         raiinKbnYayokuList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList()
-                                        )).Distinct().ToList()
-                                        )).Distinct().ToList();
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList()
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList();
             return raiinKubunMstModels;
         }
 
