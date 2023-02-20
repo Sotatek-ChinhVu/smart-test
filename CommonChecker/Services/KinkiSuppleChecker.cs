@@ -9,8 +9,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<PtSuppleModel> ListPtSupple = new();
-
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
@@ -34,7 +32,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
-            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode, ListPtSupple);
+            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode);
 
             if (checkedResult != null && checkedResult.Count > 0)
             {
