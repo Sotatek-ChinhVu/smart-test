@@ -10,4 +10,5 @@ public enum SaveSyobyoKeikaListStatus : byte
     InvalidSeqNo = 5,
     InvalidSinDay = 6,
     InvalidKeika = 7,
+    InvalidHokenId = 8,
 }

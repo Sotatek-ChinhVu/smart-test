@@ -1,5 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
+using System.Text;
 
 namespace Domain.Models.Family;
 
@@ -48,32 +49,33 @@ public class RaiinInfModel
             return string.Empty;
         }
 
-        string hokenName = hokenPid.ToString().PadLeft(3, '0') + ". ";
+        StringBuilder hokenName = new();
+        hokenName.Append(hokenPid.ToString().PadLeft(3, '0') + ". ");
         if (IsExpirated())
         {
-            hokenName = "×" + hokenName;
+            hokenName.Append("×").Append(hokenName);
         }
 
-        string prefix = string.Empty;
-        string postfix = string.Empty;
+        StringBuilder prefix = new();
+        StringBuilder postfix = new();
         if (hokenSbtCd == 0)
         {
             switch (hokenKbn)
             {
                 case 0:
-                    hokenName += "自費";
+                    hokenName.Append("自費");
                     break;
                 case 11:
-                    hokenName += "労災（短期給付）";
+                    hokenName.Append("労災（短期給付）");
                     break;
                 case 12:
-                    hokenName += "労災（傷病年金）";
+                    hokenName.Append("労災（傷病年金）");
                     break;
                 case 13:
-                    hokenName += "労災（アフターケア）";
+                    hokenName.Append("労災（アフターケア）");
                     break;
                 case 14:
-                    hokenName += "自賠責";
+                    hokenName.Append("自賠責");
                     break;
                 default:
                     break;
@@ -83,7 +85,7 @@ public class RaiinInfModel
         {
             if (hokenSbtCd < 0)
             {
-                return hokenName;
+                return hokenName.ToString();
             }
 
             string subHokenSbtCd = hokenSbtCd.ToString().PadRight(3, '0');
@@ -93,19 +95,19 @@ public class RaiinInfModel
             switch (firstNum)
             {
                 case 1:
-                    hokenName += "社保";
+                    hokenName.Append("社保");
                     break;
                 case 2:
-                    hokenName += "国保";
+                    hokenName.Append("国保");
                     break;
                 case 3:
-                    hokenName += "後期";
+                    hokenName.Append("後期");
                     break;
                 case 4:
-                    hokenName += "退職";
+                    hokenName.Append("退職");
                     break;
                 case 5:
-                    hokenName += "公費";
+                    hokenName.Append("公費");
                     break;
             }
 
@@ -113,83 +115,83 @@ public class RaiinInfModel
             {
                 if (thirNum == 1)
                 {
-                    prefix += "単独";
+                    prefix.Append("単独");
                 }
                 else
                 {
-                    prefix += thirNum + "併";
+                    prefix.Append(thirNum + "併");
                 }
 
                 if (kohi1HokenSbtKbn != CommonConstants.InvalidId)
                 {
-                    if (!string.IsNullOrEmpty(postfix))
+                    if (!string.IsNullOrEmpty(postfix.ToString()))
                     {
-                        postfix += "+";
+                        postfix.Append("+");
                     }
                     if (kohi1HokenSbtKbn != 2)
                     {
-                        postfix += kohi1Houbetu;
+                        postfix.Append(kohi1Houbetu);
                     }
                     else
                     {
-                        postfix += "マル長";
+                        postfix.Append("マル長");
                     }
                 }
                 if (kohi2HokenSbtKbn != CommonConstants.InvalidId)
                 {
-                    if (!string.IsNullOrEmpty(postfix))
+                    if (!string.IsNullOrEmpty(postfix.ToString()))
                     {
-                        postfix += "+";
+                        postfix.Append("+");
                     }
                     if (kohi2HokenSbtKbn != 2)
                     {
-                        postfix += kohi2Houbetu;
+                        postfix.Append(kohi2Houbetu);
                     }
                     else
                     {
-                        postfix += "マル長";
+                        postfix.Append("マル長");
                     }
                 }
                 if (kohi3HokenSbtKbn != CommonConstants.InvalidId)
                 {
-                    if (!string.IsNullOrEmpty(postfix))
+                    if (!string.IsNullOrEmpty(postfix.ToString()))
                     {
-                        postfix += "+";
+                        postfix.Append("+");
                     }
                     if (kohi3HokenSbtKbn != 2)
                     {
-                        postfix += kohi3Houbetu;
+                        postfix.Append(kohi3Houbetu);
                     }
                     else
                     {
-                        postfix += "マル長";
+                        postfix.Append("マル長");
                     }
                 }
                 if (kohi4HokenSbtKbn != CommonConstants.InvalidId)
                 {
-                    if (!string.IsNullOrEmpty(postfix))
+                    if (!string.IsNullOrEmpty(postfix.ToString()))
                     {
-                        postfix += "+";
+                        postfix.Append("+");
                     }
                     if (kohi4HokenSbtKbn != 2)
                     {
-                        postfix += kohi4Houbetu;
+                        postfix.Append(kohi4Houbetu);
                     }
                     else
                     {
-                        postfix += "マル長";
+                        postfix.Append("マル長");
                     }
                 }
             }
         }
 
-        if (!string.IsNullOrEmpty(postfix))
+        if (!string.IsNullOrEmpty(postfix.ToString()))
         {
-            hokenName = hokenName + prefix + "(" + postfix + ")";
+            hokenName = hokenName.Append(prefix).Append("(").Append(postfix).Append(")");
         }
         else
         {
-            hokenName = hokenName + prefix;
+            hokenName = hokenName.Append(prefix);
         }
 
         string sBuff = "";

@@ -25,6 +25,7 @@ public class SaveSyobyoKeikaListPresenter : ISaveSyobyoKeikaListOutputPort
         SaveSyobyoKeikaListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
         SaveSyobyoKeikaListStatus.InvalidSinDay => ResponseMessage.InvalidSinDay,
         SaveSyobyoKeikaListStatus.InvalidKeika => ResponseMessage.InvalidKeika,
+        SaveSyobyoKeikaListStatus.InvalidHokenId => ResponseMessage.InvalidHokenId,
         _ => string.Empty
     };
 }

@@ -24,6 +24,7 @@ public class SaveSyoukiInfListPresenter : ISaveSyoukiInfListOutputPort
         SaveSyoukiInfListStatus.InvalidSinYm => ResponseMessage.InvalidSinYm,
         SaveSyoukiInfListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
         SaveSyoukiInfListStatus.InvalidSyoukiKbn => ResponseMessage.InvalidSyoukiKbn,
+        SaveSyoukiInfListStatus.InvalidHokenId => ResponseMessage.InvalidHokenId,
         _ => string.Empty
     };
 }

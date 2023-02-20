@@ -83,11 +83,11 @@ namespace Interactor.MedicalExamination
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
                     return new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        raiinInfStatus, 
-                        new Dictionary<string, 
-                        KeyValuePair<string, 
-                        OrdInfValidationStatus>>(), 
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        new Dictionary<string,
+                        KeyValuePair<string,
+                        OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         0,
                         0,
@@ -122,9 +122,9 @@ namespace Interactor.MedicalExamination
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any())
                 {
                     return new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        raiinInfStatus, 
-                        resultOrder.Item1, 
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        resultOrder.Item1,
                         validateKarte,
                         0,
                         0,
@@ -148,19 +148,19 @@ namespace Interactor.MedicalExamination
                         SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                     }
                 }
-                return check ? 
+                return check ?
                     new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Successed, 
+                        UpsertTodayOrdStatus.Successed,
                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
-                        ptId) 
-                    : 
+                        ptId)
+                    :
                     new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, 
-                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), 
+                        UpsertTodayOrdStatus.Failed,
+                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
@@ -169,9 +169,9 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new UpsertTodayOrdOutputData(
-                    UpsertTodayOrdStatus.Failed, 
-                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, 
-                    new Dictionary<string, KeyValuePair<string, 
+                    UpsertTodayOrdStatus.Failed,
+                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                    new Dictionary<string, KeyValuePair<string,
                     OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
                     0,
                     0,
@@ -441,7 +441,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.HokenPid > 0)
             {
-                var checkHokenId = _insuranceInforRepository.CheckExistHokenId(inputDatas.HokenPid);
+                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;

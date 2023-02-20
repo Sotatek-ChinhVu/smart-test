@@ -74,11 +74,11 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         }
         else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
         {
-            return SaveSyobyoKeikaListStatus.InvalidSinYm;
+            return SaveSyobyoKeikaListStatus.InvalidHokenId;
         }
         else if (!inputData.SyobyoKeikaList.Any())
         {
-            return SaveSyobyoKeikaListStatus.ValidateSuccess;
+            return SaveSyobyoKeikaListStatus.Failed;
         }
         else if (inputData.SyobyoKeikaList.Any(item => item.SinDay > 31 || item.SinDay < 1))
         {
@@ -89,8 +89,9 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             return SaveSyobyoKeikaListStatus.InvalidKeika;
         }
         var syobyoKeikaDBList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var seqNoList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
-        var syobyoKeikaCount = syobyoKeikaDBList.Count(item => seqNoList.Contains(item.SeqNo));
+        var seqNoList = inputData.SyobyoKeikaList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).ToList();
+        var seqNoListQuery = seqNoList.Distinct().ToList();
+        var syobyoKeikaCount = syobyoKeikaDBList.Count(item => seqNoListQuery.Contains(item.SeqNo));
         if (seqNoList.Any() && syobyoKeikaCount != seqNoList.Count)
         {
             return SaveSyobyoKeikaListStatus.InvalidSeqNo;
