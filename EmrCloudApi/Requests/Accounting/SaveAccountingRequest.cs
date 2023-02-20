@@ -14,6 +14,5 @@ namespace EmrCloudApi.Requests.Accounting
         public int ThisCredit { get; set; }
         public int PayType { get; set; }
         public string Comment { get; set; } = string.Empty;
-        public List<SyunoSeikyuModel> SyunoSeikyuModels { get; set; } = new();
     }
 }

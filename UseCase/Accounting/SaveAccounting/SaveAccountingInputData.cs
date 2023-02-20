@@ -1,11 +1,10 @@
-﻿using Domain.Models.AccountDue;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.Accounting.SaveAccounting
 {
     public class SaveAccountingInputData : IInputData<SaveAccountingOutputData>
     {
-        public SaveAccountingInputData(int hpId, long ptId, int userId, int sinDate, long raiinNo, int sumAdjust, int thisWari, int thisCredit, int payType, string comment, List<SyunoSeikyuModel> syunoSeikyuModels)
+        public SaveAccountingInputData(int hpId, long ptId, int userId, int sinDate, long raiinNo, int sumAdjust, int thisWari, int thisCredit, int payType, string comment)
         {
             HpId = hpId;
             PtId = ptId;
@@ -17,7 +16,6 @@ namespace UseCase.Accounting.SaveAccounting
             ThisCredit = thisCredit;
             PayType = payType;
             Comment = comment;
-            SyunoSeikyuModels = syunoSeikyuModels;
         }
 
         public int HpId { get; private set; }
@@ -30,6 +28,5 @@ namespace UseCase.Accounting.SaveAccounting
         public int ThisCredit { get; private set; }
         public int PayType { get; private set; }
         public string Comment { get; private set; }
-        public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
     }
 }
