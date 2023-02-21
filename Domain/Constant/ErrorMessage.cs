@@ -27,6 +27,9 @@ namespace Domain.Constant
         public const string MessageType_mChk00040 = "同一期間内に複数保険が登録されています。" + "\r\n" + "有効期限を確認してください。";
         public const string MessageType_mDel01060 = "{0}ため、{1}は削除できません。";
         public const string MessageType_mInp00110 = "{0}は {1}以降を入力してください。";
+        public const string MessageType_mInp00050 = "{0}は {1} ～ {2}の範囲で入力してください。";
+        public const string MessageType_mInp00060 = "{0}は {1}以上を入力してください。";
+        public const string MessageType_mEnt01020 = "既に登録されているため、{0}は登録できません。";
         public const string MessageType_mDo00012 = "{0}" + "\r\n" + "{1}を実行しますか？";
         public const string MessageType_mDo00010 = "{0}を実行しますか？";
     }

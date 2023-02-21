@@ -20,18 +20,18 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            bool isMinCheck = SystemConfig.DosageMinCheckSetting;
+            bool isMinCheck = SystemConfig!.DosageMinCheckSetting;
             double ratioSetting = SystemConfig.DosageRatioSetting;
             List<DosageResultModel> resultList = new List<DosageResultModel>();
             List<TOdrInf> errorOrderList = new List<TOdrInf>();
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                if (checkingOrder.OdrKouiKbn == 21 && SystemConfig.DosageDrinkingDrugSetting ||
-                checkingOrder.OdrKouiKbn == 22 && SystemConfig.DosageDrugAsOrderSetting ||
+                if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.DosageDrinkingDrugSetting ||
+                checkingOrder.OdrKouiKbn == 22 && !SystemConfig.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
                 checkingOrder.OdrKouiKbn == 28 ||
-                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && SystemConfig.DosageOtherDrugSetting)
+                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !SystemConfig.DosageOtherDrugSetting)
                 {
                     continue;
                 }
@@ -63,7 +63,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     continue;
                 }
 
-                List<DosageResultModel> checkedResult = Finder.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight);
+                List<DosageResultModel> checkedResult = Finder!.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight);
 
                 if (TermLimitCheckingOnly)
                 {

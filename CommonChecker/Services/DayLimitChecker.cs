@@ -31,7 +31,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 if (usingDay > 0)
                 {
                     List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
-                    List<DayLimitResultModel> checkedResult = Finder.CheckDayLimit(HpID, Sinday, listItemCode, usingDay);
+                    List<DayLimitResultModel> checkedResult = Finder!.CheckDayLimit(HpID, Sinday, listItemCode, usingDay);
 
                     if (checkedResult != null && checkedResult.Count > 0)
                     {

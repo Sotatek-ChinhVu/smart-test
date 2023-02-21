@@ -16,36 +16,21 @@ namespace Interactor.Accounting
         {
             try
             {
-                (int, List<HistoryOrderModel>) historyList = _historyOrderRepository.GetList(
-                   inputData.HpId,
-                   inputData.UserId,
-                   inputData.PtId,
-                   inputData.SinDate,
-                   inputData.Offset,
-                   inputData.Limit,
-                   0,
-                   inputData.DeleteConditon,
-                   inputData.RaiinNo
-                   );
-                return new GetAccountingHistoryOrderOutputData(historyList.Item1, ConvertToHistoryOrderDtoModel(historyList.Item2), GetAccountingHistoryOrderStatus.Successed);
+                var historyList = _historyOrderRepository.GetListByRaiin(
+                    inputData.HpId,
+                    inputData.UserId,
+                    inputData.PtId,
+                    inputData.SinDate,
+                    0,
+                    inputData.DeleteConditon,
+                    inputData.RaiinNo
+                    );
+                return new GetAccountingHistoryOrderOutputData(historyList, GetAccountingHistoryOrderStatus.Successed);
             }
             finally
             {
                 _historyOrderRepository.ReleaseResource();
             }
-        }
-
-        private List<HistoryOrderDto> ConvertToHistoryOrderDtoModel(List<HistoryOrderModel> models)
-        {
-            List<HistoryOrderDto> historyOrderDtoModelList = new List<HistoryOrderDto>();
-            foreach (var item in models)
-            {
-                historyOrderDtoModelList.Add(new HistoryOrderDto(item.RaiinNo, item.SinDate, item.HokenPid, item.HokenTitle, item.HokenRate,
-                    item.HokenType, item.SyosaisinKbn, item.JikanKbn, item.KaId, item.TantoId, item.KaName, item.TantoName, item.SanteiKbn,
-                    item.TagNo, item.SinryoTitle, item.OrderInfList, item.KarteInfModels));
-            }
-
-            return historyOrderDtoModelList;
         }
     }
 }
