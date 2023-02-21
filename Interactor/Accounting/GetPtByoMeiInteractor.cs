@@ -39,7 +39,7 @@ namespace Interactor.Accounting
 
             foreach (var item in models)
             {
-                ptDiseaseDto.Add(new PtDiseaseDto(item.FullByomei, item.StartDate, item.TenKiBinding, item.TenkiDate));
+                ptDiseaseDto.Add(new PtDiseaseDto(item.PtId, item.ByomeiCd, item.SeqNo, item.SyubyoKbn, item.SikkanKbn, item.FullByomei, item.StartDate, item.TenKiBinding, item.TenkiDate));
             }
             return ptDiseaseDto;
         }

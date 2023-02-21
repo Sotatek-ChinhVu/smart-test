@@ -303,8 +303,14 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
         }
 
-        public PtDiseaseModel(string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
         {
+            PtId = ptId;
+            ByomeiCd = byomeiCd;
+            SeqNo = seqNo;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            SortNo = sortNo;
             Byomei = byomei;
             StartDate = startDate;
             TenkiDate = tenkiDate;

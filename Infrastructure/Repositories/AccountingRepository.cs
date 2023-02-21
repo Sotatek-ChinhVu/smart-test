@@ -758,7 +758,7 @@ namespace Infrastructure.Repositories
             if (listPtByoMei == null || listPtByoMei.Count == 0)
                 return new List<PtDiseaseModel>();
 
-            return listPtByoMei.Select(data => new PtDiseaseModel(data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>()))
+            return listPtByoMei.Select(data => new PtDiseaseModel(data.PtId, data.ByomeiCd, data.SeqNo, data.SortNo, data.SyubyoKbn, data.SikkanKbn, data.Byomei, data.StartDate, data.TenkiDate, data.HosokuCmt, data.TogetuByomei, new List<PrefixSuffixModel>()))
                 .OrderBy(data => data.TenkiKbn)
                 .ThenBy(data => data.SortNo)
                 .ThenByDescending(data => data.StartDate)
@@ -778,6 +778,12 @@ namespace Infrastructure.Repositories
                                                                    (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).ToList();
 
             var PtDiseaseModels = ptByomeis.Select(p => new PtDiseaseModel(
+                                                        p.PtId,
+                                                        p.ByomeiCd,
+                                                        p.SeqNo,
+                                                        p.SortNo,
+                                                        p.SyubyoKbn,
+                                                        p.SikkanKbn,
                                                         p.Byomei ?? string.Empty,
                                                         p.StartDate,
                                                         p.TenkiDate,
