@@ -225,7 +225,5 @@ namespace Interactor.Accounting
             }
             return new();
         }
-
-
     }
 }

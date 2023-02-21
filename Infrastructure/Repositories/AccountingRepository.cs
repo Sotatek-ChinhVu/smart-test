@@ -779,7 +779,7 @@ namespace Infrastructure.Repositories
 
             var PtDiseaseModels = ptByomeis.Select(p => new PtDiseaseModel(
                                                         p.PtId,
-                                                        p.ByomeiCd,
+                                                        p.ByomeiCd ?? string.Empty,
                                                         p.SeqNo,
                                                         p.SortNo,
                                                         p.SyubyoKbn,
