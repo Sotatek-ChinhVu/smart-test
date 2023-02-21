@@ -157,6 +157,7 @@
         public const string GetCheckedOrder = "GetCheckedOrder";
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
         public const string GetHistoryIndex = "GetHistoryIndex";
+        public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -208,5 +209,8 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //System Conf
+        public const string GetSystemConfForPrint = "GetSystemConfForPrint";
     }
 }

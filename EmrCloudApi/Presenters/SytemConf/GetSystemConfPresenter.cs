@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.SystemConf;
-using UseCase.SystemConf;
+using UseCase.SystemConf.Get;
 
 namespace EmrCloudApi.Presenters.SytemConf
 {

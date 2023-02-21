@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.SystemConf
+namespace UseCase.SystemConf.Get
 {
     public class GetSystemConfInputData : IInputData<GetSystemConfOutputData>
     {

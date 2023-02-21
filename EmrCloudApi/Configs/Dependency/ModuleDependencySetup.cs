@@ -1,8 +1,5 @@
-﻿using CommonChecker;
-using CommonChecker.DB;
+﻿using CommonChecker.DB;
 using CommonChecker.Services;
-using CommonCheckers;
-using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
@@ -197,6 +194,7 @@ using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.DeleteHokenMaster;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
+using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
@@ -222,6 +220,7 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryIndex;
+using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.InitKbnSetting;
@@ -323,7 +322,8 @@ using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
-using UseCase.SystemConf;
+using UseCase.SystemConf.Get;
+using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
@@ -344,10 +344,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.PtGroupMst.GetGroupNameMst;
-using Reporting;
-using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
-using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -705,6 +701,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
+            busBuilder.RegisterUseCase<GetSystemConfForPrintInputData, GetSystemConfForPrintInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();

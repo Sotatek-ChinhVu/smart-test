@@ -12,6 +12,7 @@ using UseCase.Core.Sync;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -322,6 +323,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaxAuditTrailLogDateForPrint)]
+        public ActionResult<Response<GetMaxAuditTrailLogDateForPrintResponse>> GetMaxAuditTrailLogDateForPrint([FromQuery] GetMaxAuditTrailLogDateForPrintRequest request)
+        {
+            var input = new GetMaxAuditTrailLogDateForPrintInputData(request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxAuditTrailLogDateForPrintPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxAuditTrailLogDateForPrintResponse>>(presenter.Result);
         }
     }
 }

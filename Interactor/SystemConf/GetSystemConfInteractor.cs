@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SystemConf;
-using UseCase.SystemConf;
+using UseCase.SystemConf.Get;
 
 namespace Interactor.SystemConf
 {
