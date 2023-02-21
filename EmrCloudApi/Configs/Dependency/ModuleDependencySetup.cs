@@ -349,6 +349,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using Reporting;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -541,6 +542,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
             busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
             busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
+            busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
