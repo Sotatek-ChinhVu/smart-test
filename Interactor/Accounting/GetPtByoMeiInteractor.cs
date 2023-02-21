@@ -27,11 +27,6 @@ namespace Interactor.Accounting
                 return new GetPtByoMeiOutputData(ConvertToPtDiseaseDto(ptByoMei), GetPtByoMeiStatus.Successed);
 
             }
-            catch (Exception)
-            {
-
-                return new GetPtByoMeiOutputData(new(), GetPtByoMeiStatus.Failed);
-            }
             finally
             {
                 _accountingRepository.ReleaseResource();
