@@ -1,5 +1,6 @@
-﻿using Domain.Models.KarteInfs;
-using Domain.Models.OrdInfs;
+﻿using Domain.Models.InsuranceInfor;
+using Domain.Models.OrdInf;
+using Domain.Models.Reception;
 using Helper.Constants;
 
 namespace Domain.Models.HistoryOrder
@@ -36,9 +37,7 @@ namespace Domain.Models.HistoryOrder
 
         public string SinryoTitle { get; private set; }
 
-        public List<OrdInfModel> OrderInfList { get; private set; }
-
-        public List<KarteInfModel> KarteInfModels { get; private set; }
+        public List<OrdInfDto> OrdInfDtos { get; private set; }
 
         public string SanteiKbnDisplay { get => _jihiSanteiDict.FirstOrDefault(x => x.Key == SanteiKbn).Value; }
 
@@ -52,25 +51,23 @@ namespace Domain.Models.HistoryOrder
             {2,"自費" }
         };
 
-        public HistoryOrderDto(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int hokenType, int syosaisinKbn, int jikanKbn, int kaId, int tantoId, string kaName, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, List<OrdInfModel> orderInfList, List<KarteInfModel> karteInfModels)
+        public HistoryOrderDto(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfDto> ordInfDtos, string kaName, string tantoName, int tagNo, string sinryoTitle)
         {
-            RaiinNo = raiinNo;
-            SinDate = sinDate;
-            HokenPid = hokenPid;
-            HokenTitle = hokenTitle;
-            HokenRate = hokenRate;
-            HokenType = hokenType;
-            SyosaisinKbn = syosaisinKbn;
-            JikanKbn = jikanKbn;
-            KaId = kaId;
-            TantoId = tantoId;
+            RaiinNo = receptionModel.RaiinNo;
+            SinDate = receptionModel.SinDate;
+            SyosaisinKbn = receptionModel.SyosaisinKbn;
+            KaId = receptionModel.KaId;
+            TantoId = receptionModel.TantoId;
+            JikanKbn = receptionModel.JikanKbn;
+            HokenPid = receptionModel.HokenPid;
+            HokenTitle = insuranceModel.HokenName;
+            HokenRate = insuranceModel.DisplayRateOnly;
+            HokenType = insuranceModel.GetHokenPatternType();
             KaName = kaName;
             TantoName = tantoName;
-            SanteiKbn = santeiKbn;
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
-            OrderInfList = orderInfList;
-            KarteInfModels = karteInfModels;
+            OrdInfDtos = ordInfDtos;
         }
     }
 }

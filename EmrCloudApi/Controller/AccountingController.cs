@@ -75,7 +75,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.HistoryOrder)]
         public ActionResult<Response<GetAccountingHistoryOrderResponse>> GetList([FromQuery] GetAccountingHistoryOrderRequest request)
         {
-            var input = new GetAccountingHistoryOrderInputData(request.PtId, request.HpId, request.UserId, request.SinDate, request.Offset, request.Limit, request.DeleteConditon, request.IsShowApproval, request.RaiinNo);
+            var input = new GetAccountingHistoryOrderInputData(request.PtId, request.HpId, request.UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetAccountingHistoryOrderPresenter();
