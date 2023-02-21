@@ -349,6 +349,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using Reporting;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
+using UseCase.Receipt.GetInsuranceReceInfList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -811,6 +812,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceHenReasonInputData, GetReceHenReasonInteractor>();
             busBuilder.RegisterUseCase<GetReceiCheckListInputData, GetReceiCheckListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
+            busBuilder.RegisterUseCase<GetInsuranceReceInfListInputData, GetInsuranceReceInfListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

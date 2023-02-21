@@ -193,6 +193,7 @@
         public const string GetReceHenReason = "GetReceHenReason";
         public const string GetReceiCheckList = "GetReceiCheckList";
         public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
+        public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
