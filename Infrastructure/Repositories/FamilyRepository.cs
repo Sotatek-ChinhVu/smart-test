@@ -1,6 +1,8 @@
 ﻿using Domain.Models.Family;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constant;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -109,6 +111,40 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         return familyRekiIdList.Count == countFromDB;
     }
 
+    public List<RaiinInfModel> GetRaiinInfListByPtId(int hpId, long ptId)
+    {
+        var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                        && item.PtId == ptId
+                                                                        && item.IsDeleted != 1)
+                                                          .ToList();
+        var tantoIdList = raiinInfList.Select(item => item.TantoId).ToList();
+        var kaIdList = raiinInfList.Select(item => item.KaId).ToList();
+        var hokenPIdList = raiinInfList.Select(item => item.HokenPid).ToList();
+
+        var doctorList = NoTrackingDataContext.UserMsts.Where(item => item.IsDeleted != 1
+                                                                    && item.JobCd == JobCdConstant.Doctor
+                                                                    && tantoIdList.Contains(item.UserId))
+                                                      .ToList();
+        var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1
+                                                                   && kaIdList.Contains(item.KaId))
+                                                    .ToList();
+        var hokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.IsDeleted != 1
+                                                                                && hokenPIdList.Contains(item.HokenPid))
+                                                                    .ToList();
+        var kohiHokenIdList = hokenPatternList.Select(item => item.Kohi1Id).ToList();
+        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi2Id).ToList());
+        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi3Id).ToList());
+        kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi4Id).ToList());
+
+        var ptKohis = NoTrackingDataContext.PtKohis.Where(item => item.IsDeleted != 1
+                                                                  && item.PtId == ptId
+                                                                  && kohiHokenIdList.Contains(item.HokenId))
+                                                          .ToList();
+        return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, ptKohis))
+                           .OrderByDescending(item => item.SinDate)
+                           .ToList();
+    }
+
     #region private function
     private FamilyModel ConvertToFamilyModel(int sinDate, PtFamily ptFamily, List<PtInf> ptInfs, List<PtFamilyReki> ptFamilyRekis)
     {
@@ -150,6 +186,39 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                         ptFamilyReki.Cmt ?? string.Empty,
                                         ptFamilyReki.SortNo
                                     );
+    }
+
+    private RaiinInfModel ConvertToRaiinInfModel(RaiinInf raiinInf, List<UserMst> doctorList, List<KaMst> kaMstList, List<PtHokenPattern> hokenPatternList, List<PtKohi> ptKohiList)
+    {
+        var doctor = doctorList.FirstOrDefault(item => item.UserId == raiinInf.TantoId);
+        var kaMst = kaMstList.FirstOrDefault(item => item.KaId == raiinInf.KaId);
+        var hokenPattern = hokenPatternList.FirstOrDefault(item => item.HokenPid == raiinInf.HokenPid);
+        var ptKohi1 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi1Id);
+        var ptKohi2 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi2Id);
+        var ptKohi3 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi3Id);
+        var ptKohi4 = ptKohiList.FirstOrDefault(item => item.HokenId == hokenPattern?.Kohi4Id);
+        return new RaiinInfModel(
+                raiinInf.PtId,
+                raiinInf.SinDate,
+                raiinInf.RaiinNo,
+                raiinInf.KaId,
+                kaMst?.KaName ?? string.Empty,
+                raiinInf.TantoId,
+                doctor?.Name ?? string.Empty,
+                hokenPattern?.HokenPid ?? CommonConstants.InvalidId,
+                hokenPattern?.StartDate ?? 0,
+                hokenPattern?.EndDate ?? 0,
+                hokenPattern?.HokenSbtCd ?? CommonConstants.InvalidId,
+                hokenPattern?.HokenKbn ?? CommonConstants.InvalidId,
+                ptKohi1?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                ptKohi1?.Houbetu ?? string.Empty,
+                ptKohi2?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                ptKohi2?.Houbetu ?? string.Empty,
+                ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                ptKohi3?.Houbetu ?? string.Empty,
+                ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                ptKohi4?.Houbetu ?? string.Empty
+            );
     }
 
     private bool SaveFamilyListAction(int hpId, int userId, List<FamilyModel> listFamily)
