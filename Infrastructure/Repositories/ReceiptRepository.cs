@@ -19,6 +19,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
     }
 
+    #region Rece check list
     public List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
     {
         if (seikyuYm == 0)
@@ -1217,21 +1218,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    private double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
-    {
-        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
-                                                                               && p.GrpCd == groupCd
-                                                                               && p.GrpEdaNo == grpEdaNo);
-        return systemConf != null ? systemConf.Val : defaultValue;
-    }
-
-    private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
-    {
-        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
-                                                                               && p.GrpCd == groupCd
-                                                                               && p.GrpEdaNo == grpEdaNo);
-        return systemConf?.Param ?? string.Empty;
-    }
+    #endregion
 
     #region Rece check screeen
     public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId)
@@ -1529,6 +1516,22 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #endregion
 
     #region Private function
+    private double GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int defaultValue = 0)
+    {
+        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+                                                                               && p.GrpCd == groupCd
+                                                                               && p.GrpEdaNo == grpEdaNo);
+        return systemConf != null ? systemConf.Val : defaultValue;
+    }
+
+    private string GetSettingParam(int hpId, int groupCd, int grpEdaNo = 0)
+    {
+        var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.HpId == hpId
+                                                                               && p.GrpCd == groupCd
+                                                                               && p.GrpEdaNo == grpEdaNo);
+        return systemConf?.Param ?? string.Empty;
+    }
+
     private ReceCmtModel ConvertToReceCmtModel(ReceCmt receCmt)
     {
         return new ReceCmtModel(
