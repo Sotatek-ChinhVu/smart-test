@@ -53,7 +53,7 @@ namespace Interactor.Accounting
                     accDue = debitBalance;
                 }
 
-                var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.ThisCredit,
+                var save = _accountingRepository.SaveAccounting(listAllSyunoSeikyu, listSyunoSeikyu, inputData.HpId, inputData.PtId, inputData.UserId, accDue, inputData.SumAdjust, inputData.ThisWari, inputData.Credit,
                                                                 inputData.PayType, inputData.Comment, inputData.IsDisCharged);
                 if (save)
                 {

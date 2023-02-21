@@ -9,7 +9,7 @@
         public long RaiinNo { get; set; }
         public int SumAdjust { get; set; }
         public int ThisWari { get; set; }
-        public int ThisCredit { get; set; }
+        public int Credit { get; set; }
         public int PayType { get; set; }
         public string Comment { get; set; } = string.Empty;
         public bool isDisCharged { get; set; }
