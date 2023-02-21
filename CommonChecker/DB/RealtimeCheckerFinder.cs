@@ -4,16 +4,11 @@ using Domain.Constant;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
-using Infrastructure.Base;
-using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using PostgreDataContext;
-using System.Diagnostics;
-using System.Net.WebSockets;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class RealtimeCheckerFinder: IRealtimeCheckerFinder
+    public class RealtimeCheckerFinder : IRealtimeCheckerFinder
     {
         public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
         public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext)
@@ -392,9 +387,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExEdIngredients> componentList, List<M56ExIngrdtMain> drugTypeList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = NoTrackingDataContext.TenMsts.Where(i => itemCodeList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).ToList();
-                
+
                 var yjCdList = tenMstList.Select(t => t.YjCd).ToList();
-                
+
                 List<M56ExEdIngredients> componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 && yjCdList.Contains(i.YjCd)).ToList();
                 List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
 
@@ -426,7 +421,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var itemCodeList = itemCodeModelList.Select(x => x.ItemCd).ToList();
             var data = getData(itemCodeList);
-            var listCheckingDrugInfo = 
+            var listCheckingDrugInfo =
                 (from drugMst in data.tenMstList
                  join componentInfo in data.componentList
                  on drugMst.YjCd equals componentInfo.YjCd
@@ -753,7 +748,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                      drugTypeInfo.YuekiFlg,
                      drugTypeInfo.KanpoFlg,
                  }).ToList();
-            
+
             var comparedItemCodeList = comparedItemCodeModelList.Select(c => c.ItemCd).ToList();
             var compatedData = getData(comparedItemCodeList);
             var listDrugAllergyAsPatientInfo =
@@ -1746,19 +1741,22 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             double bodySize = GetBodySize(weight, height, age);
 
 
-            List<string> listDrugCode = listItem.Select(i => i.ItemCD).ToList();
+            List<ItemCodeModel> listDrugCode = listItem.Select(x => new ItemCodeModel(x.ItemCD, x.Id)).ToList();
 
             #region Check by UserData
 
             var listDosageInfoByUser =
                 (
-                    from tenMst in NoTrackingDataContext.TenMsts.Where(t => listDrugCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
+                    from tenMst in NoTrackingDataContext.TenMsts.Where(t => listDrugCode.Select(x => x.ItemCd).Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).AsEnumerable()
                     join dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null)
                     on tenMst.YjCd equals dosageDrug.YjCd
                     join dosageDMst in NoTrackingDataContext.DosageMsts.Where(d => d.IsDeleted == 0)
                     on tenMst.ItemCd equals dosageDMst.ItemCd
+                    join listDrugCodes in listDrugCode
+                    on tenMst.ItemCd equals listDrugCodes.ItemCd
                     select new
                     {
+                        listDrugCodes.Id,
                         tenMst.ItemCd,
                         tenMst.YjCd,
                         tenMst.ReceUnitName,
@@ -1999,11 +1997,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             #region Check by MasterData
 
-            List<string> listCheckedCode = listDosageInfoByUser.Select(d => d.ItemCd).ToList();
-            List<string> listRestCode = listDrugCode.Where(d => !listCheckedCode.Contains(d)).ToList();
+            List<ItemCodeModel> listCheckedCode = listDosageInfoByUser.Select(x => new ItemCodeModel(x.ItemCd, x.Id)).ToList();
+            List<ItemCodeModel> listRestCode = listDrugCode.Where(d => !listCheckedCode.Contains(d)).ToList();
 
             var listDosageInfo =
-                (from tenMst in NoTrackingDataContext.TenMsts.Where(t => listRestCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
+                (from tenMst in NoTrackingDataContext.TenMsts.Where(t => listRestCode.Select(x => x.ItemCd).Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate).AsEnumerable()
                  join dosageDrug in NoTrackingDataContext.DosageDrugs.Where(d => d.RikikaUnit != null)
                  on tenMst.YjCd equals dosageDrug.YjCd
                  join dosageDosage in NoTrackingDataContext.DosageDosages.Where(d => string.IsNullOrEmpty(d.KyugenCd)
@@ -2013,8 +2011,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                                                                      && ((d.BodyOver <= bodySize && d.BodyUnder > bodySize) || (d.BodyOver == 0 && d.BodyUnder == 0))
                                                                                                 )
                  on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
+                 join listRestCodes in listRestCode
+                 on tenMst.ItemCd equals listRestCodes.ItemCd
                  select new
                  {
+                     listRestCodes.Id,
                      tenMst.ItemCd,
                      tenMst.YjCd,
                      tenMst.OdrTermVal,
@@ -2267,6 +2268,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                 void _additionDosageResult(ref DosageResultModel dosageResult)
                 {
+                    dosageResult.Id = firstDosageInfo.Id;
                     dosageResult.ItemCd = firstDosageInfo.ItemCd;
                     dosageResult.YjCd = firstDosageInfo.YjCd;
                     dosageResult.CurrentValue = itemInfo.Suryo;

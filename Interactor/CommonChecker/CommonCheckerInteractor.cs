@@ -359,7 +359,8 @@ namespace Interactor.CommonChecker
             {
                 InitUnitCheck(dosageChecker);
 
-                return dosageChecker.CheckOrderList(checkingOrderList);
+                var result = dosageChecker.CheckOrderList(checkingOrderList);
+                return result;
             }    
         }
 
@@ -1120,6 +1121,7 @@ namespace Interactor.CommonChecker
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
                 string itemName = _realtimeOrderErrorFinder.FindItemName(dosage.YjCd, _sinday);
+                errorInfoModel.Id = dosage.Id;
                 errorInfoModel.FirstCellContent = "投与量";
                 errorInfoModel.ThridCellContent = itemName;
                 errorInfoModel.FourthCellContent = dosage.CurrentValue + dosage.UnitName;
