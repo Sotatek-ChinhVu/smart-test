@@ -554,25 +554,32 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
+            var tenKnList = queryResult.ToList();
+            var santeiItemCdList = tenKnList.Where(t => t.ItemCd.StartsWith("KN")).Select(t => t.SanteiItemCd).ToList();
+
             // Query 点数 for KN% item
-            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
-                                                                                       && item.StartDate <= sinDate
-                                                                                       && item.EndDate >= sinDate);
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
+            var tenMstList = NoTrackingDataContext.TenMsts
+                .Where(item => item.HpId == hpId
+                               && item.StartDate <= sinDate
+                               && item.EndDate >= sinDate
+                               && santeiItemCdList.Contains(item.ItemCd))
+                .ToList();
 
-            var queryKNTensu = from tenKN in queryResult
-                               join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
-                               where tenKN.ItemCd.StartsWith("KN")
-                               select new { tenKN.ItemCd, ten.Ten };
+            var knTensuList = (from tenKN in tenKnList
+                               join ten in tenMstList on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                               select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-            var queryFinal = from ten in queryResult.AsEnumerable()
-                             join tenKN in queryKNTensu.AsEnumerable()
+            var queryFinal = (from ten in tenKnList
+                             join tenKN in knTensuList
                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { TenMst = ten, tenKN };
+                             select new { TenMst = ten, tenKN }).ToList();
 
-            var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
-                                     join k in kensaMstQuery.AsEnumerable()
+            var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
+            var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
+
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstList
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
