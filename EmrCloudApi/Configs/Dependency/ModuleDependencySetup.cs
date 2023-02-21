@@ -177,6 +177,7 @@ using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.GetRaiinInfList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -796,6 +797,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFamilyListInputData, GetFamilyListInteractor>();
             busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
             busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinInfListInputData, GetListRaiinInfInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
