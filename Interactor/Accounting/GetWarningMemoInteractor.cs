@@ -23,12 +23,12 @@ namespace Interactor.Accounting
                 var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
 
                 if (!raiinInf.Any())
-                    return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.NoData);
+                    return new GetWarningMemoOutputData(new(), GetWarningMemoStatus.NoData);
 
                 //Get Warning Memo
                 var warning = GetWarningMemo(inputData.HpId, inputData.PtId, inputData.SinDate, raiinInf);
 
-                return new GetWarningMemoOutputData(warning, raiinInf, GetWarningMemoStatus.Successed);
+                return new GetWarningMemoOutputData(warning, GetWarningMemoStatus.Successed);
 
             }
             finally
@@ -37,9 +37,9 @@ namespace Interactor.Accounting
             }
         }
 
-        private List<WarningMemoModel> GetWarningMemo(int hpId, long ptId, int sinDate, List<ReceptionDto> raiinInfModels)
+        private List<WarningMemoDto> GetWarningMemo(int hpId, long ptId, int sinDate, List<ReceptionDto> raiinInfModels)
         {
-            List<WarningMemoModel> WarningMemoModel = new List<WarningMemoModel>();
+            List<WarningMemoDto> WarningMemoDto = new List<WarningMemoDto>();
             bool CheckIdIsExits(List<int> idList, int idCheck)
             {
                 if (idList != null)
@@ -60,11 +60,11 @@ namespace Interactor.Accounting
                 {
                     var checkExpirated = CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkExpirated.Memo))
-                        WarningMemoModel.Add(checkExpirated);
+                        WarningMemoDto.Add(checkExpirated);
 
                     var checkHasDateConfirm = CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoModel.Add(checkHasDateConfirm);
+                        WarningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi1 != null &&
@@ -74,11 +74,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi1.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoModel.Add(checkKohi);
+                        WarningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoModel.Add(checkHasDateConfirm);
+                        WarningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi2 != null &&
@@ -88,11 +88,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi2.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoModel.Add(checkKohi);
+                        WarningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoModel.Add(checkHasDateConfirm);
+                        WarningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi3 != null &&
@@ -102,11 +102,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi3.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoModel.Add(checkKohi);
+                        WarningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoModel.Add(checkHasDateConfirm);
+                        WarningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi4 != null &&
@@ -116,11 +116,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi4.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoModel.Add(checkKohi);
+                        WarningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoModel.Add(checkHasDateConfirm);
+                        WarningMemoDto.Add(checkHasDateConfirm);
                 }
             }
 
@@ -131,12 +131,12 @@ namespace Interactor.Accounting
                 foreach (var calcLog in listCalcLog)
                 {
                     if (!string.IsNullOrEmpty(calcLog.Text))
-                        WarningMemoModel.Add(new WarningMemoModel(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
+                        WarningMemoDto.Add(new WarningMemoDto(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
                 }
             }
-            return WarningMemoModel;
+            return WarningMemoDto;
         }
-        private WarningMemoModel CheckHokenIsExpirated(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 1)
+        private WarningMemoDto CheckHokenIsExpirated(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 1)
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 
@@ -144,19 +144,19 @@ namespace Interactor.Accounting
             {
                 if (ptHokenInf.IsHoken)
                 {
-                    return new WarningMemoModel(raiinNo, string.Format(
+                    return new WarningMemoDto(raiinNo, string.Format(
                         $"【保険確認】 主保険の有効期限が切れています。（{CIUtil.SDateToShowWDate(ptHokenInf.StartDate)} ～ {CIUtil.SDateToShowWDate(ptHokenInf.EndDate)}）"),
                         alertFg);
                 }
                 else if (ptHokenInf.IsRousai)
                 {
-                    return new WarningMemoModel(raiinNo, string.Format(
+                    return new WarningMemoDto(raiinNo, string.Format(
                         $"【保険確認】 労災保険の有効期限が切れています。（{CIUtil.SDateToShowWDate(ptHokenInf.StartDate)} ～ {CIUtil.SDateToShowWDate(ptHokenInf.EndDate)}）"),
                         alertFg);
                 }
                 else if (ptHokenInf.IsJibai)
                 {
-                    return new WarningMemoModel(raiinNo, string.Format(
+                    return new WarningMemoDto(raiinNo, string.Format(
                         $"【保険確認】 自賠責保険の有効期限が切れています。（{CIUtil.SDateToShowWDate(ptHokenInf.StartDate)} ～ {CIUtil.SDateToShowWDate(ptHokenInf.EndDate)}）"),
                         alertFg);
                 }
@@ -164,7 +164,7 @@ namespace Interactor.Accounting
             return new();
         }
 
-        private WarningMemoModel CheckHokenHasDateConfirmed(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 0)
+        private WarningMemoDto CheckHokenHasDateConfirmed(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 0)
         {
             if (ptHokenInf == null || ptHokenInf.IsReceKisaiOrNoHoken) return new();
 
@@ -172,7 +172,7 @@ namespace Interactor.Accounting
             {
                 if (ptHokenInf.IsHoken)
                 {
-                    return new WarningMemoModel(raiinNo,
+                    return new WarningMemoDto(raiinNo,
                         string.Format(
                             $"【保険確認】 保険が未確認です。（最終確認日：{CIUtil.SDateToShowWDate(ptHokenInf.LastDateConfirmed)}）"),
                         alertFg);
@@ -181,21 +181,21 @@ namespace Interactor.Accounting
             return new();
         }
 
-        private WarningMemoModel CheckKohiIsExpirated(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 1)
+        private WarningMemoDto CheckKohiIsExpirated(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 1)
         {
             if (ptKohiModel == null) return new();
             if (ptKohiModel.IsExpirated == true)
             {
                 if (!string.IsNullOrWhiteSpace(ptKohiModel.FutansyaNo))
                 {
-                    return new WarningMemoModel(raiinNo,
+                    return new WarningMemoDto(raiinNo,
                         string.Format(
                             $"【保険確認】 公費（{ptKohiModel.FutansyaNo}）の有効期限が切れています。（{CIUtil.SDateToShowWDate(ptKohiModel.StartDate)} ～ {CIUtil.SDateToShowWDate(ptKohiModel.EndDate)}）"),
                         alertFg);
                 }
                 else
                 {
-                    return new WarningMemoModel(raiinNo,
+                    return new WarningMemoDto(raiinNo,
                         string.Format(
                             $"【保険確認】 公費 の有効期限が切れています。（{CIUtil.SDateToShowWDate(ptKohiModel.StartDate)} ～ {CIUtil.SDateToShowWDate(ptKohiModel.EndDate)}）"),
                         alertFg);
@@ -204,20 +204,20 @@ namespace Interactor.Accounting
             return new();
         }
 
-        private WarningMemoModel CheckKohiHasDateConfirmed(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 0)
+        private WarningMemoDto CheckKohiHasDateConfirmed(long raiinNo, KohiInfModel ptKohiModel, int alertFg = 0)
         {
             if (ptKohiModel == null) return new();
             if (ptKohiModel.HasDateConfirmed == false)
             {
                 if (!string.IsNullOrWhiteSpace(ptKohiModel.FutansyaNo))
                 {
-                    return new WarningMemoModel(raiinNo, string.Format(
+                    return new WarningMemoDto(raiinNo, string.Format(
                             $"【保険確認】 公費（{ptKohiModel.FutansyaNo}）の保険証が未確認です。（最終確認日：{CIUtil.SDateToShowWDate(ptKohiModel.LastDateConfirmed)}）"),
                         alertFg);
                 }
                 else
                 {
-                    return new WarningMemoModel(raiinNo,
+                    return new WarningMemoDto(raiinNo,
                         string.Format(
                             $"【保険確認】 公費 の保険証が未確認です。（最終確認日：{CIUtil.SDateToShowWDate(ptKohiModel.LastDateConfirmed)}）"),
                         alertFg);

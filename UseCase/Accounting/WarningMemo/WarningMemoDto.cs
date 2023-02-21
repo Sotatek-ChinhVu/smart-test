@@ -1,15 +1,15 @@
 ﻿namespace Domain.Models.Accounting
 {
-    public class WarningMemoModel
+    public class WarningMemoDto
     {
 
 
-        public WarningMemoModel()
+        public WarningMemoDto()
         {
             Memo = string.Empty;
         }
 
-        public WarningMemoModel(long raiinNo, string memo, int color)
+        public WarningMemoDto(long raiinNo, string memo, int color)
         {
             RaiinNo = raiinNo;
             Memo = memo;
