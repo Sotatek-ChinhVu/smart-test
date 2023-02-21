@@ -350,6 +350,7 @@ using UseCase.PtGroupMst.GetGroupNameMst;
 using Reporting;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetDiseaseReceList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -813,6 +814,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceiCheckListInputData, GetReceiCheckListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceReceInfListInputData, GetInsuranceReceInfListInteractor>();
+            busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

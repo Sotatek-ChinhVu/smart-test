@@ -375,9 +375,30 @@ namespace Domain.Models.Diseases
 
         public int SikkanCd { get; set; }
 
-        public string FullByomei { get => string.Concat(Byomei," ", HosokuCmt); }
+        public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
 
-        public string TenKiBinding 
+        public int ReceTenkiKbn
+        {
+            get
+            {
+                int ret = ReceTenkiKbnConst.Continued;
+                switch (TenkiKbn)
+                {
+                    case TenkiKbnConst.Cured:
+                        ret = ReceTenkiKbnConst.Cured;
+                        break;
+                    case TenkiKbnConst.Canceled:
+                        ret = ReceTenkiKbnConst.Canceled;
+                        break;
+                    case TenkiKbnConst.Dead:
+                        ret = ReceTenkiKbnConst.Dead;
+                        break;
+                }
+                return ret;
+            }
+        }
+
+        public string TenKiBinding
         {
             get
             {
