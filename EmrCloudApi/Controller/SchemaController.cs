@@ -4,6 +4,7 @@ using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
@@ -69,6 +70,14 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveListFilePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveListFileResponse>>(presenter.Result);
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("test-list-form-data")]
+        public IActionResult TestListFormData([FromForm] IList<TestFileRequest> request)
+        {
+            return Ok("ok");
         }
     }
 }
