@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Entity.Tenant;
 using Helper.Common;
@@ -1513,6 +1514,117 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
         return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
     }
+    #endregion
+
+    #region Recalculation Check
+    public List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList)
+    {
+        List<ReceRecalculationModel> receRecalculationList = new();
+        var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
+                                                                       && item.SeikyuYm == sinYm
+                                                                       && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
+                                                        .ToList();
+
+        ptIdList = receInfList.Select(item => item.PtId).ToList();
+
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                   && item.IsDelete == DeleteTypes.None
+                                                                   && ptIdList.Contains(item.PtId))
+                                                    .ToList();
+
+        var receStateList = NoTrackingDataContext.ReceStatuses.Where(item => item.HpId == hpId
+                                                                             && item.SeikyuYm == sinYm
+                                                                             && ptIdList.Contains(item.PtId))
+                                                              .ToList();
+
+        var ptHokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && ptIdList.Contains(item.PtId))
+                                                              .ToList();
+
+        var ptKohiInfList = NoTrackingDataContext.PtKohis.Where(item => item.HpId == hpId
+                                                                        && item.IsDeleted == DeleteTypes.None
+                                                                        && ptIdList.Contains(item.PtId))
+                                                         .ToList();
+
+        var hokenCheckList = NoTrackingDataContext.PtHokenChecks.Where(item => item.HpId == hpId
+                                                                               && item.IsDeleted == DeleteTypes.None
+                                                                               && (item.HokenGrp == 1 || item.HokenGrp == 2)
+                                                                               && ptIdList.Contains(item.PtID))
+                                                                .ToList();
+
+        foreach (var receInf in receInfList)
+        {
+            var ptInf = ptInfList.FirstOrDefault(item => item.PtId == receInf.PtId);
+            if (ptInf == null)
+            {
+                continue;
+            }
+            var ptHokenInf = ptHokenInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.HokenId == item.HokenId);
+            var ptKohi1Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi1Id == item.HokenId);
+            var ptKohi2Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi2Id == item.HokenId);
+            var ptKohi3Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi3Id == item.HokenId);
+            var ptKohi4Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi4Id == item.HokenId);
+            var hokenCheck = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.HokenId == item.HokenId && item.HokenGrp == 1 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var kohi1Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi1Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var kohi2Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi2Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var kohi3Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi3Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var kohi4Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi4Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var receStatus = receStateList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.HokenId == item.HokenId);
+
+            bool isNashi = receInf.Houbetu == HokenConstant.HOUBETU_NASHI;
+            bool isJihi = receInf.HokenKbn == 0 && (receInf.Houbetu == HokenConstant.HOUBETU_JIHI_108 || receInf.Houbetu == HokenConstant.HOUBETU_JIHI_109);
+            bool isHokenConfirmed = isJihi || isNashi || hokenCheck;
+            bool isRosai = receInf.HokenKbn == 11 || receInf.HokenKbn == 12 || receInf.HokenKbn == 13 || (receInf.HokenKbn == 14 && GetSettingValue(hpId, 3001, 0) == 1);
+
+            receRecalculationList.Add(
+                new ReceRecalculationModel(
+                    receInf.SeikyuYm,
+                    ptHokenInf?.RousaiSaigaiKbn ?? 0,
+                    receStatus?.IsPaperRece ?? 0,
+                    ptInf.Birthday,
+                    receInf.PtId,
+                    ptInf.PtNum,
+                    receInf.SinYm,
+                    receInf.Houbetu ?? string.Empty,
+                    receInf.Kohi1Houbetu ?? string.Empty,
+                    receInf.Kohi2Houbetu ?? string.Empty,
+                    receInf.Kohi3Houbetu ?? string.Empty,
+                    receInf.Kohi4Houbetu ?? string.Empty,
+                    receInf.HokenKbn,
+                    receInf.HokenId,
+                    receInf.Kohi1Id,
+                    receInf.Kohi2Id,
+                    receInf.Kohi3Id,
+                    receInf.Kohi4Id,
+                    ptHokenInf?.StartDate ?? 0,
+                    ptKohi1Inf?.StartDate ?? 0,
+                    ptKohi2Inf?.StartDate ?? 0,
+                    ptKohi3Inf?.StartDate ?? 0,
+                    ptKohi4Inf?.StartDate ?? 0,
+                    ptHokenInf?.EndDate ?? 0,
+                    ptKohi1Inf?.EndDate ?? 0,
+                    ptKohi2Inf?.EndDate ?? 0,
+                    ptKohi3Inf?.EndDate ?? 0,
+                    ptKohi4Inf?.EndDate ?? 0,
+                    isHokenConfirmed,
+                    kohi1Check,
+                    kohi2Check,
+                    kohi3Check,
+                    kohi4Check,
+                    ptHokenInf?.RousaiSyobyoDate ?? 0,
+                    isRosai,
+                    receInf.IsTester
+                ));
+        }
+        return receRecalculationList;
+    }
+
+    public List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 
     #region Private function
