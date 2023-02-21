@@ -8,7 +8,6 @@ using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -90,12 +89,12 @@ namespace Infrastructure.Repositories
                                                     k.Kohi4Id,
                                                     k.HokenKbn,
                                                     k.HokenSbtCd,
-                                                    k.ReceSbt,
-                                                    k.Houbetu,
-                                                    k.Kohi1Houbetu,
-                                                    k.Kohi2Houbetu,
-                                                    k.Kohi3Houbetu,
-                                                    k.Kohi4Houbetu,
+                                                    k.ReceSbt ?? string.Empty,
+                                                    k.Houbetu ?? string.Empty,
+                                                    k.Kohi1Houbetu ?? string.Empty,
+                                                    k.Kohi2Houbetu ?? string.Empty,
+                                                    k.Kohi3Houbetu ?? string.Empty,
+                                                    k.Kohi4Houbetu ?? string.Empty,
                                                     k.HonkeKbn,
                                                     k.HokenRate,
                                                     k.PtRate,

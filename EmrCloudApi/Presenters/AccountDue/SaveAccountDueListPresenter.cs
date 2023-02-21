@@ -21,7 +21,7 @@ public class SaveAccountDueListPresenter
         SaveAccountDueListStatus.Successed => ResponseMessage.Success,
         SaveAccountDueListStatus.Failed => ResponseMessage.Failed,
         SaveAccountDueListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-        SaveAccountDueListStatus.InvalidPtId => ResponseMessage.PtInfNotFound,
+        SaveAccountDueListStatus.InvalidPtId => ResponseMessage.NotFoundPtInf,
         SaveAccountDueListStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
         SaveAccountDueListStatus.InvalidUserId => ResponseMessage.InvalidUserId,
         SaveAccountDueListStatus.InvalidNyukinKbn => ResponseMessage.InvalidNyukinKbn,

@@ -24,12 +24,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             var listSanteiInf = _santeiInfRepository.GetListSanteiInf(input.HpId, input.PtId, input.SinDate);
 
             var result = ConvertToResult(input.SinDate, listSanteiInf, listByomeis);
-
             return new GetListSanteiInfOutputData(GetListSanteiInfStatus.Successed, result.Item1, DicAlertTermCombobox(), DicKisanKbnCombobox(), result.Item2);
-        }
-        catch (Exception)
-        {
-            return new GetListSanteiInfOutputData(GetListSanteiInfStatus.Failed);
         }
         finally
         {
@@ -38,7 +33,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
         }
     }
 
-    private Dictionary<int, string> DicAlertTermCombobox()
+    public Dictionary<int, string> DicAlertTermCombobox()
     {
         return new Dictionary<int, string>()
             {
@@ -50,7 +45,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             };
     }
 
-    private Dictionary<int, string> DicKisanKbnCombobox()
+    public Dictionary<int, string> DicKisanKbnCombobox()
     {
         return new Dictionary<int, string>()
             {
@@ -64,7 +59,7 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             };
     }
 
-    private Tuple<List<SanteiInfOutputItem>, List<string>> ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInfs, List<string> listByomeis)
+    public Tuple<List<SanteiInfOutputItem>, List<string>> ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInfs, List<string> listByomeis)
     {
         List<SanteiInfOutputItem> listSanteiInfResult = new();
         foreach (var santeiInf in listSanteiInfs)

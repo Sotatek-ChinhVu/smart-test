@@ -2,6 +2,14 @@
 
 public class SyoukiKbnMstModel
 {
+    public SyoukiKbnMstModel(int syoukiKbn, int startYm)
+    {
+        SyoukiKbn = syoukiKbn;
+        StartYm = startYm;
+        EndYm = 0;
+        Name = string.Empty;
+    }
+
     public SyoukiKbnMstModel(int syoukiKbn, int startYm, int endYm, string name)
     {
         SyoukiKbn = syoukiKbn;

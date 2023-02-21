@@ -235,7 +235,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
@@ -500,21 +500,28 @@ namespace Infrastructure.Repositories
             var groupKeyList = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).Select(p => new { p.GroupId, p.GroupCode });
             if (groupKeyList.Any())
             {
-                var groupIdList = groupKeyList.Select(g => g.GroupId).ToList();
+                var groupIdList = groupKeyList.Select(g => g.GroupId).Distinct().ToList();
                 var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
-                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId))
+                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId) && p.GroupCode != null)
                     .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
                     .ToList();
 
-                List<long> ptIds = new List<long>();
-                foreach (var groupId in groupIdList)
+                if (groupPtByIdList == null)
+                {
+                    return new();
+                }
+
+                string firstGroupCode = groupKeyList.First(g => g.GroupId == groupIdList.First()).GroupCode;
+                var ptIds = groupPtByIdList.Where(g => g.GroupId == groupIdList.First() && g.GroupCode == firstGroupCode).Select(g => g.PtId).ToList();
+                foreach (var groupId in groupIdList.Skip(1))
                 {
                     string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
-                    ptIds.AddRange(groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList());
+                    var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
+                    ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
                 }
 
                 if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
+                ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
 
             // Orders
@@ -646,7 +653,6 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-
             return ptInfWithLastVisitDateQuery
                                             .AsEnumerable()
                                             .Skip((pageIndex - 1) * pageSize)
@@ -818,17 +824,18 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(originKeyword) ||
+                string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
                 return new List<PatientInforModel>();
             }
 
             var ptInfWithLastVisitDate =
             from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
             orderby p.PtNum descending
             select new
             {
@@ -1187,7 +1194,7 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             #region Maxmoney
-            if(maxMoneys != null && maxMoneys.Any())
+            if (maxMoneys != null && maxMoneys.Any())
             {
                 TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
@@ -1646,7 +1653,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x => x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -1860,9 +1867,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 

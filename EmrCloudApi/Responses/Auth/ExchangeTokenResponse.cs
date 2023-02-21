@@ -2,12 +2,13 @@
 
 public class ExchangeTokenResponse
 {
-    public ExchangeTokenResponse(string token, int userId, string name, string kanaName)
+    public ExchangeTokenResponse(string token, int userId, string name, string kanaName, int kaId)
     {
         Token = token;
         UserId = userId;
         Name = name;
         KanaName = kanaName;
+        KaId = kaId;
     }
 
     public string Token { get; private set; }
@@ -17,4 +18,6 @@ public class ExchangeTokenResponse
     public string Name { get; private set; }
 
     public string KanaName { get; private set; }
+
+    public int KaId { get; private set; }
 }

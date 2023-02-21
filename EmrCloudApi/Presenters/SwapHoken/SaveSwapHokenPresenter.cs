@@ -11,9 +11,9 @@ namespace EmrCloudApi.Presenters.SwapHoken
 
         public void Complete(SaveSwapHokenOutputData outputData)
         {
-            Result.Data = new SaveSwapHokenResponse(outputData.Status);
+            Result.Data = new SaveSwapHokenResponse(outputData.Status , outputData.Message , outputData.Type);
             Result.Status = (int)outputData.Status;
-            Result.Message = GetMessage(outputData.Status);
+            Result.Message = outputData.Message ?? GetMessage(outputData.Status);
         }
 
         private string GetMessage(SaveSwapHokenStatus status) => status switch
@@ -21,10 +21,6 @@ namespace EmrCloudApi.Presenters.SwapHoken
             SaveSwapHokenStatus.Successful => ResponseMessage.Success,
             SaveSwapHokenStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             SaveSwapHokenStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-            SaveSwapHokenStatus.SourceInsuranceHasNotSelected => ResponseMessage.SwapHokenSourceInsuranceHasNotSelected,
-            SaveSwapHokenStatus.DesInsuranceHasNotSelected => ResponseMessage.SwapHokenDesInsuranceHasNotSelected,
-            SaveSwapHokenStatus.StartDateGreaterThanEndDate => ResponseMessage.SwapHokenStartDateGreaterThanEndDate,
-            SaveSwapHokenStatus.CantExecCauseNotValidDate => ResponseMessage.SwapHokenCantExecNotValidDate,
             SaveSwapHokenStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };

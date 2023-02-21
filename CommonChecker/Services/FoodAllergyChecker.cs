@@ -8,8 +8,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<PtAlrgyFoodModel> ListPtAlrgyFoods { get; set; } = new List<PtAlrgyFoodModel>();
-
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
@@ -28,7 +26,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
-            List<FoodAllergyResultModel> checkingResult = Finder.CheckFoodAllergy(HpID, PtID, Sinday, listItemCode, settingLevel, ListPtAlrgyFoods);
+            List<FoodAllergyResultModel> checkingResult = Finder!.CheckFoodAllergy(HpID, PtID, Sinday, listItemCode, settingLevel);
             if (!(checkingResult == null || checkingResult.Count == 0))
             {
                 unitCheckerForOrderListResult.ErrorInfo = checkingResult;
