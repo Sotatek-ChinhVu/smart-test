@@ -1217,15 +1217,15 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        private long GetAutoPtNum(int HpId)
+        private long GetAutoPtNum(int hpId)
         {
             long startPtNum = 1;
-            long startPtNumSetting = (long)GetSettingValue(1014, HpId, 1);
+            long startPtNumSetting = (long)GetSettingValue(1014, hpId, 1);
             if (startPtNumSetting > 0)
             {
                 startPtNum = startPtNumSetting;
             }
-            return GetAutoPtNumAction(startPtNum, HpId);
+            return GetAutoPtNumAction(startPtNum, hpId);
         }
 
         private long GetAutoPtNumAction(long startValue, int hpId)
