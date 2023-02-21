@@ -1,18 +1,13 @@
-﻿using CommonChecker;
-using CommonChecker.DB;
+﻿using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
-using CommonCheckers;
-using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Helper.Extension;
-using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using System.Diagnostics;
-using System.Reflection;
 using UseCase.CommonChecker;
 
 namespace Interactor.CommonChecker
@@ -315,7 +310,7 @@ namespace Interactor.CommonChecker
                 InitUnitCheck(drugAllergyChecker);
 
                 return drugAllergyChecker.CheckOrderList(checkingOrderList);
-            }    
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList)
@@ -329,7 +324,7 @@ namespace Interactor.CommonChecker
                 InitUnitCheck(ageChecker);
 
                 return ageChecker.CheckOrderList(checkingOrderList);
-            }    
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList)
@@ -359,9 +354,8 @@ namespace Interactor.CommonChecker
             {
                 InitUnitCheck(dosageChecker);
 
-                var result = dosageChecker.CheckOrderList(checkingOrderList);
-                return result;
-            }    
+                return dosageChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList)
@@ -462,7 +456,7 @@ namespace Interactor.CommonChecker
                 InitUnitCheck(kinkiUserChecker);
 
                 return kinkiUserChecker.CheckOrder(checkingOrder);
-            }   
+            }
         }
         #endregion
 
@@ -888,9 +882,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd ,a.ItemCd, a.KinkiItemCd}
+                                 group a by new { a.AYjCd, a.BYjCd, a.ItemCd, a.KinkiItemCd }
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd , gcs.Key.ItemCd, gcs.Key.KinkiItemCd}
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd }
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
