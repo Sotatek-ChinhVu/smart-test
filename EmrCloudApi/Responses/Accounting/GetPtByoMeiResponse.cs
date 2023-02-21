@@ -1,4 +1,4 @@
-﻿using Domain.Models.Diseases;
+﻿using UseCase.Accounting.GetPtByoMei;
 
 namespace EmrCloudApi.Responses.Accounting
 {

@@ -1,6 +1,6 @@
 ﻿using Helper.Common;
 
-namespace Domain.Models.Diseases
+namespace UseCase.Accounting.GetPtByoMei
 {
     public class PtDiseaseDto
     {
