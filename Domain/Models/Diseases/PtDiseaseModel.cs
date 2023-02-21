@@ -382,38 +382,27 @@ namespace Domain.Models.Diseases
             get
             {
                 int ret = ReceTenkiKbnConst.Continued;
-                if (TogetuByomei == 1)
+                switch (TenkiKbn)
                 {
-                    ret = ReceTenkiKbnConst.Continued;
-                }
-                else if (TenkiKbn == TenkiKbnConst.Other)
-                {
-                    // その他は、継続で出力
-                    ret = ReceTenkiKbnConst.Continued;
-                }
-                else if (TenkiDate / 100 > SinDate / 100)
-                {
-                    ret = ReceTenkiKbnConst.Continued;
-                }
-                else
-                {
-                    switch (TenkiKbn)
-                    {
-                        case TenkiKbnConst.Continued:
-                            ret = ReceTenkiKbnConst.Continued;
-                            break;
-                        case TenkiKbnConst.Cured:
-                            ret = ReceTenkiKbnConst.Cured;
-                            break;
-                        case TenkiKbnConst.Canceled:
-                            ret = ReceTenkiKbnConst.Canceled;
-                            break;
-                        case TenkiKbnConst.Dead:
-                            ret = ReceTenkiKbnConst.Dead;
-                            break;
-                    }
+                    case TenkiKbnConst.Cured:
+                        ret = ReceTenkiKbnConst.Cured;
+                        break;
+                    case TenkiKbnConst.Canceled:
+                        ret = ReceTenkiKbnConst.Canceled;
+                        break;
+                    case TenkiKbnConst.Dead:
+                        ret = ReceTenkiKbnConst.Dead;
+                        break;
                 }
                 return ret;
+            }
+        }
+
+        public string TenKiBinding
+        {
+            get
+            {
+                return TenkiKbnConst.DisplayedTenkiKbnDict[TenkiKbn];
             }
         }
     }
