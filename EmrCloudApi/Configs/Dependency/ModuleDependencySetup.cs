@@ -1,8 +1,5 @@
-﻿using CommonChecker;
-using CommonChecker.DB;
+﻿using CommonChecker.DB;
 using CommonChecker.Services;
-using CommonCheckers;
-using CommonCheckers.OrderRealtimeChecker.DB;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
@@ -139,6 +136,7 @@ using Reporting.Interface;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
+using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
@@ -198,6 +196,7 @@ using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.DeleteHokenMaster;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
+using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenMaster;
@@ -280,6 +279,8 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.GetDiseaseReceList;
+using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
@@ -347,11 +348,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.PtGroupMst.GetGroupNameMst;
-using Reporting;
-using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
-using UseCase.Receipt.GetInsuranceReceInfList;
-using UseCase.Receipt.GetDiseaseReceList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -733,6 +729,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
             busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHistoryOrderInputData, GetAccountingHistoryOrderInteractor>();
+            busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();

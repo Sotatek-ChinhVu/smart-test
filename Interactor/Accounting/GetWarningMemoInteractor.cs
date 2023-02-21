@@ -21,7 +21,7 @@ namespace Interactor.Accounting
             {
                 //Get Raiin Inf
                 var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
-               
+
                 if (!raiinInf.Any())
                     return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.NoData);
 
@@ -30,10 +30,6 @@ namespace Interactor.Accounting
 
                 return new GetWarningMemoOutputData(warning, raiinInf, GetWarningMemoStatus.Successed);
 
-            }
-            catch (Exception)
-            {
-                return new GetWarningMemoOutputData(new List<WarningMemoModel>(), new List<ReceptionDto>(), GetWarningMemoStatus.Failed);
             }
             finally
             {

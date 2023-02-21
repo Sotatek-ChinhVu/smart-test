@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false)
         {
             try
             {
@@ -55,22 +55,29 @@ namespace Infrastructure.Repositories
                                     RaiinInf = raiinInf
                                 };
 
-                var countAcc = NoTrackingDataContext.RaiinInfs.Count(item =>
-                    item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == DeleteTypes.None &&
-                    (item.Status == RaiinState.Calculate || item.Status == RaiinState.Waiting));
-                var lastRaiinInf = listRaiinInf.Last();
-
-                if (lastRaiinInf.Status < RaiinState.Settled)
+                #region GetPersonNumber
+                var countAcc = 0;
+                if (isGetHeader)
                 {
-                    if (listRaiinInf.Count > 1)
+                    countAcc = NoTrackingDataContext.RaiinInfs.Count(item =>
+                   item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == DeleteTypes.None &&
+                   (item.Status == RaiinState.Calculate || item.Status == RaiinState.Waiting));
+                    var lastRaiinInf = listRaiinInf.Last();
+
+                    if (lastRaiinInf.Status < RaiinState.Settled)
                     {
-                        countAcc = countAcc - listRaiinInf.Count();
-                    }
-                    else
-                    {
-                        countAcc--;
+                        if (listRaiinInf.Count > 1)
+                        {
+                            countAcc = countAcc - listRaiinInf.Count();
+                        }
+                        else
+                        {
+                            countAcc--;
+                        }
                     }
                 }
+                #endregion
+
                 return listRaiin
                 .Select(
                     item => new ReceptionDto(item.RaiinInf.RaiinNo, item.RaiinInf.UketukeNo,
