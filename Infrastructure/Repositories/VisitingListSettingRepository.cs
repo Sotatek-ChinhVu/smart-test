@@ -40,7 +40,7 @@ public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettin
                 if (configToUpdate.Param != model.Param)
                 {
                     configToUpdate.Param = model.Param;
-                    configToUpdate.UpdateDate = DateTime.UtcNow;
+                    configToUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     configToUpdate.UpdateId = userId;
                 }
             }
@@ -54,8 +54,8 @@ public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettin
                     Val = model.Val,
                     Param = model.Param,
                     Biko = model.Biko,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 });

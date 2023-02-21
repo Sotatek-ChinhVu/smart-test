@@ -33,9 +33,9 @@ namespace Interactor.PatientInfor
             {
                 (bool, long) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.LimitLists, inputData.UserId);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, inputData.UserId);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.LimitLists, inputData.UserId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, inputData.UserId);
 
                 if (result.Item1)
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.Item2);
@@ -55,9 +55,11 @@ namespace Interactor.PatientInfor
         private IEnumerable<SavePatientInfoValidationResult> Validation(SavePatientInfoInputData model)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
+            bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
+            bool isPatientTest = model.Patient.IsTester == 1 && model.Patient.PtId == 0;
+            bool isUpdate = model.Patient.PtId != 0;
 
             #region Patient Info
-
             if (model.Patient.HpId <= 0)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HpId`"), SavePatientInforValidationCode.InvalidHpId, TypeMessage.TypeMessageError));
 
@@ -67,9 +69,25 @@ namespace Interactor.PatientInfor
             if (model.Patient.KanaName != null && model.Patient.KanaName.Length > 100)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"), SavePatientInforValidationCode.InvalidKanaName, TypeMessage.TypeMessageError));
 
+            string message = string.Empty;
+            if (!isPatientTempotary || isUpdate)
+            {
+                if (model.Patient.Birthday == 0)
+                {
+                    message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "生年月日" });
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidBirthday, TypeMessage.TypeMessageError));
+                }
+
+                if (model.Patient.Sex != 1 && model.Patient.Sex != 2)
+                {
+                    message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "性別" });
+                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidSex, TypeMessage.TypeMessageError));
+                }
+            }
+
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
             int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
-            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, model.Patient.PtId != 0, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
+            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
@@ -238,7 +256,10 @@ namespace Interactor.PatientInfor
         /// <param name="kanjiName">Name</param>
         /// <param name="hpId"></param>
         /// <returns></returns>
-        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName , string kanjiName, int hpId , ReactSavePatientInfo react)
+        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName 
+            , string kanjiName
+            , int hpId 
+            , ReactSavePatientInfo react)
         {
 
             var resultMessages = new List<SavePatientInfoValidationResult>();
@@ -248,9 +269,9 @@ namespace Interactor.PatientInfor
 
             string message = string.Empty;
             if (string.IsNullOrEmpty(firstNameKana))
-            {
-                message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
+            { message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
                 resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKana, TypeMessage.TypeMessageError));
+               
             }
 
             if (string.IsNullOrEmpty(firstNameKanji))

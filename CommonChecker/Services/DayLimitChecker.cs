@@ -1,4 +1,5 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
@@ -29,8 +30,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
                 if (usingDay > 0)
                 {
-                    List<string> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
-                    List<DayLimitResultModel> checkedResult = Finder.CheckDayLimit(HpID, Sinday, listItemCode, usingDay);
+                    List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
+                    List<DayLimitResultModel> checkedResult = Finder!.CheckDayLimit(HpID, Sinday, listItemCode, usingDay);
 
                     if (checkedResult != null && checkedResult.Count > 0)
                     {

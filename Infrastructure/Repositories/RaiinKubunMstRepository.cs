@@ -2,6 +2,7 @@
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -45,8 +46,8 @@ namespace Infrastructure.Repositories
                             r.KbnName ?? string.Empty,
                             r.ColorCd ?? string.Empty,
                             r.IsConfirmed == 1,
-                            r.IsAuto == 1,
-                            r.IsAutoDelete == 1,
+                            r.IsAuto,
+                            r.IsAutoDelete,
                             r.IsDeleted == 1,
                             new List<RaiinKbnKouiModel>(),
                             new List<RaiinKbnItemModel>(),
@@ -88,7 +89,6 @@ namespace Infrastructure.Repositories
             var raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
                                         .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == hpId && r.IsDeleted == 0))
                                         .ToList();
-            var kbnCdList = raiinKubunDetailList.Select(r => r.KbnCd).ToList();
 
             var query = (from kbnDetail in NoTrackingDataContext.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          join kou in NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
@@ -146,18 +146,18 @@ namespace Infrastructure.Repositories
                                         z.KbnCd,
                                         z.SortNo,
                                         z.KbnName ?? string.Empty,
-                                        z.ColorCd ?? String.Empty,
+                                        z.ColorCd?.Length > 0 ? "#" + z.ColorCd : string.Empty,
                                         z.IsConfirmed == 1,
-                                        z.IsAuto == 1,
-                                        z.IsAutoDelete == 1,
+                                        z.IsAuto,
+                                        z.IsAutoDelete,
                                         z.IsDeleted == 1,
                                         raiinKbnKouiList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
-                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
+                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().OrderBy(item => item.SortNo).ToList(),
                                         rsvFrameMstList,
                                         rsvGrpMstList,
                                         raiinKbnYayokuList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList()
-                                        )).Distinct().ToList()
-                                        )).Distinct().ToList();
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList()
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList();
             return raiinKubunMstModels;
         }
 
@@ -235,8 +235,8 @@ namespace Infrastructure.Repositories
                                         SortNo = x.SortNo,
                                         GrpName = x.GroupName,
                                         IsDeleted = x.IsDeleted ? 1 : 0,
-                                        CreateDate = DateTime.UtcNow,
-                                        UpdateDate = DateTime.UtcNow,
+                                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId,
                                         CreateId = userId
                                     }).ToList());
@@ -272,7 +272,7 @@ namespace Infrastructure.Repositories
                                         CreateDate = DateTime.SpecifyKind(DateTime.SpecifyKind(currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc), DateTimeKind.Utc),
                                         CreateId = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateId ?? 0,
                                         CreateMachine = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateMachine ?? string.Empty,
-                                        UpdateDate = DateTime.UtcNow,
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                                         UpdateId = userId
                                     }));
                                 }
@@ -382,8 +382,8 @@ namespace Infrastructure.Repositories
                     RaiinNo = raiinNo,
                     GrpId = grpId,
                     KbnCd = kbnCd,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 });
@@ -392,7 +392,7 @@ namespace Infrastructure.Repositories
             {
                 // Update
                 raiinKbnInf.KbnCd = kbnCd;
-                raiinKbnInf.UpdateDate = DateTime.UtcNow;
+                raiinKbnInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 raiinKbnInf.UpdateId = userId;
             }
 
@@ -558,8 +558,8 @@ namespace Infrastructure.Repositories
                             RaiinNo = raiinInf.RaiinNo,
                             GrpId = kbnInfDto.GrpId,
                             KbnCd = kbnInfDto.KbnCd,
-                            CreateDate = DateTime.UtcNow,
-                            UpdateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId,
                             CreateId = userId
                         });
@@ -568,7 +568,7 @@ namespace Infrastructure.Repositories
                     {
                         // Update
                         existingEntity.KbnCd = kbnInfDto.KbnCd;
-                        existingEntity.UpdateDate = DateTime.UtcNow;
+                        existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         existingEntity.UpdateId = userId;
                     }
                 }
@@ -605,11 +605,11 @@ namespace Infrastructure.Repositories
                     KbnName = x.KubunName,
                     ColorCd = x.ColorCd,
                     IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto ? 1 : 0,
-                    IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
+                    IsAuto = x.IsAuto,
+                    IsAutoDelete = x.IsAutoDeleted,
                     IsDeleted = x.IsDeleted ? 1 : 0,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 }));
@@ -635,10 +635,10 @@ namespace Infrastructure.Repositories
                     KbnCd = kbnCd,
                     SeqNo = x.SeqNo,
                     KouiKbnId = x.KouiKbnId,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId
                 }));
             }
@@ -665,10 +665,10 @@ namespace Infrastructure.Repositories
                     ItemCd = x.ItemCd,
                     IsExclude = x.IsExclude,
                     IsDeleted = x.IsDeleted,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     SortNo = x.SortNo,
-                    CreateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId,
                 }));
             }
@@ -693,8 +693,8 @@ namespace Infrastructure.Repositories
                     SeqNo = x.SeqNo,
                     YoyakuCd = x.YoyakuCd,
                     IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
                 }));
@@ -756,13 +756,13 @@ namespace Infrastructure.Repositories
                     KbnName = x.KubunName,
                     ColorCd = x.ColorCd,
                     IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto ? 1 : 0,
-                    IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
+                    IsAuto = x.IsAuto,
+                    IsAutoDelete = x.IsAutoDeleted,
                     IsDeleted = x.IsDeleted ? 1 : 0,
                     CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
                     CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                 }));
                 TrackingDataContext.SaveChanges();
@@ -784,7 +784,7 @@ namespace Infrastructure.Repositories
                     CreateDate = DateTime.SpecifyKind(raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateId ?? 0,
                     CreateMachine = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateMachine ?? string.Empty,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }));
             }
@@ -808,7 +808,7 @@ namespace Infrastructure.Repositories
                     CreateDate = DateTime.SpecifyKind(raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateId ?? 0,
                     CreateMachine = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateMachine ?? string.Empty,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }));
             }
@@ -830,7 +830,7 @@ namespace Infrastructure.Repositories
                     CreateDate = DateTime.SpecifyKind(raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateId ?? 0,
                     CreateMachine = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateMachine ?? string.Empty,
-                    UpdateDate = DateTime.UtcNow,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }).ToList();
                 TrackingDataContext.RaiinKbnYayokus.UpdateRange(updateModel);

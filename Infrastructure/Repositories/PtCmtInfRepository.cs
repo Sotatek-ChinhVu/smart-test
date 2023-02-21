@@ -1,5 +1,6 @@
 ﻿using Domain.Models.PtCmtInf;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -50,8 +51,8 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
                 HpId = 1,
                 PtId = ptId,
                 Text = text,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
                 CreateId = userId
             });
@@ -61,7 +62,7 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
             var ptCmt = ptCmtList[0];
 
             ptCmt.Text = text;
-            ptCmt.UpdateDate = DateTime.UtcNow;
+            ptCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
             ptCmt.UpdateId = userId;
         }
 

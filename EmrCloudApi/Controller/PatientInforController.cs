@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -43,7 +44,6 @@ using EmrCloudApi.Responses.SwapHoken;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
-using UseCase.CommonChecker;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
@@ -75,7 +75,20 @@ using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SwapHoken.Save;
-using Domain.Models.GroupInf;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor;
+using UseCase.PatientInfor.GetListPatient;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using Domain.Models.PtGroupMst;
+using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
+using EmrCloudApi.Presenters.MaxMoney;
+using UseCase.SwapHoken.Validate;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Messages;
+using UseCase.PtGroupMst.GetGroupNameMst;
+using UseCase.PtGroupMst.CheckAllowDelete;
 
 namespace EmrCloudApi.Controller
 {
@@ -83,9 +96,11 @@ namespace EmrCloudApi.Controller
     public class PatientInforController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public PatientInforController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
@@ -391,7 +406,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SavePatientInfo)]
-        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
             PatientInforSaveModel patient = new PatientInforSaveModel(HpId,
                       request.Patient.PtId,
@@ -453,7 +468,7 @@ namespace EmrCloudApi.Controller
 
             List<GroupInfModel> grpInfs = request.PtGrps.Select(x => new GroupInfModel(
                                                 x.HpPt,
-                                                x.PtId, 
+                                                x.PtId,
                                                 x.GroupId,
                                                 x.GroupCode,
                                                 x.GroupName)).ToList();
@@ -571,9 +586,16 @@ namespace EmrCloudApi.Controller
                  hokenKohis,
                  grpInfs,
                  request.ReactSave,
-                 request.LimitLists,
+                 request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
+            
+            if (output.Status == SavePatientInfoStatus.Successful)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
+                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
+            }
+
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
@@ -603,14 +625,19 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
             var input = new SaveSwapHokenInputData(HpId,
-               request.PtId,
-               request.HokenIdBefore,
-               request.HokenIdAfter,
-               request.HokenPidBefore,
-               request.HokenPidAfter,
-               request.StartDate,
-               request.EndDate,
-               UserId);
+                                                   request.PtId,
+                                                   request.HokenIdBefore,
+                                                   request.HokenNameBefore,
+                                                   request.HokenIdAfter,
+                                                   request.HokenNameAfter,
+                                                   request.HokenPidBefore,
+                                                   request.HokenPidAfter, 
+                                                   request.StartDate,
+                                                   request.EndDate,
+                                                   request.IsHokenPatternUsed,
+                                                   request.ConfirmInvalidIsShowConversionCondition,
+                                                   request.ConfirmSwapHoken,
+                                                   UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
@@ -753,25 +780,82 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
         }
 
-
         [HttpPost(ApiPath.SaveGroupNameMst)]
         public ActionResult<Response<SaveGroupNameMstResponse>> SaveGroupNameMst([FromBody] SaveGroupNameMstRequest request)
         {
-            var input = new SaveGroupNameMstInputData(UserId, HpId, request.GroupNameMsts);
+            var inputModel = request.PtGroupMsts.Select(x => new GroupNameMstModel(
+                                                            x.GrpId,
+                                                            x.SortNo,
+                                                            x.GrpName,
+                                                            0,
+                                                            x.GroupItems.Select(m => new GroupItemModel(
+                                                                m.GrpId,
+                                                                m.GrpCode,
+                                                                m.SeqNo,
+                                                                m.GrpCodeName,
+                                                                m.SortNo,
+                                                                0)).ToList())).ToList();
+
+            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel); 
             var output = _bus.Handle(input);
             var presenter = new SaveGroupNameMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.OrderRealtimeChecker)]
-        public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
         {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder);
+            var input = new GetListPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
             var output = _bus.Handle(input);
-            var presenter = new OrderRealtimeCheckerPresenter();
+            var presenter = new GetListPatientInfoPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
+            return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
+        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        {
+            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxMoneyByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.ValidateSwapHoken)]
+        public ActionResult<Response<ValidateSwapHokenResponse>> ValidateSwapHoken([FromBody] ValidateSwapHokenRequest request)
+        {
+            var input = new ValidateSwapHokenInputData(HpId,
+               request.PtId,
+               request.HokenPid,
+               request.StartDate,
+               request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new ValidateSwapHokenPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidateSwapHokenResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetGroupNameMst)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
+        {
+            var input = new GetGroupNameMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckAllowDeleteGroupMst)]
+        public ActionResult<Response<CheckAllowDeleteGroupMstResponse>> CheckAllowDeleteGroupMst([FromBody] CheckAllowDeleteGroupMstRequest request)
+        {
+            var input = new CheckAllowDeleteGroupMstInputData(HpId, request.GroupId, request.GroupCode, request.CheckAllowDeleteGroupName);
+            var output = _bus.Handle(input);
+            var presenter = new CheckAllowDeleteGroupMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckAllowDeleteGroupMstResponse>>(presenter.Result);
         }
     }
 }

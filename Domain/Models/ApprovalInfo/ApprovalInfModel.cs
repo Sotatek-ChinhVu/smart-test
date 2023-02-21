@@ -28,6 +28,8 @@ namespace Domain.Models.ApprovalInfo
             RaiinNo = raiinNo;
             PtId = ptId;
             SinDate = sinDate;
+            KanaName = string.Empty;
+            Name = string.Empty;
         }
         public int HpId { get; private set; }
 

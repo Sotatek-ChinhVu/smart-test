@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
 
@@ -29,5 +30,9 @@ namespace Domain.Models.TodayOdr
         (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<OrdInfModel> allOrder);
 
         List<RaiinKbnModel> InitDefaultByTodayOrder(List<RaiinKbnModel> raiinKbns, List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> raiinKouiKbns, List<RaiinKbnItemModel> raiinKbnItemCds, List<OrdInfModel> todayOrds);
+
+        Dictionary<string, bool> ConvertInputItemToTodayOdr(int hpId, int sinDate, Dictionary<string, string> detailInfs);
+
+        List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels);
     }
 }

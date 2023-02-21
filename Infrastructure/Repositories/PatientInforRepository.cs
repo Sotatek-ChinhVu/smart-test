@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -14,6 +15,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -58,6 +60,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
                 where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                orderby p.PtNum descending
                 select new
                 {
                     ptInf = p,
@@ -232,7 +235,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
@@ -492,28 +495,35 @@ namespace Infrastructure.Repositories
                 if (ptIds.Count == 0) return new();
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
             }
+
             // PatientGroups
-            var validPatientGroups = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).ToList();
-            if (validPatientGroups.Any())
+            var groupKeyList = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).Select(p => new { p.GroupId, p.GroupCode });
+            if (groupKeyList.Any())
             {
-                var ptGrpInfQuery = NoTrackingDataContext.PtGrpInfs.Where(p => p.IsDeleted == DeleteTypes.None);
-                var firstGrp = validPatientGroups.First();
-                var ptIdsByPtGroupsQuery = ptGrpInfQuery.Where(p => p.GroupId == firstGrp.GroupId && p.GroupCode == firstGrp.GroupCode).Select(p => p.PtId);
-                // Inner join with another groups
-                for (int i = 1; i < validPatientGroups.Count; i++)
+                var groupIdList = groupKeyList.Select(g => g.GroupId).Distinct().ToList();
+                var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
+                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId) && p.GroupCode != null)
+                    .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
+                    .ToList();
+
+                if (groupPtByIdList == null)
                 {
-                    var anotherGrp = validPatientGroups[i];
-                    ptIdsByPtGroupsQuery =
-                        from ptId in ptIdsByPtGroupsQuery
-                        join anotherPtGrpInf in ptGrpInfQuery on ptId equals anotherPtGrpInf.PtId
-                        where anotherPtGrpInf.GroupId == anotherGrp.GroupId && anotherPtGrpInf.GroupCode == anotherGrp.GroupCode
-                        select ptId;
+                    return new();
                 }
 
-                var ptIds = ptIdsByPtGroupsQuery.ToList();
+                string firstGroupCode = groupKeyList.First(g => g.GroupId == groupIdList.First()).GroupCode;
+                var ptIds = groupPtByIdList.Where(g => g.GroupId == groupIdList.First() && g.GroupCode == firstGroupCode).Select(g => g.PtId).ToList();
+                foreach (var groupId in groupIdList.Skip(1))
+                {
+                    string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
+                    var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
+                    ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
+                }
+
                 if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
+                ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
+
             // Orders
             if (input.OrderItemCodes.Any())
             {
@@ -643,7 +653,6 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-
             return ptInfWithLastVisitDateQuery
                                             .AsEnumerable()
                                             .Skip((pageIndex - 1) * pageSize)
@@ -758,6 +767,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 (from p in NoTrackingDataContext.PtInfs
                  where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 orderby p.PtNum descending
                  select new
                  {
                      ptInf = p,
@@ -791,6 +801,7 @@ namespace Infrastructure.Repositories
             where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
                                       p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -813,17 +824,19 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(originKeyword) ||
+                string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
                 return new List<PatientInforModel>();
             }
 
             var ptInfWithLastVisitDate =
             from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -953,9 +966,9 @@ namespace Infrastructure.Repositories
                             HokenNo = item.HokenNo,
                             HokenEdaNo = item.HokenEdaNo,
                             IsDeleted = 0,
-                            CreateDate = DateTime.UtcNow,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId,
                             SortNo = sortNo
                         });
@@ -983,7 +996,7 @@ namespace Infrastructure.Repositories
                             CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
                             CreateId = checkExistDefHoken.CreateId,
                             CreateMachine = checkExistDefHoken.CreateMachine,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId,
                             SortNo = sortNo
                         });
@@ -1001,7 +1014,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1017,10 +1030,10 @@ namespace Infrastructure.Repositories
                 if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
             }
-            patientInsert.CreateDate = DateTime.UtcNow;
+            patientInsert.CreateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.CreateId = userId;
             patientInsert.UpdateId = userId;
-            patientInsert.UpdateDate = DateTime.UtcNow;
+            patientInsert.UpdateDate = CIUtil.GetJapanDateTimeNow();
             patientInsert.HpId = hpId;
             TrackingDataContext.PtInfs.Add(patientInsert);
             bool resultCreatePatient = TrackingDataContext.SaveChanges() > 0;
@@ -1035,9 +1048,9 @@ namespace Infrastructure.Repositories
                     dest.CreateId = userId;
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
-                    dest.CreateDate = DateTime.UtcNow;
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                     dest.UpdateId = userId;
-                    dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     return dest;
                 });
                 TrackingDataContext.PtSanteiConfs.AddRange(ptSanteiInserts);
@@ -1051,8 +1064,8 @@ namespace Infrastructure.Repositories
                     PtId = patientInsert.PtId,
                     Memo = ptInf.Memo,
                     CreateId = userId,
-                    CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 });
             }
@@ -1061,11 +1074,11 @@ namespace Infrastructure.Repositories
             {
                 var listPtGrpInf = Mapper.Map<GroupInfModel, PtGrpInf>(ptGrps, (src, dest) =>
                 {
-                    dest.CreateDate = DateTime.UtcNow;
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                     dest.CreateId = userId;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
-                    dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dest.UpdateId = userId;
                     return dest;
                 });
@@ -1076,12 +1089,12 @@ namespace Infrastructure.Repositories
             {
                 var ptKyuseiList = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis, (src, dest) =>
                 {
-                    dest.CreateDate = DateTime.UtcNow;
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                     dest.CreateId = userId;
                     dest.UpdateId = userId;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
-                    dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     return dest;
                 });
                 TrackingDataContext.PtKyuseis.AddRange(ptKyuseiList);
@@ -1092,8 +1105,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.UpdateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1106,9 +1119,9 @@ namespace Infrastructure.Repositories
             List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1124,8 +1137,8 @@ namespace Infrastructure.Repositories
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateDate = DateTime.UtcNow;
-                    destR.UpdateDate = DateTime.UtcNow;
+                    destR.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destR.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     return destR;
                 }));
                 #endregion
@@ -1134,7 +1147,7 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
                     destCf.CreateId = userId;
-                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
@@ -1154,9 +1167,9 @@ namespace Infrastructure.Repositories
             List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.UpdateId = userId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1164,13 +1177,13 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
                     destCf.CreateId = userId;
-                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInsert.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
@@ -1181,12 +1194,12 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             #region Maxmoney
-            if(limitLists != null && limitLists.Any())
+            if (maxMoneys != null && maxMoneys.Any())
             {
-                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists, (src, dest) =>
+                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
-                    dest.UpdateDate = DateTime.UtcNow;
-                    dest.CreateDate = DateTime.UtcNow;
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
                     dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
@@ -1204,7 +1217,7 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1216,7 +1229,7 @@ namespace Infrastructure.Repositories
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
                 return dest;
             });
@@ -1229,7 +1242,7 @@ namespace Infrastructure.Repositories
                 if (string.IsNullOrEmpty(ptInf.Memo))
                 {
                     memoCurrent.IsDeleted = 1;
-                    memoCurrent.UpdateDate = DateTime.UtcNow;
+                    memoCurrent.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     memoCurrent.UpdateId = userId;
                 }
                 else
@@ -1237,7 +1250,7 @@ namespace Infrastructure.Repositories
                     if (memoCurrent.Memo != null && !memoCurrent.Memo.Equals(ptInf.Memo))
                     {
                         memoCurrent.IsDeleted = 1;
-                        memoCurrent.UpdateDate = DateTime.UtcNow;
+                        memoCurrent.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         memoCurrent.UpdateId = userId;
                         TrackingDataContext.PtMemos.Add(new PtMemo()
                         {
@@ -1245,9 +1258,9 @@ namespace Infrastructure.Repositories
                             PtId = patientInfo.PtId,
                             Memo = ptInf.Memo,
                             CreateId = userId,
-                            UpdateDate = DateTime.UtcNow,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = userId,
-                            CreateDate = DateTime.UtcNow
+                            CreateDate = CIUtil.GetJapanDateTimeNow()
                         });
                     }
                 }
@@ -1263,9 +1276,9 @@ namespace Infrastructure.Repositories
                         PtId = patientInfo.PtId,
                         Memo = ptInf.Memo,
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                     });
                 }
             }
@@ -1278,17 +1291,17 @@ namespace Infrastructure.Repositories
             foreach (var item in ptSanteiConfRemoves)
             {
                 item.UpdateId = userId;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.IsDeleted = DeleteTypes.Deleted;
             }
 
             var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) =>
             {
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateId = userId;
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
                 return dest;
             });
@@ -1305,7 +1318,7 @@ namespace Infrastructure.Repositories
                     ptSanteiUpdate.StartDate = item.StartDate;
                     ptSanteiUpdate.EndDate = item.EndDate;
                     ptSanteiUpdate.UpdateId = userId;
-                    ptSanteiUpdate.UpdateDate = DateTime.UtcNow;
+                    ptSanteiUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
             }
             #endregion
@@ -1318,18 +1331,18 @@ namespace Infrastructure.Repositories
             foreach (var item in KyuseiRemoves)
             {
                 item.UpdateId = userId;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.IsDeleted = DeleteTypes.Deleted;
             }
 
             var ptKyuseiListAdd = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis.Where(x => x.SeqNo == 0), (src, dest) =>
             {
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateId = userId;
                 dest.UpdateId = userId;
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 return dest;
             });
             TrackingDataContext.PtKyuseis.AddRange(ptKyuseiListAdd);
@@ -1339,7 +1352,7 @@ namespace Infrastructure.Repositories
                 var kyuseiUpdate = databaseKyuseis.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if (kyuseiUpdate != null)
                 {
-                    kyuseiUpdate.UpdateDate = DateTime.UtcNow;
+                    kyuseiUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
@@ -1356,7 +1369,7 @@ namespace Infrastructure.Repositories
             foreach (var item in GrpInRemoves)
             {
                 item.UpdateId = userId;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.IsDeleted = DeleteTypes.Deleted;
             }
 
@@ -1368,16 +1381,16 @@ namespace Infrastructure.Repositories
                 {
                     //Remove record old
                     info.UpdateId = userId;
-                    info.UpdateDate = DateTime.UtcNow;
+                    info.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     info.IsDeleted = DeleteTypes.Deleted;
 
                     //clone new record
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
                     {
                         dest.CreateId = userId;
-                        dest.CreateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         return dest;
@@ -1390,8 +1403,8 @@ namespace Infrastructure.Repositories
                     {
                         dest.CreateId = userId;
                         dest.UpdateId = userId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         return dest;
@@ -1402,7 +1415,7 @@ namespace Infrastructure.Repositories
                 {
                     //delete it 
                     info.UpdateId = userId;
-                    info.UpdateDate = DateTime.UtcNow;
+                    info.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     info.IsDeleted = DeleteTypes.Deleted;
                 }
             }
@@ -1420,16 +1433,16 @@ namespace Infrastructure.Repositories
             deleteHokenPartterns.ForEach(x =>
             {
                 x.IsDeleted = DeleteTypes.Deleted;
-                x.UpdateDate = DateTime.UtcNow;
+                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 x.UpdateId = userId;
             });
 
             List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1444,7 +1457,7 @@ namespace Infrastructure.Repositories
                     Mapper.Map(item, modelUpdate, (src, dest) =>
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     });
@@ -1456,9 +1469,9 @@ namespace Infrastructure.Repositories
             List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1474,8 +1487,8 @@ namespace Infrastructure.Repositories
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
                     destR.UpdateId = userId;
-                    destR.CreateDate = DateTime.UtcNow;
-                    destR.UpdateDate = DateTime.UtcNow;
+                    destR.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destR.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     return destR;
                 }));
                 #endregion
@@ -1485,8 +1498,8 @@ namespace Infrastructure.Repositories
                 {
                     destCf.CreateId = userId;
                     destCf.UpdateId = userId;
-                    destCf.CreateDate = DateTime.UtcNow;
-                    destCf.UpdateDate = DateTime.UtcNow;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destCf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
@@ -1511,7 +1524,7 @@ namespace Infrastructure.Repositories
                     Mapper.Map(item, updateHokenInf, (src, dest) =>
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     });
@@ -1529,9 +1542,9 @@ namespace Infrastructure.Repositories
                         dest.HpId = hpId;
                         dest.HokenId = updateHokenInf.HokenId;
                         dest.CreateId = userId;
-                        dest.CreateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         return dest;
                     });
                     TrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
@@ -1544,7 +1557,7 @@ namespace Infrastructure.Repositories
                             updateItem.Sinkei = rsTkUpdate.RousaiTenkiSinkei;
                             updateItem.Tenki = rsTkUpdate.RousaiTenkiTenki;
                             updateItem.EndDate = rsTkUpdate.RousaiTenkiEndDate;
-                            updateItem.UpdateDate = DateTime.UtcNow;
+                            updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         }
                     }
 
@@ -1555,7 +1568,7 @@ namespace Infrastructure.Repositories
                     {
                         x.IsDeleted = 1;
                         x.UpdateId = userId;
-                        x.UpdateDate = DateTime.UtcNow;
+                        x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     });
                 }
             }
@@ -1566,8 +1579,8 @@ namespace Infrastructure.Repositories
             List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew && x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateId = userId;
-                dest.CreateDate = DateTime.UtcNow;
-                dest.UpdateDate = DateTime.UtcNow;
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateId = userId;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
@@ -1576,8 +1589,8 @@ namespace Infrastructure.Repositories
                 TrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
                     destCf.CreateId = userId;
-                    destCf.CreateDate = DateTime.UtcNow;
-                    destCf.UpdateDate = DateTime.UtcNow;
+                    destCf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    destCf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     destCf.UpdateId = userId;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
@@ -1603,7 +1616,7 @@ namespace Infrastructure.Repositories
                     Mapper.Map(item, updateKohi, (src, dest) =>
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     });
@@ -1621,11 +1634,11 @@ namespace Infrastructure.Repositories
 
             foreach (var item in maxMoneyDatabases)
             {
-                var exist = limitLists.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
+                var exist = maxMoneys.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
                 if (exist == null)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
                 else
@@ -1635,15 +1648,15 @@ namespace Infrastructure.Repositories
                     item.TotalGaku = exist.TotalGaku;
                     item.Biko = exist.Biko;
                     item.SinDate = exist.SinDateY * 10000 + exist.SinDateM * 100 + exist.SinDateD;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x => x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
-                dest.UpdateDate = DateTime.UtcNow;
-                dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.SinDate = src.SinDateY * 10000 + src.SinDateM * 100 + src.SinDateD;
@@ -1732,8 +1745,8 @@ namespace Infrastructure.Repositories
                 addedHokenCheck.CheckId = actUserId;
                 addedHokenCheck.CheckCmt = createItem.CheckComment;
                 addedHokenCheck.CreateId = actUserId;
-                addedHokenCheck.CreateDate = DateTime.UtcNow;
-                addedHokenCheck.UpdateDate = DateTime.UtcNow;
+                addedHokenCheck.CreateDate = CIUtil.GetJapanDateTimeNow();
+                addedHokenCheck.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 addedHokenCheck.UpdateId = actUserId;
                 TrackingDataContext.PtHokenChecks.Add(addedHokenCheck);
             }
@@ -1748,7 +1761,7 @@ namespace Infrastructure.Repositories
                     modelUpdate.CheckId = actUserId;
                     modelUpdate.CheckCmt = updateItem.CheckComment;
                     modelUpdate.CreateId = actUserId;
-                    modelUpdate.UpdateDate = DateTime.UtcNow;
+                    modelUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 }
             }
         }
@@ -1759,14 +1772,14 @@ namespace Infrastructure.Repositories
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
-                patientInf.UpdateDate = DateTime.UtcNow;
+                patientInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 patientInf.UpdateId = userId;
                 #region PtMemo
                 var ptMemos = TrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 foreach (var item in ptMemos)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
-                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     item.UpdateId = userId;
                 }
                 #endregion
@@ -1777,7 +1790,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
 
@@ -1787,7 +1800,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
 
@@ -1797,7 +1810,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
 
@@ -1807,7 +1820,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
 
@@ -1816,7 +1829,7 @@ namespace Infrastructure.Repositories
                 ptHokenKohis.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     x.UpdateId = userId;
                 });
                 #endregion
@@ -1827,7 +1840,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
 
@@ -1837,7 +1850,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = userId;
-                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 });
                 #endregion
             }
@@ -1854,9 +1867,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 
@@ -1875,6 +1891,46 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            string keyword = ptId.ToString();
+
+            var result = new List<PatientInforModel>();
+            var ptInfs = NoTrackingDataContext.PtInfs
+                .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
+                .OrderBy(x => x.PtNum)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var ptIdList = ptInfs.Select(p => p.PtId).ToList();
+
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0 &&
+                    ptIdList.Contains(x.PtId))
+                .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
+                .Select(grp => new
+                {
+                    grp.Key.PtId,
+                    SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
+                })
+                .ToList();
+
+            result = ptInfs.Select((x) => new PatientInforModel(
+                            x.HpId,
+                            x.PtId,
+                            x.PtNum,
+                            x.KanaName ?? string.Empty,
+                            x.Name ?? string.Empty,
+                            x.Birthday,
+                            raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
+                            ))
+                            .ToList();
+            return result;
         }
     }
 }

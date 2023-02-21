@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Santei;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -391,7 +392,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     {
                         santeiInf.AlertTerm = model.AlertTerm;
                         santeiInf.AlertDays = model.AlertDays;
-                        santeiInf.UpdateDate = DateTime.UtcNow;
+                        santeiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         santeiInf.UpdateId = userId;
                     }
                 }
@@ -400,7 +401,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         return SaveListSanteiInfDetail(hpId, userId, listSanteiInfDetailUpdates);
     }
 
-    private bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
+    public bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
     {
         var listSanteiInfDetailId = listSanteiInfDetailModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
         var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => listSanteiInfDetailId.Contains(item.Id)).ToList();
@@ -415,7 +416,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 var santeiInfDetail = listSanteiInfDetailDb.FirstOrDefault(item => item.Id == model.Id);
                 if (santeiInfDetail != null)
                 {
-                    santeiInfDetail.UpdateDate = DateTime.UtcNow;
+                    santeiInfDetail.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     santeiInfDetail.UpdateId = userId;
                     if (model.IsDeleted)
                     {
@@ -433,6 +434,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 }
             }
         }
+        TrackingDataContext.SaveChanges();
         return true;
     }
 
@@ -447,9 +449,9 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             SeqNo = lastSeqNo + 1,
             AlertDays = model.AlertDays,
             AlertTerm = model.AlertTerm,
-            CreateDate = DateTime.UtcNow,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
             CreateId = userId,
-            UpdateDate = DateTime.UtcNow,
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateId = userId
         };
     }
@@ -469,9 +471,9 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             HosokuComment = model.HosokuComment,
             Comment = model.Comment,
             IsDeleted = 0,
-            CreateDate = DateTime.UtcNow,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
             CreateId = userId,
-            UpdateDate = DateTime.UtcNow,
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateId = userId
         };
     }

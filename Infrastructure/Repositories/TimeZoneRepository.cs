@@ -1,9 +1,9 @@
 ﻿using Domain.Models.TimeZone;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -93,8 +93,8 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
                 EndTime = 0,
                 CreateId = userId,
                 UpdateId = userId,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
             TrackingDataContext.TimeZoneDayInfs.Add(timeDayInf);
 

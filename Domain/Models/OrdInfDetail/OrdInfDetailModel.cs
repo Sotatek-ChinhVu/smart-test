@@ -62,6 +62,13 @@ namespace Domain.Models.OrdInfDetails
         public string OdrUnitName { get; private set; }
         public string CenterItemCd1 { get; private set; }
         public string CenterItemCd2 { get; private set; }
+        public int SinYm
+        {
+            get
+            {
+                return SinDate / 100;
+            }
+        }
 
 
         public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2)
@@ -268,6 +275,39 @@ namespace Domain.Models.OrdInfDetails
         }
 
 
+        public OrdInfDetailModel(int hpId, int sinDate, long raiinNo, long rpEdaNo, long rpNo, long ptId, string itemCd, double suryo, string itemName)
+        {
+
+            ItemName = itemName;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CnvUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            HpId = hpId;
+            ItemCd = itemCd;
+            SinDate = sinDate;
+            Suryo = suryo;
+            RaiinNo = raiinNo;
+            RpEdaNo = rpEdaNo;
+            RpNo = rpNo;
+            PtId = ptId;
+        }
+
         public bool IsSpecialItem
         {
             get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
@@ -425,5 +465,7 @@ namespace Domain.Models.OrdInfDetails
 
             return OrdInfValidationStatus.Valid;
         }
+
+
     }
 }

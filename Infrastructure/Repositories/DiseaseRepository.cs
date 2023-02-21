@@ -2,10 +2,11 @@
 using Domain.Enum;
 using Domain.Models.Diseases;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -116,7 +117,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
+        public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom, bool isContiFiltered, bool isInMonthFiltered)
         {
             var ptByomeiListQueryable = NoTrackingDataContext.PtByomeis
                 .Where(p => p.HpId == hpId &&
@@ -127,6 +128,15 @@ namespace Infrastructure.Repositories
             if (hokenId > 0)
             {
                 ptByomeiListQueryable = ptByomeiListQueryable.Where(b => b.HokenPid == hokenId || b.HokenPid == 0);
+            }
+
+            if (isContiFiltered)
+            {
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(x => x.TenkiKbn <= TenkiKbnConst.Continued);
+            }
+            else if (isInMonthFiltered)
+            {
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(x => x.TenkiKbn <= TenkiKbnConst.Continued || (x.StartDate <= (sinDate / 100 * 100 + 31) && x.TenkiDate >= (sinDate / 100 * 100 + 1)));
             }
 
             var ptByomeiList = ptByomeiListQueryable.OrderBy(p => p.TenkiKbn)
@@ -212,6 +222,47 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId ,int sinDate)
+        {
+            var genarationMst = NoTrackingDataContext.ByomeiSetGenerationMsts
+                                         .Where(p => p.IsDeleted == DeleteTypes.None)
+                                         .OrderByDescending(p => p.StartDate)
+                                         .FirstOrDefault(q => q.StartDate <= sinDate);
+
+            if (genarationMst == null) return new List<ByomeiSetMstModel>();
+
+            var byomeiSetMst = NoTrackingDataContext.ByomeiSetMsts
+                                        .Where(p => p.HpId == hpId &&
+                                               p.IsDeleted == DeleteTypes.None &&
+                                               p.GenerationId == genarationMst.GenerationId);
+
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+
+
+            var query = from byomeiSet in byomeiSetMst
+                        join byomeiMst in byomeiMsts
+                        on byomeiSet.ByomeiCd equals byomeiMst.ByomeiCd into ps
+                        from p in ps.DefaultIfEmpty()
+                        select new { byomeiSet = byomeiSet, byomeiMst = p };
+
+            return query.Select(x => new ByomeiSetMstModel(x.byomeiSet.GenerationId,
+                                                                x.byomeiSet.SeqNo,
+                                                                x.byomeiSet.Level1,
+                                                                x.byomeiSet.Level2,
+                                                                x.byomeiSet.Level3,
+                                                                x.byomeiSet.Level4,
+                                                                x.byomeiSet.Level5,
+                                                                x.byomeiSet.ByomeiCd ?? string.Empty,
+                                                                x.byomeiMst.Byomei ?? string.Empty,
+                                                                x.byomeiMst.Icd101 ?? string.Empty,
+                                                                x.byomeiMst.Icd102 ?? string.Empty,
+                                                                x.byomeiMst.Icd1012013 ?? string.Empty,
+                                                                x.byomeiMst.Icd1022013 ?? string.Empty,
+                                                                x.byomeiSet.SetName ?? string.Empty,
+                                                                x.byomeiSet.IsTitle,
+                                                                x.byomeiSet.SelectType)).ToList();
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
@@ -242,7 +293,7 @@ namespace Infrastructure.Repositories
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
                         ptByomei.UpdateId = userId;
-                        ptByomei.UpdateDate = DateTime.UtcNow;
+                        ptByomei.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
@@ -301,11 +352,11 @@ namespace Infrastructure.Repositories
                 IsNodspRece = model.IsNodspRece,
                 IsNodspKarte = model.IsNodspKarte,
                 CreateId = userId,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 SeqNo = model.SeqNo,
                 IsImportant = model.IsImportant,
                 UpdateId = userId,
-                UpdateDate = DateTime.UtcNow
+                UpdateDate = CIUtil.GetJapanDateTimeNow()
             };
         }
 

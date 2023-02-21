@@ -1,9 +1,9 @@
 ﻿using Domain.Models.RaiinCmtInf;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
@@ -36,9 +36,9 @@ public class RaiinCmtInfRepository : RepositoryBase, IRaiinCmtInfRepository
                 RaiinNo = raiinNo,
                 CmtKbn = cmtKbn,
                 Text = text,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId
             });
         }
@@ -46,7 +46,7 @@ public class RaiinCmtInfRepository : RepositoryBase, IRaiinCmtInfRepository
         {
             // Update
             raiinCmt.Text = text;
-            raiinCmt.UpdateDate = DateTime.UtcNow;
+            raiinCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
             raiinCmt.UpdateId = userId;
         }
 

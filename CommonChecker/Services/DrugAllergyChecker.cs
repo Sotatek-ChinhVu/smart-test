@@ -1,5 +1,7 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using System.Reflection;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -7,8 +9,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<string> ListPtAlrgyDrugCode { private get; set; } = new List<string>();
-
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
@@ -16,32 +16,35 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
+            List<string> ptAlrgyDrugCodeList = Finder!.GetDrugAllergyByPtId(HpID, PtID, Sinday).Select(dr => dr.ItemCd).ToList();
+
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
+            List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
             List<DrugAllergyResultModel> checkedResult = new List<DrugAllergyResultModel>();
 
             #region Handle duplication itemCode case
 
-            List<string> listDuplicatedItemCode = listItemCode.Where(i => ListPtAlrgyDrugCode.Contains(i)).ToList();
+            List<ItemCodeModel> listDuplicatedItemCode = listItemCode.Where(i => ptAlrgyDrugCodeList.Contains(i.ItemCd)).ToList();
 
             if (listDuplicatedItemCode.Count > 0)
             {
-                var yjCdList = Finder.GetYjCdListByItemCdList(HpID, listDuplicatedItemCode, Sinday);
+                var yjCdList = Finder!.GetYjCdListByItemCdList(HpID, listDuplicatedItemCode, Sinday);
 
                 listDuplicatedItemCode.ForEach((i) =>
                 {
                     string yjCd = string.Empty;
-                    if (yjCdList.ContainsKey(i))
+                    if (yjCdList.ContainsKey(i.ItemCd))
                     {
-                        yjCd = yjCdList[i];
+                        yjCd = yjCdList[i.ItemCd];
                     }
                     checkedResult.Add(new DrugAllergyResultModel()
                     {
+                        Id = i.Id,
                         Level = 0,
-                        ItemCd = i,
-                        AllergyItemCd = i,
+                        ItemCd = i.ItemCd,
+                        AllergyItemCd = i.ItemCd,
                         YjCd = yjCd,
                         AllergyYjCd = yjCd
                     });
@@ -52,12 +55,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             #endregion
 
-            if (SystemConfig.IsDuplicatedComponentChecked && listItemCode.Count != 0)
+            if (SystemConfig!.IsDuplicatedComponentChecked && listItemCode.Count != 0)
             {
-                List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode);
+                List<DrugAllergyResultModel> checkedResultAsLevel = Finder!.CheckDuplicatedComponent(HpID, PtID, Sinday, listItemCode, ptAlrgyDrugCodeList);
                 checkedResult.AddRange(checkedResultAsLevel);
                 List<string> listCheckedCode = checkedResultAsLevel.Select(r => r.ItemCd).ToList();
-                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
+                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l.ItemCd)).ToList();
             }
 
             if ((SystemConfig.IsProDrugChecked || SystemConfig.IsSameComponentChecked) && listItemCode.Count != 0)
@@ -65,22 +68,22 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
                 if (SystemConfig.IsProDrugChecked && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckProDrug(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
+                    checkedResultAsLevel.AddRange(Finder!.CheckProDrug(HpID, PtID, Sinday, listItemCode, ptAlrgyDrugCodeList));
                 }
 
                 if (SystemConfig.IsSameComponentChecked && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckSameComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
+                    checkedResultAsLevel.AddRange(Finder!.CheckSameComponent(HpID, PtID, Sinday, listItemCode, ptAlrgyDrugCodeList));
                 }
 
                 checkedResult.AddRange(checkedResultAsLevel);
                 List<string> listCheckedCode = checkedResultAsLevel.Select(r => r.ItemCd).ToList();
-                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
+                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l.ItemCd)).ToList();
             }
 
             if (SystemConfig.IsDuplicatedClassChecked && listItemCode.Count != 0)
             {
-                checkedResult.AddRange(Finder.CheckDuplicatedClass(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
+                checkedResult.AddRange(Finder!.CheckDuplicatedClass(HpID, PtID, Sinday, listItemCode, ptAlrgyDrugCodeList));
             }
 
             if (checkedResult != null && checkedResult.Count > 0)

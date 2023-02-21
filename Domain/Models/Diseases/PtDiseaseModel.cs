@@ -303,6 +303,17 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
         }
 
+        public PtDiseaseModel(string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        {
+            Byomei = byomei;
+            StartDate = startDate;
+            TenkiDate = tenkiDate;
+            HosokuCmt = hosokuCmt;
+            TogetuByomei = togetuByomei;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            PrefixSuffixList.AddRange(prefixList);
+        }
+
         public ValidationStatus Validation()
         {
             #region common
@@ -430,13 +441,13 @@ namespace Domain.Models.Diseases
 
         public int HokenPid { get; private set; }
 
-        public string Icd10 { get; private set; }
+        public string Icd10 { get; set; }
 
-        public string Icd102013 { get; private set; }
+        public string Icd102013 { get; set; }
 
-        public string Icd1012013 { get; private set; }
+        public string Icd1012013 { get; set; }
 
-        public string Icd1022013 { get; private set; }
+        public string Icd1022013 { get; set; }
 
         public int HpId { get; private set; }
 
@@ -450,7 +461,7 @@ namespace Domain.Models.Diseases
 
         public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
 
-        public string Byomei { get; private set; }
+        public string Byomei { get; set; }
 
         public int IsSuspect { get; private set; }
 
@@ -481,5 +492,9 @@ namespace Domain.Models.Diseases
         public string HosokuCmt { get; private set; }
 
         public int TogetuByomei { get; private set; }
+
+        public int SikkanCd { get; set; }
+
+        public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
     }
 }

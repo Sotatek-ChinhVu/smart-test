@@ -1,4 +1,5 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using Helper.Constants;
 
@@ -19,7 +20,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
             List<TOdrDetail> currentOdrDetailList = GetOdrDetailListByCondition(CurrentListOrder);
-            List<string> currentOdrDetailCodeList = currentOdrDetailList.Select(o => o.ItemCd.Trim()).ToList(); ;
+            List<ItemCodeModel> currentOdrDetailCodeList = currentOdrDetailList.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList();
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
             //◆処方行為（ODR_INF.ODR_KOUI_CD[21..23]）のみ
@@ -31,7 +32,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             #region Check duplicated item
-            int checkDuplicationSetting = SystemConfig.CheckDupicatedSetting;
+            int checkDuplicationSetting = SystemConfig!.CheckDupicatedSetting;
             bool allowCheckDuplicatedItemCode = checkDuplicationSetting != 2;
             bool allowCheckDuplicatedIppanCode = checkDuplicationSetting == 1;
 
@@ -58,21 +59,21 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             #endregion
 
             #region Check duplicated component
-            List<string> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
-            List<string> listCheckedCode = new List<string>();
+            List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
+            List<ItemCodeModel> listCheckedCode = new List<ItemCodeModel>();
 
             List<DrugAllergyResultModel> listDuplicatedComponentResult = new List<DrugAllergyResultModel>();
             if (SystemConfig.IsDuplicatedComponentForDuplication && listItemCode.Count != 0)
             {
-                List<DrugAllergyResultModel> checkedResultAsLevelIntoOrder = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting);
+                List<DrugAllergyResultModel> checkedResultAsLevelIntoOrder = Finder!.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting);
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevelIntoOrder);
 
                 List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.GetHaigouSetting);
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevel);
 
-                listCheckedCode = new List<string>();
-                listCheckedCode.AddRange(checkedResultAsLevelIntoOrder.Select(r => r.ItemCd).ToList());
-                listCheckedCode.AddRange(checkedResultAsLevel.Select(r => r.ItemCd).ToList());
+                listCheckedCode = new List<ItemCodeModel>();
+                listCheckedCode.AddRange(checkedResultAsLevelIntoOrder.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
+                listCheckedCode.AddRange(checkedResultAsLevel.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList());
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
@@ -81,24 +82,24 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
                 if (SystemConfig.IsProDrugForDuplication && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
+                    checkedResultAsLevel.AddRange(Finder!.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
                     checkedResultAsLevel.AddRange(Finder.CheckProDrugForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.GetHaigouSetting));
                 }
 
                 if (SystemConfig.IsSameComponentForDuplication && listItemCode.Count != 0)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
+                    checkedResultAsLevel.AddRange(Finder!.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
                     checkedResultAsLevel.AddRange(Finder.CheckSameComponentForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.GetHaigouSetting));
                 }
 
                 listDuplicatedComponentResult.AddRange(checkedResultAsLevel);
-                listCheckedCode = checkedResultAsLevel.Select(r => r.ItemCd).ToList();
+                listCheckedCode = checkedResultAsLevel.Select(o => new ItemCodeModel(o.ItemCd, o.Id)).ToList();
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
             if (SystemConfig.IsDuplicatedClassForDuplication)
             {
-                listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
+                listDuplicatedComponentResult.AddRange(Finder!.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, listItemCode, SystemConfig.GetHaigouSetting));
                 listDuplicatedComponentResult.AddRange(Finder.CheckDuplicatedClassForDuplication(HpID, PtID, Sinday, listItemCode, currentOdrDetailCodeList, SystemConfig.GetHaigouSetting));
             }
 
@@ -180,7 +181,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return result;
         }
 
-        private List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<string> listDrugItemCode)
+        private List<DuplicationResultModel> CheckDuplicatedItemCode(TOdrInf checkingOrder, List<ItemCodeModel> listDrugItemCode)
         {
             List<DuplicationResultModel> listErrorInfo = new List<DuplicationResultModel>();
 
@@ -213,7 +214,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrDetail> listDuplicatedItemCode =
                 checkingOrder.OdrInfDetailModelsIgnoreEmpty
                 .Where(o => o.YohoKbn == 0 && o.DrugKbn > 0 && o.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu && o.ItemCd != ItemCdConst.Con_Refill &&
-                listDrugItemCode.Contains(o.ItemCd) && !listDuplicatedItemCodeIntoOrder.Contains(o.ItemCd))
+                listDrugItemCode.Select(x => x.ItemCd).Contains(o.ItemCd) && !listDuplicatedItemCodeIntoOrder.Contains(o.ItemCd))
                 .ToList();
 
             if (listDuplicatedItemCode != null)

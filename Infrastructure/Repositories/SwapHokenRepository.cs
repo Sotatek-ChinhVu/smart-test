@@ -1,8 +1,9 @@
 ﻿using Domain.Models.SwapHoken;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -50,7 +51,7 @@ namespace Infrastructure.Repositories
 
         public bool SwapHokenParttern(int hpId, long PtId, int OldHokenPid, int NewHokenPid, int StartDate, int EndDate, int userId)
         {
-            var updateDate = DateTime.UtcNow;
+            var updateDate = CIUtil.GetJapanDateTimeNow();
             var updateId = userId;
 
             #region UpdateHokenPatternInRaiin
@@ -114,6 +115,17 @@ namespace Infrastructure.Repositories
                 receSeiKyu.UpdateId = userId;
             }
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool IsPtHokenPatternUsed(int hpId, long ptId, int hokenPid)
+        {
+            var countOdr = NoTrackingDataContext.OdrInfs
+                .Count(
+                    x => x.HpId == hpId &&
+                    x.PtId == ptId &&
+                    x.HokenPid == hokenPid &&
+                    x.IsDeleted == 0);
+            return countOdr != 0;
         }
 
         public void ReleaseResource()

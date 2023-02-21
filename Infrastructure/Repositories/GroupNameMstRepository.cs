@@ -1,12 +1,11 @@
-﻿using Domain.Models.GroupInf;
-using Domain.Models.PtGroupMst;
+﻿using Domain.Models.PtGroupMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
-using System;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -21,10 +20,41 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
+        public List<GroupNameMstModel> GetListGroupNameMst(int hpId)
+        {
+            List<GroupNameMstModel> result = new List<GroupNameMstModel>();
+            var grpNameDatabases = NoTrackingDataContext.PtGrpNameMsts.Where(x => x.HpId == hpId).ToList();
+            foreach (var item in grpNameDatabases)
+            {
+                if(item.IsDeleted == DeleteTypes.Deleted)
+                {
+                    //Not need include GrpItems
+                    result.Add(new GroupNameMstModel(item.GrpId, item.SortNo, item.GrpName ?? string.Empty, item.IsDeleted, new List<GroupItemModel>()));
+                }
+                else
+                {
+                    var grpItems = NoTrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
+                                                                        && x.GrpId == item.GrpId)
+                                                                .OrderBy(x => x.SortNo)
+                                                                .Select(x => new GroupItemModel(
+                                                                            x.GrpId,
+                                                                            x.GrpCode,
+                                                                            x.SeqNo, 
+                                                                            x.GrpCodeName ?? string.Empty, 
+                                                                            x.SortNo,
+                                                                            x.IsDeleted)
+                                                                ).ToList();
+
+                    result.Add(new GroupNameMstModel(item.GrpId, item.SortNo, item.GrpName ?? string.Empty, item.IsDeleted, grpItems));
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// FE logic
         /// GrpName : filter & only pass record want save to db
-        /// GrpIdtem : when delete in screen : not seq no => Remove else . set IsDeleted = 1.
+        /// GrpIdtem : when delete in screen Remove real 
         /// </summary>
         /// <param name="groupNameMsts"></param>
         /// <param name="hpId"></param>
@@ -37,7 +67,7 @@ namespace Infrastructure.Repositories
             foreach(var item in grpNameDeletes)
             {
                 item.IsDeleted = DeleteTypes.Deleted;
-                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 item.UpdateId = userId;
 
                 var grpItemDeletes = TrackingDataContext.PtGrpItems.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
@@ -46,13 +76,16 @@ namespace Infrastructure.Repositories
                 foreach(var itemGrp in grpItemDeletes)
                 {
                     itemGrp.IsDeleted = DeleteTypes.Deleted;
-                    itemGrp.UpdateDate = DateTime.UtcNow;
+                    itemGrp.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemGrp.UpdateId = userId;
                 }
             }
 
             foreach(var item in groupNameMsts) //Add or Update
             {
+                if (item.IsDeleted == DeleteTypes.Deleted)
+                    continue;
+
                 var itemAct = grpNameDatabases.FirstOrDefault(x => x.GrpId == item.GrpId);
                 if(itemAct is null)
                 {
@@ -63,17 +96,17 @@ namespace Infrastructure.Repositories
                         SortNo = item.SortNo,
                         GrpName = item.GrpName,
                         IsDeleted = DeleteTypes.None,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId
                     });
                     TrackingDataContext.PtGrpItems.AddRange(Mapper.Map<GroupItemModel, PtGrpItem>(item.GroupItems, (src, dest) =>
                     {
                         dest.CreateId = userId;
                         dest.HpId = hpId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                         dest.UpdateId = userId;
                         return dest;
                     }));
@@ -82,12 +115,20 @@ namespace Infrastructure.Repositories
                 {
                     itemAct.GrpName = item.GrpName;
                     itemAct.SortNo = item.SortNo;
-                    itemAct.UpdateDate = DateTime.UtcNow;
+                    itemAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     itemAct.UpdateId = userId;
 
                     var itemInDatabases = TrackingDataContext.PtGrpItems
                                     .Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId
-                                        && x.GrpId == item.GrpId);
+                                        && x.GrpId == item.GrpId).ToList();
+
+                    var itemRemoves = itemInDatabases.Where(x => !item.GroupItems.Any(o => o.GrpCode == x.GrpCode));
+                    foreach(var itemRemove in itemRemoves)
+                    {
+                        itemRemove.IsDeleted = DeleteTypes.Deleted;
+                        itemRemove.UpdateDate = DateTime.UtcNow;
+                        itemRemove.UpdateId = userId;
+                    }
 
                     foreach (var itemGrp in item.GroupItems)
                     {
@@ -99,25 +140,36 @@ namespace Infrastructure.Repositories
                                 GrpId = itemGrp.GrpId,
                                 GrpCode = itemGrp.GrpCode,
                                 GrpCodeName = itemGrp.GrpCodeName,
+                                SortNo = itemGrp.SortNo,
                                 CreateId = userId,
                                 HpId = hpId,
-                                CreateDate = DateTime.UtcNow,
-                                UpdateDate = DateTime.UtcNow,
-                                UpdateId = userId,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId
                             });
                         }
                         else
                         {
-                            itemGrpAct.GrpCode = itemGrp.GrpCode;
                             itemGrpAct.GrpCodeName = itemGrp.GrpCodeName;
-                            itemGrpAct.UpdateDate = DateTime.UtcNow;
+                            itemGrpAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             itemGrpAct.UpdateId = userId;
-                            itemGrpAct.IsDeleted = itemGrp.IsDeleted;
                         }
                     }
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool IsInUseGroupName(int groupId, string groupCode)
+        {
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && !string.IsNullOrEmpty(pt.GroupCode));
+            return count > 0;
+        }
+
+        public bool IsInUseGroupItem(int groupId, string groupCode)
+        {
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && pt.GroupCode == groupCode);
+            return count > 0;
         }
     }
 }

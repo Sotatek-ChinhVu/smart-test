@@ -642,7 +642,7 @@ namespace Infrastructure.Repositories
 
             tenMst.IsAdopted = valueAdopted;
 
-            tenMst.UpdateDate = DateTime.UtcNow;
+            tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
             tenMst.UpdateId = userId;
 
             TrackingDataContext.SaveChanges();
@@ -664,7 +664,7 @@ namespace Infrastructure.Repositories
 
                 tenMst.IsAdopted = valueAdopted;
 
-                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 tenMst.UpdateId = userId;
             }
 
@@ -805,7 +805,7 @@ namespace Infrastructure.Repositories
             {
                 byomeiMst.IsAdopted = 1;
                 byomeiMst.UpdateId = userId;
-                byomeiMst.UpdateDate = DateTime.UtcNow;
+                byomeiMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
             return true;
@@ -818,6 +818,7 @@ namespace Infrastructure.Repositories
 
         public List<string> GetCheckItemCds(List<string> itemCds)
         {
+            itemCds = itemCds.Distinct().ToList();
             return NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
         }
 
@@ -931,7 +932,7 @@ namespace Infrastructure.Repositories
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
@@ -1120,14 +1121,15 @@ namespace Infrastructure.Repositories
         {
             return new ByomeiMstModel(
                     mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
                     ConvertByomeiCdDisplay(mst.ByomeiCd),
-                    mst.Sbyomei ?? String.Empty,
-                    mst.KanaName1 ?? String.Empty,
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
                     mst.SikkanCd,
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
-                    ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
                     mst.IsAdopted == 1
                 );
         }
