@@ -88,11 +88,19 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             Task.WaitAll(taskByomei, taskKarte, taskOrder);
 
             var karteInf = taskKarte.Result;
-
-            byomeis.AddRange(taskByomei.Result);
-            if (karteInf != null)
-                karteInfs.Add(karteInf);
-            ordInfs.AddRange(taskOrder.Result);
+            lock (byomeiObj)
+            {
+                byomeis.AddRange(taskByomei.Result);
+            }
+            lock (karteObj)
+            {
+                if (karteInf != null)
+                    karteInfs.Add(karteInf);
+            }
+            lock (orderObj)
+            {
+                ordInfs.AddRange(taskOrder.Result);
+            }
         });
 
         return new(byomeis, karteInfs, ordInfs);
@@ -129,7 +137,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     setKarteInf.HpId,
                     setKarteInf.SetCd,
                     setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText),
-                    string.Empty
+                    setKarteInf.Text ?? string.Empty
                     );
             }
 
