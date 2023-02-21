@@ -19,7 +19,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     {
     }
 
-    public List<ReceiptListModel> GetListReceipt(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
+    public List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel)
     {
         if (seikyuYm == 0)
         {
@@ -77,8 +77,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                               && listPtIds.Contains(item.PtId))
                                                                 .AsEnumerable()
                                                                 .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
-                                                                .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt())
-                                                                .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Cmt, item.IsPending });
+                                                                .Select(grp => grp.OrderByDescending(item => item.SortNo).FirstOrDefault() ?? new ReceCheckCmt());
 
         var receCheckErrors = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
                                                                                 && item.IsChecked == 0
@@ -87,8 +86,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && listPtIds.Contains(item.PtId))
                                                                   .AsEnumerable()
                                                                   .GroupBy(item => new { item.HpId, item.PtId, item.HokenId, item.SinYm })
-                                                                  .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr())
-                                                                  .Select(item => new { item.SinYm, item.HpId, item.HokenId, item.PtId, item.Message1, item.Message2 });
+                                                                  .Select(grp => grp.OrderBy(item => item.ErrCd).FirstOrDefault() ?? new ReceCheckErr());
 
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.IsDeleted == 0
                                                                     && item.HpId == hpId
@@ -1127,7 +1125,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                 data.Kohi2ReceKisai,
                                 data.Kohi3ReceKisai,
                                 data.Kohi4ReceKisai,
-                                data.Tokki
+                                data.Tokki,
+                                data.HokenNissu ?? 0,
+                                data.ReceCheckCmt
                             ))
                     .OrderBy(item => item.SinYm)
                     .ThenBy(item => item.PtNum)
@@ -1234,7 +1234,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     }
 
     #region Rece check screeen
-    public List<ReceCmtModel> GetListReceCmt(int hpId, int sinYm, long ptId, int hokenId)
+    public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                  && item.SinYm == sinYm
@@ -1247,21 +1247,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public bool SaveListReceCmt(int hpId, int userId, List<ReceCmtModel> listReceCmt)
+    public bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList)
     {
-        var listReceCmtUpdate = listReceCmt.Where(item => item.Id > 0).ToList();
-        var listReceCmtUpdateDB = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+        var receCmtUpdateList = receCmtList.Where(item => item.Id > 0).ToList();
+        var receCmtUpdateDBList = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
-                                                                             && listReceCmtUpdate.Select(item => item.Id).Contains(item.Id))
+                                                                             && receCmtUpdateList.Select(item => item.Id).Contains(item.Id))
                                                               .ToList();
 
-        var listReceCmtAddNew = listReceCmt.Where(item => item.Id == 0 && !item.IsDeleted)
+        var receCmtAddNewList = receCmtList.Where(item => item.Id == 0 && !item.IsDeleted)
                                            .Select(item => ConvertToNewReceCmt(hpId, userId, item))
                                            .ToList();
-        TrackingDataContext.ReceCmts.AddRange(listReceCmtAddNew);
-        foreach (var model in listReceCmtUpdate)
+        TrackingDataContext.ReceCmts.AddRange(receCmtAddNewList);
+        foreach (var model in receCmtUpdateList)
         {
-            var entity = listReceCmtUpdateDB.FirstOrDefault(item => item.Id == model.Id);
+            var entity = receCmtUpdateDBList.FirstOrDefault(item => item.Id == model.Id);
             if (entity == null)
             {
                 continue;
@@ -1280,9 +1280,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public List<SyoukiInfModel> GetListSyoukiInf(int hpId, int sinYm, long ptId, int hokenId)
+    public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
     {
-        var listSyoukiInf = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+        var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
                                                                            && item.SinYm == sinYm
                                                                            && item.PtId == ptId
                                                                            && item.HokenId == hokenId
@@ -1290,18 +1290,206 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                             .OrderBy(item => item.SortNo)
                                                             .ToList();
 
-        var result = listSyoukiInf.Select(item => ConvertToSyoukiInfModel(item)).ToList();
+        var result = syoukiInfList.Select(item => ConvertToSyoukiInfModel(item)).ToList();
         return result;
     }
 
-    public List<SyoukiKbnMstModel> GetListSyoukiKbnMst(int sinYm)
+    public List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm)
     {
-        var listSyoukiKbnMst = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
+        var syoukiKbnMstList = NoTrackingDataContext.SyoukiKbnMsts.Where(item => item.StartYm <= sinYm && item.EndYm >= sinYm)
                                                                   .OrderBy(p => p.SyoukiKbn)
                                                                   .ToList();
 
-        var result = listSyoukiKbnMst.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
+        var result = syoukiKbnMstList.Select(item => ConvertToSyoukiKbnMstModel(item)).ToList();
         return result;
+    }
+
+    public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                               && item.SinYm == sinYm
+                                                                               && item.PtId == ptId
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .OrderBy(item => item.SinDay)
+                                                                .ThenByDescending(item => item.SeqNo)
+                                                                .ToList();
+
+        var result = syobyoKeikaList.Select(item => ConvertToSyobyoKeikaModel(item)).ToList();
+        return result;
+    }
+
+    public bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList)
+    {
+        var syoukiInfUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        var syoukiInfUpdateDBList = TrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+                                                                             && item.IsDeleted == DeleteTypes.None
+                                                                             && syoukiInfUpdateList.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                              .ToList();
+
+        var syoukiInfAddNewList = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+                                               .Select(item => ConvertToNewSyoukiInf(hpId, userId, item))
+                                               .ToList();
+        TrackingDataContext.SyoukiInfs.AddRange(syoukiInfAddNewList);
+        foreach (var model in syoukiInfUpdateList)
+        {
+            var entity = syoukiInfUpdateDBList.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.Syouki = model.Syouki;
+            entity.SyoukiKbn = model.SyoukiKbn;
+            entity.SortNo = model.SortNo;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList)
+    {
+        var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
+                                                                                                && entity.EndYm >= sinYm
+                                                                                                && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
+        return countSyoukiKbn == syoukiKbnList.Count;
+    }
+
+    public bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList)
+    {
+        var syobyoKeikaUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
+        var syobyoKeikaUpdateDBList = TrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                                   && item.IsDeleted == DeleteTypes.None
+                                                                                   && syobyoKeikaUpdateList.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                                      .ToList();
+
+        var syobyoKeikaAddNewList = syoukiInfList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+                                                 .Select(item => ConvertToNewSyobyoKeika(hpId, userId, item))
+                                                 .ToList();
+        TrackingDataContext.SyobyoKeikas.AddRange(syobyoKeikaAddNewList);
+        foreach (var model in syobyoKeikaUpdateList)
+        {
+            var entity = syobyoKeikaUpdateDBList.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.SinDay = model.SinDay;
+            entity.Keika = model.Keika;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public List<ReceReasonModel> GetReceReasonList(int hpId, int seikyuYm, int sinDate, long ptId, int hokenId)
+    {
+        int sinYm = sinDate / 100;
+        var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.SeikyuYm == seikyuYm
+                                                                       && item.PtId == ptId
+                                                                       && item.HokenId == hokenId);
+
+        var renJiyuuList = NoTrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == hpId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.PtId == ptId
+                                                                                && item.HokenId == hokenId
+                                                                                && item.IsDeleted == 0);
+
+        var query = from receItem in receInfList
+                    join henJiyuuItem in renJiyuuList
+                    on new { receItem.HpId, receItem.PtId } equals new { henJiyuuItem.HpId, henJiyuuItem.PtId }
+                    select new ReceReasonModel(
+                                                    hokenId,
+                                                    sinYm,
+                                                    henJiyuuItem.HenreiJiyuuCd ?? string.Empty,
+                                                    henJiyuuItem.HenreiJiyuu ?? string.Empty,
+                                                    henJiyuuItem.Hosoku ?? string.Empty
+                                               );
+        return query.ToList();
+    }
+
+    public List<ReceCheckCmtModel> GetReceCheckCmtList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var receCheckCmts = NoTrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.HokenId == hokenId
+                                                                              && item.IsDeleted == DeleteTypes.None)
+                                                                .OrderByDescending(item => item.SortNo)
+                                                                .ToList();
+        return receCheckCmts.Select(item => ConvertToReceCheckCmtModel(item)).ToList();
+    }
+
+    public List<ReceCheckErrModel> GetReceCheckErrList(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var receCheckErrs = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                              && item.SinYm == sinYm
+                                                                              && item.PtId == ptId
+                                                                              && item.HokenId == hokenId)
+                                                                .OrderBy(item => item.ErrCd)
+                                                                .ToList();
+        return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
+    }
+
+    public bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
+    {
+        var receCheckCmtUpdateList = receCheckCmtList.Where(item => item.SeqNo > 0).ToList();
+        var receCheckCmtUpdateDBList = TrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
+                                                                                       && item.SinYm == sinYm
+                                                                                       && item.PtId == ptId
+                                                                                       && item.HokenId == hokenId
+                                                                                       && item.IsDeleted == DeleteTypes.None
+                                                                                       && receCheckCmtUpdateList.Select(item => item.SeqNo).Contains(item.SeqNo))
+                                                                        .ToList();
+
+        var receCheckAddNewList = receCheckCmtList.Where(item => item.SeqNo == 0 && !item.IsDeleted)
+                                                  .Select(item => ConvertToNewReceCheckCmt(hpId, userId, hokenId, sinYm, ptId, item))
+                                                  .ToList();
+        TrackingDataContext.ReceCheckCmts.AddRange(receCheckAddNewList);
+        foreach (var model in receCheckCmtUpdateList)
+        {
+            var entity = receCheckCmtUpdateDBList.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (entity == null)
+            {
+                continue;
+            }
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (model.IsDeleted)
+            {
+                entity.IsDeleted = 1;
+                continue;
+            }
+            entity.Cmt = model.Cmt;
+            entity.IsPending = model.IsPending;
+            entity.IsChecked = model.IsChecked;
+            entity.SortNo = model.SortNo;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistSeqNoReceCheckCmtList(int hpId, int hokenId, int sinYm, long ptId, List<int> seqNoList)
+    {
+        var seqNoListQuery = seqNoList.Distinct().ToList();
+        var receCheckCmtCount = NoTrackingDataContext.ReceCheckCmts.Count(item => item.HpId == hpId
+                                                                                  && item.SinYm == sinYm
+                                                                                  && item.PtId == ptId
+                                                                                  && item.HokenId == hokenId
+                                                                                  && seqNoListQuery.Contains(item.SeqNo)
+                                                                                  && item.IsDeleted == DeleteTypes.None);
+        return receCheckCmtCount == seqNoList.Count;
     }
     #endregion
 
@@ -1365,6 +1553,114 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                         item.EndYm,
                                         item.Name ?? string.Empty
                                     );
+    }
+
+    private SyoukiInf ConvertToNewSyoukiInf(int hpId, int userId, SyoukiInfModel item)
+    {
+        SyoukiInf entity = new();
+        entity.HpId = hpId;
+        entity.PtId = item.PtId;
+        entity.SinYm = item.SinYm;
+        entity.HokenId = item.HokenId;
+        entity.SeqNo = 0;
+        entity.SortNo = item.SortNo;
+        entity.SyoukiKbn = item.SyoukiKbn;
+        entity.Syouki = item.Syouki;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
+    }
+
+    private SyobyoKeikaModel ConvertToSyobyoKeikaModel(SyobyoKeika syobyoKeika)
+    {
+        return new SyobyoKeikaModel(
+                                        syobyoKeika.PtId,
+                                        syobyoKeika.SinYm,
+                                        syobyoKeika.SinDay,
+                                        syobyoKeika.HokenId,
+                                        syobyoKeika.SeqNo,
+                                        syobyoKeika.Keika ?? string.Empty
+                                    );
+    }
+
+    private SyobyoKeika ConvertToNewSyobyoKeika(int hpId, int userId, SyobyoKeikaModel item)
+    {
+        SyobyoKeika entity = new();
+        entity.HpId = hpId;
+        entity.PtId = item.PtId;
+        entity.SinYm = item.SinYm;
+        entity.HokenId = item.HokenId;
+        entity.SeqNo = 0;
+        entity.SinDay = item.SinDay;
+        entity.Keika = item.Keika;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
+    }
+
+    private ReceCheckCmtModel ConvertToReceCheckCmtModel(ReceCheckCmt receCheckCmt)
+    {
+        return new ReceCheckCmtModel(
+                    receCheckCmt.PtId,
+                    receCheckCmt.SeqNo,
+                    receCheckCmt.SinYm,
+                    receCheckCmt.HokenId,
+                    receCheckCmt.IsPending,
+                    receCheckCmt.Cmt ?? string.Empty,
+                    receCheckCmt.IsChecked,
+                    receCheckCmt.SortNo
+                   );
+    }
+
+    private ReceCheckErrModel ConvertToReceCheckErrModel(ReceCheckErr receCheckErr)
+    {
+        return new ReceCheckErrModel(
+                    receCheckErr.PtId,
+                    receCheckErr.SinYm,
+                    receCheckErr.HokenId,
+                    receCheckErr.ErrCd,
+                    receCheckErr.SinDate,
+                    receCheckErr.ACd,
+                    receCheckErr.BCd,
+                    receCheckErr.Message1 ?? string.Empty,
+                    receCheckErr.Message2 ?? string.Empty,
+                    receCheckErr.IsChecked);
+    }
+
+    private ReceCheckCmt ConvertToNewReceCheckCmt(int hpId, int userId, int hokenId, int sinYm, long ptId, ReceCheckCmtModel item)
+    {
+        ReceCheckCmt entity = new();
+        entity.HpId = hpId;
+        entity.PtId = ptId;
+        entity.SinYm = sinYm;
+        entity.HokenId = hokenId;
+        entity.SeqNo = GetLastSeqNo(hpId, ptId, hokenId, sinYm) + 1;
+        entity.IsPending = item.IsPending;
+        entity.Cmt = item.Cmt;
+        entity.IsChecked = item.IsChecked;
+        entity.SortNo = item.SortNo;
+        entity.IsDeleted = 0;
+        entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+        entity.CreateId = userId;
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        return entity;
+    }
+
+    private int GetLastSeqNo(int hpId, long ptId, int hokenId, int sinYm)
+    {
+        var receCheckCmtList = NoTrackingDataContext.ReceCheckCmts.Where(item => item.HpId == hpId
+                                                                                 && item.SinYm == sinYm
+                                                                                 && item.PtId == ptId
+                                                                                 && item.HokenId == hokenId)
+                                                                  .ToList();
+        return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
     }
     #endregion
 

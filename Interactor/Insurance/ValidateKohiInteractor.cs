@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Helper.Common;
+using Helper.Extension;
 using UseCase.Insurance.ValidKohi;
 
 namespace Interactor.Insurance
@@ -28,9 +29,7 @@ namespace Interactor.Insurance
                     validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidPtBirthday, string.Empty, TypeMessage.TypeMessageError));
 
                 // Get HokenMst Kohi1
-                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo);
-                if (hokenMstKohi is null)
-                    hokenMstKohi = new HokenMstModel();
+                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo, inputData.SinDate);
 
                 //IsValidKohi1
                 IsValidKohi(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiJyukyusyaNo, inputData.SelectedKohiTokusyuNo, inputData.SelectedKohiStartDate, inputData.SelectedKohiEndDate, inputData.SelectedKohiConfirmDate, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsTokusyuNoCheck, hokenMstKohi.StartDate, hokenMstKohi.EndDate, hokenMstKohi.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew, inputData.SelectedHokenPatternIsExpirated);
@@ -242,9 +241,10 @@ namespace Interactor.Insurance
         {
             var message = "";
             int kouhi1ConfirmDate = confirmDate;
+            int sinYm = CIUtil.Copy(sinDate.AsString(), 1, 6).AsInteger();
             int confirmKohi1YM = Int32.Parse(CIUtil.Copy(kouhi1ConfirmDate.ToString(), 1, 6));
             if (kouhi1ConfirmDate == 0
-                || sinDate != confirmKohi1YM)
+                || sinYm != confirmKohi1YM)
             {
                 // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
                 if (!isAddNew && !selectedHokenPatternIsExpirated)

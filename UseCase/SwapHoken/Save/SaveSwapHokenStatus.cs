@@ -9,6 +9,8 @@
         InvalidHpId,
         InvalidPtId,
         Failed,
-        CantExecCauseNotValidDate
+        CantExecCauseNotValidDate,
+        InvalidIsShowConversionCondition,
+        ConfirmSwapHoken
     }
 }

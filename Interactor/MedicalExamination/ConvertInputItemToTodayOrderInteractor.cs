@@ -24,7 +24,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new ConvertInputItemToTodayOrdOutputData(ConvertInputItemToTodayOrdStatus.InvalidSinDate, new());
                 }
-                if (inputData.SinDate < 0)
+                if (inputData.DetailInfs.Count == 0)
                 {
                     return new ConvertInputItemToTodayOrdOutputData(ConvertInputItemToTodayOrdStatus.InvalidDetailInfs, new());
                 }
