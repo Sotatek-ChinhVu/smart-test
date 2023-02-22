@@ -21,7 +21,13 @@ namespace Interactor.Accounting
 
                 if (raiinInf.Any())
                 {
-                    var personNumber = raiinInf.FirstOrDefault(x => x.PersonNumber != null)?.PersonNumber ?? 0;
+                    var personNumber = raiinInf.FirstOrDefault(x => x.PersonNumber != null).PersonNumber;
+
+                    if (personNumber < 0)
+                    {
+                        return new GetAccountingHeaderOutputData(0, new(), GetAccountingHeaderStatus.Failed);
+                    }
+
                     return new GetAccountingHeaderOutputData(personNumber, ConvertToDto(raiinInf), GetAccountingHeaderStatus.Successed);
                 }
 
@@ -35,7 +41,7 @@ namespace Interactor.Accounting
 
         private List<HeaderDto> ConvertToDto(List<ReceptionDto> models)
         {
-            List<HeaderDto> headerDtos = new List<HeaderDto>();
+            var headerDtos = new List<HeaderDto>();
             foreach (var item in models)
             {
                 headerDtos.Add(new HeaderDto(item.RaiinNo, item.RaiinBinding, item.PatternName));

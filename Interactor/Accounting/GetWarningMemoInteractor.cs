@@ -39,7 +39,7 @@ namespace Interactor.Accounting
 
         private List<WarningMemoDto> GetWarningMemo(int hpId, long ptId, int sinDate, List<ReceptionDto> raiinInfModels)
         {
-            List<WarningMemoDto> WarningMemoDto = new List<WarningMemoDto>();
+            var warningMemoDto = new List<WarningMemoDto>();
             bool CheckIdIsExits(List<int> idList, int idCheck)
             {
                 if (idList != null)
@@ -60,11 +60,11 @@ namespace Interactor.Accounting
                 {
                     var checkExpirated = CheckHokenIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkExpirated.Memo))
-                        WarningMemoDto.Add(checkExpirated);
+                        warningMemoDto.Add(checkExpirated);
 
                     var checkHasDateConfirm = CheckHokenHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.HokenInfModels);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoDto.Add(checkHasDateConfirm);
+                        warningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi1 != null &&
@@ -74,11 +74,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi1.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoDto.Add(checkKohi);
+                        warningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi1);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoDto.Add(checkHasDateConfirm);
+                        warningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi2 != null &&
@@ -88,11 +88,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi2.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoDto.Add(checkKohi);
+                        warningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi2);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoDto.Add(checkHasDateConfirm);
+                        warningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi3 != null &&
@@ -102,11 +102,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi3.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoDto.Add(checkKohi);
+                        warningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi3);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoDto.Add(checkHasDateConfirm);
+                        warningMemoDto.Add(checkHasDateConfirm);
                 }
 
                 if (raiin.HokenPatternModel.Kohi4 != null &&
@@ -116,11 +116,11 @@ namespace Interactor.Accounting
                     listKohiId.Add(raiin.HokenPatternModel.Kohi4.HokenId);
                     var checkKohi = CheckKohiIsExpirated(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
                     if (!string.IsNullOrEmpty(checkKohi.Memo))
-                        WarningMemoDto.Add(checkKohi);
+                        warningMemoDto.Add(checkKohi);
 
                     var checkHasDateConfirm = CheckKohiHasDateConfirmed(raiin.RaiinNo, raiin.HokenPatternModel.Kohi4);
                     if (!string.IsNullOrEmpty(checkHasDateConfirm.Memo))
-                        WarningMemoDto.Add(checkHasDateConfirm);
+                        warningMemoDto.Add(checkHasDateConfirm);
                 }
             }
 
@@ -131,10 +131,10 @@ namespace Interactor.Accounting
                 foreach (var calcLog in listCalcLog)
                 {
                     if (!string.IsNullOrEmpty(calcLog.Text))
-                        WarningMemoDto.Add(new WarningMemoDto(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
+                        warningMemoDto.Add(new WarningMemoDto(calcLog.RaiinNo, calcLog.Text ?? string.Empty, calcLog.LogSbt));
                 }
             }
-            return WarningMemoDto;
+            return warningMemoDto;
         }
         private WarningMemoDto CheckHokenIsExpirated(long raiinNo, HokenInfModel ptHokenInf, int alertFg = 1)
         {

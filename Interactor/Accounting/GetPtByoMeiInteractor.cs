@@ -35,7 +35,7 @@ namespace Interactor.Accounting
 
         private List<PtDiseaseDto> ConvertToPtDiseaseDto(List<PtDiseaseModel> models)
         {
-            List<PtDiseaseDto> ptDiseaseDto = new List<PtDiseaseDto>();
+            var ptDiseaseDto = new List<PtDiseaseDto>();
 
             foreach (var item in models)
             {
