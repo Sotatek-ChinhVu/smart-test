@@ -1,14 +1,14 @@
-﻿using Domain.Models.HistoryOrder;
+﻿using UseCase.MedicalExamination.GetHistory;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingHistoryOrderResponse
     {
-        public GetAccountingHistoryOrderResponse(List<HistoryOrderDto> historyOrderDtos)
+        public GetAccountingHistoryOrderResponse(List<HistoryKarteOdrRaiinItem> raiinfList)
         {
-            HistoryOrderDtos = historyOrderDtos;
+            RaiinfList = raiinfList;
         }
 
-        public List<HistoryOrderDto> HistoryOrderDtos { get; private set; }
+        public List<HistoryKarteOdrRaiinItem> RaiinfList { get; private set; }
     }
 }

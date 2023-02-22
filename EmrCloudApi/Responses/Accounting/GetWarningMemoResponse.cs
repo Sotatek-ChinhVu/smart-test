@@ -1,17 +1,14 @@
 ﻿using Domain.Models.Accounting;
-using Domain.Models.Reception;
 
 namespace EmrCloudApi.Responses.Accounting
 {
     public class GetWarningMemoResponse
     {
-        public GetWarningMemoResponse(List<WarningMemoModel> warningMemoModels, List<ReceptionDto> receptionDtos)
+        public GetWarningMemoResponse(List<WarningMemoDto> warningMemoDtos)
         {
-            WarningMemoModels = warningMemoModels;
-            ReceptionDtos = receptionDtos;
+            WarningMemoDtos = warningMemoDtos;
         }
 
-        public List<WarningMemoModel> WarningMemoModels { get; private set; }
-        public List<ReceptionDto> ReceptionDtos { get; private set; }
+        public List<WarningMemoDto> WarningMemoDtos { get; private set; }
     }
 }

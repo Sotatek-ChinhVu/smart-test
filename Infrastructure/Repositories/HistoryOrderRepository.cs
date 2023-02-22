@@ -4,7 +4,6 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
-using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetail;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -243,7 +242,7 @@ namespace Infrastructure.Repositories
             return (totalCount, historyOrderModelList);
         }
 
-        public List<HistoryOrderDto> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin)
+        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin)
         {
 
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted);
@@ -251,7 +250,7 @@ namespace Infrastructure.Repositories
             var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiin && x.IsDeleted == 0);
             if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
             {
-                return new List<HistoryOrderDto>();
+                return new List<HistoryOrderModel>();
             }
 
             raiinInfEnumerable = raiinInfEnumerable.Where(x => x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo);
@@ -260,7 +259,7 @@ namespace Infrastructure.Repositories
 
             if (!raiinInfList.Any())
             {
-                return new List<HistoryOrderDto>();
+                return new();
             }
 
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
@@ -272,7 +271,7 @@ namespace Infrastructure.Repositories
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
 
-            List<HistoryOrderDto> historyOrderModelList = new List<HistoryOrderDto>();
+            List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
             foreach (long raiinNo in raiinNoList)
             {
                 RaiinInf? raiinInf = raiinInfList.FirstOrDefault(r => r.RaiinNo == raiinNo);
@@ -282,29 +281,19 @@ namespace Infrastructure.Repositories
                 }
 
                 ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
+                List<KarteInfModel> karteInfModels = allKarteInfList.Where(r => r.RaiinNo == raiinNo).ToList() ?? new();
                 allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
                 List<OrdInfModel>? orderInfList = orderInfListTemp ?? new();
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
+                List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
-                historyOrderModelList.Add(new HistoryOrderDto(receptionModel, insuranceModel, ConvertOrdInfToDto(orderInfList), kaName, tantoName, tagModel.TagNo, string.Empty));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel));
             }
 
             return historyOrderModelList;
-        }
-
-        private List<OrdInfDto> ConvertOrdInfToDto(List<OrdInfModel> ordInfModels)
-        {
-            List<OrdInfDto> ordInfDtos = new List<OrdInfDto>();
-            foreach (var item in ordInfModels)
-            {
-                ordInfDtos.Add(new OrdInfDto(item.RaiinNo, item.RpNo, item.RpEdaNo, item.SinDate, item.HokenPid, item.OdrKouiKbn, item.RpName, item.InoutKbn,
-                    item.SikyuKbn, item.SyohoSbt, item.SanteiKbn, item.TosekiKbn, item.DaysCnt, item.SortNo, item.Id, ConvertOrdInfDetailToDto(item.OrdInfDetails)));
-            }
-
-            return ordInfDtos;
         }
 
         private List<OrdInfDetailDto> ConvertOrdInfDetailToDto(List<OrdInfDetailModel> ordInfDetailModels)
