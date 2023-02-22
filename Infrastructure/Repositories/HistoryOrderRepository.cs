@@ -122,7 +122,7 @@ namespace Infrastructure.Repositories
             if (isNext)
             {
                 raiinNoList = raiinInfEnumerable.OrderByDescending(r => r.SinDate)
-                                                .OrderByDescending(r => r.RaiinNo)
+                                                .ThenByDescending(r => r.RaiinNo)
                                                 .Skip(currentIndex + 1)
                                                 .Select(r => r.RaiinNo)
                                                 .ToList();
@@ -130,7 +130,7 @@ namespace Infrastructure.Repositories
             else
             {
                 raiinNoList = raiinInfEnumerable.OrderByDescending(r => r.SinDate)
-                                                .OrderByDescending(r => r.RaiinNo)
+                                                .ThenByDescending(r => r.RaiinNo)
                                                 .Take(currentIndex)
                                                 .Select(r => r.RaiinNo)
                                                 .ToList();
@@ -330,7 +330,7 @@ namespace Infrastructure.Repositories
         public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted)
         {
             var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted).OrderByDescending(r => r.SinDate)
-                                                .OrderByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
+                                                .ThenByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
             var index = raiinInfs.IndexOf(raiinNo);
             return index;
         }
