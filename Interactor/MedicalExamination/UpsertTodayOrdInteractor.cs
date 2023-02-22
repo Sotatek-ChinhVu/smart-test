@@ -61,16 +61,19 @@ namespace Interactor.MedicalExamination
                 //Raiin Info
                 var inputDataList = inputDatas.OdrItems.ToList();
                 var hpIds = inputDataList.Select(x => x.HpId).ToList();
-                hpIds.Add(inputDatas.KarteInf.HpId);
-                hpIds = hpIds.Distinct().ToList();
                 var ptIds = inputDataList.Select(x => x.PtId).ToList();
-                ptIds.Add(inputDatas.KarteInf.PtId);
-                ptIds = ptIds.Distinct().ToList();
                 var raiinNos = inputDataList.Select(x => x.RaiinNo).ToList();
-                raiinNos.Add(inputDatas.KarteInf.RaiinNo);
-                raiinNos = raiinNos.Distinct().ToList();
                 var sinDates = inputDataList.Select(x => x.SinDate).ToList();
-                sinDates.Add(inputDatas.KarteInf.SinDate);
+                if (inputDatas.KarteInf.HpId != 0 && inputDatas.KarteInf.PtId != 0 && inputDatas.KarteInf.SinDate != 0 && inputDatas.KarteInf.RaiinNo != 0)
+                {
+                    hpIds.Add(inputDatas.KarteInf.HpId);
+                    ptIds.Add(inputDatas.KarteInf.PtId);
+                    raiinNos.Add(inputDatas.KarteInf.RaiinNo);
+                    sinDates.Add(inputDatas.KarteInf.SinDate);
+                }
+                raiinNos = raiinNos.Distinct().ToList();
+                ptIds = ptIds.Distinct().ToList();
+                hpIds = hpIds.Distinct().ToList();
                 sinDates = sinDates.Distinct().ToList();
 
                 var hpId = hpIds[0];
@@ -115,9 +118,10 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         ""
                     );
+                KarteValidationStatus validateKarte = KarteValidationStatus.Valid;
 
-                var validateKarte = karteModel.Validation();
-
+                if (karteModel.PtId > 0 && karteModel.HpId > 0 && karteModel.RaiinNo > 0 && karteModel.SinDate > 0)
+                    validateKarte = karteModel.Validation();
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any())
                 {

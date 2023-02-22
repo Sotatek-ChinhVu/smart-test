@@ -186,7 +186,7 @@ namespace Interactor.MedicalExamination
 
             foreach (var hokenPid in hokenPidList)
             {
-                var hoken = insuranceData?.FirstOrDefault(c => c.HokenInf.HokenId == hokenPid);
+                var hoken = insuranceData?.FirstOrDefault(c => c.HokenPid == hokenPid);
                 var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                 var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
