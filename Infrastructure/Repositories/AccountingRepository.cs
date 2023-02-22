@@ -37,13 +37,15 @@ namespace Infrastructure.Repositories
 
             var listKaId = listRaiinInf.Select(item => item.KaId).Distinct().ToList();
 
+            var listHokenPid = listRaiinInf.Select(item => item.HokenPid).Distinct().ToList();
+
             var listKaikeiInf = NoTrackingDataContext.KaikeiInfs.Where(item =>
                 item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate);
 
             var listKaMst = NoTrackingDataContext.KaMsts.Where(item =>
             item.HpId == hpId && item.IsDeleted == 0 && listKaId.Contains(item.KaId));
 
-            var listHokenPattern = FindPtHokenPatternList(hpId, ptId, sinDate, listRaiinInf.Select(item => item.HokenPid).ToList());
+            var listHokenPattern = FindPtHokenPatternList(hpId, ptId, sinDate, listHokenPid);
             var listRaiin = from raiinInf in listRaiinInf
                             join kaikeiInf in listKaikeiInf on
                                 raiinInf.RaiinNo equals kaikeiInf.RaiinNo into listKaikei
