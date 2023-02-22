@@ -183,8 +183,134 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
         }
 
-        public PtDiseaseModel(string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd)
         {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = byomeiCd;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = string.Empty;
+            IsSuspect = 0;
+            StartDate = startDate;
+            TenkiKbn = tenkiKbn;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HokenPid = hokenPid;
+            HosokuCmt = string.Empty;
+        }
+
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = string.Empty;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = string.Empty;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = tenkiKbn;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HokenPid = hokenPid;
+            HosokuCmt = string.Empty;
+        }
+
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = string.Empty;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = string.Empty;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = tenkiKbn;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = icd1012013;
+            Icd1022013 = string.Empty;
+            HokenPid = hokenPid;
+            HosokuCmt = string.Empty;
+        }
+
+        public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013, int nanbyoCd)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = string.Empty;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = string.Empty;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = tenkiKbn;
+            TenkiDate = tenkiDate;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = nanbyoCd;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = icd1012013;
+            Icd1022013 = string.Empty;
+            HokenPid = hokenPid;
+            HosokuCmt = string.Empty;
+        }
+
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
+        {
+            PtId = ptId;
+            ByomeiCd = byomeiCd;
+            SeqNo = seqNo;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            SortNo = sortNo;
             Byomei = byomei;
             StartDate = startDate;
             TenkiDate = tenkiDate;
@@ -376,5 +502,34 @@ namespace Domain.Models.Diseases
         public int SikkanCd { get; set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
+
+        public int ReceTenkiKbn
+        {
+            get
+            {
+                int ret = ReceTenkiKbnConst.Continued;
+                switch (TenkiKbn)
+                {
+                    case TenkiKbnConst.Cured:
+                        ret = ReceTenkiKbnConst.Cured;
+                        break;
+                    case TenkiKbnConst.Canceled:
+                        ret = ReceTenkiKbnConst.Canceled;
+                        break;
+                    case TenkiKbnConst.Dead:
+                        ret = ReceTenkiKbnConst.Dead;
+                        break;
+                }
+                return ret;
+            }
+        }
+
+        public string TenKiBinding
+        {
+            get
+            {
+                return TenkiKbnConst.DisplayedTenkiKbnDict[TenkiKbn];
+            }
+        }
     }
 }

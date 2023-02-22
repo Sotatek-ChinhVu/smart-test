@@ -1491,6 +1491,41 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                   && item.IsDeleted == DeleteTypes.None);
         return receCheckCmtCount == seqNoList.Count;
     }
+
+    public InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId)
+    {
+        var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.SeikyuYm == seikyuYm
+                                                                            && item.PtId == ptId
+                                                                            && item.SinYm == sinYm
+                                                                            && item.HokenId == hokenId);
+
+        if (receInf == null)
+        {
+            return new();
+        }
+
+        var hokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.HokenId == hokenId
+                                                                                && item.IsDeleted == 0);
+
+        var kohiRepoList = NoTrackingDataContext.PtKohis.Where(item => item.HpId == hpId
+                                                                       && item.PtId == ptId
+                                                                       && item.IsDeleted == 0
+                                                                       && (item.HokenId == receInf.Kohi1Id
+                                                                           || item.HokenId == receInf.Kohi2Id
+                                                                           || item.HokenId == receInf.Kohi3Id
+                                                                           || item.HokenId == receInf.Kohi4Id)
+                                                        ).ToList();
+
+
+        var ptKohi1 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi1Id);
+        var ptKohi2 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi2Id);
+        var ptKohi3 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi3Id);
+        var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
+        return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
+    }
     #endregion
 
     #region Private function
@@ -1661,6 +1696,77 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                  && item.HokenId == hokenId)
                                                                   .ToList();
         return receCheckCmtList.Any() ? receCheckCmtList.Max(item => item.SeqNo) : 0;
+    }
+
+    private InsuranceReceInfModel ConvertToInsuranceReceInfModel(ReceInf receInf, PtHokenInf hokenInf, PtKohi ptKohi1, PtKohi ptKohi2, PtKohi ptKohi3, PtKohi ptKohi4)
+    {
+        return new InsuranceReceInfModel(
+                receInf.SeikyuYm,
+                receInf.PtId,
+                receInf.SinYm,
+                receInf.HokenId,
+                receInf.HokenId2,
+                receInf.Kohi1Id,
+                receInf.Kohi2Id,
+                receInf.Kohi3Id,
+                receInf.Kohi4Id,
+                receInf.HokenKbn,
+                receInf.ReceSbt ?? string.Empty,
+                receInf.HokensyaNo ?? string.Empty,
+                receInf.HokenReceTensu ?? 0,
+                receInf.HokenReceFutan ?? 0,
+                receInf.Kohi1ReceTensu ?? 0,
+                receInf.Kohi1ReceFutan ?? 0,
+                receInf.Kohi1ReceKyufu ?? 0,
+                receInf.Kohi2ReceTensu ?? 0,
+                receInf.Kohi2ReceFutan ?? 0,
+                receInf.Kohi2ReceKyufu ?? 0,
+                receInf.Kohi3ReceTensu ?? 0,
+                receInf.Kohi3ReceFutan ?? 0,
+                receInf.Kohi3ReceKyufu ?? 0,
+                receInf.Kohi4ReceTensu ?? 0,
+                receInf.Kohi4ReceFutan ?? 0,
+                receInf.Kohi4ReceKyufu ?? 0,
+                receInf.HokenNissu ?? 0,
+                receInf.Kohi1Nissu ?? 0,
+                receInf.Kohi2Nissu ?? 0,
+                receInf.Kohi3Nissu ?? 0,
+                receInf.Kohi4Nissu ?? 0,
+                receInf.Kohi1ReceKisai,
+                receInf.Kohi2ReceKisai,
+                receInf.Kohi3ReceKisai,
+                receInf.Kohi4ReceKisai,
+                receInf.Tokki1 ?? string.Empty,
+                receInf.Tokki2 ?? string.Empty,
+                receInf.Tokki3 ?? string.Empty,
+                receInf.Tokki4 ?? string.Empty,
+                receInf.Tokki5 ?? string.Empty,
+                receInf.RousaiIFutan,
+                receInf.RousaiRoFutan,
+                receInf.JibaiITensu,
+                receInf.JibaiRoTensu,
+                receInf.JibaiHaFutan,
+                receInf.JibaiNiFutan,
+                receInf.JibaiHoSindan,
+                receInf.JibaiHeMeisai,
+                receInf.JibaiAFutan,
+                receInf.JibaiBFutan,
+                receInf.JibaiCFutan,
+                receInf.JibaiDFutan,
+                receInf.JibaiKenpoFutan,
+                ptKohi1?.FutansyaNo ?? string.Empty,
+                ptKohi2?.FutansyaNo ?? string.Empty,
+                ptKohi3?.FutansyaNo ?? string.Empty,
+                ptKohi4?.FutansyaNo ?? string.Empty,
+                ptKohi1?.JyukyusyaNo ?? string.Empty,
+                ptKohi2?.JyukyusyaNo ?? string.Empty,
+                ptKohi3?.JyukyusyaNo ?? string.Empty,
+                ptKohi4?.JyukyusyaNo ?? string.Empty,
+                hokenInf?.RousaiKofuNo ?? string.Empty,
+                hokenInf?.Kigo ?? string.Empty,
+                hokenInf?.Bango ?? string.Empty,
+                hokenInf?.EdaNo ?? string.Empty
+            );
     }
     #endregion
 

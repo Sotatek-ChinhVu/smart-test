@@ -193,6 +193,8 @@
         public const string GetReceHenReason = "GetReceHenReason";
         public const string GetReceiCheckList = "GetReceiCheckList";
         public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
+        public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
+        public const string GetDiseaseReceList = "GetDiseaseReceList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -205,6 +207,7 @@
         // Family
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
 
         //TreeSet Byomei
