@@ -8,7 +8,6 @@ using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
 using Interactor.MedicalExamination;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Moq;
 using System.Globalization;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -2882,7 +2881,7 @@ public class GetCheckedSpecialItemInteractorTest
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
         var mockInsuranceRepo = new Mock<IInsuranceRepository>();
         mockInsuranceRepo.Setup(repo => repo.GetPtHokenInf(1, 10, 5, sinDate))
-.Returns(new InsuranceModel(1, 5, 1, 1, 10, 1, 1, 1, 1, 1, 1, 1, 1));
+.Returns(new InsuranceModel(1, 5, 1, 1, 10, 1, 1, 1, 1, 1, 1, 1, 1, 0));
         var mockSystemConfigRepo = new Mock<ISystemConfRepository>();
         var mockReceptionRepo = new Mock<IReceptionRepository>();
 
@@ -3070,7 +3069,7 @@ public class GetCheckedSpecialItemInteractorTest
             new TenItemModel(
             1,
            "111013850",
-        
+
            "00",
            "AA",
            "111013850",
@@ -3080,7 +3079,7 @@ public class GetCheckedSpecialItemInteractorTest
            new TenItemModel(
              1,
             "111014210",
-         
+
             "0",
             "AA",
             "111014210",

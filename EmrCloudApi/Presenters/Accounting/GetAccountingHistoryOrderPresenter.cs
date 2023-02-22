@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.Accounting
         {
             Result = new Response<GetAccountingHistoryOrderResponse>()
             {
-                Data = new GetAccountingHistoryOrderResponse(outputData.HistoryOrderDtos),
+                Data = new GetAccountingHistoryOrderResponse(outputData.RaiinfList),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)

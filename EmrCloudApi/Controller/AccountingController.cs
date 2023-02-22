@@ -5,6 +5,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
@@ -82,6 +83,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetAccountingHistoryOrderResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHeaderInf)]
+        public ActionResult<Response<GetAccountingHeaderResponse>> GetList([FromQuery] GetAccountingHeaderRequest request)
+        {
+            var input = new GetAccountingHeaderInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAccountingHeaderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAccountingHeaderResponse>>(presenter.Result);
         }
     }
 }

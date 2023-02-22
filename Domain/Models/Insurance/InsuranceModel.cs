@@ -48,7 +48,7 @@ namespace Domain.Models.InsuranceInfor
             Kohi4 = new KohiInfModel(0);
         }
 
-        public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -66,6 +66,7 @@ namespace Domain.Models.InsuranceInfor
             Kohi4 = new KohiInfModel(kohi4Id);
             StartDate = startDate;
             EndDate = endDate;
+            SinDate = sinDate;
         }
 
         public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted, bool hokenPatternSelected)
