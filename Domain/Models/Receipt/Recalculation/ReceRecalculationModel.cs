@@ -4,7 +4,7 @@ namespace Domain.Models.Receipt.Recalculation;
 
 public class ReceRecalculationModel
 {
-    public ReceRecalculationModel(int seikyuYm, int rousaiSaigaiKbn, int isPaperRece, int birthday, long ptId, long ptNum, int sinYm, string hokenHoubetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenStartDate, int kohi1StartDate, int kohi2StartDate, int kohi3StartDate, int kohi4StartDate, int hokenEndDate, int kohi1EndDate, int kohi2EndDate, int kohi3EndDate, int kohi4EndDate, bool isHokenConfirmed, bool isKohi1Confirmed, bool isKohi2Confirmed, bool isKohi3Confirmed, bool isKohi4Confirmed, int rousaiSyobyoDate, bool isRosai, int isTester)
+    public ReceRecalculationModel(int seikyuYm, int rousaiSaigaiKbn, int isPaperRece, int birthday, long ptId, long ptNum, int sinYm, string hokenHoubetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenStartDate, int kohi1StartDate, int kohi2StartDate, int kohi3StartDate, int kohi4StartDate, int hokenEndDate, int kohi1EndDate, int kohi2EndDate, int kohi3EndDate, int kohi4EndDate, bool isHokenConfirmed, bool isKohi1Confirmed, bool isKohi2Confirmed, bool isKohi3Confirmed, bool isKohi4Confirmed, int rousaiSyobyoDate, bool isRosai, int isTester, int latestHokenConfirmedDate, int latestKohi1ConfirmedDate, int latestKohi2ConfirmedDate, int latestKohi3ConfirmedDate, int latestKohi4ConfirmedDate)
     {
         SeikyuYm = seikyuYm;
         RousaiSaigaiKbn = rousaiSaigaiKbn;
@@ -42,6 +42,11 @@ public class ReceRecalculationModel
         RousaiSyobyoDate = rousaiSyobyoDate;
         IsRosai = isRosai;
         IsTester = isTester;
+        LatestHokenConfirmedDate = latestHokenConfirmedDate;
+        LatestKohi1ConfirmedDate = latestKohi1ConfirmedDate;
+        LatestKohi2ConfirmedDate = latestKohi2ConfirmedDate;
+        LatestKohi3ConfirmedDate = latestKohi3ConfirmedDate;
+        LatestKohi4ConfirmedDate = latestKohi4ConfirmedDate;
     }
 
     public int SeikyuYm { get; private set; }
@@ -116,6 +121,16 @@ public class ReceRecalculationModel
     public bool IsRosai { get; private set; }
 
     public int IsTester { get; private set; }
+
+    public int LatestHokenConfirmedDate { get; private set; }
+
+    public int LatestKohi1ConfirmedDate { get; private set; }
+
+    public int LatestKohi2ConfirmedDate { get; private set; }
+
+    public int LatestKohi3ConfirmedDate { get; private set; }
+
+    public int LatestKohi4ConfirmedDate { get; private set; }
     #endregion
 
     #region other param
