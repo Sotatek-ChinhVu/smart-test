@@ -1,17 +1,17 @@
-﻿using Domain.Models.HistoryOrder;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
+using UseCase.MedicalExamination.GetHistory;
 
 namespace UseCase.Accounting.GetHistoryOrder
 {
     public class GetAccountingHistoryOrderOutputData : IOutputData
     {
-        public GetAccountingHistoryOrderOutputData(List<HistoryOrderModel> historyOrderModels, GetAccountingHistoryOrderStatus status)
+        public GetAccountingHistoryOrderOutputData(List<HistoryKarteOdrRaiinItem> raiinfList, GetAccountingHistoryOrderStatus status)
         {
-            HistoryOrderModels = historyOrderModels;
+            RaiinfList = raiinfList;
             Status = status;
         }
 
-        public List<HistoryOrderModel> HistoryOrderModels { get; private set; }
+        public List<HistoryKarteOdrRaiinItem> RaiinfList { get; private set; }
 
         public GetAccountingHistoryOrderStatus Status { get; private set; }
     }
