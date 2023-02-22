@@ -172,7 +172,8 @@ namespace Infrastructure.Repositories
                 tenMst?.MaxAge ?? string.Empty,
                 tenMst?.SanteiItemCd ?? string.Empty,
                 tenMst?.OdrTermVal ?? 0,
-                tenMst?.CnvTermVal ?? 0
+                tenMst?.CnvTermVal ?? 0,
+                tenMst?.DefaultVal ?? 0
             );
         }
 
@@ -218,7 +219,8 @@ namespace Infrastructure.Repositories
                 tenMst.MaxAge ?? string.Empty,
                 tenMst.SanteiItemCd ?? string.Empty,
                 tenMst.OdrTermVal,
-                tenMst.CnvTermVal
+                tenMst.CnvTermVal,
+                tenMst.DefaultVal
             )).ToList();
         }
 
@@ -228,7 +230,7 @@ namespace Infrastructure.Repositories
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
                 var inputKeyword = keyword;
-                kanaKeyword = WanaKana.RomajiToKana(keyword);
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
                 if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
                     kanaKeyword = inputKeyword;
             }
@@ -327,6 +329,8 @@ namespace Infrastructure.Repositories
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
+
+            var count = queryResult.Count();
 
             if (kouiKbn > 0)
             {
@@ -632,7 +636,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.MaxAge ?? string.Empty,
                                                            item.TenMst?.SanteiItemCd ?? string.Empty,
                                                            item.TenMst?.OdrTermVal ?? 0,
-                                                           item.TenMst?.CnvTermVal ?? 0
+                                                           item.TenMst?.CnvTermVal ?? 0,
+                                                           item.TenMst?.DefaultVal ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -723,7 +728,9 @@ namespace Infrastructure.Repositories
                                                            item.MaxAge ?? string.Empty,
                                                            item.SanteiItemCd ?? string.Empty,
                                                            item.OdrTermVal,
-                                                           item.CnvTermVal)).ToList();
+                                                           item.CnvTermVal,
+                                                           item.DefaultVal
+                                                           )).ToList();
             }
 
             return tenMstModels;
@@ -880,7 +887,8 @@ namespace Infrastructure.Repositories
                     entity?.MaxAge ?? string.Empty,
                     entity?.SanteiItemCd ?? string.Empty,
                     entity?.OdrTermVal ?? 0,
-                    entity?.CnvTermVal ?? 0
+                    entity?.CnvTermVal ?? 0,
+                    entity?.DefaultVal ?? 0
                );
         }
 
@@ -930,7 +938,8 @@ namespace Infrastructure.Repositories
                     entity.MaxAge ?? string.Empty,
                     entity.SanteiItemCd ?? string.Empty,
                     entity.OdrTermVal,
-                    entity.CnvTermVal
+                    entity.CnvTermVal,
+                    entity.DefaultVal
                )).ToList();
         }
 
@@ -1275,7 +1284,9 @@ namespace Infrastructure.Repositories
                         tenMst?.MaxAge ?? string.Empty,
                         tenMst?.SanteiItemCd ?? string.Empty,
                         0,
-                        0);
+                        0,
+                        tenMst?.DefaultVal ?? 0
+                        );
         }
 
         public void ReleaseResource()

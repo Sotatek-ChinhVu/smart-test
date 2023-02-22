@@ -1,5 +1,4 @@
-﻿using Amazon.S3.Model;
-using Domain.Constant;
+﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
@@ -8,9 +7,7 @@ using Helper.Common;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 using System.Linq.Dynamic.Core;
-using System.Runtime.CompilerServices;
 
 namespace Infrastructure.Repositories
 {
@@ -163,11 +160,11 @@ namespace Infrastructure.Repositories
                 bool isReceKisaiOrNoHoken = false;
                 var prefName = string.Empty;
 
-                HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo 
+                HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo
                                                                 && h.HokenEdaNo == item.HokenEdaNo
                                                                 && h.StartDate <= sinDate
                                                                 && sinDate <= h.EndDate);
-                if(hokenMst is null)
+                if (hokenMst is null)
                 {
                     hokenMst = hokenMstList.Where(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo)
                                            .OrderByDescending(x => x.StartDate)
@@ -286,7 +283,7 @@ namespace Infrastructure.Repositories
                 if (item.ptKohi1 is not null)
                 {
                     hokenMst1 = hokenMstList.FirstOrDefault(h => h.HokenNo == item.ptKohi1.HokenNo && h.HokenEdaNo == item.ptKohi1.HokenEdaNo && h.StartDate <= sinDate && sinDate <= h.EndDate);
-                    if(hokenMst1 is null)
+                    if (hokenMst1 is null)
                     {
                         hokenMst1 = hokenMstList.Where(h => h.HokenNo == item.ptKohi1.HokenNo && h.HokenEdaNo == item.ptKohi1.HokenEdaNo)
                                                 .OrderByDescending(x => x.StartDate).FirstOrDefault();
@@ -620,7 +617,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true)
+        public IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true)
         {
 
             var result = NoTrackingDataContext.PtHokenPatterns.Where
@@ -646,7 +643,9 @@ namespace Infrastructure.Repositories
                         r.Kohi3Id,
                         r.Kohi4Id,
                         r.StartDate,
-                        r.EndDate));
+                        r.EndDate,
+                        sinDate
+                        ));
         }
 
         private bool IsReceKisai(HokenMst HokenMasterModel)
@@ -955,10 +954,10 @@ namespace Infrastructure.Repositories
                         sinDate,
                         item.HokenMemo,
                         hokenInf,
-                        kohi1: GetKohiInfModel(item.ptKohi1, ptHokenCheckOfKohi1,  hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
-                        kohi2: GetKohiInfModel(item.ptKohi2, ptHokenCheckOfKohi2,  hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
-                        kohi3: GetKohiInfModel(item.ptKohi3, ptHokenCheckOfKohi3,  hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
-                        kohi4: GetKohiInfModel(item.ptKohi4, ptHokenCheckOfKohi4,  hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
+                        kohi1: GetKohiInfModel(item.ptKohi1, ptHokenCheckOfKohi1, hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
+                        kohi2: GetKohiInfModel(item.ptKohi2, ptHokenCheckOfKohi2, hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
+                        kohi3: GetKohiInfModel(item.ptKohi3, ptHokenCheckOfKohi3, hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
+                        kohi4: GetKohiInfModel(item.ptKohi4, ptHokenCheckOfKohi4, hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
                         0,
                         item.StartDate,
                         item.EndDate,
