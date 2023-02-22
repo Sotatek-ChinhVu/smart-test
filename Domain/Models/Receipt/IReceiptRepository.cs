@@ -40,5 +40,9 @@ public interface IReceiptRepository : IRepositoryBase
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
     List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
+
+    List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
+
+    bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
     #endregion
 }

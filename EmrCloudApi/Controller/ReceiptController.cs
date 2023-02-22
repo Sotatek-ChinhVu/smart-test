@@ -181,10 +181,10 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetDiseaseReceListResponse>>(presenter.Result);
     }
 
-    [HttpPost (ApiPath.Recalculation)]
+    [HttpPost(ApiPath.Recalculation)]
     public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
     {
-        var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList);
+        var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList, request.IsStopCalc);
         var output = _bus.Handle(input);
 
         var presenter = new RecalculationPresenter();

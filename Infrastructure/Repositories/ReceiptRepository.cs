@@ -1622,9 +1622,169 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId)
     {
-        throw new NotImplementedException();
+        var result = new List<SinKouiCountModel>();
+
+        var sinKouiList = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
+                                                                       && item.PtId == ptId
+                                                                       && item.SinYm == sinYm
+                                                                       && item.HokenId == hokenId
+                                                                       && item.IsNodspRece == 0
+                                                                       && item.InoutKbn == 0
+                                                                       && item.IsDeleted == DeleteTypes.None)
+                                                        .ToList();
+
+        var hokenPidList = sinKouiList.Select(item => item.HokenPid).Distinct().ToList();
+        var rpNoList = sinKouiList.Select(item => item.RpNo).Distinct().ToList();
+        var seqNoList = sinKouiList.Select(item => item.SeqNo).Distinct().ToList();
+
+        var ptHokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                     && item.PtId == ptId
+                                                                                     && hokenPidList.Contains(item.HokenPid))
+                                                                      .ToList();
+
+        var sinKouiCountList = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && item.SinYm == sinYm
+                                                                                 && rpNoList.Contains(item.RpNo)
+                                                                                 && seqNoList.Contains(item.SeqNo))
+                                                                  .OrderBy(p => p.SinDate)
+                                                                  .ToList();
+
+        var sinKouiDetailList = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                   && item.PtId == ptId
+                                                                                   && item.SinYm == sinYm
+                                                                                   && item.IsDeleted == DeleteTypes.None
+                                                                                   && rpNoList.Contains(item.RpNo)
+                                                                                   && seqNoList.Contains(item.SeqNo))
+                                                                    .ToList();
+
+        var listItemCd = sinKouiDetailList.Select(item => item.ItemCd).ToList();
+        var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                     && listItemCd.Contains(item.ItemCd))
+                                                      .ToList();
+
+        var sinKouiJoinPatternQuery = from sinKoui in sinKouiList
+                                      join ptHokenPattern in ptHokenPatternList
+                                      on sinKoui.HokenPid equals ptHokenPattern.HokenPid
+                                      select new
+                                      {
+                                          sinKoui,
+                                          ptHokenPattern
+                                      };
+
+        var sinKouiJoinSinKouiCountquery = from sinKouiJoinPattern in sinKouiJoinPatternQuery
+                                           join sinKouiCount in sinKouiCountList
+                                           on new { sinKouiJoinPattern.sinKoui.RpNo, sinKouiJoinPattern.sinKoui.SeqNo } equals new { sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                                           select new
+                                           {
+                                               sinKouiJoinPattern.ptHokenPattern,
+                                               SinKouiCount = sinKouiCount
+                                           };
+
+        var sinKouiCountJoinDetailQuery = from sinKouiJoinSinKouiCount in sinKouiJoinSinKouiCountquery
+                                          join sinKouiDetail in sinKouiDetailList
+                                          on new { sinKouiJoinSinKouiCount.SinKouiCount.RpNo, sinKouiJoinSinKouiCount.SinKouiCount.SeqNo }
+                                          equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                                          select new
+                                          {
+                                              sinKouiJoinSinKouiCount.ptHokenPattern,
+                                              SinKouiCount = sinKouiJoinSinKouiCount.SinKouiCount,
+                                              SinKouiDetail = sinKouiDetail
+                                          };
+
+        var joinTenMstQuery = from sinKouiCountJoinDetail in sinKouiCountJoinDetailQuery
+                              join tenMst in tenMstList
+                              on sinKouiCountJoinDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd into tempTenMstList
+                              select new
+                              {
+                                  PtId = sinKouiCountJoinDetail.SinKouiCount.PtId,
+                                  SinDate = sinKouiCountJoinDetail.SinKouiCount.SinDate,
+                                  RaiinNo = sinKouiCountJoinDetail.SinKouiCount.RaiinNo,
+                                  SinKouiCount = sinKouiCountJoinDetail.SinKouiCount,
+                                  SinKouiDetail = sinKouiCountJoinDetail.SinKouiDetail,
+                                  sinKouiCountJoinDetail.ptHokenPattern,
+                                  TenMst = tempTenMstList.OrderByDescending(p => p.StartDate).FirstOrDefault(p => p.StartDate <= sinKouiCountJoinDetail.SinKouiCount.SinDate)
+                              };
+
+        var groupKeys = joinTenMstQuery.GroupBy(item => new { item.PtId, item.SinDate, item.RaiinNo })
+                                       .Select(p => p.FirstOrDefault())
+                                       .ToList();
+
+        foreach (var groupKey in groupKeys)
+        {
+            var entities = joinTenMstQuery.Where(p => p.PtId == groupKey!.PtId && p.SinDate == groupKey.SinDate && p.RaiinNo == groupKey.RaiinNo);
+            var sinKouiDetailModelList = entities.Select(item => new SinKouiDetailModel(
+                                                                     item.PtId,
+                                                                     item.SinKouiDetail.SinYm,
+                                                                     item.SinDate,
+                                                                     item.SinKouiDetail.PtId,
+                                                                     item.TenMst.MaxAge ?? string.Empty,
+                                                                     item.TenMst.MinAge ?? string.Empty,
+                                                                     item.SinKouiDetail.ItemCd ?? string.Empty,
+                                                                     item.SinKouiDetail.CmtOpt ?? string.Empty,
+                                                                     item.SinKouiDetail.ItemName ?? string.Empty,
+                                                                     item.TenMst.ReceName ?? string.Empty,
+                                                                     item.SinKouiDetail.Suryo,
+                                                                     item.SinKouiDetail.IsNodspPaperRece,
+                                                                     item.TenMst.MasterSbt ?? string.Empty))
+                                                .ToList();
+
+            var ptHokenPatternModelList = entities.Select(item => new PtHokenPatternModel(
+                                                                      item.ptHokenPattern.PtId,
+                                                                      item.ptHokenPattern.HokenPid,
+                                                                      item.ptHokenPattern.SeqNo,
+                                                                      item.ptHokenPattern.HokenKbn,
+                                                                      item.ptHokenPattern.HokenSbtCd,
+                                                                      item.ptHokenPattern.HokenId,
+                                                                      item.ptHokenPattern.Kohi1Id,
+                                                                      item.ptHokenPattern.Kohi2Id,
+                                                                      item.ptHokenPattern.Kohi3Id,
+                                                                      item.ptHokenPattern.Kohi4Id,
+                                                                      item.ptHokenPattern.HokenMemo ?? string.Empty,
+                                                                      item.ptHokenPattern.StartDate,
+                                                                      item.ptHokenPattern.EndDate))
+                                                    .Distinct()
+                                                    .ToList();
+
+            result.Add(new SinKouiCountModel(
+                            ptHokenPatternModelList,
+                            sinKouiDetailModelList,
+                            groupKey!.PtId,
+                            groupKey.SinDate,
+                            groupKey.RaiinNo,
+                            sinKouiDetailModelList.Any(item => ReceErrCdConst.IsFirstVisitCd.Contains(item.ItemCd)),
+                            sinKouiDetailModelList.Any(item => ReceErrCdConst.IsReVisitCd.Contains(item.ItemCd)),
+                            sinKouiDetailModelList.Any(item => item.ItemCd == "101110040" || item.ItemCd == "111011810")
+                       ));
+        }
+        return result;
     }
 
+    public List<ReceCheckOptModel> GetReceCheckOptList(int hpId)
+    {
+        var receCheckOptList = NoTrackingDataContext.ReceCheckOpts.Where(p => p.HpId == hpId).ToList();
+        return receCheckOptList.Select(item => new ReceCheckOptModel(
+                                                   item.ErrCd,
+                                                   item.CheckOpt,
+                                                   item.Biko ?? string.Empty,
+                                                   item.IsInvalid))
+                               .ToList();
+    }
+
+    public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
+    {
+        var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinYm == sinYm
+                                                                             && item.HokenId == hokenId)
+                                                              .ToList();
+        if (receCmtErrList.Any())
+        {
+            TrackingDataContext.ReceCheckErrs.RemoveRange(receCmtErrList);
+            TrackingDataContext.SaveChanges();
+        }
+        return true;
+    }
     #endregion
 
     #region Private function
