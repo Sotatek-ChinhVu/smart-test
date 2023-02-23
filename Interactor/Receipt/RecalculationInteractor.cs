@@ -235,11 +235,11 @@ public class RecalculationInteractor : IRecalculationInputPort
     private List<string> CheckBuiOrderByomei(List<BuiOdrItemMstModel> buiOdrItemMsts, List<BuiOdrItemByomeiMstModel> buiOdrItemByomeiMsts, List<TodayOdrInfDetailModel> todayOrderInfModels, List<PtDiseaseModel> PtDiseaseModels)
     {
         List<string> msgErrors = new();
-        foreach (var todayOrderInfModel in todayOrderInfModels)
+        foreach (var itemCd in todayOrderInfModels.Select(item => item.ItemCd).ToList())
         {
-            if (!buiOdrItemMsts.Any(p => p.ItemCd == todayOrderInfModel.ItemCd)) continue;
+            if (!buiOdrItemMsts.Any(p => p.ItemCd == itemCd)) continue;
 
-            var buiOdrByomeiMsts = buiOdrItemByomeiMsts.Where(p => p.ItemCd == todayOrderInfModel.ItemCd).ToList();
+            var buiOdrByomeiMsts = buiOdrItemByomeiMsts.Where(p => p.ItemCd == itemCd).ToList();
             if (buiOdrByomeiMsts.Count > 0)
             {
                 bool hasError = true;
@@ -280,7 +280,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 }
                 if (hasError)
                 {
-                    msgErrors.Add(todayOrderInfModel.ItemCd);
+                    msgErrors.Add(itemCd);
                 }
             }
         }
