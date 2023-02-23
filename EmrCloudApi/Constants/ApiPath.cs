@@ -76,6 +76,7 @@
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
+        public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
