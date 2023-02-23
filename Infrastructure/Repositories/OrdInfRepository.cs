@@ -61,6 +61,45 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
 
+        public List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            List<int> hokenPIdList = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinYm == sinYm
+                                                                                  && item.HokenId == hokenId
+                                                                                  && item.IsNodspRece == 0
+                                                                                  && item.IsDeleted == DeleteTypes.None)
+                                                                   .Select(item => item.HokenPid)
+                                                                   .Distinct()
+                                                                   .ToList();
+
+            var odrInfList = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                         && item.PtId == ptId
+                                                                         && item.SinDate / 100 == sinYm
+                                                                         && hokenPIdList.Contains(item.HokenPid)
+                                                                         && item.IsDeleted == DeleteTypes.None
+                                                                         && item.OdrKouiKbn != 10)
+                                                          .ToList();
+
+            var raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            var rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList();
+            var rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList();
+            var sinDateList = odrInfList.Select(item => item.SinDate).Distinct().ToList();
+
+            var odrInfDetailList = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                                     && item.PtId == ptId
+                                                                                     && raiinNoList.Contains(item.RaiinNo)
+                                                                                     && rpNoList.Contains(item.RpNo)
+                                                                                     && rpEdaNoList.Contains(item.RpEdaNo)
+                                                                                     && sinDateList.Contains(item.SinDate))
+                                                                      .ToList();
+
+            var sindateMin = odrInfDetailList.Any() ? odrInfDetailList.Min(o => o.SinDate) : 0;
+            var sindateMax = odrInfDetailList.Any() ? odrInfDetailList.Max(o => o.SinDate) : 0;
+
+            return ConvertEntityToListOrdInfModel(odrInfList, odrInfDetailList, hpId, sindateMin, sindateMax, 0);
+        }
+
         public OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate)
         {
 
@@ -273,7 +312,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-
         private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
             return new OrdInfModel(ordInf.HpId,
@@ -360,7 +398,8 @@ namespace Infrastructure.Repositories
                             cnvUnitName,
                             odrUnitName,
                             centerItemCd1,
-                            centerItemCd2
+                            centerItemCd2,
+                            ordInfDetail.CmtOpt ?? string.Empty
                 );
         }
 

@@ -798,7 +798,7 @@ namespace Infrastructure.Repositories
                 {
                     PtDiseaseModel.Byomei = byomeiMst.Sbyomei;
                     PtDiseaseModel.Icd10 = byomeiMst.Icd101;
-                    PtDiseaseModel.SikkanCd = byomeiMst.SikkanCd;
+                    PtDiseaseModel.ChangeSikkanCd(byomeiMst.SikkanCd);
                     if (!string.IsNullOrEmpty(byomeiMst.Icd102))
                     {
                         PtDiseaseModel.Icd10 += "/" + byomeiMst.Icd102;

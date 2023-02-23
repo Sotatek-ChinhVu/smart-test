@@ -106,7 +106,8 @@ namespace Infrastructure.Converter
                                           string.Empty,
                                           string.Empty,
                                           string.Empty,
-                                          string.Empty
+                                          string.Empty,
+                                          detail.CmtOpt??string.Empty
                                           );
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }

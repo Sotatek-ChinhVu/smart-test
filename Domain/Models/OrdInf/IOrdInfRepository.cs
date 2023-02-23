@@ -22,6 +22,8 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos);
 
+        List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenId);
+
         int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);

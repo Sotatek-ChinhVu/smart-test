@@ -44,5 +44,15 @@ public interface IReceiptRepository : IRepositoryBase
     List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
 
     bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
+
+    List<TodayOdrInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId);
+
+    List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId);
+
+    List<BuiOdrItemByomeiMstModel> GetBuiOdrItemByomeiMstList(int hpId);
+
+    List<BuiOdrMstModel> GetBuiOdrMstList(int hpId);
+
+    List<BuiOdrByomeiMstModel> GetBuiOdrByomeiMstList(int hpId);
     #endregion
 }
