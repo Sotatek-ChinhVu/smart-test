@@ -239,7 +239,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             if (!buiOdrItemMsts.Any(p => p.ItemCd == todayOrderInfModel.ItemCd)) continue;
 
-            var buiOdrByomeiMsts = buiOdrItemByomeiMsts.FindAll(p => p.ItemCd == todayOrderInfModel.ItemCd);
+            var buiOdrByomeiMsts = buiOdrItemByomeiMsts.Where(p => p.ItemCd == todayOrderInfModel.ItemCd).ToList();
             if (buiOdrByomeiMsts.Count > 0)
             {
                 bool hasError = true;
@@ -255,8 +255,8 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 1)
                     {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_left) || p.ByomeiHankToZen.AsString().Contains(_right) ||
-                            p.ByomeiHankToZen.AsString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right) ||
+                            p.ByomeiHankToZen.ToString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -264,21 +264,18 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 0)
                     {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_left) || p.ByomeiHankToZen.AsString().Contains(_right))
-                            && !p.ByomeiHankToZen.AsString().Contains(_leftRight) && !p.ByomeiHankToZen.AsString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right))
+                            && !p.ByomeiHankToZen.ToString().Contains(_leftRight) && !p.ByomeiHankToZen.ToString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
                         }
                     }
-                    else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1)
-                    {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_both) || p.ByomeiHankToZen.AsString().Contains(_leftRight) || p.ByomeiHankToZen.AsString().Contains(_rightLeft))
+                    else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1 && PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_both) || p.ByomeiHankToZen.ToString().Contains(_leftRight) || p.ByomeiHankToZen.ToString().Contains(_rightLeft))
                             && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
-                        {
-                            hasError = false;
-                            break;
-                        }
+                    {
+                        hasError = false;
+                        break;
                     }
                 }
                 if (hasError)
@@ -337,13 +334,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                     {
                         odrBuiPatterns.Add(buiOdrMst.OdrBui);
                     }
-                    foreach (var pattern in odrBuiPatterns)
+                    var ptByomeiAdd = odrBuiPatterns.FirstOrDefault(pattern => compareName.Contains(HenkanJ.HankToZen(pattern)));
+                    if (ptByomeiAdd != null)
                     {
-                        if (compareName.Contains(HenkanJ.HankToZen(pattern)))
-                        {
-                            buiOdrMstContainItemNames.Add(buiOdrMst);
-                            break;
-                        }
+                        buiOdrMstContainItemNames.Add(buiOdrMst);
                     }
                 }
 
@@ -388,13 +382,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                     List<PtDiseaseModel> ptByomeisContainByomeiBui = new();
                     foreach (var ptByomei in ptByomeiList)
                     {
-                        foreach (var mst in filteredBuiOdrByomeiMsts)
+                        var ptByomeiAdd = filteredBuiOdrByomeiMsts.FirstOrDefault(mst => HenkanJ.HankToZen(ptByomei.Byomei).Contains(HenkanJ.HankToZen(mst.ByomeiBui)));
+                        if (ptByomeiAdd != null)
                         {
-                            if (HenkanJ.HankToZen(ptByomei.Byomei).Contains(HenkanJ.HankToZen(mst.ByomeiBui)))
-                            {
-                                ptByomeisContainByomeiBui.Add(ptByomei);
-                                break;
-                            }
+                            ptByomeisContainByomeiBui.Add(ptByomei);
                         }
                     }
                     foreach (var ptByomei in ptByomeisContainByomeiBui)
@@ -480,6 +471,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             string buiOdrDirection = GetDirection(buiOdr);
             string byomeiNameDirection = GetDirection(byomeiName);
+
             // Convert names to the left-right direction if they contain 両 character or right-left direction.
             string buiOdrLeftRight = buiOdrDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
             string byomeiNameLeftRight = byomeiNameDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
@@ -489,6 +481,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             string buiOdrDirection = GetDirection(buiOdr);
             string byomeiNameDirection = GetDirection(byomeiName);
+
             // Convert names to the left-right direction if they contain 両 character or right-left direction.
             string buiOdrLeftRight = buiOdrDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
             string byomeiNameLeftRight = byomeiNameDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
@@ -879,14 +872,14 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 foreach (var ptByomei in ptByomeis)
                 {
-                    if (ptByomei.Byomei.AsString().Contains(_suspectedSuffix) &&
+                    if (ptByomei.Byomei.ToString().Contains(_suspectedSuffix) &&
                         CIUtil.DateTimeToInt(CIUtil.IntToDate(ptByomei.StartDate).AddMonths(receCheckOpt.CheckOpt)) <= recalculationModel.LastDateOfThisMonth)
                     {
                         string format = "（{0}: {1}～）";
                         string cutByomei = CIUtil.Copy(ptByomei.Byomei, 1, 100);
                         string msg2 = string.Format(format, cutByomei, CIUtil.SDateToShowSWDate(ptByomei.StartDate));
                         AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.CheckSuspectedByomeiErrCd,
-                            ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.AsString()), msg2, cutByomei);
+                            ReceErrCdConst.CheckSuspectedByomeiErrMsg.Replace("xx", receCheckOpt.CheckOpt.ToString()), msg2, cutByomei);
                     }
                 }
             }
@@ -942,14 +935,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                             string itemCd = odrInf.ItemCd;
                             if (string.IsNullOrEmpty(itemCd) ||
                                 itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ||
-                                itemCd == ItemCdConst.Con_Refill) continue;
+                                itemCd == ItemCdConst.Con_Refill) { continue; }
 
                             string santeiItemCd = _receiptRepository.GetSanteiItemCd(hpId, itemCd, sindate);
 
                             List<string> tekiouByomeiCds = _receiptRepository.GetTekiouByomei(hpId, new List<string>() { itemCd, santeiItemCd });
-                            if (tekiouByomeiCds.Count == 0) continue;
+                            if (tekiouByomeiCds.Count == 0) { continue; }
 
-                            if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.AsString().Contains(_suspectedSuffix)))
+                            if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.ToString().Contains(_suspectedSuffix)))
                                          .Any(p => tekiouByomeiCds.Contains(p.ByomeiCd)))
                             {
                                 checkedItemCds.Add(odrInf.ItemCd);
