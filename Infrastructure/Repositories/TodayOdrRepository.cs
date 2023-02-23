@@ -2043,6 +2043,7 @@ namespace Infrastructure.Repositories
             List<OrdInfModel> result = new();
             var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
             var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+            var targetItems = new List<TenItemModel>();
 
             foreach (var checkingOdr in addingOdrList)
             {
@@ -2155,7 +2156,14 @@ namespace Infrastructure.Repositories
             return new(0, string.Empty);
         }
 
-
+        private (int, string) ChangeAfterAutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
+        {
+            var targetItem = masterFinder.FindTenMst(santeiCntCheck.TargetCd, Sinday);
+            if (targetItem == null)
+            {
+                continue;
+            }
+        }
 
         private List<SanteiGrpDetail> FindSanteiGrpDetailList(string itemCd)
         {
@@ -2175,7 +2183,7 @@ namespace Infrastructure.Repositories
             return entity ?? new SanteiCntCheck();
         }
 
-        public TenMst FindTenMst(int hpId, string itemCd, int sinDate)
+        public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
         {
             var entity = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
                    p.HpId == hpId &&
@@ -2184,7 +2192,47 @@ namespace Infrastructure.Repositories
                    p.ItemCd == itemCd &&
                    p.IsDeleted == DeleteTypes.None);
 
-            return entity ?? new();
+            return entity != null ? new TenItemModel( 
+                   entity.HpId,
+                   entity.ItemCd,
+                   entity.RousaiKbn,
+                   entity.KanaName1 ?? string.Empty,
+                   entity.Name ?? string.Empty,
+                   entity.KohatuKbn,
+                   entity.MadokuKbn,
+                   entity.KouseisinKbn,
+                   entity.OdrUnitName ?? string.Empty,
+                   entity.EndDate,
+                   entity.DrugKbn,
+                   entity.MasterSbt ?? string.Empty,
+                   entity.BuiKbn,
+                   entity.IsAdopted,
+                   entity.Ten,
+                   entity.TenId,
+                   string.Empty,
+                   string.Empty,
+                   entity.CmtCol1,
+                   entity.IpnNameCd ?? string.Empty,
+                   entity.SinKouiKbn,
+                   entity.YjCd ?? string.Empty,
+                   entity.CnvUnitName ?? string.Empty,
+                   entity.StartDate,
+                   entity.YohoKbn,
+                   entity.CmtColKeta1,
+                   entity.CmtColKeta2,
+                   entity.CmtColKeta3,
+                   entity.CmtColKeta4,
+                   entity.CmtCol2,
+                   entity.CmtCol3,
+                   entity.CmtCol4,
+                   entity.IpnNameCd ?? string.Empty,
+                   entity.MinAge ?? string.Empty,
+                   entity.MaxAge ?? string.Empty,
+                   entity.SanteiItemCd ?? string.Empty,
+                   entity.OdrTermVal,
+                   entity.CnvTermVal,
+                   entity.DefaultVal
+                ) : new();
         }
 
         private GroupOdrItem GetGroupOdrInfByOdr(TodayOdrInfModel odrInf)
