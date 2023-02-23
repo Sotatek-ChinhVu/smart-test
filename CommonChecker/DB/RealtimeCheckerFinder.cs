@@ -212,7 +212,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsEnumerable()
                  join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugPro in NoTrackingDataContext.M56ProdrugCd
