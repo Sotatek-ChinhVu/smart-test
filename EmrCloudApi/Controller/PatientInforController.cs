@@ -89,6 +89,7 @@ using EmrCloudApi.Realtime;
 using EmrCloudApi.Messages;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.CheckAllowDelete;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 
 namespace EmrCloudApi.Controller
 {
@@ -589,7 +590,7 @@ namespace EmrCloudApi.Controller
                  request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
-            
+
             if (output.Status == SavePatientInfoStatus.Successful)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
@@ -631,7 +632,7 @@ namespace EmrCloudApi.Controller
                                                    request.HokenIdAfter,
                                                    request.HokenNameAfter,
                                                    request.HokenPidBefore,
-                                                   request.HokenPidAfter, 
+                                                   request.HokenPidAfter,
                                                    request.StartDate,
                                                    request.EndDate,
                                                    request.IsHokenPatternUsed,
@@ -796,7 +797,7 @@ namespace EmrCloudApi.Controller
                                                                 m.SortNo,
                                                                 0)).ToList())).ToList();
 
-            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel); 
+            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel);
             var output = _bus.Handle(input);
             var presenter = new SaveGroupNameMstPresenter();
             presenter.Complete(output);
@@ -822,7 +823,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
         }
-
 
         [HttpPost(ApiPath.ValidateSwapHoken)]
         public ActionResult<Response<ValidateSwapHokenResponse>> ValidateSwapHoken([FromBody] ValidateSwapHokenRequest request)
@@ -856,6 +856,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckAllowDeleteGroupMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckAllowDeleteGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPatientInfoBetweenTimesList)]
+        public ActionResult<Response<GetPatientInfoBetweenTimesListResponse>> GetPatientInfoBetweenTimesList([FromQuery] GetPatientInfoBetweenTimesListRequest request)
+        {
+            var input = new GetPatientInfoBetweenTimesListInputData(HpId, request.SinYm, request.StartDateD, request.StartTimeH, request.StartTimeM, request.EndDateD, request.EndTimeH, request.EndTimeM);
+            var output = _bus.Handle(input);
+            var presenter = new GetPatientInfoBetweenTimesListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPatientInfoBetweenTimesListResponse>>(presenter.Result);
         }
     }
 }

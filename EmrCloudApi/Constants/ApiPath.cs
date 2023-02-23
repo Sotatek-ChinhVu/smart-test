@@ -76,6 +76,7 @@
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
+        public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -195,6 +196,7 @@
         public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
         public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
         public const string GetDiseaseReceList = "GetDiseaseReceList";
+        public const string Recalculation = "Recalculation";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
