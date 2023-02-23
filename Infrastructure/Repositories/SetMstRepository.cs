@@ -432,7 +432,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         int setCd = -1;
         copySetKbnEdaNo = copySetKbnEdaNo - 1;
         pasteSetKbnEdaNo = pasteSetKbnEdaNo - 1;
-        var listCopySetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == copyGenerationId && mst.SetKbn == copySetKbn && mst.SetKbnEdaNo == copySetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId).ToList();
+        var listCopySetMsts = NoTrackingDataContext.SetMsts.Where(mst => mst.GenerationId == (pasteSetKbnEdaNo < 0 ? copyGenerationId : pasteSetKbnEdaNo) && mst.SetKbn == copySetKbn && mst.SetKbnEdaNo == copySetKbnEdaNo && mst.IsDeleted != 1 && mst.HpId == hpId).ToList();
         if (!listCopySetMsts.Any())
         {
             return setCd;

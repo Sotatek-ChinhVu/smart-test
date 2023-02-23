@@ -106,17 +106,23 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
                         beforeTimeKbn,
                         isPatientChildren,
                         isShowPopup,
-                        GetJikanKbnDefaultValue(isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
+                        GetJikanKbnDefaultValue(hpId, dayOfWeek, isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
                     );
     }
 
-    private int GetJikanKbnDefaultValue(bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConfModel> listTimeZoneConfig)
+    private int GetJikanKbnDefaultValue(int hpId, int dayOfWeek, bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConfModel> listTimeZoneConfig)
     {
+        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
+        TimeZoneConfModel? timeZoneConf = null;
         if (isPatientChildren && isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
         {
             return JikanConst.KyujituKotoku;
         }
-        else if (isHoliday)
+        if (timeZoneConfs != null)
+        {
+            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
+        }
+        if (isHoliday && timeZoneConf == null)
         {
             return JikanConst.Kyujitu;
         }
