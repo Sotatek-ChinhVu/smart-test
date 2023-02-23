@@ -1565,16 +1565,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             var ptKohi2Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi2Id == item.HokenId);
             var ptKohi3Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi3Id == item.HokenId);
             var ptKohi4Inf = ptKohiInfList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.Kohi4Id == item.HokenId);
-            var hokenCheck = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.HokenId == item.HokenId && item.HokenGrp == 1 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
-            var kohi1Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi1Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
-            var kohi2Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi2Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
-            var kohi3Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi3Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
-            var kohi4Check = hokenCheckList.Any(item => item.PtID == receInf.PtId && receInf.Kohi4Id == item.HokenId && item.HokenGrp == 2 && CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
+            var hokenChecks = hokenCheckList.Where(item => item.PtID == receInf.PtId && receInf.HokenId == item.HokenId && item.HokenGrp == 1).ToList();
+            var kohi1Checks = hokenCheckList.Where(item => item.PtID == receInf.PtId && receInf.Kohi1Id == item.HokenId && item.HokenGrp == 2).ToList();
+            var kohi2Checks = hokenCheckList.Where(item => item.PtID == receInf.PtId && receInf.Kohi2Id == item.HokenId && item.HokenGrp == 2).ToList();
+            var kohi3Checks = hokenCheckList.Where(item => item.PtID == receInf.PtId && receInf.Kohi3Id == item.HokenId && item.HokenGrp == 2).ToList();
+            var kohi4Checks = hokenCheckList.Where(item => item.PtID == receInf.PtId && receInf.Kohi4Id == item.HokenId && item.HokenGrp == 2).ToList();
             var receStatus = receStateList.FirstOrDefault(item => item.PtId == receInf.PtId && receInf.HokenId == item.HokenId);
 
             bool isNashi = receInf.Houbetu == HokenConstant.HOUBETU_NASHI;
             bool isJihi = receInf.HokenKbn == 0 && (receInf.Houbetu == HokenConstant.HOUBETU_JIHI_108 || receInf.Houbetu == HokenConstant.HOUBETU_JIHI_109);
-            bool isHokenConfirmed = isJihi || isNashi || hokenCheck;
+            bool isHokenConfirmed = isJihi || isNashi || hokenChecks.Any(item => CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm);
             bool isRosai = receInf.HokenKbn == 11 || receInf.HokenKbn == 12 || receInf.HokenKbn == 13 || (receInf.HokenKbn == 14 && GetSettingValue(hpId, 3001, 0) == 1);
 
             receRecalculationList.Add(
@@ -1608,13 +1608,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                     ptKohi3Inf?.EndDate ?? 0,
                     ptKohi4Inf?.EndDate ?? 0,
                     isHokenConfirmed,
-                    kohi1Check,
-                    kohi2Check,
-                    kohi3Check,
-                    kohi4Check,
+                    kohi1Checks.Any(item => CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm),
+                    kohi2Checks.Any(item => CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm),
+                    kohi3Checks.Any(item => CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm),
+                    kohi4Checks.Any(item => CIUtil.DateTimeToInt(item.CheckDate) / 100 == sinYm),
                     ptHokenInf?.RousaiSyobyoDate ?? 0,
                     isRosai,
-                    receInf.IsTester
+                    receInf.IsTester,
+                    hokenChecks.Any() ? CIUtil.DateTimeToInt(hokenChecks.Max(item => item.CheckDate)) : 0,
+                    kohi1Checks.Any() ? CIUtil.DateTimeToInt(kohi1Checks.Max(item => item.CheckDate)) : 0,
+                    kohi2Checks.Any() ? CIUtil.DateTimeToInt(kohi2Checks.Max(item => item.CheckDate)) : 0,
+                    kohi3Checks.Any() ? CIUtil.DateTimeToInt(kohi3Checks.Max(item => item.CheckDate)) : 0,
+                    kohi4Checks.Any() ? CIUtil.DateTimeToInt(kohi4Checks.Max(item => item.CheckDate)) : 0
                 ));
         }
         return receRecalculationList;
