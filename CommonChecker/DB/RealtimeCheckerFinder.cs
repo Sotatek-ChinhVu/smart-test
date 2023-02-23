@@ -132,8 +132,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                      join componentInfo in NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
+                     join listItemCodes in listItemCode
+                     on drugMst.ItemCd equals listItemCodes.ItemCd
                      select new
                      {
+                         listItemCodes.Id,
                          drugMst.ItemCd,
                          drugMst.YjCd,
                          componentInfo.SeibunCd,
@@ -808,18 +811,20 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             var allergyFoodAsPatient = GetFoodAllergyByPtId(hpID, ptID, sinDate);
 
             List<string> listAlrgyKbn = allergyFoodAsPatient.Where(a => a.AlrgyKbn != null).Select(a => a.AlrgyKbn).ToList();
-            var checkedResult =
-                NoTrackingDataContext.M12FoodAlrgy.
-                Where(c => listItemCode.Select(x => x.ItemCd).Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn))
-                .Select(c => new
-                {
-                    c.FoodKbn,
-                    c.KikinCd,
-                    c.YjCd,
-                    c.TenpuLevel,
-                    c.AttentionCmt,
-                    c.WorkingMechanism
-                });
+            var checkedResult = (from m12FoodAlrgy in NoTrackingDataContext.M12FoodAlrgy.Where(c => listItemCode.Select(x => x.ItemCd).Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn)).AsEnumerable()
+                                 join listItemCodes in listItemCode
+                                 on m12FoodAlrgy.KikinCd equals listItemCodes.ItemCd
+                                 select new
+                                 {
+                                     listItemCodes.Id,
+                                     m12FoodAlrgy.FoodKbn,
+                                     m12FoodAlrgy.KikinCd,
+                                     m12FoodAlrgy.YjCd,
+                                     m12FoodAlrgy.TenpuLevel,
+                                     m12FoodAlrgy.AttentionCmt,
+                                     m12FoodAlrgy.WorkingMechanism
+                                 }
+                                 ).ToList();
 
             if (checkedResult.Any())
             {
@@ -832,6 +837,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
                     result.Add(new FoodAllergyResultModel()
                     {
+                        Id = r.Id,
                         PtId = ptID,
                         AlrgyKbn = r.FoodKbn,
                         ItemCd = r.KikinCd,
@@ -1122,33 +1128,39 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         public List<KinkiResultModel> CheckKinki(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode)
         {
-            var listCurrentOrderSubYjCode = NoTrackingDataContext.TenMsts
-                .Where(m => listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsEnumerable()
-                .Select(m => new
-                {
-                    m.YjCd,
-                    m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
-                })
-                .ToList();
+            var listCurrentOrderSubYjCode = (from tenMst in NoTrackingDataContext.TenMsts
+                                             .Where(m => listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsEnumerable()
+                                             join listCurrentOrderCodes in listCurrentOrderCode
+                                             on tenMst.ItemCd equals listCurrentOrderCodes.ItemCd
+                                             select new
+                                             {
+                                                 listCurrentOrderCodes.Id,
+                                                 tenMst.YjCd,
+                                                 tenMst.ItemCd,
+                                                 YjCd4 = tenMst.YjCd.Substring(0, 4),
+                                                 YjCd7 = tenMst.YjCd.Substring(0, 7),
+                                                 YjCd8 = tenMst.YjCd.Substring(0, 8),
+                                                 YjCd9 = tenMst.YjCd.Substring(0, 9),
+                                                 YjCd12 = tenMst.YjCd.Substring(0, 12)
+                                             }
+                                             ).ToList();
 
-            var listAddedOrderSubYjCode = NoTrackingDataContext.TenMsts
-                .Where(m => listAddedOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
-                .Select(m => new
-                {
-                    m.YjCd,
-                    m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
-                })
-                .ToList();
+            var listAddedOrderSubYjCode = (from tenMst in NoTrackingDataContext.TenMsts
+                                           .Where(m => listAddedOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsEnumerable()
+                                           join listAddedOrderCodes in listAddedOrderCode
+                                           on tenMst.ItemCd equals listAddedOrderCodes.ItemCd
+                                           select new
+                                           {
+                                               listAddedOrderCodes.Id,
+                                               tenMst.YjCd,
+                                               tenMst.ItemCd,
+                                               YjCd4 = tenMst.YjCd.Substring(0, 4),
+                                               YjCd7 = tenMst.YjCd.Substring(0, 7),
+                                               YjCd8 = tenMst.YjCd.Substring(0, 8),
+                                               YjCd9 = tenMst.YjCd.Substring(0, 9),
+                                               YjCd12 = tenMst.YjCd.Substring(0, 12)
+                                           }
+                                           ).ToList();
 
             #region filter master data to improve performance
             var listAddedOrderSubYj4Code = listAddedOrderSubYjCode.Select(o => o.YjCd4).ToList();
@@ -1256,6 +1268,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             m => new KinkiResultModel()
                             {
+                                Id = addedOrderItemCode.Id,
                                 AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
                                 BYjCd = currentOrderSubYjCode.YjCd ?? string.Empty,
                                 SubAYjCd = m.ACd,

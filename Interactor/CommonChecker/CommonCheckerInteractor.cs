@@ -678,9 +678,9 @@ namespace Interactor.CommonChecker
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
             var errorGroup = (from a in allergyInfo
-                              group a by new { a.YjCd, a.AlrgyKbn }
+                              group a by new { a.YjCd, a.AlrgyKbn, a.Id }
                               into gcs
-                              select new { gcs.Key.YjCd, gcs.Key.AlrgyKbn }
+                              select new { gcs.Key.YjCd, gcs.Key.AlrgyKbn, gcs.Key.Id }
                               ).ToList();
 
             foreach (var error in errorGroup)
@@ -694,6 +694,7 @@ namespace Interactor.CommonChecker
                 string foodName = _realtimeOrderErrorFinder.FindFoodName(error.AlrgyKbn);
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = error.Id,
                     FirstCellContent = "アレルギー",
                     ThridCellContent = itemName,
                     FourthCellContent = foodName
@@ -729,18 +730,23 @@ namespace Interactor.CommonChecker
         private List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
         {
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
-            List<string> groupYjCd = ages.GroupBy(a => a.YjCd).Select(g => g.Key).ToList();
+            var errorGroup = (from a in ages
+                              group a by new { a.YjCd, a.Id }
+                              into gcs
+                              select new { gcs.Key.YjCd, gcs.Key.Id }
+                              ).ToList();
 
-            foreach (string yjCd in groupYjCd)
+            foreach (var error in errorGroup)
             {
                 List<AgeResultModel> tempData =
                     ages
-                    .Where(a => a.YjCd == yjCd)
+                    .Where(a => a.YjCd == error.YjCd)
                     .OrderByDescending(a => a.TenpuLevel)
                     .ToList();
-                string itemName = _realtimeOrderErrorFinder.FindItemName(yjCd, _sinday);
+                string itemName = _realtimeOrderErrorFinder.FindItemName(error.YjCd, _sinday);
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = error.Id,
                     FirstCellContent = "投与年齢",
                     ThridCellContent = itemName,
                     FourthCellContent = "ー",
@@ -794,9 +800,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listDrugDiseaseCode = (from a in diseaseInfo
-                                       group a by new { a.YjCd, a.ByotaiCd, a.DiseaseType }
+                                       group a by new { a.YjCd, a.ByotaiCd, a.DiseaseType, a.Id }
                                        into gcs
-                                       select new { gcs.Key.YjCd, gcs.Key.ByotaiCd, gcs.Key.DiseaseType }
+                                       select new { gcs.Key.YjCd, gcs.Key.ByotaiCd, gcs.Key.DiseaseType, gcs.Key.Id }
                                        ).ToList();
 
             foreach (var drugDiseaseCode in listDrugDiseaseCode)
@@ -815,6 +821,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = drugDiseaseCode.Id,
                     FirstCellContent = DiseaseTypeName(drugDiseaseCode.DiseaseType),
                     ThridCellContent = itemName,
                     FourthCellContent = diseaseName
@@ -882,9 +889,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd, a.ItemCd, a.KinkiItemCd }
+                                 group a by new { a.AYjCd, a.BYjCd, a.ItemCd, a.KinkiItemCd, a.Id }
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd }
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd, gcs.Key.Id }
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
@@ -927,6 +934,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = kikinCode.Id,
                     FirstCellContent = GetCheckingTitle(),
                     ThridCellContent = itemAName,
                     FourthCellContent = itemBName,
@@ -1058,6 +1066,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = k.Id,
                     FirstCellContent = "相互作用",
                     ThridCellContent = itemAName,
                     FourthCellContent = itemBName
@@ -1089,6 +1098,7 @@ namespace Interactor.CommonChecker
                 string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
+                errorInfoModel.Id = dayLimit.Id;
                 errorInfoModel.FirstCellContent = "投与日数";
                 errorInfoModel.SecondCellContent = "ー";
                 errorInfoModel.ThridCellContent = itemName;
