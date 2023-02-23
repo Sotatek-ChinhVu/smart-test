@@ -2032,5 +2032,170 @@ namespace Infrastructure.Repositories
             var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
+
+        /// <summary>
+        /// Main function to auto check order
+        /// </summary>
+        /// <param name="addingOdrList"></param>
+        /// <returns></returns>
+        private (int, string) AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
+        {
+            List<OrdInfModel> result = new();
+            var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+
+            foreach (var checkingOdr in addingOdrList)
+            {
+                var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                foreach (var detail in odrInfDetails)
+                {
+                    if (string.IsNullOrEmpty(detail.ItemCd))
+                    {
+                        continue;
+                    }
+
+                    var santeiGrpDetailList = FindSanteiGrpDetailList(detail.ItemCd);
+                    if (santeiGrpDetailList.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var santeiGrpDetail in santeiGrpDetailList)
+                    {
+                        var santeiCntCheck = FindSanteiCntCheck(hpId, santeiGrpDetail.SanteiGrpCd, sinDate);
+                        if (santeiCntCheck == null)
+                        {
+                            continue;
+                        }
+                        // Now, check TermCnt = 1 and TermSbt = 4 and CntType = 2 only. In other case, just ignore
+                        if (santeiCntCheck.TermCnt == 1 && santeiCntCheck.TermSbt == 4 && (santeiCntCheck.CntType == 2 || santeiCntCheck.CntType == 3))
+                        {
+                            double santeiCntInMonth = GetOdrCountInMonth(ptId, sinDate, detail.ItemCd);
+                            double countInCurrentOdr = 0;
+
+                            if (santeiCntCheck.CntType == 2)
+                            {
+                                foreach (var item in currentListOrder)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in currentListOrder)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            double totalSanteiCount = santeiCntInMonth + countInCurrentOdr;
+
+                            if (totalSanteiCount >= santeiCntCheck.MaxCnt)
+                            {
+                                var targetItem = FindTenMst(hpId, santeiCntCheck.TargetCd ?? string.Empty, sinDate);
+                                if (targetItem == null)
+                                {
+                                    continue;
+                                }
+
+                                StringBuilder stringBuilder = new StringBuilder("");
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(detail.DisplayItemName);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append("が");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("1ヶ月 ");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt);
+                                stringBuilder.Append("単位を超えています。");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(targetItem.Name);
+                                stringBuilder.Append("'に置き換えますか？");
+
+                                string msg = stringBuilder.ToString();
+
+                                return new(1, msg);
+                            }
+                            else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
+                            {
+                                StringBuilder stringBuilder = new StringBuilder("");
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(detail.DisplayItemName);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append("が");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("1ヶ月 ");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt);
+                                stringBuilder.Append("単位を超えます。");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("数量を'");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt - totalSanteiCount);
+                                stringBuilder.Append("'に変更しますか？");
+
+                                string msg = stringBuilder.ToString();
+
+                                return new(2, msg);
+                            }
+                        }
+                    }
+                }
+            }
+            return new(0, string.Empty);
+        }
+
+
+
+        private List<SanteiGrpDetail> FindSanteiGrpDetailList(string itemCd)
+        {
+            var entities = NoTrackingDataContext.SanteiGrpDetails
+                                    .Where(s => s.ItemCd == itemCd);
+            return entities.ToList();
+        }
+
+        private SanteiCntCheck FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
+        {
+            var entity = NoTrackingDataContext.SanteiCntChecks.Where(e =>
+                 e.HpId == hpId &&
+                 e.SanteiGrpCd == santeiGrpCd &&
+                 e.StartDate <= sinDate &&
+                 e.EndDate >= sinDate)
+                 .FirstOrDefault();
+            return entity ?? new SanteiCntCheck();
+        }
+
+        public TenMst FindTenMst(int hpId, string itemCd, int sinDate)
+        {
+            var entity = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   p.ItemCd == itemCd &&
+                   p.IsDeleted == DeleteTypes.None);
+
+            return entity ?? new();
+        }
+
+        private GroupOdrItem GetGroupOdrInfByOdr(TodayOdrInfModel odrInf)
+        {
+            TodayGroupOdrInfModel grpOdrInf = null;
+            foreach (var hokenGrp in HokenGroupOdrModelsView)
+            {
+                grpOdrInf = hokenGrp.GroupOdrInfModels.FirstOrDefault(o => o.OdrInfModels.Contains(odrInf));
+                if (grpOdrInf != null) break;
+            }
+            return grpOdrInf;
+        }
     }
 }
