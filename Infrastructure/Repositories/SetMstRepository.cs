@@ -1,10 +1,12 @@
-﻿using Domain.Models.SetMst;
+﻿using Domain.Models.Diseases;
+using Domain.Models.SetMst;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Text;
 
 namespace Infrastructure.Repositories;
 
@@ -65,7 +67,26 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
     {
-        var listByomeis = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
+        List<string> byomeiNameList = new();
+        var setByomeiList = NoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != string.Empty).ToList();
+        foreach (var byomei in setByomeiList)
+        {
+            var syusyokuCdList = SyusyokuCdToList(byomei);
+            var prefixList = syusyokuCdList.Where(item => !item.Code.StartsWith("8")).Select(item => item.Name).ToList();
+            var suffixList = syusyokuCdList.Where(item => item.Code.StartsWith("8")).Select(item => item.Name).ToList();
+            StringBuilder fullByomei = new();
+            foreach (var item in prefixList)
+            {
+                fullByomei.Append(item);
+            }
+            fullByomei.Append(byomei.Byomei);
+            foreach (var item in suffixList)
+            {
+                fullByomei.Append(item);
+            }
+            byomeiNameList.Add(fullByomei.ToString());
+        }
+
         var listKarteInfs = NoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.KarteKbn == 1).ToList();
         var listKarteNames = listKarteInfs.Where(item => !string.IsNullOrEmpty(item.Text)).Select(item => item.Text ?? string.Empty).ToList();
         var keys = NoTrackingDataContext.SetOdrInf.Where(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted != 1).Select(s => new { s.RpNo, s.RpEdaNo }).ToList();
@@ -76,7 +97,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             listOrders.AddRange(allOrderDetails.Where(item => item.SetCd == setCd && item.HpId == hpId && key.RpNo == item.RpNo && key.RpEdaNo == item.RpEdaNo).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)));
         }
 
-        return new SetMstTooltipModel(listKarteNames, listOrders, listByomeis);
+        return new SetMstTooltipModel(listKarteNames, listOrders, byomeiNameList);
     }
 
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
@@ -1153,6 +1174,55 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             item.UpdateDate = CIUtil.GetJapanDateTimeNow();
             item.UpdateId = userId;
         }
+    }
+
+    private List<PrefixSuffixModel> SyusyokuCdToList(SetByomei ptByomei)
+    {
+        List<string> codeList = new()
+            {
+                ptByomei.SyusyokuCd1 ?? string.Empty,
+                ptByomei.SyusyokuCd2 ?? string.Empty,
+                ptByomei.SyusyokuCd3 ?? string.Empty,
+                ptByomei.SyusyokuCd4 ?? string.Empty,
+                ptByomei.SyusyokuCd5 ?? string.Empty,
+                ptByomei.SyusyokuCd6 ?? string.Empty,
+                ptByomei.SyusyokuCd7 ?? string.Empty,
+                ptByomei.SyusyokuCd8 ?? string.Empty,
+                ptByomei.SyusyokuCd9 ?? string.Empty,
+                ptByomei.SyusyokuCd10 ?? string.Empty,
+                ptByomei.SyusyokuCd11 ?? string.Empty,
+                ptByomei.SyusyokuCd12 ?? string.Empty,
+                ptByomei.SyusyokuCd13 ?? string.Empty,
+                ptByomei.SyusyokuCd14 ?? string.Empty,
+                ptByomei.SyusyokuCd15 ?? string.Empty,
+                ptByomei.SyusyokuCd16 ?? string.Empty,
+                ptByomei.SyusyokuCd17 ?? string.Empty,
+                ptByomei.SyusyokuCd18 ?? string.Empty,
+                ptByomei.SyusyokuCd19 ?? string.Empty,
+                ptByomei.SyusyokuCd20 ?? string.Empty,
+                ptByomei.SyusyokuCd21 ?? string.Empty
+            };
+        codeList = codeList.Where(c => c != string.Empty).ToList();
+
+        if (codeList.Count == 0)
+        {
+            return new List<PrefixSuffixModel>();
+        }
+
+        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+
+        List<PrefixSuffixModel> result = new();
+        foreach (var code in codeList)
+        {
+            var byomeiMst = byomeiMstList.FirstOrDefault(b => b.ByomeiCd == code);
+            if (byomeiMst == null)
+            {
+                continue;
+            }
+            result.Add(new PrefixSuffixModel(code, byomeiMst.Byomei ?? string.Empty));
+        }
+
+        return result;
     }
     #endregion
 }
