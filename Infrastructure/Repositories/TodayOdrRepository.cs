@@ -2032,5 +2032,11 @@ namespace Infrastructure.Repositories
             var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
+
+        public bool IsHolidayForDefaultTime(int hpId, int sinDate)
+        {
+            var holidayMst = NoTrackingDataContext.HolidayMsts.Where(t => t.HpId == hpId && t.SinDate == sinDate && t.IsDeleted != 1).FirstOrDefault();
+            return holidayMst != null && holidayMst.HolidayKbn != 0;
+        }
     }
 }

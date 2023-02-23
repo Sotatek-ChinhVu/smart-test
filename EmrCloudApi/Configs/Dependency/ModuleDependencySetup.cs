@@ -292,7 +292,6 @@ using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Reception.Get;
-using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetReceptionDefault;
@@ -348,6 +347,10 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
+using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
+using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
+using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefaultSelectedTimeInteractor;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -574,10 +577,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
-
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
             busBuilder.RegisterUseCase<GetHistoryIndexInputData, GetHistoryIndexInteractor>();
+            busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -732,7 +735,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
 
             //TimeZone
-            busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();
+            busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfReception, GetDefaultSelectedTimeInteractorOfReception>();
             busBuilder.RegisterUseCase<UpdateTimeZoneDayInfInputData, UpdateTimeZoneDayInfInteractor>();
 
             //UserConf

@@ -34,5 +34,7 @@ namespace Domain.Models.TodayOdr
         Dictionary<string, bool> ConvertInputItemToTodayOdr(int hpId, int sinDate, Dictionary<string, string> detailInfs);
 
         List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels);
+
+        bool IsHolidayForDefaultTime(int hpId, int sinDate);
     }
 }
