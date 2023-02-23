@@ -348,6 +348,7 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using UseCase.Receipt.Recalculation;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 
 
@@ -817,6 +818,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceReceInfListInputData, GetInsuranceReceInfListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
+            busBuilder.RegisterUseCase<RecalculationInputData, RecalculationInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
