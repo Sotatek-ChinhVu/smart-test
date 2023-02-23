@@ -1217,6 +1217,48 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
+        private long GetAutoPtNum(int hpId)
+        {
+            long startPtNum = 1;
+            long startPtNumSetting = (long)GetSettingValue(1014, hpId, 1);
+            if (startPtNumSetting > 0)
+            {
+                startPtNum = startPtNumSetting;
+            }
+            return GetAutoPtNumAction(startPtNum, hpId);
+        }
+
+        private long GetAutoPtNumAction(long startValue, int hpId)
+        {
+            int autoSetting = (int)GetSettingValue(1014, hpId, 0);
+            var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
+                (ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+            if (ptNumExisting == null)
+            {
+                return startValue;
+            }
+
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
+               .OrderBy(ptInf => ptInf.PtNum);
+
+            long minPtNum = 0;
+            if (ptList != null && ptList.Any())
+            {
+                var queryNotExistPtNum =
+                    from ptInf in ptList
+                    where !(from ptInfDistinct in ptList
+                            select ptInfDistinct.PtNum)
+                           .Contains(ptInf.PtNum + 1)
+                    orderby ptInf.PtNum
+                    select ptInf.PtNum;
+                if (queryNotExistPtNum != null)
+                {
+                    minPtNum = queryNotExistPtNum.FirstOrDefault();
+                }
+            }
+            return minPtNum + 1;
+        }
+
         public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
@@ -1669,55 +1711,12 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
 
-        private long GetAutoPtNum(int HpId)
+        private double GetSettingValue(int groupCd, int hpId, int grpEdaNo = 0, int defaultValue = 0)
         {
-            long startPtNum = 1;
-            long startPtNumSetting = (long)GetSettingValue(1014, HpId, 1);
-            if (startPtNumSetting > 0)
-            {
-                startPtNum = startPtNumSetting;
-            }
-            return GetAutoPtNum(startPtNum, HpId);
-        }
-
-        private double GetSettingValue(int groupCd, int hpId, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
-        {
-            SystemConf? systemConf = new SystemConf();
+            SystemConf? systemConf;
             systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                     p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             return systemConf != null ? systemConf.Val : defaultValue;
-        }
-
-
-        private long GetAutoPtNum(long startValue, int hpId)
-        {
-            int autoSetting = (int)GetSettingValue(1014, hpId, 0);
-            var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
-                (ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
-            if (ptNumExisting == null)
-            {
-                return startValue;
-            }
-
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
-
-            long minPtNum = 0;
-            if (ptList != null && ptList.Any())
-            {
-                var queryNotExistPtNum =
-                    from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
-                if (queryNotExistPtNum != null)
-                {
-                    minPtNum = queryNotExistPtNum.FirstOrDefault();
-                }
-            }
-            return minPtNum + 1;
         }
 
         private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
@@ -1897,7 +1896,7 @@ namespace Infrastructure.Repositories
         {
             string keyword = ptId.ToString();
 
-            var result = new List<PatientInforModel>();
+            List<PatientInforModel> result;
             var ptInfs = NoTrackingDataContext.PtInfs
                 .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
                 .OrderBy(x => x.PtNum)
@@ -1930,6 +1929,32 @@ namespace Infrastructure.Repositories
                             raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
                             ))
                             .ToList();
+            return result;
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, int startDate, string startTime, int endDate, string endTime)
+        {
+            var startTimeFormat = (startTime + "00").PadLeft(6, '0');
+            var endTimeFormat = (endTime + "60").PadLeft(6, '0');
+            var ptIdList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                         && item.Status >= RaiinState.Calculate
+                                                                         && item.IsDeleted == DeleteTypes.None
+                                                                         && (item.SinDate > startDate || (item.SinDate == startDate && string.Compare(item.UketukeTime, startTimeFormat) >= 0))
+                                                                         && (item.SinDate < endDate || (item.SinDate == endDate && string.Compare(item.UketukeTime, endTimeFormat) <= 0)))
+                                                           .Select(item => item.PtId)
+                                                           .Distinct()
+                                                           .ToList();
+
+            var result = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete != 1
+                                                                    && ptIdList.Contains(item.PtId))
+                                                     .Select(item => new PatientInforModel(
+                                                                            item.PtId,
+                                                                            item.PtNum,
+                                                                            item.Name ?? string.Empty,
+                                                                            item.KanaName ?? string.Empty,
+                                                                            item.Sex))
+                                                     .ToList();
             return result;
         }
     }
