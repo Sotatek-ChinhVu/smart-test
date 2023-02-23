@@ -16,7 +16,7 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
     public bool IsHoliday(int hpId, int sinDate)
     {
         var holidayMst = NoTrackingDataContext.HolidayMsts.FirstOrDefault(item => item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted != 1);
-        return holidayMst != null && holidayMst.HolidayKbn != 0 && holidayMst.KyusinKbn == 1;
+        return holidayMst != null && holidayMst.HolidayKbn != 0;
     }
 
     public int GetShonikaSetting(int hpId, int presentDate)
