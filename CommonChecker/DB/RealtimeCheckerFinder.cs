@@ -4,16 +4,11 @@ using Domain.Constant;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
-using Infrastructure.Base;
-using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using PostgreDataContext;
-using System.Diagnostics;
-using System.Net.WebSockets;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
-    public class RealtimeCheckerFinder: IRealtimeCheckerFinder
+    public class RealtimeCheckerFinder : IRealtimeCheckerFinder
     {
         public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
         public RealtimeCheckerFinder(TenantNoTrackingDataContext noTrackingDataContext)
@@ -392,9 +387,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             (List<TenMst> tenMstList, List<M56ExEdIngredients> componentList, List<M56ExIngrdtMain> drugTypeList) getData(List<string> itemCodeList)
             {
                 List<TenMst> tenMstList = NoTrackingDataContext.TenMsts.Where(i => itemCodeList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).ToList();
-                
+
                 var yjCdList = tenMstList.Select(t => t.YjCd).ToList();
-                
+
                 List<M56ExEdIngredients> componentList = NoTrackingDataContext.M56ExEdIngredients.Where(i => i.Sbt == 1 && yjCdList.Contains(i.YjCd)).ToList();
                 List<M56ExIngrdtMain> drugTypeList = GetDrugTypeInfo(haigouSetting).Where(i => yjCdList.Contains(i.YjCd)).ToList();
 
@@ -426,7 +421,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             var itemCodeList = itemCodeModelList.Select(x => x.ItemCd).ToList();
             var data = getData(itemCodeList);
-            var listCheckingDrugInfo = 
+            var listCheckingDrugInfo =
                 (from drugMst in data.tenMstList
                  join componentInfo in data.componentList
                  on drugMst.YjCd equals componentInfo.YjCd
@@ -753,7 +748,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                      drugTypeInfo.YuekiFlg,
                      drugTypeInfo.KanpoFlg,
                  }).ToList();
-            
+
             var comparedItemCodeList = comparedItemCodeModelList.Select(c => c.ItemCd).ToList();
             var compatedData = getData(comparedItemCodeList);
             var listDrugAllergyAsPatientInfo =
@@ -1128,7 +1123,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         public List<KinkiResultModel> CheckKinki(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode)
         {
             var listCurrentOrderSubYjCode = NoTrackingDataContext.TenMsts
-                .Where(m => listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate).AsEnumerable()
+                .Where(m => listCurrentOrderCode.Select(x => x.ItemCd).Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
                     m.YjCd,
