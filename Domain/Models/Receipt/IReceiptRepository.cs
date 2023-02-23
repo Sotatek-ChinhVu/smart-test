@@ -54,5 +54,9 @@ public interface IReceiptRepository : IRepositoryBase
     List<BuiOdrMstModel> GetBuiOdrMstList(int hpId);
 
     List<BuiOdrByomeiMstModel> GetBuiOdrByomeiMstList(int hpId);
+
+    string GetSanteiItemCd(int hpId, string itemCd, int sinDate);
+
+    List<string> GetTekiouByomei(int hpId, List<string> itemCdList);
     #endregion
 }

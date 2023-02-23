@@ -944,9 +944,9 @@ public class RecalculationInteractor : IRecalculationInputPort
                                 itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ||
                                 itemCd == ItemCdConst.Con_Refill) continue;
 
-                            string santeiItemCd = _recalculationFinder.GetSanteiItemCd(itemCd, sindate);
+                            string santeiItemCd = _receiptRepository.GetSanteiItemCd(hpId, itemCd, sindate);
 
-                            List<string> tekiouByomeiCds = _recalculationFinder.GetTekiouByomei(new List<string>() { itemCd, santeiItemCd });
+                            List<string> tekiouByomeiCds = _receiptRepository.GetTekiouByomei(hpId, new List<string>() { itemCd, santeiItemCd });
                             if (tekiouByomeiCds.Count == 0) continue;
 
                             if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.AsString().Contains(SUSPECTED_SUFFIX)))

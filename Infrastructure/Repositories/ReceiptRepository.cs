@@ -1889,6 +1889,24 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                            .ToList();
         return result;
     }
+
+    public string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.ItemCd == itemCd
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate);
+        return tenMst?.SanteiItemCd ?? string.Empty;
+    }
+
+    public List<string> GetTekiouByomei(int hpId, List<string> itemCdList)
+    {
+        return NoTrackingDataContext.TekiouByomeiMsts.Where(item => item.HpId == hpId
+                                                                    && itemCdList.Contains(item.ItemCd)
+                                                                    && item.IsInvalid == 0)
+                                                     .Select(p => p.ByomeiCd)
+                                                     .ToList();
+    }
     #endregion
 
     #region Private function
