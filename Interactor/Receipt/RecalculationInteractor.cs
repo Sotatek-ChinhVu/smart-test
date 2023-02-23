@@ -17,18 +17,18 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly ISystemConfRepository _systemConfRepository;
     private readonly IPtDiseaseRepository _ptDiseaseRepository;
     private readonly IOrdInfRepository _ordInfRepository;
-    private const string HOKEN_CHAR = "0";
-    private const string KOHI1_CHAR = "1";
-    private const string KOHI2_CHAR = "2";
-    private const string KOHI3_CHAR = "3";
-    private const string KOHI4_CHAR = "4";
-    private const string FREE_WORD = "0000999";
-    private const string SUSPECTED_SUFFIX = "の疑い";
-    private const string LEFT = "左";
-    private const string RIGHT = "右";
-    private const string BOTH = "両";
-    private const string LEFT_RIGHT = "左右";
-    private const string RIGHT_LEFT = "右左";
+    private const string _hokenChar = "0";
+    private const string _kohi1Char = "1";
+    private const string _kohi2Char = "2";
+    private const string _kohi3Char = "3";
+    private const string _kohi4Char = "4";
+    private const string _freeWord = "0000999";
+    private const string _suspectedSuffix = "の疑い";
+    private const string _left = "左";
+    private const string _right = "右";
+    private const string _both = "両";
+    private const string _leftRight = "左右";
+    private const string _rightLeft = "右左";
 
     public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository)
     {
@@ -255,8 +255,8 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 1)
                     {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(LEFT) || p.ByomeiHankToZen.AsString().Contains(RIGHT) ||
-                            p.ByomeiHankToZen.AsString().Contains(BOTH)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_left) || p.ByomeiHankToZen.AsString().Contains(_right) ||
+                            p.ByomeiHankToZen.AsString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -264,8 +264,8 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 0)
                     {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(LEFT) || p.ByomeiHankToZen.AsString().Contains(RIGHT))
-                            && !p.ByomeiHankToZen.AsString().Contains(LEFT_RIGHT) && !p.ByomeiHankToZen.AsString().Contains(RIGHT_LEFT) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_left) || p.ByomeiHankToZen.AsString().Contains(_right))
+                            && !p.ByomeiHankToZen.AsString().Contains(_leftRight) && !p.ByomeiHankToZen.AsString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -273,7 +273,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1)
                     {
-                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(BOTH) || p.ByomeiHankToZen.AsString().Contains(LEFT_RIGHT) || p.ByomeiHankToZen.AsString().Contains(RIGHT_LEFT))
+                        if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.AsString().Contains(_both) || p.ByomeiHankToZen.AsString().Contains(_leftRight) || p.ByomeiHankToZen.AsString().Contains(_rightLeft))
                             && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
                         {
                             hasError = false;
@@ -315,22 +315,22 @@ public class RecalculationInteractor : IRecalculationInputPort
                     {
                         if (buiOdrMst.LrKbn == 1 && buiOdrMst.BothKbn == 1)
                         {
-                            odrBuiPatterns.Add($"{BOTH}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{LEFT}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{RIGHT}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{LEFT_RIGHT}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{RIGHT_LEFT}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_both}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_left}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_right}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_leftRight}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_rightLeft}{buiOdrMst.OdrBui}");
                         }
                         else if (buiOdrMst.LrKbn == 1 && buiOdrMst.BothKbn == 0)
                         {
-                            odrBuiPatterns.Add($"{LEFT}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{RIGHT}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_left}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_right}{buiOdrMst.OdrBui}");
                         }
                         else if (buiOdrMst.LrKbn == 0 && buiOdrMst.BothKbn == 1)
                         {
-                            odrBuiPatterns.Add($"{BOTH}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{LEFT_RIGHT}{buiOdrMst.OdrBui}");
-                            odrBuiPatterns.Add($"{RIGHT_LEFT}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_both}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_leftRight}{buiOdrMst.OdrBui}");
+                            odrBuiPatterns.Add($"{_rightLeft}{buiOdrMst.OdrBui}");
                         }
                     }
                     else
@@ -454,21 +454,21 @@ public class RecalculationInteractor : IRecalculationInputPort
         string GetDirection(string name)
         {
             string str = name.Length >= 2 ? name.Substring(0, 2) : name;
-            if (str.Contains(BOTH))
+            if (str.Contains(_both))
             {
-                return BOTH;
+                return _both;
             }
-            else if (str == $"{LEFT}{RIGHT}" || str == $"{RIGHT}{LEFT}")
+            else if (str == $"{_left}{_right}" || str == $"{_right}{_left}")
             {
                 return str;
             }
-            else if (str.Contains(LEFT))
+            else if (str.Contains(_left))
             {
-                return LEFT;
+                return _left;
             }
-            else if (str.Contains(RIGHT))
+            else if (str.Contains(_right))
             {
-                return RIGHT;
+                return _right;
             }
             return "";
         }
@@ -481,8 +481,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             string buiOdrDirection = GetDirection(buiOdr);
             string byomeiNameDirection = GetDirection(byomeiName);
             // Convert names to the left-right direction if they contain 両 character or right-left direction.
-            string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-            string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
+            string buiOdrLeftRight = buiOdrDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
+            string byomeiNameLeftRight = byomeiNameDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
             return byomeiNameLeftRight.Contains(buiOdrLeftRight);
         }
         else if (LrKbn == 1 && BothKbn == 0)
@@ -490,9 +490,9 @@ public class RecalculationInteractor : IRecalculationInputPort
             string buiOdrDirection = GetDirection(buiOdr);
             string byomeiNameDirection = GetDirection(byomeiName);
             // Convert names to the left-right direction if they contain 両 character or right-left direction.
-            string buiOdrLeftRight = buiOdrDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-            string byomeiNameLeftRight = byomeiNameDirection.Replace($"{BOTH}", $"{LEFT}{RIGHT}").Replace($"{RIGHT}{LEFT}", $"{LEFT}{RIGHT}");
-            if (byomeiNameLeftRight.Contains($"{LEFT}{RIGHT}") && (buiOdrLeftRight == LEFT || buiOdrLeftRight == RIGHT))
+            string buiOdrLeftRight = buiOdrDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
+            string byomeiNameLeftRight = byomeiNameDirection.Replace($"{_both}", $"{_left}{_right}").Replace($"{_right}{_left}", $"{_left}{_right}");
+            if (byomeiNameLeftRight.Contains($"{_left}{_right}") && (buiOdrLeftRight == _left || buiOdrLeftRight == _right))
             {
                 return false;
             }
@@ -580,7 +580,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (firstSinKouiCount != null && recalculationModel.HokenStartDate > 0 && recalculationModel.HokenStartDate > firstSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.HokenStartDate) + "～）", HOKEN_CHAR);
+                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.HokenStartDate) + "～）", _hokenChar);
                 }
 
                 //E1001 end date
@@ -588,7 +588,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (lastSinKouiCount != null && recalculationModel.HokenEndDate > 0 && recalculationModel.HokenEndDate < lastSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.HokenEndDate) + "）", HOKEN_CHAR);
+                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.HokenEndDate) + "）", _hokenChar);
                 }
             }
             //kohi1
@@ -599,7 +599,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (firstSinKouiCount != null && recalculationModel.Kohi1StartDate > 0 && recalculationModel.Kohi1StartDate > firstSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi1StartDate) + "～）", KOHI1_CHAR);
+                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi1StartDate) + "～）", _kohi1Char);
                 }
 
                 var lastSinKouiCount = sinKouiCountList.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
@@ -607,7 +607,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (lastSinKouiCount != null && recalculationModel.Kohi1EndDate > 0 && recalculationModel.Kohi1EndDate < lastSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi1EndDate) + "）", KOHI1_CHAR);
+                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi1EndDate) + "）", _kohi1Char);
                 }
             }
             //kohi2
@@ -618,7 +618,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (firstSinKouiCount != null && recalculationModel.Kohi2StartDate > 0 && recalculationModel.Kohi2StartDate > firstSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi2StartDate) + "～）", KOHI2_CHAR);
+                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi2StartDate) + "～）", _kohi2Char);
                 }
 
                 var lastSinKouiCount = sinKouiCountList.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
@@ -626,7 +626,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (lastSinKouiCount != null && recalculationModel.Kohi2EndDate > 0 && recalculationModel.Kohi2EndDate < lastSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi2EndDate) + "）", KOHI2_CHAR);
+                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi2EndDate) + "）", _kohi2Char);
                 }
             }
             //kohi3
@@ -637,7 +637,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (firstSinKouiCount != null && recalculationModel.Kohi3StartDate > 0 && recalculationModel.Kohi3StartDate > firstSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi3StartDate) + "～）", KOHI3_CHAR);
+                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi3StartDate) + "～）", _kohi3Char);
                 }
 
                 var lastSinKouiCount = sinKouiCountList.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
@@ -645,7 +645,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (lastSinKouiCount != null && recalculationModel.Kohi3EndDate > 0 && recalculationModel.Kohi3EndDate < lastSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi3EndDate) + "）", KOHI3_CHAR);
+                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi3EndDate) + "）", _kohi3Char);
                 }
             }
             //kohi4
@@ -656,7 +656,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (firstSinKouiCount != null && recalculationModel.Kohi4StartDate > 0 && recalculationModel.Kohi4StartDate > firstSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateHokenErrCd,
-                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi4StartDate) + "～）", KOHI4_CHAR);
+                        ReceErrCdConst.ExpiredStartDateHokenErrMsg, "（" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi4StartDate) + "～）", _kohi4Char);
                 }
 
                 var lastSinKouiCount = sinKouiCountList.OrderBy(p => p.SinDate).LastOrDefault(p => p.PtHokenPatterns
@@ -664,7 +664,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 if (lastSinKouiCount != null && recalculationModel.Kohi4EndDate > 0 && recalculationModel.Kohi4EndDate < lastSinKouiCount.SinDate)
                 {
                     AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateHokenErrCd,
-                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi4EndDate) + "）", KOHI4_CHAR);
+                        ReceErrCdConst.ExpiredEndDateHokenErrMsg, "（～" + CIUtil.SDateToShowSWDate(recalculationModel.Kohi4EndDate) + "）", _kohi4Char);
                 }
             }
         }
@@ -680,7 +680,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     latestConfirmedDate = CIUtil.SDateToShowSWDate(recalculationModel.LatestHokenConfirmedDate);
                 }
                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", HOKEN_CHAR);
+                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", _hokenChar);
             }
             if (recalculationModel.Kohi1Id > 0 && !recalculationModel.IsKohi1Confirmed)
             {
@@ -690,7 +690,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     latestConfirmedDate = CIUtil.SDateToShowSWDate(recalculationModel.LatestKohi1ConfirmedDate);
                 }
                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI1_CHAR);
+                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", _kohi1Char);
             }
             if (recalculationModel.Kohi2Id > 0 && !recalculationModel.IsKohi2Confirmed)
             {
@@ -700,7 +700,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     latestConfirmedDate = CIUtil.SDateToShowSWDate(recalculationModel.LatestKohi2ConfirmedDate);
                 }
                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI2_CHAR);
+                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", _kohi2Char);
             }
             if (recalculationModel.Kohi3Id > 0 && !recalculationModel.IsKohi3Confirmed)
             {
@@ -710,7 +710,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     latestConfirmedDate = CIUtil.SDateToShowSWDate(recalculationModel.LatestKohi3ConfirmedDate);
                 }
                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI3_CHAR);
+                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", _kohi3Char);
             }
             if (recalculationModel.Kohi4Id > 0 && !recalculationModel.IsKohi4Confirmed)
             {
@@ -720,7 +720,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     latestConfirmedDate = CIUtil.SDateToShowSWDate(recalculationModel.LatestKohi4ConfirmedDate);
                 }
                 AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.UnConfirmedHokenErrCd,
-                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", KOHI4_CHAR);
+                        ReceErrCdConst.UnConfirmedHokenErrMsg, "（最終確認: " + latestConfirmedDate + "）", _kohi4Char);
             }
         }
         return newReceCheckErrList;
@@ -879,7 +879,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 foreach (var ptByomei in ptByomeis)
                 {
-                    if (ptByomei.Byomei.AsString().Contains(SUSPECTED_SUFFIX) &&
+                    if (ptByomei.Byomei.AsString().Contains(_suspectedSuffix) &&
                         CIUtil.DateTimeToInt(CIUtil.IntToDate(ptByomei.StartDate).AddMonths(receCheckOpt.CheckOpt)) <= recalculationModel.LastDateOfThisMonth)
                     {
                         string format = "（{0}: {1}～）";
@@ -949,7 +949,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                             List<string> tekiouByomeiCds = _receiptRepository.GetTekiouByomei(hpId, new List<string>() { itemCd, santeiItemCd });
                             if (tekiouByomeiCds.Count == 0) continue;
 
-                            if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.AsString().Contains(SUSPECTED_SUFFIX)))
+                            if (!ptByomeis.Where(p => p.StartDate <= odrInf.SinDate && (!odrInf.IsDrug || !p.Byomei.AsString().Contains(_suspectedSuffix)))
                                          .Any(p => tekiouByomeiCds.Contains(p.ByomeiCd)))
                             {
                                 checkedItemCds.Add(odrInf.ItemCd);
