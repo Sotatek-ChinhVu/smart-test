@@ -335,13 +335,16 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 (from drugMst in NoTrackingDataContext.TenMsts.Where(i => listItemCode.Select(x => x.ItemCd).Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate).AsEnumerable()
                   join componentInfo in NoTrackingDataContext.M56AlrgyDerivatives
                   on drugMst.YjCd equals componentInfo.YjCd
                   join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
+                  join listItemCodes in listItemCode
+                  on drugMst.ItemCd equals listItemCodes.Id
                   select new
                   {
+                      listItemCodes.Id,
                       drugMst.ItemCd,
                       drugMst.YjCd,
                       componentInfo.SeibunCd,
@@ -370,6 +373,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 on new { allergyInfo.DrvalrgyCd, allergyInfo.RankNo } equals new { checkingInfo.DrvalrgyCd, checkingInfo.RankNo }
                 select new
                 {
+                    checkingInfo.Id,
                     Level = 4,
                     checkingInfo.YjCd,
                     checkingInfo.ItemCd,
@@ -386,7 +390,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             result =
                 (from r in checkedResult.AsEnumerable()
-                 select new DrugAllergyResultModel() { Level = 4, YjCd = r.YjCd, SeibunCd = r.SeibunCd, AllergyYjCd = r.AllergyYjCd, AllergySeibunCd = r.AllergySeibunCd, Tag = r.DrvalrgyCd, ItemCd = r.ItemCd }
+                 select new DrugAllergyResultModel() { Id = r.Id, Level = 4, YjCd = r.YjCd, SeibunCd = r.SeibunCd, AllergyYjCd = r.AllergyYjCd, AllergySeibunCd = r.AllergySeibunCd, Tag = r.DrvalrgyCd, ItemCd = r.ItemCd }
                  ).ToList();
 
             return result;
