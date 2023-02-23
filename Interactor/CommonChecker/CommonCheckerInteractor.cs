@@ -653,6 +653,7 @@ namespace Interactor.CommonChecker
                 string itemName = _realtimeOrderErrorFinder.FindItemNameByItemCode(a.ItemCd, _sinday);
                 ErrorInfoModel info = new ErrorInfoModel()
                 {
+                    Id = a.Id,
                     FirstCellContent = "アレルギー",
                     ThridCellContent = itemName,
                     FourthCellContent = itemName
