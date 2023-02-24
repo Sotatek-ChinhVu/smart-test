@@ -31,13 +31,13 @@ namespace Helper.Common
             return (T)obj;
         }
 
-        public static string ConvertYjCd(string YjCd, int startIndex, int EndIndex)
+        public static string ConvertSubstring(string input, int startIndex, int endIndex)
         {
-            if (string.IsNullOrEmpty(YjCd)) return string.Empty;
+            if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            if (YjCd.Length < EndIndex)
+            if (input.Length < endIndex)
             {
-                return YjCd.Substring(startIndex, EndIndex);
+                return input.Substring(startIndex, endIndex);
             }
 
             return string.Empty;
