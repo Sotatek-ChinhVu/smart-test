@@ -31,7 +31,7 @@ namespace Helper.Common
             return (T)obj;
         }
 
-        public static string ConvertSubstring(string input, int startIndex, int endIndex)
+        public static string Substring(string input, int startIndex, int endIndex)
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
 
