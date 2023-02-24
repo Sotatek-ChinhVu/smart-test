@@ -2,6 +2,7 @@
 {
     public class DrugInfo
     {
+        public string Id = string.Empty;
         public string ItemCD = string.Empty;
         public string ItemName = string.Empty;
         public double Suryo;
