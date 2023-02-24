@@ -16,6 +16,13 @@ public class ReceCheckErrModel
         IsChecked = isChecked;
     }
 
+    public ReceCheckErrModel ChangeMessage(string message1, string message2)
+    {
+        Message1 = message1;
+        Message2 = message2;
+        return this;
+    }
+
     public long PtId { get; private set; }
 
     public int SinYm { get; private set; }
