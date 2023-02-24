@@ -327,7 +327,6 @@ using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
-using UseCase.SystemConf;
 using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
@@ -350,7 +349,8 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.Receipt.Recalculation;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-
+using UseCase.SystemConf.GetSystemConf;
+using UseCase.SystemConf.GetSystemConfList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -712,6 +712,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
+            busBuilder.RegisterUseCase<GetSystemConfListInputData, GetSystemConfListInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
