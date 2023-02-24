@@ -1,5 +1,4 @@
 ﻿using Domain.Models.ReceSeikyu;
-using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -11,7 +10,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId ,int sinDate, int sinYm)
+        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn)
         {
             List<ReceSeikyuModel> result = new List<ReceSeikyuModel>();
 
@@ -57,29 +56,50 @@ namespace Infrastructure.Repositories
                             ReceSeikyuPending = receSeikyu,
                         };
 
-            //result = query.Select(x=> new ReceSeikyuModel(x.ReceSeikyuPending.PtInfo.HpId,
-            //                                              x.ReceSeikyuPending.PtInfo.PtId,
-            //                                              x.ReceSeikyuPending.PtInfo.Name,
-            //                                              sinYm,
-            //                                              sinYm,
-
-                                                          
-            //                                              ))
-
-            //result = query.AsEnumerable().Select(u => new ReceSeikyuModel(sinDate,
-            //                                                              sinYm,
-            //                                                              u.ReceSeikyuPending.PtInfo,
-            //                                                              u.ReceSeikyuPending.ReceSeikyu,
-            //                                                              u.ReceSeikyuPending.PtHokenInfItem ?? new PtHokenInf(),
-            //                                                              u.recedenHenjiyuuList.Select(p => new RecedenHenJiyuuModel(p.RecedenHenJiyuu, p.PtHokenInfItem)).ToList())
-            //{
-            //    OriginSeikyuYm = u.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
-            //    OriginSinYm = u.ReceSeikyuPending.ReceSeikyu.SinYm,
-            //    IsChecked = u.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999
-            //}
-            //).OrderByDescending(u => u.SeikyuYm).ThenBy(u => u.SinYm).ThenBy(u => u.PtInf.PtNum).ToList();
-
+            result = query.Select(x => new ReceSeikyuModel(sinDate,
+                                                          x.ReceSeikyuPending.PtInfo.HpId,
+                                                          x.ReceSeikyuPending.PtInfo.PtId,
+                                                          x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
+                                                          sinYm,
+                                                          sinYm,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.HokenId,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.HokensyaNo ?? string.Empty,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeqNo,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm.ToString(),
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
+                                                          x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
+                                                          x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
+                                                          false,
+                                                          x.ReceSeikyuPending.PtInfo.PtNum,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.StartDate,
+                                                          x.ReceSeikyuPending.PtHokenInfItem.EndDate,
+                                                          false,
+                                                          sinYm,
+                                                          sinYm,
+                                                          x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
+                                                                                                                    m.RecedenHenJiyuu.PtId,
+                                                                                                                    m.PtHokenInfItem.HokenId,
+                                                                                                                    sinYm,
+                                                                                                                    m.RecedenHenJiyuu.SeqNo,
+                                                                                                                    m.RecedenHenJiyuu.HenreiJiyuuCd ?? string.Empty,
+                                                                                                                    m.RecedenHenJiyuu.HenreiJiyuu ?? string.Empty,
+                                                                                                                    m.RecedenHenJiyuu.Hosoku ?? string.Empty,
+                                                                                                                    0,
+                                                                                                                    m.PtHokenInfItem.HokenKbn,
+                                                                                                                    m.PtHokenInfItem.Houbetu ?? string.Empty,
+                                                                                                                    m.PtHokenInfItem.SikakuDate,
+                                                                                                                    m.PtHokenInfItem.EndDate,
+                                                                                                                    m.PtHokenInfItem.HokensyaNo ?? string.Empty)).ToList()
+                                                          )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u=>u.SinYm).ThenBy(i=>i.PtNum).ToList();
             return result;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

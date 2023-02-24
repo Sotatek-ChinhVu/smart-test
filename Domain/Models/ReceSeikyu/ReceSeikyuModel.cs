@@ -6,8 +6,9 @@ namespace Domain.Models.ReceSeikyu
 {
     public class ReceSeikyuModel
     {
-        public ReceSeikyuModel(int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, string seikyuYmBinding, int seikyuKbn, int preHokenId, string cmt, string ptNumBinding, bool isChecked, long ptNum, string hokenName, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
+        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, string seikyuYmBinding, int seikyuKbn, int preHokenId, string cmt, bool isChecked, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
         {
+            SinDay = sinDate;
             HpId = hpId;
             PtId = ptId;
             PtName = ptName;
@@ -21,10 +22,8 @@ namespace Domain.Models.ReceSeikyu
             SeikyuKbn = seikyuKbn;
             PreHokenId = preHokenId;
             Cmt = cmt;
-            PtNumBinding = ptNumBinding;
             IsChecked = isChecked;
             PtNum = ptNum;
-            HokenName = hokenName;
             HokenKbn = hokenKbn;
             Houbetu = houbetu;
             HokenStartDate = hokenStartDate;
@@ -35,6 +34,7 @@ namespace Domain.Models.ReceSeikyu
             ListRecedenHenJiyuuModel = listRecedenHenJiyuuModel;
         }
 
+        public int SinDay { get; private set; }
 
         /// <summary>
         /// 医療機関識別ID
@@ -119,11 +119,9 @@ namespace Domain.Models.ReceSeikyu
         /// </summary>
         public string Cmt { get; private set; }
 
-        public string PtNumBinding { get; private set; }
-
         public bool CheckDefaultValue()
         {
-            return HpId == 0 && SinYm == 0 && string.IsNullOrEmpty(PtNumBinding);
+            return HpId == 0 && SinYm == 0 ;
         }
 
         public bool IsChecked { get; private set; }
@@ -192,7 +190,6 @@ namespace Domain.Models.ReceSeikyu
                 return string.Empty;
             }
         }
-        public string HokenName { get; private set; }
 
         public int HokenKbn { get; private set; }
 

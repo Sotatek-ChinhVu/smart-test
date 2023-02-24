@@ -209,5 +209,8 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //ReceSeikyus
+        public const string GetListReceSeikyu = "GetListReceSeikyu";
     }
 }
