@@ -8,6 +8,8 @@ public interface ISystemConfRepository : IRepositoryBase
 
     SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo);
 
+    List<SystemConfModel> GetListByGrpCd(int hpId, List<SystemConfModel> grpItemList);
+
     double GetSettingValue(int groupCd, int grpEdaNo, int hpId);
 
     string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");
