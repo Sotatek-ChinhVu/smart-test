@@ -48,6 +48,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                     .Where(i => i.DrugKbn > 0)
                     .Select(i => new DrugInfo()
                     {
+                        Id = i.Id,
                         ItemCD = i.ItemCd,
                         ItemName = i.ItemName,
                         Suryo = i.Suryo,
