@@ -427,6 +427,8 @@ namespace Domain.Models.OrdInfDetails
 
         public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
 
+        public bool IsShugi => SinKouiKbn >= 80 && SinKouiKbn <= 89;
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
