@@ -100,6 +100,102 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(odrInfList, odrInfDetailList, hpId, sindateMin, sindateMax, 0);
         }
 
+        public List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
+        {
+            List<OrdInfDetailModel> result = new();
+
+            List<int> hokenPidList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                                         && item.PtId == ptId
+                                                                                         && item.HokenId == hokenId
+                                                                                         && item.IsDeleted == DeleteTypes.None)
+                                                                           .Select(item => item.HokenPid)
+                                                                           .Distinct()
+                                                                           .ToList();
+
+            var odrInfList = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
+                                                                         && item.PtId == ptId
+                                                                         && item.SinDate == sinDate
+                                                                         && item.SanteiKbn == 0
+                                                                         && hokenPidList.Contains(item.HokenPid)
+                                                                         && item.IsDeleted == DeleteTypes.None
+                                                                         && item.OdrKouiKbn != 10)
+                                                          .ToList();
+
+            var raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList();
+            var rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList();
+            var rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList();
+
+            var odrInfDetailList = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
+                                                                                     && item.PtId == ptId
+                                                                                     && item.SinDate == sinDate
+                                                                                     && raiinNoList.Contains(item.RaiinNo)
+                                                                                     && rpNoList.Contains(item.RpNo)
+                                                                                     && rpEdaNoList.Contains(item.RpEdaNo))
+                                                                      .ToList();
+
+            foreach (var order in odrInfList)
+            {
+                var orderDetails = odrInfDetailList.Where(item => item.RaiinNo == order.RaiinNo && item.RpNo == order.RpNo && item.RpEdaNo == order.RpEdaNo).ToList();
+                result.AddRange(orderDetails.Select(itemDetail => new OrdInfDetailModel(
+                                                                        itemDetail.HpId,
+                                                                        itemDetail.RaiinNo,
+                                                                        itemDetail.RpNo,
+                                                                        itemDetail.RpEdaNo,
+                                                                        itemDetail.RowNo,
+                                                                        itemDetail.PtId,
+                                                                        itemDetail.SinDate,
+                                                                        itemDetail.SinKouiKbn,
+                                                                        itemDetail.ItemCd ?? string.Empty,
+                                                                        itemDetail.ItemName ?? string.Empty,
+                                                                        itemDetail.Suryo,
+                                                                        itemDetail.UnitName ?? string.Empty,
+                                                                        0,
+                                                                        itemDetail.TermVal,
+                                                                        itemDetail.KohatuKbn,
+                                                                        itemDetail.SyohoKbn,
+                                                                        itemDetail.SyohoLimitKbn,
+                                                                        itemDetail.DrugKbn,
+                                                                        itemDetail.YohoKbn,
+                                                                        itemDetail.Kokuji1 ?? string.Empty,
+                                                                        string.Empty,
+                                                                        itemDetail.IsNodspRece,
+                                                                        itemDetail.IpnCd ?? string.Empty,
+                                                                        string.Empty,
+                                                                        itemDetail.JissiKbn,
+                                                                        DateTime.UtcNow,
+                                                                        itemDetail.JissiId,
+                                                                        itemDetail.JissiMachine ?? string.Empty,
+                                                                        itemDetail.ReqCd ?? string.Empty,
+                                                                        itemDetail.Bunkatu ?? string.Empty,
+                                                                        itemDetail.CmtName ?? string.Empty,
+                                                                        itemDetail.CmtOpt ?? string.Empty,
+                                                                        itemDetail.FontColor ?? string.Empty,
+                                                                        itemDetail.CommentNewline,
+                                                                        string.Empty,
+                                                                        0,
+                                                                        0,
+                                                                        false,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        string.Empty,
+                                                                        new List<YohoSetMstModel>(),
+                                                                        0,
+                                                                        0,
+                                                                        string.Empty,
+                                                                        string.Empty,
+                                                                        string.Empty,
+                                                                        string.Empty))
+                                             .ToList());
+            }
+            return result;
+        }
+
         public OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate)
         {
 
@@ -398,8 +494,7 @@ namespace Infrastructure.Repositories
                             cnvUnitName,
                             odrUnitName,
                             centerItemCd1,
-                            centerItemCd2,
-                            ordInfDetail.CmtOpt ?? string.Empty
+                            centerItemCd2
                 );
         }
 

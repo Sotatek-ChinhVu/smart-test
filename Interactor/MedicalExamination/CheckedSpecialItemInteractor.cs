@@ -140,8 +140,7 @@ namespace Interactor.MedicalExamination
                                 "",
                                 "",
                                 "",
-                                "",
-                                string.Empty
+                                ""
                             )).ToList() ?? new List<OrdInfDetailModel>();
 
                 var hokenPids = new List<(long rpno, long edano, int hokenPid)>();

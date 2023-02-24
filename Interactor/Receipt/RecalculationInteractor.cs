@@ -45,7 +45,11 @@ public class RecalculationInteractor : IRecalculationInputPort
             List<ReceCheckErrModel> newReceCheckErrList = new();
             string errorMessage = string.Empty;
             var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
-            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
+            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList.Distinct().ToList());
+            var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
+            var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
+            var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
+            var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
             int allCheckCount = receRecalculationList.Count;
             foreach (var recalculationItem in receRecalculationList)
             {
@@ -54,7 +58,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     break;
                 }
                 List<BuiErrorModel> errorOdrInfDetails = new();
-                var oldReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
+                var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
                 var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
                 newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails);
@@ -232,7 +236,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         newReceCheckErrList.Add(newReceCheckErr);
     }
 
-    private List<string> CheckBuiOrderByomei(List<BuiOdrItemMstModel> buiOdrItemMsts, List<BuiOdrItemByomeiMstModel> buiOdrItemByomeiMsts, List<TodayOdrInfDetailModel> todayOrderInfModels, List<PtDiseaseModel> PtDiseaseModels)
+    private List<string> CheckBuiOrderByomei(List<BuiOdrItemMstModel> buiOdrItemMsts, List<BuiOdrItemByomeiMstModel> buiOdrItemByomeiMsts, List<OrdInfDetailModel> todayOrderInfModels, List<PtDiseaseModel> PtDiseaseModels)
     {
         List<string> msgErrors = new();
         foreach (var itemCd in todayOrderInfModels.Select(item => item.ItemCd).ToList())
@@ -291,7 +295,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         bool IsSpecialComment(OrdInfDetailModel detail)
         {
-            return detail.SinKouiKbn == 99 && !string.IsNullOrEmpty(detail.CmpOpt);
+            return detail.SinKouiKbn == 99 && !string.IsNullOrEmpty(detail.CmtOpt);
         }
         List<string> errorMsgs = new List<string>();
         foreach (var odrInf in odrInfModelList)
@@ -501,8 +505,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             return false;
         }
         if (currentPtByomeiModel.IsFree || comparedPtByomeiModel.IsFree
-           || (currentPtByomeiModel.HokenId != 0 && currentPtByomeiModel.HokenId != recehokenId)
-           || (comparedPtByomeiModel.HokenId != 0 && comparedPtByomeiModel.HokenId != recehokenId)
+           || (currentPtByomeiModel.HokenPid != 0 && currentPtByomeiModel.HokenPid != recehokenId)
+           || (comparedPtByomeiModel.HokenPid != 0 && comparedPtByomeiModel.HokenPid != recehokenId)
            || currentPtByomeiModel.ByomeiCd != comparedPtByomeiModel.ByomeiCd)
         {
             return false;
@@ -745,7 +749,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 foreach (var sindate in sinKouiCountList.Select(item => item.SinDate).ToList())
                 {
-                    var odrInfs = _receiptRepository.GetOdrInfsBySinDate(hpId, recalculationModel.PtId, sindate, recalculationModel.HokenId);
+                    var odrInfs = _ordInfRepository.GetOdrInfsBySinDate(hpId, recalculationModel.PtId, sindate, recalculationModel.HokenId);
                     var buiOdrItemMsts = _receiptRepository.GetBuiOdrItemMstList(hpId);
                     var buiOdrItemByomeiMsts = _receiptRepository.GetBuiOdrItemByomeiMstList(hpId);
                     List<string> msgErrors = CheckBuiOrderByomei(buiOdrItemMsts, buiOdrItemByomeiMsts, odrInfs, ptByomeis);
@@ -924,7 +928,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 foreach (var sindate in sinKouiCountList.Select(item => item.SinDate).ToList())
                 {
-                    var odrInfs = _receiptRepository.GetOdrInfsBySinDate(hpId, recalculationModel.PtId, sindate, recalculationModel.HokenId);
+                    var odrInfs = _ordInfRepository.GetOdrInfsBySinDate(hpId, recalculationModel.PtId, sindate, recalculationModel.HokenId);
 
                     //E2009 check if exist byomei corresponding with order
                     if (checkByomeiResponding)
@@ -994,5 +998,6 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
         return newReceCheckErrList;
     }
+
     #endregion
 }

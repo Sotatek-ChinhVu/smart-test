@@ -1431,6 +1431,17 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
     }
 
+    public List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList)
+    {
+        var receCheckErrs = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                              && sinYmList.Contains(item.SinYm)
+                                                                              && ptIdList.Contains(item.PtId)
+                                                                              && hokenIdList.Contains(item.HokenId))
+                                                                .OrderBy(item => item.ErrCd)
+                                                                .ToList();
+        return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
+    }
+
     public bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
     {
         var receCheckCmtUpdateList = receCheckCmtList.Where(item => item.SeqNo > 0).ToList();
@@ -1790,59 +1801,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return true;
     }
-
-    public List<TodayOdrInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
-    {
-        List<TodayOdrInfDetailModel> result = new List<TodayOdrInfDetailModel>();
-
-        List<int> hokenPidList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
-                                                                                     && item.PtId == ptId
-                                                                                     && item.HokenId == hokenId
-                                                                                     && item.IsDeleted == DeleteTypes.None)
-                                                                       .Select(item => item.HokenPid)
-                                                                       .Distinct()
-                                                                       .ToList();
-
-        var odrInfList = NoTrackingDataContext.OdrInfs.Where(item => item.HpId == hpId
-                                                                     && item.PtId == ptId
-                                                                     && item.SinDate == sinDate
-                                                                     && item.SanteiKbn == 0
-                                                                     && hokenPidList.Contains(item.HokenPid)
-                                                                     && item.IsDeleted == DeleteTypes.None
-                                                                     && item.OdrKouiKbn != 10)
-                                                      .ToList();
-
-        var raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList();
-        var rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList();
-        var rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList();
-
-        var odrInfDetailList = NoTrackingDataContext.OdrInfDetails.Where(item => item.HpId == hpId
-                                                                                 && item.PtId == ptId
-                                                                                 && item.SinDate == sinDate
-                                                                                 && raiinNoList.Contains(item.RaiinNo)
-                                                                                 && rpNoList.Contains(item.RpNo)
-                                                                                 && rpEdaNoList.Contains(item.RpEdaNo))
-                                                                  .ToList();
-
-        foreach (var order in odrInfList)
-        {
-            var orderDetails = odrInfDetailList.Where(item => item.RaiinNo == order.RaiinNo && item.RpNo == order.RpNo && item.RpEdaNo == order.RpEdaNo).ToList();
-            result.AddRange(orderDetails.Select(item => new TodayOdrInfDetailModel(
-                                                            item.PtId,
-                                                            item.SinDate,
-                                                            item.RaiinNo,
-                                                            item.RpNo,
-                                                            item.RpEdaNo,
-                                                            item.RowNo,
-                                                            item.SinKouiKbn,
-                                                            item.ItemCd ?? string.Empty,
-                                                            item.ItemName ?? string.Empty,
-                                                            item.DrugKbn))
-                                         .ToList());
-        }
-        return result;
-    }
-
+    
     public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)
     {
         var result = NoTrackingDataContext.BuiOdrItemMsts.Where(item => item.HpId == hpId).Select(item => new BuiOdrItemMstModel(item.ItemCd)).ToList();

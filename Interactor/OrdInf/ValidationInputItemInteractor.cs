@@ -185,7 +185,6 @@ namespace Interactor.OrdInfs
                                     string.Empty,
                                     string.Empty,
                                     string.Empty,
-                                    string.Empty,
                                     string.Empty
                                 );
                         ordInf.OrdInfDetails.Add(ordInfDetail);

@@ -12,7 +12,7 @@ namespace Domain.Models.Diseases
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
             List<PrefixSuffixModel> prefixSuffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate,
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte,
-            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt, int togetuByomei, int delDate, int hokenId)
+            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt, int togetuByomei, int delDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -49,7 +49,6 @@ namespace Domain.Models.Diseases
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
             DelDate = delDate;
-            HokenId = hokenId;
         }
 
         public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
@@ -504,8 +503,6 @@ namespace Domain.Models.Diseases
         public int SikkanCd { get; private set; }
 
         public int DelDate { get; private set; }
-
-        public int HokenId { get; private set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
 

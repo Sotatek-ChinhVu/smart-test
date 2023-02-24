@@ -62,7 +62,6 @@ namespace Domain.Models.OrdInfDetails
         public string OdrUnitName { get; private set; }
         public string CenterItemCd1 { get; private set; }
         public string CenterItemCd2 { get; private set; }
-        public string CmpOpt { get; private set; }
         public int SinYm
         {
             get
@@ -71,8 +70,7 @@ namespace Domain.Models.OrdInfDetails
             }
         }
 
-
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2, string cmpOpt)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, string centerItemCd1, string centerItemCd2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -128,7 +126,6 @@ namespace Domain.Models.OrdInfDetails
             OdrUnitName = odrUnitName;
             CenterItemCd1 = centerItemCd1;
             CenterItemCd2 = centerItemCd2;
-            CmpOpt = cmpOpt;
         }
 
         public OrdInfDetailModel(int hpId, string itemCd, int sinDate)
@@ -157,7 +154,6 @@ namespace Domain.Models.OrdInfDetails
             HpId = hpId;
             ItemCd = itemCd;
             SinDate = sinDate;
-            CmpOpt = string.Empty;
         }
         public OrdInfDetailModel(int hpId, string itemCd, int sinDate, int suryo)
         {
@@ -182,7 +178,6 @@ namespace Domain.Models.OrdInfDetails
             OdrUnitName = string.Empty;
             CenterItemCd1 = string.Empty;
             CenterItemCd2 = string.Empty;
-            CmpOpt = string.Empty;
             HpId = hpId;
             ItemCd = itemCd;
             SinDate = sinDate;
@@ -212,7 +207,6 @@ namespace Domain.Models.OrdInfDetails
             OdrUnitName = string.Empty;
             CenterItemCd1 = string.Empty;
             CenterItemCd2 = string.Empty;
-            CmpOpt = string.Empty;
             HpId = 0;
             ItemCd = itemCd;
             SinDate = 0;
@@ -242,7 +236,6 @@ namespace Domain.Models.OrdInfDetails
             OdrUnitName = string.Empty;
             CenterItemCd1 = string.Empty;
             CenterItemCd2 = string.Empty;
-            CmpOpt = string.Empty;
             HpId = 0;
             ItemCd = itemCd;
             SinDate = 0;
@@ -259,7 +252,6 @@ namespace Domain.Models.OrdInfDetails
             Kokuji2 = string.Empty;
             IpnCd = string.Empty;
             IpnName = string.Empty;
-            CmpOpt = string.Empty;
             JissiMachine = string.Empty;
             ReqCd = string.Empty;
             Bunkatu = string.Empty;
@@ -281,14 +273,12 @@ namespace Domain.Models.OrdInfDetails
 
         public OrdInfDetailModel(int hpId, int sinDate, long raiinNo, long rpEdaNo, long rpNo, long ptId, string itemCd, double suryo, string itemName)
         {
-
             ItemName = itemName;
             UnitName = string.Empty;
             Kokuji1 = string.Empty;
             Kokuji2 = string.Empty;
             IpnCd = string.Empty;
             IpnName = string.Empty;
-            CmpOpt = string.Empty;
             JissiMachine = string.Empty;
             ReqCd = string.Empty;
             Bunkatu = string.Empty;
