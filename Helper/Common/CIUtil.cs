@@ -31,6 +31,18 @@ namespace Helper.Common
             return (T)obj;
         }
 
+        public static string ConvertYjCd(string YjCd, int startIndex, int EndIndex)
+        {
+            if (string.IsNullOrEmpty(YjCd)) return string.Empty;
+
+            if (YjCd.Length < EndIndex)
+            {
+                return YjCd.Substring(startIndex, EndIndex);
+            }
+
+            return string.Empty;
+        }
+
         public static int FullStartDate(int startDate)
         {
             if (startDate == 0) return 0;

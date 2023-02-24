@@ -1153,11 +1153,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                  listCurrentOrderCodes.Id,
                                                  tenMst.YjCd,
                                                  tenMst.ItemCd,
-                                                 YjCd4 = tenMst.YjCd.Substring(0, 4),
-                                                 YjCd7 = tenMst.YjCd.Substring(0, 7),
-                                                 YjCd8 = tenMst.YjCd.Substring(0, 8),
-                                                 YjCd9 = tenMst.YjCd.Substring(0, 9),
-                                                 YjCd12 = tenMst.YjCd.Substring(0, 12)
+                                                 YjCd4 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 4),
+                                                 YjCd7 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 7),
+                                                 YjCd8 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 8),
+                                                 YjCd9 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 9),
+                                                 YjCd12 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 12)
                                              }
                                              ).ToList();
 
@@ -1170,11 +1170,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                listAddedOrderCodes.Id,
                                                tenMst.YjCd,
                                                tenMst.ItemCd,
-                                               YjCd4 = tenMst.YjCd.Substring(0, 4),
-                                               YjCd7 = tenMst.YjCd.Substring(0, 7),
-                                               YjCd8 = tenMst.YjCd.Substring(0, 8),
-                                               YjCd9 = tenMst.YjCd.Substring(0, 9),
-                                               YjCd12 = tenMst.YjCd.Substring(0, 12)
+                                               YjCd4 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 4),
+                                               YjCd7 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 7),
+                                               YjCd8 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 8),
+                                               YjCd9 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 9),
+                                               YjCd12 = CIUtil.ConvertYjCd(tenMst.YjCd, 0, 12)
                                            }
                                            ).ToList();
 
@@ -1385,11 +1385,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = CIUtil.ConvertYjCd(m.YjCd, 0, 4),
+                    YjCd7 = CIUtil.ConvertYjCd(m.YjCd, 0, 7),
+                    YjCd8 = CIUtil.ConvertYjCd(m.YjCd, 0, 8),
+                    YjCd9 = CIUtil.ConvertYjCd(m.YjCd, 0, 9),
+                    YjCd12 = CIUtil.ConvertYjCd(m.YjCd, 0, 12)
                 })
                 .ToList();
 
@@ -1399,11 +1399,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = CIUtil.ConvertYjCd(m.YjCd, 0, 4),
+                    YjCd7 = CIUtil.ConvertYjCd(m.YjCd, 0, 7),
+                    YjCd8 = CIUtil.ConvertYjCd(m.YjCd, 0, 8),
+                    YjCd9 = CIUtil.ConvertYjCd(m.YjCd, 0, 9),
+                    YjCd12 = CIUtil.ConvertYjCd(m.YjCd, 0, 12)
                 })
                 .ToList();
 
@@ -1527,11 +1527,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = CIUtil.ConvertYjCd(m.YjCd, 0, 4),
+                    YjCd7 = CIUtil.ConvertYjCd(m.YjCd, 0, 7),
+                    YjCd8 = CIUtil.ConvertYjCd(m.YjCd, 0, 8),
+                    YjCd9 = CIUtil.ConvertYjCd(m.YjCd, 0, 9),
+                    YjCd12 = CIUtil.ConvertYjCd(m.YjCd, 0, 12)
                 })
                 .ToList();
 
@@ -1653,11 +1653,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = CIUtil.ConvertYjCd(m.YjCd, 0, 4),
+                    YjCd7 = CIUtil.ConvertYjCd(m.YjCd, 0, 7),
+                    YjCd8 = CIUtil.ConvertYjCd(m.YjCd, 0, 8),
+                    YjCd9 = CIUtil.ConvertYjCd(m.YjCd, 0, 9),
+                    YjCd12 = CIUtil.ConvertYjCd(m.YjCd, 0, 12)
                 })
                 .ToList();
 
