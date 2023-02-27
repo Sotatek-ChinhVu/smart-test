@@ -141,6 +141,7 @@ using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
@@ -733,6 +734,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPaymentMethodInputData, GetPaymentMethodInteractor>();
             busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
             busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
+            busBuilder.RegisterUseCase<SaveAccountingInputData, SaveAccountingInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHistoryOrderInputData, GetAccountingHistoryOrderInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
 

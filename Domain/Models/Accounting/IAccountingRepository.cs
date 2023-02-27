@@ -17,5 +17,7 @@ namespace Domain.Models.Accounting
         List<PtDiseaseModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0);
         List<PaymentMethodMstModel> GetListPaymentMethodMst(int hpId);
         List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> listKohiId);
+        bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
+                                   int payType, string comment, bool isDisCharged);
     }
 }
