@@ -16,7 +16,7 @@ public class GetSystemConfListInteractor : IGetSystemConfListInputPort
     {
         try
         {
-            var result = _systemConfRepository.GetListByGrpCd(inputData.HpId, inputData.GrpItemList.Select(item => new SystemConfModel(item.GrpCd, item.GrpEdaNo)).ToList());
+            var result = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
             return new GetSystemConfListOutputData(result, GetSystemConfListStatus.Successed);
         }
         finally
