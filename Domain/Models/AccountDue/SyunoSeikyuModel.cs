@@ -94,24 +94,27 @@ public class SyunoSeikyuModel
     {
         get
         {
-            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo)?.Sum(item => item.PtFutan + item.AdjustRound);
-            return result ?? 0;
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.PtFutan + item.AdjustRound) : 0;
+            return result;
         }
     }
     public int TotalSelfExpenseOne
     {
         get
         {
-            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiFutan + item.JihiOuttax);
-            return result ?? 0;
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.JihiFutan + item.JihiOuttax) : 0;
+            return result;
         }
     }
     public int TaxOne
     {
         get
         {
-            var result = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiTax + item.JihiOuttax);
-            return result ?? 0;
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.JihiTax + item.JihiOuttax) : 0;
+            return result;
         }
     }
     public int AdjustFutanOne { get => AdjustFutan; }

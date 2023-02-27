@@ -900,15 +900,15 @@ namespace Infrastructure.Repositories
             var raiinNos = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
             var raiinInLists = TrackingDataContext.RaiinInfs
                                     .Where(item => item.HpId == hpId
-                                                        && item.PtId == ptId
-                                                        && item.IsDeleted == DeleteTypes.None
-                                                        && item.Status > RaiinState.TempSave
-                                                        && raiinNos.Contains(item.RaiinNo))
+                                                   && item.PtId == ptId
+                                                   && item.IsDeleted == DeleteTypes.None
+                                                   && item.Status > RaiinState.TempSave
+                                                   && raiinNos.Contains(item.RaiinNo))
                                     .ToList();
             var seikyuLists = TrackingDataContext.SyunoSeikyus
                         .Where(item => item.HpId == hpId
-                                            && item.PtId == ptId
-                                            && raiinNos.Contains(item.RaiinNo))
+                                       && item.PtId == ptId
+                                       && raiinNos.Contains(item.RaiinNo))
                         .ToList();
 
             int allSeikyuGaku = sumAdjust;
@@ -926,7 +926,7 @@ namespace Infrastructure.Repositories
                 if (item.SyunoNyukinModels.Any())
                 {
                     thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
 
                 }
                 bool isLastRecord = i == syunoSeikyuModels.Count - 1;
