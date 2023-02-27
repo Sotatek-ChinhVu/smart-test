@@ -215,6 +215,8 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.AutoCheckOrder;
+using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
@@ -260,6 +262,7 @@ using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -286,6 +289,7 @@ using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -348,9 +352,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Receipt.Recalculation;
-using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -578,6 +579,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
+            busBuilder.RegisterUseCase<AutoCheckOrderInputData, AutoCheckOrderInteractor>();
+            busBuilder.RegisterUseCase<ChangeAfterAutoCheckOrderInputData, ChangeAfterAutoCheckOrderInteractor>();
 
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
