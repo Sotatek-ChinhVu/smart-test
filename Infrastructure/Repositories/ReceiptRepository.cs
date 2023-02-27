@@ -1433,6 +1433,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList)
     {
+        hokenIdList = hokenIdList.Distinct().ToList();
+        ptIdList = ptIdList.Distinct().ToList();
         var receCheckErrs = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
                                                                               && sinYmList.Contains(item.SinYm)
                                                                               && ptIdList.Contains(item.PtId)
@@ -1530,6 +1532,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #region Recalculation Check
     public List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList)
     {
+        ptIdList = ptIdList.Distinct().ToList();
         List<ReceRecalculationModel> receRecalculationList = new();
         var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
                                                                        && item.SeikyuYm == sinYm
@@ -1674,7 +1677,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                    && seqNoList.Contains(item.SeqNo))
                                                                     .ToList();
 
-        var listItemCd = sinKouiDetailList.Select(item => item.ItemCd).ToList();
+        var listItemCd = sinKouiDetailList.Select(item => item.ItemCd).Distinct().ToList();
         var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                      && listItemCd.Contains(item.ItemCd))
                                                       .ToList();
@@ -1801,7 +1804,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return true;
     }
-    
+
     public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)
     {
         var result = NoTrackingDataContext.BuiOdrItemMsts.Where(item => item.HpId == hpId).Select(item => new BuiOdrItemMstModel(item.ItemCd)).ToList();
@@ -1860,6 +1863,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<string> GetTekiouByomei(int hpId, List<string> itemCdList)
     {
+        itemCdList = itemCdList.Distinct().ToList();
         return NoTrackingDataContext.TekiouByomeiMsts.Where(item => item.HpId == hpId
                                                                     && itemCdList.Contains(item.ItemCd)
                                                                     && item.IsInvalid == 0)

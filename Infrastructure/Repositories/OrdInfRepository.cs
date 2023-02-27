@@ -61,12 +61,12 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
 
-        public List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenId)
+        public List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenPId)
         {
             List<int> hokenPIdList = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
                                                                                   && item.PtId == ptId
                                                                                   && item.SinYm == sinYm
-                                                                                  && item.HokenId == hokenId
+                                                                                  && item.HokenId == hokenPId
                                                                                   && item.IsNodspRece == 0
                                                                                   && item.IsDeleted == DeleteTypes.None)
                                                                    .Select(item => item.HokenPid)
@@ -100,13 +100,13 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(odrInfList, odrInfDetailList, hpId, sindateMin, sindateMax, 0);
         }
 
-        public List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenId)
+        public List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenPId)
         {
             List<OrdInfDetailModel> result = new();
 
             List<int> hokenPidList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
                                                                                          && item.PtId == ptId
-                                                                                         && item.HokenId == hokenId
+                                                                                         && item.HokenId == hokenPId
                                                                                          && item.IsDeleted == DeleteTypes.None)
                                                                            .Select(item => item.HokenPid)
                                                                            .Distinct()
