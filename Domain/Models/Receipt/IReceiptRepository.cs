@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
@@ -22,6 +23,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCheckErrModel> GetReceCheckErrList(int hpId, int sinYm, long ptId, int hokenId);
 
+    List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList);
+
     List<SyoukiKbnMstModel> GetSyoukiKbnMstList(int sinYm);
 
     bool CheckExistSyoukiKbn(int sinYm, List<SyoukiKbnMstModel> syoukiKbnList);
@@ -44,5 +47,17 @@ public interface IReceiptRepository : IRepositoryBase
     List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
 
     bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
+
+    List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId);
+
+    List<BuiOdrItemByomeiMstModel> GetBuiOdrItemByomeiMstList(int hpId);
+
+    List<BuiOdrMstModel> GetBuiOdrMstList(int hpId);
+
+    List<BuiOdrByomeiMstModel> GetBuiOdrByomeiMstList(int hpId);
+
+    string GetSanteiItemCd(int hpId, string itemCd, int sinDate);
+
+    List<string> GetTekiouByomei(int hpId, List<string> itemCdList);
     #endregion
 }

@@ -58,6 +58,7 @@ namespace EmrCloudApi.Controllers
                     string.Empty,
                     b.HokenPid,
                     b.HosokuCmt,
+                    0,
                     0
                 )).ToList(), request.TodayOdrs.Select(
                     o => new OdrInfItemInputData(

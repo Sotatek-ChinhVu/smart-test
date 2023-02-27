@@ -199,7 +199,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 1
                     && p.StartDate <= sinDate
@@ -383,7 +383,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 1
                     && p.StartDate <= sinDate
@@ -922,7 +922,7 @@ namespace Infrastructure.Repositories
 
         private List<string> GetByomeiCdFromTenkiou(int hpId, string itemCd, bool isFromCheckingView = false)
         {
-            var result = new List<string>();
+            List<string> result;
             var teikyoByomeis = NoTrackingDataContext.TekiouByomeiMsts.Where(
                 (x) => x.HpId == hpId && x.ItemCd == itemCd && (!isFromCheckingView || x.IsInvalidTokusyo != 1));
             var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(
@@ -965,7 +965,7 @@ namespace Infrastructure.Repositories
             }
 
             // 地域包括対象疾病の患者である
-            var ptSanteiConfList = GetPtCalculationInfById(ptId, sinDate);
+            var ptSanteiConfList = GetPtCalculationInfById(hpId, ptId, sinDate);
             List<string> santeiItemCds = new List<string>();
 
             var tiikiSanteiConf = ptSanteiConfList.FirstOrDefault(c => c.Item1 == 3 && c.Item2 == 1);
@@ -1061,11 +1061,11 @@ namespace Infrastructure.Repositories
         }
 
 
-        private List<Tuple<int, int>> GetPtCalculationInfById(long ptId, int sinDate)
+        private List<Tuple<int, int>> GetPtCalculationInfById(int hpId, long ptId, int sinDate)
         {
             return NoTrackingDataContext.PtSanteiConfs
                 .Where(pt =>
-                    pt.HpId == Session.HospitalID && pt.PtId == ptId && pt.StartDate <= sinDate && pt.EndDate >= sinDate && pt.IsDeleted == 0)
+                    pt.HpId == hpId && pt.PtId == ptId && pt.StartDate <= sinDate && pt.EndDate >= sinDate && pt.IsDeleted == 0)
                 .AsEnumerable()
                 .Select(item => new Tuple<int, int>(item.KbnNo, item.EdaNo)).ToList();
         }
@@ -1089,7 +1089,7 @@ namespace Infrastructure.Repositories
                 return checkedOrderModelList;
             }
 
-            var shonikaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var shonikaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 0
                     && p.StartDate <= sinDate
@@ -1207,7 +1207,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var shonika = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var shonika = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 0
                     && p.StartDate <= sinDate

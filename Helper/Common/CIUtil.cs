@@ -31,6 +31,18 @@ namespace Helper.Common
             return (T)obj;
         }
 
+        public static string Substring(string input, int startIndex, int endIndex)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+
+            if (input.Length < endIndex)
+            {
+                return input.Substring(startIndex, endIndex);
+            }
+
+            return string.Empty;
+        }
+
         public static int FullStartDate(int startDate)
         {
             if (startDate == 0) return 0;
