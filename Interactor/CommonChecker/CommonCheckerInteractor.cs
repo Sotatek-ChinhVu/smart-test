@@ -37,7 +37,7 @@ namespace Interactor.CommonChecker
 
         public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
         {
-            unitChecker.DataContext = _tenantProvider.CreateNewNoTrackingDataContext();
+            unitChecker.DataContext = _tenantProvider.GetNoTrackingDataContext();
             unitChecker.HpID = _hpID;
             unitChecker.PtID = _ptID;
             unitChecker.Sinday = _sinday;
@@ -65,72 +65,59 @@ namespace Interactor.CommonChecker
 
         public List<UnitCheckInfoModel> CheckListOrder(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            try
+            List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
+            List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
+            List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
+
+            listCheckingOrder.ForEach((order) =>
             {
-                List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
-                List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
-                List<OrdInfoModel> tempCurrentListOdr = new List<OrdInfoModel>(currentListOdr);
+                List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> checkedOrderResult = GetErrorFromOrder(tempCurrentListOdr, order);
 
-                Task seperatedCheckTask = Task.Run(() =>
+                if (checkedOrderResult.Count > 0)
                 {
-                    listCheckingOrder.ForEach((order) =>
-                    {
-                        List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> checkedOrderResult = GetErrorFromOrder(tempCurrentListOdr, order);
-
-                        if (checkedOrderResult.Count > 0)
-                        {
-                            listErrorOfAllOrder.AddRange(checkedOrderResult);
-                            listOrderError.Add(order);
-                        }
-
-                        tempCurrentListOdr.Add(order);
-                    });
-                });
-
-                var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
-
-                seperatedCheckTask.Wait();
-
-                foreach (var checkListOrderResult in checkListOrderResultList)
-                {
-                    var notExistErrorOrderList = checkListOrderResult.ErrorOrderList.Where(o => !listOrderError.Contains(o)).ToList();
-                    if (notExistErrorOrderList.Count > 0)
-                    {
-                        listOrderError.AddRange(notExistErrorOrderList);
-                    }
+                    listErrorOfAllOrder.AddRange(checkedOrderResult);
+                    listOrderError.Add(order);
                 }
 
-                List<UnitCheckInfoModel> listUnitCheckErrorInfo = new List<UnitCheckInfoModel>();
-                listErrorOfAllOrder.ForEach((error) =>
-                {
-                    listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
-                    {
-                        CheckerType = error.CheckerType,
-                        ErrorInfo = error.ErrorInfo,
-                        IsError = error.IsError,
-                        PtId = error.PtId,
-                        Sinday = error.Sinday,
-                    });
-                });
+                tempCurrentListOdr.Add(order);
+            });
 
-                foreach (var error in checkListOrderResultList)
-                {
-                    listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
-                    {
-                        CheckerType = error.CheckerType,
-                        ErrorInfo = error.ErrorInfo,
-                        IsError = error.IsError,
-                        PtId = error.PtId,
-                        Sinday = error.Sinday,
-                    });
-                }
-                return listUnitCheckErrorInfo;
-            }
-            finally
+            var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
+
+            foreach (var checkListOrderResult in checkListOrderResultList)
             {
-                stopwatch.Stop();
+                var notExistErrorOrderList = checkListOrderResult.ErrorOrderList.Where(o => !listOrderError.Contains(o)).ToList();
+                if (notExistErrorOrderList.Count > 0)
+                {
+                    listOrderError.AddRange(notExistErrorOrderList);
+                }
             }
+
+            List<UnitCheckInfoModel> listUnitCheckErrorInfo = new List<UnitCheckInfoModel>();
+            listErrorOfAllOrder.ForEach((error) =>
+            {
+                listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
+                {
+                    CheckerType = error.CheckerType,
+                    ErrorInfo = error.ErrorInfo,
+                    IsError = error.IsError,
+                    PtId = error.PtId,
+                    Sinday = error.Sinday,
+                });
+            });
+
+            foreach (var error in checkListOrderResultList)
+            {
+                listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
+                {
+                    CheckerType = error.CheckerType,
+                    ErrorInfo = error.ErrorInfo,
+                    IsError = error.IsError,
+                    PtId = error.PtId,
+                    Sinday = error.Sinday,
+                });
+            }
+            return listUnitCheckErrorInfo;
         }
 
         private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
@@ -167,120 +154,77 @@ namespace Interactor.CommonChecker
         {
             List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>>();
 
-            List<Task> taskList = new List<Task>();
-
             if (CheckerCondition.IsCheckingAllergy)
             {
-                var foodTask = Task.Run(() =>
+                var foodAllergyCheckResult = CheckFoodAllergy(checkingOrderList);
+                if (foodAllergyCheckResult.IsError)
                 {
-                    var foodAllergyCheckResult = CheckFoodAllergy(checkingOrderList);
-                    if (foodAllergyCheckResult.IsError)
-                    {
-                        listError.Add(foodAllergyCheckResult);
-                    }
-                });
-                taskList.Add(foodTask);
+                    listError.Add(foodAllergyCheckResult);
+                }
 
-                var drugTask = Task.Run(() =>
+                var drugAllergyCheckResult = CheckDrugAllergy(checkingOrderList);
+                if (drugAllergyCheckResult.IsError)
                 {
-                    var drugAllergyCheckResult = CheckDrugAllergy(checkingOrderList);
-                    if (drugAllergyCheckResult.IsError)
-                    {
-                        listError.Add(drugAllergyCheckResult);
-                    }
-                });
-                taskList.Add(drugTask);
+                    listError.Add(drugAllergyCheckResult);
+                }
             }
 
             if (CheckerCondition.IsCheckingAge)
             {
-                var ageTask = Task.Run(() =>
+                var ageCheckResult = CheckAge(checkingOrderList);
+                if (ageCheckResult.IsError)
                 {
-                    var ageCheckResult = CheckAge(checkingOrderList);
-                    if (ageCheckResult.IsError)
-                    {
-                        listError.Add(ageCheckResult);
-                    }
-                });
-                taskList.Add(ageTask);
+                    listError.Add(ageCheckResult);
+                }
             }
 
             if (CheckerCondition.IsCheckingDisease)
             {
-                var diseaseTask = Task.Run(() =>
+                var diseaseCheckResult = CheckDisease(checkingOrderList);
+                if (diseaseCheckResult.IsError)
                 {
-                    var diseaseCheckResult = CheckDisease(checkingOrderList);
-                    if (diseaseCheckResult.IsError)
-                    {
-                        listError.Add(diseaseCheckResult);
-                    }
-                });
-                taskList.Add(diseaseTask);
+                    listError.Add(diseaseCheckResult);
+                }
             }
 
             if (CheckerCondition.IsCheckingKinki)
             {
-                var kinkiTainTask = Task.Run(() =>
+                var kinkiTainCheckResult = CheckKinkiTain(checkingOrderList);
+                if (kinkiTainCheckResult.IsError)
                 {
-                    var kinkiTainCheckResult = CheckKinkiTain(checkingOrderList);
-                    if (kinkiTainCheckResult.IsError)
-                    {
-                        listError.Add(kinkiTainCheckResult);
-                    }
-                });
-                taskList.Add(kinkiTainTask);
+                    listError.Add(kinkiTainCheckResult);
+                }
 
-                var kinkiOtcTask = Task.Run(() =>
+                var kinkiOTCCheckResult = CheckKinkiOTC(checkingOrderList);
+                if (kinkiOTCCheckResult.IsError)
                 {
-                    var kinkiOTCCheckResult = CheckKinkiOTC(checkingOrderList);
-                    if (kinkiOTCCheckResult.IsError)
-                    {
-                        listError.Add(kinkiOTCCheckResult);
-                    }
-                });
-                taskList.Add(kinkiOtcTask);
+                    listError.Add(kinkiOTCCheckResult);
+                }
 
-                var kinkiSuppleTask = Task.Run(() =>
+                var kinkiSuppleCheckResult = CheckKinkiSupple(checkingOrderList);
+                if (kinkiSuppleCheckResult.IsError)
                 {
-                    var kinkiSuppleCheckResult = CheckKinkiSupple(checkingOrderList);
-                    if (kinkiSuppleCheckResult.IsError)
-                    {
-                        listError.Add(kinkiSuppleCheckResult);
-                    }
-                });
-                taskList.Add(kinkiSuppleTask);
+                    listError.Add(kinkiSuppleCheckResult);
+                }
             }
 
             if (CheckerCondition.IsCheckingDays)
             {
-                var dayLimitTask = Task.Run(() =>
+                var dayLimitCheckResult = CheckDayLimit(checkingOrderList);
+                if (dayLimitCheckResult.IsError)
                 {
-                    var dayLimitCheckResult = CheckDayLimit(checkingOrderList);
-                    if (dayLimitCheckResult.IsError)
-                    {
-                        listError.Add(dayLimitCheckResult);
-                    }
-                });
-                taskList.Add(dayLimitTask);
+                    listError.Add(dayLimitCheckResult);
+                }
             }
 
             if (CheckerCondition.IsCheckingDosage)
             {
-                var dosageTask = Task.Run(() =>
+                var dayLimitCheckResult = CheckDosage(checkingOrderList);
+                if (dayLimitCheckResult.IsError)
                 {
-                    var dayLimitCheckResult = CheckDosage(checkingOrderList);
-                    if (dayLimitCheckResult.IsError)
-                    {
-                        listError.Add(dayLimitCheckResult);
-                    }
-                });
-                taskList.Add(dosageTask);
+                    listError.Add(dayLimitCheckResult);
+                }
             }
-
-            taskList.ForEach(task =>
-            {
-                task.Wait();
-            });
 
             return listError;
         }

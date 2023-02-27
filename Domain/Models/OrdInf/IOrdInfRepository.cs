@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 
 namespace Domain.Models.OrdInfs
 {
@@ -22,7 +23,9 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos);
 
-        List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenId);
+        List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenPId);
+
+        List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenPId);
 
         int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText);
 

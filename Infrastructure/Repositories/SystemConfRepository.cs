@@ -26,20 +26,18 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
 
-    public List<SystemConfModel> GetListByGrpCd(int hpId, List<SystemConfModel> grpItemList)
+    public List<SystemConfModel> GetAllSystemConfig(int hpId)
     {
-        List<SystemConfModel> result = new();
-        var grpCdList = grpItemList.Select(item => item.GrpCd).ToList();
-        var grpEdaNoList = grpItemList.Select(item => item.GrpEdaNo).ToList();
-        var systemConfigList = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd) && grpEdaNoList.Contains(item.GrpEdaNo)).ToList();
-        foreach (var grp in grpItemList)
-        {
-            var systemConfigItem = systemConfigList.FirstOrDefault(item => item.GrpCd == grp.GrpCd && item.GrpEdaNo == grp.GrpEdaNo);
-            if (systemConfigItem != null)
-            {
-                result.Add(new SystemConfModel(systemConfigItem.GrpCd, systemConfigItem.GrpEdaNo, systemConfigItem.Val, systemConfigItem?.Param ?? string.Empty, systemConfigItem?.Biko ?? string.Empty));
-            }
-        }
+        var result = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId)
+                                                      .Select(item => new SystemConfModel(
+                                                                          item.GrpCd,
+                                                                          item.GrpEdaNo,
+                                                                          item.Val,
+                                                                          item.Param ??
+                                                                          string.Empty,
+                                                                          item.Biko ??
+                                                                          string.Empty))
+                                                      .ToList();
         return result;
     }
 

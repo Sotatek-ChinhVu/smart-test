@@ -341,8 +341,7 @@ namespace Interactor.MedicalExamination
                                 "",
                                 "",
                                 "",
-                                "",
-                                string.Empty
+                                ""
                             );
                     lock (objDetail)
                     {

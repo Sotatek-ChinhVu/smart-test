@@ -84,7 +84,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public void Dispose()
         {
-            DataContext.Dispose();
+            //DataContext.Dispose();
         }
     }
 }

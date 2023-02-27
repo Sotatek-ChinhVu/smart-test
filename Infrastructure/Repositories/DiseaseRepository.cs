@@ -110,8 +110,7 @@ namespace Infrastructure.Repositories
                         ptByomei.HokenPid,
                         ptByomei.HosokuCmt ?? string.Empty,
                         ptByomei.TogetuByomei,
-                        0,
-                        ptByomei.HokenPid
+                        0
                         );
                 result.Add(ptDiseaseModel);
             }
@@ -229,8 +228,7 @@ namespace Infrastructure.Repositories
                         ptByomei.HokenPid,
                         ptByomei.HosokuCmt ?? string.Empty,
                         ptByomei.TogetuByomei,
-                        0,
-                        ptByomei.HokenPid
+                        0
                         );
                 result.Add(ptDiseaseModel);
             }
@@ -505,8 +503,7 @@ namespace Infrastructure.Repositories
                         ptByomei.HokenPid,
                         ptByomei.HosokuCmt ?? string.Empty,
                         ptByomei.TogetuByomei,
-                        byomeiMst?.DelDate ?? 0,
-                        ptByomei.HokenPid
+                        byomeiMst?.DelDate ?? 0
                         );
                 result.Add(ptDiseaseModel);
             }

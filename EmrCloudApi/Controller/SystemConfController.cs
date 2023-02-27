@@ -32,10 +32,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetSystemConfResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.GetList)]
-        public ActionResult<Response<GetSystemConfListResponse>> GetSystemConfList([FromBody] GetSystemConfListRequest request)
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetSystemConfListResponse>> GetSystemConfList()
         {
-            var input = new GetSystemConfListInputData(HpId, request.GrpItemList.Select(item => new GetSystemConfListInputItem(item.GrpCd, item.GrpEdaNo)).ToList());
+            var input = new GetSystemConfListInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemConfListPresenter();
