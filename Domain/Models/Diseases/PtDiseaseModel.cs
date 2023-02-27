@@ -12,7 +12,7 @@ namespace Domain.Models.Diseases
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
             List<PrefixSuffixModel> prefixSuffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate,
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte,
-            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt, int togetuByomei)
+            int isDeleted, long id, int isImportant, int sinDate, string icd10, string icd102013, string icd1012013, string icd1022013, int hokenPid, string hosokuCmt, int togetuByomei, int delDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -48,6 +48,7 @@ namespace Domain.Models.Diseases
             HokenPid = hokenPid;
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
+            DelDate = delDate;
         }
 
         public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
@@ -499,7 +500,9 @@ namespace Domain.Models.Diseases
 
         public int TogetuByomei { get; private set; }
 
-        public int SikkanCd { get; set; }
+        public int SikkanCd { get; private set; }
+
+        public int DelDate { get; private set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
 
@@ -530,6 +533,18 @@ namespace Domain.Models.Diseases
             {
                 return TenkiKbnConst.DisplayedTenkiKbnDict[TenkiKbn];
             }
+        }
+
+        public bool IsFree => ByomeiCd == FREE_WORD;
+
+        public bool IsMain => SyubyoKbn == 1;
+
+        public string ByomeiHankToZen => HenkanJ.HankToZen(Byomei);
+
+        public PtDiseaseModel ChangeSikkanCd(int sikkanCd)
+        {
+            SikkanCd = sikkanCd;
+            return this;
         }
     }
 }
