@@ -31,11 +31,11 @@ namespace Interactor.Accounting
                 var validateResult = ValidateInputData(inputData);
                 if (validateResult != SaveAccountingStatus.ValidateSuccess) return new SaveAccountingOutputData(validateResult);
 
-                var listRaiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                var raiinInfList = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
-                var listRaiinNo = listRaiinInf.Select(r => r.RaiinNo).ToList();
+                var raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
-                var listSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo);
+                var listSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNoList);
 
                 var syunoSeikyu = listSyunoSeikyu.FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
 
@@ -52,7 +52,7 @@ namespace Interactor.Accounting
                     listSyunoSeikyu = listSyunoSeikyu.Where(item => item.NyukinKbn != 0).ToList();
                 }
 
-                var listAllSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo, true);
+                var listAllSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNoList, true);
 
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>

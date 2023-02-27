@@ -897,18 +897,18 @@ namespace Infrastructure.Repositories
                                    int payType, string comment, bool isDisCharged)
         {
 
-            var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
+            var raiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
             var raiinLists = TrackingDataContext.RaiinInfs
                                     .Where(item => item.HpId == hpId
                                                         && item.PtId == ptId
                                                         && item.IsDeleted == DeleteTypes.None
                                                         && item.Status > RaiinState.TempSave
-                                                        && listRaiinNo.Contains(item.RaiinNo))
+                                                        && raiinNo.Contains(item.RaiinNo))
                                     .ToList();
             var seikyuLists = TrackingDataContext.SyunoSeikyus
                         .Where(item => item.HpId == hpId
                                             && item.PtId == ptId
-                                            && listRaiinNo.Contains(item.RaiinNo))
+                                            && raiinNo.Contains(item.RaiinNo))
                         .ToList();
 
             int allSeikyuGaku = sumAdjust;
@@ -984,6 +984,10 @@ namespace Infrastructure.Repositories
                                                 && item.PtId == ptId
                                                 && listRaiinNo.Contains(item.RaiinNo))
                             .ToList();
+            if (!seikyuLists.Any())
+            {
+                return false;
+            }
 
             int nyukinGaku = nyukinGakuEarmarked;
             int outAdjustFutan = 0;
