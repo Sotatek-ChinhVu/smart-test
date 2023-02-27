@@ -984,10 +984,6 @@ namespace Infrastructure.Repositories
                                                 && item.PtId == ptId
                                                 && listRaiinNo.Contains(item.RaiinNo))
                             .ToList();
-            if (!seikyuLists.Any())
-            {
-                return false;
-            }
 
             int nyukinGaku = nyukinGakuEarmarked;
             int outAdjustFutan = 0;
@@ -1003,13 +999,17 @@ namespace Infrastructure.Repositories
             {
                 if (nyukinGaku == 0) return;
 
-                int thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                int thisSeikyuGaku = 0;
+                int sort = 0;
+                if (item.SyunoNyukinModels.Any())
+                {
+                    thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                   item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                    sort = item.SyunoNyukinModels.Max(itemNyukin => itemNyukin.SortNo) + 1;
+                }
 
                 ParseEarmarkedValueUpdate(thisSeikyuGaku, ref nyukinGaku, out outNyukinGaku,
                     out outNyukinKbn, isSettled);
-
-                int sort = item.SyunoNyukinModels.Max(itemNyukin => itemNyukin.SortNo) + 1;
 
                 TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
                 {
@@ -1040,7 +1040,7 @@ namespace Infrastructure.Repositories
         public void ParseEarmarkedValueUpdate(int thisSeikyuGaku, ref int nyukinGaku, out int outNyukinGaku,
             out int outNyukinKbn, bool isSettled = false)
         {
-            if (isSettled == true)
+            if (isSettled)
             {
                 outNyukinGaku = thisSeikyuGaku;
                 nyukinGaku -= outNyukinGaku;
