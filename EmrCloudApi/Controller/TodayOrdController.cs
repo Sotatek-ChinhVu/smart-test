@@ -12,8 +12,9 @@ using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
-using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
+using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -416,6 +417,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetValidJihiYoboResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertNextOrderToTodayOrder)]
+        public ActionResult<Response<ConvertNextOrderToTodayOrderResponse>> ConvertNextOrderToTodayOrder([FromBody] ConvertNextOrderToTodayOrderRequest request)
+        {
+            var input = new ConvertNextOrderToTodayOrdInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.rsvKrtOrderInfItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertNextOrderToTodayOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
         }
     }
 }

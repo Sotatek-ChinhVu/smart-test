@@ -1146,10 +1146,13 @@ namespace Interactor.MedicalExamination
                 }
             }
             ptFamilyModel = new FamilyModel(
+                    ptFamilyModel.FamilyId,
                     ptFamilyModel.SeqNo,
                     ptFamilyModel.ZokugaraCd,
+                    ptFamilyModel.FamilyPtId,
                     ptFamilyModel.FamilyPtNum,
                     ptFamilyModel.Name,
+                    ptFamilyModel.KanaName,
                     ptFamilyModel.Sex,
                     ptFamilyModel.Birthday,
                     ptFamilyModel.Age,

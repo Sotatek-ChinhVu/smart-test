@@ -80,7 +80,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Paste)]
     public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var input = new CopyPasteSetMstInputData(HpId, UserId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
         var output = _bus.Handle(input);
 
         var presenter = new CopyPasteSetMstPresenter();

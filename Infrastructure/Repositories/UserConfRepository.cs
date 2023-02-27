@@ -341,9 +341,18 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return 0;
     }
 
+    public int GetSettingValue(int hpId, int userId, int groupCd, int grpItemCd = 0, int grpItemEdaNo = 0)
+    {
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId 
+                                                                           && p.GrpCd == groupCd 
+                                                                           && p.GrpItemCd == grpItemCd 
+                                                                           && p.GrpItemEdaNo == grpItemEdaNo 
+                                                                           && p.UserId == userId);
+        return userConf != null ? userConf.Val : GetDefaultValue(groupCd, grpItemCd);
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
-
 }

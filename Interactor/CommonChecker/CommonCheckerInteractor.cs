@@ -1,13 +1,13 @@
-﻿using CommonChecker;
-using CommonChecker.DB;
+﻿using CommonChecker.DB;
 using CommonChecker.Models;
 using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
-using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Helper.Extension;
+using Infrastructure.Interfaces;
+using System.Diagnostics;
 using UseCase.CommonChecker;
 
 namespace Interactor.CommonChecker
@@ -22,65 +22,22 @@ namespace Interactor.CommonChecker
         private long _ptID;
         private int _sinday;
         private bool _termLimitCheckingOnly;
-
-        private IRealtimeCheckerFinder _finder;
-        private IMasterFinder _masterFinder;
-        private ISystemConfig _systemConfig;
         private IRealtimeOrderErrorFinder _realtimeOrderErrorFinder;
 
-        private List<PtAlrgyDrugModel> _listPtAlrgyDrug;
-        private List<PtAlrgyFoodModel> _listPtAlrgyFood;
-        private List<PtOtherDrugModel> _listPtOtherDrug;
-        private List<PtOtcDrugModel> _listPtOtcDrug;
-        private List<PtSuppleModel> _listPtSupple;
-        private List<PtKioRekiModel> _listPtKioReki;
-        private List<string> _listDiseaseCode;
-        private double _currentHeight = 0;
-        private double _currentWeight = 0;
+        private readonly double _currentHeight = 0;
+        private readonly double _currentWeight = 0;
 
-        private List<string> _listPtAlrgyDrugCode;
+        private readonly ITenantProvider _tenantProvider;
 
-        public CommonCheckerInteractor(IRealtimeCheckerFinder finder, IMasterFinder masterFinder, ISystemConfig systemConfig, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
+        public CommonCheckerInteractor(ITenantProvider tenantProvider, IRealtimeOrderErrorFinder realtimeOrderErrorFinder)
         {
-            _finder = finder;
-            _masterFinder = masterFinder;
-            _systemConfig = systemConfig;
+            _tenantProvider = tenantProvider;
             _realtimeOrderErrorFinder = realtimeOrderErrorFinder;
-            _listPtAlrgyDrug = new();
-            _listPtAlrgyFood = new();
-            _listPtOtherDrug = new();
-            _listPtOtcDrug = new();
-            _listPtSupple = new();
-            _listPtKioReki = new();
-            _listDiseaseCode = new();
-            _listPtAlrgyDrugCode = new();
-        }
-
-        public List<string> ListPtAlrgyDrugCode
-        {
-            get
-            {
-                if (_listPtAlrgyDrugCode == null)
-                {
-                    if (_listPtAlrgyDrug != null)
-                    {
-                        _listPtAlrgyDrugCode = _listPtAlrgyDrug.Select(p => p.ItemCd).ToList();
-                    }
-                    else
-                    {
-                        List<PtAlrgyDrugModel> drugAllergyAsPatient = _finder.GetDrugAllergyByPtId(_hpID, _ptID, _sinday);
-                        _listPtAlrgyDrugCode = drugAllergyAsPatient.Select(dr => dr.ItemCd).ToList();
-                    }
-                }
-                return _listPtAlrgyDrugCode;
-            }
         }
 
         public void InitUnitCheck(UnitChecker<OrdInfoModel, OrdInfoDetailModel> unitChecker)
         {
-            unitChecker.Finder = _finder;
-            unitChecker.MasterFinder = _masterFinder;
-            unitChecker.SystemConfig = _systemConfig;
+            unitChecker.DataContext = _tenantProvider.GetNoTrackingDataContext();
             unitChecker.HpID = _hpID;
             unitChecker.PtID = _ptID;
             unitChecker.Sinday = _sinday;
@@ -88,31 +45,22 @@ namespace Interactor.CommonChecker
 
         public GetOrderCheckerOutputData Handle(GetOrderCheckerInputData inputData)
         {
-            try
+            _hpID = inputData.HpId;
+            _ptID = inputData.PtId;
+            _sinday = inputData.SinDay;
+
+            var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
+
+            var result = GetErrorDetails(checkedResult);
+
+            if (checkedResult == null || checkedResult.Count == 0)
             {
-                _hpID = inputData.HpId;
-                _ptID = inputData.PtId;
-                _sinday = inputData.SinDay;
-
-                var checkedResult = CheckListOrder(inputData.CurrentListOdr, inputData.ListCheckingOrder);
-
-                var result = GetErrorDetails(checkedResult);
-
-                if (checkedResult == null || checkedResult.Count == 0)
-                {
-                    return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
-                }
-                else
-                {
-                    return new GetOrderCheckerOutputData(result ?? new(), GetOrderCheckerStatus.Error);
-                }
+                return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
             }
-            catch (Exception)
+            else
             {
-
-                return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Failed);
+                return new GetOrderCheckerOutputData(result ?? new(), GetOrderCheckerStatus.Error);
             }
-
         }
 
         public List<UnitCheckInfoModel> CheckListOrder(List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
@@ -170,7 +118,6 @@ namespace Interactor.CommonChecker
                 });
             }
             return listUnitCheckErrorInfo;
-
         }
 
         private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
@@ -285,159 +232,175 @@ namespace Interactor.CommonChecker
         #region Check
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckFoodAllergy(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> foodAllergyChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> foodAllergyChecker =
                 new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.FoodAllergy,
-                    ListPtAlrgyFoods = _listPtAlrgyFood
-                };
-            InitUnitCheck(foodAllergyChecker);
-
-            return foodAllergyChecker.CheckOrderList(checkingOrderList);
+                    CheckType = RealtimeCheckerType.FoodAllergy
+                })
+            {
+                InitUnitCheck(foodAllergyChecker);
+                return foodAllergyChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDrugAllergy(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> drugAllergyChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> drugAllergyChecker =
                 new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.DrugAllergy,
-                    ListPtAlrgyDrugCode = ListPtAlrgyDrugCode
-                };
-            InitUnitCheck(drugAllergyChecker);
+                    CheckType = RealtimeCheckerType.DrugAllergy
+                })
+            {
+                InitUnitCheck(drugAllergyChecker);
 
-            return drugAllergyChecker.CheckOrderList(checkingOrderList);
+                return drugAllergyChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
-                new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
-                {
-                    CheckType = RealtimeCheckerType.Age
-                };
-            InitUnitCheck(ageChecker);
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
+               new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
+               {
+                   CheckType = RealtimeCheckerType.Age
+               })
+            {
+                InitUnitCheck(ageChecker);
 
-            return ageChecker.CheckOrderList(checkingOrderList);
+                return ageChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
                 new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CheckType = RealtimeCheckerType.Days
-                };
-            InitUnitCheck(dayLimitChecker);
+                })
+            {
+                InitUnitCheck(dayLimitChecker);
 
-            return dayLimitChecker.CheckOrderList(checkingOrderList);
+                return dayLimitChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDosage(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> dosageChecker =
-                new DosageChecker<OrdInfoModel, OrdInfoDetailModel>()
-                {
-                    CheckType = RealtimeCheckerType.Dosage,
-                    CurrentHeight = _currentHeight,
-                    CurrentWeight = _currentWeight,
-                    TermLimitCheckingOnly = _termLimitCheckingOnly
-                };
-            InitUnitCheck(dosageChecker);
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dosageChecker =
+               new DosageChecker<OrdInfoModel, OrdInfoDetailModel>()
+               {
+                   CheckType = RealtimeCheckerType.Dosage,
+                   CurrentHeight = _currentHeight,
+                   CurrentWeight = _currentWeight,
+                   TermLimitCheckingOnly = _termLimitCheckingOnly
+               })
+            {
+                InitUnitCheck(dosageChecker);
 
-            return dosageChecker.CheckOrderList(checkingOrderList);
+                return dosageChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> diseaseChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> diseaseChecker =
                 new DiseaseChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CheckType = RealtimeCheckerType.Disease,
-                    ListDiseaseCode = _listDiseaseCode,
-                    ListPtKioReki = _listPtKioReki,
-                };
-            InitUnitCheck(diseaseChecker);
+                })
+            {
+                InitUnitCheck(diseaseChecker);
 
-            return diseaseChecker.CheckOrderList(checkingOrderList);
+                return diseaseChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiOTC(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiOTCChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiOTCChecker =
                 new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiOTC,
-                    ListPtOtcDrug = _listPtOtcDrug
-                };
-            InitUnitCheck(kinkiOTCChecker);
+                    CheckType = RealtimeCheckerType.KinkiOTC
+                })
+            {
+                InitUnitCheck(kinkiOTCChecker);
 
-            return kinkiOTCChecker.CheckOrderList(checkingOrderList);
+                return kinkiOTCChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiTain(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiTainChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiTainChecker =
                 new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiTain,
-                    ListPtOtherDrug = _listPtOtherDrug
-                };
-            InitUnitCheck(kinkiTainChecker);
+                    CheckType = RealtimeCheckerType.KinkiTain
+                })
+            {
+                InitUnitCheck(kinkiTainChecker);
 
-            return kinkiTainChecker.CheckOrderList(checkingOrderList);
+                return kinkiTainChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiSupple(List<OrdInfoModel> checkingOrderList)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiSuppleChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiSuppleChecker =
                 new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
-                    CheckType = RealtimeCheckerType.KinkiSupplement,
-                    ListPtSupple = _listPtSupple
-                };
-            InitUnitCheck(kinkiSuppleChecker);
+                    CheckType = RealtimeCheckerType.KinkiSupplement
+                })
+            {
+                InitUnitCheck(kinkiSuppleChecker);
 
-            return kinkiSuppleChecker.CheckOrderList(checkingOrderList);
+                return kinkiSuppleChecker.CheckOrderList(checkingOrderList);
+            }
         }
 
         private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckDuplication(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> duplicationChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> duplicationChecker =
                 new DuplicationChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CurrentListOrder = currentListOdr,
                     CheckType = RealtimeCheckerType.Duplication
-                };
-            InitUnitCheck(duplicationChecker);
+                })
+            {
+                InitUnitCheck(duplicationChecker);
 
-            return duplicationChecker.CheckOrder(checkingOrder);
+                return duplicationChecker.CheckOrder(checkingOrder);
+            }
         }
 
         private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinki(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiChecker =
                 new KinkiChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CurrentListOrder = currentListOdr,
                     CheckType = RealtimeCheckerType.Kinki
-                };
-            InitUnitCheck(kinkiChecker);
+                })
+            {
+                InitUnitCheck(kinkiChecker);
 
-            return kinkiChecker.CheckOrder(checkingOrder);
+                return kinkiChecker.CheckOrder(checkingOrder);
+            }
         }
 
         private UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiUser(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
         {
-            UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiUserChecker =
+            using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiUserChecker =
                 new KinkiUserChecker<OrdInfoModel, OrdInfoDetailModel>()
                 {
                     CurrentListOrder = currentListOdr,
                     CheckType = RealtimeCheckerType.KinkiUser
-                };
-            InitUnitCheck(kinkiUserChecker);
+                })
+            {
+                InitUnitCheck(kinkiUserChecker);
 
-            return kinkiUserChecker.CheckOrder(checkingOrder);
+                return kinkiUserChecker.CheckOrder(checkingOrder);
+            }
         }
         #endregion
 
@@ -634,6 +597,7 @@ namespace Interactor.CommonChecker
                 string itemName = _realtimeOrderErrorFinder.FindItemNameByItemCode(a.ItemCd, _sinday);
                 ErrorInfoModel info = new ErrorInfoModel()
                 {
+                    Id = a.Id,
                     FirstCellContent = "アレルギー",
                     ThridCellContent = itemName,
                     FourthCellContent = itemName
@@ -659,9 +623,9 @@ namespace Interactor.CommonChecker
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
 
             var errorGroup = (from a in allergyInfo
-                              group a by new { a.YjCd, a.AlrgyKbn }
+                              group a by new { a.YjCd, a.AlrgyKbn, a.Id }
                               into gcs
-                              select new { gcs.Key.YjCd, gcs.Key.AlrgyKbn }
+                              select new { gcs.Key.YjCd, gcs.Key.AlrgyKbn, gcs.Key.Id }
                               ).ToList();
 
             foreach (var error in errorGroup)
@@ -675,6 +639,7 @@ namespace Interactor.CommonChecker
                 string foodName = _realtimeOrderErrorFinder.FindFoodName(error.AlrgyKbn);
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = error.Id,
                     FirstCellContent = "アレルギー",
                     ThridCellContent = itemName,
                     FourthCellContent = foodName
@@ -710,18 +675,23 @@ namespace Interactor.CommonChecker
         private List<ErrorInfoModel> ProcessDataForAge(List<AgeResultModel> ages)
         {
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
-            List<string> groupYjCd = ages.GroupBy(a => a.YjCd).Select(g => g.Key).ToList();
+            var errorGroup = (from a in ages
+                              group a by new { a.YjCd, a.Id }
+                              into gcs
+                              select new { gcs.Key.YjCd, gcs.Key.Id }
+                              ).ToList();
 
-            foreach (string yjCd in groupYjCd)
+            foreach (var error in errorGroup)
             {
                 List<AgeResultModel> tempData =
                     ages
-                    .Where(a => a.YjCd == yjCd)
+                    .Where(a => a.YjCd == error.YjCd)
                     .OrderByDescending(a => a.TenpuLevel)
                     .ToList();
-                string itemName = _realtimeOrderErrorFinder.FindItemName(yjCd, _sinday);
+                string itemName = _realtimeOrderErrorFinder.FindItemName(error.YjCd, _sinday);
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = error.Id,
                     FirstCellContent = "投与年齢",
                     ThridCellContent = itemName,
                     FourthCellContent = "ー",
@@ -775,9 +745,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listDrugDiseaseCode = (from a in diseaseInfo
-                                       group a by new { a.YjCd, a.ByotaiCd, a.DiseaseType }
+                                       group a by new { a.YjCd, a.ByotaiCd, a.DiseaseType, a.Id }
                                        into gcs
-                                       select new { gcs.Key.YjCd, gcs.Key.ByotaiCd, gcs.Key.DiseaseType }
+                                       select new { gcs.Key.YjCd, gcs.Key.ByotaiCd, gcs.Key.DiseaseType, gcs.Key.Id }
                                        ).ToList();
 
             foreach (var drugDiseaseCode in listDrugDiseaseCode)
@@ -796,6 +766,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = drugDiseaseCode.Id,
                     FirstCellContent = DiseaseTypeName(drugDiseaseCode.DiseaseType),
                     ThridCellContent = itemName,
                     FourthCellContent = diseaseName
@@ -863,9 +834,9 @@ namespace Interactor.CommonChecker
 
             List<ErrorInfoModel> result = new List<ErrorInfoModel>();
             var listKinkiCode = (from a in listErrorIgnoreDuplicated
-                                 group a by new { a.AYjCd, a.BYjCd ,a.ItemCd, a.KinkiItemCd}
+                                 group a by new { a.AYjCd, a.BYjCd, a.ItemCd, a.KinkiItemCd, a.Id }
                                        into gcs
-                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd , gcs.Key.ItemCd, gcs.Key.KinkiItemCd}
+                                 select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd, gcs.Key.Id }
                                        ).ToList();
 
             for (int x = 0; x < listKinkiCode.Count(); x++)
@@ -908,6 +879,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = kikinCode.Id,
                     FirstCellContent = GetCheckingTitle(),
                     ThridCellContent = itemAName,
                     FourthCellContent = itemBName,
@@ -1039,6 +1011,7 @@ namespace Interactor.CommonChecker
 
                 ErrorInfoModel tempModel = new ErrorInfoModel
                 {
+                    Id = k.Id,
                     FirstCellContent = "相互作用",
                     ThridCellContent = itemAName,
                     FourthCellContent = itemBName
@@ -1070,6 +1043,7 @@ namespace Interactor.CommonChecker
                 string itemName = _realtimeOrderErrorFinder.FindItemName(dayLimit.YjCd, _sinday);
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
+                errorInfoModel.Id = dayLimit.Id;
                 errorInfoModel.FirstCellContent = "投与日数";
                 errorInfoModel.SecondCellContent = "ー";
                 errorInfoModel.ThridCellContent = itemName;
@@ -1096,6 +1070,7 @@ namespace Interactor.CommonChecker
                 ErrorInfoModel errorInfoModel = new ErrorInfoModel();
                 result.Add(errorInfoModel);
                 string itemName = _realtimeOrderErrorFinder.FindItemName(dosage.YjCd, _sinday);
+                errorInfoModel.Id = dosage.Id;
                 errorInfoModel.FirstCellContent = "投与量";
                 errorInfoModel.ThridCellContent = itemName;
                 errorInfoModel.FourthCellContent = dosage.CurrentValue + dosage.UnitName;

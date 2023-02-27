@@ -2,6 +2,8 @@
 
 public class CopyPasteSetMstRequest
 {
+    public int GenerationId { get; set; }
+
     public int CopySetCd { get; set; }
 
     public int PasteSetCd { get; set; }

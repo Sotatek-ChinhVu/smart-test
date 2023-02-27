@@ -8,6 +8,17 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public struct WarekiYmd
+        {
+            public string Ymd;
+            public string GYmd;
+            public string Gengo;
+            public int GengoId;
+            public int Year;
+            public int Month;
+            public int Day;
+        }
+
         //Calculate age from yyyymmdd format
         private const int HEISEI_START_YEAR = 1989;
         private const int SHOWA_START_YEAR = 1926;
@@ -18,6 +29,18 @@ namespace Helper.Common
         private static T As<T>(this object obj)
         {
             return (T)obj;
+        }
+
+        public static string Substring(string input, int startIndex, int endIndex)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+
+            if (input.Length < endIndex)
+            {
+                return input.Substring(startIndex, endIndex);
+            }
+
+            return string.Empty;
         }
 
         public static int FullStartDate(int startDate)
@@ -2963,18 +2986,4 @@ namespace Helper.Common
             return string.Empty;
         }
     }
-    public struct WarekiYmd
-    {
-#pragma warning disable S1104 // Fields should not have public accessibility
-        public string Ymd;
-        public string GYmd;
-        public string Gengo;
-        public int GengoId;
-        public int Year;
-        public int Month;
-        public int Day;
-#pragma warning restore S1104 // Fields should not have public accessibility
-    }
-
-
 }

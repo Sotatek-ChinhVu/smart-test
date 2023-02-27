@@ -22,11 +22,17 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             // Get listItemCode
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
-            List<KinkiResultModel> checkedResult = Finder.CheckKinki(HpID, settingLevel, Sinday, listItemCode, listItemCode);
+            List<KinkiResultModel> checkedResult = Finder!.CheckKinki(HpID, settingLevel, Sinday, listItemCode, listItemCode);
             RemoveDuplicate(ref checkedResult);
 
             List<ItemCodeModel> listDrugItemCode = GetAllOdrDetailCodeByOrderList(CurrentListOrder);
             checkedResult.AddRange(Finder.CheckKinki(HpID, settingLevel, Sinday, listDrugItemCode, listItemCode));
+
+            if (checkedResult.Count > 0)
+            {
+                unitCheckerResult.IsError = true;
+                unitCheckerResult.ErrorInfo = checkedResult;
+            }
 
             return unitCheckerResult;
         }

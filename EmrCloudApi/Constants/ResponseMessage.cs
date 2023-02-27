@@ -40,6 +40,7 @@
         public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
+        public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
         public static readonly string InvalidInfoType = "Invalid InfoType";
 
         //Common
@@ -631,7 +632,7 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFound = "Invalid PtId, PtInf Not Found.";
+        public static readonly string NotFoundPtInf = "Invalid PtId, PtInf Not Found.";
         public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
@@ -758,6 +759,10 @@
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
         public static readonly string MNoInputData = "数量を入力してください。";
         public static readonly string MNoInputDataCmt = "数字情報を入力してください。";
+
+        //Message full
+        public static readonly string ErrorHasDrug = "行為や加算が登録されているため、薬剤は登録できません。";
+        public static readonly string ErrorHasUsage = "行為や加算が登録されているため、用法は登録できません。";
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
@@ -897,6 +902,22 @@
         public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
 
+        // Family
+        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
+        public static readonly string InvalidFamilyId = "Invalid FamilyId";
+        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
+        public static readonly string InvalidFamilyName = "Invalid Family Name";
+        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
+        public static readonly string InvalidFamilySex = "Invalid Family Sex";
+        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
+        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
+        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
+        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
+        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
+        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
+        public static readonly string DuplicateFamily = "Duplicate Family";
+
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
         public static readonly string InvalidReceCmtId = "Invalid ReceCmt Id!";
@@ -904,6 +925,16 @@
         public static readonly string InvalidCmtSbt = "Invalid ReceCmt CmtSbt!";
         public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
         public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
+        public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
+        public static readonly string InvalidKeika = "Invalid Keika!";
+        public static readonly string InvalidSinDay = "Invalid SinDay!";
+        public static readonly string InvalidStatusColor = "Invalid StatusColor!";
 
+        //Accounting
+        public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
+        public static readonly string InvalidThisWari = "Invalid ThisWari";
+        public static readonly string InvalidCredit = "Invalid Credit";
+        public static readonly string InvalidPayType = "Invalid PayType";
+        public static readonly string InvalidComment = "Invalid ThisWari";
     }
 }

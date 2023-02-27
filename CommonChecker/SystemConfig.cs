@@ -1,22 +1,21 @@
 ﻿using CommonChecker;
 using Entity.Tenant;
-using Infrastructure.Base;
-using Infrastructure.Interfaces;
+using PostgreDataContext;
 
 namespace CommonCheckers
 {
-    public class SystemConfig : RepositoryBase, ISystemConfig
+    public class SystemConfig : ISystemConfig
     {
-        // private DBContextFactory dbService;
         private List<SystemConf> _systemConfigs = new List<SystemConf>();
-
         private static readonly object _threadsafelock = new object();
-        int HpId = 1;
+        private const int HpId = 1;
 
-        public SystemConfig(ITenantProvider tenantProvider) : base(tenantProvider)
+
+        public TenantNoTrackingDataContext NoTrackingDataContext { get; private set; }
+        public SystemConfig(TenantNoTrackingDataContext noTrackingDataContext)
         {
+            NoTrackingDataContext = noTrackingDataContext;
             RefreshData();
-
         }
 
         public void RefreshData()

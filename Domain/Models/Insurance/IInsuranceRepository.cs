@@ -9,11 +9,13 @@ namespace Domain.Models.Insurance
 
         InsuranceModel GetPtHokenInf(int hpId, int hokenPid, long ptId, int sinDate);
 
-        IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true);
+        IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true);
 
         bool CheckExistHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds);
 
         bool CheckExistHokenId(int hokenId);
+
+        bool CheckExistHokenPid(int hokenPid);
 
         List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids);
 
@@ -21,7 +23,7 @@ namespace Domain.Models.Insurance
 
         List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false);
 
-        bool SaveInsuraneScan(InsuranceScanModel insuranceScan,int userId);
+        bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId);
 
         bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId);
 

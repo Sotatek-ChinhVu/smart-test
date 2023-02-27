@@ -1,8 +1,11 @@
-﻿namespace Domain.Models.SpecialNote.SummaryInf
+﻿using Helper.Common;
+using Helper.Extension;
+
+namespace Domain.Models.SpecialNote.SummaryInf
 {
     public class SummaryInfModel
     {
-        public SummaryInfModel(long id, int hpId, long ptId, long seqNo, string text, string rtext, DateTime createDate)
+        public SummaryInfModel(long id, int hpId, long ptId, long seqNo, string text, string rtext, DateTime createDate, DateTime updateDate)
         {
             Id = id;
             HpId = hpId;
@@ -11,6 +14,7 @@
             Text = text;
             Rtext = rtext;
             CreateDate = createDate;
+            UpdateDate = updateDate;
         }
 
         public SummaryInfModel()
@@ -33,5 +37,14 @@
 
         public DateTime CreateDate { get; private set; }
 
+        public DateTime UpdateDate { get; private set; }
+
+        public string DisplayUpdateDate
+        {
+            get
+            {
+                return CIUtil.SDateToShowSDate(UpdateDate.ToString("yyyyMMdd").AsInteger()) + " 更新";
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace Domain.Models.InsuranceMst
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName, int prefNo, int sortNo, int dayLimitCount)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName, int prefNo, int sortNo, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, bool isAdded, int dayLimitCount)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -52,6 +52,11 @@ namespace Domain.Models.InsuranceMst
             PrefactureName = prefactureName;
             PrefNo = prefNo;
             SortNo = sortNo;
+            SeikyuYm = seikyuYm;
+            ReceFutanHide = receFutanHide;
+            ReceFutanKbn = receFutanKbn;
+            KogakuTotalAll = kogakuTotalAll;
+            IsAdded = isAdded;
             DayLimitCount = dayLimitCount;
         }
 
@@ -156,6 +161,20 @@ namespace Domain.Models.InsuranceMst
         public int PrefNo { get; private set; }
 
         public int SortNo { get; private set; }
+
+        public int SeikyuYm { get; private set; }
+
+        public int ReceFutanHide { get; private set; }
+
+        public int ReceFutanKbn { get; private set; }
+
+        public int KogakuTotalAll { get; private set; }
+
+        public int KogakuTotalExcFutan { get; private set; }
+
+        public int KaiFutangaku { get; private set; }
+
+        public bool IsAdded { get; private set; }
 
         public int DayLimitCount { get; private set; }
 

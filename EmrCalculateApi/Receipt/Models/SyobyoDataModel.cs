@@ -64,7 +64,7 @@ namespace EmrCalculateApi.Receipt.Models
         {
             get
             {
-                WarekiYmd wareki = CIUtil.SDateToShowWDate3(PtByomei.StartDate);
+                CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(PtByomei.StartDate);
                 string ret = $"{ wareki.Gengo}{wareki.Year, 2}年{wareki.Month, 2}月{wareki.Day,2}日";
                 return ret;
             }
@@ -195,7 +195,7 @@ namespace EmrCalculateApi.Receipt.Models
                 string ret = "";
                 if(TenkiDate > 0 && KamiReceTenkiKbn > ReceTenkiKbnConst.Continued)
                 {
-                    WarekiYmd wareki = CIUtil.SDateToShowWDate3(PtByomei.TenkiDate);
+                    CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(PtByomei.TenkiDate);
                     ret = $"{ wareki.Gengo}{wareki.Year,2}年{wareki.Month,2}月{wareki.Day,2}日";                    
                 }
                 return ret;
