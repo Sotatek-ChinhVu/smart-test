@@ -2,9 +2,7 @@
 {
     public class SaveAccountingRequest
     {
-        public int HpId { get; set; }
         public long PtId { get; set; }
-        public int UserId { get; set; }
         public int SinDate { get; set; }
         public long RaiinNo { get; set; }
         public int SumAdjust { get; set; }
@@ -12,6 +10,6 @@
         public int Credit { get; set; }
         public int PayType { get; set; }
         public string Comment { get; set; } = string.Empty;
-        public bool isDisCharged { get; set; }
+        public bool IsDisCharged { get; set; }
     }
 }

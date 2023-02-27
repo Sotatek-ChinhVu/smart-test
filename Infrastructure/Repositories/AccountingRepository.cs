@@ -896,91 +896,83 @@ namespace Infrastructure.Repositories
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
                                    int payType, string comment, bool isDisCharged)
         {
-            try
+
+            var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
+            var raiinLists = TrackingDataContext.RaiinInfs
+                                    .Where(item => item.HpId == hpId
+                                                        && item.PtId == ptId
+                                                        && item.IsDeleted == DeleteTypes.None
+                                                        && item.Status > RaiinState.TempSave
+                                                        && listRaiinNo.Contains(item.RaiinNo))
+                                    .ToList();
+            var seikyuLists = TrackingDataContext.SyunoSeikyus
+                        .Where(item => item.HpId == hpId
+                                            && item.PtId == ptId
+                                            && listRaiinNo.Contains(item.RaiinNo))
+                        .ToList();
+
+            int allSeikyuGaku = sumAdjust;
+            int adjustFutan = thisWari;
+            int nyukinGaku = thisCredit;
+            int outAdjustFutan = 0;
+            int outNyukinGaku = 0;
+            int outNyukinKbn = 0;
+
+            for (int i = 0; i < syunoSeikyuModels.Count; i++)
             {
-                var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
-                var raiinLists = TrackingDataContext.RaiinInfs
-                                        .Where(item => item.HpId == hpId
-                                                            && item.PtId == ptId
-                                                            && item.IsDeleted == DeleteTypes.None
-                                                            && item.Status > RaiinState.TempSave
-                                                            && listRaiinNo.Contains(item.RaiinNo))
-                                        .ToList();
-                var seikyuLists = TrackingDataContext.SyunoSeikyus
-                            .Where(item => item.HpId == hpId
-                                                && item.PtId == ptId
-                                                && listRaiinNo.Contains(item.RaiinNo))
-                            .ToList();
+                var item = syunoSeikyuModels[i];
+                int thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                 item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                bool isLastRecord = i == syunoSeikyuModels.Count - 1;
 
-                int allSeikyuGaku = sumAdjust;
-                int adjustFutan = thisWari;
-                int nyukinGaku = thisCredit;
-                int outAdjustFutan = 0;
-                int outNyukinGaku = 0;
-                int outNyukinKbn = 0;
-
-                for (int i = 0; i < syunoSeikyuModels.Count; i++)
+                if (!isDisCharged)
                 {
-                    var item = syunoSeikyuModels[i];
-                    int thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
-                    bool isLastRecord = i == syunoSeikyuModels.Count - 1;
-
-                    if (!isDisCharged)
-                    {
-                        ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
-                        out outNyukinKbn, isLastRecord);
-                        allSeikyuGaku -= thisSeikyuGaku;
-                    }
-                    else
-                    {
-                        outNyukinKbn = 2;
-                    }
-
-                    if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
-                        item.SyunoNyukinModels[0].NyukinGaku != 0)
-                    {
-                        TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
-                        {
-                            HpId = item.HpId,
-                            RaiinNo = item.RaiinNo,
-                            PtId = item.PtId,
-                            SinDate = item.SinDate,
-                            AdjustFutan = outAdjustFutan,
-                            NyukinGaku = outNyukinGaku,
-                            SortNo = 1,
-                            PaymentMethodCd = payType,
-                            UketukeSbt = item.RaiinInfModel.UketukeSbt,
-                            NyukinCmt = comment,
-                            IsDeleted = 0,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = userId,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                            NyukinDate = item.SinDate,
-                            NyukinjiTensu = item.SeikyuTensu,
-                            NyukinjiDetail = item.SeikyuDetail,
-                            NyukinjiSeikyu = item.SeikyuGaku
-                        });
-
-                        UpdateStatusRaiinInf(userId, item, raiinLists);
-                        UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
-                    }
-
+                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                    out outNyukinKbn, isLastRecord);
+                    allSeikyuGaku -= thisSeikyuGaku;
                 }
-                if (accDue != 0 && thisCredit != 0)
+                else
                 {
-                    AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
+                    outNyukinKbn = 2;
                 }
 
-                TrackingDataContext.SaveChanges();
+                if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
+                    item.SyunoNyukinModels[0].NyukinGaku != 0)
+                {
+                    TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
+                    {
+                        HpId = item.HpId,
+                        RaiinNo = item.RaiinNo,
+                        PtId = item.PtId,
+                        SinDate = item.SinDate,
+                        AdjustFutan = outAdjustFutan,
+                        NyukinGaku = outNyukinGaku,
+                        SortNo = 1,
+                        PaymentMethodCd = payType,
+                        UketukeSbt = item.RaiinInfModel.UketukeSbt,
+                        NyukinCmt = comment,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        NyukinDate = item.SinDate,
+                        NyukinjiTensu = item.SeikyuTensu,
+                        NyukinjiDetail = item.SeikyuDetail,
+                        NyukinjiSeikyu = item.SeikyuGaku
+                    });
 
-                return true;
+                    UpdateStatusRaiinInf(userId, item, raiinLists);
+                    UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
+                }
+
             }
-            catch (Exception)
+            if (accDue != 0 && thisCredit != 0)
             {
-                return false;
+                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
             }
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
