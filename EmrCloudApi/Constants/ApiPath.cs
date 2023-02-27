@@ -76,6 +76,7 @@
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
+        public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -157,6 +158,7 @@
         public const string GetCheckedOrder = "GetCheckedOrder";
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
         public const string GetHistoryIndex = "GetHistoryIndex";
+        public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -184,19 +186,35 @@
         public const string ConvertTextToRichText = "ConvertTextToRichText";
 
         // Rece check
-        public const string GetListReceCmt = "GetListReceCmt";
-        public const string SaveListReceCmt = "SaveListReceCmt";
-        public const string GetListSyoukiInf = "GetListSyoukiInf";
-        public const string SaveListSyoukiInf = "SaveListSyoukiInf";
-        public const string GetListSyobyoKeika = "GetListSyobyoKeika";
-        public const string SaveListSyobyoKeika = "SaveListSyobyoKeika";
+        public const string GetReceCmtList = "GetReceCmtList";
+        public const string SaveReceCmtList = "SaveReceCmtList";
+        public const string GetSyoukiInfList = "GetSyoukiInfList";
+        public const string SaveSyoukiInfList = "SaveSyoukiInfList";
+        public const string GetSyobyoKeikaList = "GetSyobyoKeikaList";
+        public const string SaveSyobyoKeikaList = "SaveSyobyoKeikaList";
+        public const string GetReceHenReason = "GetReceHenReason";
+        public const string GetReceiCheckList = "GetReceiCheckList";
+        public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
+        public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
+        public const string GetDiseaseReceList = "GetDiseaseReceList";
+        public const string Recalculation = "Recalculation";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
+        public const string SaveAccounting = "SaveAccounting";
+        public const string HistoryOrder = "HistoryOrder";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
+
+        // Family
+        public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string GetRaiinInfList = "GetRaiinInfList";
+        public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+
+        //TreeSet Byomei
+        public const string GetSetByomeiTree = "GetSetByomeiTree";
     }
 }

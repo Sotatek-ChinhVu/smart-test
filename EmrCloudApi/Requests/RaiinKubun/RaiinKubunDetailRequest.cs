@@ -18,9 +18,9 @@ namespace EmrCloudApi.Requests.RaiinKubun
 
         public bool IsConfirmed { get; set; }
 
-        public bool IsAuto { get; set; }
+        public int IsAuto { get; set; }
 
-        public bool IsAutoDeleted { get; set; }
+        public int IsAutoDeleted { get; set; }
 
         public bool IsDeleted { get; set; }
 

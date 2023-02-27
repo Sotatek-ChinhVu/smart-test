@@ -43,11 +43,11 @@ namespace Domain.Common
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
                 }
-                if (checkOther && checkDrugOfDetail)
+                if (checkOther && checkDrugOfDetail && !checkRefill)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrug);
                 }
-                if (checkOther && checkUsageOfDetail)
+                if (checkOther && checkUsageOfDetail && !checkRefill)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsage);
                 }

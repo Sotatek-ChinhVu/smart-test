@@ -46,8 +46,8 @@ namespace Infrastructure.Repositories
                             r.KbnName ?? string.Empty,
                             r.ColorCd ?? string.Empty,
                             r.IsConfirmed == 1,
-                            r.IsAuto == 1,
-                            r.IsAutoDelete == 1,
+                            r.IsAuto,
+                            r.IsAutoDelete,
                             r.IsDeleted == 1,
                             new List<RaiinKbnKouiModel>(),
                             new List<RaiinKbnItemModel>(),
@@ -89,7 +89,6 @@ namespace Infrastructure.Repositories
             var raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
                                         .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == hpId && r.IsDeleted == 0))
                                         .ToList();
-            var kbnCdList = raiinKubunDetailList.Select(r => r.KbnCd).ToList();
 
             var query = (from kbnDetail in NoTrackingDataContext.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          join kou in NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
@@ -147,18 +146,18 @@ namespace Infrastructure.Repositories
                                         z.KbnCd,
                                         z.SortNo,
                                         z.KbnName ?? string.Empty,
-                                        z.ColorCd ?? String.Empty,
+                                        z.ColorCd?.Length > 0 ? "#" + z.ColorCd : string.Empty,
                                         z.IsConfirmed == 1,
-                                        z.IsAuto == 1,
-                                        z.IsAutoDelete == 1,
+                                        z.IsAuto,
+                                        z.IsAutoDelete,
                                         z.IsDeleted == 1,
                                         raiinKbnKouiList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
-                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
+                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().OrderBy(item => item.SortNo).ToList(),
                                         rsvFrameMstList,
                                         rsvGrpMstList,
                                         raiinKbnYayokuList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList()
-                                        )).Distinct().ToList()
-                                        )).Distinct().ToList();
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList()
+                                        )).Distinct().OrderBy(item => item.SortNo).ToList();
             return raiinKubunMstModels;
         }
 
@@ -329,8 +328,8 @@ namespace Infrastructure.Repositories
         public List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> GetRaiinKouiKbns(int hpId)
         {
             var result = new List<(int, int, int, int)>();
-            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == Session.HospitalID && r.IsDeleted == DeleteTypes.None);
-            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == Session.HospitalID);
+            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == hpId);
             var query = from raiinKouiKbn in raiinKouiKbns
                         join kouiKbnMst in kouiKbnMsts
                         on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId
@@ -606,8 +605,8 @@ namespace Infrastructure.Repositories
                     KbnName = x.KubunName,
                     ColorCd = x.ColorCd,
                     IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto ? 1 : 0,
-                    IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
+                    IsAuto = x.IsAuto,
+                    IsAutoDelete = x.IsAutoDeleted,
                     IsDeleted = x.IsDeleted ? 1 : 0,
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -757,8 +756,8 @@ namespace Infrastructure.Repositories
                     KbnName = x.KubunName,
                     ColorCd = x.ColorCd,
                     IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto ? 1 : 0,
-                    IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
+                    IsAuto = x.IsAuto,
+                    IsAutoDelete = x.IsAutoDeleted,
                     IsDeleted = x.IsDeleted ? 1 : 0,
                     CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,

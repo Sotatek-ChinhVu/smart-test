@@ -18,5 +18,7 @@ public interface IUserConfRepository : IRepositoryBase
 
     int GetDefaultValue(int groupCd, int groupItemCd = 0);
 
+    int GetSettingValue(int hpId, int userId, int groupCd, int grpItemCd = 0, int grpItemEdaNo = 0);
+
     bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs);
 }

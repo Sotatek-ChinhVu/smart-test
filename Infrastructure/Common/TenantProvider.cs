@@ -100,6 +100,16 @@ namespace Infrastructure.CommonDB
             return factory.CreateDbContext();
         }
 
+        public TenantNoTrackingDataContext CreateNewNoTrackingDataContext()
+        {
+            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+            var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+            return factory.CreateDbContext();
+        }
+
         public void DisposeDataContext()
         {
             _trackingDataContext?.Dispose();

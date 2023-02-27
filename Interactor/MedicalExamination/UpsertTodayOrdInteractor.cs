@@ -61,16 +61,19 @@ namespace Interactor.MedicalExamination
                 //Raiin Info
                 var inputDataList = inputDatas.OdrItems.ToList();
                 var hpIds = inputDataList.Select(x => x.HpId).ToList();
-                hpIds.Add(inputDatas.KarteInf.HpId);
-                hpIds = hpIds.Distinct().ToList();
                 var ptIds = inputDataList.Select(x => x.PtId).ToList();
-                ptIds.Add(inputDatas.KarteInf.PtId);
-                ptIds = ptIds.Distinct().ToList();
                 var raiinNos = inputDataList.Select(x => x.RaiinNo).ToList();
-                raiinNos.Add(inputDatas.KarteInf.RaiinNo);
-                raiinNos = raiinNos.Distinct().ToList();
                 var sinDates = inputDataList.Select(x => x.SinDate).ToList();
-                sinDates.Add(inputDatas.KarteInf.SinDate);
+                if (inputDatas.KarteInf.HpId != 0 && inputDatas.KarteInf.PtId != 0 && inputDatas.KarteInf.SinDate != 0 && inputDatas.KarteInf.RaiinNo != 0)
+                {
+                    hpIds.Add(inputDatas.KarteInf.HpId);
+                    ptIds.Add(inputDatas.KarteInf.PtId);
+                    raiinNos.Add(inputDatas.KarteInf.RaiinNo);
+                    sinDates.Add(inputDatas.KarteInf.SinDate);
+                }
+                raiinNos = raiinNos.Distinct().ToList();
+                ptIds = ptIds.Distinct().ToList();
+                hpIds = hpIds.Distinct().ToList();
                 sinDates = sinDates.Distinct().ToList();
 
                 var hpId = hpIds[0];
@@ -83,11 +86,11 @@ namespace Interactor.MedicalExamination
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
                     return new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        raiinInfStatus, 
-                        new Dictionary<string, 
-                        KeyValuePair<string, 
-                        OrdInfValidationStatus>>(), 
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        new Dictionary<string,
+                        KeyValuePair<string,
+                        OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         0,
                         0,
@@ -115,16 +118,17 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         ""
                     );
+                KarteValidationStatus validateKarte = KarteValidationStatus.Valid;
 
-                var validateKarte = karteModel.Validation();
-
+                if (karteModel.PtId > 0 && karteModel.HpId > 0 && karteModel.RaiinNo > 0 && karteModel.SinDate > 0)
+                    validateKarte = karteModel.Validation();
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any())
                 {
                     return new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        raiinInfStatus, 
-                        resultOrder.Item1, 
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        resultOrder.Item1,
                         validateKarte,
                         0,
                         0,
@@ -148,19 +152,19 @@ namespace Interactor.MedicalExamination
                         SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                     }
                 }
-                return check ? 
+                return check ?
                     new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Successed, 
+                        UpsertTodayOrdStatus.Successed,
                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
-                        ptId) 
-                    : 
+                        ptId)
+                    :
                     new UpsertTodayOrdOutputData(
-                        UpsertTodayOrdStatus.Failed, 
-                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, 
-                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), 
+                        UpsertTodayOrdStatus.Failed,
+                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
@@ -169,9 +173,9 @@ namespace Interactor.MedicalExamination
             catch
             {
                 return new UpsertTodayOrdOutputData(
-                    UpsertTodayOrdStatus.Failed, 
-                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, 
-                    new Dictionary<string, KeyValuePair<string, 
+                    UpsertTodayOrdStatus.Failed,
+                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                    new Dictionary<string, KeyValuePair<string,
                     OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
                     0,
                     0,
@@ -376,7 +380,7 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistListId(new List<long> { ptId });
+                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
 
                 if (!checkHpId)
@@ -441,7 +445,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.HokenPid > 0)
             {
-                var checkHokenId = _insuranceInforRepository.CheckExistHokenId(inputDatas.HokenPid);
+                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;

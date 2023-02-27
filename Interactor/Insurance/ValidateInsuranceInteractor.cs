@@ -5,6 +5,7 @@ using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Extension;
 using Helper.Mapping;
 using System;
 using System.Collections.Generic;
@@ -1333,11 +1334,12 @@ namespace Interactor.Insurance
 
         private ValidateInsuranceItem IsValidConfirmDateKohi(int confirmDate, string numberMessage, int sinDate, bool isAddNew, int numberKohi)
         {
+            int sinYm = CIUtil.Copy(sinDate.AsString(), 1, 6).AsInteger();
             var message = "";
             int kouhi1ConfirmDate = confirmDate;
             int confirmKohi1YM = Int32.Parse(CIUtil.Copy(kouhi1ConfirmDate.ToString(), 1, 6));
             if (kouhi1ConfirmDate == 0
-                || sinDate != confirmKohi1YM)
+                || sinYm != confirmKohi1YM)
             {
                 // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
                 if (isAddNew)

@@ -39,7 +39,7 @@ namespace Interactor.NextOrder
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
-                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistListId(new List<long> { inputData.PtId }))
+                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistIdList(new List<long> { inputData.PtId }))
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }

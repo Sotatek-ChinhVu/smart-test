@@ -34,7 +34,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
             var listReceCmtModel = inputData.SyoukiInfList.Select(item => ConvertToSyoukiInfModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                           .ToList();
 
-            if (_receiptRepository.SaveListSyoukiInf(inputData.HpId, inputData.UserId, listReceCmtModel))
+            if (_receiptRepository.SaveSyoukiInfList(inputData.HpId, inputData.UserId, listReceCmtModel))
             {
                 return new SaveSyoukiInfListOutputData(SaveSyoukiInfListStatus.Successed);
             }
@@ -51,7 +51,7 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
 
     private SaveSyoukiInfListStatus ValidateInput(SaveSyoukiInfListInputData inputData)
     {
-        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+        if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
             return SaveSyoukiInfListStatus.InvalidPtId;
         }
@@ -61,15 +61,16 @@ public class SaveSyoukiInfListInteractor : ISaveSyoukiInfListInputPort
         }
         else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
         {
-            return SaveSyoukiInfListStatus.InvalidSinYm;
+            return SaveSyoukiInfListStatus.InvalidHokenId;
         }
-        if (!inputData.SyoukiInfList.Any())
+        else if (!inputData.SyoukiInfList.Any())
         {
-            return SaveSyoukiInfListStatus.ValidateSuccess;
+            return SaveSyoukiInfListStatus.Failed;
         }
-        var listSyoukiInfDB = _receiptRepository.GetListSyoukiInf(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).Distinct().ToList();
-        var countSyoukiInf = listSyoukiInfDB.Count(item => listSeqNo.Contains(item.SeqNo));
+        var listSyoukiInfDB = _receiptRepository.GetSyoukiInfList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+        var listSeqNo = inputData.SyoukiInfList.Where(item => item.SeqNo > 0).Select(item => item.SeqNo).ToList();
+        var seqNoListQuery = listSeqNo.Distinct().ToList();
+        var countSyoukiInf = listSyoukiInfDB.Count(item => seqNoListQuery.Contains(item.SeqNo));
         if (listSeqNo.Any() && countSyoukiInf != listSeqNo.Count)
         {
             return SaveSyoukiInfListStatus.InvalidSeqNo;

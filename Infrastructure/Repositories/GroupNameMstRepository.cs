@@ -5,6 +5,7 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -150,6 +151,7 @@ namespace Infrastructure.Repositories
                         else
                         {
                             itemGrpAct.GrpCodeName = itemGrp.GrpCodeName;
+                            itemGrpAct.SortNo = itemGrp.SortNo;
                             itemGrpAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             itemGrpAct.UpdateId = userId;
                         }
@@ -157,6 +159,18 @@ namespace Infrastructure.Repositories
                 }
             }
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool IsInUseGroupName(int groupId, string groupCode)
+        {
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && !string.IsNullOrEmpty(pt.GroupCode));
+            return count > 0;
+        }
+
+        public bool IsInUseGroupItem(int groupId, string groupCode)
+        {
+            var count = NoTrackingDataContext.PtGrpInfs.Count(pt => pt.IsDeleted == 0 && pt.GroupId == groupId && pt.GroupCode == groupCode);
+            return count > 0;
         }
     }
 }
