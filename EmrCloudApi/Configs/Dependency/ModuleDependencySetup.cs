@@ -349,6 +349,9 @@ using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.PtGroupMst.GetGroupNameMst;
 using Reporting;
 using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
+using UseCase.ReceSeikyu.GetList;
+using Interactor.ReceSeikyu;
+using Domain.Models.ReceSeikyu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -465,6 +468,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
             services.AddTransient<IFamilyRepository, FamilyRepository>();
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
+            services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -811,6 +815,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceHenReasonInputData, GetReceHenReasonInteractor>();
             busBuilder.RegisterUseCase<GetReceiCheckListInputData, GetReceiCheckListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
+
+            //ReceSeikyu
+            busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

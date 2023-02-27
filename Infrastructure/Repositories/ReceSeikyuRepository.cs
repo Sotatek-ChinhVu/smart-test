@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ReceSeikyu;
+using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -29,34 +30,37 @@ namespace Infrastructure.Repositories
             var recedenHenjiyuuInfo = from recedenHenjiyuu in listRecedenHenjiyuu
                                       join ptHokenInf in ptHoken on
                                            new { recedenHenjiyuu.PtId, recedenHenjiyuu.HokenId } equals
-                                           new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
+                                           new { ptHokenInf.PtId, ptHokenInf.HokenId } into lj
+                                      from item in lj.DefaultIfEmpty()
                                       select new
                                       {
                                           RecedenHenJiyuu = recedenHenjiyuu,
-                                          PtHokenInfItem = ptHokenList.FirstOrDefault(),
+                                          PtHokenInfItem = item
                                       };
+
             var receSeikyuInf = from receSeikyu in listReceSeikyu
                                 join ptHokenInf in ptHoken on
                                   new { receSeikyu.PtId, receSeikyu.HokenId } equals
                                   new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
+                                from item in ptHokenList.DefaultIfEmpty()
                                 join ptInf in ptInfo on receSeikyu.PtId equals ptInf.PtId
                                 select new
                                 {
                                     PtInfo = ptInf,
                                     ReceSeikyu = receSeikyu,
-                                    PtHokenInfItem = ptHokenList.FirstOrDefault()
+                                    PtHokenInfItem = item ?? new PtHokenInf()
                                 };
+
             var query = from receSeikyu in receSeikyuInf
-                        join recedenHenjiyuu in recedenHenjiyuuInfo on
-                             new { receSeikyu.ReceSeikyu.PtId, receSeikyu.ReceSeikyu.SinYm, receSeikyu.ReceSeikyu.HokenId } equals
-                             new { recedenHenjiyuu.RecedenHenJiyuu.PtId, recedenHenjiyuu.RecedenHenJiyuu.SinYm, recedenHenjiyuu.RecedenHenJiyuu.HokenId } into recedenHenjiyuuList
                         select new
                         {
-                            recedenHenjiyuuList = recedenHenjiyuuList,
+                            recedenHenjiyuuList = recedenHenjiyuuInfo.Where(x => x.RecedenHenJiyuu.PtId == receSeikyu.ReceSeikyu.PtId
+                                                                                && x.RecedenHenJiyuu.SinYm == receSeikyu.ReceSeikyu.SinYm
+                                                                                && x.RecedenHenJiyuu.HokenId == receSeikyu.ReceSeikyu.HokenId).AsEnumerable(),
                             ReceSeikyuPending = receSeikyu,
                         };
 
-            result = query.Select(x => new ReceSeikyuModel(sinDate,
+            result = query.AsEnumerable().Select(x => new ReceSeikyuModel(sinDate,
                                                           x.ReceSeikyuPending.PtInfo.HpId,
                                                           x.ReceSeikyuPending.PtInfo.PtId,
                                                           x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
