@@ -7,7 +7,6 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.ReceSeikyu.GetList;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -20,11 +19,10 @@ namespace EmrCloudApi.Controller
             _bus = bus;
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetListReceSeikyu)]
         public ActionResult<Response<GetListReceSeikyuResponse>> GetListReceSeikyu([FromQuery] GetListReceSeikyuRequest request)
         {
-            var input = new GetListReceSeikyuInputData(1, 
+            var input = new GetListReceSeikyuInputData(HpId, 
                                                        request.SinDate,
                                                        request.SinYm,
                                                        request.IsIncludingUnConfirmed,

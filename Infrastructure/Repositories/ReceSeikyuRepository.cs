@@ -1,5 +1,6 @@
 ﻿using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -13,8 +14,6 @@ namespace Infrastructure.Repositories
 
         public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int sinDate, int sinYm, bool isIncludingUnConfirmed, long ptNumSearch, bool noFilter, bool isFilterMonthlyDelay, bool isFilterReturn, bool isFilterOnlineReturn)
         {
-            List<ReceSeikyuModel> result = new List<ReceSeikyuModel>();
-
             var ptInfo = NoTrackingDataContext.PtInfs.Where(u => u.HpId == hpId &&
                                                                                 u.IsDelete == 0);
 
@@ -44,6 +43,16 @@ namespace Infrastructure.Repositories
                                   new { ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenList
                                 from item in ptHokenList.DefaultIfEmpty()
                                 join ptInf in ptInfo on receSeikyu.PtId equals ptInf.PtId
+                                where receSeikyu.IsDeleted == DeleteTypes.None
+                                      && !(!isIncludingUnConfirmed && receSeikyu.SeikyuYm == 999999)
+                                      && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
+
+                                      && (ptNumSearch == 0 || ptInf.PtNum == ptNumSearch)
+                                      && (noFilter || 
+                                            (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
+                                            (isFilterReturn && receSeikyu.SeikyuKbn == 2) || 
+                                            (isFilterOnlineReturn && receSeikyu.SeikyuKbn == 3)
+                                          )
                                 select new
                                 {
                                     PtInfo = ptInf,
@@ -60,7 +69,7 @@ namespace Infrastructure.Repositories
                             ReceSeikyuPending = receSeikyu,
                         };
 
-            result = query.AsEnumerable().Select(x => new ReceSeikyuModel(sinDate,
+            return query.AsEnumerable().Select(x => new ReceSeikyuModel(sinDate,
                                                           x.ReceSeikyuPending.PtInfo.HpId,
                                                           x.ReceSeikyuPending.PtInfo.PtId,
                                                           x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
@@ -98,7 +107,6 @@ namespace Infrastructure.Repositories
                                                                                                                     m.PtHokenInfItem.EndDate,
                                                                                                                     m.PtHokenInfItem.HokensyaNo ?? string.Empty)).ToList()
                                                           )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u=>u.SinYm).ThenBy(i=>i.PtNum).ToList();
-            return result;
         }
 
         public void ReleaseResource()
