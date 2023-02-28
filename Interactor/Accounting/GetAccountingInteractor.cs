@@ -63,7 +63,7 @@ namespace Interactor.Accounting
 
         private List<KohiInfModel> GetVisibilityPtKohiModelList(List<ReceptionDto> receptionDtos, int hpId, long ptId, int sinDate)
         {
-            var listKohiId = new List<int>();
+            var kohiIds = new List<int>();
             var listKaikeiInfAll = receptionDtos.Where(item => item.RaiinNo > 0 && item.KaikeiInfModels != null).ToList();
             var listKaikeiInf = new List<KaikeiInfModel>();
 
@@ -75,33 +75,33 @@ namespace Interactor.Accounting
             foreach (var kaikeiInf in listKaikeiInf)
             {
                 if (kaikeiInf.Kohi1Id > 0 &&
-                    !listKohiId.Contains(kaikeiInf.Kohi1Id))
+                    !kohiIds.Contains(kaikeiInf.Kohi1Id))
                 {
-                    listKohiId.Add(kaikeiInf.Kohi1Id);
+                    kohiIds.Add(kaikeiInf.Kohi1Id);
                 }
 
                 if (kaikeiInf.Kohi2Id > 0 &&
-                    !listKohiId.Contains(kaikeiInf.Kohi2Id))
+                    !kohiIds.Contains(kaikeiInf.Kohi2Id))
                 {
-                    listKohiId.Add(kaikeiInf.Kohi2Id);
+                    kohiIds.Add(kaikeiInf.Kohi2Id);
                 }
 
                 if (kaikeiInf.Kohi3Id > 0 &&
-                    !listKohiId.Contains(kaikeiInf.Kohi3Id))
+                    !kohiIds.Contains(kaikeiInf.Kohi3Id))
                 {
-                    listKohiId.Add(kaikeiInf.Kohi3Id);
+                    kohiIds.Add(kaikeiInf.Kohi3Id);
                 }
 
                 if (kaikeiInf.Kohi4Id > 0 &&
-                    !listKohiId.Contains(kaikeiInf.Kohi4Id))
+                    !kohiIds.Contains(kaikeiInf.Kohi4Id))
                 {
-                    listKohiId.Add(kaikeiInf.Kohi4Id);
+                    kohiIds.Add(kaikeiInf.Kohi4Id);
                 }
             }
 
-            if (listKohiId.Count <= 0) return new();
+            if (kohiIds.Count <= 0) return new();
 
-            var listKohi = _accountingRepository.GetListKohiByKohiId(hpId, ptId, sinDate, listKohiId);
+            var listKohi = _accountingRepository.GetListKohiByKohiId(hpId, ptId, sinDate, kohiIds);
 
             return listKohi.Where(item => item.HokenMstModel != null && (item.HokenMstModel.MoneyLimitListFlag != 0 || item.HokenMstModel.MonthLimitCount > 0)).ToList();
         }
