@@ -41,6 +41,7 @@
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
         public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
+        public static readonly string InvalidInfoType = "Invalid InfoType";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -928,5 +929,12 @@
         public static readonly string InvalidKeika = "Invalid Keika!";
         public static readonly string InvalidSinDay = "Invalid SinDay!";
         public static readonly string InvalidStatusColor = "Invalid StatusColor!";
+
+        //Accounting
+        public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
+        public static readonly string InvalidThisWari = "Invalid ThisWari";
+        public static readonly string InvalidCredit = "Invalid Credit";
+        public static readonly string InvalidPayType = "Invalid PayType";
+        public static readonly string InvalidComment = "Invalid ThisWari";
     }
 }

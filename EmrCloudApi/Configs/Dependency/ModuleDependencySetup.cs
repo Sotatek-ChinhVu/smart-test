@@ -42,6 +42,7 @@ using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionLock;
 using Domain.Models.ReceptionSameVisit;
+using Domain.Models.RsvInf;
 using Domain.Models.Santei;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
@@ -141,6 +142,7 @@ using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
@@ -228,6 +230,7 @@ using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SearchHistory;
+using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -467,6 +470,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRealtimeOrderErrorFinder, RealtimeOrderErrorFinder>();
             services.AddTransient<IFamilyRepository, FamilyRepository>();
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
+            services.AddTransient<IRsvInfRepository, RsvInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -578,6 +582,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidJihiYoboInputData, GetValidJihiYoboInteractor>();
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
+            busBuilder.RegisterUseCase<SummaryInfInputData, SummaryInfInteractor>();
 
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
@@ -733,6 +738,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPaymentMethodInputData, GetPaymentMethodInteractor>();
             busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
             busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
+            busBuilder.RegisterUseCase<SaveAccountingInputData, SaveAccountingInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHistoryOrderInputData, GetAccountingHistoryOrderInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
 

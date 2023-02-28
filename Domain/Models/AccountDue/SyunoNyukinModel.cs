@@ -21,6 +21,12 @@ public class SyunoNyukinModel
         NyukinjiDetail = nyukinjiDetail;
     }
 
+    public SyunoNyukinModel()
+    {
+        NyukinCmt = string.Empty;
+        NyukinjiDetail = string.Empty;
+    }
+
     public int HpId { get; private set; }
     
     public long PtId { get; private set; }
