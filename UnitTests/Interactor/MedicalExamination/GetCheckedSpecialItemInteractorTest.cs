@@ -1418,7 +1418,6 @@ public class GetCheckedSpecialItemInteractorTest
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
-        long ptId = 54109;
         var mockMstItemRepo = new Mock<IMstItemRepository>();
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
         var mockInsuranceRepo = new Mock<IInsuranceRepository>();
@@ -2118,7 +2117,6 @@ public class GetCheckedSpecialItemInteractorTest
     {
         // Arrange
         int hpId = 1, sinDate = 20221110, sysyosinDate = 20191111;
-        long ptId = 54109;
         var mockMstItemRepo = new Mock<IMstItemRepository>();
         var mockTodayRepo = new Mock<ITodayOdrRepository>();
         mockTodayRepo.Setup(repo => repo.MonthsAfterExcludeHoliday(1, sysyosinDate, 1))
