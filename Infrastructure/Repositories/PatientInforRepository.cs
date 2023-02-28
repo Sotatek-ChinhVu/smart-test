@@ -13,8 +13,11 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
@@ -1885,6 +1888,54 @@ namespace Infrastructure.Repositories
         {
             var hokensyaMst = TrackingDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
             return hokensyaMst ?? new HokensyaMstModel();
+        }
+
+        public PatientInforModel GetPtInf(int hpId, long ptId)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete != 1) ?? new PtInf();
+            return  new PatientInforModel(
+                        ptInf.HpId,
+                        ptInf.PtId,
+                        ptInf.ReferenceNo,
+                        ptInf.SeqNo,
+                        ptInf.PtNum,
+                        ptInf.KanaName ?? string.Empty,
+                        ptInf.Name ?? string.Empty,
+                        ptInf.Sex,
+                        ptInf.Birthday,
+                        ptInf.LimitConsFlg,
+                        ptInf.IsDead,
+                        ptInf.DeathDate,
+                        ptInf.HomePost ?? string.Empty,
+                        ptInf.HomeAddress1 ?? string.Empty,
+                        ptInf.HomeAddress2 ?? string.Empty,
+                        ptInf.Tel1 ?? string.Empty,
+                        ptInf.Tel2 ?? string.Empty,
+                        ptInf.Mail ?? string.Empty,
+                        ptInf.Setanusi ?? string.Empty,
+                        ptInf.Zokugara ?? string.Empty,
+                        ptInf.Job ?? string.Empty,
+                        ptInf.RenrakuName ?? string.Empty,
+                        ptInf.RenrakuPost ?? string.Empty,
+                        ptInf.RenrakuAddress1 ?? string.Empty,
+                        ptInf.RenrakuAddress2 ?? string.Empty,
+                        ptInf.RenrakuTel ?? string.Empty,
+                        ptInf.RenrakuMemo ?? string.Empty,
+                        ptInf.OfficeName ?? string.Empty,
+                        ptInf.OfficePost ?? string.Empty,
+                        ptInf.OfficeAddress1 ?? string.Empty,
+                        ptInf.OfficeAddress2 ?? string.Empty,
+                        ptInf.OfficeTel ?? string.Empty,
+                        ptInf.OfficeMemo ?? string.Empty,
+                        ptInf.IsRyosyoDetail,
+                        ptInf.PrimaryDoctor,
+                        ptInf.IsTester,
+                        ptInf.MainHokenPid,
+                        string.Empty,
+                        0,
+                        0,
+                        string.Empty
+                    );
         }
 
         public void ReleaseResource()

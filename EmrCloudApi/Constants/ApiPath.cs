@@ -159,6 +159,7 @@
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
+        public const string GetSummaryInf = "GetSummaryInf";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

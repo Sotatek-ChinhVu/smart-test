@@ -25,7 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList + "InsuranceMstDetail")]
         public ActionResult<Response<GetInsuranceMasterDetailResponse>> GetList([FromQuery] GetInsuranceMasterDetailRequest request)
         {
-            var input = new GetInsuranceMasterDetailInputData(HpId, request.FHokenNo, request.FHokenSbtKbn , request.IsJitan , request.IsTaken);
+            var input = new GetInsuranceMasterDetailInputData(HpId, request.FHokenNo, request.FHokenSbtKbn, request.IsJitan, request.IsTaken);
             var output = _bus.Handle(input);
             var presenter = new GetInsuranceMasterDetailPresenter();
             presenter.Complete(output);
@@ -45,7 +45,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Delete + "HokenMaster")]
         public ActionResult<Response<DeleteHokenMasterResponse>> DeleteHokenMaster([FromBody] DeleteHokenMasterRequest request)
         {
-            var input = new DeleteHokenMasterInputData(HpId, request.PrefNo, request.HokenNo, request.HokenEdaNo,  request.StartDate);
+            var input = new DeleteHokenMasterInputData(HpId, request.PrefNo, request.HokenNo, request.HokenEdaNo, request.StartDate);
             var output = _bus.Handle(input);
             var presenter = new DeleteHokenMasterPresenter();
             presenter.Complete(output);
@@ -116,7 +116,8 @@ namespace EmrCloudApi.Controller
                                                           request.Insurance.ReceFutanHide,
                                                           request.Insurance.ReceFutanKbn,
                                                           request.Insurance.KogakuTotalAll,
-                                                          request.Insurance.IsAdded));
+                                                          request.Insurance.IsAdded,
+                                                          request.Insurance.DayLimitCount));
             var output = _bus.Handle(input);
             var presenter = new SaveHokenMasterPresenter();
             presenter.Complete(output);
