@@ -531,6 +531,7 @@ namespace Infrastructure.Repositories
                 hoken.Address1 = model.Address1;
                 hoken.Address2 = model.Address2;
                 hoken.Tel1 = model.Tel1;
+                hoken.IsKigoNa = model.IsKigoNa;
                 hoken.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 hoken.UpdateId = userId;
             }
