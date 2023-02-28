@@ -887,6 +887,8 @@ namespace Infrastructure.Repositories
 
         public List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> listKohiId)
         {
+            listKohiId = listKohiId.Distinct().ToList();
+
             var hospitalInfo = NoTrackingDataContext.HpInfs
                 .Where(p => p.HpId == hpId)
                 .OrderByDescending(p => p.StartDate)
@@ -968,7 +970,7 @@ namespace Infrastructure.Repositories
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
                 : null;
         }
-        
+
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
                                    int payType, string comment, bool isDisCharged)
         {

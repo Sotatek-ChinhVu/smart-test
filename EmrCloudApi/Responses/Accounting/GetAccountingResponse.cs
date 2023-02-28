@@ -18,7 +18,7 @@ namespace EmrCloudApi.Responses.Accounting
             SumAdjustView = sumAdjustView;
             ThisCredit = thisCredit;
             ThisWari = thisWari;
-            this.kohiInfModels = kohiInfModels;
+            KohiInfModels = kohiInfModels;
         }
 
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
@@ -32,6 +32,6 @@ namespace EmrCloudApi.Responses.Accounting
         public int SumAdjustView { get; private set; }
         public int ThisCredit { get; private set; }
         public int ThisWari { get; private set; }
-        public List<KohiInfModel> kohiInfModels { get; private set; }
+        public List<KohiInfModel> KohiInfModels { get; private set; }
     }
 }
