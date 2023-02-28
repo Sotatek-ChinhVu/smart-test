@@ -70,6 +70,12 @@ namespace Domain.Models.InsuranceMst
             EndDate = 99999999;
         }
 
+        public HokenMstModel(int isLimitList, int monthLimitCount)
+        {
+            IsLimitList = isLimitList;
+            MonthLimitCount = monthLimitCount;
+        }
+
         public int FutanKbn { get; private set; }
 
         public int FutanRate { get; private set; }
@@ -219,6 +225,10 @@ namespace Domain.Models.InsuranceMst
         public bool CheckDefaultValue()
         {
             return HokenNo == 0;
+        }
+        public int MoneyLimitListFlag
+        {
+            get { return IsLimitList; }
         }
     }
 }

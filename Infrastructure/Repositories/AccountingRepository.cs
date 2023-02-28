@@ -186,8 +186,8 @@ namespace Infrastructure.Repositories
                 .Where(
                     entity => entity.HpId == hpId
                               && (entity.PrefNo == 0
-                                  || entity.PrefNo == 0
-                                  || entity.IsOtherPrefValid == 1))
+                              || entity.PrefNo == 0
+                              || entity.IsOtherPrefValid == 1))
                 .OrderBy(e => e.HpId)
                 .ThenBy(e => e.HokenNo)
                 .ThenBy(e => e.HokenEdaNo)
@@ -299,7 +299,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenInf, bool>>(Expression.Constant(false), param);
         }
 
         private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<PtHokenPattern> listPtHokenPattern)
@@ -326,7 +326,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
@@ -374,7 +374,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtHokenCheckExpression(List<int> listHokenId, int hokenGrp, ref Expression expression, ref ParameterExpression param)
@@ -411,7 +411,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
 
         private void CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf, ref Expression expression, ref ParameterExpression param)
@@ -538,9 +538,9 @@ namespace Infrastructure.Repositories
                 HokenMstModel hokenMstModel = null;
                 if (hokenMst != null)
                 {
-                    hokenMstModel = new HokenMstModel();
+                    hokenMstModel = new HokenMstModel(hokenMst.IsLimitList, hokenMst.MonthLimitCount);
                 }
-                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
+                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo ?? string.Empty, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return kohiInfModel;
@@ -885,6 +885,94 @@ namespace Infrastructure.Repositories
                     item.IsDeleted)).ToList();
         }
 
+        public List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds)
+        {
+            kohiIds = kohiIds.Distinct().ToList();
+
+            var hospitalInfo = NoTrackingDataContext.HpInfs
+                .Where(p => p.HpId == hpId)
+                .OrderByDescending(p => p.StartDate)
+                .FirstOrDefault();
+
+            int prefCd = 0;
+
+            if (hospitalInfo != null)
+            {
+                prefCd = hospitalInfo.PrefNo;
+            }
+
+            var listPtKohi = NoTrackingDataContext.PtKohis
+                  .Where(kohi => kohi.HpId == hpId && kohi.PtId == ptId && kohi.IsDeleted == 0 && kohiIds.Contains(kohi.HokenId))
+                  .ToList();
+
+            if (!listPtKohi.Any()) return new List<KohiInfModel>();
+
+            var predicateHokenMst = CreateHokenMstExpression(listPtKohi);
+
+            if (predicateHokenMst == null) return new List<KohiInfModel>();
+
+            var hokenMstListRepo = NoTrackingDataContext.HokenMsts
+                .Where(
+                    entity => entity.HpId == hpId
+                              && (entity.PrefNo == prefCd
+                              || entity.PrefNo == 0
+                              || entity.IsOtherPrefValid == 1))
+                .OrderBy(e => e.HpId)
+                .ThenBy(e => e.HokenNo)
+                .ThenBy(e => e.HokenEdaNo)
+                .ThenByDescending(e => e.StartDate)
+                .ThenBy(e => e.HokenSbtKbn)
+                .ThenBy(e => e.SortNo);
+
+            var hokenMstList = hokenMstListRepo.Where(predicateHokenMst).ToList();
+
+            var predicatePtHokenCheck = CreatePtHokenCheckExpression(listPtKohi);
+
+            if (predicatePtHokenCheck == null) return new List<KohiInfModel>();
+
+            var ptHokenCheckRepos = NoTrackingDataContext.PtHokenChecks.Where(item =>
+                item.HpId == hpId && item.PtID == ptId && item.IsDeleted == 0);
+
+            var ptHokenCheckList = ptHokenCheckRepos.Where(predicatePtHokenCheck).ToList();
+
+            return listPtKohi.Select(kohi => CreatePtKohiModel(kohi,
+                                    hokenMstList.Where(item =>
+                                        item.HokenNo == kohi.HokenNo &&
+                                        item.HokenEdaNo == kohi.HokenEdaNo).ToList(),
+                                    ptHokenCheckList.Where(item =>
+                                        item.HokenGrp == 2 &&
+                                        item.HokenId == kohi.HokenId)
+                                       .Select(item => new ConfirmDateModel(
+                                       item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine ?? string.Empty, item.CheckCmt ?? string.Empty, item.IsDeleted)).ToList(), sinDate))
+                .ToList();
+        }
+
+        private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtKohi> listPtKohi)
+        {
+            var param = Expression.Parameter(typeof(PtHokenCheck));
+            Expression expression = null;
+
+            var listKohiId = listPtKohi.Select(item => item.HokenId).ToList();
+
+            CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
+
+            return expression != null
+                    ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
+                    : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
+        }
+
+        private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
+        {
+            var param = Expression.Parameter(typeof(HokenMst));
+            Expression expression = null;
+
+            CreateHokenMstExpression(listPtKohi, ref expression, ref param);
+
+            return expression != null
+                ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
+        }
+
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
                                    int payType, string comment, bool isDisCharged)
         {
@@ -1001,7 +1089,7 @@ namespace Infrastructure.Repositories
                 if (item.SyunoNyukinModels.Any())
                 {
                     thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
-                                   item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
                     sort = item.SyunoNyukinModels.Max(itemNyukin => itemNyukin.SortNo) + 1;
                 }
 
