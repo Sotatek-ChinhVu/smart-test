@@ -56,8 +56,8 @@ namespace Infrastructure.Repositories
                         }
 
                         SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId);
-
-                        UpsertKarteInfs(karteInfModel, userId);
+                        if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
+                            UpsertKarteInfs(karteInfModel, userId);
 
                         SaveRaiinListInf(odrInfs, userId);
 
@@ -1091,15 +1091,12 @@ namespace Infrastructure.Repositories
         public List<OrdInfModel> AutoAddOrders(int hpId, int userId, int sinDate, List<Tuple<int, int, string, int, int>> addingOdrList, List<Tuple<int, int, string, long>> autoAddItems)
         {
             List<OrdInfModel> autoAddOdr = new();
-            var autoItems = new List<(int, int, List<Tuple<string, string>>)>();
-            var sinKouiKbns = new List<int>();
             var itemCds = new List<string>();
 
             foreach (var autoAddItem in autoAddItems)
             {
                 itemCds.Add(autoAddItem.Item3);
             }
-            var tenMstOrders = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
             var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDate && t.EndDate >= sinDate)).ToList();
@@ -1633,7 +1630,7 @@ namespace Infrastructure.Repositories
                                     break;
                                 }
                                 var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
-                                                .FirstOrDefault(i => i.HpId == Session.HospitalID
+                                                .FirstOrDefault(i => i.HpId == hpId
                                                 && i.IsDeleted == DeleteTypes.None
                                                 && i.JihiSbt == tenMstItem.JihiSbt);
                                 if (jihiSbtItem != null)
@@ -1801,13 +1798,13 @@ namespace Infrastructure.Repositories
 
         public List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels)
         {
-            List<OrdInfModel> ordInfs = new();
+            List<OrdInfModel> ordInfs;
             List<string> itemCds = new();
             List<string> ipNameCds = new();
-            foreach (var rsvkrtOdrInfModel in rsvkrtOdrInfModels)
+            foreach (var ordInfDetail in rsvkrtOdrInfModels.Select(item => item.OrdInfDetails).ToList())
             {
-                itemCds.AddRange(rsvkrtOdrInfModel.OrdInfDetails.Select(od => od.ItemCd));
-                ipNameCds.AddRange(rsvkrtOdrInfModel.OrdInfDetails.Select(od => od.IpnCd));
+                itemCds.AddRange(ordInfDetail.Select(od => od.ItemCd));
+                ipNameCds.AddRange(ordInfDetail.Select(od => od.IpnCd));
             }
             itemCds = itemCds.Distinct().ToList();
             ipNameCds = itemCds.Distinct().ToList();
@@ -1897,13 +1894,6 @@ namespace Infrastructure.Repositories
                     double ten = tenMst == null ? 0 : tenMst.Ten;
                     var masterSbt = tenMst == null ? "" : tenMst.MasterSbt;
                     var cmtCol1 = tenMst == null ? 0 : tenMst.CmtCol1;
-                    var cmtCol2 = tenMst == null ? 0 : tenMst.CmtCol2;
-                    var cmtCol3 = tenMst == null ? 0 : tenMst.CmtCol3;
-                    var cmtCol4 = tenMst == null ? 0 : tenMst.CmtCol4;
-                    var cmtColKeta1 = tenMst == null ? 0 : tenMst.CmtColKeta1;
-                    var cmtColKeta2 = tenMst == null ? 0 : tenMst.CmtColKeta2;
-                    var cmtColKeta3 = tenMst == null ? 0 : tenMst.CmtColKeta3;
-                    var cmtColKeta4 = tenMst == null ? 0 : tenMst.CmtColKeta4;
 
                     int currenRowNo = ++rowNo;
                     var odrInfDetail = new OrdInfDetailModel(

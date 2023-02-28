@@ -76,6 +76,7 @@
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
+        public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -158,6 +159,7 @@
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
+        public const string GetSummaryInf = "GetSummaryInf";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -193,11 +195,15 @@
         public const string GetReceHenReason = "GetReceHenReason";
         public const string GetReceiCheckList = "GetReceiCheckList";
         public const string SaveReceCheckCmtList = "SaveReceCheckCmtList";
+        public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
+        public const string GetDiseaseReceList = "GetDiseaseReceList";
+        public const string Recalculation = "Recalculation";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
+        public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
@@ -205,6 +211,7 @@
         // Family
         public const string GetFamilyReverserList = "GetFamilyReverserList";
         public const string GetGroupNameMst = "GetGroupNameMst";
+        public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
 
         //TreeSet Byomei

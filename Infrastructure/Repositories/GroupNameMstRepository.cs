@@ -151,6 +151,7 @@ namespace Infrastructure.Repositories
                         else
                         {
                             itemGrpAct.GrpCodeName = itemGrp.GrpCodeName;
+                            itemGrpAct.SortNo = itemGrp.SortNo;
                             itemGrpAct.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             itemGrpAct.UpdateId = userId;
                         }

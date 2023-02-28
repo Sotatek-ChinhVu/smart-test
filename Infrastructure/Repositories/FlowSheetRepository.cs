@@ -1,11 +1,13 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
+using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 
@@ -20,8 +22,20 @@ namespace Infrastructure.Repositories
         private readonly string syosaisinKbn = "syosaisinkbn";
         private readonly string comment = "comment";
 
-        public FlowSheetRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private string HolidayMstCacheKey
         {
+            get => $"{GetCacheKey()}-HolidayMstCacheKey";
+        }
+
+        private string RaiinListMstCacheKey
+        {
+            get => $"{GetCacheKey()}-RaiinListMstCacheKey";
+        }
+
+        private readonly IMemoryCache _memoryCache;
+        public FlowSheetRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
+        {
+            _memoryCache = memoryCache;
         }
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount)
@@ -158,7 +172,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
+        #region RaiinListMst
+
+        private List<RaiinListMstModel> ReloadRaiinListMstCache(int hpId)
         {
             var raiinListMst = NoTrackingDataContext.RaiinListMsts.Where(m => m.HpId == hpId && m.IsDeleted == DeleteTypes.None).ToList();
             var raiinListDetail = NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None).ToList();
@@ -168,16 +184,56 @@ namespace Infrastructure.Repositories
                             Mst = mst,
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
-            var output = query.Select(
-                data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()));
-            return output.ToList();
+            var raiinListMstModelList = query
+                .Select(data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()))
+                .ToList();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(RaiinListMstCacheKey, raiinListMstModelList, cacheEntryOptions);
+
+            return raiinListMstModelList;
+        }
+
+        public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
+        {
+            if (!_memoryCache.TryGetValue(RaiinListMstCacheKey, out List<RaiinListMstModel> setKbnMstList))
+            {
+                setKbnMstList = ReloadRaiinListMstCache(hpId);
+            }
+
+            return setKbnMstList!;
+        }
+
+        #endregion
+
+        #region HolidayMst
+        private List<HolidayModel> ReloadHolidayCache(int hpId)
+        {
+            var holidayModelList = NoTrackingDataContext.HolidayMsts
+                .Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None)
+                .Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty))
+                .ToList();
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(HolidayMstCacheKey, holidayModelList, cacheEntryOptions);
+
+            return holidayModelList;
         }
 
         public List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
-            var holidayCollection = NoTrackingDataContext.HolidayMsts.Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None && holidayFrom <= h.SinDate && h.SinDate <= holidayTo);
-            return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty)).ToList();
+
+            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayModel> setKbnMstList))
+            {
+                setKbnMstList = ReloadHolidayCache(hpId);
+            }
+
+            return setKbnMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
+
+        #endregion
 
         public void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId)
         {
