@@ -69,7 +69,8 @@ namespace Domain.Models.SpecialNote.PatientInfo
                 if (PeriodDate == 0 && PeriodDueDate == 0)
                 {
                     var periodDueDate = CIUtil.IntToDate(PeriodDueDate);
-                    startDate = periodDueDate.AddDays(-280).ToString("yyyyMMdd").AsInteger();
+                    if (periodDueDate.Year > 1)
+                        startDate = periodDueDate.AddDays(-280).ToString("yyyyMMdd").AsInteger();
                 }
                 return GetPeriodWeek(startDate, 0, endDate);
             }
