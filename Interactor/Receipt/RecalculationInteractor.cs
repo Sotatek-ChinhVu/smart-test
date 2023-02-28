@@ -1,12 +1,15 @@
 ﻿using Domain.Models.Diseases;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Text;
 using UseCase.Receipt.Recalculation;
 
 namespace Interactor.Receipt;
@@ -17,6 +20,8 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly ISystemConfRepository _systemConfRepository;
     private readonly IPtDiseaseRepository _ptDiseaseRepository;
     private readonly IOrdInfRepository _ordInfRepository;
+    private readonly IMstItemRepository _mstItemRepository;
+    private readonly ITodayOdrRepository _todayOdrRepository;
     private const string _hokenChar = "0";
     private const string _kohi1Char = "1";
     private const string _kohi2Char = "2";
@@ -30,12 +35,14 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
         _ptDiseaseRepository = ptDiseaseRepository;
         _ordInfRepository = ordInfRepository;
+        _mstItemRepository = mstItemRepository;
+        _todayOdrRepository = todayOdrRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -50,6 +57,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
             var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
             var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
+            var systemConfigList = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
             int allCheckCount = receRecalculationList.Count;
             foreach (var recalculationItem in receRecalculationList)
             {
@@ -60,8 +68,15 @@ public class RecalculationInteractor : IRecalculationInputPort
                 List<BuiErrorModel> errorOdrInfDetails = new();
                 var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
                 var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
+                List<string> itemCdList = new();
+                foreach (var sinKouiCount in sinKouiCountList)
+                {
+                    itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
+                }
+                var tenMstByItemCdList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCdList);
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
-                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails);
+                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
+                newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
             }
             var count = newReceCheckErrList.Count;
             return new RecalculationOutputData(RecalculationStatus.Successed, errorMessage + count.ToString());
@@ -72,6 +87,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             _systemConfRepository.ReleaseResource();
             _ptDiseaseRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
+            _todayOdrRepository.ReleaseResource();
         }
     }
 
@@ -544,26 +561,10 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
-    private List<DayLimitResultModel> CheckOnlyDayLimitOrder(OrdInfModel todayOdrInfModel, long ptId, int sinDate)
+    private double GetSettingValue(List<SystemConfModel> systemConfList, int groupCd, int grpEdaNo = 0)
     {
-        RealtimeChecker<TodayOdrInfModel, TodayOdrInfDetailModel> realtimeChecker = new RealtimeChecker<TodayOdrInfModel, TodayOdrInfDetailModel>();
-        realtimeChecker.InjectProperties(Session.HospitalID, ptId, sinDate);
-        realtimeChecker.InjectFinder(_realtimeCheckerFinder, _masterFinder);
-        return CheckOnlyDayLimit(todayOdrInfModel);
-    }
-
-    public List<DayLimitResultModel> CheckOnlyDayLimit(TOdrInf checkingOrder)
-    {
-        UnitChecker<TOdrInf, TOdrDetail> dayLimitChecker =
-            new DayLimitChecker<TOdrInf, TOdrDetail>()
-            {
-                CheckType = RealtimeCheckerType.Days
-            };
-        InitUnitCheck(dayLimitChecker);
-
-        UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> checkedResult = dayLimitChecker.CheckOrderList(new List<TOdrInf>() { checkingOrder });
-        List<DayLimitResultModel> result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
-        return result ?? new List<DayLimitResultModel>();
+        var systemConf = systemConfList.FirstOrDefault(item => item.GrpCd == groupCd && item.GrpEdaNo == grpEdaNo);
+        return systemConf != null ? systemConf.Val : 0;
     }
 
     internal class BuiErrorModel
@@ -745,9 +746,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails)
+    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
     {
-        bool visibleBuiOrderCheck = _systemConfRepository.GetSettingValue(6003, 0, hpId) == 1;
+        bool visibleBuiOrderCheck = GetSettingValue(systemConfList, 6003, 0) == 1;
         var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
         if (ptByomeis.Count == 0)
         {
@@ -1021,7 +1022,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel receInfModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList)
+    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList)
     {
         bool isCheckExceedDosage = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExceededDosageOdrErrCd);
         bool isCheckDuplicateOdr = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateOdrErrCd);
@@ -1033,25 +1034,25 @@ public class RecalculationInteractor : IRecalculationInputPort
         bool isCheckComment = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CommentCheckErrCd);
         bool isCheckAdditionItem = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.AdditionItemErrCd);
 
-        var odrInfModels = _ordInfRepository.GetList(hpId, receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
+        var odrInfModels = _ordInfRepository.GetList(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
         List<OrdInfDetailModel> odrInfDetailModels = new();
 
-        //OrderInf
-        foreach (var odrInfModel in odrInfModels)
-        {
-            //E4001 check exceeded dosage
-            if (isCheckExceedDosage)
-            {
-                var resultOdrs = CheckOnlyDayLimitOrder(odrInfModel, odrInfModel.PtId, odrInfModel.SinDate);
-                foreach (var odr in resultOdrs)
-                {
-                    string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(todayOdrInf.SinDate), odr.UsingDay, odr.LimitDay);
-                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
-                                                    msg2, odr.ItemCd, sinDate: todayOdrInf.SinDate);
-                }
-            }
-            odrInfDetailModels.AddRange(odrInfModel.OdrInfDetailModels);
-        }
+        ////OrderInf
+        //foreach (var odrInfModel in odrInfModels)
+        //{
+        //    //E4001 check exceeded dosage
+        //    if (isCheckExceedDosage)
+        //    {
+        //        var resultOdrs = CheckOnlyDayLimitOrder(odrInfModel, odrInfModel.PtId, odrInfModel.SinDate);
+        //        foreach (var odr in resultOdrs)
+        //        {
+        //            string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(todayOdrInf.SinDate), odr.UsingDay, odr.LimitDay);
+        //            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
+        //                                            msg2, odr.ItemCd, sinDate: todayOdrInf.SinDate);
+        //        }
+        //    }
+        //    odrInfDetailModels.AddRange(odrInfModel.OdrInfDetailModels);
+        //}
 
         #region Duplicate check
         if (isCheckDuplicateOdr)
@@ -1059,29 +1060,23 @@ public class RecalculationInteractor : IRecalculationInputPort
             List<string> checkedOdrItemCds = new();
             foreach (var odrDetail in odrInfDetailModels)
             {
-                int sinDate = odrDetail.SinDate;
-                int endDate = odrDetail.SinDate;
-                int syosinDate = _masterFinder.GetFirstVisitWithSyosin(receInfModel.PtId, sinDate);
                 //E4002 check order with same effect
-                if (isCheckDuplicateOdr)
+                if (isCheckDuplicateOdr && odrDetail.IsDrugOrInjection && !string.IsNullOrEmpty(odrDetail.YjCd))
                 {
-                    if (odrDetail.IsDrugOrInjection && !string.IsNullOrEmpty(odrDetail.YJCode))
+                    var duplicatedOdr = odrInfDetailModels.FirstOrDefault(item => CIUtil.Copy(item.YjCd, 1, 4) == CIUtil.Copy(odrDetail.YjCd, 1, 4) &&
+                                                                               item.SinDate == odrDetail.SinDate &&
+                                                                               item.RaiinNo == odrDetail.RaiinNo &&
+                                                                               item.ItemCd != odrDetail.ItemCd);
+                    if (duplicatedOdr != null)
                     {
-                        var duplicatedOdr = odrInfDetailModels.FirstOrDefault(p => CIUtil.Copy(p.YJCode, 1, 4) == CIUtil.Copy(odrDetail.YJCode, 1, 4) &&
-                                                                                   p.SinDate == odrDetail.SinDate &&
-                                                                                   p.RaiinNo == odrDetail.RaiinNo &&
-                                                                                   p.ItemCd != odrDetail.ItemCd);
-                        if (duplicatedOdr != null)
+                        if (!checkedOdrItemCds.Contains(odrDetail.ItemCd) || !checkedOdrItemCds.Contains(duplicatedOdr.ItemCd))
                         {
-                            if (!checkedOdrItemCds.Contains(odrDetail.ItemCd) || !checkedOdrItemCds.Contains(duplicatedOdr.ItemCd))
-                            {
-                                string msg2 = string.Format("（{0} : {1} [{2}]）", odrDetail.ItemName, duplicatedOdr.ItemName, CIUtil.SDateToShowSWDate(odrDetail.SinDate));
-                                _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.DuplicateOdrErrCd, ReceErrCdConst.DuplicateOdrErrMsg,
-                                                                msg2, odrDetail.ItemCd, sinDate: odrDetail.SinDate);
-                            }
-                            checkedOdrItemCds.Add(odrDetail.ItemCd);
-                            checkedOdrItemCds.Add(duplicatedOdr.ItemCd);
+                            string msg2 = string.Format("（{0} : {1} [{2}]）", odrDetail.ItemName, duplicatedOdr.ItemName, CIUtil.SDateToShowSWDate(odrDetail.SinDate));
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.DuplicateOdrErrCd, ReceErrCdConst.DuplicateOdrErrMsg,
+                                             msg2, odrDetail.ItemCd, sinDate: odrDetail.SinDate);
                         }
+                        checkedOdrItemCds.Add(odrDetail.ItemCd);
+                        checkedOdrItemCds.Add(duplicatedOdr.ItemCd);
                     }
                 }
             }
@@ -1098,20 +1093,20 @@ public class RecalculationInteractor : IRecalculationInputPort
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
-                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMst != null && !checkedItemCds.Contains(itemCd))
+                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
                     {
-                        var lastTenMst = _masterFinder.FindLastTenMst(itemCd);
+                        var lastTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderByDescending(item => item.EndDate).FirstOrDefault();
                         if (lastTenMst != null && sinKouiCount.SinDate > lastTenMst.EndDate)
                         {
                             string msg2 = string.Format("（{0} {1}: ～{2}）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(lastTenMst.EndDate));
-                            _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredEndDateOdrErrCd, ReceErrCdConst.ExpiredEndDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateOdrErrCd, ReceErrCdConst.ExpiredEndDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                         }
 
-                        var firstTenMst = _masterFinder.FindFirstTenMst(itemCd);
+                        var firstTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderBy(item => item.StartDate).FirstOrDefault();
                         if (firstTenMst != null && sinKouiCount.SinDate < firstTenMst.StartDate)
                         {
                             string msg2 = string.Format("（{0} {1}: {2}～）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(firstTenMst.StartDate));
-                            _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ExpiredStartDateOdrErrCd, ReceErrCdConst.ExpiredStartDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateOdrErrCd, ReceErrCdConst.ExpiredStartDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                         }
 
                         checkedItemCds.Add(itemCd);
@@ -1126,14 +1121,17 @@ public class RecalculationInteractor : IRecalculationInputPort
         if (isCheckSanteiCount)
         {
             List<string> checkedItemCds = new List<string>();
+            var minSinDate = !sinKouiCountList.Any() ? 0 : sinKouiCountList.Min(o => o.SinDate);
+            var maxSinDate = !sinKouiCountList.Any() ? 0 : sinKouiCountList.Max(o => o.SinDate);
+            var allDensiSanteiKaisuModelList = _todayOdrRepository.FindDensiSanteiKaisuList(hpId, itemCdList, minSinDate, maxSinDate);
+            var allItemGrpMstList = _mstItemRepository.FindItemGrpMst(hpId, minSinDate, maxSinDate, 1, allDensiSanteiKaisuModelList?.Select(item => item.ItemGrpCd).Distinct().ToList() ?? new());
             foreach (var sinKouiCount in sinKouiCountList)
             {
                 int sinDate = sinKouiCount.SinDate;
-                long raiinNo = sinKouiCount.RaiinNo;
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
                 {
                     string itemCd = sinKouiDetailModel.ItemCd;
-                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMst != null)
+                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull)
                     {
                         #region Sub function
                         int WeeksBefore(int baseDate, int term)
@@ -1154,11 +1152,6 @@ public class RecalculationInteractor : IRecalculationInputPort
                         int DaysBefore(int baseDate, int term)
                         {
                             return CIUtil.DaysBefore(baseDate, term);
-                        }
-
-                        int MonthsAfter(int baseDate, int term)
-                        {
-                            return CIUtil.MonthsAfter(baseDate, term);
                         }
 
                         int GetHokenKbn(int receHokenKbn)
@@ -1188,34 +1181,16 @@ public class RecalculationInteractor : IRecalculationInputPort
 
                             return hokenKbn;
                         }
-                        /// <summary>
-                        /// チェック用保険区分を返す
-                        /// 健保、労災、自賠の場合、オプションにより、同一扱いにするか別扱いにするか決定
-                        /// 自費の場合、健保と自費を対象にする
-                        /// </summary>
-                        /// <param name="hokenKbn">
-                        /// 0-健保、1-労災、2-アフターケア、3-自賠、4-自費
-                        /// </param>
-                        /// <returns></returns>
+
                         List<int> GetCheckHokenKbns(int receHokenKbn)
                         {
-                            /// <summary>
-                            /// 保険区分
-                            ///     0:自費
-                            ///     1:社保          
-                            ///     2:国保          
-                            ///     11:労災(短期給付)          
-                            ///     12:労災(傷病年金)          
-                            ///     13:アフターケア          
-                            ///     14:自賠責          
-                            /// </summary>
 
                             List<int> results = new List<int>();
 
                             int hokenKbn = GetHokenKbn(receHokenKbn);
 
 
-                            if (SystemConfig.Instance.HokensyuHandling == 0)
+                            if (GetSettingValue(systemConfList, 3013) == 0)
                             {
                                 // 同一に考える
                                 if (hokenKbn <= 3)
@@ -1227,7 +1202,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                                     results.Add(hokenKbn);
                                 }
                             }
-                            else if (SystemConfig.Instance.HokensyuHandling == 1)
+                            else if (GetSettingValue(systemConfList, 3013) == 1)
                             {
                                 // すべて同一に考える
                                 results.AddRange(new List<int> { 0, 1, 2, 3, 4 });
@@ -1246,43 +1221,29 @@ public class RecalculationInteractor : IRecalculationInputPort
                             return results;
                         }
 
-                        List<int> GetCheckSanteiKbns(int receHokenKbn)
+                        List<int> GetCheckSanteiKbns()
                         {
                             List<int> results = new List<int> { 0 };
-                            int hokenKbn = GetHokenKbn(receHokenKbn);
-
-                            if (SystemConfig.Instance.HokensyuHandling == 0)
-                            {
-                                // 同一に考える
-                                if (hokenKbn == 4)
-                                {
-                                    //results.Add(2);
-                                }
-                            }
-                            else if (SystemConfig.Instance.HokensyuHandling == 1)
+                            if (GetSettingValue(systemConfList, 3013) == 1)
                             {
                                 // すべて同一に考える
                                 results.Add(2);
                             }
-                            else
-                            {
-                                // 別に考える
-                            }
-
                             return results;
                         }
                         #endregion
 
-                        List<DensiSanteiKaisuModel> densiSanteiKaisuModels = _masterFinder.FindDensiSanteiKaisuList(sinDate, itemCd);
+                        List<DensiSanteiKaisuModel> densiSanteiKaisuModels = allDensiSanteiKaisuModelList?.Where(item => item.ItemCd == itemCd
+                                                                                                                     && item.StartDate <= sinDate
+                                                                                                                     && item.EndDate >= sinDate)
+                                                                                                          .ToList() ?? new();
                         foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
                         {
                             string sTerm = string.Empty;
                             int startDate = 0;
-                            // チェック終了日
-                            int endDate = sinDate;
 
                             List<int> checkHokenKbnTmp = new List<int>();
-                            checkHokenKbnTmp.AddRange(GetCheckHokenKbns(receInfModel.HokenKbn));
+                            checkHokenKbnTmp.AddRange(GetCheckHokenKbns(recalculationModel.HokenKbn));
 
                             if (densiSanteiKaisu.TargetKbn == 1)
                             {
@@ -1295,7 +1256,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                             }
 
                             List<int> checkSanteiKbnTmp = new List<int>();
-                            checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(receInfModel.HokenKbn));
+                            checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns());
 
                             switch (densiSanteiKaisu.UnitCd)
                             {
@@ -1407,12 +1368,15 @@ public class RecalculationInteractor : IRecalculationInputPort
 
                             List<string> itemCds = new List<string>();
 
-                            List<ItemGrpMstModel> itemGrpMsts = new List<ItemGrpMstModel>();
+                            List<ItemGrpMstModel> itemGrpMsts = new();
 
                             if (densiSanteiKaisu.ItemGrpCd > 0)
                             {
                                 // 項目グループの設定がある場合
-                                itemGrpMsts = _recalculationFinder.FindItemGrpMst(sinDate, 1, densiSanteiKaisu.ItemGrpCd);
+                                itemGrpMsts = allItemGrpMstList.Where(item => item.ItemGrpCd == densiSanteiKaisu.ItemGrpCd
+                                                                              && item.StartDate <= sinDate
+                                                                              && item.EndDate >= sinDate)
+                                                               .ToList();
                             }
 
                             if (itemGrpMsts != null && itemGrpMsts.Any())
@@ -1428,14 +1392,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                             double santeiCount = 0;
                             if (startDate >= 0)
                             {
-                                santeiCount = _masterFinder.SanteiCount(receInfModel.PtId, startDate, sinDate,
+                                santeiCount = _receiptRepository.SanteiCount(hpId, recalculationModel.PtId, startDate, sinDate,
                                                                sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
                             }
 
                             if (santeiCount > densiSanteiKaisu.MaxCount)
                             {
                                 string msg2 = string.Format("({0}: {1}回 [{2}回/{3}])", sinKouiDetailModel.ItemName, santeiCount, densiSanteiKaisu.MaxCount, sTerm);
-                                _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
+                                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
                             }
                         }
                         checkedItemCds.Add(itemCd);
@@ -1449,27 +1413,27 @@ public class RecalculationInteractor : IRecalculationInputPort
         if (isCheckFirstExamFee)
         {
             double suryoSum = 0;
-            string msg2 = string.Empty;
+            StringBuilder msg2 = new();
             foreach (var sinKouiCount in sinKouiCountList)
             {
                 if (sinKouiCount.IsFirstVisit)
                 {
                     //msg2 max length = 100
                     string formatSinDate = CIUtil.SDateToShowSWDate(sinKouiCount.SinDate);
-                    if (!msg2.Contains(formatSinDate) && msg2.Length + formatSinDate.Length + 2 <= 100)
+                    if (!msg2.ToString().Contains(formatSinDate) && msg2.Length + formatSinDate.Length + 2 <= 100)
                     {
-                        if (!string.IsNullOrEmpty(msg2))
+                        if (!string.IsNullOrEmpty(msg2.ToString()))
                         {
-                            msg2 += ", ";
+                            msg2.Append(", ");
                         }
-                        msg2 += formatSinDate;
+                        msg2.Append(formatSinDate);
                     }
                     suryoSum += sinKouiCount.SinKouiDetailModels.Where(p => ReceErrCdConst.IsFirstVisitCd.Contains(p.ItemCd)).Sum(p => p.Suryo);
                 }
             }
             if (suryoSum > 1)
             {
-                _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2);
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2.ToString());
             }
         }
 
@@ -1478,9 +1442,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         {
             foreach (var sinKouiCount in sinKouiCountList)
             {
-                if (sinKouiCount.SinKouiDetailModels.Any(p => p.ItemCd == ReceErrCdConst.TokuzaiItemCd))
+                if (sinKouiCount.SinKouiDetailModels.Any(item => item.ItemCd == ReceErrCdConst.TokuzaiItemCd))
                 {
-                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
                                                     "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
                     continue;
                 }
@@ -1491,7 +1455,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         if (isCheckItemAge)
         {
             List<string> checkedItemCds = new List<string>();
-            int iBirthDay = receInfModel.Birthday;
+            int iBirthDay = recalculationModel.Birthday;
             foreach (var sinKouiCount in sinKouiCountList)
             {
                 foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
@@ -1499,7 +1463,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     string itemCd = sinKouiDetailModel.ItemCd;
                     string maxAge = sinKouiDetailModel.MaxAge;
                     string minAge = sinKouiDetailModel.MinAge;
-                    if (!string.IsNullOrEmpty(sinKouiDetailModel.ItemCd) && sinKouiDetailModel.TenMst != null && !checkedItemCds.Contains(itemCd))
+                    if (!string.IsNullOrEmpty(sinKouiDetailModel.ItemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
                     {
                         #region sub function
                         int iYear = 0;
@@ -1644,7 +1608,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         }
                         if (!string.IsNullOrEmpty(msg2))
                         {
-                            _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.ItemAgeCheckErrCd, ReceErrCdConst.ItemAgeCheckErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ItemAgeCheckErrCd, ReceErrCdConst.ItemAgeCheckErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
                         }
 
                         checkedItemCds.Add(itemCd);
@@ -1656,13 +1620,13 @@ public class RecalculationInteractor : IRecalculationInputPort
         //E3008 check comment into order
         if (isCheckComment)
         {
-            List<SinKouiModel> listSinKoui = _recalculationFinder.GetListSinKoui(receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
-            List<string> listReceCmtItemCode = _recalculationFinder.GetListReceCmtItemCode(receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
+            List<SinKouiMstModel> listSinKoui = _receiptRepository.GetListSinKoui(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+            List<string> listReceCmtItemCode = _receiptRepository.GetListReceCmtItemCode(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
 
-            List<SinKouiDetail> listItemCdOfMonth = new List<SinKouiDetail>();
+            List<SinKouiDetailModel> listItemCdOfMonth = new();
             listSinKoui.ForEach((sinKoui) =>
             {
-                listItemCdOfMonth.AddRange(sinKoui.SinKouiDetailModels.Select(s => s.SinKouiDetail).ToList());
+                listItemCdOfMonth.AddRange(sinKoui.SinKouiDetailModels);
             });
 
             listSinKoui.ForEach((sinKoui) =>
@@ -1676,64 +1640,56 @@ public class RecalculationInteractor : IRecalculationInputPort
                         List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
                         sinKouiDetail.ListCmtSelect.ForEach((cmtSelect) =>
                         {
-                            cmtSelect.ListGroupComment.ForEach((groupComment) =>
+                            var filteredCmtSelect = cmtSelect.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
+                            if (filteredCmtSelect.Count > 0)
                             {
-                                List<RecedenCmtSelectModel> filteredCmtSelect = groupComment.ListRecedenCmtSelect.Where(r => r.CondKbn == 1).ToList();
-                                if (filteredCmtSelect.Count > 0)
+                                bool existCmtSelect = false;
+                                foreach (var recedenCmtSelect in filteredCmtSelect)
                                 {
-                                    bool existCmtSelect = false;
-                                    foreach (var recedenCmtSelect in filteredCmtSelect)
+                                    if (recedenCmtSelect.IsSatsueiBui)
                                     {
-                                        if (recedenCmtSelect.IsSatsueiBui)
+                                        // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
+                                        if (listItemCd.Contains(recedenCmtSelect.CmtCd))
                                         {
-                                            // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
-                                            if (listItemCd.Contains(recedenCmtSelect.CmtCd))
-                                            {
-                                                existCmtSelect = true;
-                                                break;
-                                            }
+                                            existCmtSelect = true;
+                                            break;
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
+                                        // If exist recedenCmtSelect in ReceCmt => it's Ok
+                                        bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
+                                        if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
                                         {
-                                            // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
-                                            // If exist recedenCmtSelect in ReceCmt => it's Ok
-                                            bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
-                                            if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
-                                            {
-                                                existCmtSelect = true;
-                                                break;
-                                            }
-                                        }
-
-                                        // Fix bug 4858
-                                        if (recedenCmtSelect.CmtSbt == 3)
-                                        {
-                                            //Fix comment 4818
-                                            if (listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
-                                            {
-                                                existCmtSelect = true;
-                                                break;
-                                            }
+                                            existCmtSelect = true;
+                                            break;
                                         }
                                     }
 
-                                    if (!existCmtSelect)
+                                    if (recedenCmtSelect.CmtSbt == 3 && listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
                                     {
-                                        string itemCd = sinKouiDetail.ItemCd;
-                                        string itemName = sinKouiDetail.ItemName;
-                                        string cmtCd = filteredCmtSelect.First().CmtCd;
-
-                                        string comment = filteredCmtSelect.First().CommentName;
-                                        if (filteredCmtSelect.Count > 1)
-                                        {
-                                            comment += "...など";
-                                        }
-
-                                        string message = string.Format("（{0}: {1}）", itemName, comment);
-                                        _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                                        existCmtSelect = true;
+                                        break;
                                     }
                                 }
-                            });
+
+                                if (!existCmtSelect)
+                                {
+                                    string itemCd = sinKouiDetail.ItemCd;
+                                    string itemName = sinKouiDetail.ItemName;
+                                    string cmtCd = filteredCmtSelect.First().CmtCd;
+
+                                    string comment = filteredCmtSelect.First().CommentName;
+                                    if (filteredCmtSelect.Count > 1)
+                                    {
+                                        comment += "...など";
+                                    }
+
+                                    string message = string.Format("（{0}: {1}）", itemName, comment);
+                                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                                }
+                            }
                         });
                     });
                 }
@@ -1742,12 +1698,12 @@ public class RecalculationInteractor : IRecalculationInputPort
 
         if (isCheckAdditionItem)
         {
-            var addtionItems = _recalculationFinder.GetAddtionItems(receInfModel.PtId, receInfModel.SinYm, receInfModel.HokenId);
-            if (addtionItems.Count > 0)
+            var addtionItems = _receiptRepository.GetAddtionItems(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+            if (addtionItems.Any())
             {
                 foreach (var item in addtionItems)
                 {
-                    _commandHandler.InsertReceCmtErr(receInfModel, ReceErrCdConst.AdditionItemErrCd, CIUtil.Copy(item.Text, 1, 100), "（" + CIUtil.SDateToShowSWDate(item.SinDate) + "）",
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.AdditionItemErrCd, CIUtil.Copy(item.Text, 1, 100), "（" + CIUtil.SDateToShowSWDate(item.SinDate) + "）",
                         item.ItemCd + "," + item.DelItemCd, item.TermCnt + "," + item.TermSbt + "," + item.IsWarning, item.SinDate);
                 }
             }

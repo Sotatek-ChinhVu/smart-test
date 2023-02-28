@@ -574,10 +574,10 @@ namespace Infrastructure.Repositories
                                select new { tenKN.ItemCd, ten.Ten }).ToList();
 
             var queryFinal = (from ten in tenKnList
-                             join tenKN in knTensuList
-                             on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
-                             from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { TenMst = ten, tenKN }).ToList();
+                              join tenKN in knTensuList
+                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                              select new { TenMst = ten, tenKN }).ToList();
 
             var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
             var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
@@ -943,6 +943,56 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
+        public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
+        {
+            itemCds = itemCds.Distinct().ToList();
+            var entities = NoTrackingDataContext.TenMsts.Where(p =>
+                  p.HpId == hpId &&
+                  itemCds.Contains(p.ItemCd));
+
+            return entities.Select(entity => new TenItemModel(
+                    entity.HpId,
+                    entity.ItemCd,
+                    entity.RousaiKbn,
+                    entity.KanaName1 ?? string.Empty,
+                    entity.Name ?? string.Empty,
+                    entity.KohatuKbn,
+                    entity.MadokuKbn,
+                    entity.KouseisinKbn,
+                    entity.OdrUnitName ?? string.Empty,
+                    entity.EndDate,
+                    entity.DrugKbn,
+                    entity.MasterSbt ?? string.Empty,
+                    entity.BuiKbn,
+                    entity.IsAdopted,
+                    entity.Ten,
+                    entity.TenId,
+                    string.Empty,
+                    string.Empty,
+                    entity.CmtCol1,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.SinKouiKbn,
+                    entity.YjCd ?? string.Empty,
+                    entity.CnvUnitName ?? string.Empty,
+                    entity.StartDate,
+                    entity.YohoKbn,
+                    entity.CmtColKeta1,
+                    entity.CmtColKeta2,
+                    entity.CmtColKeta3,
+                    entity.CmtColKeta4,
+                    entity.CmtCol2,
+                    entity.CmtCol3,
+                    entity.CmtCol4,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.MinAge ?? string.Empty,
+                    entity.MaxAge ?? string.Empty,
+                    entity.SanteiItemCd ?? string.Empty,
+                    entity.OdrTermVal,
+                    entity.CnvTermVal,
+                    entity.DefaultVal
+               )).ToList();
+        }
+
         public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
             var entities = NoTrackingDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
@@ -1014,6 +1064,7 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds)
         {
+            itemGrpCds = itemGrpCds.Distinct().ToList();
             List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
 
             var query =
@@ -1023,6 +1074,29 @@ namespace Infrastructure.Repositories
                     itemGrpCds.Contains(p.ItemGrpCd) &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+            foreach (var entity in query)
+            {
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
+            }
+            return result;
+        }
+
+        public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int minSinDate, int maxSinDate, int grpSbt, List<long> itemGrpCds)
+        {
+            itemGrpCds = itemGrpCds.Distinct().ToList();
+            List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
+
+            var query =
+                NoTrackingDataContext.itemGrpMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.GrpSbt == grpSbt &&
+                    itemGrpCds.Contains(p.ItemGrpCd) &&
+                    p.StartDate <= minSinDate &&
+                    p.EndDate >= maxSinDate)
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
                 .ThenBy(p => p.SeqNo)
