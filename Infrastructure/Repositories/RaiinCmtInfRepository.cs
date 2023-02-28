@@ -52,4 +52,17 @@ public class RaiinCmtInfRepository : RepositoryBase, IRaiinCmtInfRepository
 
         TrackingDataContext.SaveChanges();
     }
+
+    public string GetRaiinCmtByPtId(int hpId, long ptId, int sindate, long raiinNo)
+    {
+        string result = "";
+        var raiinCmtInf = NoTrackingDataContext.RaiinCmtInfs.Where(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sindate &&
+                                                                      p.RaiinNo == raiinNo && p.IsDelete != 1).FirstOrDefault();
+        if (raiinCmtInf != null)
+        {
+            result = raiinCmtInf.Text ?? string.Empty;
+        }
+
+        return result;
+    }
 }
