@@ -1,20 +1,24 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Enums;
-
-namespace CommonChecker.Models
+﻿namespace CommonChecker.Models
 {
     public class ErrorInfoModel
     {
-        public string FirstCellContent { get; set; }
+        public string Id { get; set; } = string.Empty;
 
-        public string SecondCellContent { get; set; }
+        public string FirstCellContent { get; set; } = string.Empty;
 
-        public string ThridCellContent { get; set; }
+        public string SecondCellContent { get; set; } = string.Empty;
 
-        public string FourthCellContent { get; set; }
+        public string ThridCellContent { get; set; } = string.Empty;
 
-        public string SuggestedContent { get; set; }
+        public string FourthCellContent { get; set; } = string.Empty;
 
-        public List<LevelInfoModel> ListLevelInfo { get; set; }
+        public string SuggestedContent { get; set; } = string.Empty;
+
+        public string CheckingItemCd { get; set; } = string.Empty;
+
+        public string CurrentItemCd { get; set; } = string.Empty;
+
+        public List<LevelInfoModel> ListLevelInfo { get; set; } = new List<LevelInfoModel>();
 
     }
 }

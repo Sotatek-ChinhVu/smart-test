@@ -33,9 +33,11 @@ public class AccountDueModel
         SeikyuDetail = seikyuDetail;
         SeikyuAdjustFutan = seikyuAdjustFutan;
         IsDelete = isDelete;
+        NewSeikyuDetail = string.Empty;
+        NewSeikyuTensu = 0;
     }
 
-    public AccountDueModel(int hpId, long ptId, int seikyuSinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, int sortNo, long seqNo, string seikyuDetail, int raiinInfStatus, int seikyuAdjustFutan)
+    public AccountDueModel(int hpId, long ptId, int seikyuSinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, int sortNo, long seqNo, string seikyuDetail, int raiinInfStatus, int seikyuAdjustFutan, string newSeikyuDetail, int newSeikyuTensu)
     {
         HpId = hpId;
         PtId = ptId;
@@ -65,6 +67,8 @@ public class AccountDueModel
         RaiinInfStatus = raiinInfStatus;
         SeikyuAdjustFutan = seikyuAdjustFutan;
         IsDelete = false;
+        NewSeikyuDetail = newSeikyuDetail;
+        NewSeikyuTensu = newSeikyuTensu;
     }
 
     public AccountDueModel(int nyukinKbn, int sortNo, long raiinNo, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int seikyuGaku, int seikyuTensu, string seikyuDetail, long seqNo, int raiinInfStatus, int seikyuAdjustFutan, int seikyuSinDate, bool isDelete)
@@ -97,6 +101,8 @@ public class AccountDueModel
         RaiinInfStatus = raiinInfStatus;
         SeikyuAdjustFutan = seikyuAdjustFutan;
         IsDelete = isDelete;
+        NewSeikyuTensu = 0;
+        NewSeikyuDetail = string.Empty;
     }
 
     public AccountDueModel()
@@ -128,6 +134,8 @@ public class AccountDueModel
         SeikyuDetail = string.Empty;
         SeikyuAdjustFutan = 0;
         IsDelete = false;
+        NewSeikyuDetail = string.Empty;
+        NewSeikyuTensu = 0;
     }
 
     public AccountDueModel UpdateAccountDueListModel(int unPaid, string hokenPatternName, bool isSeikyuRow)
@@ -193,4 +201,7 @@ public class AccountDueModel
 
     public bool IsDelete { get; private set; }
 
+    public string NewSeikyuDetail { get; private set; }
+
+    public int NewSeikyuTensu { get; private set; }
 }

@@ -32,6 +32,10 @@ namespace UseCase.PatientInfor.SearchSimple
 
         public string Birthday { get; private set; }
 
+        public int BirthdayRaw { get; private set; }
+
+        public int Sex { get; private set; }
+
         public string Age { get; private set; }
 
         public string Tel1 { get; private set; }
@@ -52,9 +56,11 @@ namespace UseCase.PatientInfor.SearchSimple
             PtNum = patientInfo.PtNum;
             KanaName = patientInfo.KanaName;
             Name = patientInfo.Name;
+            Sex = patientInfo.Sex;
 
             //Generate birthday
             Birthday = CIUtil.SDateToShowSWDate(patientInfo.Birthday);
+            BirthdayRaw = patientInfo.Birthday;
 
             //Generate age
             int intDate = patientInfo.Birthday;

@@ -24,8 +24,7 @@ namespace Interactor.FlowSheet
                 else
                 {
                     long totalFlowSheet = 0;
-                    int count = inputData.Count <= 0 ? 50 : inputData.Count;
-                    var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.StartIndex, count, inputData.Sort, ref totalFlowSheet);
+                    var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, ref totalFlowSheet);
                     var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
                     var raiinListInfList = _flowsheetRepository.GetRaiinListInf(inputData.HpId, inputData.PtId);
 

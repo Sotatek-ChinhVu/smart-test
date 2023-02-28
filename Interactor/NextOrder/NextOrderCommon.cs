@@ -91,7 +91,8 @@ namespace Interactor.NextOrder
                     nextOrderItem.SortNo,
                     nextOrderItem.RsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
                     ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.RsvkrtKarteInf),
-                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
+                    nextOrderItem.RsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList(),
+                    new FileItemModel(nextOrderItem.FileItem.IsUpdateFile, nextOrderItem.FileItem.ListFileItems)
                 );
         }
 
@@ -113,7 +114,7 @@ namespace Interactor.NextOrder
                     rsvkrtByomeiItem.IsNodspRece,
                     rsvkrtByomeiItem.IsNodspKarte,
                     rsvkrtByomeiItem.IsDeleted,
-                    rsvkrtByomeiItem.PrefixSuffixList,
+                    rsvkrtByomeiItem.PrefixSuffixList.Select(r => new PrefixSuffixModel(r, string.Empty)).ToList(),
                     string.Empty,
                     string.Empty,
                     string.Empty,
@@ -212,6 +213,9 @@ namespace Interactor.NextOrder
                     string.Empty,
                     new(),
                     0,
+                    0,
+                    string.Empty,
+                    string.Empty,
                     0
                 );
         }

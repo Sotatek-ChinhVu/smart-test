@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTokusitu1, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTokusitu, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -121,10 +121,11 @@ namespace Infrastructure.Repositories
             return checkedOrderModelList;
         }
 
-        public void IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, ref List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
+        public List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var result = new List<CheckedOrderModel>();
             var igakuTokusituItems = checkedOrders.Where(detail => detail.ItemCd == ItemCdConst.IgakuTokusitu || detail.ItemCd == ItemCdConst.IgakuTokusitu1);
+            var igakuTokusituItemOthers = checkedOrders.Where(detail => detail.ItemCd != ItemCdConst.IgakuTokusitu || detail.ItemCd != ItemCdConst.IgakuTokusitu1);
             if (syosaisinKbn == SyosaiConst.None)
             {
                 bool containCdKbn = false;
@@ -154,6 +155,10 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
+
+            result.AddRange(igakuTokusituItemOthers);
+
+            return result;
         }
 
         public List<CheckedOrderModel> SihifuToku1(int hpId, long ptId, int sinDate, int hokenId, int syosaisinKbn, long raiinNo, long oyaRaiinNo, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
@@ -175,7 +180,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku1JyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -188,13 +193,13 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku1, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
             }
 
-            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 1
                     && p.StartDate <= sinDate
@@ -282,11 +287,13 @@ namespace Infrastructure.Repositories
         {
             var raiinInfQuery = NoTrackingDataContext.RaiinInfs
                .Where(s => s.HpId == hpId && s.PtId == ptId && s.SinDate == sinDate && s.OyaRaiinNo == oyaRaiinNo && s.RaiinNo != raiinNo);
+            var count = raiinInfQuery.Count();
             var odrInfQuery = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.IsDeleted == 0);
+            count = odrInfQuery.Count();
             var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && itemCd.Contains(o.ItemCd));
-            var resultQuery = from raiinInf in raiinInfQuery
+            var resultQuery = from raiinInf in raiinInfQuery.AsEnumerable()
                               join odrInf in odrInfQuery
                               on new { raiinInf.HpId, raiinInf.PtId, raiinInf.RaiinNo }
                               equals new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo }
@@ -316,7 +323,7 @@ namespace Infrastructure.Repositories
             var sinKouiDetailQuery = NoTrackingDataContext.SinKouiDetails
                 .Where(s => s.HpId == hpId && s.PtId == ptId && itemCd.Contains(s.ItemCd));
 
-            var resultQuery = from sinKouiCount in sinKouiCountQuery
+            var resultQuery = from sinKouiCount in sinKouiCountQuery.AsEnumerable()
                               join sinKouiDetail in sinKouiDetailQuery
                               on new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SinYm }
                               equals new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SinYm }
@@ -357,7 +364,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku2JyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -370,13 +377,13 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiHifuToku2, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
             }
 
-            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var hifukaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 1
                     && p.StartDate <= sinDate
@@ -490,7 +497,7 @@ namespace Infrastructure.Repositories
             if (isJouhou)
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTenkanJyohoTusin, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -498,7 +505,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuTenkan, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -620,7 +627,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuNanbyoJyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -633,7 +640,7 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.IgakuNanbyo, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
@@ -742,91 +749,7 @@ namespace Infrastructure.Repositories
 
         public List<CheckedOrderModel> TouyakuTokusyoSyoho(int hpId, int sinDate, int hokenId, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOdrInf)
         {
-            #region sub function
-            CheckedOrderModel checkByoMei(int hpId, int sinDate, int hokenId, bool isCheckShuByomeiOnly, bool isCheckTeikyoByomei, string itemTokusyoCd, string itemCd, int inoutKbn)
-            {
-                var tenMstModel = FindTenMst(hpId, itemTokusyoCd, sinDate);
 
-                var byoMeiSpecialList = ByomeiModelList
-                                .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
-                                    b.SikkanKbn == SikkanKbnConst.Special &&
-                                    (b.HokenPid == hokenId || b.HokenPid == 0) &&
-                                    b.StartDate <= sinDate &&
-                                    (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
-                                .ToList();
-                if (byoMeiSpecialList.Count > 0)
-                {
-                    bool isSantei = false;
-                    if (isCheckTeikyoByomei)
-                    {
-                        var byomeiCdList = byoMeiSpecialList.Select(b => b.ByomeiCd);
-                        var byomeiCdTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                        foreach (var byomeiCd in byomeiCdTenkiouList)
-                        {
-                            if (byomeiCdList.Contains(byomeiCd))
-                            {
-                                isSantei = true;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isSantei = true;
-                    }
-                    if (isSantei)
-                    {
-                        var santei = false;
-                        var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
-                        if (touyaku == 1)
-                        {
-                            santei = true;
-                        }
-                        var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
-                        var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
-
-                        return checkedOrderModel;
-                    }
-                }
-
-                var byoMeiOtherList = ByomeiModelList
-                                .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
-                                    b.SikkanKbn == SikkanKbnConst.Other &&
-                                    (b.HokenPid == hokenId || b.HokenPid == 0) &&
-                                    b.StartDate <= sinDate &&
-                                    (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
-                                .ToList();
-                if (byoMeiOtherList.Count > 0)
-                {
-                    bool isSantei = false;
-                    if (isCheckTeikyoByomei)
-                    {
-                        var byomeiCdList = byoMeiOtherList.Select(b => b.ByomeiCd);
-                        var byomeiCdFromTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
-                        foreach (var byomeiCdFromTenkiou in byomeiCdFromTenkiouList)
-                        {
-                            if (byomeiCdList.Contains(byomeiCdFromTenkiou))
-                            {
-                                isSantei = true;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        isSantei = true;
-                    }
-                    if (isSantei)
-                    {
-                        var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
-                        var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, false, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
-
-                        return checkedOrderModel;
-                    }
-                }
-                return new CheckedOrderModel();
-            }
-            #endregion
 
             var checkedOrderModelList = new List<CheckedOrderModel>();
 
@@ -881,7 +804,7 @@ namespace Infrastructure.Repositories
                 {
                     foreach (var drug in drugItems)
                     {
-                        var checkedMoreThan28DaysOdr = checkByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd2, drug.ItemCd, inoutKbn);
+                        var checkedMoreThan28DaysOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd2, drug.ItemCd, inoutKbn, ByomeiModelList);
                         if (checkedMoreThan28DaysOdr != null)
                         {
                             // having item with usage day >= 28, just break
@@ -894,7 +817,7 @@ namespace Infrastructure.Repositories
                 if (checkedOdr != null) continue;
                 foreach (var drug in drugItems)
                 {
-                    checkedOdr = checkByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd1, drug.ItemCd, inoutKbn);
+                    checkedOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd1, drug.ItemCd, inoutKbn, ByomeiModelList);
                     if (checkedOdr != null)
                     {
                         break;
@@ -913,9 +836,93 @@ namespace Infrastructure.Repositories
             return checkedOrderModelList;
         }
 
+        public CheckedOrderModel CheckByoMei(int hpId, int sinDate, int hokenId, bool isCheckShuByomeiOnly, bool isCheckTeikyoByomei, string itemTokusyoCd, string itemCd, int inoutKbn, List<PtDiseaseModel> ByomeiModelList)
+        {
+            var tenMstModel = FindTenMst(hpId, itemTokusyoCd, sinDate);
+
+            var byoMeiSpecialList = ByomeiModelList
+                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                                b.SikkanKbn == SikkanKbnConst.Special &&
+                                (b.HokenPid == hokenId || b.HokenPid == 0) &&
+                                b.StartDate <= sinDate &&
+                                (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
+                            .ToList();
+            if (byoMeiSpecialList.Count > 0)
+            {
+                bool isSantei = false;
+                if (isCheckTeikyoByomei)
+                {
+                    var byomeiCdList = byoMeiSpecialList.Select(b => b.ByomeiCd);
+                    var byomeiCdTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
+                    foreach (var byomeiCd in byomeiCdTenkiouList)
+                    {
+                        if (byomeiCdList.Contains(byomeiCd))
+                        {
+                            isSantei = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    isSantei = true;
+                }
+                if (isSantei)
+                {
+                    var santei = false;
+                    var touyaku = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 4001 && p.GrpEdaNo == 1)?.Val;
+                    if (touyaku == 1)
+                    {
+                        santei = true;
+                    }
+                    var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
+                    var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, santei, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
+
+                    return checkedOrderModel;
+                }
+            }
+
+            var byoMeiOtherList = ByomeiModelList
+                            .Where(b => (isCheckShuByomeiOnly ? b.SyubyoKbn == 1 : true) &&
+                                b.SikkanKbn == SikkanKbnConst.Other &&
+                                (b.HokenPid == hokenId || b.HokenPid == 0) &&
+                                b.StartDate <= sinDate &&
+                                (b.TenkiKbn == TenkiKbnConst.Continued || b.TenkiDate > sinDate))
+                            .ToList();
+            if (byoMeiOtherList.Count > 0)
+            {
+                bool isSantei = false;
+                if (isCheckTeikyoByomei)
+                {
+                    var byomeiCdList = byoMeiOtherList.Select(b => b.ByomeiCd);
+                    var byomeiCdFromTenkiouList = GetByomeiCdFromTenkiou(hpId, itemCd, true);
+                    foreach (var byomeiCdFromTenkiou in byomeiCdFromTenkiouList)
+                    {
+                        if (byomeiCdList.Contains(byomeiCdFromTenkiou))
+                        {
+                            isSantei = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    isSantei = true;
+                }
+                if (isSantei)
+                {
+                    var checkedContent = FormatSanteiMessage(tenMstModel.Name ?? string.Empty);
+                    var checkedOrderModel = new CheckedOrderModel(CheckingType.MissingCalculate, false, checkedContent, tenMstModel?.ItemCd ?? string.Empty, tenMstModel?.SinKouiKbn ?? 0, tenMstModel?.Name ?? string.Empty, inoutKbn);
+
+                    return checkedOrderModel;
+                }
+            }
+            return new CheckedOrderModel();
+        }
+
         private List<string> GetByomeiCdFromTenkiou(int hpId, string itemCd, bool isFromCheckingView = false)
         {
-            var result = new List<string>();
+            List<string> result;
             var teikyoByomeis = NoTrackingDataContext.TekiouByomeiMsts.Where(
                 (x) => x.HpId == hpId && x.ItemCd == itemCd && (!isFromCheckingView || x.IsInvalidTokusyo != 1));
             var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(
@@ -958,7 +965,7 @@ namespace Infrastructure.Repositories
             }
 
             // 地域包括対象疾病の患者である
-            var ptSanteiConfList = GetPtCalculationInfById(ptId, sinDate);
+            var ptSanteiConfList = GetPtCalculationInfById(hpId, ptId, sinDate);
             List<string> santeiItemCds = new List<string>();
 
             var tiikiSanteiConf = ptSanteiConfList.FirstOrDefault(c => c.Item1 == 3 && c.Item2 == 1);
@@ -1054,11 +1061,11 @@ namespace Infrastructure.Repositories
         }
 
 
-        private List<Tuple<int, int>> GetPtCalculationInfById(long ptId, int sinDate)
+        private List<Tuple<int, int>> GetPtCalculationInfById(int hpId, long ptId, int sinDate)
         {
             return NoTrackingDataContext.PtSanteiConfs
                 .Where(pt =>
-                    pt.HpId == Session.HospitalID && pt.PtId == ptId && pt.StartDate <= sinDate && pt.EndDate >= sinDate && pt.IsDeleted == 0)
+                    pt.HpId == hpId && pt.PtId == ptId && pt.StartDate <= sinDate && pt.EndDate >= sinDate && pt.IsDeleted == 0)
                 .AsEnumerable()
                 .Select(item => new Tuple<int, int>(item.KbnNo, item.EdaNo)).ToList();
         }
@@ -1082,7 +1089,7 @@ namespace Infrastructure.Repositories
                 return checkedOrderModelList;
             }
 
-            var shonikaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var shonikaSetting = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 0
                     && p.StartDate <= sinDate
@@ -1104,13 +1111,13 @@ namespace Infrastructure.Repositories
             }
 
             var tenMstModel = FindTenMst(hpId, ItemCdConst.YakuzaiJoho, sinDate);
-            if (tenMstModel == null)
+            if (string.IsNullOrEmpty(tenMstModel.ItemCd))
             {
                 return checkedOrderModelList;
             }
 
             var tenMstTeiyoModel = FindTenMst(hpId, ItemCdConst.YakuzaiJohoTeiyo, sinDate);
-            if (tenMstTeiyoModel == null)
+            if (string.IsNullOrEmpty(tenMstTeiyoModel.ItemCd))
             {
                 return checkedOrderModelList;
             }
@@ -1181,7 +1188,7 @@ namespace Infrastructure.Repositories
                 if (sinDate >= 20220401)
                 {
                     tenMstModel = FindTenMst(hpId, ItemCdConst.SiIkujiJyohoTusin, sinDate);
-                    if (tenMstModel == null)
+                    if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                     {
                         return checkedOrderModelList;
                     }
@@ -1194,13 +1201,13 @@ namespace Infrastructure.Repositories
             else
             {
                 tenMstModel = FindTenMst(hpId, ItemCdConst.SiIkuji, sinDate);
-                if (tenMstModel == null)
+                if (string.IsNullOrEmpty(tenMstModel.ItemCd))
                 {
                     return checkedOrderModelList;
                 }
             }
 
-            var shonika = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == Session.HospitalID
+            var shonika = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                     && p.GrpCd == 8001
                     && p.GrpEdaNo == 0
                     && p.StartDate <= sinDate

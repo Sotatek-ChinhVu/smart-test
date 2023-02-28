@@ -39,7 +39,7 @@ namespace Interactor.NextOrder
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
-                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistListId(new List<long> { inputData.PtId }))
+                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistIdList(new List<long> { inputData.PtId }))
                 {
                     return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
@@ -80,16 +80,17 @@ namespace Interactor.NextOrder
                     {
                         rsvkrtNos.Add(byomei.RsvkrtNo);
                     }
-                }
+                    if (rsvkrtNos.Distinct().Count() > 1)
+                    {
+                        return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
+                    }
 
-                if (rsvkrtNos.Distinct().Count() > 1)
-                {
-                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
-                }
-
-                if (rsvkrtDates.Distinct().Count() > 1)
-                {
-                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                    if (rsvkrtDates.Distinct().Count() > 1)
+                    {
+                        return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                    }
+                    rsvkrtNos.Clear();
+                    rsvkrtDates.Clear();
                 }
 
                 var nextOrderModels = inputData.NextOrderItems.Select(n => NextOrderCommon.ConvertNextOrderToModel(inputData.HpId, inputData.PtId, ipnCds, n)).ToList();

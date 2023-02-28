@@ -19,7 +19,7 @@ namespace EmrCloudApi.Requests.SpecialNote
         public DateTime CreateDate { get; set; }
         public SummaryInfModel Map()
         {
-            return new SummaryInfModel(Id, HpId, PtId, SeqNo, Text, Rtext, CreateDate);
+            return new SummaryInfModel(Id, HpId, PtId, SeqNo, Text, Rtext, CreateDate, DateTime.MinValue);
         }
     }
 }

@@ -5,6 +5,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -12,8 +13,12 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Collections.Generic;
+using System.Net.WebSockets;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -58,6 +63,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 from p in NoTrackingDataContext.PtInfs
                 where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
+                orderby p.PtNum descending
                 select new
                 {
                     ptInf = p,
@@ -232,7 +238,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckExistListId(List<long> ptIds)
+        public bool CheckExistIdList(List<long> ptIds)
         {
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
@@ -497,21 +503,28 @@ namespace Infrastructure.Repositories
             var groupKeyList = input.PatientGroups.Where(p => !string.IsNullOrEmpty(p.GroupCode)).Select(p => new { p.GroupId, p.GroupCode });
             if (groupKeyList.Any())
             {
-                var groupIdList = groupKeyList.Select(g => g.GroupId).ToList();
+                var groupIdList = groupKeyList.Select(g => g.GroupId).Distinct().ToList();
                 var groupPtByIdList = NoTrackingDataContext.PtGrpInfs
-                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId))
+                    .Where(p => p.IsDeleted == DeleteTypes.None && groupIdList.Contains(p.GroupId) && p.GroupCode != null)
                     .Select(p => new { p.PtId, p.GroupId, p.GroupCode })
                     .ToList();
 
-                List<long> ptIds = new List<long>();
-                foreach (var groupId in groupIdList)
+                if (groupPtByIdList == null)
+                {
+                    return new();
+                }
+
+                string firstGroupCode = groupKeyList.First(g => g.GroupId == groupIdList.First()).GroupCode;
+                var ptIds = groupPtByIdList.Where(g => g.GroupId == groupIdList.First() && g.GroupCode == firstGroupCode).Select(g => g.PtId).ToList();
+                foreach (var groupId in groupIdList.Skip(1))
                 {
                     string groupCode = groupKeyList.First(g => g.GroupId == groupId).GroupCode;
-                    ptIds.AddRange(groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList());
+                    var ptIdItems = groupPtByIdList.Where(g => g.GroupId == groupId && g.GroupCode == groupCode).Select(g => g.PtId).ToList();
+                    ptIds = ptIds.Where(item => ptIdItems.Contains(item)).ToList();
                 }
 
                 if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
+                ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
 
             // Orders
@@ -643,7 +656,6 @@ namespace Infrastructure.Repositories
                         select r.SinDate
                     ).FirstOrDefault()
                 };
-
             return ptInfWithLastVisitDateQuery
                                             .AsEnumerable()
                                             .Skip((pageIndex - 1) * pageSize)
@@ -758,6 +770,7 @@ namespace Infrastructure.Repositories
             var ptInfWithLastVisitDate =
                 (from p in NoTrackingDataContext.PtInfs
                  where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 orderby p.PtNum descending
                  select new
                  {
                      ptInf = p,
@@ -791,6 +804,7 @@ namespace Infrastructure.Repositories
             where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
                                       p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -813,17 +827,19 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchName(string originKeyword, string halfsizeKeyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
-            if (string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(originKeyword) ||
+                string.IsNullOrWhiteSpace(halfsizeKeyword))
             {
                 return new List<PatientInforModel>();
             }
 
             var ptInfWithLastVisitDate =
             from p in NoTrackingDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(originKeyword) || p.Name.StartsWith(originKeyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(halfsizeKeyword) || p.KanaName.StartsWith(halfsizeKeyword)))
+            orderby p.PtNum descending
             select new
             {
                 ptInf = p,
@@ -1001,7 +1017,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1170,7 +1186,7 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInsert.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
@@ -1181,9 +1197,9 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             #region Maxmoney
-            if(limitLists != null && limitLists.Any())
+            if (maxMoneys != null && maxMoneys.Any())
             {
-                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists, (src, dest) =>
+                TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys, (src, dest) =>
                 {
                     dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     dest.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -1204,7 +1220,49 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> limitLists, int userId)
+        private long GetAutoPtNum(int hpId)
+        {
+            long startPtNum = 1;
+            long startPtNumSetting = (long)GetSettingValue(1014, hpId, 1);
+            if (startPtNumSetting > 0)
+            {
+                startPtNum = startPtNumSetting;
+            }
+            return GetAutoPtNumAction(startPtNum, hpId);
+        }
+
+        private long GetAutoPtNumAction(long startValue, int hpId)
+        {
+            int autoSetting = (int)GetSettingValue(1014, hpId, 0);
+            var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
+                (ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+            if (ptNumExisting == null)
+            {
+                return startValue;
+            }
+
+            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 || ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
+               .OrderBy(ptInf => ptInf.PtNum);
+
+            long minPtNum = 0;
+            if (ptList != null && ptList.Any())
+            {
+                var queryNotExistPtNum =
+                    from ptInf in ptList
+                    where !(from ptInfDistinct in ptList
+                            select ptInfDistinct.PtNum)
+                           .Contains(ptInf.PtNum + 1)
+                    orderby ptInf.PtNum
+                    select ptInf.PtNum;
+                if (queryNotExistPtNum != null)
+                {
+                    minPtNum = queryNotExistPtNum.FirstOrDefault();
+                }
+            }
+            return minPtNum + 1;
+        }
+
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1621,7 +1679,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in maxMoneyDatabases)
             {
-                var exist = limitLists.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
+                var exist = maxMoneys.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
                 if (exist == null)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
@@ -1640,7 +1698,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(limitLists.Where(x=>x.SeqNo == 0 && x.Id == 0), (src, dest) =>
+            TrackingDataContext.LimitListInfs.AddRange(Mapper.Map<LimitListModel, LimitListInf>(maxMoneys.Where(x => x.SeqNo == 0 && x.Id == 0), (src, dest) =>
             {
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -1656,55 +1714,12 @@ namespace Infrastructure.Repositories
             return (TrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
 
-        private long GetAutoPtNum(int HpId)
+        private double GetSettingValue(int groupCd, int hpId, int grpEdaNo = 0, int defaultValue = 0)
         {
-            long startPtNum = 1;
-            long startPtNumSetting = (long)GetSettingValue(1014, HpId, 1);
-            if (startPtNumSetting > 0)
-            {
-                startPtNum = startPtNumSetting;
-            }
-            return GetAutoPtNum(startPtNum, HpId);
-        }
-
-        private double GetSettingValue(int groupCd, int hpId, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
-        {
-            SystemConf? systemConf = new SystemConf();
+            SystemConf? systemConf;
             systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                     p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             return systemConf != null ? systemConf.Val : defaultValue;
-        }
-
-
-        private long GetAutoPtNum(long startValue, int hpId)
-        {
-            int autoSetting = (int)GetSettingValue(1014, hpId, 0);
-            var ptNumExisting = NoTrackingDataContext.PtInfs.FirstOrDefault
-                (ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
-            if (ptNumExisting == null)
-            {
-                return startValue;
-            }
-
-            var ptList = NoTrackingDataContext.PtInfs.Where(ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
-               .OrderBy(ptInf => ptInf.PtNum);
-
-            long minPtNum = 0;
-            if (ptList != null && ptList.Any())
-            {
-                var queryNotExistPtNum =
-                    from ptInf in ptList
-                    where !(from ptInfDistinct in ptList
-                            select ptInfDistinct.PtNum)
-                           .Contains(ptInf.PtNum + 1)
-                    orderby ptInf.PtNum
-                    select ptInf.PtNum;
-                if (queryNotExistPtNum != null)
-                {
-                    minPtNum = queryNotExistPtNum.FirstOrDefault();
-                }
-            }
-            return minPtNum + 1;
         }
 
         private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
@@ -1854,9 +1869,12 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate)
         {
-            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            var hokenMst = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo
+                                                                        && x.HokenEdaNo == hokenEdaNo
+                                                                        && x.StartDate <= sinDate
+                                                                        && sinDate <= x.EndDate);
             if (hokenMst is null)
                 return new HokenMstModel();
 
@@ -1872,9 +1890,123 @@ namespace Infrastructure.Repositories
             return hokensyaMst ?? new HokensyaMstModel();
         }
 
+        public PatientInforModel GetPtInf(int hpId, long ptId)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete != 1) ?? new PtInf();
+            return  new PatientInforModel(
+                        ptInf.HpId,
+                        ptInf.PtId,
+                        ptInf.ReferenceNo,
+                        ptInf.SeqNo,
+                        ptInf.PtNum,
+                        ptInf.KanaName ?? string.Empty,
+                        ptInf.Name ?? string.Empty,
+                        ptInf.Sex,
+                        ptInf.Birthday,
+                        ptInf.LimitConsFlg,
+                        ptInf.IsDead,
+                        ptInf.DeathDate,
+                        ptInf.HomePost ?? string.Empty,
+                        ptInf.HomeAddress1 ?? string.Empty,
+                        ptInf.HomeAddress2 ?? string.Empty,
+                        ptInf.Tel1 ?? string.Empty,
+                        ptInf.Tel2 ?? string.Empty,
+                        ptInf.Mail ?? string.Empty,
+                        ptInf.Setanusi ?? string.Empty,
+                        ptInf.Zokugara ?? string.Empty,
+                        ptInf.Job ?? string.Empty,
+                        ptInf.RenrakuName ?? string.Empty,
+                        ptInf.RenrakuPost ?? string.Empty,
+                        ptInf.RenrakuAddress1 ?? string.Empty,
+                        ptInf.RenrakuAddress2 ?? string.Empty,
+                        ptInf.RenrakuTel ?? string.Empty,
+                        ptInf.RenrakuMemo ?? string.Empty,
+                        ptInf.OfficeName ?? string.Empty,
+                        ptInf.OfficePost ?? string.Empty,
+                        ptInf.OfficeAddress1 ?? string.Empty,
+                        ptInf.OfficeAddress2 ?? string.Empty,
+                        ptInf.OfficeTel ?? string.Empty,
+                        ptInf.OfficeMemo ?? string.Empty,
+                        ptInf.IsRyosyoDetail,
+                        ptInf.PrimaryDoctor,
+                        ptInf.IsTester,
+                        ptInf.MainHokenPid,
+                        string.Empty,
+                        0,
+                        0,
+                        string.Empty
+                    );
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            string keyword = ptId.ToString();
+
+            List<PatientInforModel> result;
+            var ptInfs = NoTrackingDataContext.PtInfs
+                .Where(x => x.HpId == hpId && x.IsDelete == 0 && x.PtId.ToString().Contains(keyword))
+                .OrderBy(x => x.PtNum)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var ptIdList = ptInfs.Select(p => p.PtId).ToList();
+
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                    x.HpId == hpId &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.IsDeleted == 0 &&
+                    ptIdList.Contains(x.PtId))
+                .GroupBy(raiinInf => new { raiinInf.HpId, raiinInf.PtId })
+                .Select(grp => new
+                {
+                    grp.Key.PtId,
+                    SinDate = grp.OrderByDescending(x => x.SinDate).Select(x => x.SinDate).FirstOrDefault()
+                })
+                .ToList();
+
+            result = ptInfs.Select((x) => new PatientInforModel(
+                            x.HpId,
+                            x.PtId,
+                            x.PtNum,
+                            x.KanaName ?? string.Empty,
+                            x.Name ?? string.Empty,
+                            x.Birthday,
+                            raiinInfs.Any(s => s.PtId == x.PtId) ? raiinInfs.First(s => s.PtId == x.PtId).SinDate : 0
+                            ))
+                            .ToList();
+            return result;
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, int startDate, string startTime, int endDate, string endTime)
+        {
+            var startTimeFormat = (startTime + "00").PadLeft(6, '0');
+            var endTimeFormat = (endTime + "60").PadLeft(6, '0');
+            var ptIdList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                         && item.Status >= RaiinState.Calculate
+                                                                         && item.IsDeleted == DeleteTypes.None
+                                                                         && (item.SinDate > startDate || (item.SinDate == startDate && string.Compare(item.UketukeTime, startTimeFormat) >= 0))
+                                                                         && (item.SinDate < endDate || (item.SinDate == endDate && string.Compare(item.UketukeTime, endTimeFormat) <= 0)))
+                                                           .Select(item => item.PtId)
+                                                           .Distinct()
+                                                           .ToList();
+
+            var result = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete != 1
+                                                                    && ptIdList.Contains(item.PtId))
+                                                     .Select(item => new PatientInforModel(
+                                                                            item.PtId,
+                                                                            item.PtNum,
+                                                                            item.Name ?? string.Empty,
+                                                                            item.KanaName ?? string.Empty,
+                                                                            item.Sex))
+                                                     .ToList();
+            return result;
         }
     }
 }

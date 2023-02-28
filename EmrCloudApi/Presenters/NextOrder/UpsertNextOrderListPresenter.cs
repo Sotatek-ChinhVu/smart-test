@@ -284,6 +284,12 @@ namespace EmrCloudApi.Presenters.NextOrder
                             case OrderInfConst.OrdInfValidationStatus.InvalidKokuji2:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, string.Empty));
                                 break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidHasDrug:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorHasDrug, string.Empty));
+                                break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
+                                break;
                             default:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, "-1", "-1", string.Empty, string.Empty));
                                 break;

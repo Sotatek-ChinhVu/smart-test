@@ -8,10 +8,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfoModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfoDetailModel
     {
-        public List<string> ListDiseaseCode { get; set; } = new List<string>();
-
-        public List<PtKioRekiModel> ListPtKioReki { get; set; } = new List<PtKioRekiModel>();
-
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
@@ -19,7 +15,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return SystemConfig.DiseaseLevelSetting;
+            return SystemConfig!.DiseaseLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
@@ -33,17 +29,17 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
+            List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
             List<DiseaseResultModel> checkedResult = new List<DiseaseResultModel>();
 
-            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder.CheckContraindicationForCurrentDisease(HpID, settingLevel, Sinday, listItemCode, ListDiseaseCode);
+            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder!.CheckContraindicationForCurrentDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
             if (checkedResultForCurrentDisease != null)
             {
                 checkedResult.AddRange(checkedResultForCurrentDisease);
             }
 
-            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode, ListPtKioReki);
+            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
             if (checkedResultForHistoryDisease != null)
             {
                 checkedResult.AddRange(checkedResultForHistoryDisease);

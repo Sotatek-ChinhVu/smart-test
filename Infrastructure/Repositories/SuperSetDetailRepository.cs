@@ -52,7 +52,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             codeLists.AddRange(GetCodeLists(item));
         }
         var allByomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
-        var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.IsDeleted == DeleteTypes.None).ToList();
+        var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.KarteKbn == 1 && k.IsDeleted == DeleteTypes.None).ToList();
         var allSetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd) && o.IsDeleted == DeleteTypes.None).ToList() ?? new();
         var allSetOrderInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd)).ToList() ?? new();
         var itemCds = allSetOrderInfDetails?.Select(detail => detail.ItemCd);
@@ -128,7 +128,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 return new SetKarteInfModel(
                     setKarteInf.HpId,
                     setKarteInf.SetCd,
-                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText));
+                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText),
+                    string.Empty
+                    );
             }
 
         return null;
@@ -236,11 +238,12 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
     #region GetSetKarteInfModelList
     private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
     {
-        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1) ?? new SetKarteInf();
+        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.KarteKbn == 1 && odr.IsDeleted != 1) ?? new SetKarteInf();
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
-                setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)
+                setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText),
+                string.Empty
             );
     }
 
@@ -799,7 +802,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         try
         {
             // update SetKarte
-            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1 && mst.KarteKbn == 1);
             if (entity == null)
             {
                 entity = new();
@@ -807,15 +810,18 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                 entity.HpId = model.HpId;
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
                 entity.IsDeleted = 0;
+                entity.KarteKbn = 1;
                 entity.CreateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
                 entity.CreateId = userId;
+                entity.Text = model.Text;
                 TrackingDataContext.SetKarteInf.Add(entity);
             }
             else
             {
                 entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.Text = model.Text;
                 entity.UpdateId = userId;
                 entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
             }

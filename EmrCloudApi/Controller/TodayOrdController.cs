@@ -12,12 +12,15 @@ using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
-using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
+using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Messages;
 
 namespace EmrCloudApi.Controller
 {
@@ -25,13 +28,15 @@ namespace EmrCloudApi.Controller
     public class TodayOrdController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public TodayOrdController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+        public TodayOrdController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertTodayOdrResponse>> Upsert([FromBody] UpsertTodayOdrRequest request)
+        public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
@@ -105,6 +110,12 @@ namespace EmrCloudApi.Controller
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems)
             );
             var output = _bus.Handle(input);
+
+            if (output.Status == UpsertTodayOrdStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
+                    new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
+            }
 
             var presenter = new UpsertTodayOdrPresenter();
             presenter.Complete(output);
@@ -406,6 +417,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetValidJihiYoboResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertNextOrderToTodayOrder)]
+        public ActionResult<Response<ConvertNextOrderToTodayOrderResponse>> ConvertNextOrderToTodayOrder([FromBody] ConvertNextOrderToTodayOrderRequest request)
+        {
+            var input = new ConvertNextOrderToTodayOrdInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.rsvKrtOrderInfItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertNextOrderToTodayOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
         }
     }
 }
