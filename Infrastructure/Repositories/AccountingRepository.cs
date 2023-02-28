@@ -299,7 +299,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenInf, bool>>(Expression.Constant(false), param);
         }
 
         private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<PtHokenPattern> listPtHokenPattern)
@@ -326,7 +326,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
@@ -374,7 +374,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtHokenCheckExpression(List<int> listHokenId, int hokenGrp, ref Expression expression, ref ParameterExpression param)
@@ -411,7 +411,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
 
         private void CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf, ref Expression expression, ref ParameterExpression param)
@@ -956,8 +956,8 @@ namespace Infrastructure.Repositories
             CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
 
             return expression != null
-                ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
+                    ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
+                    : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
         private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
         {
@@ -968,7 +968,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
