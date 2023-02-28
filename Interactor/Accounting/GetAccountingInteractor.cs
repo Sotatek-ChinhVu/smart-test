@@ -43,12 +43,11 @@ namespace Interactor.Accounting
                     listSyunoSeikyu = listSyunoSeikyu.Where(item => item.NyukinKbn != 0).ToList();
                 }
 
-                var query = syunoSeikyu.SyunoNyukinModels
-                            .Where(x => x.RaiinNo == inputData.RaiinNo)
-                            .Select(x => new { Comment = x.NyukinCmt ?? string.Empty, PaymentType = x.PaymentMethodCd });
-
-                var comment = query.Select(x => x.Comment).FirstOrDefault();
-                var paytype = query.Select(x => x.PaymentType).FirstOrDefault(); ;
+                var syunoNyukinModel = syunoSeikyu.SyunoNyukinModels
+                            .FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
+                            
+                var comment = syunoNyukinModel?.NyukinCmt ?? string.Empty;
+                var paytype = syunoNyukinModel?.PaymentMethodCd ?? 0;
 
                 var listAllSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo, true);
 
