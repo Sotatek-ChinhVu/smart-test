@@ -99,7 +99,8 @@ namespace Infrastructure.Repositories
                                         item.ReceFutanHide,
                                         item.ReceFutanKbn,
                                         item.KogakuTotalAll,
-                                        false
+                                        false,
+                                        item.DayLimitCount
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -300,7 +301,8 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanHide,
                                             h.ReceFutanKbn,
                                             h.KogakuTotalAll,
-                                            false));
+                                            false,
+                                            0));
             });
 
             return list;
@@ -435,7 +437,8 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanHide,
                                             h.ReceFutanKbn,
                                             h.KogakuTotalAll,
-                                            false));
+                                            false,
+                                            h.DayLimitCount));
             });
 
             // Get KohiMst
@@ -540,7 +543,7 @@ namespace Infrastructure.Repositories
                                                         && hokensya.Houbetu == houbetuNo
                                                         && hokensya.HokensyaNo == hokensyaNoSearch);
 
-            if(entity is null)
+            if (entity is null)
             {
                 entity = new HokensyaMst()
                 {
@@ -552,22 +555,22 @@ namespace Infrastructure.Repositories
             }
 
             return new HokensyaMstModel(entity.HpId
-                                        ,entity.Name ?? string.Empty
-                                        ,entity.KanaName ?? string.Empty
-                                        ,entity.HoubetuKbn ?? string.Empty
-                                        ,entity.Houbetu ?? string.Empty
-                                        ,entity.HokenKbn
-                                        ,entity.PrefNo
-                                        ,entity.HokensyaNo ?? string.Empty
-                                        ,entity.Kigo ?? string.Empty
-                                        ,entity.Bango ?? string.Empty
-                                        ,entity.RateHonnin
-                                        ,entity.RateKazoku
-                                        ,entity.PostCode ?? string.Empty
-                                        ,entity.Address1 ?? string.Empty
-                                        ,entity.Address2 ?? string.Empty
-                                        ,entity.Tel1 ?? string.Empty
-                                        ,entity.IsKigoNa); ;
+                                        , entity.Name ?? string.Empty
+                                        , entity.KanaName ?? string.Empty
+                                        , entity.HoubetuKbn ?? string.Empty
+                                        , entity.Houbetu ?? string.Empty
+                                        , entity.HokenKbn
+                                        , entity.PrefNo
+                                        , entity.HokensyaNo ?? string.Empty
+                                        , entity.Kigo ?? string.Empty
+                                        , entity.Bango ?? string.Empty
+                                        , entity.RateHonnin
+                                        , entity.RateKazoku
+                                        , entity.PostCode ?? string.Empty
+                                        , entity.Address1 ?? string.Empty
+                                        , entity.Address2 ?? string.Empty
+                                        , entity.Tel1 ?? string.Empty
+                                        , entity.IsKigoNa); ;
         }
 
         public List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken)
@@ -582,7 +585,7 @@ namespace Infrastructure.Repositories
                 prefCd = hospitalInfo.PrefNo;
 
             var hokenMst = (NoTrackingDataContext.HokenMsts
-                                            .Where(x => 
+                                            .Where(x =>
                                                    x.HpId == hpId
                                                 && (FHokenNo == 0 || x.HokenNo == FHokenNo)
                                                 && (FHokenSbtKbn == 0 || x.HokenSbtKbn == FHokenSbtKbn)
@@ -652,7 +655,8 @@ namespace Infrastructure.Repositories
                                                           mst.ReceFutanHide,
                                                           mst.ReceFutanKbn,
                                                           mst.KogakuTotalAll,
-                                                          false),
+                                                          false,
+                                                          mst.DayLimitCount),
                                         details.Select(x => new HokenMstModel(x.FutanKbn,
                                                           x.FutanRate,
                                                           x.StartDate,
@@ -703,7 +707,8 @@ namespace Infrastructure.Repositories
                                                           x.ReceFutanHide,
                                                           x.ReceFutanKbn,
                                                           x.KogakuTotalAll,
-                                                          false))
+                                                          false,
+                                                          x.DayLimitCount))
                                         );
 
             return result.OrderBy(h => h.Master.HokenNo).ToList();
@@ -829,7 +834,7 @@ namespace Infrastructure.Repositories
                                                                                 x.HokenEdaNo == hokenEdaNo &&
                                                                                 x.PrefNo == prefNo) <= 1;
 
-            if(!CheckOneStartDate)
+            if (!CheckOneStartDate)
             {
                 var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId &&
                                                                           x.HokenEdaNo == hokenEdaNo &&
@@ -885,7 +890,8 @@ namespace Infrastructure.Repositories
                                                                                                          x.ReceFutanHide,
                                                                                                          x.ReceFutanKbn,
                                                                                                          x.KogakuTotalAll,
-                                                                                                         false)).ToList();
+                                                                                                         false,
+                                                                                                         x.DayLimitCount)).ToList();
                 hokenMsts.ForEach(x =>
                 {
                     result.Add(new SelectMaintenanceModel(x));
@@ -962,7 +968,8 @@ namespace Infrastructure.Repositories
                                                                             hokenMaster.ReceFutanHide,
                                                                             hokenMaster.ReceFutanKbn,
                                                                             hokenMaster.KogakuTotalAll,
-                                                                            false)));
+                                                                            false,
+                                                                            hokenMaster.DayLimitCount)));
             }
 
             return result;

@@ -41,6 +41,7 @@
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
         public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
+        public static readonly string InvalidInfoType = "Invalid InfoType";
 
         //Common
         public static readonly string NotFound = "Not found";

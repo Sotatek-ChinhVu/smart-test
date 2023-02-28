@@ -28,9 +28,22 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
         return ptCmts.ToList();
     }
 
-    public void ReleaseResource()
+    public PtCmtInfModel GetPtCmtInfo(int hpId, long ptId)
     {
-        DisposeDataContext();
+        var result = NoTrackingDataContext.PtCmtInfs
+                           .Where(u => u.HpId == hpId && u.PtId == ptId && u.IsDeleted == 0)
+                           .OrderByDescending(u => u.UpdateDate)
+                           .AsEnumerable()
+                           .Select(u => new PtCmtInfModel(
+                                u.HpId,
+                                u.PtId,
+                                u.SeqNo,
+                                u.Text ?? string.Empty,
+                                u.IsDeleted,
+                                u.Id
+                               ))
+                           .FirstOrDefault();
+        return result ?? new PtCmtInfModel();
     }
 
     public void Upsert(long ptId, string text, int userId)
@@ -67,5 +80,10 @@ public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
         }
 
         TrackingDataContext.SaveChanges();
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

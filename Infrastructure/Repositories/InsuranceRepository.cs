@@ -1465,7 +1465,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceFutanHide,
                                         hokenMst.ReceFutanKbn,
                                         hokenMst.KogakuTotalAll,
-                                        false);
+                                        false,
+                                        hokenMst.DayLimitCount);
                 return itemHokenMst;
             }
             return new HokenMstModel();
