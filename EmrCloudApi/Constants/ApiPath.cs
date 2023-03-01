@@ -160,11 +160,13 @@
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
+        public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
+        public const string UpsertUserConfList = "UpsertUserConfList";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -216,5 +218,8 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //System Conf
+        public const string GetSystemConfForPrint = "GetSystemConfForPrint";
     }
 }

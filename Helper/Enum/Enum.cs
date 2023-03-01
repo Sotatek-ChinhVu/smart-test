@@ -86,4 +86,12 @@
         NotificationInfo,
         Popup
     }
+
+    public enum OrderTypeForPrinter
+    {
+        None,
+        AllOrder,
+        InDrug,
+        OutDrug
+    }
 }

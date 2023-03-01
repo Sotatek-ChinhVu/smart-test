@@ -8,7 +8,7 @@ namespace EmrCloudApi.Presenters.Reception
     public class GetReceptionPresenter : IGetReceptionOutputPort
     {
         public Response<GetReceptionResponse> Result { get; private set; } = default!;
-        
+
         public void Complete(GetReceptionOutputData outputData)
         {
             Result = new Response<GetReceptionResponse>()
@@ -28,7 +28,7 @@ namespace EmrCloudApi.Presenters.Reception
                     break;
                 case GetReceptionStatus.Successed:
                     Result.Message = ResponseMessage.Success;
-                    Result.Data.Reception = outputData.ReceptionModel!.ToDto();
+                    Result.Data.Reception = outputData.ReceptionDto;
                     break;
             }
         }
