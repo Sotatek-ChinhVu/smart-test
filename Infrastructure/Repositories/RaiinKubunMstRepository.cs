@@ -764,47 +764,24 @@ namespace Infrastructure.Repositories
                     }
                 });
 
-                foreach (var item in raiinKubunDetailModels)
+                TrackingDataContext.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(item => new RaiinKbnDetail()
                 {
-                    TrackingDataContext.RaiinKbnDetails.Update(
-                        new RaiinKbnDetail()
-                        {
-                            HpId = item.HpId,
-                            GrpCd = grpCd,
-                            KbnCd = item.KubunCd,
-                            SortNo = item.SortNo,
-                            KbnName = item.KubunName,
-                            ColorCd = item.ColorCd != null && item.ColorCd.Contains("#") ? item.ColorCd.Replace("#", string.Empty) : item.ColorCd,
-                            IsConfirmed = item.IsConfirmed ? 1 : 0,
-                            IsAuto = item.IsAuto,
-                            IsAutoDelete = item.IsAutoDeleted,
-                            IsDeleted = item.IsDeleted ? 1 : 0,
-                            //CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                            //CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
-                            //CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = userId,
-                        });
-                    TrackingDataContext.SaveChanges();
-                }
-                //TrackingDataContext.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
-                //{
-                //    HpId = x.HpId,
-                //    GrpCd = grpCd,
-                //    KbnCd = x.KubunCd,
-                //    SortNo = x.SortNo,
-                //    KbnName = x.KubunName,
-                //    ColorCd = x.ColorCd,
-                //    IsConfirmed = x.IsConfirmed ? 1 : 0,
-                //    IsAuto = x.IsAuto,
-                //    IsAutoDelete = x.IsAutoDeleted,
-                //    IsDeleted = x.IsDeleted ? 1 : 0,
-                //    //CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                //    //CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
-                //    //CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
-                //    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                //    UpdateId = userId,
-                //}));
+                    HpId = item.HpId,
+                    GrpCd = grpCd,
+                    KbnCd = item.KubunCd,
+                    SortNo = item.SortNo,
+                    KbnName = item.KubunName,
+                    ColorCd = item.ColorCd != null && item.ColorCd.Contains("#") ? item.ColorCd.Replace("#", string.Empty) : item.ColorCd,
+                    IsConfirmed = item.IsConfirmed ? 1 : 0,
+                    IsAuto = item.IsAuto,
+                    IsAutoDelete = item.IsAutoDeleted,
+                    IsDeleted = item.IsDeleted ? 1 : 0,
+                    CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
+                    CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateId ?? 0,
+                    CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateMachine ?? string.Empty,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                }));
                 TrackingDataContext.SaveChanges();
             }
         }
@@ -821,6 +798,9 @@ namespace Infrastructure.Repositories
                     SeqNo = x.SeqNo,
                     KouiKbnId = x.KouiKbnId,
                     IsDeleted = x.IsDeleted,
+                    CreateDate = DateTime.SpecifyKind(raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
+                    CreateId = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateId ?? 0,
+                    CreateMachine = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateMachine ?? string.Empty,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }));
@@ -842,6 +822,9 @@ namespace Infrastructure.Repositories
                     IsExclude = x.IsExclude,
                     IsDeleted = x.IsDeleted,
                     SortNo = x.SortNo,
+                    CreateDate = DateTime.SpecifyKind(raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
+                    CreateId = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateId ?? 0,
+                    CreateMachine = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateMachine ?? string.Empty,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }));
@@ -861,6 +844,9 @@ namespace Infrastructure.Repositories
                     SeqNo = x.SeqNo,
                     YoyakuCd = x.YoyakuCd,
                     IsDeleted = x.IsDeleted,
+                    CreateDate = DateTime.SpecifyKind(raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
+                    CreateId = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateId ?? 0,
+                    CreateMachine = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateMachine ?? string.Empty,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
                 }).ToList();
@@ -887,21 +873,6 @@ namespace Infrastructure.Repositories
             if (!ValidateSortNo(currentSortNos, newSortNos))
             {
                 result.Add(KubunSettingConstant.InvalidRaiinKbnMstSortNo);
-                return result;
-            }
-
-            var raiinKubunMstModel = raiinKubunMstModels.Where(x => x.HpId != 0 && x.GroupId != 0).ToList();
-            var raiinKubunMstUpdate = from raiinKbnMst in raiinKubunMstModel
-                                      join current in currentRaiinKubunMsts
-                                      on new { raiinKbnMst.HpId, GrpCd = raiinKbnMst.GroupId }
-                                      equals new { current.HpId, current.GrpCd }
-                                      into msts
-                                      from mst in msts.DefaultIfEmpty()
-                                      select new { raiinKbnMst, mst };
-
-            if (raiinKubunMstUpdate.Any(x => x.mst == null))
-            {
-                result.Add(KubunSettingConstant.RaiinKbnMstNotExisted);
                 return result;
             }
 
@@ -932,21 +903,6 @@ namespace Infrastructure.Repositories
                         return result;
                     }
 
-                    raiinKubunDetailModels = raiinKubunDetailModels.Where(x => x.HpId != 0 && x.GroupId != 0 && x.KubunCd != 0).ToList();
-                    var raiinKbnDetailUpdate = from raiinKbndetail in raiinKubunDetailModels
-                                               join current in currentDetails
-                                               on new { raiinKbndetail.HpId, GrpCd = raiinKbndetail.GroupId, KbnCd = raiinKbndetail.KubunCd }
-                                               equals new { current.HpId, current.GrpCd, current.KbnCd }
-                                               into details
-                                               from detail in details.DefaultIfEmpty()
-                                               select new { raiinKbndetail, detail };
-
-                    if (raiinKbnDetailUpdate.Any(x => x.detail == null))
-                    {
-                        result.Add(KubunSettingConstant.RaiinKbnDetailNotExisted);
-                        return result;
-                    }
-
                     foreach (var raiinKubunDetail in raiinKubunMst.RaiinKubunDetailModels)
                     {
                         if (raiinKubunDetail.RaiinKbnKouiModels != null && raiinKubunDetail.RaiinKbnKouiModels.Any())
@@ -958,30 +914,6 @@ namespace Infrastructure.Repositories
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnKouiKbnCd);
                                 return result;
                             }
-
-                            var currentRaiinKbnKouis = raiinKbnKouis.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            //var currentRaiinKbnKouiSortNos = currentRaiinKbnKouis.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
-                            //var newRaiinKbnKouiSortNos = raiinKbnKouiModels.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
-                            //if (!ValidateSortNo(currentRaiinKbnKouiSortNos, newRaiinKbnKouiSortNos))
-                            //{
-                            //    result.Add(KubunSettingConstant.InvalidRaiinKbnKouiSortNo);
-                            //    return result;
-                            //}
-
-                            //raiinKbnKouiModels = raiinKbnKouiModels.Where(x => x.HpId != 0 && x.GrpId != 0 && x.KbnCd != 0 && x.KouiKbnId != 0).ToList();
-                            //var raiinKbnKouiUpdate = from raiinKbnKoui in raiinKbnKouiModels
-                            //                         join current in currentRaiinKbnKouis
-                            //                         on new { raiinKbnKoui.HpId, raiinKbnKoui.GrpId, raiinKbnKoui.KbnCd, raiinKbnKoui.KouiKbnId }
-                            //                         equals new { current.HpId, current.GrpId, current.KbnCd, current.KouiKbnId }
-                            //                         into Kouis
-                            //                         from koui in Kouis.DefaultIfEmpty()
-                            //                         select new { raiinKbnKoui, koui };
-
-                            //if (raiinKbnKouiUpdate.Any(x => x.koui == null))
-                            //{
-                            //    result.Add(KubunSettingConstant.RaiinKbnKouiNotExisted);
-                            //    return result;
-                            //}
                         }
                         if (raiinKubunDetail.RaiinKbnItemModels != null && raiinKubunDetail.RaiinKbnItemModels.Any())
                         {
