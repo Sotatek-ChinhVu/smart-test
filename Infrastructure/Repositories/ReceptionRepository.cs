@@ -715,6 +715,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.UketukeNo,
                 r.relatedLockInf is not null,
                 r.raiinInf.Status,
+                r.raiinInf.IsDeleted,
                 r.ptInf.PtNum,
                 r.ptInf.KanaName ?? string.Empty,
                 r.ptInf.Name ?? string.Empty,

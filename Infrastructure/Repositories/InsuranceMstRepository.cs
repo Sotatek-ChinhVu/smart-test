@@ -1,12 +1,11 @@
-﻿using Domain.Models.HokenMst;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -95,7 +94,13 @@ namespace Infrastructure.Repositories
                                         item.ReceSpKbn,
                                         prefName == null ? string.Empty : prefName,
                                         item.PrefNo,
-                                        item.SortNo
+                                        item.SortNo,
+                                        item.SeikyuYm,
+                                        item.ReceFutanHide,
+                                        item.ReceFutanKbn,
+                                        item.KogakuTotalAll,
+                                        false,
+                                        item.DayLimitCount
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -291,7 +296,13 @@ namespace Infrastructure.Repositories
                                             h.ReceSpKbn,
                                             prefName == null ? string.Empty : prefName,
                                             h.PrefNo,
-                                            h.SortNo));
+                                            h.SortNo,
+                                            h.SeikyuYm,
+                                            h.ReceFutanHide,
+                                            h.ReceFutanKbn,
+                                            h.KogakuTotalAll,
+                                            false,
+                                            0));
             });
 
             return list;
@@ -421,7 +432,13 @@ namespace Infrastructure.Repositories
                                             h.ReceSpKbn,
                                             string.Empty,
                                             h.PrefNo,
-                                            h.SortNo));
+                                            h.SortNo,
+                                            h.SeikyuYm,
+                                            h.ReceFutanHide,
+                                            h.ReceFutanKbn,
+                                            h.KogakuTotalAll,
+                                            false,
+                                            h.DayLimitCount));
             });
 
             // Get KohiMst
@@ -514,6 +531,7 @@ namespace Infrastructure.Repositories
                 hoken.Address1 = model.Address1;
                 hoken.Address2 = model.Address2;
                 hoken.Tel1 = model.Tel1;
+                hoken.IsKigoNa = model.IsKigoNa;
                 hoken.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 hoken.UpdateId = userId;
             }
@@ -526,7 +544,7 @@ namespace Infrastructure.Repositories
                                                         && hokensya.Houbetu == houbetuNo
                                                         && hokensya.HokensyaNo == hokensyaNoSearch);
 
-            if(entity is null)
+            if (entity is null)
             {
                 entity = new HokensyaMst()
                 {
@@ -538,22 +556,22 @@ namespace Infrastructure.Repositories
             }
 
             return new HokensyaMstModel(entity.HpId
-                                        ,entity.Name ?? string.Empty
-                                        ,entity.KanaName ?? string.Empty
-                                        ,entity.HoubetuKbn ?? string.Empty
-                                        ,entity.Houbetu ?? string.Empty
-                                        ,entity.HokenKbn
-                                        ,entity.PrefNo
-                                        ,entity.HokensyaNo ?? string.Empty
-                                        ,entity.Kigo ?? string.Empty
-                                        ,entity.Bango ?? string.Empty
-                                        ,entity.RateHonnin
-                                        ,entity.RateKazoku
-                                        ,entity.PostCode ?? string.Empty
-                                        ,entity.Address1 ?? string.Empty
-                                        ,entity.Address2 ?? string.Empty
-                                        ,entity.Tel1 ?? string.Empty
-                                        ,entity.IsKigoNa); ;
+                                        , entity.Name ?? string.Empty
+                                        , entity.KanaName ?? string.Empty
+                                        , entity.HoubetuKbn ?? string.Empty
+                                        , entity.Houbetu ?? string.Empty
+                                        , entity.HokenKbn
+                                        , entity.PrefNo
+                                        , entity.HokensyaNo ?? string.Empty
+                                        , entity.Kigo ?? string.Empty
+                                        , entity.Bango ?? string.Empty
+                                        , entity.RateHonnin
+                                        , entity.RateKazoku
+                                        , entity.PostCode ?? string.Empty
+                                        , entity.Address1 ?? string.Empty
+                                        , entity.Address2 ?? string.Empty
+                                        , entity.Tel1 ?? string.Empty
+                                        , entity.IsKigoNa); ;
         }
 
         public List<InsuranceMasterDetailModel> GetInsuranceMasterDetails(int hpId, int FHokenNo, int FHokenSbtKbn, bool IsJitan, bool IsTaken)
@@ -568,7 +586,7 @@ namespace Infrastructure.Repositories
                 prefCd = hospitalInfo.PrefNo;
 
             var hokenMst = (NoTrackingDataContext.HokenMsts
-                                            .Where(x => 
+                                            .Where(x =>
                                                    x.HpId == hpId
                                                 && (FHokenNo == 0 || x.HokenNo == FHokenNo)
                                                 && (FHokenSbtKbn == 0 || x.HokenSbtKbn == FHokenSbtKbn)
@@ -633,7 +651,13 @@ namespace Infrastructure.Repositories
                                                           mst.ReceSpKbn,
                                                           string.Empty,
                                                           mst.PrefNo,
-                                                          mst.SortNo),
+                                                          mst.SortNo,
+                                                          mst.SeikyuYm,
+                                                          mst.ReceFutanHide,
+                                                          mst.ReceFutanKbn,
+                                                          mst.KogakuTotalAll,
+                                                          false,
+                                                          mst.DayLimitCount),
                                         details.Select(x => new HokenMstModel(x.FutanKbn,
                                                           x.FutanRate,
                                                           x.StartDate,
@@ -679,10 +703,111 @@ namespace Infrastructure.Repositories
                                                           x.ReceSpKbn,
                                                           string.Empty,
                                                           x.PrefNo,
-                                                          x.SortNo))
+                                                          x.SortNo,
+                                                          x.SeikyuYm,
+                                                          x.ReceFutanHide,
+                                                          x.ReceFutanKbn,
+                                                          x.KogakuTotalAll,
+                                                          false,
+                                                          x.DayLimitCount))
                                         );
 
             return result.OrderBy(h => h.Master.HokenNo).ToList();
+        }
+
+        public bool CheckDuplicateKey(int hpId ,HokenMstModel model)
+        {
+            if (model.IsAdded)
+            {
+                return NoTrackingDataContext.HokenMsts.Any(u => u.HpId == hpId &&
+                                                           u.HokenNo == model.HokenNo &&
+                                                           u.HokenEdaNo == model.HokenEdaNo &&
+                                                           u.PrefNo == model.PrefNo &&
+                                                           u.StartDate == model.StartDate);
+            }
+            return NoTrackingDataContext.HokenMsts.Count(u => u.HpId == hpId &&
+                                                         u.HokenNo == model.HokenNo &&
+                                                         u.HokenEdaNo == model.HokenEdaNo &&
+                                                         u.PrefNo == model.PrefNo &&
+                                                         u.StartDate == model.StartDate) > 1;
+        }
+
+        public bool CreateHokenMaster(int hpId, int userId, HokenMstModel insurance)
+        {
+            HokenMst create = Mapper.Map(insurance, new HokenMst(), (src, dest) =>
+            {
+                dest.HpId = hpId;
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateId = userId;
+                dest.CreateId = userId;
+                return dest;
+            });
+            TrackingDataContext.HokenMsts.Add(create);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool UpdateHokenMaster(int hpId, int userId, HokenMstModel insurance)
+        {
+            var model = TrackingDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
+                                                                    && x.StartDate == insurance.StartDate
+                                                                    && x.PrefNo == insurance.PrefNo
+                                                                    && x.HokenNo == insurance.HokenNo
+                                                                    && x.HokenEdaNo == insurance.HokenEdaNo);
+
+            if(model is not null)
+            {
+                model.StartDate = insurance.StartDate;
+                model.EndDate = insurance.EndDate;
+                model.HokenSbtKbn = insurance.HokenSbtKbn;
+                model.HokenKohiKbn = insurance.HokenKohiKbn;
+                model.Houbetu = insurance.Houbetu;
+                model.HokenName = insurance.HokenName;
+                model.HokenNameCd = insurance.HokenNameCd;
+                model.CheckDigit = insurance.CheckDigit;
+                model.JyukyuCheckDigit = insurance.JyuKyuCheckDigit;
+                model.IsFutansyaNoCheck = insurance.IsFutansyaNoCheck;
+                model.IsJyukyusyaNoCheck = insurance.IsJyukyusyaNoCheck;
+                model.IsTokusyuNoCheck = insurance.IsTokusyuNoCheck;
+                model.IsLimitList = insurance.IsLimitList;
+                model.IsLimitListSum = insurance.IsLimitListSum;
+                model.IsOtherPrefValid = insurance.IsOtherPrefValid;
+                model.AgeStart = insurance.AgeStart;
+                model.AgeEnd = insurance.AgeEnd;
+                model.EnTen = insurance.EnTen;
+                model.SeikyuYm = insurance.SeikyuYm;
+                model.ReceSpKbn = insurance.ReceSpKbn;
+                model.ReceSeikyuKbn = insurance.ReceSeikyuKbn;
+                model.ReceFutanRound = insurance.ReceFutanRound;
+                model.ReceKisai = insurance.ReceKisai;
+                model.ReceKisai2 = insurance.ReceKisai2;
+                model.ReceZeroKisai = insurance.ReceZeroKisai;
+                model.ReceFutanHide = insurance.ReceFutanHide;
+                model.ReceFutanKbn = insurance.ReceFutanKbn;
+                model.ReceTenKisai = insurance.ReceTenKisai;
+                model.KogakuTotalKbn = insurance.KogakuTotalKbn;
+                model.KogakuTotalAll = insurance.KogakuTotalAll;
+                model.CalcSpKbn = insurance.CalcSpKbn;
+                model.KogakuTotalExcFutan = insurance.KogakuTotalExcFutan;
+                model.KogakuTekiyo = insurance.KogakuTekiyo;
+                model.FutanYusen = insurance.FutanYusen;
+                model.LimitKbn = insurance.LimitKbn;
+                model.CountKbn = insurance.CountKbn;
+                model.FutanKbn = insurance.FutanKbn;
+                model.FutanRate = insurance.FutanRate;
+                model.KaiFutangaku = insurance.KaiFutangaku;
+                model.KaiLimitFutan = insurance.KaiLimitFutan;
+                model.DayLimitFutan = insurance.DayLimitFutan;
+                model.DayLimitCount = insurance.DayLimitCount;
+                model.MonthLimitFutan = insurance.MonthLimitFutan;
+                model.MonthSpLimit = insurance.MonthSpLimit;
+                model.MonthLimitCount = insurance.MonthLimitCount;
+                model.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                model.UpdateId = userId;
+                model.ReceKisaiKokho = insurance.ReceKisaiKokho;
+                model.KogakuHairyoKbn = insurance.KogakuHairyoKbn;
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public void ReleaseResource()
@@ -710,7 +835,7 @@ namespace Infrastructure.Repositories
                                                                                 x.HokenEdaNo == hokenEdaNo &&
                                                                                 x.PrefNo == prefNo) <= 1;
 
-            if(!CheckOneStartDate)
+            if (!CheckOneStartDate)
             {
                 var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId &&
                                                                           x.HokenEdaNo == hokenEdaNo &&
@@ -761,7 +886,13 @@ namespace Infrastructure.Repositories
                                                                                                          x.ReceSpKbn,
                                                                                                          string.Empty,
                                                                                                          x.PrefNo,
-                                                                                                         x.SortNo)).ToList();
+                                                                                                         x.SortNo,
+                                                                                                         x.SeikyuYm,
+                                                                                                         x.ReceFutanHide,
+                                                                                                         x.ReceFutanKbn,
+                                                                                                         x.KogakuTotalAll,
+                                                                                                         false,
+                                                                                                         x.DayLimitCount)).ToList();
                 hokenMsts.ForEach(x =>
                 {
                     result.Add(new SelectMaintenanceModel(x));
@@ -833,10 +964,58 @@ namespace Infrastructure.Repositories
                                                                             hokenMaster.ReceSpKbn,
                                                                             string.Empty,
                                                                             hokenMaster.PrefNo,
-                                                                            hokenMaster.SortNo)));
+                                                                            hokenMaster.SortNo,
+                                                                            hokenMaster.SeikyuYm,
+                                                                            hokenMaster.ReceFutanHide,
+                                                                            hokenMaster.ReceFutanKbn,
+                                                                            hokenMaster.KogakuTotalAll,
+                                                                            false,
+                                                                            hokenMaster.DayLimitCount)));
             }
 
             return result;
+        }
+
+        public bool DeleteHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int startDate)
+        {
+            var hokenMaster = TrackingDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
+                                                                             u.HokenNo == hokenNo &&
+                                                                             u.HokenEdaNo == hokenEdaNo &&
+                                                                             u.PrefNo == prefNo &&
+                                                                             u.StartDate == startDate);
+
+            if (hokenMaster is null)
+                return false;
+            else
+            {
+                TrackingDataContext.HokenMsts.Remove(hokenMaster);
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
+
+        /// <summary>
+        /// Item 1 is sortNO
+        /// Item 2 is HokenEdaNo
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="hokenNo"></param>
+        /// <param name="prefNo"></param>
+        /// <param name="startDate"></param>
+        /// <returns></returns>
+        public (int sortNo, int hokenEdaNo) GetInfoCloneInsuranceMst(int hpId, int hokenNo, int prefNo, int startDate)
+        {
+            int sortNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+                                                               u.HokenNo == hokenNo &&
+                                                               u.PrefNo == prefNo &&
+                                                               u.StartDate == startDate).Max(u => u.SortNo) + 1;
+
+
+            int hokenEdaNo = NoTrackingDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+                                                                   u.HokenNo == hokenNo &&
+                                                                   u.PrefNo == prefNo &&
+                                                                   u.StartDate == startDate).Max(u => u.HokenEdaNo) + 1;
+
+            return (sortNo, hokenEdaNo);
         }
     }
 }

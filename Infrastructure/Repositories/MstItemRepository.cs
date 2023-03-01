@@ -172,7 +172,8 @@ namespace Infrastructure.Repositories
                 tenMst?.MaxAge ?? string.Empty,
                 tenMst?.SanteiItemCd ?? string.Empty,
                 tenMst?.OdrTermVal ?? 0,
-                tenMst?.CnvTermVal ?? 0
+                tenMst?.CnvTermVal ?? 0,
+                tenMst?.DefaultVal ?? 0
             );
         }
 
@@ -218,7 +219,8 @@ namespace Infrastructure.Repositories
                 tenMst.MaxAge ?? string.Empty,
                 tenMst.SanteiItemCd ?? string.Empty,
                 tenMst.OdrTermVal,
-                tenMst.CnvTermVal
+                tenMst.CnvTermVal,
+                tenMst.DefaultVal
             )).ToList();
         }
 
@@ -228,7 +230,7 @@ namespace Infrastructure.Repositories
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
                 var inputKeyword = keyword;
-                kanaKeyword = WanaKana.RomajiToKana(keyword);
+                kanaKeyword = CIUtil.ToHalfsize(keyword);
                 if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
                     kanaKeyword = inputKeyword;
             }
@@ -327,6 +329,8 @@ namespace Infrastructure.Repositories
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
+
+            var count = queryResult.Count();
 
             if (kouiKbn > 0)
             {
@@ -554,25 +558,32 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.IsAdopted == 1);
             }
 
+            var tenKnList = queryResult.ToList();
+            var santeiItemCdList = tenKnList.Where(t => t.ItemCd.StartsWith("KN")).Select(t => t.SanteiItemCd).ToList();
+
             // Query 点数 for KN% item
-            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
-                                                                                       && item.StartDate <= sinDate
-                                                                                       && item.EndDate >= sinDate);
-            var kensaMstQuery = NoTrackingDataContext.KensaMsts.AsQueryable();
+            var tenMstList = NoTrackingDataContext.TenMsts
+                .Where(item => item.HpId == hpId
+                               && item.StartDate <= sinDate
+                               && item.EndDate >= sinDate
+                               && santeiItemCdList.Contains(item.ItemCd))
+                .ToList();
 
-            var queryKNTensu = from tenKN in queryResult
-                               join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
-                               where tenKN.ItemCd.StartsWith("KN")
-                               select new { tenKN.ItemCd, ten.Ten };
+            var knTensuList = (from tenKN in tenKnList
+                               join ten in tenMstList on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                               select new { tenKN.ItemCd, ten.Ten }).ToList();
 
-            var queryFinal = from ten in queryResult.AsEnumerable()
-                             join tenKN in queryKNTensu.AsEnumerable()
+            var queryFinal = (from ten in tenKnList
+                             join tenKN in knTensuList
                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { TenMst = ten, tenKN };
+                             select new { TenMst = ten, tenKN }).ToList();
 
-            var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
-                                     join k in kensaMstQuery.AsEnumerable()
+            var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
+            var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
+
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstList
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
@@ -625,7 +636,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.MaxAge ?? string.Empty,
                                                            item.TenMst?.SanteiItemCd ?? string.Empty,
                                                            item.TenMst?.OdrTermVal ?? 0,
-                                                           item.TenMst?.CnvTermVal ?? 0
+                                                           item.TenMst?.CnvTermVal ?? 0,
+                                                           item.TenMst?.DefaultVal ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -716,7 +728,9 @@ namespace Infrastructure.Repositories
                                                            item.MaxAge ?? string.Empty,
                                                            item.SanteiItemCd ?? string.Empty,
                                                            item.OdrTermVal,
-                                                           item.CnvTermVal)).ToList();
+                                                           item.CnvTermVal,
+                                                           item.DefaultVal
+                                                           )).ToList();
             }
 
             return tenMstModels;
@@ -818,6 +832,7 @@ namespace Infrastructure.Repositories
 
         public List<string> GetCheckItemCds(List<string> itemCds)
         {
+            itemCds = itemCds.Distinct().ToList();
             return NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
         }
 
@@ -872,7 +887,8 @@ namespace Infrastructure.Repositories
                     entity?.MaxAge ?? string.Empty,
                     entity?.SanteiItemCd ?? string.Empty,
                     entity?.OdrTermVal ?? 0,
-                    entity?.CnvTermVal ?? 0
+                    entity?.CnvTermVal ?? 0,
+                    entity?.DefaultVal ?? 0
                );
         }
 
@@ -922,7 +938,8 @@ namespace Infrastructure.Repositories
                     entity.MaxAge ?? string.Empty,
                     entity.SanteiItemCd ?? string.Empty,
                     entity.OdrTermVal,
-                    entity.CnvTermVal
+                    entity.CnvTermVal,
+                    entity.DefaultVal
                )).ToList();
         }
 
@@ -1120,14 +1137,15 @@ namespace Infrastructure.Repositories
         {
             return new ByomeiMstModel(
                     mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
                     ConvertByomeiCdDisplay(mst.ByomeiCd),
-                    mst.Sbyomei ?? String.Empty,
-                    mst.KanaName1 ?? String.Empty,
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
                     mst.SikkanCd,
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
-                    ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
                     mst.IsAdopted == 1
                 );
         }
@@ -1266,7 +1284,9 @@ namespace Infrastructure.Repositories
                         tenMst?.MaxAge ?? string.Empty,
                         tenMst?.SanteiItemCd ?? string.Empty,
                         0,
-                        0);
+                        0,
+                        tenMst?.DefaultVal ?? 0
+                        );
         }
 
         public void ReleaseResource()

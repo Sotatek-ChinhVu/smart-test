@@ -21,7 +21,8 @@ namespace Infrastructure.Repositories.SpecialNote
                    x.SeqNo,
                    x.Text ?? String.Empty,
                    x.Rtext == null ? string.Empty : Encoding.UTF8.GetString(x.Rtext),
-                   x.CreateDate
+                   x.CreateDate,
+                   x.UpdateDate
                 )).ToList();
             return summaryInfs.Any() ? summaryInfs.First() : new SummaryInfModel();
         }

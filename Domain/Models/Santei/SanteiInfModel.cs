@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.Santei;
+﻿using Helper.Common;
+
+namespace Domain.Models.Santei;
 
 public class SanteiInfModel
 {
-    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, List<SanteiInfDetailModel> listSanteiInfDetails)
+    public SanteiInfModel(long id, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, string itemName, int lastOdrDate, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum, int sinDate, List<SanteiInfDetailModel> listSanteiInfDetails)
     {
         Id = id;
         PtId = ptId;
@@ -18,6 +20,7 @@ public class SanteiInfModel
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
         ListSanteiInfDetails = listSanteiInfDetails;
         IsDeleted = false;
+        SinDate = sinDate;
     }
 
     public SanteiInfModel(string itemCd, int santeiItemCount, double santeiItemSum, int currentMonthSanteiItemCount, double currentMonthSanteiItemSum)
@@ -100,5 +103,79 @@ public class SanteiInfModel
 
     public bool IsDeleted { get; private set; }
 
+    public int SinDate { get; private set; }
+
     public List<SanteiInfDetailModel> ListSanteiInfDetails { get; private set; }
+
+    public int DayCount
+    {
+        get
+        {
+            return CIUtil.GetSanteInfDayCount(SinDate, LastOdrDate, AlertTerm);
+        }
+    }
+
+    public string DayCountDisplay
+    {
+        get
+        {
+            string dayCountDisplay = string.Empty;
+            if (DayCount != 0)
+            {
+                switch (AlertTerm)
+                {
+                    case 2:
+                        dayCountDisplay = DayCount + "日";
+                        break;
+                    case 3:
+                        dayCountDisplay = DayCount + "週";
+                        break;
+                    case 4:
+                        dayCountDisplay = DayCount + "ヶ月";
+                        break;
+                    case 5:
+                        dayCountDisplay = DayCount + "週";
+                        break;
+                    case 6:
+                        dayCountDisplay = DayCount + "ヶ月";
+                        break;
+                }
+            }
+            return dayCountDisplay;
+        }
+    }
+
+    public string KisanType
+    {
+        get
+        {
+            var santeiInfDetail = ListSanteiInfDetails.OrderByDescending(u => u.KisanDate).FirstOrDefault();
+            if (santeiInfDetail != null)
+            {
+                return GetKisanName(santeiInfDetail.KisanSbt);
+            }
+            return "前回日";
+        }
+    }
+
+    private string GetKisanName(int kisanSbt)
+    {
+        switch (kisanSbt)
+        {
+            case 1:
+                return "初回日";
+            case 2:
+                return "発症日";
+            case 3:
+                return "急性増悪";
+            case 4:
+                return "治療開始";
+            case 5:
+                return "手術日";
+            case 6:
+                return "初回診断";
+            default:
+                return "前回日";
+        }
+    }
 }

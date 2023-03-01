@@ -2,7 +2,7 @@
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetListRaiinInfs;
 
-namespace Interactor.RaiinFilterMst;
+namespace Interactor.Reception;
 
 public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
 {

@@ -29,7 +29,7 @@ namespace Domain.Models.NextOrder
             {
                 return NextOrderStatus.InvalidRsvkrtKbn;
             }
-            if (RsvDate <= 0)
+            if (RsvDate < 0)
             {
                 return NextOrderStatus.InvalidRsvDate;
             }

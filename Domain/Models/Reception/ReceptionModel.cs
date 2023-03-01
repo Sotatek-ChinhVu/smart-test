@@ -91,10 +91,6 @@ namespace Domain.Models.Reception
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
             Comment = comment;
-            KaSname = string.Empty;
-            SName = string.Empty;
-            Houbetu = string.Empty;
-            HokensyaNo = string.Empty;
         }
 
         public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
@@ -103,15 +99,11 @@ namespace Domain.Models.Reception
             PtId = ptId;
             RaiinNo = raiinNo;
             Comment = comment;
-            YoyakuTime = string.Empty;
-            UketukeTime = string.Empty;
-            SinStartTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
-            KaSname = string.Empty;
-            SName = string.Empty;
-            Houbetu = string.Empty;
-            HokensyaNo = string.Empty;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
         }
 
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
@@ -124,14 +116,10 @@ namespace Domain.Models.Reception
             Status = status;
             YoyakuId = yokakuId;
             TantoId = tantoId;
-            YoyakuTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
-            Comment = string.Empty;
-            KaSname = string.Empty;
-            SName = string.Empty;
-            Houbetu = string.Empty;
-            HokensyaNo = string.Empty;
+            YoyakuTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            Comment = String.Empty;
         }
 
         public ReceptionModel()
@@ -145,35 +133,31 @@ namespace Domain.Models.Reception
             SanteiKbn = 0;
             Status = 0;
             IsYoyaku = 0;
-            YoyakuTime = string.Empty;
+            YoyakuTime = String.Empty;
             YoyakuId = 0;
             UketukeSbt = 0;
-            UketukeTime = string.Empty;
+            UketukeTime = String.Empty;
             UketukeId = 0;
             UketukeNo = 0;
-            SinStartTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
             KaikeiId = 0;
             KaId = 0;
             TantoId = 0;
             SyosaisinKbn = 0;
             JikanKbn = 0;
-            Comment = string.Empty;
-            KaSname = string.Empty;
-            SName = string.Empty;
-            Houbetu = string.Empty;
-            HokensyaNo = string.Empty;
+            Comment = String.Empty;
         }
 
         public ReceptionModel(int tantoId, int kaId)
         {
-            Comment = string.Empty;
-            YoyakuTime = string.Empty;
-            UketukeTime = string.Empty;
-            SinStartTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
+            Comment = String.Empty;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
             KaId = kaId;
             TantoId = tantoId;
             KaSname = string.Empty;

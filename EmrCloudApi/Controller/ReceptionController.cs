@@ -95,7 +95,7 @@ namespace EmrCloudApi.Controller
             if (output.Status == InsertReceptionStatus.Success)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo, PtId = input.Dto.Reception.PtId });
             }
 
             var presenter = new InsertReceptionPresenter();
@@ -112,7 +112,7 @@ namespace EmrCloudApi.Controller
             if (output.Status == UpdateReceptionStatus.Success)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo, PtId = input.Dto.Reception.PtId });
             }
 
             var presenter = new UpdateReceptionPresenter();

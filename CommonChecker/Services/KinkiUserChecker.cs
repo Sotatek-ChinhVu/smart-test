@@ -23,11 +23,17 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             // Get listItemCode
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
-            List<KinkiResultModel> checkedResult = Finder.CheckKinkiUser(HpID, settingLevel, Sinday, listItemCode, listItemCode);
+            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiUser(HpID, settingLevel, Sinday, listItemCode, listItemCode);
             RemoveDuplicate(ref checkedResult);
 
             List<ItemCodeModel> listDrugItemCode = GetAllOdrDetailCodeByOrderList(CurrentListOrder);
             checkedResult.AddRange(Finder.CheckKinkiUser(HpID, settingLevel, Sinday, listDrugItemCode, listItemCode));
+
+            if (checkedResult.Count > 0)
+            {
+                unitCheckerResult.IsError = true;
+                unitCheckerResult.ErrorInfo = checkedResult;
+            }
 
             return unitCheckerResult;
         }
@@ -51,7 +57,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private int GetSettingLevel()
         {
-            return SystemConfig.KinkiLevelSetting;
+            return SystemConfig!.KinkiLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)

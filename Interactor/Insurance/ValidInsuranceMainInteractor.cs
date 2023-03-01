@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Constants;
 using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidMainInsurance;
 
@@ -23,7 +24,7 @@ namespace Interactor.Insurance
             try
             {
                 // Get HokenMst
-                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo);
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo, inputData.SinDate);
 
                 // Get HokenSyaMst
                 //get FindHokensyaMstByNoNotrack

@@ -26,7 +26,7 @@ public class GetAccountDueListPresenter : IGetAccountDueListOutputPort
         GetAccountDueListStatus.Successed => ResponseMessage.Success,
         GetAccountDueListStatus.Failed => ResponseMessage.Failed,
         GetAccountDueListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-        GetAccountDueListStatus.InvalidPtId => ResponseMessage.PtInfNotFound,
+        GetAccountDueListStatus.InvalidPtId => ResponseMessage.NotFoundPtInf,
         GetAccountDueListStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
         _ => string.Empty
     };

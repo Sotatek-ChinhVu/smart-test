@@ -242,6 +242,10 @@ namespace Domain.Models.NextOrder
             get => (SinKouiKbn >= 31 && SinKouiKbn <= 34) || (SinKouiKbn == 30 && ItemCd.StartsWith("Z") && MasterSbt == "S");
         }
 
+        public bool IsInDrugOdr
+        {
+            get => (SinKouiKbn >= 20 && SinKouiKbn <= 23) || SinKouiKbn == 28;
+        }
 
         public bool IsSpecialItem
         {
