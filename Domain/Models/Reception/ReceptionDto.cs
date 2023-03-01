@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.Accounting;
+﻿using Domain.Models.Accounting;
 using Domain.Models.ReceptionSameVisit;
 using Helper.Common;
 using Helper.Constants;
