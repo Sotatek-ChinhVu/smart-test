@@ -19,12 +19,18 @@ public class SyunoSeikyuModel
         NewAdjustFutan = newAdjustFutan;
         NewSeikyuGaku = newSeikyuGaku;
         NewSeikyuDetail = newSeikyuDetail;
+        RaiinInfModel = new();
+        SyunoNyukinModels = new();
+        KaikeiInfModels = new();
     }
 
     public SyunoSeikyuModel()
     {
         SeikyuDetail = string.Empty;
         NewSeikyuDetail = string.Empty;
+        RaiinInfModel = new();
+        SyunoNyukinModels = new();
+        KaikeiInfModels = new();
     }
 
     public SyunoSeikyuModel(int hpId, long ptId, int sinDate, long raiinNo, int nyukinKbn, int seikyuTensu, int adjustFutan, int seikyuGaku, string seikyuDetail, int newSeikyuTensu, int newAdjustFutan, int newSeikyuGaku, string newSeikyuDetail, SyunoRaiinInfModel raiinInfModel, List<SyunoNyukinModel> syunoNyukinModels, List<KaikeiInfModel> kaikeiInfModels, int hokenId)
@@ -84,9 +90,33 @@ public class SyunoSeikyuModel
 
     #region BindData
     public int TotalPointOne { get => SeikyuTensu; }
-    public int KanFutanOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.PtFutan + item.AdjustRound); }
-    public int TotalSelfExpenseOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiFutan + item.JihiOuttax); }
-    public int TaxOne { get => KaikeiInfModels.Where(x => x.RaiinNo == RaiinNo).Sum(item => item.JihiTax + item.JihiOuttax); }
+    public int KanFutanOne
+    {
+        get
+        {
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.PtFutan + item.AdjustRound) : 0;
+            return result;
+        }
+    }
+    public int TotalSelfExpenseOne
+    {
+        get
+        {
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.JihiFutan + item.JihiOuttax) : 0;
+            return result;
+        }
+    }
+    public int TaxOne
+    {
+        get
+        {
+            var kaikeiInfs = KaikeiInfModels?.Where(x => x.RaiinNo == RaiinNo);
+            var result = kaikeiInfs?.Count() > 0 ? kaikeiInfs.Sum(item => item.JihiTax + item.JihiOuttax) : 0;
+            return result;
+        }
+    }
     public int AdjustFutanOne { get => AdjustFutan; }
     public int SumAdjustOne { get => SeikyuGaku; }
     #endregion

@@ -149,6 +149,25 @@
         public string Kohi4PriorityNo { get; set; } = string.Empty;
 
         /// <summary>
+        /// 計算順番
+        ///     診察日 + 診察開始時間 + 来院番号 + 公費優先順位(都道府県番号+優先順位+法別番号) + 保険PID + 0
+        /// </summary>
+        public string SortKey
+        {
+            get
+            {
+                return string.Format(
+                "{0}{1}{2:D10}{3}{4}{5}{6}{7}{8}{9}{10}{11:D4}0",
+                SinDate, SinStartTime?.PadRight(6, '0') ?? "000000", RaiinNo,
+                Kohi1PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi1Houbetu?.PadLeft(3, '0') ?? "999",
+                Kohi2PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi2Houbetu?.PadLeft(3, '0') ?? "999",
+                Kohi3PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi3Houbetu?.PadLeft(3, '0') ?? "999",
+                Kohi4PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi4Houbetu?.PadLeft(3, '0') ?? "999",
+                HokenPid);
+            }
+        }
+
+        /// <summary>
         /// 実日数カウント有無
         /// </summary>
         public bool JituNisu { get; set; }
@@ -234,24 +253,5 @@
         /// 労災用（円→点数換算）
         /// </summary>
         public int RousaiEnTensu { get; set; }
-
-        /// <summary>
-        /// 計算順番
-        ///     診察日 + 診察開始時間 + 来院番号 + 公費優先順位(都道府県番号+優先順位+法別番号) + 保険PID + 0
-        /// </summary>
-        public string SortKey
-        {
-            get
-            {
-                return string.Format(
-                "{0}{1}{2:D10}{3}{4}{5}{6}{7}{8}{9}{10}{11:D4}0",
-                SinDate, SinStartTime?.PadRight(6, '0') ?? "000000", RaiinNo,
-                Kohi1PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi1Houbetu?.PadLeft(3, '0') ?? "999",
-                Kohi2PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi2Houbetu?.PadLeft(3, '0') ?? "999",
-                Kohi3PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi3Houbetu?.PadLeft(3, '0') ?? "999",
-                Kohi4PriorityNo?.PadLeft(5, '9') ?? "99999", Kohi4Houbetu?.PadLeft(3, '0') ?? "999",
-                HokenPid);
-            }
-        }
     }
 }

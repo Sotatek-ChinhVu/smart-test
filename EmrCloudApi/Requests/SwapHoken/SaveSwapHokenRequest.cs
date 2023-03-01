@@ -2,7 +2,7 @@
 {
     public class SaveSwapHokenRequest
     {
-        public SaveSwapHokenRequest(long ptId, int hokenIdBefore, string hokenNameBefore, int hokenIdAfter, string hokenNameAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, bool isHokenPatternUsed, bool confirmInvalidIsShowConversionCondition, bool confirmSwapHoken)
+        public SaveSwapHokenRequest(long ptId, int hokenIdBefore, string hokenNameBefore, int hokenIdAfter, string hokenNameAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, bool isHokenPatternUsed, bool confirmInvalidIsShowConversionCondition, bool confirmSwapHoken, bool isReCalculation, bool isReceCalculation, bool isReceCheckError)
         {
             PtId = ptId;
             HokenIdBefore = hokenIdBefore;
@@ -16,6 +16,9 @@
             IsHokenPatternUsed = isHokenPatternUsed;
             ConfirmInvalidIsShowConversionCondition = confirmInvalidIsShowConversionCondition;
             ConfirmSwapHoken = confirmSwapHoken;
+            IsReCalculation = isReCalculation;
+            IsReceCalculation = isReceCalculation;
+            IsReceCheckError = isReceCheckError;
         }
 
         public long PtId { get; private set; }
@@ -41,5 +44,14 @@
         public bool ConfirmInvalidIsShowConversionCondition { get; private set; }
 
         public bool ConfirmSwapHoken { get; private set; }
+
+        #region caculate module client
+        public bool IsReCalculation { get; private set; }
+
+        public bool IsReceCalculation { get; private set; }
+
+        public bool IsReceCheckError { get; private set; }
+        #endregion
+
     }
 }

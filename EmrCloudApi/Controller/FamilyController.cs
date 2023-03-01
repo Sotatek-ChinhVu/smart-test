@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.Family;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.GetRaiinInfList;
 using UseCase.Family.SaveFamilyList;
 
 namespace EmrCloudApi.Controller;
@@ -59,6 +60,17 @@ public class FamilyController : AuthorizeControllerBase
         return new ActionResult<Response<SaveFamilyListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetRaiinInfList)]
+    public ActionResult<Response<GetRaiinInfListResponse>> GetListRaiinInf([FromQuery] GetRaiinInfListRequest request)
+    {
+        var input = new GetRaiinInfListInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetRaiinInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetRaiinInfListResponse>>(presenter.Result);
+    }
     private List<FamilyItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
     {
         var result = listFamilyRequest.Select(family => new FamilyItem(

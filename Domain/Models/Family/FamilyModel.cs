@@ -2,7 +2,7 @@
 
 public class FamilyModel
 {
-    public FamilyModel(long familyId, long seqNo, string zokugaraCd, long familyPtId, long familyPtNum, string name, string kanaName, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis)
+    public FamilyModel(long familyId, long seqNo, string zokugaraCd, long familyPtId, long familyPtNum, string name, string kanaName, int sex, int birthday, int age, int isDead, int isSeparated, string biko, int sortNo, List<PtFamilyRekiModel> listPtFamilyRekis, string diseaseName)
     {
         FamilyId = familyId;
         SeqNo = seqNo;
@@ -21,6 +21,7 @@ public class FamilyModel
         ListPtFamilyRekis = listPtFamilyRekis;
         PtId = 0;
         IsDeleted = false;
+        DiseaseName = diseaseName;
     }
 
     public FamilyModel(long familyId, long ptId, string zokugaraCd, long familyPtId)
@@ -42,6 +43,7 @@ public class FamilyModel
         SortNo = 0;
         ListPtFamilyRekis = new();
         IsDeleted = false;
+        DiseaseName = string.Empty;
     }
 
     public FamilyModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int isDead)
@@ -63,6 +65,7 @@ public class FamilyModel
         SortNo = 0;
         ListPtFamilyRekis = new();
         IsDeleted = false;
+        DiseaseName = string.Empty;
     }
 
     public FamilyModel(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<PtFamilyRekiModel> listPtFamilyRekis)
@@ -84,6 +87,7 @@ public class FamilyModel
         SortNo = sortNo;
         ListPtFamilyRekis = listPtFamilyRekis;
         IsDeleted = isDeleted;
+        DiseaseName = string.Empty;
     }
 
     public long FamilyId { get; private set; }
@@ -119,4 +123,6 @@ public class FamilyModel
     public List<PtFamilyRekiModel> ListPtFamilyRekis { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public string DiseaseName { get; private set; }
 }

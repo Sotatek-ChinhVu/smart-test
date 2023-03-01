@@ -105,6 +105,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return result;
     }
 
+    public string GetSettingParam(int hpId, int userId, int groupCd, int grpItemCd = 0, string defaultValue = "")
+    {
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
+             p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.UserId == userId);
+        return userConf != null ? userConf.Param ?? string.Empty : defaultValue;
+    }
+
     private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)
     {
         var result = NoTrackingDataContext.UserConfs
@@ -119,6 +126,14 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         _memoryCache.Set(GetCacheKey(), result, cacheEntryOptions);
         return result;
     }
+
+
+    public List<UserConfModel> GetListUserConf(int hpId, int userId, int groupCd)
+    {
+        return NoTrackingDataContext.UserConfs.Where(p =>
+            p.HpId == hpId && p.GrpCd == groupCd && p.UserId == userId).AsEnumerable().Select(u => ToModel(u)).ToList();
+    }
+
     public int Sagaku(bool fromRece)
     {
         if (fromRece)
@@ -326,9 +341,59 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return 0;
     }
 
+    public bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs)
+    {
+        foreach (var model in userConfs)
+        {
+            var checkEntity = TrackingDataContext.UserConfs.FirstOrDefault(u => u.GrpCd == model.GrpCd && u.GrpItemCd == model.GrpItemCd && u.GrpItemEdaNo == model.GrpItemEdaNo && u.HpId == hpId && u.UserId == userId);
+            if (checkEntity == null)
+            {
+                var entity = ConvertToEntity(userId, hpId, model);
+                entity.HpId = hpId;
+                entity.CreateId = userId;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.UpdateId = userId;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                TrackingDataContext.UserConfs.Add(entity);
+            }
+            else
+            {
+                checkEntity.Val = model.Val;
+                checkEntity.Param = model.Param;
+                checkEntity.UpdateId = userId;
+                checkEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            }
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private static UserConf ConvertToEntity(int userId, int hpId, UserConfModel userConfModel)
+    {
+        var userConf = new UserConf();
+        userConf.HpId = hpId;
+        userConf.UserId = userId;
+        userConf.GrpCd = userConfModel.GrpCd;
+        userConf.GrpItemCd = userConfModel.GrpItemCd;
+        userConf.GrpItemEdaNo = userConfModel.GrpItemEdaNo;
+        userConf.Val = userConfModel.Val;
+        userConf.Param = userConfModel.Param;
+
+        return userConf;
+    }
+
+    public int GetSettingValue(int hpId, int userId, int groupCd, int grpItemCd = 0, int grpItemEdaNo = 0)
+    {
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId 
+                                                                           && p.GrpCd == groupCd 
+                                                                           && p.GrpItemCd == grpItemCd 
+                                                                           && p.GrpItemEdaNo == grpItemEdaNo 
+                                                                           && p.UserId == userId);
+        return userConf != null ? userConf.Val : GetDefaultValue(groupCd, grpItemCd);
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
-
 }

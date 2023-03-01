@@ -10,7 +10,7 @@ namespace Domain.Models.MedicalExamination
     {
         List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou);
 
-        void IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, ref List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail);
+        List<CheckedOrderModel> IgakuTokusituIsChecked(int hpId, int sinDate, int syosaisinKbn, List<CheckedOrderModel> checkedOrders, List<OrdInfDetailModel> allOdrInfDetail);
 
         List<CheckedOrderModel> SihifuToku1(int hpId, long ptId, int sinDate, int hokenId, int syosaisinKbn, long raiinNo, long oyaRaiinNo, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou);
 
@@ -33,5 +33,7 @@ namespace Domain.Models.MedicalExamination
         List<CheckedOrderModel> Zanyaku(int hpId, int sinDate, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOrderInf);
 
         (List<string>, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder);
+
+        Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(long ptID, int sinDate, long raiinNo);
     }
 }
