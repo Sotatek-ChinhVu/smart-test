@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Helper.Common;
+using Helper.Constants;
 
 namespace Domain.Models.ReceptionSameVisit
 {

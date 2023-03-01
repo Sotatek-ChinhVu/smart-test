@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Constant
+﻿namespace Helper.Constants
 {
     public static class HokenConstant
     {
@@ -131,5 +125,13 @@ namespace Domain.Constant
     public static class KohiHoubetu
     {
         public const string Choki = "102";
+    }
+
+    /// <summary>
+    /// 高額療養費の合算対象となる一部負担金
+    /// </summary>
+    public static class KogakuIchibu
+    {
+        public const int BorderVal = 21000;
     }
 }

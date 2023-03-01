@@ -2066,6 +2066,7 @@ namespace Helper.Common
 
             return retDate;
         }
+
         public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
         {
             //法別番号を求める
