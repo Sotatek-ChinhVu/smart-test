@@ -160,6 +160,7 @@
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
+        public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -217,5 +218,8 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //System Conf
+        public const string GetSystemConfForPrint = "GetSystemConfForPrint";
     }
 }
