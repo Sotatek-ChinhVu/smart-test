@@ -253,7 +253,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
             new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>()
