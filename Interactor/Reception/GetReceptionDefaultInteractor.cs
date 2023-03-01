@@ -17,30 +17,55 @@ namespace Interactor.Reception
             {
                 if (inputData.HpId < 0)
                 {
-                    return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidHpId);
+                    return new GetReceptionDefaultOutputData(new(), GetReceptionDefaultStatus.InvalidHpId);
                 }
 
                 if (inputData.PtId < 0)
                 {
-                    return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidPtId);
+                    return new GetReceptionDefaultOutputData(new(), GetReceptionDefaultStatus.InvalidPtId);
                 }
 
                 if (inputData.Sindate < 0)
                 {
-                    return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidSindate);
+                    return new GetReceptionDefaultOutputData(new(), GetReceptionDefaultStatus.InvalidSindate);
                 }
 
                 if (inputData.DefaultDoctorSetting < 0)
                 {
-                    return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidDefautDoctorSetting);
+                    return new GetReceptionDefaultOutputData(new(), GetReceptionDefaultStatus.InvalidDefautDoctorSetting);
                 }
 
                 var data = _receptionRepository.GetDataDefaultReception(inputData.HpId, inputData.PtId, inputData.Sindate, inputData.DefaultDoctorSetting);
-                return new GetReceptionDefaultOutputData(data, GetReceptionDefaultStatus.Successed);
+                return new GetReceptionDefaultOutputData(new ReceptionDto(
+                        data.HpId,
+                        data.PtId,
+                        data.SinDate,
+                        data.RaiinNo,
+                        data.OyaRaiinNo,
+                        data.HokenPid,
+                        data.SanteiKbn,
+                        data.Status,
+                        data.IsYoyaku,
+                        data.YoyakuTime,
+                        data.YoyakuId,
+                        data.UketukeSbt,
+                        data.UketukeTime,
+                        data.UketukeId,
+                        data.UketukeNo,
+                        data.SinStartTime,
+                        data.SinEndTime,
+                        data.KaikeiTime,
+                        data.KaikeiId,
+                        data.KaId,
+                        data.TantoId,
+                        data.SyosaisinKbn,
+                        data.JikanKbn,
+                        data.Comment
+                    ), GetReceptionDefaultStatus.Successed);
             }
             catch
             {
-                return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.Failed);
+                return new GetReceptionDefaultOutputData(new(), GetReceptionDefaultStatus.Failed);
             }
             finally
             {

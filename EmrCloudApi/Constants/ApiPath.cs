@@ -166,6 +166,7 @@
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
+        public const string UpsertUserConfList = "UpsertUserConfList";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";

@@ -1,5 +1,5 @@
-﻿using Domain.Constant;
-using Domain.Models.InsuranceInfor;
+﻿using Domain.Models.InsuranceInfor;
+using Helper.Constants;
 
 namespace EmrCloudApi.Responses.Insurance
 {

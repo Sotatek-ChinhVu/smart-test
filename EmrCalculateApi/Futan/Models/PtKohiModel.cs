@@ -13,7 +13,7 @@ namespace EmrCalculateApi.Futan.Models
         /// <summary>
         /// 公費優先順位(KOHI_PRIORITY.PRIORITY_NO)
         /// </summary>
-        public string PriorityNo { get; }
+        public string PriorityNo { get; } = "99999";
 
         public PtKohiModel(PtKohi ptKohi, HokenMst hokenMst, bool exceptHokensya, string priorityNo)
         {
@@ -173,6 +173,19 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
+        /// 高額療養費の合算時に公費負担を除く
+        ///     0: 公費負担を含む
+        ///     1: 公費負担を除く
+		///     
+        /// 一般公費が対象（主補公費の場合に使用を想定）
+		/// 分点公費や生活保護は、公費負担を除くようになっている
+        /// </summary>
+        public int KogakuTotalExcFutan
+        {
+            get { return HokenMst.KogakuTotalExcFutan; }
+        }
+
+        /// <summary>
         /// 計算特殊処理区分   
         /// </summary>
         public int CalcSpKbn
@@ -306,6 +319,18 @@ namespace EmrCalculateApi.Futan.Models
                     PriorityNo?.PadLeft(5, '9') ?? "99999", HokenMst.Houbetu?.PadLeft(3, '0') ?? "999"
                 );
             }
+        }
+
+        /// <summary>
+        /// 高額療養費 配慮措置適用区分
+        ///     0: 県内(配慮措置なし)・県外(配慮措置なし)
+        ///     1: 県内(配慮措置なし)・県外(配慮措置あり)
+        ///     2: 県内(配慮措置あり)・県外(配慮措置なし)
+        ///     3: 県内(配慮措置あり)・県外(配慮措置あり)
+        /// </summary>
+        public int KogakuHairyoKbn
+        {
+            get => HokenMst.KogakuHairyoKbn;
         }
     }
 }

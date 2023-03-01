@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Helper.Common;
+using Helper.Constants;
 
 namespace Domain.Models.ReceptionSameVisit
 {
@@ -29,7 +30,7 @@ namespace Domain.Models.ReceptionSameVisit
             RaiinInfSyosaisinKbn = raiinInfSyosaisinKbn;
             RaiinInfSanteiKbn = raiinInfSanteiKbn;
             RaiinInfJikanKbn = raiinInfJikanKbn;
-
+            HokenInfModels = new();
         }
 
         public HokenPatternModel(long ptId, int hokenPid, int hokenId, int startDate, int endDate, int hokenSbtCd, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, HokenInfModel hokenInfModels, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
@@ -50,6 +51,17 @@ namespace Domain.Models.ReceptionSameVisit
             Kohi2 = kohi2;
             Kohi3 = kohi3;
             Kohi4 = kohi4;
+            HokenMstHoubetu = string.Empty;
+        }
+
+        public HokenPatternModel()
+        {
+            Kohi1 = new();
+            Kohi2 = new();
+            Kohi3 = new();
+            Kohi4 = new();
+            HokenInfModels = new();
+            HokenMstHoubetu = string.Empty;
         }
 
         public long PtId { get; private set; }

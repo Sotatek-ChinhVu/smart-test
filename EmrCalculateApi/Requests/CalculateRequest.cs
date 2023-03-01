@@ -12,4 +12,11 @@
 
         public string Prefix { get; set; } = string.Empty;
     }
+
+    public class ReceCalculateRequest
+    {
+        public List<long> PtIds { get; set; } = new List<long>();
+
+        public int SeikyuYm { get; set; }
+    }
 }
