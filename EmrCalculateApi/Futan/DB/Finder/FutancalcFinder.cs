@@ -7,12 +7,13 @@ using Domain.Constant;
 namespace EmrCalculateApi.Futan.DB.Finder
 {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable IDE0075 // Simplify conditional expression
 #pragma warning disable S1125
     public class FutancalcFinder
     {
-        private List<KogakuLimitModel> _kogakuLimitModels = new List<KogakuLimitModel>();
+        private List<KogakuLimitModel>? _kogakuLimitModels;
         private readonly TenantDataContext _tenantDataContext;
         public FutancalcFinder(TenantDataContext tenantDataContext)
         {
@@ -106,11 +107,21 @@ namespace EmrCalculateApi.Futan.DB.Finder
                     }
                 );
 
+                var prefNo = _tenantDataContext.HpInfs
+                        .FindListQueryableNoTrack(h =>
+                            h.HpId == hpId &&
+                            h.StartDate <= sinDate
+                        )
+                        .OrderByDescending(h => h.StartDate)
+                        .Select(h => h.PrefNo)
+                        .FirstOrDefault();
+
                 var result = joinQuery.AsEnumerable().Select(
                     data =>
                         new PtHokenInfModel(
                             data.ptHokenInf,
-                            data.hokenMst //data.hokenMst
+                            data.hokenMst,
+                            prefNo
                         )
                     )
                     .FirstOrDefault();

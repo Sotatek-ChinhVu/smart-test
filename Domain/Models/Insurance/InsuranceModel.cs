@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.Insurance;
+﻿using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;

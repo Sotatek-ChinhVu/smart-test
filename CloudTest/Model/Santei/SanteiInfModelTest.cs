@@ -22,6 +22,7 @@ public class SanteiInfModelTest
         double santeiItemSum = 1.1;
         int currentMonthSanteiItemCount = 1;
         double currentMonthSanteiItemSum = 1.1;
+        int sinDate = 20220101;
         var listSanteiInfDetails = new List<SanteiInfDetailModel>()
         {
             new SanteiInfDetailModel(
@@ -51,6 +52,7 @@ public class SanteiInfModelTest
                                                     santeiItemSum,
                                                     currentMonthSanteiItemCount,
                                                     currentMonthSanteiItemSum,
+                                                    sinDate,
                                                     listSanteiInfDetails
                                                 );
         Assert.True(

@@ -200,6 +200,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             // 包括処理
             Houkatu(first);
 
+            // 行為包括処理
+            KouiHoukatu(first);
+
             // 背反処理
             Haihan(first);
 
@@ -845,7 +848,39 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             _emrLogger.WriteLogEnd(this, conFncName, "");
         }
+        private void KouiHoukatu(bool excludeMaybe)
+        {
+            const string conFncName = nameof(KouiHoukatu);
 
+            List<KouiHoukatuMstModel> filteredKoiuHoukatuMst = _common.Mst.FindKouiHoukatuMst(_common.sinDate, _common.IsRosai);
+
+            foreach (KouiHoukatuMstModel kouiHoukatuMst in filteredKoiuHoukatuMst)
+            {
+                // 他の項目を削除する項目のリスト
+                List<string> checkItemCds =
+                    new List<string>
+                    {
+                        kouiHoukatuMst.ItemCd
+                    };
+
+                List<(int min, int max, double stdTen, bool syotei, bool excludeYakuzai, bool excludeTokuzai, bool excludeFilm)> delKoui =
+                    new List<(int min, int max, double stdTen, bool syotei, bool excludeYakuzai, bool excludeTokuzai, bool excludeFilm)>
+                    {
+                    (kouiHoukatuMst.KouiFrom, kouiHoukatuMst.KouiTo, 0, false, false, false, false)
+                    };
+
+                DelWrkDetail(
+                    checkItemCds: checkItemCds,
+                    delKouis: delKoui,
+                    delItemCds: null,
+                    delCdKbns: null,
+                    excludeItemCds: null,
+                    checkTerm: kouiHoukatuMst.HoukatuTerm,
+                    ignoreSanteiKbn: (kouiHoukatuMst.IgnoreSanteiKbn == 1));
+            }
+
+            _emrLogger.WriteLogEnd(this, conFncName, "");
+        }
         /// <summary>
         /// 背反処理
         /// </summary>
@@ -3414,10 +3449,10 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="checkTerm">0:同来院　1:同日 2:月(診療日以前) 3:月(月末まで)</param>
         private void DelWrkDetail
             (List<string> checkItemCds, List<(int min, int max, double stdTen, bool syotei, bool excludeYakuzai, bool excludeTokuzai, bool excludeFilm)> delKouis, List<string> delItemCds, List<string> delCdKbns,
-             List<string> excludeItemCds, int checkTerm, int delSbt = DelSbtConst.HoukatuTokusyu)
+             List<string> excludeItemCds, int checkTerm, int delSbt = DelSbtConst.HoukatuTokusyu, bool ignoreSanteiKbn = false)
         {
             // 今回の算定から、他の行為を包括する診療行為(checkItemCds)を探す
-            List<WrkSinKouiDetailModel> wrkDtls = GetWrkDtlRaiin(checkItemCds);
+            List<WrkSinKouiDetailModel> wrkDtls = GetWrkDtlRaiin(checkItemCds, ignoreSanteiKbn);
 
             if (wrkDtls.Any())
             {
@@ -3425,16 +3460,30 @@ namespace EmrCalculateApi.Ika.ViewModels
                 foreach (WrkSinKouiDetailModel wrkDtl in wrkDtls)
                 {
                     List<int> santeiKbns = new List<int>();
-                    if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
+
+                    if (ignoreSanteiKbn)
                     {
-                        // 自費算定の項目は自費算定の項目のみ包括する
-                        santeiKbns.Add(SanteiKbnConst.Jihi);
+                        santeiKbns.AddRange(
+                            new List<int>()
+                            {
+                                SanteiKbnConst.Santei,
+                                SanteiKbnConst.Jihi
+                            }
+                            );
                     }
                     else
                     {
-                        // 自費算定以外の場合、自費算定は包括しない
-                        santeiKbns.AddRange(CalcUtils.GetCheckSanteiKbns(wrkDtl.HokenKbn, _systemConfigProvider.GetHokensyuHandling()));
-                        santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
+                        if (_common.Wrk.GetSanteiKbn(wrkDtl.RaiinNo, wrkDtl.RpNo) == SanteiKbnConst.Jihi)
+                        {
+                            // 自費算定の項目は自費算定の項目のみ包括する
+                            santeiKbns.Add(SanteiKbnConst.Jihi);
+                        }
+                        else
+                        {
+                            // 自費算定以外の場合、自費算定は包括しない
+                            santeiKbns.AddRange(CalcUtils.GetCheckSanteiKbns(wrkDtl.HokenKbn, _systemConfigProvider.GetHokensyuHandling()));
+                            santeiKbns.RemoveAll(p => p == SanteiKbnConst.Jihi);
+                        }
                     }
                     
                     //if (_common.Wrk.wrkSinKouiDetailDels.Any(p =>
@@ -3697,7 +3746,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="checkItemCds"></param>
         /// <param name="beforeThisRaiin">true-当来院以前の診療行為を探す</param>
         /// <returns></returns>
-        private List<WrkSinKouiDetailModel> GetWrkDtlRaiin(List<string> checkItemCds)
+        private List<WrkSinKouiDetailModel> GetWrkDtlRaiin(List<string> checkItemCds, bool ignoreSanteiKbn = false)
         {
             List<WrkSinKouiDetailModel> results = new List<WrkSinKouiDetailModel>();
 
@@ -3708,7 +3757,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         _common.Wrk.ExistWrkSinKouiDetailDel(p) == false &&
                         //p.HokenKbn == _common.hokenKbn &&
                         checkHokenKbn.Contains(p.HokenKbn) &&
-                        checkSanteiKbn.Contains(_common.Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo)) &&
+                        (ignoreSanteiKbn == true ? true : checkSanteiKbn.Contains(_common.Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))) &&
                         checkItemCds.Contains(p.ItemCd) &&
                         p.IsDummy == false &&
                         p.IsDeleted == DeleteStatus.None);

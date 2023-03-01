@@ -29,8 +29,9 @@ namespace Domain.Models.Insurance
             ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
             CheckId = checkId;
             CheckMachine = checkMachine;
-            CheckComment = checkComment;
             IsDeleted = isDeleted;
+            CheckName = string.Empty;
+            CheckComment = string.Empty;
         }
 
         public ConfirmDateModel(int hokenGrp, int hokenId, long seqNo, int checkId, string checkName, string checkComment, DateTime confirmDate)
@@ -41,6 +42,7 @@ namespace Domain.Models.Insurance
             CheckId = checkId;
             CheckName = checkName;
             CheckComment = checkComment;
+            CheckMachine = string.Empty;
             ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
         }
 
@@ -54,6 +56,7 @@ namespace Domain.Models.Insurance
             CheckName = checkName;
             CheckComment = checkComment;
             ConfirmDate = confirmDate;
+            CheckMachine = string.Empty;
         }
     }
 }

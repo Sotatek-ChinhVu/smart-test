@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using System.Collections;
 
 namespace Infrastructure.Repositories;
 
@@ -18,6 +19,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             .Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd)
             .AsEnumerable().Select(s => ToModel(s)).ToList();
     }
+
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
         var data = NoTrackingDataContext.SystemConfs
@@ -26,20 +28,18 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
 
-    public List<SystemConfModel> GetListByGrpCd(int hpId, List<SystemConfModel> grpItemList)
+    public List<SystemConfModel> GetAllSystemConfig(int hpId)
     {
-        List<SystemConfModel> result = new();
-        var grpCdList = grpItemList.Select(item => item.GrpCd).ToList();
-        var grpEdaNoList = grpItemList.Select(item => item.GrpEdaNo).ToList();
-        var systemConfigList = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId && grpCdList.Contains(item.GrpCd) && grpEdaNoList.Contains(item.GrpEdaNo)).ToList();
-        foreach (var grp in grpItemList)
-        {
-            var systemConfigItem = systemConfigList.FirstOrDefault(item => item.GrpCd == grp.GrpCd && item.GrpEdaNo == grp.GrpEdaNo);
-            if (systemConfigItem != null)
-            {
-                result.Add(new SystemConfModel(systemConfigItem.GrpCd, systemConfigItem.GrpEdaNo, systemConfigItem.Val, systemConfigItem?.Param ?? string.Empty, systemConfigItem?.Biko ?? string.Empty));
-            }
-        }
+        var result = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId)
+                                                      .Select(item => new SystemConfModel(
+                                                                          item.GrpCd,
+                                                                          item.GrpEdaNo,
+                                                                          item.Val,
+                                                                          item.Param ??
+                                                                          string.Empty,
+                                                                          item.Biko ??
+                                                                          string.Empty))
+                                                      .ToList();
         return result;
     }
 
@@ -62,6 +62,27 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
 
         return defaultParam;
+    }
+
+    public Hashtable GetConfigForPrintFunction(int hpId)
+    {
+        Hashtable config = new Hashtable();
+        config.Add("OrderLabelCheckMachineParam", GetSettingParams(92001, 9, hpId, "KrtRenkei,TKImport"));
+        config.Add("InnaishohosenCheckMachineParam", GetSettingParams(92002, 2, hpId, "KrtRenkei,TKImport"));
+        config.Add("IngaiShohosenCheckMachineParam", GetSettingParams(92003, 8, hpId, "KrtRenkei,TKImport"));
+        config.Add("KusurijoCheckMachineParam", GetSettingParams(92004, 16, hpId, "KrtRenkei,TKImport"));
+        config.Add("PrintDrgLabelCheckMachineParam", GetSettingParams(92005, 30, hpId, "KrtRenkei,TKImport"));
+        config.Add("PrintDrgNoteCheckMachineParam", GetSettingParams(92006, 1, hpId, "KrtRenkei,TKImport"));
+        config.Add("SijisenCheckMachineParam", GetSettingParams(92008, 5, hpId, "KrtRenkei,TKImport"));
+        config.Add("OrderLabelCheckMachine", GetSettingValue(92001, 9, hpId));
+        config.Add("InnaishohosenCheckMachine", GetSettingValue(92002, 2, hpId));
+        config.Add("IngaiShohosenCheckMachine", GetSettingValue(92003, 8, hpId));
+        config.Add("KusurijoCheckMachine", GetSettingValue(92004, 16, hpId));
+        config.Add("PrintDrgLabelCheckMachine", GetSettingValue(92005, 50, hpId));
+        config.Add("PrintDrgNoteCheckMachine", GetSettingValue(92006, 1, hpId));
+        config.Add("SijisenCheckMachine", GetSettingValue(92008, 5, hpId));
+
+        return config;
     }
 
     private SystemConfModel ToModel(SystemConf s)

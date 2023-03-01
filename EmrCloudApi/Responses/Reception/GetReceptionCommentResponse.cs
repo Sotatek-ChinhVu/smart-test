@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.Reception
 {
     public class GetReceptionCommentResponse
     {
-        public GetReceptionCommentResponse(ReceptionModel receptionModels)
+        public GetReceptionCommentResponse(ReceptionDto receptionModel)
         {
-            ReceptionModels = receptionModels;
+            ReceptionModel = receptionModel;
         }
 
-        public ReceptionModel ReceptionModels { get; set; }
+        public ReceptionDto ReceptionModel { get; set; }
     }
 }

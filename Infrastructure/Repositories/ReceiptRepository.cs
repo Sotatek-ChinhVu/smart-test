@@ -27,8 +27,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         {
             return new();
         }
-        int fromDay = (seikyuYm.AsString() + "01").AsInteger();
-        int toDay = (seikyuYm.AsString() + DateTime.DaysInMonth(seikyuYm / 100, seikyuYm % 100)).AsInteger();
+        int fromDay = seikyuYm * 100 + 1;
+        int toDay = seikyuYm * 100 + DateTime.DaysInMonth(seikyuYm / 100, seikyuYm % 100);
 
         List<ReceiptListModel> result = ActionGetReceiptList(hpId, fromDay, toDay, seikyuYm, searchModel);
 
@@ -1431,6 +1431,19 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
     }
 
+    public List<ReceCheckErrModel> GetReceCheckErrList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList)
+    {
+        hokenIdList = hokenIdList.Distinct().ToList();
+        ptIdList = ptIdList.Distinct().ToList();
+        var receCheckErrs = NoTrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                              && sinYmList.Contains(item.SinYm)
+                                                                              && ptIdList.Contains(item.PtId)
+                                                                              && hokenIdList.Contains(item.HokenId))
+                                                                .OrderBy(item => item.ErrCd)
+                                                                .ToList();
+        return receCheckErrs.Select(item => ConvertToReceCheckErrModel(item)).ToList();
+    }
+
     public bool SaveReceCheckCmtList(int hpId, int userId, int hokenId, int sinYm, long ptId, List<ReceCheckCmtModel> receCheckCmtList)
     {
         var receCheckCmtUpdateList = receCheckCmtList.Where(item => item.SeqNo > 0).ToList();
@@ -1519,6 +1532,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     #region Recalculation Check
     public List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList)
     {
+        ptIdList = ptIdList.Distinct().ToList();
         List<ReceRecalculationModel> receRecalculationList = new();
         var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
                                                                        && item.SeikyuYm == sinYm
@@ -1663,7 +1677,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                    && seqNoList.Contains(item.SeqNo))
                                                                     .ToList();
 
-        var listItemCd = sinKouiDetailList.Select(item => item.ItemCd).ToList();
+        var listItemCd = sinKouiDetailList.Select(item => item.ItemCd).Distinct().ToList();
         var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                      && listItemCd.Contains(item.ItemCd))
                                                       .ToList();
@@ -1786,9 +1800,75 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         if (receCmtErrList.Any())
         {
             TrackingDataContext.ReceCheckErrs.RemoveRange(receCmtErrList);
-            TrackingDataContext.SaveChanges();
+            return TrackingDataContext.SaveChanges() > 0;
         }
         return true;
+    }
+
+    public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.BuiOdrItemMsts.Where(item => item.HpId == hpId).Select(item => new BuiOdrItemMstModel(item.ItemCd)).ToList();
+        return result;
+    }
+
+    public List<BuiOdrItemByomeiMstModel> GetBuiOdrItemByomeiMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.BuiOdrItemByomeiMsts.Where(item => item.HpId == hpId)
+                                                               .Select(item => new BuiOdrItemByomeiMstModel(
+                                                                                   item.ItemCd,
+                                                                                   item.ByomeiBui,
+                                                                                   item.LrKbn,
+                                                                                   item.BothKbn))
+                                                               .ToList();
+        return result;
+    }
+
+    public List<BuiOdrMstModel> GetBuiOdrMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.BuiOdrMsts.Where(item => item.HpId == hpId)
+                                                     .Select(item => new BuiOdrMstModel(
+                                                                         item.BuiId,
+                                                                         item.OdrBui ?? string.Empty,
+                                                                         item.LrKbn,
+                                                                         item.MustLrKbn,
+                                                                         item.BothKbn,
+                                                                         item.Koui30,
+                                                                         item.Koui40,
+                                                                         item.Koui50,
+                                                                         item.Koui60,
+                                                                         item.Koui70,
+                                                                         item.Koui80))
+                                                     .ToList();
+        return result;
+    }
+
+    public List<BuiOdrByomeiMstModel> GetBuiOdrByomeiMstList(int hpId)
+    {
+        var result = NoTrackingDataContext.BuiOdrByomeiMsts.Where(item => item.HpId == hpId)
+                                                           .Select(item => new BuiOdrByomeiMstModel(
+                                                                                item.BuiId,
+                                                                                item.ByomeiBui))
+                                                           .ToList();
+        return result;
+    }
+
+    public string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
+    {
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(item => item.HpId == hpId
+                                                                          && item.ItemCd == itemCd
+                                                                          && item.StartDate <= sinDate
+                                                                          && item.EndDate >= sinDate);
+        return tenMst?.SanteiItemCd ?? string.Empty;
+    }
+
+    public List<string> GetTekiouByomei(int hpId, List<string> itemCdList)
+    {
+        itemCdList = itemCdList.Distinct().ToList();
+        return NoTrackingDataContext.TekiouByomeiMsts.Where(item => item.HpId == hpId
+                                                                    && itemCdList.Contains(item.ItemCd)
+                                                                    && item.IsInvalid == 0)
+                                                     .Select(p => p.ByomeiCd)
+                                                     .ToList();
     }
     #endregion
 
