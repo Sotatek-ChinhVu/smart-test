@@ -1,4 +1,7 @@
-﻿using Domain.Models.Diseases;
+﻿using CommonChecker.Models.OrdInf;
+using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.Diseases;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -9,6 +12,7 @@ using Domain.Models.TodayOdr;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
 using UseCase.Receipt.Recalculation;
 
@@ -22,12 +26,13 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IOrdInfRepository _ordInfRepository;
     private readonly IMstItemRepository _mstItemRepository;
     private readonly ITodayOdrRepository _todayOdrRepository;
+    private readonly ICommonMedicalCheck _commonMedicalCheck;
+
     private const string _hokenChar = "0";
     private const string _kohi1Char = "1";
     private const string _kohi2Char = "2";
     private const string _kohi3Char = "3";
     private const string _kohi4Char = "4";
-    private const string _freeWord = "0000999";
     private const string _suspectedSuffix = "の疑い";
     private const string _left = "左";
     private const string _right = "右";
@@ -35,7 +40,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheckt)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -43,6 +48,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         _ordInfRepository = ordInfRepository;
         _mstItemRepository = mstItemRepository;
         _todayOdrRepository = todayOdrRepository;
+        _commonMedicalCheck = commonMedicalCheckt;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -52,7 +58,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             List<ReceCheckErrModel> newReceCheckErrList = new();
             string errorMessage = string.Empty;
             var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
-            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList.Distinct().ToList());
+            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
             var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
             var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
             var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
@@ -567,6 +573,53 @@ public class RecalculationInteractor : IRecalculationInputPort
         return systemConf != null ? systemConf.Val : 0;
     }
 
+    private List<DayLimitResultModel> CheckOnlyDayLimitOrder(int hpId, long ptId, int sinDate, OrdInfModel orderInf)
+    {
+        List<DayLimitResultModel> result = new();
+        RealTimeCheckerCondition condition = new RealTimeCheckerCondition(
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 true,
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 false);
+        List<OrdInfoModel> orderInfList = new();
+        orderInfList.Add(new OrdInfoModel(
+                             orderInf.OdrKouiKbn,
+                             orderInf.SanteiKbn,
+                             orderInf.OrdInfDetails.Select(detail => new OrdInfoDetailModel(
+                                                                         string.Empty,
+                                                                         detail.SinKouiKbn,
+                                                                         detail.ItemCd,
+                                                                         detail.ItemName,
+                                                                         detail.Suryo,
+                                                                         detail.UnitName,
+                                                                         detail.TermVal,
+                                                                         detail.SyohoKbn,
+                                                                         detail.SyohoLimitKbn,
+                                                                         detail.DrugKbn,
+                                                                         detail.YohoKbn,
+                                                                         detail.IpnCd,
+                                                                         detail.Bunkatu,
+                                                                         detail.MasterSbt,
+                                                                         detail.BunkatuKoui
+                                                                     ))
+                             .ToList()));
+
+        var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition);
+        foreach (var errorInfo in checkedResult)
+        {
+            var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;
+            if (dayLimitList != null && dayLimitList.Any())
+            {
+                result.AddRange(dayLimitList);
+            }
+        }
+        return result;
+    }
     internal class BuiErrorModel
     {
         public OrdInfDetailModel OdrInfDetail { get; }
@@ -1037,22 +1090,22 @@ public class RecalculationInteractor : IRecalculationInputPort
         var odrInfModels = _ordInfRepository.GetList(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
         List<OrdInfDetailModel> odrInfDetailModels = new();
 
-        ////OrderInf
-        //foreach (var odrInfModel in odrInfModels)
-        //{
-        //    //E4001 check exceeded dosage
-        //    if (isCheckExceedDosage)
-        //    {
-        //        var resultOdrs = CheckOnlyDayLimitOrder(odrInfModel, odrInfModel.PtId, odrInfModel.SinDate);
-        //        foreach (var odr in resultOdrs)
-        //        {
-        //            string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(todayOdrInf.SinDate), odr.UsingDay, odr.LimitDay);
-        //            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
-        //                                            msg2, odr.ItemCd, sinDate: todayOdrInf.SinDate);
-        //        }
-        //    }
-        //    odrInfDetailModels.AddRange(odrInfModel.OdrInfDetailModels);
-        //}
+        //OrderInf
+        foreach (var odrInfModel in odrInfModels)
+        {
+            //E4001 check exceeded dosage
+            if (isCheckExceedDosage)
+            {
+                var resultOdrs = CheckOnlyDayLimitOrder(hpId, odrInfModel.PtId, odrInfModel.SinDate, odrInfModel);
+                foreach (var odr in resultOdrs)
+                {
+                    string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(odrInfModel.SinDate), odr.UsingDay, odr.LimitDay);
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
+                                                    msg2, odr.ItemCd, sinDate: odrInfModel.SinDate);
+                }
+            }
+            odrInfDetailModels.AddRange(odrInfModel.OrdInfDetails);
+        }
 
         #region Duplicate check
         if (isCheckDuplicateOdr)
