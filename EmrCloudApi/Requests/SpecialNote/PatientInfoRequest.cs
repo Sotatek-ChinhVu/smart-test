@@ -61,7 +61,8 @@ namespace EmrCloudApi.Requests.SpecialNote
             IsDeleted,
             UpdateDate,
             UpdateId,
-            UpdateMachine);
+            UpdateMachine,
+            0);
         }
 
     }
@@ -184,7 +185,7 @@ namespace EmrCloudApi.Requests.SpecialNote
         public DateTime UpdateDate { get; set; }
         public KensaInfDetailModel Map()
         {
-            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, UpdateDate);
+            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, UpdateDate, string.Empty, string.Empty, 0);
         }
     }
 }

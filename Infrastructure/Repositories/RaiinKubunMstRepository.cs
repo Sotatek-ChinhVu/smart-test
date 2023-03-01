@@ -178,7 +178,7 @@ namespace Infrastructure.Repositories
             int kouiKbnCd = 0;
             if (currentKubunKouiList != null && currentKubunKouiList.Any())
             {
-                currentKubunKouiList.Max(x => x.KouiKbnId);
+                currentKubunKouiList?.Max(x => x.KouiKbnId);
             }
             int itemSeqNo = 0;
             if (currentKubunItemList != null && currentKubunItemList.Any())
@@ -328,8 +328,8 @@ namespace Infrastructure.Repositories
         public List<(int grpId, int kbnCd, int kouiKbn1, int kouiKbn2)> GetRaiinKouiKbns(int hpId)
         {
             var result = new List<(int, int, int, int)>();
-            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == Session.HospitalID && r.IsDeleted == DeleteTypes.None);
-            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == Session.HospitalID);
+            var raiinKouiKbns = NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
+            var kouiKbnMsts = NoTrackingDataContext.KouiKbnMsts.Where(k => k.HpId == hpId);
             var query = from raiinKouiKbn in raiinKouiKbns
                         join kouiKbnMst in kouiKbnMsts
                         on raiinKouiKbn.KouiKbnId equals kouiKbnMst.KouiKbnId

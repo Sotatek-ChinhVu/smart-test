@@ -1,4 +1,4 @@
-﻿namespace UseCase.SystemConf
+﻿namespace UseCase.SystemConf.GetSystemConf
 {
     public enum GetSystemConfStatus : byte
     {

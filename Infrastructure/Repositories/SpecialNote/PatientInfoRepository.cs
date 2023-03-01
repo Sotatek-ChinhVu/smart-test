@@ -37,7 +37,10 @@ namespace Infrastructure.Repositories.SpecialNote
                                             item.IsDeleted,
                                             item.CmtCd1 ?? string.Empty,
                                             item.CmtCd2 ?? string.Empty,
-                                            item.UpdateDate
+                                            item.UpdateDate,
+                                            string.Empty,
+                                            string.Empty,
+                                            0
                                         )).ToList();
             }
             return new();
@@ -92,7 +95,10 @@ namespace Infrastructure.Repositories.SpecialNote
                         kd?.IsDeleted ?? 0,
                         kd?.CmtCd1 ?? String.Empty,
                         kd?.CmtCd2 ?? String.Empty,
-                        kd?.UpdateDate ?? DateTime.MinValue
+                        kd?.UpdateDate ?? DateTime.MinValue,
+                        string.Empty,
+                        string.Empty,
+                        0
                       )).ToList()
                     );
                 physicals.Add(physical);
@@ -102,7 +108,8 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId)
         {
-            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).Select(x => new PtPregnancyModel(
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0)
+              .Select(x => new PtPregnancyModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
@@ -116,9 +123,33 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.IsDeleted,
                 x.UpdateDate,
                 x.UpdateId,
-                x.UpdateMachine ?? String.Empty
+                x.UpdateMachine ?? String.Empty,
+                0
             ));
             return ptPregnancys.ToList();
+        }
+
+        public List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId, int sinDate)
+        {
+            var ptPregnancys = NoTrackingDataContext.PtPregnancies.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0 && x.StartDate <= sinDate && x.EndDate >= sinDate)
+              .Select(x => new PtPregnancyModel(
+                x.Id,
+                x.HpId,
+                x.PtId,
+                x.SeqNo,
+                x.StartDate,
+                x.EndDate,
+                x.PeriodDate,
+                x.PeriodDueDate,
+                x.OvulationDate,
+                x.OvulationDueDate,
+                x.IsDeleted,
+                x.UpdateDate,
+                x.UpdateId,
+                x.UpdateMachine ?? String.Empty,
+                sinDate
+            ));
+            return ptPregnancys.AsEnumerable().OrderByDescending(item => item.StartDate).ToList();
         }
 
         public List<SeikaturekiInfModel> GetSeikaturekiInfList(long ptId, int hpId)
@@ -131,6 +162,42 @@ namespace Infrastructure.Repositories.SpecialNote
                 x.Text ?? String.Empty
             ));
             return seikaturekiInfs.ToList();
+        }
+
+        public List<KensaInfDetailModel> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate)
+        {
+            var result = new List<KensaInfDetailModel>();
+            var KensaMstRepos = NoTrackingDataContext.KensaMsts.Where(k => k.HpId == hpId && k.IsDelete == 0 && k.KensaItemCd.StartsWith("V"))
+                .Select(u => new
+                {
+                    KensaName = u.KensaName,
+                    KensaItemCd = u.KensaItemCd,
+                    Unit = u.Unit,
+                    SortNo = u.SortNo
+                });
+            var kensaInfDetailRepos = NoTrackingDataContext.KensaInfDetails.Where(d => d.HpId == hpId
+                                                                                                    && d.PtId == ptId
+                                                                                                    && d.IsDeleted == 0
+                                                                                                    && d.IraiDate <= sinDate
+                                                                                                    && d.KensaItemCd != null && d.KensaItemCd.StartsWith("V")
+                                                                                                    && !string.IsNullOrEmpty(d.ResultVal));
+            var query = from KensaMst in KensaMstRepos
+                        join kensaInfDetail in kensaInfDetailRepos on
+                        KensaMst.KensaItemCd equals kensaInfDetail.KensaItemCd into listDetail
+                        select new
+                        {
+                            KensaMst = KensaMst,
+                            KensaInfDetail = listDetail.OrderByDescending(item => item.IraiDate).ThenByDescending(item => item.UpdateDate).FirstOrDefault()
+                        };
+
+            result = query.AsEnumerable().Select(u => new KensaInfDetailModel(
+                u.KensaMst.KensaItemCd,
+                u.KensaMst.Unit,
+                u.KensaMst.KensaName,
+                u.KensaMst.SortNo
+            )).ToList();
+
+            return result;
         }
 
         public void ReleaseResource()

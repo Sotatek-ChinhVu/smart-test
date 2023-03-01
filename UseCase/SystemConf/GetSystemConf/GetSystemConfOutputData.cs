@@ -1,7 +1,7 @@
 ﻿using Domain.Models.SystemConf;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.SystemConf
+namespace UseCase.SystemConf.GetSystemConf
 {
     public class GetSystemConfOutputData : IOutputData
     {

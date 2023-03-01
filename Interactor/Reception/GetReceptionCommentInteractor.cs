@@ -16,16 +16,41 @@ namespace Interactor.Reception
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new GetReceptionCommentOutputData(new ReceptionModel(), GetReceptionCommentStatus.InvalidHpId);
+                    return new GetReceptionCommentOutputData(new(), GetReceptionCommentStatus.InvalidHpId);
                 }
                 if (inputData.RaiinNo <= 0)
                 {
-                    return new GetReceptionCommentOutputData(new ReceptionModel(), GetReceptionCommentStatus.InvalidRaiinNo);
+                    return new GetReceptionCommentOutputData(new(), GetReceptionCommentStatus.InvalidRaiinNo);
                 }
 
-                var Data = _receptionRepository.GetReceptionComments(inputData.HpId, inputData.RaiinNo);
+                var data = _receptionRepository.GetReceptionComments(inputData.HpId, inputData.RaiinNo);
 
-                return new GetReceptionCommentOutputData(Data, GetReceptionCommentStatus.Success);
+                return new GetReceptionCommentOutputData(new ReceptionDto(
+                        data.HpId,
+                        data.PtId,
+                        data.SinDate,
+                        data.RaiinNo,
+                        data.OyaRaiinNo,
+                        data.HokenPid,
+                        data.SanteiKbn,
+                        data.Status,
+                        data.IsYoyaku,
+                        data.YoyakuTime,
+                        data.YoyakuId,
+                        data.UketukeSbt,
+                        data.UketukeTime,
+                        data.UketukeId,
+                        data.UketukeNo,
+                        data.SinStartTime,
+                        data.SinEndTime,
+                        data.KaikeiTime,
+                        data.KaikeiId,
+                        data.KaId,
+                        data.TantoId,
+                        data.SyosaisinKbn,
+                        data.JikanKbn,
+                        data.Comment
+                    ), GetReceptionCommentStatus.Success);
             }
             catch (Exception)
             {

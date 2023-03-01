@@ -2,6 +2,7 @@ using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Implementation;
 using EmrCalculateApi.Interface;
+using EmrCalculateApi.ReceFutan.ViewModels;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 
@@ -22,6 +23,7 @@ services.AddScoped<ISystemConfigProvider, SystemConfigProvider>();
 services.AddScoped<IEmrLogger, EmrLogger>();
 
 services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
+services.AddScoped<IReceFutanViewModel, ReceFutanViewModel>();
 services.AddScoped<IIkaCalculateViewModel, IkaCalculateViewModel>();
 
 var app = builder.Build();

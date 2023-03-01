@@ -18,6 +18,9 @@ using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.ReceptionInsurance;
 using EmrCloudApi.Responses.ReceptionSameVisit;
 using EmrCloudApi.Services;
+using EmrCloudApi.Tenant.Presenters.Reception;
+using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Responses.Reception;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.ValidPatternExpirated;
@@ -27,6 +30,7 @@ using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
+using UseCase.Reception.GetListRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
@@ -240,6 +244,16 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<InitDoctorComboResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetListRaiinInfResponse>> GetList([FromQuery] GetListRaiinInfRequest req)
+        {
+            var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
+            var output = _bus.Handle(input);
+            var presenter = new GetListRaiinInfPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }

@@ -4,6 +4,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -1465,7 +1466,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceFutanHide,
                                         hokenMst.ReceFutanKbn,
                                         hokenMst.KogakuTotalAll,
-                                        false);
+                                        false,
+                                        hokenMst.DayLimitCount);
                 return itemHokenMst;
             }
             return new HokenMstModel();
