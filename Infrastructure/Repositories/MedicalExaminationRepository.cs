@@ -8,8 +8,10 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -1416,7 +1418,7 @@ namespace Infrastructure.Repositories
 
             return new(msgs, lastSanteiInMonth);
         }
-
+     
         string BuildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
         {
             StringBuilder msg = new StringBuilder();
@@ -1479,6 +1481,33 @@ namespace Infrastructure.Repositories
             return new List<SinKouiCountModel>();
         }
 
+        public Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(long ptID, int sinDate, long raiinNo)
+        {
+            Dictionary<string, DateTime> result = new Dictionary<string, DateTime>();
+
+            List<string> eventCds = new List<string>();
+            eventCds.Add(EventCode.ReportInDrug);
+            eventCds.Add(EventCode.ReportDrugNoteSeal);
+            eventCds.Add(EventCode.ReportYakutai);
+            eventCds.Add(EventCode.ReportDrugInf);
+            eventCds.Add(EventCode.ReportOutDrug);
+            eventCds.Add(EventCode.ReportOrderLabel);
+            eventCds.Add(EventCode.ReportSijisen);
+
+            var auditTrailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
+                            (x.EventCd != null && eventCds.Contains(x.EventCd)) &&
+                            x.PtId == ptID &&
+                            x.SinDay == sinDate &&
+                            x.RaiinNo == raiinNo).ToList();
+            foreach (var eventCd in eventCds)
+            {
+                var eventAuditTrailLogs = auditTrailLogs.Where(a => a.EventCd == eventCd).ToList();
+               var maxDate =  eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
+                result.Add(eventCd, maxDate);
+            }
+            return result;
+        }
+        
         public void ReleaseResource()
         {
             DisposeDataContext();
