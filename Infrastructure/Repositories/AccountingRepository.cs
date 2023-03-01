@@ -1102,6 +1102,27 @@ namespace Infrastructure.Repositories
                     UpdateStatusRaiinInf(userId, item, raiinInLists);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
+                else
+                {
+                    var syuno = TrackingDataContext.SyunoNyukin.FirstOrDefault(x =>
+                                                                               x.HpId == item.SyunoNyukinModels[0].HpId &&
+                                                                               x.PtId == item.SyunoNyukinModels[0].PtId &&
+                                                                               x.RaiinNo == item.SyunoNyukinModels[0].RaiinNo &&
+                                                                               x.SortNo == item.SyunoNyukinModels[0].SortNo &&
+                                                                               x.SeqNo == item.SyunoNyukinModels[0].SeqNo
+                                                                               );
+                    syuno.AdjustFutan = outAdjustFutan;
+                    syuno.NyukinGaku = outNyukinGaku;
+                    syuno.PaymentMethodCd = payType;
+                    syuno.UketukeSbt = item.RaiinInfModel.UketukeSbt;
+                    syuno.NyukinCmt = comment;
+                    syuno.NyukinjiTensu = item.SeikyuTensu;
+                    syuno.NyukinjiDetail = item.SeikyuDetail;
+                    syuno.NyukinjiSeikyu = item.SeikyuGaku;
+                    syuno.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    syuno.UpdateId = userId;
+                    syuno.NyukinDate = item.SinDate;
+                }
 
             }
             if (accDue != 0 && thisCredit != 0)
