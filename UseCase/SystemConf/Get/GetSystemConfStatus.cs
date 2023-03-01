@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:UseCase/SystemConf/Get/GetSystemConfStatus.cs
 ﻿namespace UseCase.SystemConf.Get
-========
-﻿namespace UseCase.SystemConf.GetSystemConf
->>>>>>>> develop:UseCase/SystemConf/GetSystemConf/GetSystemConfStatus.cs
 {
     public enum GetSystemConfStatus : byte
     {

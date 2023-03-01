@@ -6,10 +6,9 @@ using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.SystemConf.GetSystemConf;
-using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
+using UseCase.SystemConf.GetSystemConfList;
 
 namespace EmrCloudApi.Controller
 {
