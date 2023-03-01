@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -48,9 +48,11 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
                                                         GetListDocCategoryStatus.Successed
                                                     );
         }
-        catch
+        finally
         {
-            return new GetListDocCategoryOutputData(GetListDocCategoryStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 
@@ -78,12 +80,13 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         {
             StringBuilder domainUrl = new StringBuilder();
             domainUrl.Append(_options.BaseAccessUrl + "/");
-            foreach (var catId in listCategoryId)
+            foreach (var categoryId in listCategoryId)
             {
                 var listFileItem = listOutputData
-                                            .Where(file => file.Contains("/" + catId + "/"))
+                                            .Where(file => file.Contains("/" + categoryId + "/"))
                                             .Select(file => new FileDocumentModel(
-                                                    file.Replace(path, string.Empty).Replace(catId + "/", string.Empty),
+                                                    categoryId,
+                                                    file.Replace(path, string.Empty).Replace(categoryId + "/", string.Empty),
                                                     domainUrl + file
                                              )).ToList();
                 result.AddRange(listFileItem.Where(item => !string.IsNullOrWhiteSpace(item.FileName)).Distinct().ToList());

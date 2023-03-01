@@ -38,6 +38,10 @@ namespace Interactor.HokenMst
             {
                 return new GetDetailHokenMstOutputData(new HokenMasterModel(), GetDetailHokenMstStatus.Exception);
             }
+            finally
+            {
+                _hokenMstRepository.ReleaseResource();
+            }
         }
     }
 }

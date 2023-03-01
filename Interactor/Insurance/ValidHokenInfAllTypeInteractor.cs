@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Constants;
 using UseCase.Insurance.ValidHokenInfAllType;
 
 namespace Interactor.Insurance
@@ -24,7 +25,7 @@ namespace Interactor.Insurance
             try
             {
                 // Get HokenMst
-                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo);
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo ,inputData.SinDate);
 
                 string houbetuNo = string.Empty;
                 string hokensyaNoSearch = string.Empty;
@@ -38,7 +39,13 @@ namespace Interactor.Insurance
                         break;
                     case 1:
                     case 2:
-                        IsValidHokenInf(ref validateDetails,
+                        if(inputData.HokenKbn == 1 && inputData.SelectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
+                        {
+                            IsValidHokenNashi(ref validateDetails, inputData.HpId, inputData.SinDate, inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate);
+                        }
+                        else
+                        {
+                            IsValidHokenInf(ref validateDetails,
                                 inputData.SelectedHokenInf,
                                 inputData.SelectedHokenInfIsAddNew,
                                 inputData.HokenKbn,
@@ -73,7 +80,7 @@ namespace Interactor.Insurance
                                 inputData.SelectedHokenInfTokureiYm2,
                                 inputData.SelectedHokenInfisShahoOrKokuho,
                                 inputData.SelectedHokenInfisExpirated,
-                                inputData.SelectedHokenInfconfirmDate,
+                                inputData.SelectedHokenInfConfirmDate,
                                 hokenMst.StartDate,
                                 hokenMst.EndDate,
                                 hokenMst.DisplayTextMaster,
@@ -81,6 +88,7 @@ namespace Interactor.Insurance
                                 inputData.HokenInfConfirmDate,
                                 inputData.SelectedHokenInfIsAddHokenCheck,
                                 inputData.SelectedHokenInfHokenChecksCount);
+                        }
                         break;
                     // 労災(短期給付)	
                     case 11:
@@ -103,6 +111,11 @@ namespace Interactor.Insurance
             catch (Exception ex)
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
+            }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
             }
             return new ValidHokenInfAllTypeOutputData(validateDetails);
         }
@@ -419,7 +432,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageWarning));
             }
         }
 
@@ -529,7 +542,7 @@ namespace Interactor.Insurance
                                                             selectedHokenInfHokenChecksCount);
             if (!string.IsNullOrEmpty(checkMessageIsValidConfirmDateHoken))
             {
-                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageConfirmation));
             }
 
             // check valid hokenmst date

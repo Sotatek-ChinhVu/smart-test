@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class UpsertTodayOrdInputData : IInputData<UpsertTodayOrdOutputData>
     {
-        public UpsertTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId)
+        public UpsertTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem)
         {
             SyosaiKbn = syosaiKbn;
             JikanKbn = jikanKbn;
@@ -18,6 +18,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             SinStartTime = sinStartTime;
             SinEndTime = sinEndTime;
             UserId = userId;
+            FileItem = fileItem;
         }
 
         public int SyosaiKbn { get; private set; }
@@ -32,5 +33,6 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public int UserId { get; private set; }
         public List<OdrInfItemInputData> OdrItems { get; private set; }
         public KarteItemInputData KarteInf { get; private set; }
+        public FileItemInputItem FileItem { get; private set; }
     }
 }

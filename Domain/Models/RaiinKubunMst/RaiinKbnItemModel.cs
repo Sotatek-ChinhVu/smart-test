@@ -31,6 +31,5 @@ namespace Domain.Models.RaiinKubunMst
         public int IsDeleted { get; private set; }
 
         public int SortNo { get; private set; }
-
     }
 }

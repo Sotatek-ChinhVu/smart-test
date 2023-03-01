@@ -1,6 +1,10 @@
-﻿namespace Domain.Models.User
+﻿using Domain.Common;
+
+using static Helper.Constants.UserConst;
+
+namespace Domain.Models.User
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase
     {
         void Create(UserMstModel user);
 
@@ -21,6 +25,8 @@
         int MaxUserId();
 
         UserMstModel? GetByUserId(int userId);
+
+        UserMstModel GetByUserId(int userId, int sinDate);
 
         UserMstModel? GetByLoginId(string loginId);
 
@@ -43,5 +49,9 @@
         bool CheckLoginInfo(string userName, string password);
 
         bool MigrateDatabase();
+
+        bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId);
+
+        PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
     }
 }

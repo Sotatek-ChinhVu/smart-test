@@ -1,7 +1,13 @@
-﻿namespace Domain.Models.UketukeSbtMst;
+﻿using Domain.Common;
+using Domain.Models.User;
 
-public interface IUketukeSbtMstRepository
+namespace Domain.Models.UketukeSbtMst;
+
+public interface IUketukeSbtMstRepository : IRepositoryBase
 {
-    UketukeSbtMstModel? GetByKbnId(int kbnId);
+    UketukeSbtMstModel GetByKbnId(int kbnId);
+
     List<UketukeSbtMstModel> GetList();
+
+    void Upsert(List<UketukeSbtMstModel> upsertUketukeList, int userId, int hpId);
 }

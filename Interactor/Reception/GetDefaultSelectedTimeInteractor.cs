@@ -18,30 +18,49 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
     {
         try
         {
-            if (inputData.HpId <= 0)
+            var resultValidate = ValidateInput(inputData);
+            if (resultValidate != GetDefaultSelectedTimeStatus.ValidateSuccess)
             {
-                return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.InvalidHpId);
+                return new GetDefaultSelectedTimeOutputData(resultValidate);
             }
-            else if (inputData.SinDate.ToString().Length != 8)
-            {
-                return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.InvalidSinDate);
-            }
-            else if (inputData.BirthDay.ToString().Length != 8)
-            {
-                return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.InvalidBirthDay);
-            }
-            var result = GetDefaultSelectedTime(inputData.HpId, inputData.SinDate, inputData.BirthDay);
+            var result = GetDefaultSelectedTime(inputData.HpId, inputData.UketukeTime, inputData.SinDate, inputData.BirthDay);
             return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.Successed, result);
         }
         catch
         {
             return new GetDefaultSelectedTimeOutputData(GetDefaultSelectedTimeStatus.Failed);
         }
+        finally
+        {
+            _timeZoneRepository.ReleaseResource();
+        }
     }
-    private DefaultSelectedTimeModel GetDefaultSelectedTime(int hpId, int sinDate, int birthDay)
+
+    private GetDefaultSelectedTimeStatus ValidateInput(GetDefaultSelectedTimeInputData inputData)
+    {
+        var uketukeTime = inputData.UketukeTime.ToString().PadLeft(4, '0').ToString();
+        var HH = int.Parse(uketukeTime.Substring(0, 2));
+        var ss = int.Parse(uketukeTime.Substring(2, 2));
+        if (uketukeTime.Length > 4
+            || HH < 0 || HH > 24
+            || ss < 0 || ss > 60)
+        {
+            return GetDefaultSelectedTimeStatus.InvalidUketukeTime;
+        }
+        else if (inputData.SinDate.ToString().Length != 8)
+        {
+            return GetDefaultSelectedTimeStatus.InvalidSinDate;
+        }
+        else if (inputData.BirthDay.ToString().Length != 8)
+        {
+            return GetDefaultSelectedTimeStatus.InvalidBirthDay;
+        }
+        return GetDefaultSelectedTimeStatus.ValidateSuccess;
+    }
+
+    private DefaultSelectedTimeModel GetDefaultSelectedTime(int hpId, int uketukeTime, int sinDate, int birthDay)
     {
         int dayOfWeek = CIUtil.DayOfWeek(CIUtil.IntToDate(sinDate));
-        int uketukeTime = int.Parse(DateTime.Now.ToString("HHmm"));
         string startTime = string.Empty, endTime = string.Empty;
         int currentTimeKbn = 0, beforeTimeKbn = 0;
         bool isShowPopup = false;
@@ -80,24 +99,30 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         }
         return new DefaultSelectedTimeModel(
                         timeKbnName,
-                        uketukeTime,
+                        CIUtil.TimeToShowTime(uketukeTime),
                         startTime,
                         endTime,
                         currentTimeKbn,
                         beforeTimeKbn,
                         isPatientChildren,
                         isShowPopup,
-                        GetJikanKbnDefaultValue(isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
+                        GetJikanKbnDefaultValue(hpId, dayOfWeek, isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
                     );
     }
 
-    private int GetJikanKbnDefaultValue(bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConfModel> listTimeZoneConfig)
+    private int GetJikanKbnDefaultValue(int hpId, int dayOfWeek, bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConfModel> listTimeZoneConfig)
     {
+        var timeZoneConfs = _timeZoneRepository.GetTimeZoneConfs(hpId);
+        TimeZoneConfModel? timeZoneConf = null;
         if (isPatientChildren && isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
         {
             return JikanConst.KyujituKotoku;
         }
-        else if (isHoliday)
+        if (timeZoneConfs != null)
+        {
+            timeZoneConf = timeZoneConfs.Find(t => t.YoubiKbn == dayOfWeek && t.StartTime <= uketukeTime && t.EndTime > uketukeTime);
+        }
+        if (isHoliday && timeZoneConf == null)
         {
             return JikanConst.Kyujitu;
         }

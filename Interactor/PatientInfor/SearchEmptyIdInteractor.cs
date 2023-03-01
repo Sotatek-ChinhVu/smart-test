@@ -39,6 +39,10 @@ namespace Interactor.PatientInfor
             {
                 return new SearchEmptyIdOutputData(new List<PatientInforModel>(), SearchEmptyIdStatus.Failed);
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
         }
 
     }

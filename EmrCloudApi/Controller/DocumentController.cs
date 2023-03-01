@@ -6,13 +6,26 @@ using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocCategory;
+using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
+using UseCase.Document.GetListParamTemplate;
+using Interactor.Document.CommonGetListParam;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Net;
+using UseCase.Document;
+using UseCase.Document.DownloadDocumentTemplate;
+using UseCase.Document.GetListDocComment;
+using UseCase.Document.ConfirmReplaceDocParam;
 
 namespace EmrCloudApi.Controller;
 
@@ -21,9 +34,11 @@ namespace EmrCloudApi.Controller;
 public class DocumentController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public DocumentController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly ICommonGetListParam _commonGetListParam;
+    public DocumentController(UseCaseBus bus, IUserService userService, ICommonGetListParam commonGetListParam) : base(userService)
     {
         _bus = bus;
+        _commonGetListParam = commonGetListParam;
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
@@ -74,16 +89,16 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<SortDocCategoryResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.AddTemplateToCategory)]
-    public ActionResult<Response<AddTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] AddTemplateToCategoryRequest request)
+    [HttpPost(ApiPath.UploadTemplateToCategory)]
+    public ActionResult<Response<UploadTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] UploadTemplateToCategoryRequest request)
     {
-        var input = new AddTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, Request.Body);
+        var input = new UploadTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, request.OverWrite, Request.Body);
         var output = _bus.Handle(input);
 
-        var presenter = new AddTemplateToCategoryPresenter();
+        var presenter = new UploadTemplateToCategoryPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<AddTemplateToCategoryResponse>>(presenter.Result);
+        return new ActionResult<Response<UploadTemplateToCategoryResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.CheckExistFileName)]
@@ -110,6 +125,117 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<SaveDocInfResponse>>(presenter.Result);
     }
 
+    [HttpPut(ApiPath.DeleteDocInf)]
+    public ActionResult<Response<DeleteDocInfResponse>> DeleteDocInf([FromBody] DeleteDocInfRequest request)
+    {
+        var input = new DeleteDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocInfResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.DeleteDocTemplate)]
+    public ActionResult<Response<DeleteDocTemplateResponse>> DeleteDocTemplate([FromBody] DeleteDocTemplateRequest request)
+    {
+        var input = new DeleteDocTemplateInputData(request.CategoryCd, request.FileTemplateName);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.DeleteDocCategory)]
+    public ActionResult<Response<DeleteDocCategoryResponse>> DeleteDocCategory([FromBody] DeleteDocCategoryRequest request)
+    {
+        var input = new DeleteDocCategoryInputData(HpId, UserId, request.CategoryCd, request.PtId, request.MoveToCategoryCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.MoveTemplateToOtherCategory)]
+    public ActionResult<Response<MoveTemplateToOtherCategoryResponse>> MoveTemplateToOtherCategory([FromBody] MoveTemplateToOtherCategoryRequest request)
+    {
+        var input = new MoveTemplateToOtherCategoryInputData(HpId, request.OldCategoryCd, request.NewCategoryCd, request.FileName);
+        var output = _bus.Handle(input);
+
+        var presenter = new MoveTemplateToOtherCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListParamTemplate)]
+    public ActionResult<Response<GetListParamTemplateResponse>> GetListParamTemplate([FromQuery] GetListParamTemplateRequest request)
+    {
+        var input = new GetListParamTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListParamTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.GetListDocComment)]
+    public ActionResult<Response<GetListDocCommentResponse>> GetListDocComment([FromBody] GetListDocCommentRequest request)
+    {
+        var input = new GetListDocCommentInputData(request.ListReplaceWord);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListDocCommentPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListDocCommentResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.ConfirmReplaceDocParam)]
+    public ActionResult<Response<ConfirmReplaceDocParamResponse>> ConfirmReplaceDocParam([FromQuery] ConfirmReplaceDocParamRequest request)
+    {
+        var input = new ConfirmReplaceDocParamInputData(GetAllTextFile(request.LinkFile));
+        var output = _bus.Handle(input);
+
+        var presenter = new ConfirmReplaceDocParamPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ConfirmReplaceDocParamResponse>>(presenter.Result);
+    }
+
+
+    [HttpPost(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportTemplate([FromBody] DownloadDocumentTemplateRequest request)
+    {
+        var extension = Path.GetExtension(request.LinkFile).ToLower();
+        var fileName = Path.GetFileName(request.LinkFile);
+        if (extension.Equals(".docx"))
+        {
+            var input = new DownloadDocumentTemplateInputData(HpId,
+                                                              UserId,
+                                                              request.PtId,
+                                                              request.SinDate,
+                                                              request.RaiinNo,
+                                                              request.HokenPId,
+                                                              request.LinkFile,
+                                                              request.ListReplaceComment.Select(item => new ReplaceCommentInputItem(item.ReplaceKey, item.ReplaceValue)).ToList());
+            var output = _bus.Handle(input);
+            return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+        }
+        else if (extension.Equals(".xlsx"))
+        {
+            return File(ExportTemplateXlsx(HpId, UserId, request).ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        return File(new MemoryStream(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+    }
+
+    #region Private function
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
@@ -119,4 +245,88 @@ public class DocumentController : AuthorizeControllerBase
                                                     false
                                               )).ToList();
     }
+
+    private MemoryStream ExportTemplateXlsx(int hpId, int userId, DownloadDocumentTemplateRequest request)
+    {
+        var listGroupParams = _commonGetListParam.GetListParam(hpId, userId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(request.LinkFile).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            using (var workbook = SpreadsheetDocument.Open(streamOutput, true, new OpenSettings { AutoSave = true }))
+            {
+                // Replace shared strings
+                if (workbook.WorkbookPart != null)
+                {
+                    var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                    if (sharedStringsPart != null)
+                    {
+                        var sharedStringTextElements = sharedStringsPart.SharedStringTable.Descendants<Text>();
+                        foreach (var group in listGroupParams)
+                        {
+                            foreach (var param in group.ListParamModel)
+                            {
+                                DoReplaceFileXlsx("《", "》", sharedStringTextElements, param);
+                            }
+                        }
+                        foreach (var comment in request.ListReplaceComment)
+                        {
+                            DoReplaceFileXlsx("@", "@", sharedStringTextElements, new ItemDisplayParamModel(comment.ReplaceKey, comment.ReplaceValue));
+                        }
+                    }
+                }
+            }
+            return streamOutput;
+        }
+    }
+
+    private static void DoReplaceFileXlsx(string preCharParam, string subCharParam, IEnumerable<Text> textElements, ItemDisplayParamModel param)
+    {
+        var listData = textElements.ToList();
+        for (int i = 0; i < listData.Count; i++)
+        {
+            if (listData[i].Text.Trim().Contains(preCharParam + param.Parameter + subCharParam))
+            {
+                listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
+            }
+        }
+    }
+
+    private string GetAllTextFile(string fileLink)
+    {
+        string extention = Path.GetExtension(fileLink).ToLower();
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(fileLink).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            if (extention.Equals(".docx"))
+            {
+                using (var workbook = WordprocessingDocument.Open(streamOutput, true))
+                {
+                    if (workbook.MainDocumentPart != null)
+                    {
+                        return workbook.MainDocumentPart.Document.InnerText;
+                    }
+                }
+            }
+            else if (extention.Equals(".xlsx"))
+            {
+                using (var workbook = SpreadsheetDocument.Open(streamOutput, true))
+                {
+                    if (workbook.WorkbookPart != null)
+                    {
+                        var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                        if (sharedStringsPart != null)
+                        {
+                            return sharedStringsPart.SharedStringTable.InnerText;
+                        }
+                    }
+                }
+            }
+        }
+        return string.Empty;
+    }
+    #endregion
 }

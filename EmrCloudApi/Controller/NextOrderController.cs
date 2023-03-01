@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Upsert;
+using UseCase.NextOrder.Validation;
 
 namespace EmrCloudApi.Controller;
 
@@ -23,7 +25,7 @@ public class NextOrderController : AuthorizeControllerBase
     [HttpGet(ApiPath.Get)]
     public ActionResult<Response<GetNextOrderResponse>> Get([FromQuery] GetNextOrderRequest request)
     {
-        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.Type, UserId);
+        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.RsvkrtKbn, UserId);
         var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderPresenter();
@@ -42,5 +44,29 @@ public class NextOrderController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetNextOrderListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Upsert)]
+    public ActionResult<Response<UpsertNextOrderListResponse>> Upsert([FromBody] UpsertNextOrderListRequest request)
+    {
+        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpsertNextOrderListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpsertNextOrderListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Validate)]
+    public ActionResult<Response<ValidationNextOrderListResponse>> Validate([FromBody] ValidationNextOrderListRequest request)
+    {
+        var input = new ValidationNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems);
+        var output = _bus.Handle(input);
+
+        var presenter = new ValidationNextOrderListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ValidationNextOrderListResponse>>(presenter.Result);
     }
 }

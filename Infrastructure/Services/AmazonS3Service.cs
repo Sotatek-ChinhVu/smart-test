@@ -65,6 +65,28 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
     }
 
+    public async Task<bool> MoveObjectAsync(string sourceFile, string destinationFile)
+    {
+        try
+        {
+            var request = new CopyObjectRequest
+            {
+                SourceBucket = _options.BucketName,
+                SourceKey = sourceFile,
+                DestinationBucket = _options.BucketName,
+                DestinationKey = destinationFile
+            };
+            await _s3Client.CopyObjectAsync(request);
+
+            var response = await _s3Client.DeleteObjectAsync(_options.BucketName, sourceFile);
+            return Convert.ToBoolean(response.DeleteMarker);
+        }
+        catch (AmazonS3Exception)
+        {
+            return false;
+        }
+    }
+
     public async Task<List<string>> GetListObjectAsync(string prefix)
     {
         List<string> listObjects = new();

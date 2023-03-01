@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
+using UseCase.MstItem.GetAdoptedItemList;
+using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetSelectiveComment;
@@ -18,6 +20,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.MstItem.UpdateAdoptedItemList;
 
 namespace EmrCloudApi.Controller
 {
@@ -141,12 +144,44 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
+        [HttpPost(ApiPath.GetAdoptedItemList)]
+        public ActionResult<Response<GetAdoptedItemListResponse>> GetAdoptedItemList([FromBody] GetAdoptedItemListRequest request)
+        {
+            var input = new GetAdoptedItemListInputData(request.ItemCds, request.SinDate, HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetAdoptedItemListPresenter();
+            presenter.Complete(output);
+
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateAdoptedItemList)]
+        public ActionResult<Response<UpdateAdoptedItemListResponse>> UpdateAdoptedItemList([FromBody] UpdateAdoptedItemListRequest request)
+        {
+            var input = new UpdateAdoptedItemListInputData(request.ValueAdopted, request.ItemCds, request.SinDate, HpId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateAdoptedItemListPresenter();
+            presenter.Complete(output);
+
+            return Ok(presenter.Result);
+        }
+
         [HttpGet(ApiPath.GetSelectiveComment)]
         public ActionResult<Response<GetSelectiveCommentResponse>> GetSelectiveComment([FromQuery] GetSelectiveCommentRequest request)
         {
             var input = new GetSelectiveCommentInputData(HpId, request.ItemCds.Trim().Split(",").ToList(), request.SinDate);
             var output = _bus.Handle(input);
             var presenter = new GetSelectiveCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetCmtCheckMstList)]
+        public ActionResult<Response<GetCmtCheckMstListResponse>> GetCmtCheckMstList([FromBody] GetCmtCheckMstListRequest request)
+        {
+            var input = new GetCmtCheckMstListInputData(HpId, UserId, request.ItemCds);
+            var output = _bus.Handle(input);
+            var presenter = new GetCmtCheckMstListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

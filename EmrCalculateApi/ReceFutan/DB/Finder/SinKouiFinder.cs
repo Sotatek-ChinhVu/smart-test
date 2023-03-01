@@ -4,6 +4,7 @@ using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
 using PostgreDataContext;
+using Domain.Constant;
 
 namespace EmrCalculateApi.ReceFutan.DB.Finder
 {

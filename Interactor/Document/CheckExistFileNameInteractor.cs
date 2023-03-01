@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -59,9 +59,11 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
             response.Wait();
             return new CheckExistFileNameOutputData(response.Result, CheckExistFileNameStatus.Successed);
         }
-        catch
+        finally
         {
-            return new CheckExistFileNameOutputData(CheckExistFileNameStatus.Failed);
+            _patientInforRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _documentRepository.ReleaseResource();
         }
     }
 
@@ -79,7 +81,7 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
         {
             return CheckExistFileNameStatus.InvalidFileName;
         }
-        if (inputData.IsCheckDocInf && !_patientInforRepository.CheckExistListId(new List<long> { inputData.PtId }))
+        if (inputData.IsCheckDocInf && !_patientInforRepository.CheckExistIdList(new List<long> { inputData.PtId }))
         {
             return CheckExistFileNameStatus.InvalidPtId;
         }

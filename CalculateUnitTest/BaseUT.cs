@@ -1,5 +1,8 @@
 ﻿using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PostgreDataContext;
 
@@ -25,7 +28,14 @@ namespace CalculateUnitTest
             get
             {
                 var mockTenantProvider = new Mock<ITenantProvider>();
-                mockTenantProvider.Setup(repo => repo.GetTrackingTenantDataContext()).Returns(new TenantDataContext(_unittestDBConnectionString));
+
+                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(_unittestDBConnectionString, buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                mockTenantProvider.Setup(repo => repo.GetTrackingTenantDataContext()).Returns(factory.CreateDbContext());
+                
                 return mockTenantProvider.Object;
             }
         }

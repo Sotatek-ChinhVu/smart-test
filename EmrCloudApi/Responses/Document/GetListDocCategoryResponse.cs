@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Document;
+using EmrCloudApi.Responses.Document.Dto;
 using UseCase.Document;
 
 namespace EmrCloudApi.Responses.Document;

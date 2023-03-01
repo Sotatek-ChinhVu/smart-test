@@ -1,24 +1,21 @@
 ﻿using Domain.Models.PtCmtInf;
 using Entity.Tenant;
-using Helper.Constants;
+using Helper.Common;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class PtCmtInfRepository : IPtCmtInfRepository
+public class PtCmtInfRepository : RepositoryBase, IPtCmtInfRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantDataContext;
-
-    public PtCmtInfRepository(ITenantProvider tenantProvider)
+    public PtCmtInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtCmtInfModel> GetList(long ptId, int hpId)
     {
-        var ptCmts = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(p => p.UpdateDate)
+        var ptCmts = NoTrackingDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(p => p.UpdateDate)
             .Select(x => new PtCmtInfModel(
                 x.HpId,
                 x.PtId,
@@ -31,9 +28,27 @@ public class PtCmtInfRepository : IPtCmtInfRepository
         return ptCmts.ToList();
     }
 
+    public PtCmtInfModel GetPtCmtInfo(int hpId, long ptId)
+    {
+        var result = NoTrackingDataContext.PtCmtInfs
+                           .Where(u => u.HpId == hpId && u.PtId == ptId && u.IsDeleted == 0)
+                           .OrderByDescending(u => u.UpdateDate)
+                           .AsEnumerable()
+                           .Select(u => new PtCmtInfModel(
+                                u.HpId,
+                                u.PtId,
+                                u.SeqNo,
+                                u.Text ?? string.Empty,
+                                u.IsDeleted,
+                                u.Id
+                               ))
+                           .FirstOrDefault();
+        return result ?? new PtCmtInfModel();
+    }
+
     public void Upsert(long ptId, string text, int userId)
     {
-        var ptCmtList = _tenantDataContext.PtCmtInfs.AsTracking()
+        var ptCmtList = TrackingDataContext.PtCmtInfs.AsTracking()
             .Where(p => p.PtId == ptId && p.IsDeleted != 1)
             .ToList();
 
@@ -44,26 +59,31 @@ public class PtCmtInfRepository : IPtCmtInfRepository
                 ptCmt.IsDeleted = 1;
             }
 
-            _tenantDataContext.PtCmtInfs.Add(new PtCmtInf
+            TrackingDataContext.PtCmtInfs.Add(new PtCmtInf
             {
                 HpId = 1,
                 PtId = ptId,
                 Text = text,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
                 CreateId = userId
             });
         }
         else
         {
-            var  ptCmt = ptCmtList[0];
+            var ptCmt = ptCmtList[0];
 
             ptCmt.Text = text;
-            ptCmt.UpdateDate = DateTime.UtcNow;
+            ptCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
             ptCmt.UpdateId = userId;
         }
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

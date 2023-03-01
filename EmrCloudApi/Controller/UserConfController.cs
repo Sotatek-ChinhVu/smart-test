@@ -7,6 +7,9 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
+using UseCase.User.Sagaku;
+using UseCase.User.UpdateUserConf;
+using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 
 namespace EmrCloudApi.Controller;
@@ -44,4 +47,41 @@ public class UserConfController : AuthorizeControllerBase
 
         return new ActionResult<Response<UpdateAdoptedByomeiConfigResponse>>(presenter.Result);
     }
+
+    [HttpPut(ApiPath.Update)]
+    public ActionResult<Response<UpdateUserConfResponse>> Update([FromBody] UpdateUserConfRequest request)
+    {
+        var input = new UpdateUserConfInputData(HpId, UserId, request.GrpCd, request.Value);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateUserConfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateUserConfResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Sagaku)]
+    public ActionResult<Response<SagakuResponse>> Sagaku([FromQuery] SagakuRequest request)
+    {
+        var input = new SagakuInputData(HpId, UserId, request.FromRece);
+        var output = _bus.Handle(input);
+
+        var presenter = new SagakuPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SagakuResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListMedicalExaminationConfig)]
+    public ActionResult<Response<GetListMedicalExaminationConfigResponse>> GetListMedicalExaminationConfig()
+    {
+        var input = new GetListMedicalExaminationConfigInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListMedicalExaminationConfigPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListMedicalExaminationConfigResponse>>(presenter.Result);
+    }
+
 }

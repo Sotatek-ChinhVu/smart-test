@@ -1,8 +1,8 @@
 ﻿using EmrCalculateApi.Futan.Models;
-using EmrCalculateApi.Constants;
 using EmrCalculateApi.Extensions;
 using Entity.Tenant;
 using PostgreDataContext;
+using Domain.Constant;
 
 namespace EmrCalculateApi.Futan.DB.Finder
 {

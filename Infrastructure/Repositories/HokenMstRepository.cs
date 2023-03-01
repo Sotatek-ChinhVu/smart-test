@@ -1,21 +1,18 @@
 ﻿using Domain.Models.HokenMst;
-using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class HokenMstRepository : IHokenMstRepository
+    public class HokenMstRepository : RepositoryBase, IHokenMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public HokenMstRepository(ITenantProvider tenantProvider)
+        public HokenMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public HokenMasterModel GetHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int sinDate)
         {
-            var hokenMaster = _tenantDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
+            var hokenMaster = NoTrackingDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
                                                                  u.HokenNo == hokenNo &&
                                                                  u.HokenEdaNo == hokenEdaNo &&
                                                                  (u.PrefNo == prefNo
@@ -25,7 +22,7 @@ namespace Infrastructure.Repositories
 
             if (hokenMaster == null)
             {
-                hokenMaster = _tenantDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
+                hokenMaster = NoTrackingDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
                                                                                 u.HokenNo == hokenNo &&
                                                                                 u.HokenEdaNo == hokenEdaNo &&
                                                                                 (u.PrefNo == prefNo
@@ -79,7 +76,7 @@ namespace Infrastructure.Repositories
                                         hokenMaster?.ReceSpKbn ?? 0,
                                         string.Empty);
 
-            string? roudou = _tenantDataContext.RoudouMsts.FirstOrDefault(u => u.RoudouCd == result.PrefNo.ToString())?.RoudouName;
+            string? roudou = NoTrackingDataContext.RoudouMsts.FirstOrDefault(u => u.RoudouCd == result.PrefNo.ToString())?.RoudouName;
             if (!string.IsNullOrEmpty(roudou))
                 result.Roudou = "(" + roudou + ")";
 
@@ -87,18 +84,19 @@ namespace Infrastructure.Repositories
         }
         public List<HokenMasterModel> CheckExistHokenEdaNo(int hokenNo, int hpId)
         {
-            var existHokenEdaNo = _tenantDataContext.HokenMsts
+            var existHokenEdaNo = NoTrackingDataContext.HokenMsts
                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
                .Select(x => new HokenMasterModel(
-                   x.HpId,
-                   x.HokenNo,
-                   x.HokenEdaNo,
-                   0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
-                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty
-                   ))
-               .ToList();
-
+                       x.HokenNo,
+                       x.HokenEdaNo
+               )).ToList();
             return existHokenEdaNo;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
     }
 }

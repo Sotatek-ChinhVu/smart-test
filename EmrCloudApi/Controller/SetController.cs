@@ -2,12 +2,10 @@
 using EmrCloudApi.Presenters.SetMst;
 using EmrCloudApi.Requests.SetMst;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Responses.SetMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
@@ -82,7 +80,7 @@ public class SetController : AuthorizeControllerBase
     [HttpPost(ApiPath.Paste)]
     public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var input = new CopyPasteSetMstInputData(HpId, UserId, request.CopySetCd, request.PasteSetCd);
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.GenerationId, request.CopySetCd, request.PasteSetCd, request.PasteToOtherGroup, request.CopySetKbnEdaNo, request.CopySetKbn, request.PasteSetKbnEdaNo, request.PasteSetKbn);
         var output = _bus.Handle(input);
 
         var presenter = new CopyPasteSetMstPresenter();
@@ -111,8 +109,9 @@ public class SetController : AuthorizeControllerBase
                         UserId,
                         HpId,
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
-                        ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
+                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText, request.SaveSetKarteRequestItem.Text),
+                        ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems),
+                        new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems)
                     );
         var output = _bus.Handle(input);
 
@@ -120,19 +119,6 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
-    }
-
-
-    [HttpPost(ApiPath.SaveImageSuperSetDetail)]
-    public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
-    {
-        var input = new SaveImageSuperSetDetailInputData(HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
-        var output = _bus.Handle(input);
-
-        var presenter = new SaveImageSuperSetDetailPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]

@@ -1,6 +1,7 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
@@ -11,6 +12,9 @@ using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
@@ -29,9 +33,14 @@ namespace Interactor.MedicalExamination
         private readonly IUserRepository _userRepository;
         private readonly IHpInfRepository _hpInfRepository;
         private readonly ITodayOdrRepository _todayOdrRepository;
+        private readonly IKarteInfRepository _karteInfRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
 
-        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository)
+        public UpsertTodayOrdInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository)
         {
+            _amazonS3Service = amazonS3Service;
+            _options = optionsAccessor.Value;
             _ordInfRepository = ordInfRepository;
             _kaRepository = kaRepository;
             _receptionRepository = receptionRepository;
@@ -42,6 +51,7 @@ namespace Interactor.MedicalExamination
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
             _todayOdrRepository = todayOdrRepository;
+            _karteInfRepository = karteInfRepository;
         }
 
         public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputDatas)
@@ -51,16 +61,19 @@ namespace Interactor.MedicalExamination
                 //Raiin Info
                 var inputDataList = inputDatas.OdrItems.ToList();
                 var hpIds = inputDataList.Select(x => x.HpId).ToList();
-                hpIds.Add(inputDatas.KarteInf.HpId);
-                hpIds = hpIds.Distinct().ToList();
                 var ptIds = inputDataList.Select(x => x.PtId).ToList();
-                ptIds.Add(inputDatas.KarteInf.PtId);
-                ptIds = ptIds.Distinct().ToList();
                 var raiinNos = inputDataList.Select(x => x.RaiinNo).ToList();
-                raiinNos.Add(inputDatas.KarteInf.RaiinNo);
-                raiinNos = raiinNos.Distinct().ToList();
                 var sinDates = inputDataList.Select(x => x.SinDate).ToList();
-                sinDates.Add(inputDatas.KarteInf.SinDate);
+                if (inputDatas.KarteInf.HpId != 0 && inputDatas.KarteInf.PtId != 0 && inputDatas.KarteInf.SinDate != 0 && inputDatas.KarteInf.RaiinNo != 0)
+                {
+                    hpIds.Add(inputDatas.KarteInf.HpId);
+                    ptIds.Add(inputDatas.KarteInf.PtId);
+                    raiinNos.Add(inputDatas.KarteInf.RaiinNo);
+                    sinDates.Add(inputDatas.KarteInf.SinDate);
+                }
+                raiinNos = raiinNos.Distinct().ToList();
+                ptIds = ptIds.Distinct().ToList();
+                hpIds = hpIds.Distinct().ToList();
                 sinDates = sinDates.Distinct().ToList();
 
                 var hpId = hpIds[0];
@@ -72,7 +85,16 @@ namespace Interactor.MedicalExamination
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
+                    return new UpsertTodayOrdOutputData(
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        new Dictionary<string,
+                        KeyValuePair<string,
+                        OrdInfValidationStatus>>(),
+                        KarteValidationStatus.Valid,
+                        0,
+                        0,
+                        0);
                 }
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
@@ -96,22 +118,106 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         ""
                     );
+                KarteValidationStatus validateKarte = KarteValidationStatus.Valid;
 
-                var validateKarte = karteModel.Validation();
-
+                if (karteModel.PtId > 0 && karteModel.HpId > 0 && karteModel.RaiinNo > 0 && karteModel.SinDate > 0)
+                    validateKarte = karteModel.Validation();
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any())
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, resultOrder.Item1, validateKarte);
+                    return new UpsertTodayOrdOutputData(
+                        UpsertTodayOrdStatus.Failed,
+                        raiinInfStatus,
+                        resultOrder.Item1,
+                        validateKarte,
+                        0,
+                        0,
+                        0);
                 }
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId);
-
-                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
+                if (inputDatas.FileItem.IsUpdateFile)
+                {
+                    if (check)
+                    {
+                        var listFileItems = inputDatas.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    }
+                }
+                return check ?
+                    new UpsertTodayOrdOutputData(
+                        UpsertTodayOrdStatus.Successed,
+                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
+                        sinDate,
+                        raiinNo,
+                        ptId)
+                    :
+                    new UpsertTodayOrdOutputData(
+                        UpsertTodayOrdStatus.Failed,
+                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
+                        KarteValidationStatus.Valid,
+                        sinDate,
+                        raiinNo,
+                        ptId);
             }
             catch
             {
-                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
+                return new UpsertTodayOrdOutputData(
+                    UpsertTodayOrdStatus.Failed,
+                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                    new Dictionary<string, KeyValuePair<string,
+                    OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
+                    0,
+                    0,
+                    0);
+            }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+                _kaRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _todayOdrRepository.ReleaseResource();
+                _karteInfRepository.ReleaseResource();
+            }
+        }
+
+        private void SaveFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveSuccess)
+        {
+            var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
+            List<string> listFolders = new();
+            string path = string.Empty;
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+            string host = _options.BaseAccessUrl + "/" + path;
+            var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
+            if (saveSuccess)
+            {
+                _karteInfRepository.SaveListFileKarte(hpId, ptId, raiinNo, host, listUpdates.Select(item => new FileInfModel(false, item)).ToList(), false);
+            }
+            else
+            {
+                _karteInfRepository.ClearTempData(hpId, ptId, listUpdates.ToList());
+                foreach (var item in listUpdates)
+                {
+                    _amazonS3Service.DeleteObjectAsync(path + item);
+                }
             }
         }
 
@@ -163,7 +269,9 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
 
                 var objDetail = new object();
@@ -229,7 +337,11 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                "",
+                                "",
+                                ""
                             );
                     lock (objDetail)
                     {
@@ -268,7 +380,7 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistListId(new List<long> { ptId });
+                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
 
                 if (!checkHpId)
@@ -300,7 +412,7 @@ namespace Interactor.MedicalExamination
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn;
             }
-            else if (inputDatas.HokenPid < 0)
+            else if (inputDatas.HokenPid <= 0)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid;
             }

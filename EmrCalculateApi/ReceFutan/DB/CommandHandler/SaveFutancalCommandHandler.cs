@@ -1,10 +1,9 @@
-﻿using EmrCalculateApi.ReceFutan.Models;
+﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
-using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Interface;
+using EmrCalculateApi.ReceFutan.Models;
 using Entity.Tenant;
 using PostgreDataContext;
-
 
 namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 {

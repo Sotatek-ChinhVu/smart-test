@@ -1,10 +1,11 @@
-﻿using EmrCalculateApi.ReceFutan.DB.CommandHandler;
-using EmrCalculateApi.ReceFutan.DB.Finder;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.ReceFutan.Models;
+﻿using EmrCalculateApi.Constants;
 using EmrCalculateApi.Interface;
+using EmrCalculateApi.ReceFutan.DB.CommandHandler;
+using EmrCalculateApi.ReceFutan.DB.Finder;
+using EmrCalculateApi.ReceFutan.Models;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -66,7 +67,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
             _receFutanFinder = new ReceFutanFinder(_tenantDataContext);
             _kaikeiFinder = new KaikeiFinder(_tenantDataContext);
-            _sinKouiFinder = new SinKouiFinder(_tenantDataContext);                     
+            _sinKouiFinder = new SinKouiFinder(_tenantDataContext);
             _saveFutancalCommandHandler = new SaveFutancalCommandHandler(_tenantDataContext, emrLogger);
             _clearCommandHandler = new ClearCommandHandler(_tenantDataContext, emrLogger);
 
@@ -108,7 +109,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
 
                 //レセデータ集計
                 ReceCalculate(seikyuYm);
-                
+
                 if (IsStopCalc || CancellationToken.IsCancellationRequested)
                 {
                     _emrLogger.WriteLogMsg(this, conFncName, "IsCancellationRequested");
@@ -1148,7 +1149,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 {
                     switch (receInf.KogakuKbn)
                     {
-                        case 0: addCode("42区キ"); break;                        
+                        case 0: addCode("42区キ"); break;
                         case 41: addCode("41区カ"); break;
                     }
                 }
@@ -2409,7 +2410,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                 {
                     var wrkNissu = wrkNissus.Find(k => k.SinDate == receInf.SinYm * 100 + i);
 
-                    if (wrkNissu ==  null)
+                    if (wrkNissu == null)
                     {
                         //来院がない日
                         typeof(ReceInfJdModel).GetProperty($"Nissu{i}").SetValue(receInfJd, 0);
@@ -2428,7 +2429,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
                     {
                         //診療費なし
                         typeof(ReceInfJdModel).GetProperty($"Nissu{i}").SetValue(receInfJd, 0);
-                    }                  
+                    }
                 }
 
                 ReceInfJds.Add(receInfJd);
@@ -2438,7 +2439,7 @@ namespace EmrCalculateApi.ReceFutan.ViewModels
             //公費実日数
             int futanSbtCd = 1;
 
-            for (int kohiNo = 1; kohiNo <= 4; kohiNo ++)
+            for (int kohiNo = 1; kohiNo <= 4; kohiNo++)
             {
                 if (receInf.GetKohiId(kohiNo) == 0) break;
                 if (!receInf.GetKohiReceKisai(kohiNo)) continue;

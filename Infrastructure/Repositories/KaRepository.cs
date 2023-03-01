@@ -1,49 +1,46 @@
 ﻿using Domain.Models.Ka;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class KaRepository : IKaRepository
+public class KaRepository : RepositoryBase, IKaRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
-    public KaRepository(ITenantProvider tenantProvider)
+    public KaRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public bool CheckKaId(int kaId)
     {
-        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        var check = NoTrackingDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
     public bool CheckKaId(List<int> kaIds)
     {
-        var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
+        var countKaMsts = NoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
 
     public KaMstModel GetByKaId(int kaId)
     {
-        var entity = _tenantNoTrackingDataContext.KaMsts
+        var entity = NoTrackingDataContext.KaMsts
             .Where(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None).FirstOrDefault();
         return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
     public List<KaMstModel> GetByKaIds(List<int> kaIds)
     {
-        var entities = _tenantNoTrackingDataContext.KaMsts
+        var entities = NoTrackingDataContext.KaMsts
            .Where(k => kaIds.Contains(k.KaId) && k.IsDeleted == DeleteTypes.None).AsEnumerable();
         return entities is null ? new List<KaMstModel>() : entities.Select(e => ConvertToKaMstModel(e)).ToList();
     }
 
     public List<KaMstModel> GetList()
     {
-        return _tenantNoTrackingDataContext.KaMsts
+        return NoTrackingDataContext.KaMsts
             .Where(k => k.IsDeleted == DeleteTypes.None)
             .OrderBy(k => k.SortNo).AsEnumerable()
             .Select(k => ConvertToKaMstModel(k)).ToList();
@@ -51,66 +48,56 @@ public class KaRepository : IKaRepository
 
     public List<KaCodeMstModel> GetListKacode()
     {
-        return _tenantNoTrackingDataContext.KacodeMsts
+        return NoTrackingDataContext.KacodeMsts
                                             .OrderBy(u => u.ReceKaCd)
                                             .Select(ka => new KaCodeMstModel(
                                                         ka.ReceKaCd,
                                                         ka.SortNo,
-                                                        ka.KaName
+                                                        ka.KaName ?? string.Empty
                                              )).ToList();
     }
 
     public bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels)
     {
-        bool status = false;
-        try
+        var listKaMsts = TrackingDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
+        int sortNo = 1;
+        List<KaMst> listAddNews = new();
+        foreach (var model in kaMstModels)
         {
-            var listKaMsts = _tenantDataContext.KaMsts.Where(item => item.IsDeleted != 1).ToList();
-            int sortNo = 1;
-            List<KaMst> listAddNews = new();
-            foreach (var model in kaMstModels)
+            var entity = listKaMsts.FirstOrDefault(mst => mst.Id == model.Id && mst.HpId == hpId);
+            if (entity == null)
             {
-                var entity = listKaMsts.FirstOrDefault(mst => mst.Id == model.Id && mst.HpId == hpId);
-                if (entity == null)
-                {
-                    entity = new KaMst();
-                    entity.HpId = hpId;
-                    entity.Id = 0;
-                    entity.CreateDate = DateTime.UtcNow;
-                    entity.CreateId = userId;
-                }
-                entity.KaId = model.KaId;
-                entity.SortNo = sortNo;
-                entity.ReceKaCd = model.ReceKaCd;
-                entity.KaSname = model.KaSname;
-                entity.KaName = model.KaSname;
-                entity.IsDeleted = 0;
-                entity.UpdateDate = DateTime.UtcNow;
-                entity.UpdateId = userId;
-                if (entity.Id == 0)
-                {
-                    listAddNews.Add(entity);
-                }
-                sortNo++;
+                entity = new KaMst();
+                entity.HpId = hpId;
+                entity.Id = 0;
+                entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+                entity.CreateId = userId;
             }
-            _tenantDataContext.KaMsts.AddRange(listAddNews);
+            entity.KaId = model.KaId;
+            entity.SortNo = sortNo;
+            entity.ReceKaCd = model.ReceKaCd;
+            entity.KaSname = model.KaSname;
+            entity.KaName = model.KaSname;
+            entity.IsDeleted = 0;
+            entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            entity.UpdateId = userId;
+            if (entity.Id == 0)
+            {
+                listAddNews.Add(entity);
+            }
+            sortNo++;
+        }
+        TrackingDataContext.KaMsts.AddRange(listAddNews);
 
-            var listKaIdModel = kaMstModels.Select(model => model.Id).ToList();
-            var listKaDeletes = listKaMsts.Where(model => !listKaIdModel.Contains(model.Id)).ToList();
-            foreach (var mst in listKaDeletes)
-            {
-                mst.IsDeleted = 1;
-                mst.UpdateDate = DateTime.UtcNow;
-                mst.UpdateId = userId;
-            }
-            _tenantDataContext.SaveChanges();
-            status = true;
-            return status;
-        }
-        catch (Exception)
+        var listKaIdModel = kaMstModels.Select(model => model.Id).ToList();
+        var listKaDeletes = listKaMsts.Where(model => !listKaIdModel.Contains(model.Id)).ToList();
+        foreach (var mst in listKaDeletes)
         {
-            return status;
+            mst.IsDeleted = 1;
+            mst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            mst.UpdateId = userId;
         }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     private static KaMstModel ConvertToKaMstModel(KaMst k)
@@ -122,5 +109,10 @@ public class KaRepository : IKaRepository
             k.ReceKaCd ?? string.Empty,
             k.KaSname ?? string.Empty,
             k.KaName ?? string.Empty);
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

@@ -19,26 +19,25 @@ namespace Interactor.FlowSheet
 
         public UpsertFlowSheetOutputData Handle(UpsertFlowSheetInputData inputData)
         {
-
-            if (inputData.ToList().Count == 0)
+            try
             {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InputDataNoValid);
-            }
-            if (inputData.Items.Any(i => i.RainNo <= 0))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RainNoNoValid);
-            }
-            if (inputData.Items.Any(i => i.PtId <= 0))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoValid);
-            }
-            if (inputData.Items.Any(i => i.SinDate < 19000000 || i.SinDate > 30000000))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.SinDateNoValid);
-            }
-            if (inputData.Items.Any(i => i.Flag))
-            {
-                try
+                if (inputData.ToList().Count == 0)
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InputDataNoValid);
+                }
+                if (inputData.Items.Any(i => i.RainNo <= 0))
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RainNoNoValid);
+                }
+                if (inputData.Items.Any(i => i.PtId <= 0))
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoValid);
+                }
+                if (inputData.Items.Any(i => i.SinDate < 19000000 || i.SinDate > 30000000))
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.SinDateNoValid);
+                }
+                if (inputData.Items.Any(i => i.Flag))
                 {
                     var checkTagNo = inputData.Items.Where(i => i.Flag).Any(i => int.Parse(i.Value) < 0 || int.Parse(i.Value) > 7);
                     if (checkTagNo)
@@ -46,22 +45,15 @@ namespace Interactor.FlowSheet
                         return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
                     }
                 }
-                catch
+                if (!_patientRepository.CheckExistIdList(inputData.Items.Select(i => i.PtId).Distinct().ToList()))
                 {
-                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoExist);
                 }
-            }
-            if (!_patientRepository.CheckExistListId(inputData.Items.Select(i => i.PtId).Distinct().ToList()))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoExist);
-            }
-            if (!_receptionRepository.CheckListNo(inputData.Items.Select(i => i.RainNo).ToList()))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RaiinNoExist);
-            }
+                if (!_receptionRepository.CheckListNo(inputData.Items.Select(i => i.RainNo).ToList()))
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RaiinNoExist);
+                }
 
-            try
-            {
                 var dataTags = inputData?.ToList()?.Where(i => i.Flag).Select(i => new FlowSheetModel(
                         i.SinDate,
                         int.Parse(i.Value),
@@ -99,6 +91,12 @@ namespace Interactor.FlowSheet
             catch
             {
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.UpdateNoSuccess);
+            }
+            finally
+            {
+                _flowsheetRepository.ReleaseResource();
+                _patientRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
             }
         }
     }

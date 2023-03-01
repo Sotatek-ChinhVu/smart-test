@@ -1,11 +1,7 @@
-﻿using Domain.Constant;
+﻿using Domain.Models.HokenMst;
 using Domain.Models.InsuranceMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Helper.Constants;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
 {
@@ -95,6 +91,27 @@ namespace Domain.Models.Insurance
             HokenMst = new HokenMstModel();
             HokensyaMst = new HokensyaMstModel();
         }
+        public HokenInfModel()
+        {
+            HokenMst = new HokenMstModel();
+            HokensyaMst = new HokensyaMstModel();
+        }
+
+        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMasterModel hokenMasterModels, List<ConfirmDateModel> confirmDateModels)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
+            Houbetu = houbetu;
+            StartDate = startDate;
+            EndDate = endDate;
+            SinDate = sinDate;
+            HokenMasterModels = hokenMasterModels;
+            ConfirmDateList = confirmDateModels;
+        }
+
+        public HokenMasterModel HokenMasterModels { get; private set; }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
@@ -322,5 +339,41 @@ namespace Domain.Models.Insurance
         public bool IsNotKenkoKanri => HokenKbn != 13;
 
         public bool IsNotRodo => HokenKbn != 11;
+
+        public bool IsRousai => HokenKbn == 11 || HokenKbn == 12 || HokenKbn == 13;
+
+        public bool IsJibai => HokenKbn == 14;
+
+        public bool IsHoken => IsShaho || IsKokuho;
+
+        public bool HasDateConfirmed
+        {
+            get
+            {
+                // Jihi
+                if (IsJihi)
+                {
+                    return true;
+                }
+
+                // nashi
+                if (Houbetu == HokenConstant.HOUBETU_NASHI)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public int LastDateConfirmed
+        {
+            get
+            {
+                if (!ConfirmDateList.Any()) return 0;
+
+                return ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate;
+            }
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace Interactor.Diseases
                     }
                 }
 
-                if (!_patientInforRepository.CheckExistListId(datas.Select(i => i.PtId).Distinct().ToList()))
+                if (!_patientInforRepository.CheckExistIdList(datas.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist, new());
                 }
@@ -79,7 +79,12 @@ namespace Interactor.Diseases
             {
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess, new());
             }
-
+            finally
+            {
+                _diseaseRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
         }
 
         private static UpsertPtDiseaseListStatus ConvertStatus(ValidationStatus status)

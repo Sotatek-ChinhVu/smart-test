@@ -1,7 +1,6 @@
-﻿using EmrCalculateApi.ReceFutan.Models;
-using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
 using EmrCalculateApi.Extensions;
-using EmrCalculateApi.Interface;
+using EmrCalculateApi.ReceFutan.Models;
 using Entity.Tenant;
 using PostgreDataContext;
 
@@ -204,7 +203,7 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
             var joinQuery = (
                 from ptHokenInf in ptHokenInfs
                 join hokenMst in hokenMsts on
-                    new { ptHokenInf.HpId, ptHokenInf.HokenNo, ptHokenInf.HokenEdaNo} equals
+                    new { ptHokenInf.HpId, ptHokenInf.HokenNo, ptHokenInf.HokenEdaNo } equals
                     new { hokenMst.HpId, hokenMst.HokenNo, hokenMst.HokenEdaNo }
                 where
                     ptHokenInf.HpId == hpId &&
@@ -283,7 +282,7 @@ namespace EmrCalculateApi.ReceFutan.DB.Finder
                 join hokenKey in hokenMstKeys on
                     new { hokenMst.HpId, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.PrefNo, hokenMst.StartDate } equals
                     new { hokenKey.HpId, hokenKey.HokenNo, hokenKey.HokenEdaNo, hokenKey.PrefNo, hokenKey.StartDate }
-                select 
+                select
                     hokenMst
             );
 

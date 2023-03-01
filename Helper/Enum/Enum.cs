@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Helper.Enum
+﻿namespace Helper.Enum
 {
     public enum CheckSpecialType
     {
@@ -38,5 +32,58 @@ namespace Helper.Enum
     {
         MaxAge,
         MinAge
+    }
+
+    public enum WindowType
+    {
+        MedicalExamination,
+        ReceptionInInsertMode,
+        ReceptionInUpdateMode,
+        ReceptionInYoyakuMode,
+        SearchPatient,
+        MonshinInput,
+        Accounting,
+        AccountingCard,
+        FamilyInfo,
+        AccountDueList,
+        Scan,
+        ApprovalInfo,
+        DiseaseRegistration,
+        SpecialNote,
+        Reservation,
+        DocumentManagement,
+        VisitingList,
+        KarteDaicho,
+        Booking,
+        PrintRaiinInf,
+        RaiinView
+    }
+
+    public enum RelationshipEnum
+    {
+        GF1,
+        GM1,
+        GF2,
+        GM2,
+        FA,
+        MO,
+        MA,
+        BB,
+        BS,
+        LB,
+        LS,
+        SO,
+        DA,
+        GC,
+        BR,
+        OT
+    }
+
+    public enum InfoType
+    {
+        PtHeaderInfo = 0,
+        SumaryInfo,
+        NotificationInfo,
+        Popup
     }
 }

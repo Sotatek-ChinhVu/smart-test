@@ -1,6 +1,7 @@
 ﻿using EmrCalculateApi.Constants;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 
 namespace EmrCalculateApi.ReceFutan.Models
@@ -3015,7 +3016,7 @@ namespace EmrCalculateApi.ReceFutan.Models
             {
                 return
                     HokensyaNo.Length < 6 ? false :
-                        HokenKbn == EmrCalculateApi.Constants.HokenKbn.Kokho &&
+                        HokenKbn == Helper.Constants.HokenKbn.Kokho &&
                         ReceSbt.Substring(1, 1) != "3" &&   //後期以外
                         HokensyaNo.Substring(HokensyaNo.Length - 6, 6).Substring(2, 1) == "3";
             }

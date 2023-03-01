@@ -2,26 +2,21 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class AccountDueRepository : IAccountDueRepository
+public class AccountDueRepository : RepositoryBase, IAccountDueRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
-
-    public AccountDueRepository(ITenantProvider tenantProvider)
+    public AccountDueRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
+    public List<AccountDueModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked)
     {
         // Left table
-        var seikyuList = _tenantNoTrackingDataContext.SyunoSeikyus
+        var seikyuList = NoTrackingDataContext.SyunoSeikyus
                         .Where(item => item.HpId == hpId
                                             && item.PtId == ptId).ToList();
 
@@ -31,18 +26,18 @@ public class AccountDueRepository : IAccountDueRepository
         }
 
         // Right table
-        var nyukinList = _tenantNoTrackingDataContext.SyunoNyukin
+        var nyukinList = NoTrackingDataContext.SyunoNyukin
                                .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
                                                    && item.IsDeleted == 0).ToList();
 
-        var raiinList = _tenantNoTrackingDataContext.RaiinInfs
+        var raiinList = NoTrackingDataContext.RaiinInfs
                         .Where(item => item.HpId == hpId
                                             && item.PtId == ptId
                                             && item.IsDeleted == DeleteTypes.None
                                             && item.Status > RaiinState.TempSave).ToList();
 
-        var kaMstList = _tenantNoTrackingDataContext.KaMsts
+        var kaMstList = NoTrackingDataContext.KaMsts
                         .Where(item => item.HpId == hpId
                                             && item.IsDeleted == 0).ToList();
 
@@ -57,11 +52,9 @@ public class AccountDueRepository : IAccountDueRepository
                               from kaMstItem in kaMstLeft.DefaultIfEmpty()
                               select ConvertToAccountDueListModel(hpId, ptId, seikyu, nyukinItem, raiinItem, kaMstItem)
                          )
-                         .OrderByDescending(item => item.SeikyuSinDate)
-                         .ThenByDescending(item => item.RaiinNo)
-                         .ThenByDescending(item => item.SortNo)
-                         .Skip((pageIndex - 1) * pageSize)
-                         .Take(pageSize)
+                         .OrderBy(item => item.SeikyuSinDate)
+                         .ThenBy(item => item.RaiinNo)
+                         .ThenBy(item => item.SortNo)
                          .ToList();
         return accountDueList;
     }
@@ -93,7 +86,9 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin != null ? nyukin.SeqNo : 0,
                 seikyu.SeikyuDetail ?? string.Empty,
                 raiinItem.Status,
-                seikyu.AdjustFutan
+                seikyu.AdjustFutan,
+                seikyu.NewSeikyuDetail ?? string.Empty,
+                seikyu.NewSeikyuTensu
             );
     }
     private int GetMonth(int date)
@@ -104,7 +99,7 @@ public class AccountDueRepository : IAccountDueRepository
     public Dictionary<int, string> GetPaymentMethod(int hpId)
     {
         Dictionary<int, string> result = new();
-        var paymentMethodList = _tenantNoTrackingDataContext.PaymentMethodMsts.Where(item => item.HpId == hpId).OrderBy(item => item.SortNo).ToList();
+        var paymentMethodList = NoTrackingDataContext.PaymentMethodMsts.Where(item => item.HpId == hpId).OrderBy(item => item.SortNo).ToList();
         foreach (var paymentMethod in paymentMethodList)
         {
             result.Add(paymentMethod.PaymentMethodCd, paymentMethod.PayName ?? string.Empty);
@@ -115,10 +110,10 @@ public class AccountDueRepository : IAccountDueRepository
     public Dictionary<int, string> GetUketsukeSbt(int hpId)
     {
         Dictionary<int, string> result = new();
-        var uketukeList = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+        var uketukeList = NoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
         foreach (var uketuke in uketukeList)
         {
-            result.Add(uketuke.KbnId, uketuke.KbnName);
+            result.Add(uketuke.KbnId, uketuke.KbnName ?? string.Empty);
         }
         return result;
     }
@@ -126,7 +121,7 @@ public class AccountDueRepository : IAccountDueRepository
     public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
     {
         var listRaiinNo = listAccountDues.Select(item => item.RaiinNo).ToList();
-        var raiinLists = _tenantDataContext.RaiinInfs
+        var raiinLists = TrackingDataContext.RaiinInfs
                                 .Where(item => item.HpId == hpId
                                                     && item.PtId == ptId
                                                     && item.IsDeleted == DeleteTypes.None
@@ -135,14 +130,14 @@ public class AccountDueRepository : IAccountDueRepository
                                 .ToList();
 
         // Left table
-        var seikyuLists = _tenantDataContext.SyunoSeikyus
+        var seikyuLists = TrackingDataContext.SyunoSeikyus
                             .Where(item => item.HpId == hpId
                                                 && item.PtId == ptId
                                                 && listRaiinNo.Contains(item.RaiinNo))
                             .ToList();
 
         // Right table
-        var nyukinLists = _tenantDataContext.SyunoNyukin
+        var nyukinLists = TrackingDataContext.SyunoNyukin
                                .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
                                                    && item.IsDeleted == 0
@@ -150,7 +145,7 @@ public class AccountDueRepository : IAccountDueRepository
                                .ToList();
         try
         {
-            var dateTimeNow = DateTime.UtcNow;
+            var dateTimeNow = CIUtil.GetJapanDateTimeNow();
 
             foreach (var model in listAccountDues)
             {
@@ -161,10 +156,10 @@ public class AccountDueRepository : IAccountDueRepository
                 UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
 
                 // Update right table SyunoNyukin
-                UpdateSyunoNyukin(hpId, ptId, userId, sinDate, dateTimeNow, model, nyukinLists);
+                UpdateSyunoNyukin(hpId, ptId, userId, dateTimeNow, model, nyukinLists);
             }
 
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return true;
         }
         catch
@@ -202,12 +197,14 @@ public class AccountDueRepository : IAccountDueRepository
         if (seikyu != null)
         {
             seikyu.NyukinKbn = model.NyukinKbn;
+            seikyu.SeikyuGaku = model.SeikyuGaku;
+            seikyu.AdjustFutan = model.SeikyuAdjustFutan;
             seikyu.UpdateDate = dateTimeNow;
             seikyu.UpdateId = userId;
         }
     }
 
-    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, int sinDate, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
+    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
     {
         if (model.SeqNo == 0) // Create new SyunoNyukin
         {
@@ -221,7 +218,7 @@ public class AccountDueRepository : IAccountDueRepository
             nyukin.AdjustFutan = model.AdjustFutan;
             nyukin.NyukinGaku = model.NyukinGaku;
             nyukin.PaymentMethodCd = model.PaymentMethodCd;
-            nyukin.NyukinDate = sinDate;
+            nyukin.NyukinDate = model.NyukinDate;
             nyukin.UketukeSbt = model.UketukeSbt;
             nyukin.NyukinCmt = model.NyukinCmt;
             nyukin.NyukinjiSeikyu = model.SeikyuGaku;
@@ -231,7 +228,7 @@ public class AccountDueRepository : IAccountDueRepository
             nyukin.UpdateDate = dateTimeNow;
             nyukin.CreateId = userId;
             nyukin.UpdateId = userId;
-            _tenantDataContext.SyunoNyukin.Add(nyukin);
+            TrackingDataContext.SyunoNyukin.Add(nyukin);
         }
         else // Update SyunoNyukin
         {
@@ -243,7 +240,7 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin.AdjustFutan = model.AdjustFutan;
                 nyukin.NyukinGaku = model.NyukinGaku;
                 nyukin.PaymentMethodCd = model.PaymentMethodCd;
-                nyukin.NyukinDate = sinDate;
+                nyukin.NyukinDate = model.NyukinDate;
                 nyukin.UketukeSbt = model.UketukeSbt;
                 nyukin.NyukinCmt = model.NyukinCmt;
                 nyukin.NyukinjiSeikyu = model.SeikyuGaku;
@@ -261,7 +258,7 @@ public class AccountDueRepository : IAccountDueRepository
 
     public List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo)
     {
-        var result = _tenantNoTrackingDataContext.SyunoSeikyus.Where(item => listRaiinNo.Contains(item.RaiinNo))
+        var result = TrackingDataContext.SyunoSeikyus.Where(item => listRaiinNo.Contains(item.RaiinNo))
                                                              .Select(item => new SyunoSeikyuModel(
                                                                     item.HpId,
                                                                     item.PtId,
@@ -281,7 +278,7 @@ public class AccountDueRepository : IAccountDueRepository
     }
     public List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo)
     {
-        var result = _tenantNoTrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
+        var result = TrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
                                                              .Select(item => new SyunoNyukinModel(
                                                                     item.HpId,
                                                                     item.PtId,
@@ -300,5 +297,10 @@ public class AccountDueRepository : IAccountDueRepository
                                                                     item.NyukinjiDetail ?? string.Empty
                                                              )).ToList();
         return result;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

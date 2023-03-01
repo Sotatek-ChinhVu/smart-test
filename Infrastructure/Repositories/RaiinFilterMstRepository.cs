@@ -1,30 +1,41 @@
 ﻿using Domain.Models.RaiinFilterMst;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class RaiinFilterMstRepository : IRaiinFilterMstRepository
+public class RaiinFilterMstRepository : RepositoryBase, IRaiinFilterMstRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public RaiinFilterMstRepository(ITenantProvider tenantProvider)
+    public RaiinFilterMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+    }
+
+    public int GetLastTimeDate(int hpId, long ptId, int sinDate)
+    {
+        var result = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                        && x.PtId == ptId
+                                                        && x.SinDate < sinDate
+                                                        && x.Status >= RaiinState.TempSave
+                                                        && x.IsDeleted == DeleteTypes.None
+                                                    )
+                                                    .OrderByDescending(x => x.SinDate)
+                                                    .FirstOrDefault();
+        return result != null ? result.SinDate : 0;
     }
 
     public List<RaiinFilterMstModel> GetList()
     {
         var query =
-            from mst in _tenantDataContext.RaiinFilterMsts
+            from mst in NoTrackingDataContext.RaiinFilterMsts
             where mst.IsDeleted == DeleteTypes.None
             select new
             {
                 mst,
-                sorts = _tenantDataContext.RaiinFilterSorts
+                sorts = NoTrackingDataContext.RaiinFilterSorts
                     .Where(s => s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
                     .ToList()
             };
@@ -48,20 +59,34 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         )).ToList();
     }
 
+    public int GetTantoId(long ptId, int sinDate, long raiinNo)
+    {
+        var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.PtId == ptId
+                                                                && p.IsDeleted == DeleteTypes.None
+                                                                && p.SinDate == sinDate
+                                                                && p.RaiinNo == raiinNo);
+        return raiinInf != null ? raiinInf.TantoId : 0;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void SaveList(List<RaiinFilterMstModel> mstModels, int hpId, int userId)
     {
-        var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(() =>
         {
-            using var transaction = _tenantDataContext.Database.BeginTransaction();
+            using var transaction = TrackingDataContext.Database.BeginTransaction();
 
             var query =
-                from mst in _tenantDataContext.RaiinFilterMsts.AsTracking()
+                from mst in TrackingDataContext.RaiinFilterMsts.AsTracking()
                 where mst.IsDeleted == DeleteTypes.None
                 select new
                 {
                     mst,
-                    sorts = _tenantDataContext.RaiinFilterSorts.AsTracking()
+                    sorts = TrackingDataContext.RaiinFilterSorts.AsTracking()
                         .Where(s => s.FilterId == mst.FilterId && s.IsDeleted == DeleteTypes.None)
                         .ToList()
                 };
@@ -102,9 +127,9 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                         FilterName = mstModel.FilterName,
                         SelectKbn = mstModel.SelectKbn,
                         Shortcut = mstModel.Shortcut,
-                        UpdateDate = DateTime.UtcNow,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId
                     };
                     // Create RaiinFilterSort entities with temporary FilterId = 0
@@ -116,8 +141,8 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
 
             // Insert msts
             var mstsToInsert = mstWithSortsToInsert.Select(x => x.Mst);
-            _tenantDataContext.RaiinFilterMsts.AddRange(mstsToInsert);
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.RaiinFilterMsts.AddRange(mstsToInsert);
+            TrackingDataContext.SaveChanges();
             // Insert related sorts
             // After SaveChanges called FilterId of RaiinFilterMst is populated
             // so we can set FilterId for the related RaiinFilterSort entities here
@@ -130,7 +155,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 }
             }
 
-            _tenantDataContext.RaiinFilterSorts.AddRange(sortsToInsert);
+            TrackingDataContext.RaiinFilterSorts.AddRange(sortsToInsert);
 
             // If entities don't exist in the models, we will delete them
             foreach (var item in existingEntities)
@@ -150,7 +175,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 }
             }
 
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
 
             transaction.Commit();
         });
@@ -169,7 +194,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 entity.FilterName = model.FilterName;
                 entity.SelectKbn = model.SelectKbn;
                 entity.Shortcut = model.Shortcut;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
             }
         }
@@ -188,7 +213,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 entity.ColumnName = model.ColumnName;
                 entity.KbnCd = model.KbnCd;
                 entity.SortKbn = model.SortKbn;
-                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 entity.UpdateId = userId;
             }
         }
@@ -203,10 +228,10 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 Priority = sortModel.Priority,
                 ColumnName = sortModel.ColumnName,
                 KbnCd = sortModel.KbnCd,
-                UpdateDate = DateTime.UtcNow,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
                 UpdateId = userId,
                 SortKbn = sortModel.SortKbn,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = userId
             };
         }

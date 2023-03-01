@@ -63,7 +63,7 @@ namespace Interactor.SpecialNote
                         keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
                     }
 
-                    var checkPtId = _patientInfoRepository.CheckExistListId(new List<long> { item.PtId });
+                    var checkPtId = _patientInfoRepository.CheckExistIdList(new List<long> { item.PtId });
                     var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
 
                     if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))
@@ -89,6 +89,12 @@ namespace Interactor.SpecialNote
             catch
             {
                 return new AddAlrgyDrugListOutputData(new List<KeyValuePair<int, AddAlrgyDrugListStatus>>() { new(-1, AddAlrgyDrugListStatus.Failed) });
+            }
+            finally
+            {
+                _importantNoteRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _patientInfoRepository.ReleaseResource();
             }
         }
 

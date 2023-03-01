@@ -26,7 +26,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             {
                 return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidHpId);
             }
-            else if (!_patientInforRepository.CheckExistListId(new List<long>() { inputData.PtId }))
+            else if (!_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
             {
                 return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidPtId);
             }
@@ -34,17 +34,9 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             {
                 return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidSindate);
             }
-            else if (inputData.PageIndex < 1)
-            {
-                return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidpageIndex);
-            }
-            else if (inputData.PageSize < 1)
-            {
-                return new GetAccountDueListOutputData(GetAccountDueListStatus.InvalidpageSize);
-            }
             var uketsukeSbt = _accountDueRepository.GetUketsukeSbt(inputData.HpId);
             var paymentMethod = _accountDueRepository.GetPaymentMethod(inputData.HpId);
-            var listAccountDues = _accountDueRepository.GetAccountDueList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsUnpaidChecked, inputData.PageIndex, inputData.PageSize);
+            var listAccountDues = _accountDueRepository.GetAccountDueList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsUnpaidChecked);
             var hokenPatternList = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, -1, inputData.PtId, true);
 
             // Get HokenPattern List
@@ -87,17 +79,14 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 tempModel = model;
             }
 
-            listAccountDues = listAccountDues
-                                             .OrderBy(item => item.SeikyuSinDate)
-                                             .ThenBy(item => item.RaiinNo)
-                                             .ThenBy(item => item.SortNo).ToList();
-
             var result = new AccountDueListModel(listAccountDues, paymentMethod, uketsukeSbt);
             return new GetAccountDueListOutputData(result, GetAccountDueListStatus.Successed);
         }
-        catch
+        finally
         {
-            return new GetAccountDueListOutputData(GetAccountDueListStatus.Failed);
+            _accountDueRepository.ReleaseResource();
+            _receptionRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 }

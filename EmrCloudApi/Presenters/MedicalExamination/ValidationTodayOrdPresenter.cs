@@ -238,7 +238,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidCmtOpt:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtName));
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MMaxLengthOfCmt), ResponseMessage.TodayOdrCmtName));
                         break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidFontColor:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrFontColor));
@@ -266,6 +266,12 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                         break;
                     case OrderInfConst.OrdInfValidationStatus.OdrNoMapOdrDetail:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasDrug:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasDrug, string.Empty));
+                        break;
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
                         break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));

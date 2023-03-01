@@ -45,23 +45,30 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.UploadListFileKarte)]
-        public ActionResult<Response<SaveListFileTodayOrderResponse>> MultiUpload([FromQuery] SaveListFileTodayOrderRequest request, [FromForm] List<IFormFile> files)
+        public ActionResult<Response<SaveListFileResponse>> MultiUpload([FromQuery] SaveListFileRequest request, [FromForm] List<IFormFile> files)
         {
             List<FileItem> listFiles = new();
             foreach (var file in files)
             {
                 if (file.Length > 0)
                 {
+                    string fileName = file.FileName;
+                    bool isSchema = false;
+                    if (file.FileName.EndsWith(".schema"))
+                    {
+                        fileName = file.FileName.Replace(".schema", "." + file.ContentType.Replace("image/", string.Empty));
+                        isSchema = true;
+                    }
                     var streamImage = new MemoryStream();
                     file.CopyTo(streamImage);
-                    listFiles.Add(new FileItem(file.FileName, streamImage));
+                    listFiles.Add(new FileItem(fileName, isSchema, streamImage));
                 }
             }
             var input = new SaveListFileTodayOrderInputData(HpId, request.PtId, request.SetCd, request.TypeUpload, listFiles);
             var output = _bus.Handle(input);
-            var presenter = new SaveListFileTodayOrderPresenter();
+            var presenter = new SaveListFilePresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<SaveListFileTodayOrderResponse>>(presenter.Result);
+            return new ActionResult<Response<SaveListFileResponse>>(presenter.Result);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SwapHoken
+﻿using Domain.Common;
+
+namespace Domain.Models.SwapHoken
 {
-    public interface ISwapHokenRepository
+    public interface ISwapHokenRepository : IRepositoryBase
     {
         long CountOdrInf(int hpId, long ptId, int hokenPid, int startDate, int endDate);
 
@@ -13,5 +15,7 @@
         bool ExistRaiinInfUsedOldHokenId(int hpId, long ptId, List<int> sinYms, int oldHokenPId);
 
         bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId, int userId);
+
+        bool IsPtHokenPatternUsed(int hpId, long ptId, int hokenPid);
     }
 }

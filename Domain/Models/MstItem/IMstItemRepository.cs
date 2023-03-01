@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.MstItem
+﻿using Domain.Common;
+
+namespace Domain.Models.MstItem
 {
-    public interface IMstItemRepository
+    public interface IMstItemRepository : IRepositoryBase
     {
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 
@@ -24,7 +26,7 @@
 
         List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
 
-        bool CheckItemCd(string ItemCd);
+        bool CheckItemCd(string itemCd);
 
         (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
@@ -36,6 +38,16 @@
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
 
+        List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId);
+
+        bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId);
+
         List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
+
+        List<string> GetCheckItemCds(List<string> itemCds);
+
+        List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
+
+        List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
     }
 }

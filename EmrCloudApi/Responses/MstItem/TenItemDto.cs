@@ -46,6 +46,9 @@ namespace EmrCloudApi.Responses.MstItem
             KensaCenterItemCDDisplay = model.KensaCenterItemCDDisplay;
             TenDisplay = model.TenDisplay;
             KouiName = model.KouiName;
+            OdrTermVal = model.OdrTermVal;
+            CnvTermVal = model.CnvTermVal;
+            DefaultValue = model.DefaultValue;
         }
 
         public int HpId { get; private set; }
@@ -127,5 +130,11 @@ namespace EmrCloudApi.Responses.MstItem
         public string TenDisplay { get; private set; }
 
         public string KouiName { get; private set; }
+
+        public double OdrTermVal { get; private set; }
+
+        public double CnvTermVal { get; private set; }
+
+        public double DefaultValue { get; private set; }
     }
 }

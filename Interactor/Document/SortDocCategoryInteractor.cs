@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.User;
 using UseCase.Document.SortDocCategory;
 
@@ -33,9 +33,11 @@ public class SortDocCategoryInteractor : ISortDocCategoryInputPort
             }
             return new SortDocCategoryOutputData(SortDocCategoryStatus.Failed);
         }
-        catch (Exception)
+        finally
         {
-            return new SortDocCategoryOutputData(SortDocCategoryStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _userRepository.ReleaseResource();
         }
     }
 

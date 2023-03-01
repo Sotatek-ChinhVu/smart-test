@@ -11,8 +11,16 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
+using UseCase.MedicalExamination.GetAddedAutoItem;
+using UseCase.MedicalExamination.GetValidGairaiRiha;
+using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Messages;
 
 namespace EmrCloudApi.Controller
 {
@@ -20,13 +28,15 @@ namespace EmrCloudApi.Controller
     public class TodayOrdController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public TodayOrdController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+        public TodayOrdController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertTodayOdrResponse>> Upsert([FromBody] UpsertTodayOdrRequest request)
+        public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
@@ -96,9 +106,16 @@ namespace EmrCloudApi.Controller
                     request.KarteItem.Text,
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText),
-                UserId
+                UserId,
+                new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems)
             );
             var output = _bus.Handle(input);
+
+            if (output.Status == UpsertTodayOrdStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
+                    new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
+            }
 
             var presenter = new UpsertTodayOdrPresenter();
             presenter.Complete(output);
@@ -222,6 +239,196 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetAddedAutoItem)]
+        public ActionResult<Response<GetAddedAutoItemResponse>> GetAddedAutoItem([FromBody] GetAddedAutoItemRequest request)
+        {
+            var input = new GetAddedAutoItemInputData(HpId, request.PtId, request.SinDate, request.OrderInfItems, request.CurrentOrderInfs);
+            var output = _bus.Handle(input);
+            var presenter = new GetAddedAutoItemPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAddedAutoItemResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.AddAutoItem)]
+        public ActionResult<Response<AddAutoItemResponse>> AddAutoItem([FromBody] AddAutoItemRequest request)
+        {
+            var input = new AddAutoItemInputData(HpId, UserId, request.SinDate, request.AddedOrderInfs, request.OrderInfItems);
+            var output = _bus.Handle(input);
+            var presenter = new AddAutoItemPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<AddAutoItemResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.GetInfCheckedItemName)]
+        public ActionResult<Response<CheckedItemNameResponse>> GetInfCheckedItemName([FromBody] CheckedItemNameRequest request)
+        {
+            var input = new CheckedItemNameInputData(request.OdrInfs);
+            var output = _bus.Handle(input);
+            var presenter = new CheckedItemNamePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedItemNameResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetValidGairaiRiha)]
+        public ActionResult<Response<GetValidGairaiRihaResponse>> GetValidGairaiRiha([FromBody] GetValidGairaiRihaRequest request)
+        {
+            var input = new GetValidGairaiRihaInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInf.Select(
+                o => new OdrInfItemInputData(
+                            HpId,
+                            o.RaiinNo,
+                            o.RpNo,
+                            o.RpEdaNo,
+                            o.PtId,
+                            o.SinDate,
+                            o.HokenPid,
+                            o.OdrKouiKbn,
+                            o.RpName,
+                            o.InoutKbn,
+                            o.SikyuKbn,
+                            o.SyohoSbt,
+                            o.SanteiKbn,
+                            o.TosekiKbn,
+                            o.DaysCnt,
+                            o.SortNo,
+                            o.Id,
+                            o.OrdInfDetails.Select(
+                                    od => new OdrInfDetailItemInputData(
+                                            HpId,
+                                            od.RaiinNo,
+                                            od.RpNo,
+                                            od.RpEdaNo,
+                                            od.RowNo,
+                                            od.PtId,
+                                            od.SinDate,
+                                            od.SinKouiKbn,
+                                            od.ItemCd,
+                                            od.ItemName,
+                                            od.Suryo,
+                                            od.UnitName,
+                                            od.UnitSbt,
+                                            od.TermVal,
+                                            od.KohatuKbn,
+                                            od.SyohoKbn,
+                                            od.SyohoLimitKbn,
+                                            od.DrugKbn,
+                                            od.YohoKbn,
+                                            od.Kokuji1,
+                                            od.Kokuji2,
+                                            od.IsNodspRece,
+                                            od.IpnCd,
+                                            od.IpnName,
+                                            od.JissiKbn,
+                                            od.JissiDate,
+                                            od.JissiId,
+                                            od.JissiMachine,
+                                            od.ReqCd,
+                                            od.Bunkatu,
+                                            od.CmtName,
+                                            od.CmtOpt,
+                                            od.FontColor,
+                                            od.CommentNewline
+                                        )
+                                ).ToList(),
+                            o.IsDeleted
+                        )
+                ).ToList()
+                );
+            var output = _bus.Handle(input);
+
+            var presenter = new GetValidGairaiRihaPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetValidGairaiRihaResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetValidJihiYobo)]
+        public ActionResult<Response<GetValidJihiYoboResponse>> GetValidJihiYobo([FromBody] GetValidGairaiRihaRequest request)
+        {
+            var input = new GetValidJihiYoboInputData(HpId, request.SinDate, request.SyosaiKbn, request.AllOdrInf.Select(
+                o => new OdrInfItemInputData(
+                            HpId,
+                            o.RaiinNo,
+                            o.RpNo,
+                            o.RpEdaNo,
+                            o.PtId,
+                            o.SinDate,
+                            o.HokenPid,
+                            o.OdrKouiKbn,
+                            o.RpName,
+                            o.InoutKbn,
+                            o.SikyuKbn,
+                            o.SyohoSbt,
+                            o.SanteiKbn,
+                            o.TosekiKbn,
+                            o.DaysCnt,
+                            o.SortNo,
+                            o.Id,
+                            o.OrdInfDetails.Select(
+                                    od => new OdrInfDetailItemInputData(
+                                            HpId,
+                                            od.RaiinNo,
+                                            od.RpNo,
+                                            od.RpEdaNo,
+                                            od.RowNo,
+                                            od.PtId,
+                                            od.SinDate,
+                                            od.SinKouiKbn,
+                                            od.ItemCd,
+                                            od.ItemName,
+                                            od.Suryo,
+                                            od.UnitName,
+                                            od.UnitSbt,
+                                            od.TermVal,
+                                            od.KohatuKbn,
+                                            od.SyohoKbn,
+                                            od.SyohoLimitKbn,
+                                            od.DrugKbn,
+                                            od.YohoKbn,
+                                            od.Kokuji1,
+                                            od.Kokuji2,
+                                            od.IsNodspRece,
+                                            od.IpnCd,
+                                            od.IpnName,
+                                            od.JissiKbn,
+                                            od.JissiDate,
+                                            od.JissiId,
+                                            od.JissiMachine,
+                                            od.ReqCd,
+                                            od.Bunkatu,
+                                            od.CmtName,
+                                            od.CmtOpt,
+                                            od.FontColor,
+                                            od.CommentNewline
+                                        )
+                                ).ToList(),
+                            o.IsDeleted
+                        )
+                ).ToList()
+                );
+            var output = _bus.Handle(input);
+
+            var presenter = new GetValidJihiYoboPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetValidJihiYoboResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertNextOrderToTodayOrder)]
+        public ActionResult<Response<ConvertNextOrderToTodayOrderResponse>> ConvertNextOrderToTodayOrder([FromBody] ConvertNextOrderToTodayOrderRequest request)
+        {
+            var input = new ConvertNextOrderToTodayOrdInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.rsvKrtOrderInfItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertNextOrderToTodayOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
         }
     }
 }

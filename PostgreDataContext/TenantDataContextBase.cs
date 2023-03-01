@@ -8,24 +8,26 @@ namespace PostgreDataContext
     {
         private readonly string _connectionString;
 
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
+        public TenantDataContext(DbContextOptions options)
         : base(options)
         {
             _connectionString = string.Empty;
         }
 
-        public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!string.IsNullOrEmpty(_connectionString))
-            {
-                optionsBuilder.UseNpgsql(_connectionString, buider =>
-                {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                }).LogTo(Console.WriteLine, LogLevel.Information);
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!string.IsNullOrEmpty(_connectionString))
+        //    {
+        //        optionsBuilder.UseNpgsql(_connectionString, buider =>
+        //        {
+        //            buider.EnableRetryOnFailure(maxRetryCount: 3);
+        //        }).LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //    else
+        //    {
+        //        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -98,7 +100,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
             modelBuilder.Entity<KarteKbnMst>().HasKey(o => new { o.HpId, o.KarteKbn });
-            modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
+            modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtSanteiConf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.PtId, r.IraiCd, r.SeqNo });
             modelBuilder.Entity<KensaMst>().HasKey(r => new { r.HpId, r.KensaItemCd, r.KensaItemSeqNo });
@@ -420,7 +422,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<HpInf>().HasKey(h => new { h.HpId, h.StartDate });
             modelBuilder.Entity<IpnKasanMst>().HasKey(i => new { i.HpId, i.StartDate, i.IpnNameCd, i.SeqNo });
             modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.AnalogueCd });
-            modelBuilder.Entity<PtFamily>().HasKey(p => new { p.PtId });
+            modelBuilder.Entity<PtFamily>().HasKey(p => new { p.FamilyId });
             modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
             modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
         }

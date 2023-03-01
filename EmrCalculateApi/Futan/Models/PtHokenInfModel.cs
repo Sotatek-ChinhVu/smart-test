@@ -1,5 +1,7 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using Entity.Tenant;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Futan.Models
 {

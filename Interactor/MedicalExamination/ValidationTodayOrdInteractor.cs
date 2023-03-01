@@ -1,4 +1,4 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInfs;
@@ -10,6 +10,7 @@ using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.User;
 using Helper.Constants;
+using Infrastructure.Repositories;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
@@ -118,6 +119,18 @@ namespace Interactor.MedicalExamination
             {
                 return new ValidationTodayOrdOutputData(ValidationTodayOrdStatus.Failed, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, KarteValidationStatus.Valid);
             }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _systemGenerationConfRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _insuranceInforRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _kaRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+            }
         }
 
         private List<OrdInfModel> ConvertInputDataToOrderInfs(int hpId, int sinDate, List<ValidationOdrInfItem> inputDataList)
@@ -164,7 +177,9 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
 
                 var objDetail = new object();
@@ -230,7 +245,11 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                "",
+                                "",
+                                ""
                             );
                     lock (objDetail)
                     {
@@ -390,7 +409,7 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckExistListId(new List<long> { ptId });
+                var checkPtId = _patientInforRepository.CheckExistIdList(new List<long> { ptId });
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
 
                 if (!checkHpId)

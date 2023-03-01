@@ -16,14 +16,21 @@ public class GetJsonSettingInteractor : IGetJsonSettingInputPort
 
     public GetJsonSettingOutputData Handle(GetJsonSettingInputData input)
     {
-        var model = _jsonSettingRepository.Get(input.UserId, input.Key);
-        if (model is null)
+        try
         {
-            return new GetJsonSettingOutputData(GetJsonSettingStatus.NotFound, null);
-        }
+            var model = _jsonSettingRepository.Get(input.UserId, input.Key);
+            if (model is null)
+            {
+                return new GetJsonSettingOutputData(GetJsonSettingStatus.NotFound, null);
+            }
 
-        var jsonObject = JsonSerializer.Deserialize<object>(model.Value);
-        var dto = new JsonSettingDto(model.UserId, model.Key, jsonObject);
-        return new GetJsonSettingOutputData(GetJsonSettingStatus.Success, dto);
+            var jsonObject = JsonSerializer.Deserialize<object>(model.Value);
+            var dto = new JsonSettingDto(model.UserId, model.Key, jsonObject);
+            return new GetJsonSettingOutputData(GetJsonSettingStatus.Success, dto);
+        }
+        finally
+        {
+            _jsonSettingRepository.ReleaseResource();
+        }
     }
 }

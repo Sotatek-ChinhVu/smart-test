@@ -1,22 +1,19 @@
 ﻿using Domain.Models.ColumnSetting;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class ColumnSettingRepository : IColumnSettingRepository
+public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public ColumnSettingRepository(ITenantProvider tenantProvider)
+    public ColumnSettingRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<ColumnSettingModel> GetList(int userId, string tableName)
     {
-        return _tenantDataContext.ColumnSettings
+        return NoTrackingDataContext.ColumnSettings
             .Where(c => c.UserId == userId && c.TableName == tableName)
             .AsEnumerable().Select(c => ToModel(c)).ToList();
     }
@@ -37,14 +34,14 @@ public class ColumnSettingRepository : IColumnSettingRepository
             return false;
         }
 
-        var existingSettings = _tenantDataContext.ColumnSettings
+        var existingSettings = TrackingDataContext.ColumnSettings
             .Where(c => c.UserId == userId && c.TableName == tableName).ToList();
-        _tenantDataContext.ColumnSettings.RemoveRange(existingSettings);
+        TrackingDataContext.ColumnSettings.RemoveRange(existingSettings);
 
         var newSettings = settingModels.Select(m => ToEntity(m));
-        _tenantDataContext.ColumnSettings.AddRange(newSettings);
+        TrackingDataContext.ColumnSettings.AddRange(newSettings);
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
         return true;
     }
 
@@ -66,5 +63,10 @@ public class ColumnSettingRepository : IColumnSettingRepository
             IsHidden = model.IsHidden,
             Width = model.Width
         };
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

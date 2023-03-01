@@ -33,6 +33,15 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidToken = "Invalid Token";
+        public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
+        public static readonly string InvalidWindowType = "Invalid WindowType";
+        public static readonly string InvalidFrameId = "Invalid FrameId";
+        public static readonly string InvalidOyaRaiinNo = "Invalid OyaRaiinNo";
+        public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
+        public static readonly string InvalidDetailInfs = "Invalid Details";
+        public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
+        public static readonly string InvalidInfoType = "Invalid InfoType";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -46,6 +55,7 @@
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
+        public static readonly string Error = "Error";
 
         //Patient Infor
         public static readonly string InvalidPtNum = "Invalid PtNum";
@@ -106,11 +116,8 @@
         //ApprovalInfo
         public static readonly string InvalidStarDate = "InvalidStarDate";
         public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string InvalidId = "InvalidId";
         public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
-        public static readonly string InvalidCreateId = "InvalidCreateId";
-        public static readonly string InvalidUpdateId = "InvalidUpdateId";
-        public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
-        public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
         public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
         public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
         public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
@@ -286,6 +293,7 @@
         public static readonly string GetOrdInfSuccessed = "Successed";
 
         //RaiinKubun controller
+        public static readonly string RaiinKubunInvalidKbnInf = "Invalid KbnInf";
 
         //Calculation Inf
 
@@ -314,7 +322,7 @@
         public static readonly string InvalidBirthDay = "Invalid BirthDay";
         public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn > 0";
         public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
-        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime";
         public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
 
         //SetMst
@@ -330,6 +338,10 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
+        public static readonly string InvalidPasteSetKbn = "Invalid PasteSetKbn";
+        public static readonly string InvalidPasteSetKbnEdaNo = "Invalid PasteSetKbnEdaNo";
+        public static readonly string InvalidCopySetKbn = "Invalid CopySetKbn";
+        public static readonly string InvalidCopySetKbnEdaNo = "Invalid CopySetKbnEdaNo";
         public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
@@ -466,6 +478,7 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+        public static readonly string TodayOrdInvalidAddedAutoItem = "Invalid Added Auto Item List";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
@@ -517,6 +530,12 @@
         public static readonly string KaNameMaxLength40 = "Length of KaName must lest than 40 or equal 40";
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
+
+        //UketukeMst
+        public static readonly string InvalidKbnId = "Invalid KbnId";
+        public static readonly string InvalidKbnName = "Invalid KbnName";
+        public static readonly string InputNoData = "Input no data";
+        public static readonly string InputDataDuplicateKbnId = "InputData duplicate KbnId";
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
@@ -613,8 +632,8 @@
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
         // Export 
-        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
-        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string NotFoundPtInf = "Invalid PtId, PtInf Not Found.";
+        public static readonly string HokenNotFound = "Invalid HokenPid, Hoken Not Found.";
         public static readonly string CanNotExportPdf = "Can not export file Pdf.";
         public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 
@@ -731,15 +750,19 @@
         public static readonly string MBunkatu = "分割調剤";
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
-        public static readonly string MProcedure = "・手技が入力されているか確認してください。";
-        public static readonly string MDisease = "薬剤";
+        public static readonly string MProcedure = "行為が未確定のため、入力が確定できません。\r\n・手技が入力されているか確認してください。";
+        public static readonly string MDisease = "病名";
         public static readonly string MTenkiContinue = "転帰区分";
         public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
         public static readonly string MTenkiDate = "転帰日";
         public static readonly string MTenkiStartDate = "開始日";
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
         public static readonly string MNoInputData = "数量を入力してください。";
+        public static readonly string MNoInputDataCmt = "数字情報を入力してください。";
 
+        //Message full
+        public static readonly string ErrorHasDrug = "行為や加算が登録されているため、薬剤は登録できません。";
+        public static readonly string ErrorHasUsage = "行為や加算が登録されているため、用法は登録できません。";
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
@@ -819,14 +842,28 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+        public static readonly string InvalidRsvDate = "Invalid RsvDate";
+        public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
+        public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
+
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
+        public static readonly string TemplateNotFound = "Template Not Found!";
+        public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
+        public static readonly string InvalidNewCategoryCd = "Invalid NewCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidOldCategoryCd = "Invalid OldCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string FileTemplateNotFould = "File template not fould!";
+        public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
+        public static readonly string DocInfNotFound = "DocInf Not Found!";
+        public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
+        public static readonly string InvalidExtentionFile = "Extention file is must .docx or .xlsx!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
@@ -843,5 +880,61 @@
         public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
+
+        //Drug Menu
+        public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
+
+        //PtGrpMaster
+        public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
+
+        // SanteiInf
+        public static readonly string InvalidAlertDays = "Invalid AlertDays!";
+        public static readonly string InvalidAlertTerm = "Invalid AlertTerm!";
+        public static readonly string InvalidKisanSbt = "Invalid KisanSbt!";
+        public static readonly string InvalidKisanDate = "Invalid KisanDate!";
+        public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
+        public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
+        public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
+        public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
+
+        //Insurance Mst Detail
+        public static readonly string InvalidFHokenSbtKbn = "FHokenSbtKbn is in valid";
+        public static readonly string InvalidFHokenNo = "FHokenNo is in valid";
+        public static readonly string InvalidPrefNo = "PrefNo is in valid";
+
+        // Family
+        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
+        public static readonly string InvalidFamilyId = "Invalid FamilyId";
+        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
+        public static readonly string InvalidFamilyName = "Invalid Family Name";
+        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
+        public static readonly string InvalidFamilySex = "Invalid Family Sex";
+        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
+        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
+        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
+        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
+        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
+        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
+        public static readonly string DuplicateFamily = "Duplicate Family";
+
+        // Rece
+        public static readonly string InvalidSinYm = "Invalid SinYm!";
+        public static readonly string InvalidReceCmtId = "Invalid ReceCmt Id!";
+        public static readonly string InvalidCmtKbn = "Invalid ReceCmt CmtKbn!";
+        public static readonly string InvalidCmtSbt = "Invalid ReceCmt CmtSbt!";
+        public static readonly string InvalidCmt = "Invalid ReceCmt Cmt!";
+        public static readonly string InvalidCmtData = "Invalid ReceCmt CmtData!";
+        public static readonly string InvalidSyoukiKbn = "Invalid SyoukiKbn!";
+        public static readonly string InvalidKeika = "Invalid Keika!";
+        public static readonly string InvalidSinDay = "Invalid SinDay!";
+        public static readonly string InvalidStatusColor = "Invalid StatusColor!";
+
+        //Accounting
+        public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
+        public static readonly string InvalidThisWari = "Invalid ThisWari";
+        public static readonly string InvalidCredit = "Invalid Credit";
+        public static readonly string InvalidPayType = "Invalid PayType";
+        public static readonly string InvalidComment = "Invalid ThisWari";
     }
 }

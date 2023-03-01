@@ -18,15 +18,23 @@ public class GetNextUketukeSbtMstInteractor : IGetNextUketukeSbtMstInputPort
 
     public GetNextUketukeSbtMstOutputData Handle(GetNextUketukeSbtMstInputData input)
     {
-        var nextReceptionType = GetNextReceptionType(input.CurrentKbnId);
-        var status = GetNextUketukeSbtMstStatus.NotFound;
-        if (nextReceptionType is not null)
+        try
         {
-            status = GetNextUketukeSbtMstStatus.Success;
-            _uketukeSbtDayInfRepository.Upsert(input.SinDate, nextReceptionType.KbnId, 0, input.UserId);
-        }
+            var nextReceptionType = GetNextReceptionType(input.CurrentKbnId);
+            var status = GetNextUketukeSbtMstStatus.NotFound;
+            if (nextReceptionType is not null)
+            {
+                status = GetNextUketukeSbtMstStatus.Success;
+                _uketukeSbtDayInfRepository.Upsert(input.SinDate, nextReceptionType.KbnId, 0, input.UserId);
+            }
 
-        return new GetNextUketukeSbtMstOutputData(status, nextReceptionType);
+            return new GetNextUketukeSbtMstOutputData(status, nextReceptionType);
+        }
+        finally
+        {
+            _uketukeSbtMstRepository.ReleaseResource();
+            _uketukeSbtDayInfRepository.ReleaseResource(); 
+        }
     }
 
     private UketukeSbtMstModel? GetNextReceptionType(int currentKbnId)

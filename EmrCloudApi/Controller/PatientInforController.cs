@@ -1,4 +1,9 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.CalculationInf;
 using EmrCloudApi.Presenters.GroupInf;
 using EmrCloudApi.Presenters.HokenMst;
@@ -10,6 +15,8 @@ using EmrCloudApi.Presenters.PatientInfor;
 using EmrCloudApi.Presenters.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Presenters.PatientInformation;
+using EmrCloudApi.Presenters.PtGroupMst;
+using EmrCloudApi.Presenters.SwapHoken;
 using EmrCloudApi.Requests.CalculationInf;
 using EmrCloudApi.Requests.GroupInf;
 using EmrCloudApi.Requests.HokenMst;
@@ -19,6 +26,8 @@ using EmrCloudApi.Requests.KohiHokenMst;
 using EmrCloudApi.Requests.PatientInfor;
 using EmrCloudApi.Requests.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Requests.PatientInfor.PtKyuseiInf;
+using EmrCloudApi.Requests.PtGroupMst;
+using EmrCloudApi.Requests.SwapHoken;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.CalculationInf;
 using EmrCloudApi.Responses.GroupInf;
@@ -30,18 +39,25 @@ using EmrCloudApi.Responses.PatientInfor;
 using EmrCloudApi.Responses.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Responses.PatientInformaiton;
+using EmrCloudApi.Responses.PtGroupMst;
+using EmrCloudApi.Responses.SwapHoken;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.Insurance.GetKohiPriorityList;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
@@ -56,19 +72,24 @@ using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.SearchHokensyaMst.Get;
-using EmrCloudApi.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
-using EmrCloudApi.Presenters.SwapHoken;
-using EmrCloudApi.Responses.SwapHoken;
-using Domain.Models.PatientInfor;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.Insurance;
-using Domain.Models.InsuranceMst;
-using EmrCloudApi.Services;
-using Domain.Constant;
-using UseCase.Insurance.ValidHokenInfAllType;
-using System.Collections.Generic;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor;
+using UseCase.PatientInfor.GetListPatient;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using Domain.Models.PtGroupMst;
+using EmrCloudApi.Responses.MaxMoney;
+using EmrCloudApi.Requests.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoneyByPtId;
+using EmrCloudApi.Presenters.MaxMoney;
+using UseCase.SwapHoken.Validate;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Messages;
+using UseCase.PtGroupMst.GetGroupNameMst;
+using UseCase.PtGroupMst.CheckAllowDelete;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 
 namespace EmrCloudApi.Controller
 {
@@ -76,9 +97,11 @@ namespace EmrCloudApi.Controller
     public class PatientInforController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public PatientInforController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+        public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
@@ -340,7 +363,7 @@ namespace EmrCloudApi.Controller
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
                 request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
                 request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
-                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew);
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew, request.HokenInfIsNoHoken, request.SelectedHokenInfHokenChecksCount);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateMainInsurancePresenter();
@@ -384,7 +407,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SavePatientInfo)]
-        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
             PatientInforSaveModel patient = new PatientInforSaveModel(HpId,
                       request.Patient.PtId,
@@ -432,7 +455,7 @@ namespace EmrCloudApi.Controller
                        x.HokenPid,
                        x.HokenKbn,
                        x.HokenMemo,
-                       0,
+                       x.SinDate,
                        x.StartDate,
                        x.EndDate,
                        x.HokenId,
@@ -441,7 +464,15 @@ namespace EmrCloudApi.Controller
                        x.Kohi3Id,
                        x.Kohi4Id,
                        x.IsAddNew,
-                       x.IsDeleted)).ToList();
+                       x.IsDeleted,
+                       x.HokenPatternSelected)).ToList();
+
+            List<GroupInfModel> grpInfs = request.PtGrps.Select(x => new GroupInfModel(
+                                                x.HpPt,
+                                                x.PtId,
+                                                x.GroupId,
+                                                x.GroupCode,
+                                                x.GroupName)).ToList();
 
             List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(HpId,
                    x.PtId,
@@ -554,9 +585,18 @@ namespace EmrCloudApi.Controller
                  insurances,
                  hokenInfs,
                  hokenKohis,
-                 request.PtGrps,
+                 grpInfs,
+                 request.ReactSave,
+                 request.MaxMoneys,
                  UserId);
             var output = _bus.Handle(input);
+
+            if (output.Status == SavePatientInfoStatus.Successful)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientInfChanged,
+                    new CommonMessage { PtId = output.PtID, RaiinNo = 0, SinDate = 0 });
+            }
+
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
@@ -586,14 +626,19 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
             var input = new SaveSwapHokenInputData(HpId,
-               request.PtId,
-               request.HokenIdBefore,
-               request.HokenIdAfter,
-               request.HokenPidBefore,
-               request.HokenPidAfter,
-               request.StartDate,
-               request.EndDate,
-               UserId);
+                                                   request.PtId,
+                                                   request.HokenIdBefore,
+                                                   request.HokenNameBefore,
+                                                   request.HokenIdAfter,
+                                                   request.HokenNameAfter,
+                                                   request.HokenPidBefore,
+                                                   request.HokenPidAfter,
+                                                   request.StartDate,
+                                                   request.EndDate,
+                                                   request.IsHokenPatternUsed,
+                                                   request.ConfirmInvalidIsShowConversionCondition,
+                                                   request.ConfirmSwapHoken,
+                                                   UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
@@ -648,18 +693,19 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
         {
             var input = new ValidHokenInfAllTypeInputData(HpId,
                                             request.HokenKbn,
-                                            request.SinDate, 
+                                            request.SinDate,
                                             request.IsSelectedHokenInf,
-                                            request.SelectedHokenInfRodoBango, 
-                                            request.ListRousaiTenki, 
-                                            request.SelectedHokenInfRousaiSaigaiKbn, 
+                                            request.SelectedHokenInfRodoBango,
+                                            request.ListRousaiTenki,
+                                            request.SelectedHokenInfRousaiSaigaiKbn,
                                             request.SelectedHokenInfRousaiSyobyoDate,
-                                            request.SelectedHokenInfRousaiSyobyoCd, 
+                                            request.SelectedHokenInfRousaiSyobyoCd,
                                             request.SelectedHokenInfRyoyoStartDate,
                                             request.SelectedHokenInfRyoyoEndDate,
                                             request.SelectedHokenInfStartDate,
@@ -683,11 +729,10 @@ namespace EmrCloudApi.Controller
                                             request.SelectedHokenInfTokureiYm1,
                                             request.SelectedHokenInfTokureiYm2,
                                             request.SelectedHokenInfisShahoOrKokuho,
-                                            request.SelectedHokenInfisExpirated, 
-                                            request.SelectedHokenInfconfirmDate, 
-                                            request.SelectedHokenInfHokenNo, 
+                                            request.SelectedHokenInfisExpirated,
+                                            request.SelectedHokenInfHokenNo,
                                             request.SelectedHokenInfHokenEdraNo,
-                                            request.IsSelectedHokenMst, 
+                                            request.IsSelectedHokenMst,
                                             request.SelectedHokenInfHonkeKbn,
                                             request.PtBirthday,
                                             request.SelectedHokenInfIsAddHokenCheck,
@@ -701,6 +746,126 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidHokenInfAllTypeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckHokenPatternUsed)]
+        public ActionResult<Response<CheckHokenPatternUsedResponse>> CheckHokenPatternUsed([FromBody] CheckHokenPatternUsedRequest request)
+        {
+            var input = new HokenPatternUsedInputData(HpId,
+               request.PtId,
+               request.HokenPid);
+            var output = _bus.Handle(input);
+            var presenter = new CheckHokenPatternUsedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckHokenPatternUsedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKohiPriorityList)]
+        public ActionResult<Response<GetKohiPriorityListResponse>> GetKohiPriorityList()
+        {
+            var input = new GetKohiPriorityListInputData();
+            var output = _bus.Handle(input);
+            var presenter = new GetKohiPriorityListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKohiPriorityListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHokenSyaMst)]
+        public ActionResult<Response<GetHokenSyaMstResponse>> GetHokenSyaMst([FromQuery] GetHokenSyaMstRequest request)
+        {
+            var input = new GetHokenSyaMstInputData(HpId, request.HokensyaNo, request.HokenKbn);
+            var output = _bus.Handle(input);
+            var presenter = new GetHokenSyaMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveGroupNameMst)]
+        public ActionResult<Response<SaveGroupNameMstResponse>> SaveGroupNameMst([FromBody] SaveGroupNameMstRequest request)
+        {
+            var inputModel = request.PtGroupMsts.Select(x => new GroupNameMstModel(
+                                                            x.GrpId,
+                                                            x.SortNo,
+                                                            x.GrpName,
+                                                            0,
+                                                            x.GroupItems.Select(m => new GroupItemModel(
+                                                                m.GrpId,
+                                                                m.GrpCode,
+                                                                m.SeqNo,
+                                                                m.GrpCodeName,
+                                                                m.SortNo,
+                                                                0)).ToList())).ToList();
+
+            var input = new SaveGroupNameMstInputData(UserId, HpId, inputModel);
+            var output = _bus.Handle(input);
+            var presenter = new SaveGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
+        {
+            var input = new GetListPatientInfoInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
+            var output = _bus.Handle(input);
+            var presenter = new GetListPatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMaxMoneyByPtId)]
+        public ActionResult<Response<GetMaxMoneyByPtIdResponse>> GetMaxMoneyByPtId([FromQuery] GetMaxMoneyByPtIdRequest request)
+        {
+            var input = new GetMaxMoneyByPtIdInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetMaxMoneyByPtIdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetMaxMoneyByPtIdResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ValidateSwapHoken)]
+        public ActionResult<Response<ValidateSwapHokenResponse>> ValidateSwapHoken([FromBody] ValidateSwapHokenRequest request)
+        {
+            var input = new ValidateSwapHokenInputData(HpId,
+               request.PtId,
+               request.HokenPid,
+               request.StartDate,
+               request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new ValidateSwapHokenPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidateSwapHokenResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetGroupNameMst)]
+        public ActionResult<Response<GetGroupNameMstResponse>> GetGroupNameMst()
+        {
+            var input = new GetGroupNameMstInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetGroupNameMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckAllowDeleteGroupMst)]
+        public ActionResult<Response<CheckAllowDeleteGroupMstResponse>> CheckAllowDeleteGroupMst([FromBody] CheckAllowDeleteGroupMstRequest request)
+        {
+            var input = new CheckAllowDeleteGroupMstInputData(HpId, request.GroupId, request.GroupCode, request.CheckAllowDeleteGroupName);
+            var output = _bus.Handle(input);
+            var presenter = new CheckAllowDeleteGroupMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckAllowDeleteGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPatientInfoBetweenTimesList)]
+        public ActionResult<Response<GetPatientInfoBetweenTimesListResponse>> GetPatientInfoBetweenTimesList([FromQuery] GetPatientInfoBetweenTimesListRequest request)
+        {
+            var input = new GetPatientInfoBetweenTimesListInputData(HpId, request.SinYm, request.StartDateD, request.StartTimeH, request.StartTimeM, request.EndDateD, request.EndTimeH, request.EndTimeM);
+            var output = _bus.Handle(input);
+            var presenter = new GetPatientInfoBetweenTimesListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetPatientInfoBetweenTimesListResponse>>(presenter.Result);
         }
     }
 }

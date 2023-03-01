@@ -44,6 +44,10 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            finally
+            {
+                _systemConfRepository.ReleaseResource();
+            }
             return new ValidateRousaiJibaiOutputData(validateDetails);
         }
 
@@ -359,7 +363,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageWarning));
             }
         }
 

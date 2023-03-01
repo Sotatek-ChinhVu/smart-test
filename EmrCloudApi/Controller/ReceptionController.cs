@@ -1,19 +1,19 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
-using EmrCloudApi.Presenters.PatientRaiinKubun;
+using EmrCloudApi.Presenters.RaiinKubun;
 using EmrCloudApi.Presenters.Reception;
 using EmrCloudApi.Presenters.ReceptionInsurance;
 using EmrCloudApi.Presenters.ReceptionSameVisit;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.MaxMoney;
-using EmrCloudApi.Requests.PatientRaiinKubun;
+using EmrCloudApi.Requests.RaiinKubun;
 using EmrCloudApi.Requests.Reception;
 using EmrCloudApi.Requests.ReceptionInsurance;
 using EmrCloudApi.Requests.ReceptionSameVisit;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MaxMoney;
-using EmrCloudApi.Responses.PatientRaiinKubun;
+using EmrCloudApi.Responses.RaiinKubun;
 using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.ReceptionInsurance;
 using EmrCloudApi.Responses.ReceptionSameVisit;
@@ -23,7 +23,7 @@ using UseCase.Core.Sync;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
-using UseCase.PatientRaiinKubun.Get;
+using UseCase.RaiinKbn.GetPatientRaiinKubunList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -91,7 +91,7 @@ namespace EmrCloudApi.Controller
             if (output.Status == InsertReceptionStatus.Success)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo, PtId = input.Dto.Reception.PtId });
             }
 
             var presenter = new InsertReceptionPresenter();
@@ -108,7 +108,7 @@ namespace EmrCloudApi.Controller
             if (output.Status == UpdateReceptionStatus.Success)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo, PtId = input.Dto.Reception.PtId });
             }
 
             var presenter = new UpdateReceptionPresenter();
@@ -118,15 +118,15 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet("GetPatientRaiinKubun")]
-        public ActionResult<Response<GetPatientRaiinKubunResponse>> GetPatientRaiinKubun([FromQuery] PatientRaiinKubunRequest request)
+        public ActionResult<Response<GetPatientRaiinKubunListResponse>> GetPatientRaiinKubun([FromQuery] GetPatientRaiinKubunListRequest request)
         {
-            var input = new GetPatientRaiinKubunInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
+            var input = new GetPatientRaiinKubunListInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
             var output = _bus.Handle(input);
 
-            var presenter = new GetPatientRaiinKubunPresenter();
+            var presenter = new GetPatientRaiinKubunListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetPatientRaiinKubunResponse>>(presenter.Result);
+            return new ActionResult<Response<GetPatientRaiinKubunListResponse>>(presenter.Result);
         }
 
         [HttpGet("GetReceptionInsurance")]
@@ -209,7 +209,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetDefaultSelectedTime)]
         public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
         {
-            var input = new GetDefaultSelectedTimeInputData(HpId, request.SinDate, request.BirthDay);
+            var input = new GetDefaultSelectedTimeInputData(HpId, request.UketukeTime, request.SinDate, request.BirthDay);
             var output = _bus.Handle(input);
 
             var presenter = new GetDefaultSelectedTimePresenter();

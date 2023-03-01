@@ -21,18 +21,17 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.DefHokenNoModels.Any())
                 {
-                    bool hasMatch = inputData.DefHokenNoModels.Select(x => x.HokenNo).Distinct().Count() > 1;
-                    if (hasMatch) return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenNo);
-
-                    var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo, inputData.HpId);
                     foreach (var item in inputData.DefHokenNoModels)
                     {
                         var validationStatus = item.Validation();
+
                         if (validationStatus != ValidationStatus.Valid)
                             return new SaveInsuranceMasterLinkageOutputData(validationStatus);
 
                         if (item.HokenEdaNo == 0 && item.HokenNo == 0)
                             continue;
+
+                        var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(item.HokenNo, inputData.HpId);
 
                         var checkExistsHokenEda = listHokenEdaNo.Where(x => x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
 
@@ -49,6 +48,11 @@ namespace Interactor.PatientInfor
             catch (Exception)
             {
                 return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.Failed);
+            }
+            finally
+            {
+                _hokenMstRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -56,9 +56,11 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
                                                         GetDocCategoryDetailStatus.Successed
                                                     );
         }
-        catch
+        finally
         {
-            return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.Failed);
+            _documentRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
         }
     }
 
@@ -80,6 +82,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             domainUrl.Append(_options.BaseAccessUrl + "/");
             var listFileItem = listOutputData
                                         .Select(file => new FileDocumentModel(
+                                                categoryId,
                                                 file.Replace(path, string.Empty).Replace(categoryId + "/", string.Empty),
                                                 domainUrl + file
                                             )).ToList();

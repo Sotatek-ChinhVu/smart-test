@@ -14,6 +14,11 @@
             DisplayApprovalInfo = displayApprovalInfo;
         }
 
+        public ApproveInfModel()
+        {
+            DisplayApprovalInfo = string.Empty;
+        }
+
         public int Id { get; private set; }
         public int HpId { get; private set; }
         public long PtId { get; private set; }

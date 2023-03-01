@@ -1,10 +1,13 @@
-﻿using Domain.Models.RaiinListMst;
+﻿using Domain.Common;
+using Domain.Models.RaiinListMst;
 
 namespace Domain.Models.FlowSheet
 {
-    public interface IFlowSheetRepository
+    public interface IFlowSheetRepository : IRepositoryBase
     {
-        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount);
+        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, ref long totalCount);
+
+        Dictionary<long, List<RaiinListInfModel>> GetRaiinListInf(int hpId, long ptId);
 
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 

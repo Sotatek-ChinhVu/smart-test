@@ -1,27 +1,21 @@
 ﻿using Domain.Models.SetGenerationMst;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories
 {
-    public class SetGenerationMstRepository : ISetGenerationMstRepository
+    public class SetGenerationMstRepository : RepositoryBase, ISetGenerationMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public SetGenerationMstRepository(ITenantProvider tenantProvider)
+        private readonly IMemoryCache _memoryCache;
+        public SetGenerationMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _memoryCache = memoryCache;
         }
 
-        public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
+        private IEnumerable<SetGenerationMstModel> ReloadCache()
         {
-            var setEntities = _tenantDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0 && s.StartDate <= sinDate).OrderByDescending(x => x.StartDate);
-
-            if (setEntities == null)
-            {
-                return new List<SetGenerationMstModel>();
-            }
-
-            return setEntities.Select(s =>
+            var setGenerationMstList = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
                     new SetGenerationMstModel(
                         s.HpId,
                         s.GenerationId,
@@ -29,6 +23,21 @@ namespace Infrastructure.Repositories
                         s.IsDeleted
                     )
                   ).ToList();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(GetCacheKey(), setGenerationMstList, cacheEntryOptions);
+
+            return setGenerationMstList;
+        }
+
+        public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
+        {
+            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetGenerationMstModel> setGenerationMstList))
+            {
+                setGenerationMstList = ReloadCache();
+            }
+
+            return setGenerationMstList!.Where(s => s.StartDate <= sinDate).OrderByDescending(x => x.StartDate).ToList();
         }
 
         public int GetGenerationId(int hpId, int sinDate)
@@ -36,7 +45,8 @@ namespace Infrastructure.Repositories
             int generationId = 0;
             try
             {
-                var generation = _tenantDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0).OrderByDescending(x => x.StartDate).FirstOrDefault();
+                var setGenerationMstList = GetList(hpId, sinDate);
+                var generation = setGenerationMstList.OrderByDescending(x => x.StartDate).FirstOrDefault();
                 if (generation != null)
                 {
                     generationId = generation.GenerationId;
@@ -47,6 +57,11 @@ namespace Infrastructure.Repositories
                 return 0;
             }
             return generationId;
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

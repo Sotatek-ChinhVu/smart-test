@@ -1,5 +1,5 @@
-﻿using EmrCalculateApi.Constants;
-using Entity.Tenant;
+﻿using Entity.Tenant;
+using Helper.Constants;
 
 namespace EmrCalculateApi.ReceFutan.Models
 {
