@@ -1268,5 +1268,30 @@ namespace Infrastructure.Repositories
             thisSeikyuGaku = thisSeikyuGaku - outAdjustFutan - outNyukinGaku;
             outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
         }
+
+        public bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item =>
+                item.HpId == hpId &&
+                item.PtId == ptId &&
+                item.RaiinNo == raiinNo &&
+                item.IsDeleted == DeleteTypes.None);
+
+            return raiinInf != null;
+        }
+
+        public List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo)
+        {
+            var raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.OyaRaiinNo == oyaRaiinNo &&
+                                                                x.Status > RaiinState.TempSave &&
+                                                                x.IsDeleted == DeleteTypes.None
+                                                                ).Select(x => x.RaiinNo).ToList();
+            if (raiinNos.Any()) return raiinNos;
+
+            return new();
+        }
     }
 }
