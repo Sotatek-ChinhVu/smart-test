@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
                     TantoId = model.TantoId,
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateDate = DateTime.UtcNow,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId
@@ -150,7 +150,7 @@ namespace Infrastructure.Repositories
                     PtId = raiinInf.PtId,
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateDate = CIUtil.GetJapanDateTimeNow()   ,
                     UpdateId = userId,
                     GrpId = dto.GrpId,
                     KbnCd = dto.KbnCd,
@@ -305,12 +305,13 @@ namespace Infrastructure.Repositories
                         {
                             // Update
                             existingEntity.KbnCd = kbnInfDto.KbnCd;
-                            existingEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            existingEntity.UpdateDate = DateTime.UtcNow;
                             existingEntity.UpdateId = userId;
                         }
                     }
                 }
             }
+
             #endregion
         }
 
@@ -1008,6 +1009,78 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize)
+        {
+            var result = new List<ReceptionModel>();
+            var usermsts = NoTrackingDataContext.UserMsts.Where(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0
+                        );
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.PtId == ptId
+                        );
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0
+                        );
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.PtId == ptId
+                        );
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.PtId == ptId
+                        );
+
+            var query = from raiinInf in raiinInfs.AsEnumerable()
+                        join KaMst in kaMsts on
+                           new { raiinInf.HpId, raiinInf.KaId } equals
+                           new { KaMst.HpId, KaMst.KaId } into listKaMst
+                        join usermst in usermsts on
+                            new { raiinInf.HpId, raiinInf.TantoId } equals
+                            new { usermst.HpId, TantoId = usermst.UserId } into listUserMst
+                        join ptHokenPattern in ptHokenPatterns on
+                            new { raiinInf.HpId, raiinInf.PtId, raiinInf.HokenPid } equals
+                            new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into listPtHokenPatterns
+                        from listPtHokenPattern in listPtHokenPatterns.DefaultIfEmpty()
+                        join ptHokenInf in ptHokenInfs on
+                            new { listPtHokenPattern.HpId, listPtHokenPattern.PtId, listPtHokenPattern.HokenId } equals
+                            new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into raiinPtHokenInfs
+
+                        from raiinPtHokenInf in raiinPtHokenInfs.DefaultIfEmpty()
+                        select new
+                        {
+                            RaiinInf = raiinInf,
+                            PtHokenInf = raiinPtHokenInf,
+                            UserMst = listUserMst.FirstOrDefault(),
+                            KaMst = listKaMst.FirstOrDefault(),
+                            PtHokenPattern = listPtHokenPattern
+                        };
+
+            result = query.Select((x) => new ReceptionModel(
+                            x.RaiinInf.HpId,
+                            x.RaiinInf.PtId,
+                            x.RaiinInf.SinDate,
+                            x.RaiinInf.UketukeNo,
+                            x.RaiinInf.Status,
+                            x.KaMst?.KaSname ?? string.Empty,
+                            x.UserMst?.Sname ?? string.Empty,
+                            x.PtHokenInf?.Houbetu ?? string.Empty,
+                            x.PtHokenInf?.HokensyaNo ?? string.Empty,
+                            x.PtHokenInf?.HokenKbn ?? 0,
+                            x.PtHokenInf?.HokenId ?? 0,
+                            x.RaiinInf.HokenPid,
+                            x.RaiinInf.RaiinNo))
+                            .OrderByDescending(x => x.SinDate)
+                            .Skip((pageIndex - 1) * pageSize)
+                            .Take(pageSize).ToList();
+            return result;
         }
     }
 }

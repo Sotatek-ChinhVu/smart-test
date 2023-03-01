@@ -32,6 +32,7 @@ namespace Domain.Models.Insurance
             IsDeleted = isDeleted;
             IsAddNew = isAddNew;
             SeqNo = seqNo;
+            ConfirmDateModels = new();
         }
 
         public KohiInfModel(int hokenId)
@@ -44,6 +45,19 @@ namespace Domain.Models.Insurance
             HokenMstModel = new HokenMstModel();
             ConfirmDateList = new List<ConfirmDateModel>();
             IsHaveKohiMst = false;
+            ConfirmDateModels = new();
+        }
+
+        public KohiInfModel()
+        {
+            FutansyaNo = string.Empty;
+            JyukyusyaNo = string.Empty;
+            TokusyuNo = string.Empty;
+            Houbetu = string.Empty;
+            HokenMstModel = new HokenMstModel();
+            ConfirmDateList = new List<ConfirmDateModel>();
+            IsHaveKohiMst = false;
+            ConfirmDateModels = new();
         }
 
         [JsonConstructor]
@@ -72,6 +86,7 @@ namespace Domain.Models.Insurance
             IsDeleted = isDeleted;
             SeqNo = seqNo;
             IsAddNew = isAddNew;
+            ConfirmDateModels = new();
         }
 
         public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
@@ -86,6 +101,10 @@ namespace Domain.Models.Insurance
             SinDate = sinDate;
             HokenMstModel = hokenMstModel;
             ConfirmDateModels = confirmDateModels;
+            ConfirmDateList = new();
+            JyukyusyaNo = string.Empty;
+            TokusyuNo = string.Empty;
+            Houbetu = string.Empty;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
@@ -129,6 +148,7 @@ namespace Domain.Models.Insurance
         public bool IsHaveKohiMst { get; private set; }
 
         public int IsDeleted { get; private set; }
+
         public long SeqNo { get; private set; }
 
         public List<ConfirmDateModel> ConfirmDateModels { get; private set; }

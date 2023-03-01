@@ -80,6 +80,7 @@ using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.CommonChecker;
+using Interactor.CommonChecker.CommonMedicalCheck;
 using Interactor.Diseases;
 using Interactor.Document;
 using Interactor.Document.CommonGetListParam;
@@ -177,7 +178,6 @@ using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
-using UseCase.Family.GetRaiinInfList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -263,6 +263,7 @@ using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -289,6 +290,7 @@ using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -298,6 +300,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
+using UseCase.Reception.GetListRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -330,6 +333,8 @@ using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.SystemConf.GetSystemConf;
+using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
@@ -351,11 +356,9 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Receipt.Recalculation;
-using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-using UseCase.SystemConf.GetSystemConf;
-using UseCase.SystemConf.GetSystemConfList;
-using Interactor.CommonChecker.CommonMedicalCheck;
+using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
+using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
+using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -515,6 +518,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetLastRaiinInfsInputData, GetLastRaiinInfsInteractor>();
             busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
             busBuilder.RegisterUseCase<InitDoctorComboInputData, InitDoctorComboInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfFamily, GetListRaiinInfInteractorOfFamily>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -809,7 +813,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFamilyListInputData, GetFamilyListInteractor>();
             busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
             busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
-            busBuilder.RegisterUseCase<GetRaiinInfListInputData, GetListRaiinInfInteractor>();
+            busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractorOfReception>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
