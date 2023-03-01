@@ -39,6 +39,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
                                             1,
                                             1,
                                             1.5,
+                                            sinDate,
                                             new List<SanteiInfDetailModel>()
                                             {
                                                 new SanteiInfDetailModel(
@@ -125,6 +126,7 @@ public class GetListSanteiInfInteractorTest : BaseUT
                                                                     1,
                                                                     1,
                                                                     1.5,
+                                                                    sinDate,
                                                                     new List<SanteiInfDetailModel>()
                                                                     {
                                                                         new SanteiInfDetailModel(

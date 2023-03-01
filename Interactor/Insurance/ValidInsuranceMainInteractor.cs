@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Constants;
 using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidMainInsurance;
 

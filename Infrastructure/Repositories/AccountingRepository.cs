@@ -8,6 +8,7 @@ using Domain.Models.MstItem;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -185,8 +186,8 @@ namespace Infrastructure.Repositories
                 .Where(
                     entity => entity.HpId == hpId
                               && (entity.PrefNo == 0
-                                  || entity.PrefNo == 0
-                                  || entity.IsOtherPrefValid == 1))
+                              || entity.PrefNo == 0
+                              || entity.IsOtherPrefValid == 1))
                 .OrderBy(e => e.HpId)
                 .ThenBy(e => e.HokenNo)
                 .ThenBy(e => e.HokenEdaNo)
@@ -298,7 +299,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenInf, bool>>(Expression.Constant(false), param);
         }
 
         private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<PtHokenPattern> listPtHokenPattern)
@@ -325,7 +326,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
@@ -373,7 +374,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
 
         private void CreatePtHokenCheckExpression(List<int> listHokenId, int hokenGrp, ref Expression expression, ref ParameterExpression param)
@@ -410,7 +411,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
 
         private void CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf, ref Expression expression, ref ParameterExpression param)
@@ -537,9 +538,61 @@ namespace Infrastructure.Repositories
                 HokenMstModel hokenMstModel = null;
                 if (hokenMst != null)
                 {
-                    hokenMstModel = new HokenMstModel();
+                    hokenMstModel = new HokenMstModel(
+                        hokenMst.FutanKbn,
+                        hokenMst.FutanRate,
+                        hokenMst.StartDate,
+                        hokenMst.EndDate,
+                        hokenMst.HokenNo,
+                        hokenMst.HokenEdaNo,
+                        hokenMst.HokenSname,
+                        hokenMst.Houbetu,
+                        hokenMst.HokenSbtKbn,
+                        hokenMst.CheckDigit,
+                        hokenMst.AgeStart,
+                        hokenMst.AgeEnd,
+                        hokenMst.IsFutansyaNoCheck,
+                        hokenMst.IsJyukyusyaNoCheck,
+                        hokenMst.JyukyuCheckDigit,
+                        hokenMst.IsTokusyuNoCheck,
+                        hokenMst.HokenName,
+                        hokenMst.HokenNameCd,
+                        hokenMst.HokenKohiKbn,
+                        hokenMst.IsOtherPrefValid,
+                        hokenMst.ReceKisai,
+                        hokenMst.IsLimitList,
+                        hokenMst.IsLimitListSum,
+                        hokenMst.EnTen,
+                        hokenMst.KaiLimitFutan,
+                        hokenMst.DayLimitFutan,
+                        hokenMst.MonthLimitFutan,
+                        hokenMst.MonthLimitCount,
+                        hokenMst.LimitKbn,
+                        hokenMst.CountKbn,
+                        hokenMst.FutanYusen,
+                        hokenMst.CalcSpKbn,
+                        hokenMst.MonthSpLimit,
+                        hokenMst.KogakuTekiyo,
+                        hokenMst.KogakuTotalKbn,
+                        hokenMst.KogakuHairyoKbn,
+                        hokenMst.ReceSeikyuKbn,
+                        hokenMst.ReceKisaiKokho,
+                        hokenMst.ReceKisai2,
+                        hokenMst.ReceTenKisai,
+                        hokenMst.ReceFutanRound,
+                        hokenMst.ReceZeroKisai,
+                        hokenMst.ReceSpKbn,
+                        string.Empty,
+                        hokenMst.PrefNo,
+                        hokenMst.SortNo,
+                        hokenMst.SeikyuYm,
+                        hokenMst.ReceFutanHide,
+                        hokenMst.ReceFutanKbn,
+                        hokenMst.KogakuTotalAll,
+                        true,
+                        hokenMst.DayLimitCount);
                 }
-                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
+                kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo ?? string.Empty, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
 
             return kohiInfModel;
@@ -882,6 +935,338 @@ namespace Infrastructure.Repositories
                     item.PaySname ?? string.Empty,
                     item.SortNo,
                     item.IsDeleted)).ToList();
+        }
+
+        public List<KohiInfModel> GetListKohiByKohiId(int hpId, long ptId, int sinDate, List<int> kohiIds)
+        {
+            kohiIds = kohiIds.Distinct().ToList();
+
+            var hospitalInfo = NoTrackingDataContext.HpInfs
+                .Where(p => p.HpId == hpId)
+                .OrderByDescending(p => p.StartDate)
+                .FirstOrDefault();
+
+            int prefCd = 0;
+
+            if (hospitalInfo != null)
+            {
+                prefCd = hospitalInfo.PrefNo;
+            }
+
+            var listPtKohi = NoTrackingDataContext.PtKohis
+                  .Where(kohi => kohi.HpId == hpId && kohi.PtId == ptId && kohi.IsDeleted == 0 && kohiIds.Contains(kohi.HokenId))
+                  .ToList();
+
+            if (!listPtKohi.Any()) return new List<KohiInfModel>();
+
+            var predicateHokenMst = CreateHokenMstExpression(listPtKohi);
+
+            if (predicateHokenMst == null) return new List<KohiInfModel>();
+
+            var hokenMstListRepo = NoTrackingDataContext.HokenMsts
+                .Where(
+                    entity => entity.HpId == hpId
+                              && (entity.PrefNo == prefCd
+                              || entity.PrefNo == 0
+                              || entity.IsOtherPrefValid == 1))
+                .OrderBy(e => e.HpId)
+                .ThenBy(e => e.HokenNo)
+                .ThenBy(e => e.HokenEdaNo)
+                .ThenByDescending(e => e.StartDate)
+                .ThenBy(e => e.HokenSbtKbn)
+                .ThenBy(e => e.SortNo);
+
+            var hokenMstList = hokenMstListRepo.Where(predicateHokenMst).ToList();
+
+            var predicatePtHokenCheck = CreatePtHokenCheckExpression(listPtKohi);
+
+            if (predicatePtHokenCheck == null) return new List<KohiInfModel>();
+
+            var ptHokenCheckRepos = NoTrackingDataContext.PtHokenChecks.Where(item =>
+                item.HpId == hpId && item.PtID == ptId && item.IsDeleted == 0);
+
+            var ptHokenCheckList = ptHokenCheckRepos.Where(predicatePtHokenCheck).ToList();
+
+            return listPtKohi.Select(kohi => CreatePtKohiModel(kohi,
+                                    hokenMstList.Where(item =>
+                                        item.HokenNo == kohi.HokenNo &&
+                                        item.HokenEdaNo == kohi.HokenEdaNo).ToList(),
+                                    ptHokenCheckList.Where(item =>
+                                        item.HokenGrp == 2 &&
+                                        item.HokenId == kohi.HokenId)
+                                       .Select(item => new ConfirmDateModel(
+                                       item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine ?? string.Empty, item.CheckCmt ?? string.Empty, item.IsDeleted)).ToList(), sinDate))
+                .ToList();
+        }
+
+        private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtKohi> listPtKohi)
+        {
+            var param = Expression.Parameter(typeof(PtHokenCheck));
+            Expression expression = null;
+
+            var listKohiId = listPtKohi.Select(item => item.HokenId).ToList();
+
+            CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
+
+            return expression != null
+                    ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
+                    : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
+        }
+
+        private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
+        {
+            var param = Expression.Parameter(typeof(HokenMst));
+            Expression expression = null;
+
+            CreateHokenMstExpression(listPtKohi, ref expression, ref param);
+
+            return expression != null
+                ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
+                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
+        }
+
+        public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
+                                   int payType, string comment, bool isDisCharged)
+        {
+
+            var raiinNos = syunoSeikyuModels.Select(item => item.RaiinNo).Distinct().ToList();
+            var raiinInLists = TrackingDataContext.RaiinInfs
+                                    .Where(item => item.HpId == hpId
+                                                   && item.PtId == ptId
+                                                   && item.IsDeleted == DeleteTypes.None
+                                                   && item.Status > RaiinState.TempSave
+                                                   && raiinNos.Contains(item.RaiinNo))
+                                    .ToList();
+            var seikyuLists = TrackingDataContext.SyunoSeikyus
+                        .Where(item => item.HpId == hpId
+                                       && item.PtId == ptId
+                                       && raiinNos.Contains(item.RaiinNo))
+                        .ToList();
+
+            int allSeikyuGaku = sumAdjust;
+            int adjustFutan = thisWari;
+            int nyukinGaku = thisCredit;
+            int outAdjustFutan = 0;
+            int outNyukinGaku = 0;
+            int outNyukinKbn = 0;
+
+            for (int i = 0; i < syunoSeikyuModels.Count; i++)
+            {
+                var item = syunoSeikyuModels[i];
+
+                int thisSeikyuGaku = 0;
+                if (item.SyunoNyukinModels.Any())
+                {
+                    thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+
+                }
+                bool isLastRecord = i == syunoSeikyuModels.Count - 1;
+                if (!isDisCharged)
+                {
+                    ParseValueUpdate(allSeikyuGaku, thisSeikyuGaku, ref adjustFutan, ref nyukinGaku, out outAdjustFutan, out outNyukinGaku,
+                    out outNyukinKbn, isLastRecord);
+                    allSeikyuGaku -= thisSeikyuGaku;
+                }
+                else
+                {
+                    outNyukinKbn = 2;
+                }
+
+                if (item.SyunoNyukinModels.Count != 1 || item.SyunoNyukinModels[0].AdjustFutan != 0 ||
+                    item.SyunoNyukinModels[0].NyukinGaku != 0)
+                {
+                    TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
+                    {
+                        HpId = item.HpId,
+                        RaiinNo = item.RaiinNo,
+                        PtId = item.PtId,
+                        SinDate = item.SinDate,
+                        AdjustFutan = outAdjustFutan,
+                        NyukinGaku = outNyukinGaku,
+                        SortNo = 1,
+                        PaymentMethodCd = payType,
+                        UketukeSbt = item.RaiinInfModel.UketukeSbt,
+                        NyukinCmt = comment,
+                        IsDeleted = 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        NyukinDate = item.SinDate,
+                        NyukinjiTensu = item.SeikyuTensu,
+                        NyukinjiDetail = item.SeikyuDetail,
+                        NyukinjiSeikyu = item.SeikyuGaku
+                    });
+
+                    UpdateStatusRaiinInf(userId, item, raiinInLists);
+                    UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
+                }
+
+            }
+            if (accDue != 0 && thisCredit != 0)
+            {
+                AdjustWariExecute(hpId, ptId, userId, thisCredit, accDue, listAllSyunoSeikyu, syunoSeikyuModels, payType, comment);
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        private void AdjustWariExecute(int hpId, long ptId, int userId, int nyukinGakuEarmarked, int accDue, List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int paymentMethod, string comment)
+        {
+            var listRaiinNo = syunoSeikyuModels.Select(item => item.RaiinNo).ToList();
+
+            var seikyuLists = TrackingDataContext.SyunoSeikyus
+                            .Where(item => item.HpId == hpId
+                                                && item.PtId == ptId
+                                                && listRaiinNo.Contains(item.RaiinNo))
+                            .ToList();
+
+            int nyukinGaku = nyukinGakuEarmarked;
+            int outAdjustFutan = 0;
+            int outNyukinGaku = 0;
+            int outNyukinKbn = 0;
+            bool isSettled = nyukinGakuEarmarked == accDue;
+
+            listAllSyunoSeikyu = listAllSyunoSeikyu
+                .Where(item => !(item.SeikyuGaku != item.NewSeikyuGaku && item.NewSeikyuGaku > 0))
+                .ToList();
+
+            foreach (var item in listAllSyunoSeikyu)
+            {
+                if (nyukinGaku == 0) return;
+
+                int thisSeikyuGaku = 0;
+                int sort = 0;
+                if (item.SyunoNyukinModels.Any())
+                {
+                    thisSeikyuGaku = item.SeikyuGaku - item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.NyukinGaku) -
+                                     item.SyunoNyukinModels.Sum(itemNyukin => itemNyukin.AdjustFutan);
+                    sort = item.SyunoNyukinModels.Max(itemNyukin => itemNyukin.SortNo) + 1;
+                }
+
+                ParseEarmarkedValueUpdate(thisSeikyuGaku, ref nyukinGaku, out outNyukinGaku,
+                    out outNyukinKbn, isSettled);
+
+                TrackingDataContext.SyunoNyukin.Add(new SyunoNyukin()
+                {
+                    HpId = item.HpId,
+                    RaiinNo = item.RaiinNo,
+                    PtId = item.PtId,
+                    SinDate = item.SinDate,
+                    SortNo = sort,
+                    AdjustFutan = outAdjustFutan,
+                    NyukinGaku = outNyukinGaku,
+                    PaymentMethodCd = paymentMethod,
+                    UketukeSbt = item.RaiinInfModel.UketukeSbt,
+                    NyukinCmt = comment,
+                    IsDeleted = 0,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    NyukinjiTensu = item.SeikyuTensu,
+                    NyukinjiDetail = item.SeikyuDetail,
+                    NyukinjiSeikyu = item.SeikyuGaku
+                });
+
+                UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
+            }
+        }
+
+        public void ParseEarmarkedValueUpdate(int thisSeikyuGaku, ref int nyukinGaku, out int outNyukinGaku,
+            out int outNyukinKbn, bool isSettled = false)
+        {
+            if (isSettled)
+            {
+                outNyukinGaku = thisSeikyuGaku;
+                nyukinGaku -= outNyukinGaku;
+                outNyukinKbn = 3;
+                return;
+            }
+
+            if (nyukinGaku >= thisSeikyuGaku)
+            {
+                outNyukinGaku = thisSeikyuGaku;
+                nyukinGaku -= outNyukinGaku;
+            }
+            else
+            {
+                outNyukinGaku = nyukinGaku;
+                nyukinGaku -= outNyukinGaku;
+            }
+
+            thisSeikyuGaku -= outNyukinGaku;
+            outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
+        }
+
+        private void UpdateStatusRaiinInf(int userId, SyunoSeikyuModel syunoSeikyu, List<RaiinInf> raiinLists)
+        {
+            var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == syunoSeikyu.RaiinNo);
+
+            if (raiin != null)
+            {
+                raiin.Status = RaiinState.Settled;
+                raiin.KaikeiTime = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                raiin.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiin.UpdateId = userId;
+            }
+        }
+
+        private void UpdateStatusSyunoSeikyu(int userId, long raiinNo, int nyuKinKbn, List<SyunoSeikyu> seikyuLists)
+        {
+            var seikyu = seikyuLists.FirstOrDefault(item => item.RaiinNo == raiinNo);
+            if (seikyu != null)
+            {
+                seikyu.NyukinKbn = nyuKinKbn;
+                seikyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                seikyu.UpdateId = userId;
+            }
+        }
+
+        private void ParseValueUpdate(int allSeikyuGaku, int thisSeikyuGaku, ref int adjustFutan, ref int nyukinGaku, out int outAdjustFutan,
+            out int outNyukinGaku, out int outNyukinKbn, bool isLastRecord)
+        {
+            int credit = adjustFutan + nyukinGaku;
+
+            if (credit == allSeikyuGaku || credit < allSeikyuGaku && credit > thisSeikyuGaku)
+            {
+                if (isLastRecord)
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else if (adjustFutan >= thisSeikyuGaku)
+                {
+                    outAdjustFutan = thisSeikyuGaku;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+                else
+                {
+                    outAdjustFutan = adjustFutan;
+                    outNyukinGaku = thisSeikyuGaku - outAdjustFutan;
+
+                    adjustFutan -= outAdjustFutan;
+                    nyukinGaku -= outNyukinGaku;
+                }
+            }
+            else
+            {
+                outAdjustFutan = adjustFutan;
+                outNyukinGaku = nyukinGaku;
+
+                adjustFutan -= outAdjustFutan;
+                nyukinGaku -= outNyukinGaku;
+            }
+
+            thisSeikyuGaku = thisSeikyuGaku - outAdjustFutan - outNyukinGaku;
+            outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
         }
     }
 }

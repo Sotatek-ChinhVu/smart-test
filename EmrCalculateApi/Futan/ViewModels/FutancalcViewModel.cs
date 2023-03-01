@@ -1,13 +1,13 @@
-﻿using EmrCalculateApi.Futan.DB.CommandHandler;
+﻿using EmrCalculateApi.Constants;
+using EmrCalculateApi.Futan.DB.CommandHandler;
 using EmrCalculateApi.Futan.DB.Finder;
-using EmrCalculateApi.Constants;
 using EmrCalculateApi.Futan.Models;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using Domain.Constant;
 
 namespace EmrCalculateApi.Futan.ViewModels
 {
@@ -19,6 +19,7 @@ namespace EmrCalculateApi.Futan.ViewModels
 #pragma warning disable S1121
 #pragma warning disable S1481
 #pragma warning disable CS8602
+#pragma warning disable CS8625
 #pragma warning disable S2184
 #pragma warning disable S3267
 #pragma warning disable S1125
@@ -34,41 +35,63 @@ namespace EmrCalculateApi.Futan.ViewModels
         private FutancalcListModel _futancalcAggregate;
 
         public RaiinTensuModel RaiinTensu { get; set; } = new RaiinTensuModel();
-
         public PtInfModel PtInf { get; set; }
-
-        public List<KaikeiInfModel> KaikeiInfs { get; set; } = new List<KaikeiInfModel>();
-
+        public List<KaikeiInfModel> KaikeiInfs { get; private set; } = new List<KaikeiInfModel>();
         public KaikeiDetailModel KaikeiDetail { get; set; } = new KaikeiDetailModel(new KaikeiDetail());
-
-        public List<KaikeiDetailModel> AdjustDetails { get; set; } = new List<KaikeiDetailModel>();
-
-        public List<LimitListInfModel> LimitListInfs { get; set; } = new List<LimitListInfModel>();
-
-        public List<LimitCntListInfModel> LimitCntListInfs { get; set; } = new List<LimitCntListInfModel>();
-
+        public List<KaikeiDetailModel> AdjustDetails { get; private set; } = new List<KaikeiDetailModel>();
+        public List<LimitListInfModel> LimitListInfs { get; private set; } = new List<LimitListInfModel>();
+        public List<LimitCntListInfModel> LimitCntListInfs { get; private set; } = new List<LimitCntListInfModel>();
         public List<KaikeiDetailModel> KaikeiDetails { get; set; } = new List<KaikeiDetailModel>();
-
         public List<KaikeiDetailModel> KaikeiAdjustDetails { get; set; } = new List<KaikeiDetailModel>();
-
-        public List<KaikeiDetailModel> KaikeiTotalDetails { get; set; } = new List<KaikeiDetailModel>();
-
+        public List<KaikeiDetailModel> KaikeiTotalDetails { get; private set; } = new List<KaikeiDetailModel>();
         public List<LimitListInfModel> LimitListOthers { get; set; } = new List<LimitListInfModel>();
-
         public List<LimitCntListInfModel> LimitCntListOthers { get; set; } = new List<LimitCntListInfModel>();
-
-        public List<PtSanteiConfModel> PtSanteiConfs { get; set; } = new List<PtSanteiConfModel>();
-
+        public List<PtSanteiConfModel> PtSanteiConfs { get; private set; } = new List<PtSanteiConfModel>();
         public List<OdrInfModel> OdrInfs { get; private set; } = new List<OdrInfModel>();
-
         public PtHokenPatternModel HokenPattern { get; set; }
-
         public PtHokenInfModel PtHoken { get; set; }
-
         public List<PtKohiModel> PtKohis { get; private set; } = new List<PtKohiModel>();
-
         public List<CalcLogModel> CalcLogs { get; private set; } = new List<CalcLogModel>();
 
+        public struct SystemConfs
+        {
+            /// <summary>
+            /// 15更生があり異点数の場合のマル長の負担額
+            ///     0:公費負担額を含む
+            ///     1:社保/公費負担額を含む　　　国保/公費負担額を含まない
+            ///     2:社保/公費負担額を含まない　国保/公費負担額を含む
+            ///     3:公費負担額を含まない
+            /// </summary>
+            public int ChokiFutan { get; set; }
+
+            /// <summary>
+            /// マル長計算オプション
+            ///     0:月単位
+            ///     1:日単位（公費負担額を含むのみ）
+            ///     2:社保/日単位　国保/月単位
+            ///     3:社保/月単位　国保/日単位     
+            /// </summary>
+            /// <remarks>
+            ///     公１が5000円上限、マル長10000円で、1日目にマル長上限に達して公1上限未満だった場合に、
+            ///     2日目以降に公1上限まで患者負担させるかどうか（月単位の場合は公1上限まで患者負担させる）
+            /// </remarks>
+            public int ChokiDateRange { get; set; }
+
+            /// <summary>
+            /// 高額療養費の窓口負担まるめ設定
+            ///     0:1円単位
+            ///     1:10円単位(四捨五入)
+            ///     2:10円単位(切り捨て)
+            /// </summary>
+            public int RoundKogakuPtFutan { get; set; }
+
+            public SystemConfs(int chokiFutan, int chokiDateRange, int roundKogakuPtFutan)
+            {
+                ChokiFutan = chokiFutan;
+                ChokiDateRange = chokiDateRange;
+                RoundKogakuPtFutan = roundKogakuPtFutan;
+            }
+        }
         public SystemConfs SystemConf;
 
         private readonly TenantDataContext _tenantDataContext;
@@ -87,226 +110,55 @@ namespace EmrCalculateApi.Futan.ViewModels
             _clearCommandHandler = new ClearCommandHandler(_tenantDataContext, emrLogger);
 
             SystemConf = new SystemConfs(
-            chokiFutan: _systemConfigProvider.GetChokiFutan(),
-            chokiDateRange: _systemConfigProvider.GetChokiDateRange(),
-            roundKogakuPtFutan: _systemConfigProvider.GetRoundKogakuPtFutan()
-        );
-        }
-
-        public void DetailCalculate(bool raiinAdjust)
-        {
-            //KaikeiDetail = new KaikeiDetailModel(new KaikeiDetail());
-            KaikeiDetail.HpId = RaiinTensu.HpId;
-            KaikeiDetail.PtId = RaiinTensu.PtId;
-            KaikeiDetail.SinDate = RaiinTensu.SinDate;
-            KaikeiDetail.RaiinNo = RaiinTensu.RaiinNo;
-            KaikeiDetail.OyaRaiinNo = RaiinTensu.OyaRaiinNo;
-            KaikeiDetail.HokenPid = RaiinTensu.HokenPid;
-            KaikeiDetail.Tensu = RaiinTensu.Tensu;
-            if (new int[] { 0, 4 }.Contains(RaiinTensu.HokenKbn))
-            {
-                KaikeiDetail.Tensu += RaiinTensu.RousaiEnTensu;
-            }
-            KaikeiDetail.HokenKbn = HokenPattern.HokenKbn;
-            KaikeiDetail.HokenSbtCd = HokenPattern.HokenSbtCd;
-            KaikeiDetail.HokenId = HokenPattern.HokenId;
-            KaikeiDetail.Kohi1Id = HokenPattern.Kohi1Id;
-            KaikeiDetail.Kohi2Id = HokenPattern.Kohi2Id;
-            KaikeiDetail.Kohi3Id = HokenPattern.Kohi3Id;
-            KaikeiDetail.Kohi4Id = HokenPattern.Kohi4Id;
-            KaikeiDetail.Jitunisu = Convert.ToInt32(RaiinTensu.JituNisu);
-            KaikeiDetail.SortKey = RaiinTensu.SortKey;
-            KaikeiDetail.JihiFutan = RaiinTensu.JihiFutan;
-            KaikeiDetail.JihiOuttax = RaiinTensu.OutTax;
-            KaikeiDetail.JihiTax = RaiinTensu.InclTax;
-            KaikeiDetail.JihiFutanTaxfree = RaiinTensu.JihiTaxFree;
-            KaikeiDetail.JihiFutanOuttaxNr = RaiinTensu.JihiOutTaxNr;
-            KaikeiDetail.JihiFutanOuttaxGen = RaiinTensu.JihiOutTaxGen;
-            KaikeiDetail.JihiFutanTaxNr = RaiinTensu.JihiTaxNr;
-            KaikeiDetail.JihiFutanTaxGen = RaiinTensu.JihiTaxGen;
-            KaikeiDetail.JihiOuttaxNr = RaiinTensu.OutTaxNr;
-            KaikeiDetail.JihiOuttaxGen = RaiinTensu.OutTaxGen;
-            KaikeiDetail.JihiTaxNr = RaiinTensu.InclTaxNr;
-            KaikeiDetail.JihiTaxGen = RaiinTensu.InclTaxGen;
-            KaikeiDetail.IsNinpu = RaiinTensu.IsNinpu;
-            KaikeiDetail.IsZaiiso = RaiinTensu.IsZaiiso;
-
-            _futancalcAggregate = new FutancalcListModel(KaikeiDetail, KaikeiDetails, OdrInfs);
-            AdjustDetails.Clear();
-            LimitListInfs.Clear();
-            LimitCntListInfs.Clear();
-
-            for (int i = 0; i <= 1; i++)
-            {
-                KaikeiDetails.ForEach(k => k.RoundTo10en = i == 0);
-                KaikeiDetail.RoundTo10en = i == 0;
-
-                //主保険計算
-                CalculateHoken();
-
-                //マル長限度額
-                int chokiLimit = 0;
-
-                //公費計算
-                for (int iKohiNo = 1; iKohiNo <= 4; iKohiNo++)
-                {
-                    CalculateKohi(iKohiNo, ref chokiLimit);
-                    //特殊処理
-                    CalculateKohiSp(iKohiNo);
-                }
-
-                //高額療養費計算
-                CalculateKogaku(chokiLimit);
-
-                //高額療養費（公費併用と保険単独の合算）
-                CalculateKogakuTotal(chokiLimit);
-
-                //国保減免（高額療養費及び、公費を適用した後の最終的な一部負担金相当額を減免する）                
-                CalculateGenmen();
-            }
-
-            //上限額管理
-            for (int iKohiNo = 1; iKohiNo <= 4; iKohiNo++)
-            {
-                SetLimitList(iKohiNo);
-            }
-
-            //患者負担
-            KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en;
-            if ((KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen || KaikeiDetail.IchibuFutan10en % 10 != 0) &&
-                !KaikeiDetail.IsKohiLimitOver)
-            {
-                if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen)
-                {
-                    switch (SystemConf.RoundKogakuPtFutan)
-                    {
-                        case 1:  //10円単位(四捨五入)
-                            KaikeiDetail.PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en, 1);
-                            break;
-                        case 2:  //10円単位(切り捨て)
-                            KaikeiDetail.PtFutan = (int)Math.Truncate((double)(KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en) / 10) * 10;
-                            break;
-                        default: //1円単位
-                            KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en;
-                            break;
-                    }
-                }
-                else
-                {
-                    KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku;
-                }
-            }
-            //患者負担(合算調整)
-            AdjustDetails.ForEach(x =>
-            {
-                x.PtFutan = x.IchibuFutan10en;
-                if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen && !KaikeiDetail.IsKohiLimitOver)
-                {
-                    if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen)
-                    {
-                        switch (SystemConf.RoundKogakuPtFutan)
-                        {
-                            case 1:  //10円単位(四捨五入)
-                                x.PtFutan = CIUtil.RoundInt(x.IchibuFutan10en - x.GenmenGaku10en, 1);
-                                break;
-                            case 2:  //10円単位(切り捨て)
-                                x.PtFutan = (int)Math.Truncate((double)(x.IchibuFutan10en - x.GenmenGaku10en) / 10) * 10;
-                                break;
-                            default: //1円単位
-                                x.PtFutan = x.IchibuFutan10en - x.GenmenGaku10en;
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        x.PtFutan = x.IchibuFutan - x.GenmenGaku;
-                    }
-                }
-            }
+                chokiFutan: _systemConfigProvider.GetChokiFutan(),
+                chokiDateRange: _systemConfigProvider.GetChokiDateRange(),
+                roundKogakuPtFutan: _systemConfigProvider.GetRoundKogakuPtFutan()
             );
-
-            if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.Over)
-            {
-                int wrkPtFutan = _futancalcAggregate.GetTotalPtFutan(KaikeiDetail.HokenId) +
-                    KaikeiDetail.PtFutan + AdjustDetails.Sum(x => x.PtFutan) +
-                    KaikeiDetail.Kohi1OtherFutan + KaikeiDetail.Kohi2OtherFutan +
-                    KaikeiDetail.Kohi3OtherFutan + KaikeiDetail.Kohi4OtherFutan;
-
-                //窓口負担が上限に達していない場合は、まるめ誤差を考慮しない（＝1円単位の四捨五入）
-                if (wrkPtFutan < KaikeiDetail.KogakuLimit && wrkPtFutan < KaikeiDetail.TotalKogakuLimit &&
-                    (KaikeiDetail.Kohi1Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi1Limit) &&
-                    (KaikeiDetail.Kohi2Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi2Limit) &&
-                    (KaikeiDetail.Kohi3Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi3Limit) &&
-                    (KaikeiDetail.Kohi4Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi4Limit))
-                {
-                    KaikeiDetail.PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku, 1);
-
-                    if (AdjustDetails.Count >= 1)
-                    {
-                        AdjustDetails.ForEach(x => x.PtFutan = 0);
-                        AdjustDetails[0].PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan + AdjustDetails.Sum(x => x.IchibuFutan) - KaikeiDetail.GenmenGaku, 1) - KaikeiDetail.PtFutan;
-                    }
-                }
-            }
-            else if (KaikeiDetail.IsChoki && KaikeiDetail.ChokiKohiNo > 0 && !PtKohis.Any(p => p.PrefNo == 13 && p.CalcSpKbn == 1))
-            {
-                int wrkPtFutan = _futancalcAggregate.GetKohiFutan(KaikeiDetail.ChokiKohiNo, CountType.Month, PtKohis[KaikeiDetail.ChokiKohiNo - 1].LimitKbn) +
-                    KaikeiDetail.PtFutan + AdjustDetails.Sum(x => x.PtFutan) +
-                    KaikeiDetail.Kohi1OtherFutan + KaikeiDetail.Kohi2OtherFutan +
-                    KaikeiDetail.Kohi3OtherFutan + KaikeiDetail.Kohi4OtherFutan;
-
-                //窓口負担が上限に達していない場合は、まるめ誤差を考慮しない（＝1円単位の四捨五入）
-                if (wrkPtFutan < KaikeiDetail.ChokiLimit &&
-                    (KaikeiDetail.Kohi2Limit == 0 || KaikeiDetail.ChokiKohiNo >= 2 || wrkPtFutan < KaikeiDetail.Kohi2Limit) &&
-                    (KaikeiDetail.Kohi3Limit == 0 || KaikeiDetail.ChokiKohiNo >= 3 || wrkPtFutan < KaikeiDetail.Kohi3Limit) &&
-                    (KaikeiDetail.Kohi4Limit == 0 || KaikeiDetail.ChokiKohiNo >= 4 || wrkPtFutan < KaikeiDetail.Kohi4Limit))
-                {
-                    KaikeiDetail.PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku, 1);
-
-                    if (AdjustDetails.Count >= 1)
-                    {
-                        AdjustDetails.ForEach(x => x.PtFutan = 0);
-                        AdjustDetails[0].PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan + AdjustDetails.Sum(x => x.IchibuFutan) - KaikeiDetail.GenmenGaku, 1) - KaikeiDetail.PtFutan;
-                    }
-                }
-            }
-
-            //労災・自賠
-            int wrkFutan = CalculateRosaiJibai();
-            if (wrkFutan > 0)
-            {
-                KaikeiDetail.Tensu += RaiinTensu.RousaiEnTensu;
-                KaikeiDetail.TotalIryohi = wrkFutan;
-                KaikeiDetail.PtFutan = wrkFutan * KaikeiDetail.PtRate / 100;
-            }
-
-            //会計情報の設定
-            SetKaikeiInf(raiinAdjust, KaikeiDetail);
-            foreach (KaikeiDetailModel kaikeiDetail in AdjustDetails)
-            {
-                SetKaikeiInf(raiinAdjust, kaikeiDetail);
-            }
-
-            //まるめ調整額をDetailに反映する
-            KaikeiDetail.AdjustRound = raiinAdjust ? KaikeiInfs.Where(k => k.RaiinNo == KaikeiDetail.RaiinNo && k.HokenId == KaikeiDetail.HokenId).Sum(k => k.AdjustRound) : 0;
-            if (KaikeiDetail.AdjustRound != 0)
-            {
-                AddCalcLog(1, string.Format("【負担金額】同一来院の患者負担調整を行いました。 調整額:{0}円", KaikeiDetail.AdjustRound));
-            }
         }
 
-        public void FutanCalculation(long ptId, int sinDate, List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis, List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs, int seikyuUp)
+        /// <summary>
+        /// 負担金計算
+        /// </summary>
+        /// <param name="ptId">患者ID</param>
+        /// <param name="sinDate">診療日</param>
+        /// <param name="raiinNo">来院番号</param>
+        /// <param name="sinKouiCounts">診療行為回数(点数計算の結果/当月分)</param>
+        /// <param name="sinKouis">診療行為(点数計算の結果/当月分)</param>
+        /// <param name="sinKouiDetails">診療行為詳細(点数計算の結果/当月分)</param>
+        /// <param name="sinRpInfs">診療Rp情報(点数計算の結果/当月分)</param>
+        /// <param name="seikyuUp">請求情報更新(0:反映しない 1:反映する)</param>
+        public void FutanCalculation(
+            long ptId, int sinDate,
+            List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis,
+            List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs,
+            int seikyuUp
+        )
         {
             FutanCalculateMain(
-                    ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, new List<RaiinInfModel>(), seikyuUp
-                );
+                ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, null, seikyuUp
+            );
         }
 
-        public List<KaikeiInfModel> TrialFutanCalculation(long ptId, int sinDate, long raiinNo, List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis, List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs, List<RaiinInfModel> raiinInfs)
+        /// <summary>
+        /// 試算（データベースに登録しない）
+        /// </summary>
+        /// <param name="ptId">患者ID</param>
+        /// <param name="sinDate">診療日</param>
+        /// <param name="raiinNo">来院番号</param>
+        /// <param name="sinKouiCounts">診療行為回数(点数計算の結果/当月分)</param>
+        /// <param name="sinKouis">診療行為(点数計算の結果/当月分)</param>
+        /// <param name="sinKouiDetails">診療行為詳細(点数計算の結果/当月分)</param>
+        /// <param name="sinRpInfs">診療Rp情報(点数計算の結果/当月分)</param>
+        public List<KaikeiInfModel> TrialFutanCalculation(
+            long ptId, int sinDate, long raiinNo,
+            List<SinKouiCountModel> sinKouiCounts, List<SinKouiModel> sinKouis,
+            List<SinKouiDetailModel> sinKouiDetails, List<SinRpInfModel> sinRpInfs,
+            List<RaiinInfModel> raiinInfs
+        )
         {
             FutanCalculateMain(
-                    ptId, sinDate, raiinNo, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, raiinInfs, default
-                );
+                ptId, sinDate, raiinNo, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, raiinInfs, default
+            );
 
             return KaikeiInfs;
         }
@@ -501,6 +353,220 @@ namespace EmrCalculateApi.Futan.ViewModels
             );
         }
 
+        public void DetailCalculate(bool raiinAdjust)
+        {
+            //KaikeiDetail = new KaikeiDetailModel(new KaikeiDetail());
+            KaikeiDetail.HpId = RaiinTensu.HpId;
+            KaikeiDetail.PtId = RaiinTensu.PtId;
+            KaikeiDetail.SinDate = RaiinTensu.SinDate;
+            KaikeiDetail.RaiinNo = RaiinTensu.RaiinNo;
+            KaikeiDetail.OyaRaiinNo = RaiinTensu.OyaRaiinNo;
+            KaikeiDetail.HokenPid = RaiinTensu.HokenPid;
+            KaikeiDetail.Tensu = RaiinTensu.Tensu;
+            if (new int[] { 0, 4 }.Contains(RaiinTensu.HokenKbn))
+            {
+                KaikeiDetail.Tensu += RaiinTensu.RousaiEnTensu;
+            }
+            KaikeiDetail.HokenKbn = HokenPattern.HokenKbn;
+            KaikeiDetail.HokenSbtCd = HokenPattern.HokenSbtCd;
+            KaikeiDetail.HokenId = HokenPattern.HokenId;
+            KaikeiDetail.Kohi1Id = HokenPattern.Kohi1Id;
+            KaikeiDetail.Kohi2Id = HokenPattern.Kohi2Id;
+            KaikeiDetail.Kohi3Id = HokenPattern.Kohi3Id;
+            KaikeiDetail.Kohi4Id = HokenPattern.Kohi4Id;
+            KaikeiDetail.Jitunisu = Convert.ToInt32(RaiinTensu.JituNisu);
+            KaikeiDetail.SortKey = RaiinTensu.SortKey;
+            KaikeiDetail.JihiFutan = RaiinTensu.JihiFutan;
+            KaikeiDetail.JihiOuttax = RaiinTensu.OutTax;
+            KaikeiDetail.JihiTax = RaiinTensu.InclTax;
+            KaikeiDetail.JihiFutanTaxfree = RaiinTensu.JihiTaxFree;
+            KaikeiDetail.JihiFutanOuttaxNr = RaiinTensu.JihiOutTaxNr;
+            KaikeiDetail.JihiFutanOuttaxGen = RaiinTensu.JihiOutTaxGen;
+            KaikeiDetail.JihiFutanTaxNr = RaiinTensu.JihiTaxNr;
+            KaikeiDetail.JihiFutanTaxGen = RaiinTensu.JihiTaxGen;
+            KaikeiDetail.JihiOuttaxNr = RaiinTensu.OutTaxNr;
+            KaikeiDetail.JihiOuttaxGen = RaiinTensu.OutTaxGen;
+            KaikeiDetail.JihiTaxNr = RaiinTensu.InclTaxNr;
+            KaikeiDetail.JihiTaxGen = RaiinTensu.InclTaxGen;
+            KaikeiDetail.IsNinpu = RaiinTensu.IsNinpu;
+            KaikeiDetail.IsZaiiso = RaiinTensu.IsZaiiso;
+
+            _futancalcAggregate = new FutancalcListModel(KaikeiDetail, KaikeiDetails, OdrInfs);
+            AdjustDetails.Clear();
+            LimitListInfs.Clear();
+            LimitCntListInfs.Clear();
+
+            KaikeiDetails.ForEach(k => k.RoundKogakuPtFutan = SystemConf.RoundKogakuPtFutan);
+            KaikeiDetail.RoundKogakuPtFutan = SystemConf.RoundKogakuPtFutan;
+
+            for (int i = 0; i <= 1; i++)
+            {
+                KaikeiDetails.ForEach(k => k.RoundTo10en = i == 0);
+                KaikeiDetail.RoundTo10en = i == 0;
+
+                //主保険計算
+                CalculateHoken();
+
+                //マル長限度額
+                int chokiLimit = 0;
+
+                //公費計算
+                for (int iKohiNo = 1; iKohiNo <= 4; iKohiNo++)
+                {
+                    CalculateKohi(iKohiNo, ref chokiLimit);
+                    //特殊処理
+                    CalculateKohiSp(iKohiNo);
+                }
+
+                //高額療養費計算
+                CalculateKogaku(chokiLimit);
+
+                //高額療養費（公費併用と保険単独の合算）
+                CalculateKogakuTotal(chokiLimit);
+
+                //国保減免（高額療養費及び、公費を適用した後の最終的な一部負担金相当額を減免する）                
+                CalculateGenmen();
+            }
+
+            //上限額管理
+            for (int iKohiNo = 1; iKohiNo <= 4; iKohiNo++)
+            {
+                SetLimitList(iKohiNo);
+            }
+
+            //患者負担
+            KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en;
+            if ((KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen || KaikeiDetail.IchibuFutan10en % 10 != 0) &&
+                !KaikeiDetail.IsKohiLimitOver)
+            {
+                if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen ||
+                    (KaikeiDetail.KogakuKbn == 41 && KaikeiDetail.IchibuFutan10en % 10 != 0)) //配慮措置適用の日がある場合、高額上限に達した日が1円単位になるため丸める
+                {
+                    switch (SystemConf.RoundKogakuPtFutan)
+                    {
+                        case 1:  //10円単位(四捨五入)
+                            int ptFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en, 1);
+                            KaikeiDetail.IchibuFutan10en += ptFutan - KaikeiDetail.PtFutan;
+                            KaikeiDetail.PtFutan = ptFutan;
+                            break;
+                        case 2:  //10円単位(切り捨て)
+                            ptFutan = (int)Math.Truncate((double)(KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en) / 10) * 10;
+                            KaikeiDetail.IchibuFutan10en += ptFutan - KaikeiDetail.PtFutan;
+                            KaikeiDetail.PtFutan = ptFutan;
+                            break;
+                        default: //1円単位
+                            KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan10en - KaikeiDetail.GenmenGaku10en;
+                            break;
+                    }
+                }
+                else
+                {
+                    KaikeiDetail.PtFutan = KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku;
+                }
+            }
+            //患者負担(合算調整)
+            AdjustDetails.ForEach(x =>
+            {
+                x.PtFutan = x.IchibuFutan10en;
+                if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen && !KaikeiDetail.IsKohiLimitOver)
+                {
+                    if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.OverOneYen)
+                    {
+                        switch (SystemConf.RoundKogakuPtFutan)
+                        {
+                            case 1:  //10円単位(四捨五入)
+                                int ptFutan = CIUtil.RoundInt(x.IchibuFutan10en - x.GenmenGaku10en, 1);
+                                x.IchibuFutan10en += ptFutan - x.PtFutan;
+                                x.PtFutan = ptFutan;
+                                break;
+                            case 2:  //10円単位(切り捨て)
+                                ptFutan = (int)Math.Truncate((double)(x.IchibuFutan10en - x.GenmenGaku10en) / 10) * 10;
+                                x.IchibuFutan10en += ptFutan - x.PtFutan;
+                                x.PtFutan = ptFutan;
+                                break;
+                            default: //1円単位
+                                x.PtFutan = x.IchibuFutan10en - x.GenmenGaku10en;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        x.PtFutan = x.IchibuFutan - x.GenmenGaku;
+                    }
+                }
+            }
+            );
+
+            if (KaikeiDetail.KogakuOverKbn == KogakuOverStatus.Over)
+            {
+                int wrkPtFutan = _futancalcAggregate.GetTotalPtFutan(KaikeiDetail.HokenId) +
+                    KaikeiDetail.PtFutan + AdjustDetails.Sum(x => x.PtFutan) +
+                    KaikeiDetail.Kohi1OtherFutan + KaikeiDetail.Kohi2OtherFutan +
+                    KaikeiDetail.Kohi3OtherFutan + KaikeiDetail.Kohi4OtherFutan;
+
+                //窓口負担が上限に達していない場合は、まるめ誤差を考慮しない（＝1円単位の四捨五入）
+                if (wrkPtFutan < KaikeiDetail.KogakuLimit && wrkPtFutan < KaikeiDetail.TotalKogakuLimit &&
+                    (KaikeiDetail.Kohi1Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi1Limit) &&
+                    (KaikeiDetail.Kohi2Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi2Limit) &&
+                    (KaikeiDetail.Kohi3Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi3Limit) &&
+                    (KaikeiDetail.Kohi4Limit == 0 || wrkPtFutan < KaikeiDetail.Kohi4Limit))
+                {
+                    KaikeiDetail.PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku, 1);
+
+                    if (AdjustDetails.Count >= 1)
+                    {
+                        AdjustDetails.ForEach(x => x.PtFutan = 0);
+                        AdjustDetails[0].PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan + AdjustDetails.Sum(x => x.IchibuFutan) - KaikeiDetail.GenmenGaku, 1) - KaikeiDetail.PtFutan;
+                    }
+                }
+            }
+            else if (KaikeiDetail.IsChoki && KaikeiDetail.ChokiKohiNo > 0 && !PtKohis.Any(p => p.PrefNo == 13 && p.CalcSpKbn == 1))
+            {
+                int wrkPtFutan = _futancalcAggregate.GetKohiFutan(KaikeiDetail.ChokiKohiNo, CountType.Month, PtKohis[KaikeiDetail.ChokiKohiNo - 1].LimitKbn) +
+                    KaikeiDetail.PtFutan + AdjustDetails.Sum(x => x.PtFutan) +
+                    KaikeiDetail.Kohi1OtherFutan + KaikeiDetail.Kohi2OtherFutan +
+                    KaikeiDetail.Kohi3OtherFutan + KaikeiDetail.Kohi4OtherFutan;
+
+                //窓口負担が上限に達していない場合は、まるめ誤差を考慮しない（＝1円単位の四捨五入）
+                if (wrkPtFutan < KaikeiDetail.ChokiLimit &&
+                    (KaikeiDetail.Kohi2Limit == 0 || KaikeiDetail.ChokiKohiNo >= 2 || wrkPtFutan < KaikeiDetail.Kohi2Limit) &&
+                    (KaikeiDetail.Kohi3Limit == 0 || KaikeiDetail.ChokiKohiNo >= 3 || wrkPtFutan < KaikeiDetail.Kohi3Limit) &&
+                    (KaikeiDetail.Kohi4Limit == 0 || KaikeiDetail.ChokiKohiNo >= 4 || wrkPtFutan < KaikeiDetail.Kohi4Limit))
+                {
+                    KaikeiDetail.PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan - KaikeiDetail.GenmenGaku, 1);
+
+                    if (AdjustDetails.Count >= 1)
+                    {
+                        AdjustDetails.ForEach(x => x.PtFutan = 0);
+                        AdjustDetails[0].PtFutan = CIUtil.RoundInt(KaikeiDetail.IchibuFutan + AdjustDetails.Sum(x => x.IchibuFutan) - KaikeiDetail.GenmenGaku, 1) - KaikeiDetail.PtFutan;
+                    }
+                }
+            }
+
+            //労災・自賠
+            int wrkFutan = CalculateRosaiJibai();
+            if (wrkFutan > 0)
+            {
+                KaikeiDetail.Tensu += RaiinTensu.RousaiEnTensu;
+                KaikeiDetail.TotalIryohi = wrkFutan;
+                KaikeiDetail.PtFutan = wrkFutan * KaikeiDetail.PtRate / 100;
+            }
+
+            //会計情報の設定
+            SetKaikeiInf(raiinAdjust, KaikeiDetail);
+            foreach (KaikeiDetailModel kaikeiDetail in AdjustDetails)
+            {
+                SetKaikeiInf(raiinAdjust, kaikeiDetail);
+            }
+
+            //まるめ調整額をDetailに反映する
+            KaikeiDetail.AdjustRound = raiinAdjust ? KaikeiInfs.Where(k => k.RaiinNo == KaikeiDetail.RaiinNo && k.HokenId == KaikeiDetail.HokenId).Sum(k => k.AdjustRound) : 0;
+            if (KaikeiDetail.AdjustRound != 0)
+            {
+                AddCalcLog(1, string.Format("【負担金額】同一来院の患者負担調整を行いました。 調整額:{0}円", KaikeiDetail.AdjustRound));
+            }
+        }
+
         /// <summary>
         /// 主保険計算
         /// </summary>
@@ -634,12 +700,22 @@ namespace EmrCalculateApi.Futan.ViewModels
                             kogakuKbn = 3;
                         }
 
-                        if (kogakuKbn == 3 ||  //(kogakuKbn == 3 && KaikeiDetail.SinDate < KaiseiDate.d20180801) ||
-                            new int[] { 26, 27, 28 }.Contains(kogakuKbn) && KaikeiDetail.SinDate >= KaiseiDate.d20180801)
+                        if ((kogakuKbn == 3) ||  //(kogakuKbn == 3 && KaikeiDetail.SinDate < KaiseiDate.d20180801) ||
+                            (kogakuKbn == 6) ||  //特定収入(～2008/12)
+                            (new int[] { 26, 27, 28 }.Contains(kogakuKbn) && KaikeiDetail.SinDate >= KaiseiDate.d20180801))
                         {
                             //後期７割 or 高齢７割
                             wrkRate = 30;
                             wrkReceSbt[3] = '0';
+                        }
+                        else if (PtHoken.Houbetu == "39" && kogakuKbn == 41 && KaikeiDetail.SinDate >= KaiseiDate.d20221001)
+                        {
+                            //後期８割
+                            wrkRate = 20;
+                        }
+                        else if (kogakuKbn == 41)
+                        {
+                            KaikeiDetail.KogakuKbn = 0;
                         }
                     }
                     break;
@@ -752,12 +828,13 @@ namespace EmrCalculateApi.Futan.ViewModels
                 if (SystemConf.ChokiDateRange == 1 ||
                     SystemConf.ChokiDateRange == 2 && KaikeiDetail.HokenKbn == HokenKbn.Syaho ||
                     SystemConf.ChokiDateRange == 3 && KaikeiDetail.HokenKbn == HokenKbn.Kokho ||
-
+                    (
                         //東京マル都
                         kohiNo + 1 <= PtKohis.Count &&
                         PtKohis[kohiNo]?.PrefNo == PrefCode.Tokyo &&
                         PtKohis[kohiNo]?.CalcSpKbn == 1
                     )
+                )
                 {
                     //公費計算
                     KaikeiDetail.IsChoki = kohiFutan > 0;
@@ -1044,6 +1121,7 @@ namespace EmrCalculateApi.Futan.ViewModels
             if (kohiInf.CalcSpKbn == 0) return;
 
             int ichibuFutan = KaikeiDetail.IchibuFutan;
+            int genmenGaku = KaikeiDetail.GenmenGaku;
             int kohiFutan = 0;
 
             //計算処理
@@ -1084,6 +1162,11 @@ namespace EmrCalculateApi.Futan.ViewModels
                     CalculateShizuoka(kohiNo, ref ichibuFutan, ref kohiFutan);
                     break;
 
+                //27.大阪府
+                case PrefCode.Osaka:
+                    CalculateOsaka(kohiNo, ref ichibuFutan, ref genmenGaku, ref kohiFutan);
+                    break;
+
                 //30.和歌山県
                 case PrefCode.Wakayama:
                     CalculateWakayama(kohiNo, ref ichibuFutan, ref kohiFutan);
@@ -1107,6 +1190,7 @@ namespace EmrCalculateApi.Futan.ViewModels
 
             ////計算結果格納
             KaikeiDetail.IchibuFutan = ichibuFutan;
+            KaikeiDetail.GenmenGaku = genmenGaku;
             KaikeiDetail.AddKohiFutan(kohiNo, kohiFutan);
         }
 
@@ -1324,7 +1408,7 @@ namespace EmrCalculateApi.Futan.ViewModels
                     if (
                             KaikeiDetail.AgeKbn == AgeKbn.Ippan &&                          //70歳未満
                             KaikeiDetail.KogakuKbn == 0 &&                                  //限度額認定証の提示がない
-                            PtHoken.IsKokKumiai && !PtHoken.IsKokPrefIn(kohiInf.PrefNo)     //県外国保組合
+                            PtHoken.IsKokKumiai && !PtHoken.IsKokPrefIn                     //県外国保組合
                         )
                     {
                         //一律「区分ウ」と見なして額を算出
@@ -1476,6 +1560,65 @@ namespace EmrCalculateApi.Futan.ViewModels
                         LimitCntListInfs.Add(limitCntListInf);
                     }
 
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 27.大阪府（特殊処理）
+        ///  1: 一部負担金相当額 - {80,100円 ＋ （総医療費 - 267,000円）×1％｝（一般の上限額）を患者が窓口で支払い
+        ///    ※70歳未満国保の府外保険者で、認定証が提示されなかった場合のみ
+        /// </summary>
+        /// <param name="kohiNo">公費番号[1..4]</param>
+        /// <param name="ichibuFutan">一部負担額</param>
+        /// <param name="genmenGaku">減免額</param>
+        /// <param name="kohiFutan">公費負担額</param>
+        private void CalculateOsaka(int kohiNo, ref int ichibuFutan, ref int genmenGaku, ref int kohiFutan)
+        {
+            int kohiId = HokenPattern.KohiNoToId(kohiNo);
+            PtKohiModel kohiInf = PtKohis[kohiNo - 1];
+
+            switch (kohiInf.CalcSpKbn)
+            {
+                case 1:
+                    if (
+                            KaikeiDetail.AgeKbn == AgeKbn.Ippan &&          //70歳未満
+                            KaikeiDetail.KogakuKbn == 0 &&                  //限度額認定証の提示がない
+                            PtHoken.IsKokPrefOut                            //府外国保
+                        )
+                    {
+                        //一律「区分ウ」と見なして額を算出
+                        var kogakuLimit = KogakuLimit(28);
+                        int limitFutan = kogakuLimit.Limit;
+
+                        //今回の自己負担相当額
+                        int wrkIchibu = ichibuFutan + kohiFutan + KaikeiDetail.GetKohiFutan(kohiNo);
+                        //今までの負担額を取得
+                        int wrkFutan =
+                            _futancalcAggregate.GetKohiIchibuFutan(kohiId, CountType.Month, kohiInf.LimitKbn) +
+                            _futancalcAggregate.GetKohiFutan(kohiId, CountType.Month, kohiInf.LimitKbn);
+                        //今までの負担額が高額療養費限度額を超えている場合
+                        int preKogakuLimit = _futancalcAggregate.GetPreKogakuLimit();
+                        if (wrkFutan > preKogakuLimit)
+                        {
+                            wrkFutan = preKogakuLimit;
+                        }
+
+                        if (wrkFutan + wrkIchibu > limitFutan)
+                        {
+                            //上限を超えた分を患者に請求する
+                            int limitOver = wrkFutan + wrkIchibu - limitFutan;
+                            if (KaikeiDetail.RoundTo10en)
+                            {
+                                limitOver = CIUtil.RoundInt(limitOver, 1);
+                            }
+
+                            kohiFutan -= limitOver;
+                            //レセプトの公費一部負担金記載に影響しないよう減免額扱い
+                            //ichibuFutan += limitOver;
+                            genmenGaku -= limitOver;
+                        }
+                    }
                     break;
             }
         }
@@ -1703,10 +1846,20 @@ namespace EmrCalculateApi.Futan.ViewModels
             limitListInf.RaiinNo = KaikeiDetail.RaiinNo;
             //患者負担額
             limitListInf.FutanGaku =
-                KaikeiDetail.Kohi1Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi2Futan10en + KaikeiDetail.Kohi3Futan + KaikeiDetail.Kohi4Futan :
-                KaikeiDetail.Kohi2Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi3Futan + KaikeiDetail.Kohi4Futan :
-                KaikeiDetail.Kohi3Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi4Futan :
+                KaikeiDetail.Kohi1Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi2Futan10en + KaikeiDetail.Kohi3Futan10en + KaikeiDetail.Kohi4Futan10en :
+                KaikeiDetail.Kohi2Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi3Futan10en + KaikeiDetail.Kohi4Futan10en :
+                KaikeiDetail.Kohi3Id == kohiId ? KaikeiDetail.IchibuFutan10en + KaikeiDetail.Kohi4Futan10en :
                 KaikeiDetail.IchibuFutan10en;
+
+            foreach (var adjustDetail in AdjustDetails)
+            {
+                limitListInf.FutanGaku +=
+                    adjustDetail.Kohi1Id == kohiId ? adjustDetail.IchibuFutan10en + adjustDetail.Kohi2Futan10en + adjustDetail.Kohi3Futan10en + adjustDetail.Kohi4Futan10en :
+                    adjustDetail.Kohi2Id == kohiId ? adjustDetail.IchibuFutan10en + adjustDetail.Kohi3Futan10en + adjustDetail.Kohi4Futan10en :
+                    adjustDetail.Kohi3Id == kohiId ? adjustDetail.IchibuFutan10en + adjustDetail.Kohi4Futan10en :
+                    adjustDetail.Kohi4Id == kohiId ? adjustDetail.IchibuFutan10en : 0;
+            }
+
             //総額表示
             if (kohiInf.IsLimitListSum == IsLimitListSum.Yes)
             {
@@ -1738,10 +1891,8 @@ namespace EmrCalculateApi.Futan.ViewModels
 
                 var wrkDetails = totalDetails.Where(d =>
                     d.HokenId == KaikeiDetail.HokenId ||
-
-                        //後期は月中で保険が変わっても通算で上限をかける
-                        KaikeiDetail.IsKouki && d.IsKouki
-
+                    //後期は月中で保険が変わっても通算で上限をかける
+                    KaikeiDetail.IsKouki && d.IsKouki
                 ).GroupBy(d => d.KogakuTekiyoKbn).ToList();
 
                 if (wrkDetails.Count() == 1)
@@ -1765,17 +1916,15 @@ namespace EmrCalculateApi.Futan.ViewModels
                     var tekiyoKbns = KaikeiTotalDetails.Where(d =>
                         (
                             d.HokenId == KaikeiDetail.HokenId ||
-
-                                //後期は月中で保険が変わっても通算で上限をかける
-                                KaikeiDetail.IsKouki && d.IsKouki
-
+                            //後期は月中で保険が変わっても通算で上限をかける
+                            KaikeiDetail.IsKouki && d.IsKouki
                         ) &&
                         (
                             KaikeiDetail.AgeKbn == AgeKbn.Elder ? d.KogakuTekiyoKbn != 0 : !new int[] { 0, 18, 28 }.Contains(d.KogakuTekiyoKbn)
                         ) &&
-
+                        (
                             !(d.RaiinNo == KaikeiDetail.RaiinNo && d.HokenPid == KaikeiDetail.HokenPid)
-
+                        )
                     )
                     .GroupBy(d => d.KogakuTekiyoKbn)
                     .Select(d => d.Key)
@@ -1829,14 +1978,14 @@ namespace EmrCalculateApi.Futan.ViewModels
 
             if (limitFutan > 0)
             {
+                //総医療費合計
+                int totalIryohi =
+                    _futancalcAggregate.GetTotalIryohi(
+                        KaikeiDetail.HokenPid * Convert.ToInt32(!totalCheck), KaikeiDetail.HokenId
+                    );
+
                 if (adjustFutan > 0)
                 {
-                    //総医療費合計
-                    int totalIryohi =
-                        _futancalcAggregate.GetTotalIryohi(
-                            KaikeiDetail.HokenPid * Convert.ToInt32(!totalCheck), KaikeiDetail.HokenId
-                        );
-
                     if (KaikeiDetail.IsTokurei)
                     {
                         //限度額特例
@@ -1867,6 +2016,35 @@ namespace EmrCalculateApi.Futan.ViewModels
                         limitFutan = limitFutan / 2;
                     }
                 }
+
+                //後期高齢２割 配慮措置
+                if (KaikeiDetail.KogakuKbn == 41 && !totalCheck && !PtKohis.Any(p => p.HokenSbtKbn == HokenSbtKbn.Choki))
+                {
+                    var kohiInf = PtKohis.FirstOrDefault();
+
+                    if (kohiInf == null ||
+                        (kohiInf.KogakuHairyoKbn == 1 && PtHoken.IsKokPrefOut) ||
+                        (kohiInf.KogakuHairyoKbn == 2 && PtHoken.IsKokPrefIn) ||
+                        (kohiInf.KogakuHairyoKbn == 3))
+                    {
+                        int wrkLimitFutan = 6000;
+                        int wrkAdjustFutan = 30000;
+
+                        if (totalIryohi > wrkAdjustFutan)
+                        {
+                            wrkLimitFutan =
+                                CIUtil.RoundInt(
+                                    wrkLimitFutan + (totalIryohi - wrkAdjustFutan) * 0.1, 0
+                                );
+
+                            if (limitFutan > wrkLimitFutan)
+                            {
+                                limitFutan = wrkLimitFutan;
+                            }
+                        }
+                    }
+                }
+
                 //上限額
                 if (totalCheck)
                 {
@@ -2030,6 +2208,12 @@ namespace EmrCalculateApi.Futan.ViewModels
                         {
                             KaikeiDetail.KogakuOverKbn =
                                 Convert.ToInt32(limitFutan > 0) + Convert.ToInt32(adjustFutan > 0);
+
+                            if (KaikeiDetail.KogakuKbn == 41 &&
+                                limitFutan % 10 >= 1)
+                            {
+                                KaikeiDetail.KogakuOverKbn = KogakuOverStatus.OverOneYen;
+                            }
                         }
 
                         int wrkBuf = limitFutan - wrkFutan;
@@ -2160,12 +2344,9 @@ namespace EmrCalculateApi.Futan.ViewModels
         private void CalculateKogakuTotal(int chokiLimit)
         {
             KaikeiDetail.AdjustKid =
-                PtKohis.Find(k => k.HokenSbtKbn == HokenSbtKbn.Bunten)?.HokenId ?? 0;
-            if (KaikeiDetail.AdjustKid == 0)
-            {
-                KaikeiDetail.AdjustKid =
-                    PtKohis.Find(k => k.HokenSbtKbn == HokenSbtKbn.Seiho)?.HokenId ?? 0;
-            }
+                PtKohis.Find(k => k.HokenSbtKbn == HokenSbtKbn.Bunten)?.HokenId ??
+                PtKohis.Find(k => k.HokenSbtKbn == HokenSbtKbn.Seiho)?.HokenId ??
+                PtKohis.Find(k => k.KogakuTotalExcFutan == 1)?.HokenId ?? 0;
 
             List<KaikeiDetailModel> totalDetails = new List<KaikeiDetailModel>(KaikeiDetails);
             totalDetails.Add(KaikeiDetail);
@@ -2211,9 +2392,7 @@ namespace EmrCalculateApi.Futan.ViewModels
                                 d.HokenId == KaikeiDetail.HokenId ||
                                 d.IsKouki && KaikeiDetail.IsKouki   //後期は月中で保険が変わっても通算で上限をかける
                             ) &&
-
-                                d.Kohi1Id == KaikeiDetail.Kohi1Id     //マル長を持つ保険パターンのみ集計する
-
+                            d.Kohi1Id == KaikeiDetail.Kohi1Id     //マル長を持つ保険パターンのみ集計する
                         )
                     .GroupBy(d => d.HokenPid).ToList().Count() >= 2 : false;
 
@@ -2483,9 +2662,7 @@ namespace EmrCalculateApi.Futan.ViewModels
                                             d.HokenId == KaikeiDetail.HokenId ||
                                             d.IsKouki && KaikeiDetail.IsKouki   //後期は月中で保険が変わっても通算で上限をかける
                                         ) &&
-
-                                            d.Kohi1Id == KaikeiDetail.Kohi1Id     //マル長を持つ保険パターンのみ集計する
-                                         &&
+                                        d.Kohi1Id == KaikeiDetail.Kohi1Id &&    //マル長を持つ保険パターンのみ集計する                                         
                                         d.Kohi1Houbetu == "102"
                                     );
 
@@ -3055,46 +3232,6 @@ namespace EmrCalculateApi.Futan.ViewModels
             );
 
             CalcLogs.Add(calcLog);
-        }
-    }
-
-    public struct SystemConfs
-    {
-        /// <summary>
-        /// 15更生があり異点数の場合のマル長の負担額
-        ///     0:公費負担額を含む
-        ///     1:社保/公費負担額を含む　　　国保/公費負担額を含まない
-        ///     2:社保/公費負担額を含まない　国保/公費負担額を含む
-        ///     3:公費負担額を含まない
-        /// </summary>
-        public int ChokiFutan { get; private set; }
-
-        /// <summary>
-        /// マル長計算オプション
-        ///     0:月単位
-        ///     1:日単位（公費負担額を含むのみ）
-        ///     2:社保/日単位　国保/月単位
-        ///     3:社保/月単位　国保/日単位     
-        /// </summary>
-        /// <remarks>
-        ///     公１が5000円上限、マル長10000円で、1日目にマル長上限に達して公1上限未満だった場合に、
-        ///     2日目以降に公1上限まで患者負担させるかどうか（月単位の場合は公1上限まで患者負担させる）
-        /// </remarks>
-        public int ChokiDateRange { get; private set; }
-
-        /// <summary>
-        /// 高額療養費の窓口負担まるめ設定
-        ///     0:1円単位
-        ///     1:10円単位(四捨五入)
-        ///     2:10円単位(切り捨て)
-        /// </summary>
-        public int RoundKogakuPtFutan { get; private set; }
-
-        public SystemConfs(int chokiFutan, int chokiDateRange, int roundKogakuPtFutan)
-        {
-            ChokiFutan = chokiFutan;
-            ChokiDateRange = chokiDateRange;
-            RoundKogakuPtFutan = roundKogakuPtFutan;
         }
     }
 }

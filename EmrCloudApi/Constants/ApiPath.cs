@@ -161,11 +161,13 @@
         public const string CheckedAfter327Screen = "CheckedAfter327Screen";
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
+        public const string GetSummaryInf = "GetSummaryInf";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
+        public const string UpsertUserConfList = "UpsertUserConfList";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -204,6 +206,7 @@
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
+        public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";

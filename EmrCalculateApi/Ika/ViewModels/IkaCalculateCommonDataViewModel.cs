@@ -12,6 +12,7 @@ using EmrCalculateApi.Constants;
 using Infrastructure.CommonDB;
 using PostgreDataContext;
 using Infrastructure.Interfaces;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -67,6 +68,10 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// 項目グループマスタのキャッシュ
         /// </summary>
         public List<ItemGrpMstModel> cacheItemGrpMst;
+        /// <summary>
+        /// 行為包括マスタ
+        /// </summary>
+        public List<KouiHoukatuMstModel> cacheKouiHoukatuMst;
         /// <summary>
         /// 医科計算ファインダー
         /// </summary>
@@ -261,8 +266,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             _calcLogModels = new List<CalcLogModel>();
 
             // マスタ管理クラス
-            _mstCommon = new IkaCalculateCommonMasterViewModel(_arg.masterFinder, _arg.hpId, _arg.sinDate, _arg.cacheTenMst, _arg.cacheDensiSanteiKaisu, _arg.cacheItemGrpMst, _systemConfigProvider, _emrLogger);
-            
+            _mstCommon = new IkaCalculateCommonMasterViewModel(_arg.masterFinder, _arg.hpId, _arg.sinDate, _arg.cacheTenMst, _arg.cacheDensiSanteiKaisu, _arg.cacheItemGrpMst, _arg.cacheKouiHoukatuMst, _systemConfigProvider, _emrLogger);
+
             _hokenPids = new List<int>();
 
             _syosaiList = new Dictionary<(long, int), double>();
@@ -314,20 +319,20 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// オーダーを計算用にコンバートする
         /// </summary>
         /// <param name="todayOdrInfModels"></param>
-        //public void CreatOdrCommon(List<TodayOdrInfModel> todayOdrInfModels)
-        //{
-        //    _odrCommon = new IkaCalculateCommonOdrDataViewModel(
-        //        todayOdrInfModels, _arg.raiinInf, _ptHokenPatternModels,
-        //        _arg.odrInfFinder, _arg.masterFinder, _arg.ikaCalculateFinder,
-        //        _mstCommon,
-        //        _arg.hpId, _arg.ptId, _arg.sinDate);
+        public void CreatOdrCommon(List<OrderInfo> todayOdrInfModels)
+        {
+            _odrCommon = new IkaCalculateCommonOdrDataViewModel(
+                todayOdrInfModels, _arg.raiinInf, _ptHokenPatternModels,
+                _arg.odrInfFinder, _arg.masterFinder, _arg.ikaCalculateFinder,
+                _mstCommon,
+                _arg.hpId, _arg.ptId, _arg.sinDate);
 
-        //    // 検査重複オーダー削除
-        //    DelKensa();
+            // 検査重複オーダー削除
+            DelKensa();
 
-        //    // 並び順を調整
-        //    SortOdrDtl();
-        //}
+            // 並び順を調整
+            SortOdrDtl();
+        }
 
         /// <summary>
         /// 検査重複オーダー削除
@@ -1759,7 +1764,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         else if (densiSanteiKaisu.TermSbt == 4)
                         {
                             //月
-                            startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount);
+                            startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount - 1);
                             sTerm = densiSanteiKaisu.TermCount.ToString() + "月";
                         }
                         else if (densiSanteiKaisu.TermSbt == 5)

@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.Accounting
             Result.Data = new GetAccountingResponse(outputData.SyunoSeikyuModels, outputData.TotalPoint,
                                                     outputData.KanFutan, outputData.TotalSelfExpense, outputData.Tax, outputData.AdjustFutan,
                                                     outputData.DebitBalance, outputData.SumAdjust, outputData.SumAdjustView,
-                                                    outputData.ThisCredit, outputData.ThisWari);
+                                                    outputData.ThisCredit, outputData.ThisWari, outputData.PayType, outputData.Comment, outputData.KohiInfModels);
             Result.Message = GetMessage(outputData.GetAccountingStatus);
             Result.Status = (int)outputData.GetAccountingStatus;
         }
