@@ -354,6 +354,7 @@ using UseCase.Receipt.Recalculation;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using UseCase.SystemConf.GetSystemConf;
 using UseCase.SystemConf.GetSystemConfList;
+using Interactor.CommonChecker.CommonMedicalCheck;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -471,6 +472,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IFamilyRepository, FamilyRepository>();
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
+            services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
         }
 
         private void SetupUseCase(IServiceCollection services)
