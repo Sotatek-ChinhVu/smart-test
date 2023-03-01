@@ -35,7 +35,7 @@ namespace Helper.Common
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            if (input.Length < endIndex)
+            if (endIndex < input.Length)
             {
                 return input.Substring(startIndex, endIndex);
             }
