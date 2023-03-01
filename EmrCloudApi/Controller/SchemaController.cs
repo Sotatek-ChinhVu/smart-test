@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.Insurance;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Schema;
 using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
@@ -35,11 +36,20 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SaveInsuranceScanImage)]
-        public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromQuery] SaveInsuranceScanRequest request)
+        public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromForm] IList<SaveInsuranceScanRequest> request)
         {
-            var input = new SaveInsuranceScanInputData(HpId, request.PtId, request.HokenGrp, request.HokenId, request.UrlOldImage, UserId, Request.Body);
+            var input = new SaveInsuranceScanInputData(HpId,
+                                                     UserId, 
+                                                     request.Select(x=> new InsuranceScanModel(
+                                                                    HpId, 
+                                                                    x.PtId , 
+                                                                    x.SeqNo,
+                                                                    x.HokenGrp, 
+                                                                    x.HokenId,
+                                                                    x.FileName,
+                                                                    x.File.OpenReadStream(), 
+                                                                    x.IsDeleted)));
             var output = _bus.Handle(input);
-
             var presenter = new SaveInsuranceScanPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
@@ -70,14 +80,6 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveListFilePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveListFileResponse>>(presenter.Result);
-        }
-
-
-        [AllowAnonymous]
-        [HttpPost("test-list-form-data")]
-        public IActionResult TestListFormData([FromForm] IList<TestFileRequest> request)
-        {
-            return Ok("ok");
         }
     }
 }

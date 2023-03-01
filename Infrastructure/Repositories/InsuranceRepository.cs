@@ -1502,13 +1502,9 @@ namespace Infrastructure.Repositories
             return TrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId)
+        public bool DeleteInsuranceScan(int hpId, long seqNo, int userId)
         {
-            var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == insuranceScan.HpId
-                                                                       && x.PtId == insuranceScan.PtId
-                                                                       && x.HokenGrp == insuranceScan.HokenGrp
-                                                                       && x.HokenId == insuranceScan.HokenId
-                                                                       && x.IsDeleted == DeleteStatus.None);
+            var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == hpId && x.SeqNo == seqNo && x.IsDeleted == DeleteStatus.None);
 
             if (model is null)
                 return false;
