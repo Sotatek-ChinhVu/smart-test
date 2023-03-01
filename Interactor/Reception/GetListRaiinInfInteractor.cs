@@ -1,7 +1,4 @@
 ﻿using Domain.Models.Reception;
-using Entity.Tenant;
-using System.Linq.Dynamic.Core.Tokenizer;
-using UseCase.Reception;
 using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetListRaiinInfs;
 
@@ -30,30 +27,29 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
             {
                 return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPtId);
             }
-            if(inputData.PageIndex < 1)
+            if (inputData.PageIndex < 1)
             {
                 return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPageIndex);
-            }    
-            if(inputData.PageSize < 0)
+            }
+            if (inputData.PageSize < 0)
             {
                 return new GetListRaiinInfOutputData(new(), GetListRaiinInfStatus.InvalidPageSize);
             }
 
-            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new ReceptionGetDto(
-                                                            item.HpId,
-                                                            item.PtId,
-                                                            item.SinDate,
-                                                            item.UketukeNo,
-                                                            item.Status,
-                                                            item.KaSname,
-                                                            item.SName,
-                                                            item.Houbetu,
-                                                            item.HokensyaNo,
-                                                            item.HokenKbn,
-                                                            item.HokenId,
-                                                            item.HokenPid,
-                                                            item.RaiinNo))
-                                                            .ToList();
+            var listRaiinInfos = GetListRaiinInfos(inputData.HpId, inputData.PtId, inputData.PageIndex, inputData.PageSize).Select(item => new GetListRaiinInfOutputItem(item.HpId,
+                                        item.PtId,
+                                        item.SinDate,
+                                        item.UketukeNo,
+                                        item.Status,
+                                        item.KaSname,
+                                        item.SName,
+                                        item.Houbetu,
+                                        item.HokensyaNo,
+                                        item.HokenKbn,
+                                        item.HokenId,
+                                        item.HokenPid,
+                                        item.RaiinNo))
+                                        .ToList();
             return new GetListRaiinInfOutputData(listRaiinInfos, GetListRaiinInfStatus.Success);
         }
         finally
@@ -62,22 +58,21 @@ public class GetListRaiinInfInteractor : IGetListRaiinInfInputPort
         }
     }
 
-    private List<ReceptionModel> GetListRaiinInfos(int hpId, long ptId, int pageIndex, int pageSize)
+    private List<GetListRaiinInfOutputItem> GetListRaiinInfos(int hpId, long ptId, int pageIndex, int pageSize)
     {
-        List<ReceptionModel> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId, pageIndex, pageSize).Select(x => new ReceptionModel(
-                                                      x.HpId,
-                                                      x.PtId,
-                                                      x.SinDate,
-                                                      x.UketukeNo,
-                                                      x.Status,
-                                                      x.KaSname,
-                                                      x.SName,
-                                                      x.Houbetu,
-                                                      x.HokensyaNo,
-                                                      x.HokenKbn,
-                                                      x.HokenId,
-                                                      x.HokenPid,
-                                                      x.RaiinNo)));
+        List<GetListRaiinInfOutputItem> result = new(_raiinInfRepository.GetListRaiinInf(hpId, ptId, pageIndex, pageSize).Select(x => new GetListRaiinInfOutputItem(x.HpId,
+                                                                               x.PtId,
+                                                                               x.SinDate,
+                                                                               x.UketukeNo,
+                                                                               x.Status,
+                                                                               x.KaSname,
+                                                                               x.SName,
+                                                                               x.Houbetu,
+                                                                               x.HokensyaNo,
+                                                                               x.HokenKbn,
+                                                                               x.HokenId,
+                                                                               x.HokenPid,
+                                                                               x.RaiinNo)));
         return result;
     }
 }

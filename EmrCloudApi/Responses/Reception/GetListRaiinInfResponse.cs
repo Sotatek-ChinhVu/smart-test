@@ -1,14 +1,13 @@
-﻿using UseCase.Reception;
-using UseCase.Reception.GetListRaiinInfs;
+﻿using UseCase.Reception.GetListRaiinInf;
 
 namespace EmrCloudApi.Tenant.Responses.Reception;
 
 public class GetListRaiinInfResponse
 {
-    public GetListRaiinInfResponse(List<ReceptionGetDto> raiinInfs)
+    public GetListRaiinInfResponse(List<GetListRaiinInfOutputItem> raiinInfs)
     {
         RaiinInfs = raiinInfs;
     }
 
-    public List<ReceptionGetDto> RaiinInfs { get; private set; } = new List<ReceptionGetDto>();
+    public List<GetListRaiinInfOutputItem> RaiinInfs { get; private set; } = new();
 }
