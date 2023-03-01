@@ -1,25 +1,22 @@
-﻿using Domain.Models.SetKbnMst;
+﻿using Domain.Models.SetGenerationMst;
+using Domain.Models.SetKbnMst;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories
 {
     public class SetKbnMstRepository : RepositoryBase, ISetKbnMstRepository
     {
-        public SetKbnMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly IMemoryCache _memoryCache;
+        public SetKbnMstRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
         {
+            _memoryCache = memoryCache;
         }
 
-        public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
+        private IEnumerable<SetKbnMstModel> ReloadCache()
         {
-            var setEntities = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
-
-            if (setEntities == null)
-            {
-                return new List<SetKbnMstModel>();
-            }
-
-            return setEntities.Select(s =>
+            var setKbnMstList = NoTrackingDataContext.SetKbnMsts.Where(s => s.HpId == 1 && s.IsDeleted == 0).Select(s =>
                     new SetKbnMstModel(
                         s.HpId,
                         s.SetKbn,
@@ -31,6 +28,21 @@ namespace Infrastructure.Repositories
                         s.GenerationId
                     )
                   ).ToList();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.Normal);
+            _memoryCache.Set(GetCacheKey(), setKbnMstList, cacheEntryOptions);
+
+            return setKbnMstList;
+        }
+
+        public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
+        {
+            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel> setKbnMstList))
+            {
+                setKbnMstList = ReloadCache();
+            }
+
+            return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
         }
 
         public void ReleaseResource()

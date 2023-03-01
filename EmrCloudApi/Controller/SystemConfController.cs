@@ -6,6 +6,8 @@ using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SystemConf.GetSystemConf;
+using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 
@@ -30,6 +32,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSystemConfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetSystemConfListResponse>> GetSystemConfList()
+        {
+            var input = new GetSystemConfListInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSystemConfListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSystemConfListResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetSystemConfForPrint)]

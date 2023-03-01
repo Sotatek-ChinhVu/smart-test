@@ -1,4 +1,5 @@
 ﻿using Entity.Tenant;
+using Helper.Common;
 
 namespace EmrCalculateApi.Futan.Models
 {
@@ -481,7 +482,20 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int KogakuLimit
         {
-            get { return KaikeiDetail.KogakuLimit; }
+            get
+            {
+                if (RoundTo10en)
+                {
+                    switch (RoundKogakuPtFutan)
+                    {
+                        case 1: //10円単位(四捨五入)
+                            return CIUtil.RoundInt(KaikeiDetail.KogakuLimit, 1);
+                        case 2: //10円単位(切り捨て)
+                            return (int)Math.Truncate((double)(KaikeiDetail.KogakuLimit) / 10) * 10;
+                    }
+                }
+                return KaikeiDetail.KogakuLimit;
+            }
             set
             {
                 if (KaikeiDetail.KogakuLimit == value) return;
@@ -495,7 +509,20 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int TotalKogakuLimit
         {
-            get { return KaikeiDetail.TotalKogakuLimit; }
+            get
+            {
+                if (RoundTo10en)
+                {
+                    switch (RoundKogakuPtFutan)
+                    {
+                        case 1: //10円単位(四捨五入)
+                            return CIUtil.RoundInt(KaikeiDetail.TotalKogakuLimit, 1);
+                        case 2: //10円単位(切り捨て)
+                            return (int)Math.Truncate((double)(KaikeiDetail.TotalKogakuLimit) / 10) * 10;
+                    }
+                }
+                return KaikeiDetail.TotalKogakuLimit;
+            }
             set
             {
                 if (KaikeiDetail.TotalKogakuLimit == value) return;
@@ -1657,6 +1684,14 @@ namespace EmrCalculateApi.Futan.Models
         /// True: 公費上限に達した
         /// </summary>
         public bool IsKohiLimitOver { get; set; }
+
+        /// <summary>
+        /// 高額療養費の窓口負担まるめ設定
+        ///     0:1円単位
+        ///     1:10円単位(四捨五入)
+        ///     2:10円単位(切り捨て)
+        /// </summary>
+        public int RoundKogakuPtFutan { get; set; }
 
         /// <summary>
         /// 公費番号の取得

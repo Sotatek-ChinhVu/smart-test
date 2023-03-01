@@ -8,12 +8,14 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -166,6 +168,31 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetInsuranceReceInfListResponse>>(presenter.Result);
     }
+
+    [HttpGet(ApiPath.GetDiseaseReceList)]
+    public ActionResult<Response<GetDiseaseReceListResponse>> GetDiseaseReceList([FromQuery] GetDiseaseReceListRequest request)
+    {
+        var input = new GetDiseaseReceListInputData(HpId, UserId, request.PtId, request.HokenId, request.SinYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetDiseaseReceListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetDiseaseReceListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Recalculation)]
+    public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
+    {
+        var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList, request.IsStopCalc);
+        var output = _bus.Handle(input);
+
+        var presenter = new RecalculationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<RecalculationResponse>>(presenter.Result);
+    }
+
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {

@@ -14,6 +14,7 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
+using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
@@ -59,6 +60,7 @@ namespace EmrCloudApi.Controllers
                     string.Empty,
                     b.HokenPid,
                     b.HosokuCmt,
+                    0,
                     0
                 )).ToList(), request.TodayOdrs.Select(
                     o => new OdrInfItemInputData(
@@ -323,6 +325,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSummaryInf)]
+        public ActionResult<Response<SummaryInfResponse>> GetSummaryInf([FromQuery] SummaryInfRequest request)
+        {
+            var input = new SummaryInfInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, UserId, request.InfoType);
+            var output = _bus.Handle(input);
+            var presenter = new SummaryInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SummaryInfResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetMaxAuditTrailLogDateForPrint)]

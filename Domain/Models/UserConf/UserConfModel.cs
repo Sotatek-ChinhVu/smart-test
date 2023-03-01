@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.UserConf;
+﻿using static Helper.Constants.UserConfConst;
+
+namespace Domain.Models.UserConf;
 
 public class UserConfModel
 {
@@ -23,4 +25,30 @@ public class UserConfModel
     public int Val { get; private set; }
 
     public string Param { get; private set; }
+
+    public UserConfStatus Validation()
+    {
+        if (GrpCd < 0)
+        {
+            return UserConfStatus.InvalidGrpCd;
+        }
+        if (GrpItemCd < 0)
+        {
+            return UserConfStatus.InvalidGrpItemCd;
+        }
+        if (GrpItemEdaNo < 0)
+        {
+            return UserConfStatus.InvalidGrpItemEdaNo;
+        }
+        if (Val < 0)
+        {
+            return UserConfStatus.InvalidVal;
+        }
+        if (Param.Length > 300)
+        {
+            return UserConfStatus.InvalidParam;
+        }
+
+        return UserConfStatus.Valid;
+    }
 }

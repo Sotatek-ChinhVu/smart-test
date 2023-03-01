@@ -37,5 +37,15 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.Prefix);
             return Ok();
         }
+
+        [HttpPost("RunTrialCalculate")]
+        public ActionResult RunTrialCalculate([FromBody] RunTraialCalculateRequest calculateRequest)
+        {
+            _ikaCalculate.RunTraialCalculate(
+                calculateRequest.OrderInfoList,
+                calculateRequest.Reception,
+                calculateRequest.CalcFutan);
+            return Ok();
+        }
     }
 }

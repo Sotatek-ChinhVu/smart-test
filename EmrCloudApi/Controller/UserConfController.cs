@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.UserConf;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.UserConf;
 using EmrCloudApi.Requests.UserConf;
 using EmrCloudApi.Responses;
@@ -9,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
 using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
+using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 
@@ -84,4 +86,29 @@ public class UserConfController : AuthorizeControllerBase
         return new ActionResult<Response<GetListMedicalExaminationConfigResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.UpsertUserConfList)]
+    public ActionResult<Response<UpsertUserConfListResponse>> UpsertUserConfList(UpsertUserConfListRequest request)
+    {
+        var input = new UpsertUserConfListInputData(HpId, UserId, request.userConfs.Select(u => ConvertToModel(UserId, u)).ToList());
+        var output = _bus.Handle(input);
+
+        var presenter = new UpsertUserConfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpsertUserConfListResponse>>(presenter.Result);
+    }
+
+    private static UserConfModel ConvertToModel(int userId, UserConfListItem userConfListItem)
+    {
+        var userConfModel = new UserConfModel(
+                userId,
+                userConfListItem.GrpCd,
+                userConfListItem.GrpItemCd,
+                userConfListItem.GrpItemEdaNo,
+                userConfListItem.Val,
+                userConfListItem.Param
+            );
+
+        return userConfModel;
+    }
 }

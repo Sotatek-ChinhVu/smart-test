@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SystemConf;
+using UseCase.SystemConf.GetSystemConf;
 using UseCase.SystemConf.Get;
 
 namespace Interactor.SystemConf
@@ -22,10 +23,6 @@ namespace Interactor.SystemConf
 
                 var result = _systemConfRepository.GetByGrpCd(inputData.HpId, inputData.GrpCd, inputData.GrpEdaNo);
                 return new GetSystemConfOutputData(result, GetSystemConfStatus.Successed);
-            }
-            catch
-            {
-                return new GetSystemConfOutputData(GetSystemConfStatus.Failed);
             }
             finally
             {

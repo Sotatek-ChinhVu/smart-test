@@ -9,6 +9,8 @@ public interface ISystemConfRepository : IRepositoryBase
 
     SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo);
 
+    List<SystemConfModel> GetAllSystemConfig(int hpId);
+
     double GetSettingValue(int groupCd, int grpEdaNo, int hpId);
 
     string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");

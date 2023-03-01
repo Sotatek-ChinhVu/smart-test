@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.Reception
 {
     public class GetReceptionDefaultResponse
     {
-        public GetReceptionDefaultResponse(ReceptionModel data)
+        public GetReceptionDefaultResponse(ReceptionDto data)
         {
             Data = data;
         }
 
-        public ReceptionModel Data { get; private set; }
+        public ReceptionDto Data { get; private set; }
     }
 }

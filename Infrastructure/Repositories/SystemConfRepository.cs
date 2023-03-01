@@ -28,6 +28,21 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
     }
 
+    public List<SystemConfModel> GetAllSystemConfig(int hpId)
+    {
+        var result = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId)
+                                                      .Select(item => new SystemConfModel(
+                                                                          item.GrpCd,
+                                                                          item.GrpEdaNo,
+                                                                          item.Val,
+                                                                          item.Param ??
+                                                                          string.Empty,
+                                                                          item.Biko ??
+                                                                          string.Empty))
+                                                      .ToList();
+        return result;
+    }
+
     public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
         var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
@@ -79,4 +94,5 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         DisposeDataContext();
     }
+
 }

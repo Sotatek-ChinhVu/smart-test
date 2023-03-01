@@ -1376,7 +1376,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(KasanItemls);
             //見つかったら、項目を算定する
-            if (minIndex >= 0)
+            while (minIndex >= 0)
             {
                 if (odrDtls.First().HokenPid == _common.syosaiPid)
                 {
@@ -1393,11 +1393,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                         }
                     }
                     //オーダーから削除
-                    while (minIndex >= 0)
-                    {
-                        _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
-                        (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(KasanItemls);
-                    }
+                    _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
+                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(KasanItemls);
+                }
+                else
+                {
+                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(KasanItemls, minIndex + itemCnt);
                 }
             }
         }
@@ -1473,7 +1474,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(Kasanls);
                 //見つかったら、項目を算定する
-                if (minIndex >= 0)
+                while (minIndex >= 0)
                 {
                     if (odrDtls.First().HokenPid != _common.syosaiPid)
                     {
@@ -1501,11 +1502,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                         } 
                     }
                     //オーダーから削除
-                    while (minIndex >= 0)
-                    {
-                        _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
-                        (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(Kasanls);
-                    }
+                    _common.Odr.odrDtlls.RemoveRange(minIndex, itemCnt);
+                    (odrDtls, minIndex, itemCnt) = _common.Odr.FilterOdrDetailRangeByItemCd(Kasanls);
                 }
             }
         }

@@ -5,15 +5,10 @@ using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Helper.Mapping;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Insurance.ValidateInsurance;
-using UseCase.OrdInfs.ValidationInputItem;
 
 namespace Interactor.Insurance
 {
@@ -33,14 +28,14 @@ namespace Interactor.Insurance
             {
                 //convert inputData ValidateInsuranceDto -> ValidateInsuranceModel 
                 var listValidateInsuranceModel = new List<ValidateInsuranceModel>();
-                if(inputData.ListDataModel.Any())
+                if (inputData.ListDataModel.Any())
                 {
                     foreach (var item in inputData.ListDataModel)
                     {
                         var itemValidateInsurance = ConvertModelToDto(item, inputData.SinDate);
                         listValidateInsuranceModel.Add(itemValidateInsurance);
                     }
-                }    
+                }
                 var listValidateData = new List<ValidateInsuranceListItem>();
                 var itemListValidate = new List<ValidateInsuranceItem>();
                 // check validate Input

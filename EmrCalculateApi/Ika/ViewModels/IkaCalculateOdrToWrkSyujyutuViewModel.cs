@@ -218,7 +218,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                                             // 年齢加算自動算定
                                             if (_common.AppendNewWrkSinKouiDetailAgeKasan(odrDtl, filteredOdrDtl) == false)
                                             {
-                                                if (odrDtl.IsKihonKoumoku)
+                                                if (odrDtl.IsKihonKoumoku && odrDtl.SanteiItemCd != ItemCdConst.NoSantei)
                                                 {
                                                     //AgeKasan(i, filteredOdrDtl);
                                                     checkAgeKasan = true;

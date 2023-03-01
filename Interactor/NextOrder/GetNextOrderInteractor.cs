@@ -52,7 +52,7 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
                 return new GetNextOrderOutputData(GetNextOrderStatus.InvalidUserId);
             }
 
-            var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
+            var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, inputData.SinDate, false).ToList();
 
             var byomeis = _nextOrderRepository.GetByomeis(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.RsvkrtKbn);
             var orderInfs = _nextOrderRepository.GetOrderInfs(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.SinDate, inputData.UserId);
