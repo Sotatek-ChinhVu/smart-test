@@ -178,7 +178,7 @@ namespace Infrastructure.Repositories
             int kouiKbnCd = 0;
             if (currentKubunKouiList != null && currentKubunKouiList.Any())
             {
-                currentKubunKouiList.Max(x => x.KouiKbnId);
+                currentKubunKouiList?.Max(x => x.KouiKbnId);
             }
             int itemSeqNo = 0;
             if (currentKubunItemList != null && currentKubunItemList.Any())
