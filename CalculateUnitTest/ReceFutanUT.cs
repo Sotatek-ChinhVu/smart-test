@@ -93,7 +93,8 @@ namespace CalculateUnitTest
                         EnTen = 10,
                         FutanKbn = 1,
                         FutanRate = 30
-                    }
+                    },
+                    27
                 )
             );
             //公費

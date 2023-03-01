@@ -1,8 +1,6 @@
-﻿using Domain.Constant;
-using Domain.Models.HokenMst;
+﻿using Domain.Models.HokenMst;
 using Domain.Models.InsuranceMst;
-using Helper.Common;
-using Helper.Extension;
+using Helper.Constants;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
