@@ -3,7 +3,11 @@
     public enum ConvertFromHistoryTodayOrderStatus : byte
     {
         Successed = 1,
-        InputNotData,
-        Failed
+        InvalidHpId,
+        InvalidSinDate,
+        InvalidRaiinNo,
+        InvalidUserId,
+        InvalidPtId,
+        InputNoData
     }
 }

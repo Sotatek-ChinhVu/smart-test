@@ -1,16 +1,17 @@
 ﻿using UseCase.Core.Sync.Core;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace UseCase.MedicalExamination.ConvertFromHistoryTodayOrder
 {
     public class ConvertFromHistoryTodayOrderOutputData : IOutputData
     {
-        public ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus status, Dictionary<string, string> checkedItemNames)
+        public ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus status, List<OdrInfItem> odrInfItems)
         {
             Status = status;
-            CheckedItemNames = checkedItemNames;
+            OdrInfItems = odrInfItems;
         }
 
         public ConvertFromHistoryTodayOrderStatus Status { get; private set; }
-        public Dictionary<string, string> CheckedItemNames { get; private set; }
+        public List<OdrInfItem> OdrInfItems { get; private set; }
     }
 }
