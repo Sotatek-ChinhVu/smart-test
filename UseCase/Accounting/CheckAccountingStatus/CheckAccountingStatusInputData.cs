@@ -5,7 +5,7 @@ namespace UseCase.Accounting.CheckAccountingStatus
 {
     public class CheckAccountingStatusInputData : IInputData<CheckAccountingStatusOutputData>
     {
-        public CheckAccountingStatusInputData(int hpId, long ptId, int sinDate, long raiinNo, int debitBalance, int sumAdjust, int thisCredit, int wari, bool isDisCharge, bool isDeletedSyuno, bool isSaveAccounting, List<SyunoSeikyuModel> syunoSeikyus)
+        public CheckAccountingStatusInputData(int hpId, long ptId, int sinDate, long raiinNo, int debitBalance, int sumAdjust, int thisCredit, int wari, bool isDisCharge, bool isDeletedSyuno, bool isSaveAccounting, List<SyunoSeikyuModel> syunoSeikyus, List<SyunoSeikyuModel> allSyunoSeiKyus)
         {
             HpId = hpId;
             PtId = ptId;
@@ -17,8 +17,9 @@ namespace UseCase.Accounting.CheckAccountingStatus
             Wari = wari;
             IsDisCharge = isDisCharge;
             IsDeletedSyuno = isDeletedSyuno;
-            SyunoSeikyus = syunoSeikyus;
             IsSaveAccounting = isSaveAccounting;
+            SyunoSeikyus = syunoSeikyus;
+            AllSyunoSeiKyus = allSyunoSeiKyus;
         }
 
         public int HpId { get; private set; }
@@ -33,5 +34,6 @@ namespace UseCase.Accounting.CheckAccountingStatus
         public bool IsDeletedSyuno { get; private set; }
         public bool IsSaveAccounting { get; private set; }
         public List<SyunoSeikyuModel> SyunoSeikyus { get; private set; }
+        public List<SyunoSeikyuModel> AllSyunoSeiKyus { get; private set; }
     }
 }

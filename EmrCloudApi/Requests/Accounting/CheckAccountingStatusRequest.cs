@@ -15,6 +15,7 @@ namespace EmrCloudApi.Requests.Accounting
         public bool IsDisCharge { get; set; }
         public bool IsDeletedSyuno { get; set; }
         public bool IsSaveAccounting { get; set; }
-        public List<SyunoSeikyuModel> SyunoSeikyus { get; set; }
+        public List<SyunoSeikyuModel> SyunoSeikyus { get; set; } = new();
+        public List<SyunoSeikyuModel> AllSyunoSeiKyus { get; set; } = new();
     }
 }

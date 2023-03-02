@@ -21,11 +21,14 @@ namespace Interactor.Accounting
         {
             try
             {
+                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
+
+                var syunoSeikyusChecking = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos);
+
                 //CloseWindowWhenSyunoDeleted
                 if (inputData.IsDeletedSyuno)
                 {
-                    var syunoIsdeleled = CheckSyunoDeleted(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-                    if (syunoIsdeleled)
+                    if (syunoSeikyusChecking == null)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.StateChanged);
                     }
@@ -35,26 +38,22 @@ namespace Interactor.Accounting
                     }
                 }
 
-
-                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-
-                var syunoSeikyusChecking = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos);
-
                 var allSyunoSeikyusChecking = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos, true);
 
                 //CheckAccounting when is DisChargeClick
                 if (inputData.IsDisCharge)
                 {
-                    var syunoIsdeleled = CheckSyunoDeleted(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-                    if (syunoIsdeleled)
+                    if (syunoSeikyusChecking == null)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
-                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
+
+                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, inputData.AllSyunoSeiKyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
                     if (syunoChanged)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
+
                     var accDue = 0;
                     var setting = _systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
                     if (!setting)
@@ -78,17 +77,18 @@ namespace Interactor.Accounting
                 //CheckAccounting when save
                 if (inputData.IsSaveAccounting)
                 {
-                    var syunoIsdeleled = CheckSyunoDeleted(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-                    if (syunoIsdeleled)
+                    if (syunoSeikyusChecking == null)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
 
-                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
+                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, inputData.AllSyunoSeiKyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
+
                     if (syunoChanged)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
+
                     if (inputData.ThisCredit < 0)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.ValidThisCredit);
@@ -96,7 +96,7 @@ namespace Interactor.Accounting
 
                     var accDue = 0;
                     var setting = _systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
-                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, true))
+                    if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari))
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.ValidPaymentAmount);
                     }
@@ -118,12 +118,7 @@ namespace Interactor.Accounting
             }
         }
 
-        private bool CheckSyunoDeleted(int hpId, long ptId, long raiinNo)
-        {
-            return _accountingRepository.CheckRaiinInfExist(hpId, ptId, raiinNo);
-        }
-
-        private bool CheckSyunoChanged(int hpId, long ptId, int sinDate, long raiinNo, List<SyunoSeikyuModel> currentList, List<SyunoSeikyuModel> syunoSeikyusChecking, List<SyunoSeikyuModel> allSyunoSeikyusChecking)
+        private bool CheckSyunoChanged(int hpId, long ptId, int sinDate, long raiinNo, List<SyunoSeikyuModel> currentList, List<SyunoSeikyuModel> allCurrentSyuno, List<SyunoSeikyuModel> syunoSeikyusChecking, List<SyunoSeikyuModel> allSyunoSeikyusChecking)
         {
 
             if (CheckSyunoDifferent(currentList, syunoSeikyusChecking))
@@ -131,7 +126,7 @@ namespace Interactor.Accounting
                 return true;
             }
 
-            if (CheckSyunoDifferent(currentList, allSyunoSeikyusChecking))
+            if (CheckSyunoDifferent(allCurrentSyuno, allSyunoSeikyusChecking))
             {
                 return true;
             }
