@@ -173,7 +173,9 @@ namespace Infrastructure.Repositories
                 tenMst?.SanteiItemCd ?? string.Empty,
                 tenMst?.OdrTermVal ?? 0,
                 tenMst?.CnvTermVal ?? 0,
-                tenMst?.DefaultVal ?? 0
+                tenMst?.DefaultVal ?? 0,
+                tenMst?.Kokuji1 ?? string.Empty,
+                tenMst?.Kokuji2 ?? string.Empty
             );
         }
 
@@ -220,7 +222,9 @@ namespace Infrastructure.Repositories
                 tenMst.SanteiItemCd ?? string.Empty,
                 tenMst.OdrTermVal,
                 tenMst.CnvTermVal,
-                tenMst.DefaultVal
+                tenMst.DefaultVal,
+                tenMst.Kokuji1 ?? string.Empty,
+                tenMst.Kokuji2 ?? string.Empty
             )).ToList();
         }
 
@@ -637,7 +641,9 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.SanteiItemCd ?? string.Empty,
                                                            item.TenMst?.OdrTermVal ?? 0,
                                                            item.TenMst?.CnvTermVal ?? 0,
-                                                           item.TenMst?.DefaultVal ?? 0
+                                                           item.TenMst?.DefaultVal ?? 0,
+                                                           item.TenMst?.Kokuji1 ?? string.Empty,
+                                                           item.TenMst?.Kokuji2 ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -729,7 +735,9 @@ namespace Infrastructure.Repositories
                                                            item.SanteiItemCd ?? string.Empty,
                                                            item.OdrTermVal,
                                                            item.CnvTermVal,
-                                                           item.DefaultVal
+                                                           item.DefaultVal,
+                                                           item.Kokuji1 ?? string.Empty,
+                                                           item.Kokuji2 ?? string.Empty
                                                            )).ToList();
             }
 
@@ -888,7 +896,9 @@ namespace Infrastructure.Repositories
                     entity?.SanteiItemCd ?? string.Empty,
                     entity?.OdrTermVal ?? 0,
                     entity?.CnvTermVal ?? 0,
-                    entity?.DefaultVal ?? 0
+                    entity?.DefaultVal ?? 0,
+                    entity?.Kokuji1 ?? string.Empty,
+                    entity?.Kokuji2 ?? string.Empty
                );
         }
 
@@ -939,7 +949,9 @@ namespace Infrastructure.Repositories
                     entity.SanteiItemCd ?? string.Empty,
                     entity.OdrTermVal,
                     entity.CnvTermVal,
-                    entity.DefaultVal
+                    entity.DefaultVal,
+                    entity.Kokuji1 ?? string.Empty,
+                    entity.Kokuji2 ?? string.Empty
                )).ToList();
         }
 
@@ -989,7 +1001,9 @@ namespace Infrastructure.Repositories
                     entity.SanteiItemCd ?? string.Empty,
                     entity.OdrTermVal,
                     entity.CnvTermVal,
-                    entity.DefaultVal
+                    entity.DefaultVal,
+                    entity.Kokuji1 ?? string.Empty,
+                    entity.Kokuji2 ?? string.Empty
                )).ToList();
         }
 
@@ -1359,7 +1373,9 @@ namespace Infrastructure.Repositories
                         tenMst?.SanteiItemCd ?? string.Empty,
                         0,
                         0,
-                        tenMst?.DefaultVal ?? 0
+                        tenMst?.DefaultVal ?? 0,
+                        tenMst?.Kokuji1 ?? string.Empty,
+                        tenMst?.Kokuji2 ?? string.Empty
                         );
         }
 
