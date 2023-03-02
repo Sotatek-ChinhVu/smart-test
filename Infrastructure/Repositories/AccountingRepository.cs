@@ -1122,6 +1122,9 @@ namespace Infrastructure.Repositories
                     syuno.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     syuno.UpdateId = userId;
                     syuno.NyukinDate = item.SinDate;
+
+                    UpdateStatusRaiinInf(userId, item, raiinInLists);
+                    UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
 
             }
