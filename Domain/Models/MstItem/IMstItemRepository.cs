@@ -34,15 +34,19 @@ namespace Domain.Models.MstItem
 
         List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate);
 
+        List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds);
+
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
+
+        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int minSinDate, int maxSinDate, int grpSbt, List<long> itemGrpCds);
 
         List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId);
 
         bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId);
 
-        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
+        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
 
         List<string> GetCheckItemCds(List<string> itemCds);
 

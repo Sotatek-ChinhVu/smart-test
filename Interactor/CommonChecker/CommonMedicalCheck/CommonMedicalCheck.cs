@@ -102,6 +102,67 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listUnitCheckErrorInfo;
     }
 
+    public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> listCheckingOrder, RealTimeCheckerCondition checkerCondition)
+    {
+        _hpID = hpId;
+        _ptID = ptId;
+        _sinday = sinday;
+        CheckerCondition = checkerCondition;
+        List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listErrorOfAllOrder = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();
+        List<OrdInfoModel> listOrderError = new List<OrdInfoModel>();
+        List<OrdInfoModel> tempCurrentListOdr = new();
+
+        listCheckingOrder.ForEach((order) =>
+        {
+            List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> checkedOrderResult = GetErrorFromOrder(tempCurrentListOdr, order);
+
+            if (checkedOrderResult.Count > 0)
+            {
+                listErrorOfAllOrder.AddRange(checkedOrderResult);
+                listOrderError.Add(order);
+            }
+
+            tempCurrentListOdr.Add(order);
+        });
+
+        var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
+
+        foreach (var checkListOrderResult in checkListOrderResultList)
+        {
+            var notExistErrorOrderList = checkListOrderResult.ErrorOrderList.Where(o => !listOrderError.Contains(o)).ToList();
+            if (notExistErrorOrderList.Count > 0)
+            {
+                listOrderError.AddRange(notExistErrorOrderList);
+            }
+        }
+
+        List<UnitCheckInfoModel> listUnitCheckErrorInfo = new List<UnitCheckInfoModel>();
+        listErrorOfAllOrder.ForEach((error) =>
+        {
+            listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
+            {
+                CheckerType = error.CheckerType,
+                ErrorInfo = error.ErrorInfo,
+                IsError = error.IsError,
+                PtId = error.PtId,
+                Sinday = error.Sinday,
+            });
+        });
+
+        foreach (var error in checkListOrderResultList)
+        {
+            listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
+            {
+                CheckerType = error.CheckerType,
+                ErrorInfo = error.ErrorInfo,
+                IsError = error.IsError,
+                PtId = error.PtId,
+                Sinday = error.Sinday,
+            });
+        }
+        return listUnitCheckErrorInfo;
+    }
+
     private List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromOrder(List<OrdInfoModel> currentListOdr, OrdInfoModel checkingOrder)
     {
         List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerResult<OrdInfoModel, OrdInfoDetailModel>>();

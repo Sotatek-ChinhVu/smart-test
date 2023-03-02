@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
                 using var transaction = TrackingDataContext.Database.BeginTransaction();
 
                 // Insert RaiinInf
-                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId);
+                var raiinInf = CreateNewRaiinInf(new ReceptionModel(dto.Reception), hpId, userId);
                 TrackingDataContext.RaiinInfs.Add(raiinInf);
                 TrackingDataContext.SaveChanges();
 
@@ -191,7 +191,7 @@ namespace Infrastructure.Repositories
                 return false;
             }
 
-            UpdateRaiinInfIfChanged(raiinInf, dto.Reception);
+            UpdateRaiinInfIfChanged(raiinInf, new ReceptionModel(dto.Reception));
             UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
             SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
             // Update insurances and diseases
