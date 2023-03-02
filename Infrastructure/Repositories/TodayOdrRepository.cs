@@ -2168,6 +2168,7 @@ namespace Infrastructure.Repositories
 
             foreach (var checkingOdr in addingOdrList)
             {
+                var index = odrInfs.FindIndex(o => o.Equals(checkingOdr));
                 var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
                                                      && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
                                                      && odrInf.InoutKbn == checkingOdr?.InoutKbn
@@ -2274,11 +2275,11 @@ namespace Infrastructure.Repositories
                                 if (checkGroupOrder != null)
                                 {
                                     checkingOdr.Delete();
-                                    result.Add(new(odrInfIndex, checkingOdr));
+                                    result.Add(new(index, checkingOdr));
                                 }
                             }
                             detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                            result.Add(new(odrInfIndex, checkingOdr));
+                            result.Add(new(index, checkingOdr));
                         }
                         else
                         {
@@ -2443,13 +2444,13 @@ namespace Infrastructure.Repositories
 
                             result.Add(new(-1, odrInf));
                             checkingOdr.Delete();
-                            result.Add(new(odrInfIndex, checkingOdr));
+                            result.Add(new(index, checkingOdr));
                         }
                     }
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
-                        result.Add(new(odrInfIndex, checkingOdr));
+                        result.Add(new(index, checkingOdr));
                     }
                     odrInfDetailIndex++;
                 }
