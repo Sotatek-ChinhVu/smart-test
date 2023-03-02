@@ -160,6 +160,7 @@
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
+        public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

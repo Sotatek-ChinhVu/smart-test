@@ -5,7 +5,7 @@ namespace UseCase.MedicalExamination.ConvertFromHistoryTodayOrder
 {
     public class ConvertFromHistoryTodayOrderInputData : IInputData<ConvertFromHistoryTodayOrderOutputData>
     {
-        public ConvertFromHistoryTodayOrderInputData(int hpId, int sinDate, long raiinNo, long userId, long ptId, List<OrdInfModel> historyOdrInfModels)
+        public ConvertFromHistoryTodayOrderInputData(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
             HpId = hpId;
             SinDate = sinDate;
@@ -21,7 +21,7 @@ namespace UseCase.MedicalExamination.ConvertFromHistoryTodayOrder
 
         public long RaiinNo { get; private set; }
 
-        public long UserId { get; private set; }
+        public int UserId { get; private set; }
 
         public long PtId { get; private set; }
 

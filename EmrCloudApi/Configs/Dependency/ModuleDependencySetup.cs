@@ -219,6 +219,7 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
@@ -263,6 +264,7 @@ using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.GetListPatient;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
@@ -289,6 +291,7 @@ using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -330,6 +333,8 @@ using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.SystemConf.GetSystemConf;
+using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
@@ -350,10 +355,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Receipt.Recalculation;
-using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-using UseCase.SystemConf.GetSystemConf;
-using UseCase.SystemConf.GetSystemConfList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -583,10 +584,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
             busBuilder.RegisterUseCase<SummaryInfInputData, SummaryInfInteractor>();
-
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
             busBuilder.RegisterUseCase<GetHistoryIndexInputData, GetHistoryIndexInteractor>();
+            busBuilder.RegisterUseCase<ConvertFromHistoryTodayOrderInputData, ConvertFromHistoryToTodayOdrInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

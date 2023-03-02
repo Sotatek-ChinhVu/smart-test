@@ -1,6 +1,8 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
@@ -13,14 +15,13 @@ using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
-using EmrCloudApi.Realtime;
-using EmrCloudApi.Messages;
 
 namespace EmrCloudApi.Controller
 {
@@ -429,6 +430,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertFromHistoryToTodayOrder)]
+        public ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>> ConvertFromHistoryToTodayOrder([FromBody] ConvertFromHistoryToTodayOrderRequest request)
+        {
+            var input = new ConvertFromHistoryTodayOrderInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.HistoryOdrInfModels);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertFromHistoryToTodayOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>>(presenter.Result);
         }
     }
 }
