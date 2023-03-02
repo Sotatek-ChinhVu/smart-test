@@ -13,8 +13,21 @@ namespace Domain.Models.RaiinKubunMst
 
         public bool IsDeleted { get; private set; }
 
+        public int MaxKbnCd { get; private set; }
+
         public List<RaiinKubunDetailModel> RaiinKubunDetailModels { get; private set; }
 
+        public RaiinKubunMstModel(int hpId, int groupId, int sortNo, string groupName, bool isDeleted, int maxKbnCd, List<RaiinKubunDetailModel> raiinKubunDetailModels)
+        {
+            HpId = hpId;
+            GroupId = groupId;
+            SortNo = sortNo;
+            GroupName = groupName;
+            IsDeleted = isDeleted;
+            MaxKbnCd = maxKbnCd;
+            RaiinKubunDetailModels = raiinKubunDetailModels;
+        }
+        
         public RaiinKubunMstModel(int hpId, int groupId, int sortNo, string groupName, bool isDeleted, List<RaiinKubunDetailModel> raiinKubunDetailModels)
         {
             HpId = hpId;
