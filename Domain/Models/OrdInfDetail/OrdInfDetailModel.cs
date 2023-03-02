@@ -421,6 +421,11 @@ namespace Domain.Models.OrdInfDetails
 
         public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
 
+        public bool IsDrugOrInjection
+        {
+            get => DrugKbn == 1 || DrugKbn == 4 || DrugKbn == 6;
+        }
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
