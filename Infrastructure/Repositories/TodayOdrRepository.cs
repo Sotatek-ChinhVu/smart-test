@@ -1999,6 +1999,7 @@ namespace Infrastructure.Repositories
             }
             return (syohoKbn, syohoLimitKbn);
         }
+
         public static double CorrectTermVal(int unitSbt, TenMst tenMst, double originTermVal)
         {
             if (tenMst == null || (string.IsNullOrEmpty(tenMst.ItemCd) && tenMst.StartDate == 0 && tenMst.HpId == 0)) return 0;

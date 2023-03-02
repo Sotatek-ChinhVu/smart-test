@@ -1,4 +1,5 @@
-﻿using Domain.Models.Family;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.Family;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -8,6 +9,7 @@ using Domain.Models.RsvInf;
 using Domain.Models.Santei;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.UserConf;
 using Helper.Common;
 using Helper.Constants;
@@ -42,6 +44,7 @@ namespace Interactor.MedicalExamination
         private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
         private readonly IUserConfRepository _userConfRepository;
         private readonly IRsvInfRepository _rsvInfRepository;
+        private readonly ISummaryInfRepository _summaryInfRepository;
         private Dictionary<string, string> _relationship = new();
         private List<SummaryInfItem> _header1Infos = new();
         private List<SummaryInfItem> _header2Infos = new();
@@ -49,7 +52,7 @@ namespace Interactor.MedicalExamination
         private List<PopUpNotificationItem> _notificationPopUps = new();
         private List<UserConfModel> _listNotifiProperty = new List<UserConfModel>();
 
-        public SummaryInfInteractor(IPatientInforRepository patientInfAddressRepository, IPatientInforRepository patientInfPhoneRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfPhysicalRepository, IImportantNoteRepository importantNotePathologicalInflectionRepository, IImportantNoteRepository importantNoteDrugInfElseRepository, IImportantNoteRepository importantNoteInteractionOtherDrugRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfReproductionRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfLifeHistoryRepository, IImportantNoteRepository importantNoteDrugInfAlgryFoodRepository, IImportantNoteRepository importantNoteDrugInfAlgryDrugRepository, IImportantNoteRepository importantNoteInteractionOtcDrugRepository, IImportantNoteRepository importantNoteInteractionSuppleDrugRepository, IImportantNoteRepository importantNotePathologicalRekiRepository)
+        public SummaryInfInteractor(IPatientInforRepository patientInfAddressRepository, IPatientInforRepository patientInfPhoneRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfPhysicalRepository, IImportantNoteRepository importantNotePathologicalInflectionRepository, IImportantNoteRepository importantNoteDrugInfElseRepository, IImportantNoteRepository importantNoteInteractionOtherDrugRepository, ISanteiInfRepository santeiInfRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IUserConfRepository userConfRepository, IFamilyRepository familyRepository, IRsvInfRepository rsvInfRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfReproductionRepository, SpecialNotePatienInfDomain.IPatientInfoRepository specialNotePatientInfLifeHistoryRepository, IImportantNoteRepository importantNoteDrugInfAlgryFoodRepository, IImportantNoteRepository importantNoteDrugInfAlgryDrugRepository, IImportantNoteRepository importantNoteInteractionOtcDrugRepository, IImportantNoteRepository importantNoteInteractionSuppleDrugRepository, IImportantNoteRepository importantNotePathologicalRekiRepository, ISummaryInfRepository summaryInfRepository)
         {
             _patientInfAddressRepository = patientInfAddressRepository;
             _patientInfPhoneRepository = patientInfPhoneRepository;
@@ -71,6 +74,7 @@ namespace Interactor.MedicalExamination
             _importantNoteDrugInfAlgryDrugRepository = importantNoteDrugInfAlgryDrugRepository;
             _importantNoteInteractionOtcDrugRepository = importantNoteInteractionOtcDrugRepository;
             _importantNoteInteractionSuppleDrugRepository = importantNoteInteractionSuppleDrugRepository;
+            _summaryInfRepository = summaryInfRepository;
         }
 
         public SummaryInfOutputData Handle(SummaryInfInputData inputData)
@@ -163,6 +167,12 @@ namespace Interactor.MedicalExamination
                 _notifications = GetNotification(hpId, ptId, sinDate, userId);
                 _notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
             }
+            else if (infoType == InfoType.SumaryInfo)
+            {
+                header1Property = _userConfRepository.GetSettingParam(hpId, userId, 913);
+                listUserconfig = _userConfRepository.GetList(hpId, userId, 914).ToList();
+            }
+
             var objKey = new object();
             Parallel.ForEach(header1Property, propertyCd =>
             {
@@ -404,9 +414,10 @@ namespace Interactor.MedicalExamination
         private SummaryInfItem GetSummaryInfo(int hpId, long ptId, int sinDate, string propertyCd, int headerType, long raiinNo, InfoType infoType = InfoType.PtHeaderInfo)
         {
             SummaryInfItem summaryInfItem = new SummaryInfItem();
-
             GetData(hpId, ptId, sinDate, propertyCd, ref summaryInfItem);
-
+            int grpItemCd = 0;
+            string headerName = "";
+            string headerInf = "";
             if (infoType == InfoType.PtHeaderInfo)
             {
                 switch (propertyCd)
@@ -424,6 +435,38 @@ namespace Interactor.MedicalExamination
                         //家族歴
                         break;
                 }
+            }
+            else if (infoType == InfoType.SumaryInfo)
+            {
+                switch (propertyCd)
+                {
+                    case "C":
+                        //"サマリー";
+                        grpItemCd = 12;
+                        headerName = "◆サマリー";
+                        var summaryInf = _summaryInfRepository.Get(hpId, ptId);
+                        if (summaryInf != null && !string.IsNullOrEmpty(summaryInf.Text))
+                        {
+                            headerInf = summaryInf.Text;
+                        }
+                        break;
+                    case "D":
+                        // "電話番号";
+                        summaryInfItem = GetPhoneNumber(hpId, ptId);
+                        grpItemCd = 13;
+                        break;
+                    case "E":
+                        //"受付コメント";
+                        summaryInfItem = GetReceptionComment(hpId, ptId, sinDate, raiinNo);
+                        grpItemCd = 14;
+                        break;
+                    case "F":
+                        GetFamilyList(hpId, ptId, sinDate);
+                        grpItemCd = 15;
+                        //家族歴
+                        break;
+                }
+                summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
             }
 
             summaryInfItem = summaryInfItem.ChangePropertyColor("000000");

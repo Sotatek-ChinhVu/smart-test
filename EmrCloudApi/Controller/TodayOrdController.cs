@@ -14,6 +14,7 @@ using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedItemName;
@@ -431,6 +432,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckedExpired)]
+        public ActionResult<Response<CheckedExpiredResponse>> CheckedExpired([FromBody] CheckedExpiredRequest request)
+        {
+            var input = new CheckedExpiredInputData(HpId, request.SinDate, request.CheckedExpiredItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckedExpiredPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedExpiredResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.AutoCheckOrder)]

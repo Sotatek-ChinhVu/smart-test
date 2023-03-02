@@ -56,6 +56,7 @@
         public const string GetAddedAutoItem = "GetAddedAutoItem";
         public const string AddAutoItem = "AddAutoItem";
         public const string ConvertInputItemToTodayOrder = "ConvertInputItemToTodayOrder";
+        public const string CheckedExpired = "CheckedExpired";
         public const string AutoCheckOrder = "AutoCheckOrder";
         public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
 
@@ -162,6 +163,7 @@
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
+        public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -219,5 +221,8 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //System Conf
+        public const string GetSystemConfForPrint = "GetSystemConfForPrint";
     }
 }
