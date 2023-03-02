@@ -2144,11 +2144,11 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<OrdInfModel> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems)
+        public List<(int, OrdInfModel)> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems)
         {
-            List<OrdInfModel> result = new();
-            var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+            List<(int, OrdInfModel)> result = new();
+            var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             List<string> ipnNameCds = new List<string>();
             foreach (var ordInfDetails in odrInfs.Select(o => o.OrdInfDetails))
@@ -2274,11 +2274,11 @@ namespace Infrastructure.Repositories
                                 if (checkGroupOrder != null)
                                 {
                                     checkingOdr.Delete();
-                                    result.Add(checkingOdr);
+                                    result.Add(new(odrInfIndex, checkingOdr));
                                 }
                             }
                             detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                            result.Add(checkingOdr);
+                            result.Add(new(odrInfIndex, checkingOdr));
                         }
                         else
                         {
@@ -2441,14 +2441,15 @@ namespace Infrastructure.Repositories
                                     string.Empty
                                 );
 
-                            result.Add(odrInf);
+                            result.Add(new(-1, odrInf));
                             checkingOdr.Delete();
+                            result.Add(new(odrInfIndex, checkingOdr));
                         }
                     }
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
-                        result.Add(checkingOdr);
+                        result.Add(new(odrInfIndex, checkingOdr));
                     }
                     odrInfDetailIndex++;
                 }
