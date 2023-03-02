@@ -13,6 +13,7 @@ using EmrCalculateApi.Constants;
 using PostgreDataContext;
 using Domain.Constant;
 using System.Security.AccessControl;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -34,6 +35,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         private List<TenMstModel> _cacheTenMst;
         private List<DensiSanteiKaisuModel> _cacheDensiSanteiKaisu;
         private List<ItemGrpMstModel> _cacheItemGrpMst;
+        private List<KouiHoukatuMstModel> _cacheKouiHoukatuMst;
 
         /// <summary>
         /// 来院情報
@@ -155,6 +157,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             ikaCalculateArgumentViewModel.saveHandler = _saveIkaCalculateCommandHandler;
             ikaCalculateArgumentViewModel.cacheTenMst = _cacheTenMst;
             ikaCalculateArgumentViewModel.cacheDensiSanteiKaisu = _cacheDensiSanteiKaisu;
+            ikaCalculateArgumentViewModel.cacheKouiHoukatuMst = _cacheKouiHoukatuMst;
             ikaCalculateArgumentViewModel.cacheItemGrpMst = _cacheItemGrpMst;
             ikaCalculateArgumentViewModel.preFix = preFix;
 
@@ -235,6 +238,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
             // 項目グループマスタのキャッシュ
             _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst();
+            // 行為包括マスタのキャッシュ
+            _cacheKouiHoukatuMst = _masterFinder.FindKouiHoukatuMst();
 
             CalcStatusModel calcStatus = new CalcStatusModel(new CalcStatus());
 
@@ -1011,271 +1016,274 @@ namespace EmrCalculateApi.Ika.ViewModels
         ///     診療明細情報
         ///     会計情報
         /// </returns>
-        //public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>) RunTraialCalculate(List<TodayOdrInfModel> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
-        //{
-        //    const string conFncName = nameof(RunTraialCalculate);
+        public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
+        {
+            const string conFncName = nameof(RunTraialCalculate);
 
-        //    List<SinMeiDataModel> retSinMeis = new List<SinMeiDataModel>();
-        //    List<Futan.Models.KaikeiInfModel> retKaikeiInfModels = new List<Futan.Models.KaikeiInfModel>();
+            List<SinMeiDataModel> retSinMeis = new List<SinMeiDataModel>();
+            List<Futan.Models.KaikeiInfModel> retKaikeiInfModels = new List<Futan.Models.KaikeiInfModel>();
 
-        //    List<SinRpInfModel> retSinRpInfModels = new List<SinRpInfModel>();
-        //    List<SinKouiModel> retSinKouiModels = new List<SinKouiModel>();
-        //    List<SinKouiDetailModel> retSinKouiDetailModels = new List<SinKouiDetailModel>();
-        //    List<SinKouiCountModel> retSinKouiCountModels = new List<SinKouiCountModel>();
-        //    List<CalcLogModel> retCalcLogModels = new List<CalcLogModel>();
+            List<SinRpInfModel> retSinRpInfModels = new List<SinRpInfModel>();
+            List<SinKouiModel> retSinKouiModels = new List<SinKouiModel>();
+            List<SinKouiDetailModel> retSinKouiDetailModels = new List<SinKouiDetailModel>();
+            List<SinKouiCountModel> retSinKouiCountModels = new List<SinKouiCountModel>();
+            List<CalcLogModel> retCalcLogModels = new List<CalcLogModel>();
 
-        //    if (todayOdrInfs != null && todayOdrInfs.Any())
-        //    {
-        //        if (todayOdrInfs.First().SinDate <= 20180331)
-        //        {
-        //            CalcLogModel addCalcLog = new CalcLogModel(new CalcLog());
-        //            addCalcLog.HpId = Hardcode.HospitalID;
-        //            addCalcLog.PtId = todayOdrInfs.First().PtId;
-        //            addCalcLog.SinDate = todayOdrInfs.First().SinDate;
-        //            addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
-        //            addCalcLog.LogSbt = 2;
-        //            addCalcLog.Text = "2018年3月以前の計算には対応していません。";
-        //            addCalcLog.CreateDate = DateTime.UtcNow;
-        //            addCalcLog.CreateId = 0;
-        //            retCalcLogModels.Add(addCalcLog);
+            if (todayOdrInfs != null && todayOdrInfs.Any())
+            {
+                if (todayOdrInfs.First().SinDate <= 20180331)
+                {
+                    CalcLogModel addCalcLog = new CalcLogModel(new CalcLog());
+                    addCalcLog.HpId = Hardcode.HospitalID;
+                    addCalcLog.PtId = todayOdrInfs.First().PtId;
+                    addCalcLog.SinDate = todayOdrInfs.First().SinDate;
+                    addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
+                    addCalcLog.LogSbt = 2;
+                    addCalcLog.Text = "2018年3月以前の計算には対応していません。";
+                    addCalcLog.CreateDate = DateTime.UtcNow;
+                    addCalcLog.CreateId = 0;
+                    retCalcLogModels.Add(addCalcLog);
 
-        //            ikaCalculateArgumentViewModel = new IkaCalculateArgumentViewModel();
+                    ikaCalculateArgumentViewModel = new IkaCalculateArgumentViewModel();
 
-        //            //計算準備
-        //            StartTrialCalculate(todayOdrInfs.First().HpId, todayOdrInfs.First().PtId, todayOdrInfs.First().SinDate, reception);
+                    //計算準備
+                    StartTrialCalculate(todayOdrInfs.First().HpId, todayOdrInfs.First().PtId, todayOdrInfs.First().SinDate, reception);
 
-        //            _common.calcLogs.Add(addCalcLog);
-        //        }
-        //        else
-        //        {
-        //            // 電子算定回数マスタのキャッシュ
-        //            _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
-        //            // 項目グループマスタのキャッシュ
-        //            _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst();
+                    _common.calcLogs.Add(addCalcLog);
+                }
+                else
+                {
+                    // 電子算定回数マスタのキャッシュ
+                    _cacheDensiSanteiKaisu = _masterFinder.FindAllDensiSanteiKaisu();
+                    // 項目グループマスタのキャッシュ
+                    _cacheItemGrpMst = _masterFinder.FindAllItemGrpMst();
+                    // 行為包括マスタのキャッシュ
+                    _cacheKouiHoukatuMst = _masterFinder.FindKouiHoukatuMst();
 
-        //            ikaCalculateArgumentViewModel = new IkaCalculateArgumentViewModel();
+                    ikaCalculateArgumentViewModel = new IkaCalculateArgumentViewModel();
 
-        //            //計算準備
-        //            StartTrialCalculate(todayOdrInfs.First().HpId, todayOdrInfs.First().PtId, todayOdrInfs.First().SinDate, reception);
+                    //計算準備
+                    StartTrialCalculate(todayOdrInfs.First().HpId, todayOdrInfs.First().PtId, todayOdrInfs.First().SinDate, reception);
 
-        //            //計算処理
-        //            if (MainTrialCalculate(todayOdrInfs))
-        //            {
-        //                // 負担金計算用引数データ取得
-        //                if (calcFutan)
-        //                {
-        //                    (List<Futan.Models.SinKouiCountModel> argSinKouiCountModels,
-        //                    List<Futan.Models.SinKouiModel> argSinKouiModels,
-        //                    List<Futan.Models.SinKouiDetailModel> argSinKouiDetailModels,
-        //                    List<Futan.Models.SinRpInfModel> argSinRpInfModels) =
-        //                        GetArgTrialSinData();
+                    //計算処理
+                    if (MainTrialCalculate(todayOdrInfs))
+                    {
+                        // 負担金計算用引数データ取得
+                        if (calcFutan)
+                        {
+                            (List<Futan.Models.SinKouiCountModel> argSinKouiCountModels,
+                            List<Futan.Models.SinKouiModel> argSinKouiModels,
+                            List<Futan.Models.SinKouiDetailModel> argSinKouiDetailModels,
+                            List<Futan.Models.SinRpInfModel> argSinRpInfModels) =
+                                GetArgTrialSinData();
 
-        //                    // 負担金計算実行
-        //                    FutancalcViewModel FtanCalcVM = new FutancalcViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
-        //                    List<Futan.Models.RaiinInfModel> raiinInfs = new List<Futan.Models.RaiinInfModel>();
-        //                    raiinInfs.Add(new Futan.Models.RaiinInfModel(reception.RaiinInf));
-        //                    retKaikeiInfModels = FtanCalcVM.TrialFutanCalculation(_common.ptId,
-        //                                                                          _common.sinDate,
-        //                                                                          _common.raiinNo,
-        //                                                                          argSinKouiCountModels,
-        //                                                                          argSinKouiModels,
-        //                                                                          argSinKouiDetailModels,
-        //                                                                          argSinRpInfModels,
-        //                                                                          raiinInfs);
-        //                    //FtanCalcVM.Dispose();
-        //                }
+                            // 負担金計算実行
+                            FutancalcViewModel FtanCalcVM = new FutancalcViewModel(_tenantProvider, _systemConfigProvider, _emrLogger);
+                            List<Futan.Models.RaiinInfModel> raiinInfs = new List<Futan.Models.RaiinInfModel>();
+                            raiinInfs.Add(new Futan.Models.RaiinInfModel(reception.RaiinInf));
+                            retKaikeiInfModels = FtanCalcVM.TrialFutanCalculation(_common.ptId,
+                                                                                  _common.sinDate,
+                                                                                  _common.raiinNo,
+                                                                                  argSinKouiCountModels,
+                                                                                  argSinKouiModels,
+                                                                                  argSinKouiDetailModels,
+                                                                                  argSinRpInfModels,
+                                                                                  raiinInfs);
+                            //FtanCalcVM.Dispose();
+                        }
 
-        //                retSinRpInfModels = _common.Sin.SinRpInfs.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
-        //                retSinKouiModels = _common.Sin.SinKouis.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
-        //                retSinKouiDetailModels = _common.Sin.SinKouiDetails.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
-        //                retSinKouiCountModels = _common.Sin.SinKouiCounts.FindAll(p => p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None);
-        //                retCalcLogModels = _common.calcLogs;
+                        retSinRpInfModels = _common.Sin.SinRpInfs.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
+                        retSinKouiModels = _common.Sin.SinKouis.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
+                        retSinKouiDetailModels = _common.Sin.SinKouiDetails.FindAll(p => p.IsDeleted == DeleteStatus.None && (p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None));
+                        retSinKouiCountModels = _common.Sin.SinKouiCounts.FindAll(p => p.UpdateState == UpdateStateConst.Add || p.UpdateState == UpdateStateConst.None);
+                        retCalcLogModels = _common.calcLogs;
 
-        //                List<long> raiinNos = new List<long> { _common.raiinNo };
-        //                SinMeiViewModel sinMeiVM =
-        //                    new SinMeiViewModel(
-        //                        3, false, _common.hpId, _common.ptId, _common.sinDate, raiinNos,
-        //                        retSinRpInfModels, retSinKouiModels, retSinKouiCountModels, retSinKouiDetailModels, retKaikeiInfModels);
+                        List<long> raiinNos = new List<long> { _common.raiinNo };
+                        SinMeiViewModel sinMeiVM =
+                            new SinMeiViewModel(
+                                3, false, _common.hpId, _common.ptId, _common.sinDate, raiinNos,
+                                retSinRpInfModels, retSinKouiModels, retSinKouiCountModels, retSinKouiDetailModels, retKaikeiInfModels, _tenantProvider, _systemConfigProvider, _emrLogger);
 
-        //                retSinMeis = sinMeiVM.SinMei;
-        //                //sinMeiVM.DbService?.Dispose();
-        //            }
+                        retSinMeis = sinMeiVM.SinMei;
+                        //sinMeiVM.DbService?.Dispose();
+                    }
 
-        //            // 点数マスタのキャッシュを受け取り（次回の計算に引き継ぐため）
-        //            _cacheTenMst = _common.CacheTenMst;
-        //        }
-        //    }
+                    // 点数マスタのキャッシュを受け取り（次回の計算に引き継ぐため）
+                    _cacheTenMst = _common.CacheTenMst;
+                }
+            }
 
-        //    return (retSinMeis, retKaikeiInfModels);
-        //}
+            return (retSinMeis, retKaikeiInfModels);
+        }
 
         /// <summary>
         /// 試算準備処理
         /// </summary>
-        /// <param name="hpId">医療機関識別ID</param>
-        /// <param name="ptId">患者ID</param>
-        /// <param name="sinDate">診療日</param>
-        //public void StartTrialCalculate(int hpId, long ptId, int sinDate, ReceptionModel reception)
-        //{
-        //    const string conFncName = nameof(StartTrialCalculate);
+        /// <param name = "hpId" > 医療機関識別ID </ param >
+        /// < param name="ptId">患者ID</param>
+        /// <param name = "sinDate" > 診療日 </ param >
+        public void StartTrialCalculate(int hpId, long ptId, int sinDate, ReceptionModel reception)
+        {
+            const string conFncName = nameof(StartTrialCalculate);
 
-        //    _emrLogger.WriteLogStart( this, conFncName,
-        //        String.Format("hpId={0} ptId={1} sinDate={2} ", hpId, ptId, sinDate));
+            _emrLogger.WriteLogStart(this, conFncName,
+                String.Format("hpId={0} ptId={1} sinDate={2} ", hpId, ptId, sinDate));
 
-        //    //指定の診療日の来院情報を取得
-        //    _raiinInfModels = _raiinInfFinder.FindRaiinInfData(hpId, ptId, sinDate);
-        //    _raiinInfModels.RemoveAll(p => p.RaiinNo == reception.RaiinNo);
-        //    _raiinInfModels.Add(new RaiinInfModel(reception.RaiinInf, _masterFinder.FindKaMst(hpId, reception.KaId)));
+            //指定の診療日の来院情報を取得
+            _raiinInfModels = _raiinInfFinder.FindRaiinInfData(hpId, ptId, sinDate);
+            _raiinInfModels.RemoveAll(p => p.RaiinNo == reception.RaiinNo);
+            _raiinInfModels.Add(new RaiinInfModel(reception.RaiinInf, _masterFinder.FindKaMst(hpId, reception.KaId)));
 
-        //    //メンバー変数設定
-        //    _hpId = hpId;
-        //    _ptId = ptId;
-        //    _sinDate = sinDate;
+            //メンバー変数設定
+            _hpId = hpId;
+            _ptId = ptId;
+            _sinDate = sinDate;
 
-        //    //引数クラス生成
+            //引数クラス生成
 
-        //    ikaCalculateArgumentViewModel.hpId = _hpId;
-        //    ikaCalculateArgumentViewModel.ptId = _ptId;
-        //    ikaCalculateArgumentViewModel.sinDate = _sinDate;
-        //    ikaCalculateArgumentViewModel.seikyuUp = 0;
-        //    ikaCalculateArgumentViewModel.calcMode = CalcModeConst.Trial;
-        //    ikaCalculateArgumentViewModel.raiinInfs = _raiinInfModels;
-        //    ikaCalculateArgumentViewModel.masterFinder = _masterFinder;
-        //    //ikaCalculateArgumentViewModel.commonMstFinder = _commonMstFinder;
-        //    ikaCalculateArgumentViewModel.santeiFinder = _santeiFinder;
-        //    ikaCalculateArgumentViewModel.odrInfFinder = _odrInfFinder;
-        //    ikaCalculateArgumentViewModel.ikaCalculateFinder = _ikaCalculateFinder;
-        //    ikaCalculateArgumentViewModel.saveHandler = _saveIkaCalculateCommandHandler;
-        //    ikaCalculateArgumentViewModel.raiinInf = _raiinInfModels.FirstOrDefault(p => p.RaiinNo == reception.RaiinNo);
-        //    ikaCalculateArgumentViewModel.cacheTenMst = _cacheTenMst;
-        //    ikaCalculateArgumentViewModel.cacheDensiSanteiKaisu = _cacheDensiSanteiKaisu;
-        //    ikaCalculateArgumentViewModel.cacheItemGrpMst = _cacheItemGrpMst;
+            ikaCalculateArgumentViewModel.hpId = _hpId;
+            ikaCalculateArgumentViewModel.ptId = _ptId;
+            ikaCalculateArgumentViewModel.sinDate = _sinDate;
+            ikaCalculateArgumentViewModel.seikyuUp = 0;
+            ikaCalculateArgumentViewModel.calcMode = CalcModeConst.Trial;
+            ikaCalculateArgumentViewModel.raiinInfs = _raiinInfModels;
+            ikaCalculateArgumentViewModel.masterFinder = _masterFinder;
+            //ikaCalculateArgumentViewModel.commonMstFinder = _commonMstFinder;
+            ikaCalculateArgumentViewModel.santeiFinder = _santeiFinder;
+            ikaCalculateArgumentViewModel.odrInfFinder = _odrInfFinder;
+            ikaCalculateArgumentViewModel.ikaCalculateFinder = _ikaCalculateFinder;
+            ikaCalculateArgumentViewModel.saveHandler = _saveIkaCalculateCommandHandler;
+            ikaCalculateArgumentViewModel.raiinInf = _raiinInfModels.FirstOrDefault(p => p.RaiinNo == reception.RaiinNo);
+            ikaCalculateArgumentViewModel.cacheTenMst = _cacheTenMst;
+            ikaCalculateArgumentViewModel.cacheDensiSanteiKaisu = _cacheDensiSanteiKaisu;
+            ikaCalculateArgumentViewModel.cacheItemGrpMst = _cacheItemGrpMst;
+            ikaCalculateArgumentViewModel.cacheKouiHoukatuMst = _cacheKouiHoukatuMst;
 
-        //    _common = new IkaCalculateCommonDataViewModel(ikaCalculateArgumentViewModel, _systemConfigProvider, _emrLogger);
+            _common = new IkaCalculateCommonDataViewModel(ikaCalculateArgumentViewModel, _systemConfigProvider, _emrLogger);
 
-        //    List<long> delSinRaiinNo = _raiinInfModels.FindAll(p => string.Compare(p.SinStartTime, reception.RaiinInf.SinStartTime) > 0).Select(p => p.RaiinNo).ToList();
-        //    _common.Sin.DelSinKouiCountByRaiinNo(delSinRaiinNo);
+            List<long> delSinRaiinNo = _raiinInfModels.FindAll(p => string.Compare(p.SinStartTime, reception.RaiinInf.SinStartTime) > 0).Select(p => p.RaiinNo).ToList();
+            _common.Sin.DelSinKouiCountByRaiinNo(delSinRaiinNo);
 
-        //    _emrLogger.WriteLogEnd( this, conFncName, "");
-        //}
+            _emrLogger.WriteLogEnd(this, conFncName, "");
+        }
 
         /// <summary>
         /// 試算のメインの計算ロジック
         /// </summary>
-        //public bool MainTrialCalculate(List<TodayOdrInfModel> todayOdrInfs)
-        //{
-        //    const string conFncName = nameof(MainTrialCalculate);
-        //    _emrLogger.WriteLogStart( this, conFncName, "");
+        public bool MainTrialCalculate(List<OrderInfo> todayOdrInfs)
+        {
+            const string conFncName = nameof(MainTrialCalculate);
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
-        //    bool ret = true;
+            bool ret = true;
 
-        //    if (todayOdrInfs != null && todayOdrInfs.Any())
-        //    {
+            if (todayOdrInfs != null && todayOdrInfs.Any())
+            {
 
-        //        // 前準備
-        //        int hpId = todayOdrInfs.First().HpId;
-        //        long ptId = todayOdrInfs.First().PtId;
-        //        int sinDate = todayOdrInfs.First().SinDate;
-        //        long raiinNo = todayOdrInfs.First().RaiinNo;
+                // 前準備
+                int hpId = todayOdrInfs.First().HpId;
+                long ptId = todayOdrInfs.First().PtId;
+                int sinDate = todayOdrInfs.First().SinDate;
+                long raiinNo = todayOdrInfs.First().RaiinNo;
 
-        //        int hokenKbn = 0;
-        //        try
-        //        {
-        //            bool checkOdr = false;
+                int hokenKbn = 0;
+                try
+                {
+                    bool checkOdr = false;
 
-        //            //RaiinInfModel raiinInfModel = _raiinInfFinder.FindRaiinInfData(hpId, ptId, sinDate).Where(p => p.RaiinNo == raiinNo).FirstOrDefault();
-        //            RaiinInfModel raiinInfModel = _common.raiinInfs.Find(p => p.RaiinNo == raiinNo);
+                    //RaiinInfModel raiinInfModel = _raiinInfFinder.FindRaiinInfData(hpId, ptId, sinDate).Where(p => p.RaiinNo == raiinNo).FirstOrDefault();
+                    RaiinInfModel raiinInfModel = _common.raiinInfs.Find(p => p.RaiinNo == raiinNo);
 
-        //            if (raiinInfModel != null)
-        //            {
-        //                _common.raiinInf = raiinInfModel;
+                    if (raiinInfModel != null)
+                    {
+                        _common.raiinInf = raiinInfModel;
 
-        //                // オーダーを計算用に変換
-        //                _common.CreatOdrCommon(todayOdrInfs);
+                        // オーダーを計算用に変換
+                        _common.CreatOdrCommon(todayOdrInfs);
 
-        //                //if (_common.IsRosai)
-        //                //{
-        //                //// 労災合成コード
-        //                //_common.Odr.MakeRosaiGosei(_common.IsRosai);
-        //                //}
-        //                // 労災合成コード
-        //                _common.Odr.MakeRosaiGosei();
+                        //if (_common.IsRosai)
+                        //{
+                        //// 労災合成コード
+                        //_common.Odr.MakeRosaiGosei(_common.IsRosai);
+                        //}
+                        // 労災合成コード
+                        _common.Odr.MakeRosaiGosei();
 
-        //                // 保険の種類分ループを回す
-        //                hokenKbn = 0;
-        //                while (hokenKbn <= 4)
-        //                {
-        //                    // 引数設定
+                        // 保険の種類分ループを回す
+                        hokenKbn = 0;
+                        while (hokenKbn <= 4)
+                        {
+                            // 引数設定
 
-        //                    _common.hokenKbn = hokenKbn;
+                            _common.hokenKbn = hokenKbn;
 
-        //                    //オーダー存在確認
-        //                    if (_common.Odr.ExistOdrDtlHokenSyu())
-        //                    {
-        //                        if (checkOdr == false)
-        //                        {
-        //                            // マスタと紐づけのない項目をログ出力する
-        //                            _common.CheckOdr();
-        //                            checkOdr = true;
-        //                        }
+                            //オーダー存在確認
+                            if (_common.Odr.ExistOdrDtlHokenSyu())
+                            {
+                                if (checkOdr == false)
+                                {
+                                    // マスタと紐づけのない項目をログ出力する
+                                    _common.CheckOdr();
+                                    checkOdr = true;
+                                }
 
-        //                        //オーダー情報からワーク情報へ変換
-        //                        OdrToWrk();
+                                //オーダー情報からワーク情報へ変換
+                                OdrToWrk();
 
-        //                    }
+                            }
 
-        //                    hokenKbn++;
-        //                }
+                            hokenKbn++;
+                        }
 
-        //                hokenKbn = 0;
-        //                while (hokenKbn <= 4)
-        //                {
-        //                    _common.hokenKbn = hokenKbn;
+                        hokenKbn = 0;
+                        while (hokenKbn <= 4)
+                        {
+                            _common.hokenKbn = hokenKbn;
 
-        //                    if ((_common.syosai != SyosaiConst.Jihi) &&
-        //                        _common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
-        //                    {
-        //                        //背反等調整処理
-        //                        AdjustWrk(false);
-        //                    }
+                            if ((_common.syosai != SyosaiConst.Jihi) &&
+                                _common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
+                            {
+                                //背反等調整処理
+                                AdjustWrk(false);
+                            }
 
-        //                    hokenKbn++;
-        //                }
+                            hokenKbn++;
+                        }
 
-        //                hokenKbn = 0;
-        //                while (hokenKbn <= 4)
-        //                {
-        //                    _common.hokenKbn = hokenKbn;
+                        hokenKbn = 0;
+                        while (hokenKbn <= 4)
+                        {
+                            _common.hokenKbn = hokenKbn;
 
-        //                    //if (_common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
-        //                    if (_common.Odr.ExistOdrDtlHokenSyu())
-        //                    {
-        //                        //ワーク情報から算定情報へ変換
-        //                        WrkToSin();
-        //                    }
+                            //if (_common.Wrk.wrkSinKouiDetails.Any(p => p.RaiinNo == _common.raiinNo && p.HokenKbn == hokenKbn))
+                            if (_common.Odr.ExistOdrDtlHokenSyu())
+                            {
+                                //ワーク情報から算定情報へ変換
+                                WrkToSin();
+                            }
 
-        //                    hokenKbn++;
-        //                }
-        //            }
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            _emrLogger.WriteLogError(this, conFncName, new Exception(string.Format("raiinNo={0} hokenKbn={1}", _common.raiinNo, hokenKbn) + ":" + e.Message));
+                            hokenKbn++;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    _emrLogger.WriteLogError(this, conFncName, new Exception(string.Format("raiinNo={0} hokenKbn={1}", _common.raiinNo, hokenKbn) + ":" + e.Message));
 
-        //            _common.ClearCalcLog();
-        //            _common.AppendCalcLog(9, "医科計算で問題が発生したため、試算できません。");
+                    _common.ClearCalcLog();
+                    _common.AppendCalcLog(9, "医科計算で問題が発生したため、試算できません。");
 
-        //            ret = false;
+                    ret = false;
 
-        //        }
+                }
 
-        //    }
+            }
 
-        //    _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
 
-        //    return ret;
+            return ret;
 
-        //}
+        }
         /// <summary>
         /// 本日の算定にかかわるデータを削除する
         /// </summary>

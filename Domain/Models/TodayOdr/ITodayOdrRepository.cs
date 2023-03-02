@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
+using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
@@ -34,6 +35,10 @@ namespace Domain.Models.TodayOdr
         Dictionary<string, bool> ConvertInputItemToTodayOdr(int hpId, int sinDate, Dictionary<string, string> detailInfs);
 
         List<OrdInfModel> FromNextOrderToTodayOrder(int hpId, int sinDate, long raiinNo, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels);
+
+        List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs);
+
+        List<OrdInfModel> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems);
 
         List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels);
     }

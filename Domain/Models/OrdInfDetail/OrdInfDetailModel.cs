@@ -421,6 +421,13 @@ namespace Domain.Models.OrdInfDetails
 
         public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
 
+        public bool IsDrugOrInjection
+        {
+            get => DrugKbn == 1 || DrugKbn == 4 || DrugKbn == 6;
+        }
+
+        public bool IsShugi => SinKouiKbn >= 80 && SinKouiKbn <= 89;
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
@@ -460,6 +467,32 @@ namespace Domain.Models.OrdInfDetails
             return OrdInfValidationStatus.Valid;
         }
 
+        public OrdInfDetailModel ChangeOrdInfDetail(string itemCd, string itemName, int sinKouiKbn, int kohatuKbn, int drugKbn, int unitSBT, string unitName, double termVal, double suryo, int yohoKbn, string ipnCd,
+        string ipnName, string kokuji1, string kokuji2, int syohoKbn, int syohoLimitKbn)
+        {
+            ItemCd = itemCd;
+            ItemName = itemName;
+            SinKouiKbn = sinKouiKbn;
+            KohatuKbn = kohatuKbn;
+            DrugKbn = drugKbn;
+            UnitSbt = unitSBT;
+            UnitName = unitName;
+            TermVal = termVal;
+            Suryo = suryo;
+            YohoKbn = yohoKbn;
+            IpnCd = ipnCd;
+            IpnName = ipnName;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            SyohoKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
+            return this;
+        }
 
+        public OrdInfDetailModel ChangeSuryo(double suryo)
+        {
+            Suryo = suryo;
+            return this;
+        }
     }
 }

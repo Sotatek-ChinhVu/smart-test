@@ -14,6 +14,9 @@ using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.CheckedExpired;
+using UseCase.MedicalExamination.AutoCheckOrder;
+using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
@@ -430,6 +433,42 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ConvertNextOrderToTodayOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckedExpired)]
+        public ActionResult<Response<CheckedExpiredResponse>> CheckedExpired([FromBody] CheckedExpiredRequest request)
+        {
+            var input = new CheckedExpiredInputData(HpId, request.SinDate, request.CheckedExpiredItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckedExpiredPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedExpiredResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.AutoCheckOrder)]
+        public ActionResult<Response<AutoCheckOrderResponse>> AutoCheckOrder([FromBody] AutoCheckOrderRequest request)
+        {
+            var input = new AutoCheckOrderInputData(HpId, request.SinDate, request.PtId, request.OdrInfs);
+            var output = _bus.Handle(input);
+
+            var presenter = new AutoCheckOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<AutoCheckOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ChangeAfterAutoCheckOrder)]
+        public ActionResult<Response<ChangeAfterAutoCheckOrderResponse>> ChangeAfterAutoCheckOrder([FromBody] ChangeAfterAutoCheckOrderRequest request)
+        {
+            var input = new ChangeAfterAutoCheckOrderInputData(HpId, request.SinDate, UserId, request.RaiinNo, request.PtId, request.OdrInfs, request.TargetItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new ChangeAfterAutoCheckOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ChangeAfterAutoCheckOrderResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.ConvertFromHistoryToTodayOrder)]

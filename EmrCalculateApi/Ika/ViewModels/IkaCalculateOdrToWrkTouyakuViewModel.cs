@@ -738,6 +738,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 // 手オーダーあり
                 pid = odrDtls.First().HokenPid;
+                hid = odrDtls.First().HokenId;
                 santeiKbn = odrDtls.First().SanteiKbn;
 
                 // Rp、行為を追加
