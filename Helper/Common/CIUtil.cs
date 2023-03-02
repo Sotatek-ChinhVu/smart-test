@@ -31,6 +31,18 @@ namespace Helper.Common
             return (T)obj;
         }
 
+        public static string Substring(string input, int startIndex, int endIndex)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+
+            if (input.Length < endIndex)
+            {
+                return input.Substring(startIndex, endIndex);
+            }
+
+            return string.Empty;
+        }
+
         public static int FullStartDate(int startDate)
         {
             if (startDate == 0) return 0;
@@ -2054,6 +2066,7 @@ namespace Helper.Common
 
             return retDate;
         }
+
         public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
         {
             //法別番号を求める
@@ -2946,6 +2959,66 @@ namespace Helper.Common
         public static DateTime GetJapanDateTimeNow()
         {
             return DateTime.UtcNow.AddHours(9);
+        }
+
+        //西暦を表示用西暦(yyyy/mm/dd (ddd))に変換
+        //Convert format yyyymmdd to yyyy/mm/dd(//Convert format yyyymmdd to yyyy/mm/ddd)
+        public static string SDateToShowSDate2(int Ymd)
+        {
+            if (Ymd <= 0)
+            {
+                return string.Empty;
+            }
+
+            // Must use ja-JP culture info here
+            // We need format date time as 2019/12/08(月)
+            // instead of 2019/12/08(Mon)
+            // Omit this culture info will cause wrong date/time format
+            CultureInfo jaJP = new CultureInfo("ja-JP");
+
+            // Zero padding
+            string WrkStr = Ymd.ToString("D8");
+
+            if (DateTime.TryParseExact(WrkStr, "yyyyMMdd", jaJP, DateTimeStyles.None, out DateTime WrkDate))
+            {
+                return WrkDate.ToString("yyyy/MM/dd(ddd)", jaJP);
+            }
+
+            return string.Empty;
+        }
+
+        public static int GetGroupKoui(int kouiCode)
+        {
+            int result = kouiCode / 10 * 10;
+
+            if (11 <= kouiCode && kouiCode <= 13)
+            {
+                // NuiTran recommend handle this case
+                result = 11;
+            }
+            else if (kouiCode == 14)
+            {
+                // 在宅
+                result = kouiCode;
+            }
+            else if (kouiCode >= 68 && kouiCode < 70)
+            {
+                // 画像
+                result = kouiCode;
+            }
+            else if (kouiCode >= 95 && kouiCode < 99)
+            {
+                // コメント以外
+                result = kouiCode;
+            }
+            else if (kouiCode == 100 || kouiCode == 101)
+            {
+                // コメント（処方箋）
+                // コメント（処方箋備考）
+                result = 20;
+            }
+
+            return result;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.Accounting;
+﻿using Domain.Models.Accounting;
 using Domain.Models.ReceptionSameVisit;
 using Helper.Common;
 using Helper.Constants;
@@ -46,6 +45,12 @@ namespace Domain.Models.Reception
             PersonNumber = personNumber;
             HokenPatternModel = hokenPatternModel;
             KaikeiInfModels = kaikeiInfModels;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            Comment = string.Empty;
         }
         public int HpId { get; private set; }
 
@@ -127,9 +132,9 @@ namespace Domain.Models.Reception
             var kaikeInf = KaikeiInfModels?.FirstOrDefault(item => item.HokenId == hokenId);
 
             if (kaikeInf == null)
-                return null;
+                return string.Empty;
 
-            string patternName = null;
+            string patternName = string.Empty;
 
             string hokenKbn = kaikeInf.HokenKbn.AsString().PadLeft(2, '0');
             string hokenSbtCd = kaikeInf.HokenSbtCd.AsString().PadRight(3, '0');
@@ -221,5 +226,17 @@ namespace Domain.Models.Reception
             }
         }
 
+        public ReceptionDto()
+        {
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            Comment = string.Empty;
+            DepartmentSName = string.Empty;
+            KaikeiInfModels = new();
+            HokenPatternModel = new();
+        }
     }
 }

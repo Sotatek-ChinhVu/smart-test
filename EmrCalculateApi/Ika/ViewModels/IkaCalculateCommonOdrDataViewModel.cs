@@ -9,6 +9,7 @@ using Infrastructure.Interfaces;
 using EmrCalculateApi.Interface;
 using Domain.Constant;
 using EmrCalculateApi.Constants;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -158,297 +159,297 @@ namespace EmrCalculateApi.Ika.ViewModels
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
 
-        //public IkaCalculateCommonOdrDataViewModel(List<TodayOdrInfModel> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels,OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
-        //{
-        //    const string conFncName = nameof(IkaCalculateCommonOdrDataViewModel);
+        public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
+        {
+            const string conFncName = nameof(IkaCalculateCommonOdrDataViewModel);
 
-        //    _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
-        //    SetArgData(odrInfFinder, masterFinder, tenMstCommon, hpId, ptId, sinDate);
-        //    _raiinNo = raiinInfModel.RaiinNo;
+            SetArgData(odrInfFinder, masterFinder, tenMstCommon, hpId, ptId, sinDate);
+            _raiinNo = raiinInfModel.RaiinNo;
 
-        //    //オーダー情報をコンバートする
+            //オーダー情報をコンバートする
 
-        //    //まず、指定の診療日のオーダー情報を取得する
-        //    _emrLogger.WriteLogMsg( this, conFncName, "get odrinf start");
-        //    //_odrInfModels = odrInfFinder.FindOdrInfData(hpId, ptId, sinDate);
-        //    //_emrLogger.WriteLogMsg( this, conFncName, "get odrdtl start", ICDebugConf.logLevel);
-        //    //_odrDtlTenModels = odrInfFinder.FindOdrInfDetailData(hpId, ptId, sinDate);
+            //まず、指定の診療日のオーダー情報を取得する
+            _emrLogger.WriteLogMsg(this, conFncName, "get odrinf start");
+            //_odrInfModels = odrInfFinder.FindOdrInfData(hpId, ptId, sinDate);
+            //_emrLogger.WriteLogMsg( this, conFncName, "get odrdtl start", ICDebugConf.logLevel);
+            //_odrDtlTenModels = odrInfFinder.FindOdrInfDetailData(hpId, ptId, sinDate);
 
-        //    (_odrInfModels, _odrDtlTenModels) = odrInfFinder.FindOdrInfDetailDatas(hpId, ptId, sinDate, _raiinNo);
-        //    if (_systemConfigProvider.GetReceNoDspComment() == 0)
-        //    {
-        //        if (_systemConfigProvider.GetOutDrugYohoDsp() == 0)
-        //        {
-        //            _odrDtlTenModels =
-        //                _odrDtlTenModels.FindAll(p =>
-        //                    p.IsComment == false ||
-        //                    p.IsNodspRece == 0
-        //                    );
-        //        }
-        //        else
-        //        { 
-        //            _odrDtlTenModels = 
-        //                _odrDtlTenModels.FindAll(p => 
-        //                    p.IsComment == false ||
-        //                    p.IsNodspRece == 0 || 
-        //                    (p.OdrKouiKbn >= OdrKouiKbnConst.TouyakuMin && p.OdrKouiKbn <= OdrKouiKbnConst.TouyakuMax && p.InoutKbn == 1)
-        //                    );
-        //        }
-        //    }
-        //    _emrLogger.WriteLogMsg( this, conFncName, "get odrdtlcmt start");
-        //    _odrInfCmtModels = odrInfFinder.FindOdrInfCmtData(hpId, ptId, sinDate, _raiinNo);
+            (_odrInfModels, _odrDtlTenModels) = odrInfFinder.FindOdrInfDetailDatas(hpId, ptId, sinDate, _raiinNo);
+            if (_systemConfigProvider.GetReceNoDspComment() == 0)
+            {
+                if (_systemConfigProvider.GetOutDrugYohoDsp() == 0)
+                {
+                    _odrDtlTenModels =
+                        _odrDtlTenModels.FindAll(p =>
+                            p.IsComment == false ||
+                            p.IsNodspRece == 0
+                            );
+                }
+                else
+                {
+                    _odrDtlTenModels =
+                        _odrDtlTenModels.FindAll(p =>
+                            p.IsComment == false ||
+                            p.IsNodspRece == 0 ||
+                            (p.OdrKouiKbn >= OdrKouiKbnConst.TouyakuMin && p.OdrKouiKbn <= OdrKouiKbnConst.TouyakuMax && p.InoutKbn == 1)
+                            );
+                }
+            }
+            _emrLogger.WriteLogMsg(this, conFncName, "get odrdtlcmt start");
+            _odrInfCmtModels = odrInfFinder.FindOdrInfCmtData(hpId, ptId, sinDate, _raiinNo);
 
-        //    //// 今から計算する来院のオーダー情報を削除する
-        //    //_odrInfModels.RemoveAll(p => p.RaiinNo == _raiinNo);
-        //    //_odrDtlTenModels.RemoveAll(p => p.RaiinNo == _raiinNo);
-        //    //_odrInfCmtModels.RemoveAll(p => p.RaiinNo == _raiinNo);
+            //// 今から計算する来院のオーダー情報を削除する
+            //_odrInfModels.RemoveAll(p => p.RaiinNo == _raiinNo);
+            //_odrDtlTenModels.RemoveAll(p => p.RaiinNo == _raiinNo);
+            //_odrInfCmtModels.RemoveAll(p => p.RaiinNo == _raiinNo);
 
-        //    List<string> itemCds = new List<string>();
-        //    List<string> ipnCds = new List<string>();
+            List<string> itemCds = new List<string>();
+            List<string> ipnCds = new List<string>();
 
-        //    foreach (TodayOdrInfModel todayOdrInf in todayOdrInfs.FindAll(p => p.SanteiKbn == SanteiKbnConst.Santei || p.SanteiKbn == SanteiKbnConst.Jihi))
-        //    {
-        //        itemCds.AddRange(todayOdrInf.OdrInfDetailModels.Select(p => p.ItemCd).Distinct().ToList());
-        //    }
+            foreach (OrderInfo todayOdrInf in todayOdrInfs.FindAll(p => p.SanteiKbn == SanteiKbnConst.Santei || p.SanteiKbn == SanteiKbnConst.Jihi))
+            {
+                itemCds.AddRange(todayOdrInf.DetailInfoList.Select(p => p.ItemCd).Distinct().ToList());
+            }
 
-        //    _emrLogger.WriteLogMsg( this, conFncName, "get tenmst start");
-        //    List<TenMstModel> tenMsts = new List<TenMstModel>();
-        //    List<CmtKbnMstModel> cmtKbnMsts = new List<CmtKbnMstModel>();
-                        
-        //    if (itemCds.Any())
-        //    {
-        //        tenMsts = _masterFinder.FindTenMst(hpId, sinDate, itemCds);
+            _emrLogger.WriteLogMsg(this, conFncName, "get tenmst start");
+            List<TenMstModel> tenMsts = new List<TenMstModel>();
+            List<CmtKbnMstModel> cmtKbnMsts = new List<CmtKbnMstModel>();
 
-        //        // 算定用の項目コードも
-        //        itemCds = tenMsts.Where(p=>p.ItemCd != p.SanteiItemCd && p.SanteiItemCd != ItemCdConst.NoSantei).Select(p => p.SanteiItemCd).ToList();
-        //        if(itemCds.Any())
-        //        {
-        //            tenMsts.AddRange(_masterFinder.FindTenMst(hpId, sinDate, itemCds));
-        //            cmtKbnMsts.AddRange(_masterFinder.FindCmtKbnMst(hpId, sinDate, itemCds));
-        //        }
+            if (itemCds.Any())
+            {
+                tenMsts = _masterFinder.FindTenMst(hpId, sinDate, itemCds);
 
-        //        ipnCds = tenMsts.Where(p => string.IsNullOrEmpty(p.IpnNameCd) == false).Select(p => p.IpnNameCd).Distinct().ToList();
-        //    }
+                // 算定用の項目コードも
+                itemCds = tenMsts.Where(p => p.ItemCd != p.SanteiItemCd && p.SanteiItemCd != ItemCdConst.NoSantei).Select(p => p.SanteiItemCd).ToList();
+                if (itemCds.Any())
+                {
+                    tenMsts.AddRange(_masterFinder.FindTenMst(hpId, sinDate, itemCds));
+                    cmtKbnMsts.AddRange(_masterFinder.FindCmtKbnMst(hpId, sinDate, itemCds));
+                }
 
-        //    List<IpnKasanMstModel> ipnKasans = new List<IpnKasanMstModel>();
-        //    List<IpnMinYakkaMstModel> ipnMinYakkas = new List<IpnMinYakkaMstModel>();
+                ipnCds = tenMsts.Where(p => string.IsNullOrEmpty(p.IpnNameCd) == false).Select(p => p.IpnNameCd).Distinct().ToList();
+            }
 
-        //    if(ipnCds.Any())
-        //    {
-        //        ipnKasans = _masterFinder.FindIpnKasanMst(hpId, sinDate, ipnCds);
-        //        ipnMinYakkas = _masterFinder.FindIpnMinYakkaMst(hpId, sinDate, ipnCds);
-        //    }
+            List<IpnKasanMstModel> ipnKasans = new List<IpnKasanMstModel>();
+            List<IpnMinYakkaMstModel> ipnMinYakkas = new List<IpnMinYakkaMstModel>();
 
-        //    _emrLogger.WriteLogMsg( this, conFncName, "get convert start");
-        //    // コンバート
-        //    foreach (TodayOdrInfModel todayOdrInf in todayOdrInfs.FindAll(p=> p.SanteiKbn == SanteiKbnConst.Santei || p.SanteiKbn == SanteiKbnConst.Jihi))
-        //    {
-        //        PtHokenPatternModel ptHokenPatternModel = 
-        //            ptHokenPatternModels.Where(p => p.HokenPid == todayOdrInf.HokenPid).FirstOrDefault();
+            if (ipnCds.Any())
+            {
+                ipnKasans = _masterFinder.FindIpnKasanMst(hpId, sinDate, ipnCds);
+                ipnMinYakkas = _masterFinder.FindIpnMinYakkaMst(hpId, sinDate, ipnCds);
+            }
 
-        //        if (ptHokenPatternModel == null)
-        //        {
-        //            // 保険組み合わせ情報が取得できなかった場合
-        //            _emrLogger.WriteLogMsg( this, conFncName, $"ptHokenPattern not found HokenPid:{todayOdrInf.HokenPid}");
+            _emrLogger.WriteLogMsg(this, conFncName, "get convert start");
+            // コンバート
+            foreach (OrderInfo todayOdrInf in todayOdrInfs.FindAll(p => p.SanteiKbn == SanteiKbnConst.Santei || p.SanteiKbn == SanteiKbnConst.Jihi))
+            {
+                PtHokenPatternModel ptHokenPatternModel =
+                    ptHokenPatternModels.FirstOrDefault(p => p.HokenPid == todayOdrInf.HokenPid);
 
-        //            // エラーを発生させ、計算を中断する
-        //            throw new Exception($"マスタに登録のない保険組み合わせIDがあります。[OdrKouiKbn:{todayOdrInf.OdrKouiKbn}, Pid:{todayOdrInf.HokenPid}]");
-        //        }
-        //        else
-        //        {
-        //            OdrInfDataModel odrInfData =
-        //                new OdrInfDataModel(
-        //                    hpId: todayOdrInf.HpId,
-        //                    ptId: todayOdrInf.PtId,
-        //                    sinDate: todayOdrInf.SinDate,
-        //                    raiinNo: todayOdrInf.RaiinNo,
-        //                    rpNo: todayOdrInf.RpNo,
-        //                    rpEdaNo: todayOdrInf.RpEdaNo,
-        //                    hokenId: todayOdrInf.HokenPid,
-        //                    odrKouiKbn: todayOdrInf.OdrKouiKbn,
-        //                    inoutKbn: todayOdrInf.InoutKbn,
-        //                    sikyuKbn: todayOdrInf.SikyuKbn,
-        //                    syohoSbt: todayOdrInf.SyohoSbt,
-        //                    santeiKbn: todayOdrInf.SanteiKbn,
-        //                    daysCnt: todayOdrInf.DaysCnt,
-        //                    sortNo: todayOdrInf.SortNo,
-        //                    isDeleted: todayOdrInf.IsDeleted
-        //                    );
+                if (ptHokenPatternModel == null)
+                {
+                    // 保険組み合わせ情報が取得できなかった場合
+                    _emrLogger.WriteLogMsg(this, conFncName, $"ptHokenPattern not found HokenPid:{todayOdrInf.HokenPid}");
 
-        //            OdrInfModel odrInf = new OdrInfModel(odrInfData, ptHokenPatternModel, raiinInfModel);
-        //            _odrInfModels.Add(odrInf);
+                    // エラーを発生させ、計算を中断する
+                    throw new Exception($"マスタに登録のない保険組み合わせIDがあります。[OdrKouiKbn:{todayOdrInf.OdrKouiKbn}, Pid:{todayOdrInf.HokenPid}]");
+                }
+                else
+                {
+                    OdrInfDataModel odrInfData =
+                        new OdrInfDataModel(
+                            hpId: todayOdrInf.HpId,
+                            ptId: todayOdrInf.PtId,
+                            sinDate: todayOdrInf.SinDate,
+                            raiinNo: todayOdrInf.RaiinNo,
+                            rpNo: todayOdrInf.RpNo,
+                            rpEdaNo: todayOdrInf.RpEdaNo,
+                            hokenId: todayOdrInf.HokenPid,
+                            odrKouiKbn: todayOdrInf.OdrKouiKbn,
+                            inoutKbn: todayOdrInf.InoutKbn,
+                            sikyuKbn: todayOdrInf.SikyuKbn,
+                            syohoSbt: todayOdrInf.SyohoSbt,
+                            santeiKbn: todayOdrInf.SanteiKbn,
+                            daysCnt: todayOdrInf.DaysCnt,
+                            sortNo: todayOdrInf.SortNo,
+                            isDeleted: todayOdrInf.IsDeleted
+                            );
 
-        //            foreach (TodayOdrInfDetailModel todayOdrInfDtl in todayOdrInf.OdrInfDetailModels)
-        //            {
-        //                OdrInfDetailDataModel odrInfDtlData =
-        //                    new OdrInfDetailDataModel(
-        //                        hpId: todayOdrInfDtl.HpId,
-        //                        ptId: todayOdrInfDtl.PtId,
-        //                        sinDate: todayOdrInfDtl.SinDate,
-        //                        raiinNo: todayOdrInfDtl.RaiinNo,
-        //                        rpNo: todayOdrInfDtl.RpNo,
-        //                        rpEdaNo: todayOdrInfDtl.RpEdaNo,
-        //                        rowNo: todayOdrInfDtl.RowNo,
-        //                        itemCd: todayOdrInfDtl.ItemCd,
-        //                        itemName: todayOdrInfDtl.ItemName,
-        //                        suryo: todayOdrInfDtl.Suryo,
-        //                        unitName: todayOdrInfDtl.UnitName,
-        //                        unitSBT: todayOdrInfDtl.UnitSBT,
-        //                        termVal: todayOdrInfDtl.TermVal,
-        //                        kohatuKbn: todayOdrInfDtl.KohatuKbn,
-        //                        syohoKbn: todayOdrInfDtl.SyohoKbn,
-        //                        syohoLimitKbn: todayOdrInfDtl.SyohoLimitKbn,
-        //                        isNodspRece: todayOdrInfDtl.IsNodspRece,
-        //                        yohoKbn: todayOdrInfDtl.YohoKbn,
-        //                        ipnCd: todayOdrInfDtl.IpnCd,
-        //                        ipnName: todayOdrInfDtl.IpnName,
-        //                        bunkatu: todayOdrInfDtl.Bunkatu,
-        //                        cmtName: todayOdrInfDtl.CmtName,
-        //                        cmtOpt: todayOdrInfDtl.CmtOpt,
-        //                        isdummy: todayOdrInfDtl.IsDummy
-        //                        );
+                    OdrInfModel odrInf = new OdrInfModel(odrInfData, ptHokenPatternModel, raiinInfModel);
+                    _odrInfModels.Add(odrInf);
+
+                    foreach (OrderDetailInfo todayOdrInfDtl in todayOdrInf.DetailInfoList)
+                    {
+                        OdrInfDetailDataModel odrInfDtlData =
+                            new OdrInfDetailDataModel(
+                                hpId: todayOdrInfDtl.HpId,
+                                ptId: todayOdrInfDtl.PtId,
+                                sinDate: todayOdrInfDtl.SinDate,
+                                raiinNo: todayOdrInfDtl.RaiinNo,
+                                rpNo: todayOdrInfDtl.RpNo,
+                                rpEdaNo: todayOdrInfDtl.RpEdaNo,
+                                rowNo: todayOdrInfDtl.RowNo,
+                                itemCd: todayOdrInfDtl.ItemCd,
+                                itemName: todayOdrInfDtl.ItemName,
+                                suryo: todayOdrInfDtl.Suryo,
+                                unitName: todayOdrInfDtl.UnitName,
+                                unitSBT: 0, //todayOdrInfDtl.UnitSBT,
+                                termVal: todayOdrInfDtl.TermVal,
+                                kohatuKbn: 0,   //todayOdrInfDtl.KohatuKbn,
+                                syohoKbn: todayOdrInfDtl.SyohoKbn,
+                                syohoLimitKbn: 0,   //todayOdrInfDtl.SyohoLimitKbn,
+                                isNodspRece: todayOdrInfDtl.IsNodspRece,
+                                yohoKbn: todayOdrInfDtl.YohoKbn,
+                                ipnCd: todayOdrInfDtl.IpnCd,
+                                ipnName: todayOdrInfDtl.IpnName,
+                                bunkatu: "",    //todayOdrInfDtl.Bunkatu,
+                                cmtName: "",    //todayOdrInfDtl.CmtName,
+                                cmtOpt: todayOdrInfDtl.CmtOpt,
+                                isdummy: todayOdrInfDtl.IsDummy
+                                );
 
 
-        //                TenMstModel tenMst = _FindTenMst(todayOdrInfDtl.ItemCd);
+                        TenMstModel tenMst = _FindTenMst(todayOdrInfDtl.ItemCd);
 
-        //                string receName = "";
-        //                if (tenMst != null)
-        //                {
-        //                    if (!string.IsNullOrEmpty(todayOdrInfDtl.ItemCd) && todayOdrInfDtl.ItemCd.StartsWith("IGE") && tenMst != null)
-        //                    {
-        //                        receName = tenMst.ReceName;
-        //                    }
+                        string receName = "";
+                        if (tenMst != null)
+                        {
+                            if (!string.IsNullOrEmpty(todayOdrInfDtl.ItemCd) && todayOdrInfDtl.ItemCd.StartsWith("IGE") && tenMst != null)
+                            {
+                                receName = tenMst.ReceName;
+                            }
 
-        //                    if (tenMst.SanteiItemCd != tenMst.ItemCd && tenMst.ItemCd != null && tenMst.ItemCd != "" && tenMst.ItemCd.StartsWith("Z") == false && tenMst.SanteiItemCd != ItemCdConst.NoSantei)
-        //                    {
-        //                        tenMst = _FindTenMst(tenMst.SanteiItemCd);
-        //                    }
-        //                }
+                            if (tenMst.SanteiItemCd != tenMst.ItemCd && tenMst.ItemCd != null && tenMst.ItemCd != "" && tenMst.ItemCd.StartsWith("Z") == false && tenMst.SanteiItemCd != ItemCdConst.NoSantei)
+                            {
+                                tenMst = _FindTenMst(tenMst.SanteiItemCd);
+                            }
+                        }
 
-        //                CmtKbnMstModel cmtKbn = _FindCmtMst(todayOdrInfDtl.ItemCd, tenMst?.SanteiItemCd ?? "");
+                        CmtKbnMstModel cmtKbn = _FindCmtMst(todayOdrInfDtl.ItemCd, tenMst?.SanteiItemCd ?? "");
 
-        //                IpnKasanMstModel ipnKasanMst = null;
-        //                IpnMinYakkaMstModel ipnMinYakkaMst = null;
+                        IpnKasanMstModel ipnKasanMst = null;
+                        IpnMinYakkaMstModel ipnMinYakkaMst = null;
 
-        //                if (todayOdrInf.OdrKouiKbn >= 20 && todayOdrInf.OdrKouiKbn <= 29 && tenMst != null)
-        //                {
-        //                    ipnKasanMst = _FindIpnKasanMst(tenMst.IpnNameCd);
-        //                    ipnMinYakkaMst = _FindIpnMinYakkaMst(tenMst.IpnNameCd);
-        //                }
+                        if (todayOdrInf.OdrKouiKbn >= 20 && todayOdrInf.OdrKouiKbn <= 29 && tenMst != null)
+                        {
+                            ipnKasanMst = _FindIpnKasanMst(tenMst.IpnNameCd);
+                            ipnMinYakkaMst = _FindIpnMinYakkaMst(tenMst.IpnNameCd);
+                        }
 
-        //                OdrDtlTenModel odrDtl =
-        //                    new OdrDtlTenModel(
-        //                        odrInfDtlData, tenMst, (cmtKbn?.CmtKbnMst ?? null),
-        //                        receName: receName,
-        //                        hokenKbn: ptHokenPatternModel.HokenKbn, hokenPid: ptHokenPatternModel.HokenPid, hokenId: ptHokenPatternModel.HokenId, hokenSbt: ptHokenPatternModel.HokenSbtCd,
-        //                        odrKouiKbn: todayOdrInf.OdrKouiKbn, santeiKbn: todayOdrInf.SanteiKbn, inoutKbn: todayOdrInf.InoutKbn,
-        //                        syohoSbt: todayOdrInf.SyohoSbt, daysCnt: todayOdrInf.DaysCnt, sortNo: todayOdrInf.SortNo,
-        //                        kasan1: ipnKasanMst?.Kasan1 ?? 0, kasan2: ipnKasanMst?.Kasan2 ?? 0,
-        //                        sinStartTime: raiinInfModel.SinStartTime,
-        //                        minYakka: ipnMinYakkaMst?.Yakka ?? 0);
-        //                _odrDtlTenModels.Add(odrDtl);
+                        OdrDtlTenModel odrDtl =
+                            new OdrDtlTenModel(
+                                odrInfDtlData, tenMst, (cmtKbn?.CmtKbnMst ?? null),
+                                receName: receName,
+                                hokenKbn: ptHokenPatternModel.HokenKbn, hokenPid: ptHokenPatternModel.HokenPid, hokenId: ptHokenPatternModel.HokenId, hokenSbt: ptHokenPatternModel.HokenSbtCd,
+                                odrKouiKbn: todayOdrInf.OdrKouiKbn, santeiKbn: todayOdrInf.SanteiKbn, inoutKbn: todayOdrInf.InoutKbn,
+                                syohoSbt: todayOdrInf.SyohoSbt, daysCnt: todayOdrInf.DaysCnt, sortNo: todayOdrInf.SortNo,
+                                kasan1: ipnKasanMst?.Kasan1 ?? 0, kasan2: ipnKasanMst?.Kasan2 ?? 0,
+                                sinStartTime: raiinInfModel.SinStartTime,
+                                minYakka: ipnMinYakkaMst?.Yakka ?? 0);
+                        _odrDtlTenModels.Add(odrDtl);
 
-        //                if (tenMst != null && tenMst.ItemCd != null && tenMst.ItemCd.StartsWith("Z"))
-        //                {
-        //                    var tenEntities = masterFinder.FindTenMstByItemCd(HpId, todayOdrInfDtl.SinDate, tenMst.SanteiItemCd);
-        //                    if (tenEntities.FirstOrDefault() != null)
-        //                    {
-        //                        _odrDtlTenModels.Last().Z_MasterSbt = tenEntities.First().MasterSbt;
-        //                        _odrDtlTenModels.Last().Z_TenId = tenEntities.First().TenId;
-        //                    }
-        //                }
+                        if (tenMst != null && tenMst.ItemCd != null && tenMst.ItemCd.StartsWith("Z"))
+                        {
+                            var tenEntities = masterFinder.FindTenMstByItemCd(HpId, todayOdrInfDtl.SinDate, tenMst.SanteiItemCd);
+                            if (tenEntities.FirstOrDefault() != null)
+                            {
+                                _odrDtlTenModels.Last().Z_MasterSbt = tenEntities.First().MasterSbt;
+                                _odrDtlTenModels.Last().Z_TenId = tenEntities.First().TenId;
+                            }
+                        }
 
-        //            }
-        //        }
+                    }
+                }
 
-        //        #region local method
-        //        // 点数マスタ取得、キャッシュ優先
-        //        TenMstModel _FindTenMst(string itemCd)
-        //        {
-        //            TenMstModel result = 
-        //                tenMsts.FirstOrDefault(p => p.ItemCd == itemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
-        //            if (result == null)
-        //            {
-        //                result = _masterFinder.FindTenMstByItemCd(hpId, sinDate, itemCd).FirstOrDefault();
-        //            }
+                #region local method
+                // 点数マスタ取得、キャッシュ優先
+                TenMstModel _FindTenMst(string itemCd)
+                {
+                    TenMstModel result =
+                        tenMsts.FirstOrDefault(p => p.ItemCd == itemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
+                    if (result == null)
+                    {
+                        result = _masterFinder.FindTenMstByItemCd(hpId, sinDate, itemCd).FirstOrDefault();
+                    }
 
-        //            return result;
-        //        }
+                    return result;
+                }
 
-        //        CmtKbnMstModel _FindCmtMst(string itemCd, string santeiItemCd)
-        //        {
-        //            CmtKbnMstModel result =
-        //                cmtKbnMsts.FirstOrDefault(p => p.ItemCd == itemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
+                CmtKbnMstModel _FindCmtMst(string itemCd, string santeiItemCd)
+                {
+                    CmtKbnMstModel result =
+                        cmtKbnMsts.FirstOrDefault(p => p.ItemCd == itemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
 
-        //            if (result == null)
-        //            {
-        //                if (itemCd != santeiItemCd && string.IsNullOrEmpty(santeiItemCd) == false)
-        //                {
-        //                    result =
-        //                        cmtKbnMsts.FirstOrDefault(p => p.ItemCd == santeiItemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
-        //                }
-        //            }
+                    if (result == null)
+                    {
+                        if (itemCd != santeiItemCd && string.IsNullOrEmpty(santeiItemCd) == false)
+                        {
+                            result =
+                                cmtKbnMsts.FirstOrDefault(p => p.ItemCd == santeiItemCd && p.StartDate <= sinDate && p.EndDate >= sinDate);
+                        }
+                    }
 
-        //            if (result == null)
-        //            {
-        //                result = _masterFinder.FindCmtKbnMstByItemCd(hpId, sinDate, itemCd).FirstOrDefault();
-        //            }
+                    if (result == null)
+                    {
+                        result = _masterFinder.FindCmtKbnMstByItemCd(hpId, sinDate, itemCd).FirstOrDefault();
+                    }
 
-        //            if (result == null)
-        //            {
-        //                if (itemCd != santeiItemCd && string.IsNullOrEmpty(santeiItemCd) == false)
-        //                {
-        //                    result =
-        //                        _masterFinder.FindCmtKbnMstByItemCd(hpId, sinDate, santeiItemCd).FirstOrDefault();
-        //                }
-        //            }
+                    if (result == null)
+                    {
+                        if (itemCd != santeiItemCd && string.IsNullOrEmpty(santeiItemCd) == false)
+                        {
+                            result =
+                                _masterFinder.FindCmtKbnMstByItemCd(hpId, sinDate, santeiItemCd).FirstOrDefault();
+                        }
+                    }
 
-        //            return result;
-        //        }
+                    return result;
+                }
 
-        //        // 一般名処方加算マスタ取得、キャッシュ優先
-        //        IpnKasanMstModel _FindIpnKasanMst(string ipnCd)
-        //        {
-        //            IpnKasanMstModel result =
-        //                ipnKasans.FirstOrDefault(p => p.IpnNameCd == ipnCd);
+                // 一般名処方加算マスタ取得、キャッシュ優先
+                IpnKasanMstModel _FindIpnKasanMst(string ipnCd)
+                {
+                    IpnKasanMstModel result =
+                        ipnKasans.FirstOrDefault(p => p.IpnNameCd == ipnCd);
 
-        //            //if (result == null)
-        //            //{
-        //            //    result = _masterFinder.FindIpnKasanMst(hpId, sinDate, ipnCd).FirstOrDefault();
-        //            //}
+                    //if (result == null)
+                    //{
+                    //    result = _masterFinder.FindIpnKasanMst(hpId, sinDate, ipnCd).FirstOrDefault();
+                    //}
 
-        //            return result;
-        //        }
+                    return result;
+                }
 
-        //        // 最低薬価マスタ取得、キャッシュ優先
-        //        IpnMinYakkaMstModel _FindIpnMinYakkaMst(string ipnCd)
-        //        {
-        //            IpnMinYakkaMstModel result =
-        //                ipnMinYakkas.FirstOrDefault(p => p.IpnNameCd == ipnCd);
+                // 最低薬価マスタ取得、キャッシュ優先
+                IpnMinYakkaMstModel _FindIpnMinYakkaMst(string ipnCd)
+                {
+                    IpnMinYakkaMstModel result =
+                        ipnMinYakkas.FirstOrDefault(p => p.IpnNameCd == ipnCd);
 
-        //            //if (result == null)
-        //            //{
-        //            //    _masterFinder.FindIpnMinYakkaMst(hpId, sinDate, ipnCd).FirstOrDefault();
-        //            //}
+                    //if (result == null)
+                    //{
+                    //    _masterFinder.FindIpnMinYakkaMst(hpId, sinDate, ipnCd).FirstOrDefault();
+                    //}
 
-        //            return result;
+                    return result;
 
-        //        }
-        //        #endregion
-        //    }
+                }
+                #endregion
+            }
 
-        //    // 検査重複オーダー削除
-        //    //DelSameKensa();
+            // 検査重複オーダー削除
+            //DelSameKensa();
 
-        //    // 注射アンプルの調整
-        //    CheckChusyaAmpoule();
+            // 注射アンプルの調整
+            CheckChusyaAmpoule();
 
-        //    // オーダーで使用している保険種のリスト
-        //    _hokenSyuList = GetHokenSyuList();
+            // オーダーで使用している保険種のリスト
+            _hokenSyuList = GetHokenSyuList();
 
-        //    _emrLogger.WriteLogEnd( this, conFncName, "");
-        //}
+            _emrLogger.WriteLogEnd(this, conFncName, "");
+        }
 
         private void SetArgData(OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
         {

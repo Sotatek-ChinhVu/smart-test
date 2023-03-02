@@ -1,5 +1,7 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
+using Domain.Models.Insurance;
+using Domain.Models.Reception;
 using Domain.Models.SystemConf;
 using UseCase.Accounting.GetAccountingInf;
 
@@ -30,7 +32,7 @@ namespace Interactor.Accounting
 
                 if (syunoSeikyu == null)
                 {
-                    return new GetAccountingOutputData(new List<SyunoSeikyuModel>(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -41,6 +43,12 @@ namespace Interactor.Accounting
                     listSyunoSeikyu = listSyunoSeikyu.Where(item => item.NyukinKbn != 0).ToList();
                 }
 
+                var syunoNyukinModel = syunoSeikyu.SyunoNyukinModels
+                            .FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
+                            
+                var comment = syunoNyukinModel?.NyukinCmt ?? string.Empty;
+                var paytype = syunoNyukinModel?.PaymentMethodCd ?? 0;
+
                 var listAllSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo, true);
 
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
@@ -48,11 +56,9 @@ namespace Interactor.Accounting
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
                 var checkDebitBalance = (int)_systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
 
-                return GetAccountingInf(listSyunoSeikyu, debitBalance, checkDebitBalance);
-            }
-            catch (Exception)
-            {
-                return new GetAccountingOutputData(new List<SyunoSeikyuModel>(), GetAccountingStatus.Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                var listKohi = GetVisibilityPtKohiModelList(listRaiinInf, inputData.HpId, inputData.PtId, inputData.SinDate);
+
+                return GetAccountingInf(listKohi, listSyunoSeikyu, debitBalance, checkDebitBalance, comment, paytype);
             }
             finally
             {
@@ -61,7 +67,52 @@ namespace Interactor.Accounting
             }
         }
 
-        private GetAccountingOutputData GetAccountingInf(List<SyunoSeikyuModel> listSyunoSeikyu, int debitBalance, bool checkDebitBalance)
+        private List<KohiInfModel> GetVisibilityPtKohiModelList(List<ReceptionDto> receptionDtos, int hpId, long ptId, int sinDate)
+        {
+            var kohiIds = new List<int>();
+            var listKaikeiInfAll = receptionDtos.Where(item => item.RaiinNo > 0 && item.KaikeiInfModels != null).ToList();
+            var listKaikeiInf = new List<KaikeiInfModel>();
+
+            foreach (var kaikeiInf in listKaikeiInfAll)
+            {
+                listKaikeiInf.AddRange(kaikeiInf.KaikeiInfModels);
+            }
+
+            foreach (var kaikeiInf in listKaikeiInf)
+            {
+                if (kaikeiInf.Kohi1Id > 0 &&
+                    !kohiIds.Contains(kaikeiInf.Kohi1Id))
+                {
+                    kohiIds.Add(kaikeiInf.Kohi1Id);
+                }
+
+                if (kaikeiInf.Kohi2Id > 0 &&
+                    !kohiIds.Contains(kaikeiInf.Kohi2Id))
+                {
+                    kohiIds.Add(kaikeiInf.Kohi2Id);
+                }
+
+                if (kaikeiInf.Kohi3Id > 0 &&
+                    !kohiIds.Contains(kaikeiInf.Kohi3Id))
+                {
+                    kohiIds.Add(kaikeiInf.Kohi3Id);
+                }
+
+                if (kaikeiInf.Kohi4Id > 0 &&
+                    !kohiIds.Contains(kaikeiInf.Kohi4Id))
+                {
+                    kohiIds.Add(kaikeiInf.Kohi4Id);
+                }
+            }
+
+            if (kohiIds.Count <= 0) return new();
+
+            var listKohi = _accountingRepository.GetListKohiByKohiId(hpId, ptId, sinDate, kohiIds);
+
+            return listKohi.Where(item => item.HokenMstModel != null && (item.HokenMstModel.MoneyLimitListFlag != 0 || item.HokenMstModel.MonthLimitCount > 0)).ToList();
+        }
+
+        private GetAccountingOutputData GetAccountingInf(List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> listSyunoSeikyu, int debitBalance, bool checkDebitBalance, string comment, int paytype)
         {
             var isSettled = listSyunoSeikyu.Select(item => item.NyukinKbn != 0).FirstOrDefault();
 
@@ -98,7 +149,7 @@ namespace Interactor.Accounting
                 thisCredit = sumAdjust;
             }
 
-            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari);
+            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari, paytype, comment, kohiInfModels);
         }
     }
 }

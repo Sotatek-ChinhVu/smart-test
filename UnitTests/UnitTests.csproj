@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EmrCalculateApi\EmrCalculateApi.csproj" />
     <ProjectReference Include="..\Interactor\Interactor.csproj" />
   </ItemGroup>
 

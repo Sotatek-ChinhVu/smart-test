@@ -7,6 +7,7 @@ using EmrCalculateApi.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
@@ -1526,6 +1527,23 @@ namespace EmrCalculateApi.Ika.DB.Finder
             );
 
             return results;
+        }
+        /// <summary>
+        /// 電子算定回数マスタをすべて取得する
+        /// </summary>
+        /// <returns></returns>
+        public List<KouiHoukatuMstModel> FindKouiHoukatuMst()
+        {
+            const string conFncName = nameof(FindKouiHoukatuMst);
+
+            var entities = _tenantDataContext.KouiHoukatuMsts.FindListQueryableNoTrack(p =>
+                    p.HpId == Session.HospitalID &&
+                    p.IsInvalid == 0)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ToList();
+
+            return entities.Select(p => new KouiHoukatuMstModel(p)).ToList();
         }
         public TenMstModel FindTenMstBySanteiItemCd(string santeiItemCd, int sinDate)
         {

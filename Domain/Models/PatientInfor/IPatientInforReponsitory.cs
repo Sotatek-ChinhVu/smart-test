@@ -48,10 +48,14 @@ namespace Domain.Models.PatientInfor
         bool DeletePatientInfo(long ptId, int hpId, int userId);
         bool IsAllowDeletePatient(int hpId, long ptId);
 
-        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo ,int sinDate);
+        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo, int sinDate);
 
         HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya);
 
+        PatientInforModel GetPtInf(int hpId, long ptId);
+
         List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize);
+
+        List<PatientInforModel> SearchPatient(int hpId, int startDate, string startTime, int endDate, string endTime);
     }
 }
