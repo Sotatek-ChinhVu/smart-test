@@ -1,11 +1,12 @@
-﻿using Domain.Models.OrdInfs;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
+using UseCase.MedicalExamination.GetCheckedOrder;
+using OdrInfItemOfTodayOrder = UseCase.OrdInfs.GetListTrees.OdrInfItem;
 
 namespace UseCase.MedicalExamination.ConvertFromHistoryTodayOrder
 {
     public class ConvertFromHistoryTodayOrderInputData : IInputData<ConvertFromHistoryTodayOrderOutputData>
     {
-        public ConvertFromHistoryTodayOrderInputData(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
+        public ConvertFromHistoryTodayOrderInputData(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OdrInfItemOfTodayOrder> historyOdrInfModels)
         {
             HpId = hpId;
             SinDate = sinDate;
@@ -25,6 +26,6 @@ namespace UseCase.MedicalExamination.ConvertFromHistoryTodayOrder
 
         public long PtId { get; private set; }
 
-        public List<OrdInfModel> HistoryOdrInfModels { get; private set; }
+        public List<OdrInfItemOfTodayOrder> HistoryOdrInfModels { get; private set; }
     }
 }

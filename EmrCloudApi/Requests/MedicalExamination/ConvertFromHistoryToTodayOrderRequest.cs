@@ -1,4 +1,4 @@
-﻿using Domain.Models.OrdInfs;
+﻿using OdrInfItemOfTodayOrder = UseCase.OrdInfs.GetListTrees.OdrInfItem;
 
 namespace EmrCloudApi.Requests.MedicalExamination
 {
@@ -10,6 +10,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public long PtId { get; set; }
 
-        public List<OrdInfModel> HistoryOdrInfModels { get; set; } = new();
+        public List<OdrInfItemOfTodayOrder> HistoryOdrInfModels { get; set; } = new();
     }
 }
