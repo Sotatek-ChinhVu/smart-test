@@ -438,6 +438,7 @@ namespace Interactor.MedicalExamination
             var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
+                var tenMsts = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd);
                 if (checkedItem.Contains(detail.ItemCd))
                 {
                     continue;
@@ -450,7 +451,7 @@ namespace Interactor.MedicalExamination
                 {
                     continue;
                 }
-                int minStartDate = tenMstItemList.Min(item => item.StartDate);
+                int minStartDate = tenMsts.Min(item => item.StartDate);
 
                 if (minStartDate > sinDate)
                 {
@@ -459,7 +460,7 @@ namespace Interactor.MedicalExamination
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
 
-                int maxEndDate = tenMstItemList.Max(item => item.EndDate);
+                int maxEndDate = tenMsts.Max(item => item.EndDate);
 
                 if (maxEndDate < sinDate)
                 {
