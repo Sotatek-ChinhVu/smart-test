@@ -5,18 +5,20 @@ using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
-using Domain.Models.SetMst;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
+using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -1836,6 +1838,7 @@ namespace Infrastructure.Repositories
 
         public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
+            List<OrdInfModel> ordInfModels = new();
             List<OrdInfDetailModel> odrInfDetails = new List<OrdInfDetailModel>();
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
             int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
@@ -1883,17 +1886,31 @@ namespace Infrastructure.Repositories
 
             foreach (var historyOdrInfModel in historyOdrInfModels)
             {
-                string ipnCd = "";
-                string ipnName = "";
-                string kokuji1 = "";
-                string kokuji2 = "";
-                string cmtName = "";
-                string cmtOpt = "";
-                string fontColor = "";
-                int commentNewline = 0;
-                int kohatuKbn = 0;
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
+                    string ipnCd = "";
+                    string ipnName = "";
+                    string kokuji1 = "";
+                    string kokuji2 = "";
+                    string cmtName = "";
+                    string cmtOpt = "";
+                    string fontColor = "";
+                    int commentNewline = 0;
+                    int kohatuKbn = 0;
+                    int sinKouiKbn = detail.SinKouiKbn;
+                    string itemCd = detail.ItemCd;
+                    string itemName = detail.ItemName;
+                    double suryo = detail.Suryo;
+                    string unitName = detail.UnitName;
+                    int unitSBT = detail.UnitSbt;
+                    double termVal = detail.TermVal;
+                    string bunkatu = detail.Bunkatu;
+
+                    kohatuKbn = detail.KohatuKbn;
+                    int drugKbn = detail.DrugKbn;
+                    int yohoKbn = detail.YohoKbn;
+                    int isNodspRece = detail.IsNodspRece;
+
                     TenMst? tenMst = null;
                     if (!string.IsNullOrEmpty(detail.ItemCd))
                     {
@@ -2010,11 +2027,11 @@ namespace Infrastructure.Repositories
                     }
 
                     // Correct TermVal
-                    double termVal = CorrectTermVal(detail.UnitSbt, tenMst ?? new(), detail.TermVal);
+                    termVal = CorrectTermVal(detail.UnitSbt, tenMst ?? new(), detail.TermVal);
 
                     ++rowNo;
 
-                    var kensaMstModel = tenMst != null ? kensaMsts.FirstOrDefault(k => k.KensaItemCd  == tenMst.KensaItemCd && k.KensaItemSeqNo == k.KensaItemSeqNo) : new();
+                    var kensaMstModel = tenMst != null ? kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == k.KensaItemSeqNo) : new();
                     var ipnMinYakkaMstModel = tenMst != null ? ipnMinYakkaMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd) : new();
                     var isGetYakkaPrice = CheckIsGetYakkaPrice(hpId, tenMst ?? new(), sinDate, ipnKasanExcludes, ipnKasanExcludeItems);
 
@@ -2026,39 +2043,88 @@ namespace Infrastructure.Repositories
                             rowNo,
                             ptId,
                             sinDate,
-                            tenMst?.SinKouiKbn ?? 0,
-                            tenMst?.ItemCd ?? string.Empty,
-
-
+                            sinKouiKbn,
+                            itemCd,
+                            itemName,
+                            suryo,
+                            unitName,
+                            unitSBT,
+                            termVal,
+                            kohatuKbn,
+                            syohoKbn,
+                            syohoLimitKbn,
+                            drugKbn,
+                            yohoKbn,
+                            kokuji1,
+                            kokuji2,
+                            isNodspRece,
+                            ipnCd,
+                            ipnName,
+                            0,
+                            DateTime.MinValue,
+                            0,
+                            string.Empty,
+                            string.Empty,
+                            bunkatu,
+                            cmtName,
+                            cmtOpt,
+                            fontColor,
+                            commentNewline,
+                            tenMst?.MasterSbt ?? string.Empty,
+                            0,
+                            ipnMinYakkaMstModel?.Yakka ?? 0,
+                            isGetYakkaPrice,
+                            0,
+                            tenMst?.CmtCol1 ?? 0,
+                            tenMst?.Ten ?? 0,
+                            0,
+                            0,
+                            0,
+                            tenMst?.OdrTermVal ?? 0,
+                            tenMst?.CnvTermVal ?? 0,
+                            tenMst?.YjCd ?? string.Empty,
+                            detail.YohoSets,
+                            0,
+                            0,
+                            tenMst?.CnvUnitName ?? string.Empty,
+                            tenMst?.OdrUnitName ?? string.Empty,
+                            kensaMstModel?.CenterItemCd1 ?? string.Empty,
+                            kensaMstModel?.CenterItemCd2 ?? string.Empty
                         );
-                    odrInfDetails.Add(new TodayOdrInfDetailModel(detail)
-                    {
-                        KensaMstModel = tenMst == null ? null : masterFinder.FindKensaMst(tenMst.KensaItemCd, tenMst.KensaItemSeqNo),
-                        IpnMinYakkaMstModel = tenMst == null ? null : masterFinder.FindIpnMinYakkaMst(tenMst.IpnNameCd, sindate),
-                        IsGetPriceInYakka = masterFinder.CheckIsGetYakkaPrice(tenMst, sindate),
-                        Ten = tenMst == null ? 0 : tenMst.Ten,
-                        HandanGrpKbn = tenMst == null ? 0 : tenMst.HandanGrpKbn,
-                        MasterSbt = tenMst == null ? "" : tenMst.MasterSbt,
-                        CmtCol1 = tenMst == null ? 0 : tenMst.CmtCol1,
-                        CmtCol2 = tenMst == null ? 0 : tenMst.CmtCol2,
-                        CmtCol3 = tenMst == null ? 0 : tenMst.CmtCol3,
-                        CmtCol4 = tenMst == null ? 0 : tenMst.CmtCol4,
-                        CmtColKeta1 = tenMst == null ? 0 : tenMst.CmtColKeta1,
-                        CmtColKeta2 = tenMst == null ? 0 : tenMst.CmtColKeta2,
-                        CmtColKeta3 = tenMst == null ? 0 : tenMst.CmtColKeta3,
-                        CmtColKeta4 = tenMst == null ? 0 : tenMst.CmtColKeta4,
-                    });
+
+                    odrInfDetails.Add(odrInfDetail);
                 }
+                var newTodayOdrInfModel = new OrdInfModel(
+                   hpId,
+                   raiinNo,
+                   0,
+                   0,
+                   ptId,
+                   sinDate,
+                   historyOdrInfModel.HokenPid,
+                   historyOdrInfModel.OdrKouiKbn,
+                   historyOdrInfModel.RpName,
+                   historyOdrInfModel.InoutKbn,
+                   historyOdrInfModel.SikyuKbn,
+                   historyOdrInfModel.SyohoSbt,
+                   historyOdrInfModel.SanteiKbn,
+                   historyOdrInfModel.TosekiKbn,
+                   historyOdrInfModel.DaysCnt,
+                   historyOdrInfModel.SortNo,
+                   0,
+                   0,
+                   odrInfDetails,
+                   DateTime.MinValue,
+                   userId,
+                   string.Empty,
+                   DateTime.MinValue,
+                   userId,
+                   string.Empty
+               );
+                ordInfModels.Add(newTodayOdrInfModel);
             }
 
-
-
-            TodayOdrInfModel newTodayOdrInfModel = new TodayOdrInfModel(odrInf, odrInfDetails)
-            {
-                RpName = historyOdrInfModel.RpName
-            };
-
-            return newTodayOdrInfModel;
+            return ordInfModels;
         }
 
         public List<OrdInfModel> ConvertToDetailModel(int hpId, long raiinNo, int sinDate, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels, List<IpnNameMst> ipns, List<TenMst> tenMsts, List<KensaMst> kensMsts, List<IpnMinYakkaMst> ipnMinYakkas)
