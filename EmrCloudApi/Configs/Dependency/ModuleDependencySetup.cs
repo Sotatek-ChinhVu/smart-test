@@ -217,6 +217,8 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.AutoCheckOrder;
+using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.CheckedItemName;
@@ -593,6 +595,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetValidGairaiRihaInputData, GetValidGairaiRihaInteractor>();
             busBuilder.RegisterUseCase<ConvertNextOrderToTodayOrdInputData, ConvertNextOrderTodayOrdInteractor>();
             busBuilder.RegisterUseCase<SummaryInfInputData, SummaryInfInteractor>();
+            busBuilder.RegisterUseCase<AutoCheckOrderInputData, AutoCheckOrderInteractor>();
+            busBuilder.RegisterUseCase<ChangeAfterAutoCheckOrderInputData, ChangeAfterAutoCheckOrderInteractor>();
             busBuilder.RegisterUseCase<InitKbnSettingInputData, InitKbnSettingInteractor>();
             busBuilder.RegisterUseCase<CheckedAfter327ScreenInputData, CheckedAfter327ScreenInteractor>();
             busBuilder.RegisterUseCase<GetHistoryIndexInputData, GetHistoryIndexInteractor>();

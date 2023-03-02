@@ -57,6 +57,8 @@
         public const string AddAutoItem = "AddAutoItem";
         public const string ConvertInputItemToTodayOrder = "ConvertInputItemToTodayOrder";
         public const string CheckedExpired = "CheckedExpired";
+        public const string AutoCheckOrder = "AutoCheckOrder";
+        public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";

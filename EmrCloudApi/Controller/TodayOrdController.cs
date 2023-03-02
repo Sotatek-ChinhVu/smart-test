@@ -15,6 +15,8 @@ using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.CheckedExpired;
+using UseCase.MedicalExamination.AutoCheckOrder;
+using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
@@ -442,6 +444,30 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckedExpiredResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.AutoCheckOrder)]
+        public ActionResult<Response<AutoCheckOrderResponse>> AutoCheckOrder([FromBody] AutoCheckOrderRequest request)
+        {
+            var input = new AutoCheckOrderInputData(HpId, request.SinDate, request.PtId, request.OdrInfs);
+            var output = _bus.Handle(input);
+
+            var presenter = new AutoCheckOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<AutoCheckOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ChangeAfterAutoCheckOrder)]
+        public ActionResult<Response<ChangeAfterAutoCheckOrderResponse>> ChangeAfterAutoCheckOrder([FromBody] ChangeAfterAutoCheckOrderRequest request)
+        {
+            var input = new ChangeAfterAutoCheckOrderInputData(HpId, request.SinDate, UserId, request.RaiinNo, request.PtId, request.OdrInfs, request.TargetItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new ChangeAfterAutoCheckOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ChangeAfterAutoCheckOrderResponse>>(presenter.Result);
         }
     }
 }
