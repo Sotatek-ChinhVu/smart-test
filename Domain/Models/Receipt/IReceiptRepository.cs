@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Accounting;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
@@ -59,5 +60,13 @@ public interface IReceiptRepository : IRepositoryBase
     string GetSanteiItemCd(int hpId, string itemCd, int sinDate);
 
     List<string> GetTekiouByomei(int hpId, List<string> itemCdList);
+
+    double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns);
+
+    List<SinKouiMstModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId);
+
+    List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId);
+
+    List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
     #endregion
 }
