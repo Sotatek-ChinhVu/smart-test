@@ -9,7 +9,7 @@ namespace Domain.Models.RaiinKubunMst
 
         List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId);
 
-        List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId);
+        List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId);
 
         List<(string, string)> GetListColumnName(int hpId);
 

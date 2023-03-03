@@ -162,7 +162,7 @@ namespace Infrastructure.Repositories
             return raiinKubunMstModels;
         }
 
-        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId)
+        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId)
         {
             List<string> result = new List<string>();
             var currentKubunMstList = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
@@ -211,39 +211,6 @@ namespace Infrastructure.Repositories
                         {
                             if (raiinKubunMstModels != null && raiinKubunMstModels.Any())
                             {
-                                var raiinKubunMstAddList = raiinKubunMstModels.Where(x => x.GroupId == 0).ToList();
-
-                                if (raiinKubunMstAddList != null && raiinKubunMstAddList.Any())
-                                {
-                                    var currentGrpCd = currentKubunMstList.Max(x => x.GrpCd);
-                                    raiinKubunMstAddList.ForEach(x =>
-                                    {
-                                        currentGrpCd++;
-
-                                        x = new RaiinKubunMstModel(x.HpId, currentGrpCd, x.SortNo, x.GroupName, x.IsDeleted, x.RaiinKubunDetailModels);
-
-                                        var resultIds = AddRaiinKubunDetail(currentGrpCd, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
-                                        detailKbnCd = resultIds.Item1;
-                                        kouiKbnCd = resultIds.Item2;
-                                        itemSeqNo = resultIds.Item3;
-                                        yoyakuKbnCd = resultIds.Item4;
-                                    });
-
-                                    TrackingDataContext.RaiinKbnMsts.AddRange(raiinKubunMstAddList.Select(x => new RaiinKbnMst()
-                                    {
-                                        HpId = x.HpId,
-                                        GrpCd = x.GroupId,
-                                        SortNo = x.SortNo,
-                                        GrpName = x.GroupName,
-                                        IsDeleted = x.IsDeleted ? 1 : 0,
-                                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                        UpdateId = userId,
-                                        CreateId = userId
-                                    }).ToList());
-                                    TrackingDataContext.SaveChanges();
-                                }
-
                                 var raiinKubunMstUpdateList = raiinKubunMstModels.Where(x => x.GroupId != 0).ToList();
 
                                 if (raiinKubunMstUpdateList != null && raiinKubunMstUpdateList.Any())
@@ -252,7 +219,7 @@ namespace Infrastructure.Repositories
                                     {
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd == 0))
                                         {
-                                            var resultIds = AddRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
+                                            var resultIds = AddRaiinKubunDetail(hpId, x.GroupId, x.RaiinKubunDetailModels, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                             detailKbnCd = resultIds.Item1;
                                             kouiKbnCd = resultIds.Item2;
                                             itemSeqNo = resultIds.Item3;
@@ -280,19 +247,38 @@ namespace Infrastructure.Repositories
                                         });
                                         TrackingDataContext.SaveChanges();
                                     }
-                                    //TrackingDataContext.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
-                                    //{
-                                    //    HpId = x.HpId,
-                                    //    GrpCd = x.GroupId,
-                                    //    SortNo = x.SortNo,
-                                    //    GrpName = x.GroupName,
-                                    //    IsDeleted = x.IsDeleted ? 1 : 0,
-                                    //    CreateDate = DateTime.SpecifyKind(DateTime.SpecifyKind(currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc), DateTimeKind.Utc),
-                                    //    CreateId = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateId ?? 0,
-                                    //    CreateMachine = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateMachine ?? string.Empty,
-                                    //    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                    //    UpdateId = userId
-                                    //}));
+                                }
+
+                                var raiinKubunMstAddList = raiinKubunMstModels.Where(x => x.GroupId == 0).ToList();
+
+                                if (raiinKubunMstAddList != null && raiinKubunMstAddList.Any())
+                                {
+                                    var currentGrpCd = GetMaxGrpId(hpId);
+                                    raiinKubunMstAddList.ForEach(x =>
+                                    {
+                                        currentGrpCd++;
+                                        x.ChangeGrpId(currentGrpCd);
+
+                                        var resultIds = AddRaiinKubunDetail(hpId, currentGrpCd, x.RaiinKubunDetailModels, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
+                                        detailKbnCd = resultIds.Item1;
+                                        kouiKbnCd = resultIds.Item2;
+                                        itemSeqNo = resultIds.Item3;
+                                        yoyakuKbnCd = resultIds.Item4;
+                                    });
+
+                                    TrackingDataContext.RaiinKbnMsts.AddRange(raiinKubunMstAddList.Select(x => new RaiinKbnMst()
+                                    {
+                                        HpId = x.HpId,
+                                        GrpCd = x.GroupId,
+                                        SortNo = x.SortNo,
+                                        GrpName = x.GroupName,
+                                        IsDeleted = x.IsDeleted ? 1 : 0,
+                                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                        UpdateId = userId,
+                                        CreateId = userId
+                                    }).ToList());
+                                    TrackingDataContext.SaveChanges();
                                 }
                             }
                             TrackingDataContext.SaveChanges();
@@ -594,8 +580,9 @@ namespace Infrastructure.Repositories
 
         #region RaiinKbn
         #region Add
-        private (int, int, int, int) AddRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int currentKbnCd, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd, int userId)
+        private (int, int, int, int) AddRaiinKubunDetail(int hpId, int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd, int userId)
         {
+            int currentKbnCd = GetMaxKbnCd(hpId, grpCd);
             if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
             {
                 raiinKubunDetailModels.ForEach(x =>
@@ -787,26 +774,6 @@ namespace Infrastructure.Repositories
                     });
                     TrackingDataContext.SaveChanges();
                 }
-
-                //TrackingDataContext.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(item => new RaiinKbnDetail()
-                //{
-                //    HpId = item.HpId,
-                //    GrpCd = grpCd,
-                //    KbnCd = item.KubunCd,
-                //    SortNo = item.SortNo,
-                //    KbnName = item.KubunName,
-                //    ColorCd = item.ColorCd != null && item.ColorCd.Contains("#") ? item.ColorCd.Replace("#", string.Empty) : item.ColorCd,
-                //    IsConfirmed = item.IsConfirmed ? 1 : 0,
-                //    IsAuto = item.IsAuto,
-                //    IsAutoDelete = item.IsAutoDeleted,
-                //    IsDeleted = item.IsDeleted ? 1 : 0,
-                //    CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                //    CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateId ?? 0,
-                //    CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == item.GroupId && y.KbnCd == item.KubunCd)?.CreateMachine ?? string.Empty,
-                //    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                //    UpdateId = userId,
-                //}));
-                //TrackingDataContext.SaveChanges();
             }
         }
 
@@ -1049,7 +1016,8 @@ namespace Infrastructure.Repositories
 
         private int GetMaxKbnCd(int hpId, int grpId)
         {
-            return NoTrackingDataContext.RaiinKbnDetails.Where(item => item.HpId == hpId && item.GrpCd == grpId)?.Max(item => item.KbnCd) ?? 0;
+            var raiinKbnDetailKbnCdList = NoTrackingDataContext.RaiinKbnDetails.Where(item => item.HpId == hpId && item.GrpCd == grpId).Select(item => item.KbnCd).ToList();
+            return raiinKbnDetailKbnCdList.Any() ? raiinKbnDetailKbnCdList.Max() : 0;
         }
     }
 }

@@ -37,5 +37,11 @@ namespace Domain.Models.RaiinKubunMst
             IsDeleted = isDeleted;
             RaiinKubunDetailModels = raiinKubunDetailModels;
         }
+
+        public RaiinKubunMstModel ChangeGrpId(int newGroupId)
+        {
+            GroupId = newGroupId;
+            return this;
+        }
     }
 }
