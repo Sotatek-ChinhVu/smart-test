@@ -64,6 +64,8 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
+using EmrCalculateApi.Implementation;
+using EmrCalculateApi.Interface;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
@@ -143,6 +145,7 @@ using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
@@ -362,9 +365,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Receipt.Recalculation;
-using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
-
 using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
@@ -490,6 +490,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
+            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
+            services.AddTransient<IEmrLogger, EmrLogger>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -768,6 +770,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetAccountingHistoryOrderInputData, GetAccountingHistoryOrderInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
             busBuilder.RegisterUseCase<CheckAccountingStatusInputData, CheckAccountingStatusInteractor>();
+            busBuilder.RegisterUseCase<GetSinMeiInputData, GetSinMeiInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfReception, GetDefaultSelectedTimeInteractorOfReception>();

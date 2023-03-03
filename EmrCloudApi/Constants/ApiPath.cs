@@ -212,6 +212,7 @@
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
+        public const string GetSinMei = "GetSinMei";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 

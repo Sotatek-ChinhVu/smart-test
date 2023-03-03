@@ -4,7 +4,7 @@ namespace Domain.Models.Accounting
 {
     public class SinMeiModel
     {
-        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn)
+        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray)
         {
             SinId = sinId;
             SinIdBinding = sinIdBinding;
@@ -25,27 +25,27 @@ namespace Domain.Models.Accounting
             EnTenKbn = enTenKbn;
             SanteiKbn = santeiKbn;
             InOutKbn = inOutKbn;
+            IsRowColorGray = isRowColorGray;
         }
-
-        public int SinId { get; set; }
+        public int SinId { get; private set; }
         public string SinIdBinding { get; set; }
-        public string ItemName { get; set; }
-        public double Suryo { get; set; }
-        public string UnitName { get; set; }
-        public string TenKai { get; set; }
-        public double TotalTen { get; set; }
-        public double TotalKingaku { get; set; }
-        public double Kingaku { get; set; }
-        public int FutanS { get; set; }
-        public int FutanK1 { get; set; }
-        public int FutanK2 { get; set; }
-        public int FutanK3 { get; set; }
-        public int FutanK4 { get; set; }
-        public string CdKbn { get; set; }
-        public int JihiSbt { get; set; }
-        public int EnTenKbn { get; set; }
-        public int SanteiKbn { get; set; }
-        public int InOutKbn { get; set; }
+        public string ItemName { get; private set; }
+        public double Suryo { get; private set; }
+        public string UnitName { get; private set; }
+        public string TenKai { get; private set; }
+        public double TotalTen { get; private set; }
+        public double TotalKingaku { get; private set; }
+        public double Kingaku { get; private set; }
+        public int FutanS { get; private set; }
+        public int FutanK1 { get; private set; }
+        public int FutanK2 { get; private set; }
+        public int FutanK3 { get; private set; }
+        public int FutanK4 { get; private set; }
+        public string CdKbn { get; private set; }
+        public int JihiSbt { get; private set; }
+        public int EnTenKbn { get; private set; }
+        public int SanteiKbn { get; private set; }
+        public int InOutKbn { get; private set; }
         public string Quantity => Suryo > 0 && !string.IsNullOrEmpty(UnitName) ? Suryo.AsString() + UnitName : "";
         public double SinHoTotalTen => EnTenKbn == 1 ? Kingaku / 10 : TotalTen;
         public double Total => TotalKingaku != 0 ? TotalKingaku : TotalTen;
@@ -56,7 +56,7 @@ namespace Domain.Models.Accounting
         public string FutanK3Binding => FutanK3 >= 1 ? "＊" : "";
         public string FutanK4Binding => FutanK4 >= 1 ? "＊" : "";
         public string Asterisk => SinId > 0 ? "＊" : "";
-        public bool IsRowColorGray { get; set; } = false;
+        public bool IsRowColorGray { get; private set; } = false;
         public bool IsForegroundRed => EnTenKbn == 1;
         public bool IsRowCreateInstanceDefault = false;
 

@@ -10,6 +10,7 @@ using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
@@ -123,6 +124,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckAccountingStatusResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSinMei)]
+        public ActionResult<Response<GetSinMeiResponse>> GetList([FromQuery] GetSinMeiRequest request)
+        {
+            var input = new GetSinMeiInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSinMeiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSinMeiResponse>>(presenter.Result);
         }
     }
 }
