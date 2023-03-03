@@ -4,15 +4,15 @@ namespace Schema.Insurance.SaveInsuranceScan
 {
     public class SaveInsuranceScanOutputData : IOutputData
     {
-        public SaveInsuranceScanOutputData(string urlImage, SaveInsuranceScanStatus status)
+        public SaveInsuranceScanOutputData(SaveInsuranceScanStatus status, IEnumerable<string> urlCreateds)
         {
-            UrlImage = urlImage;
             Status = status;
+            UrlCreateds = urlCreateds;
         }
 
-        public string UrlImage { get; private set; }
-
         public SaveInsuranceScanStatus Status { get; private set; }
+
+        public IEnumerable<string> UrlCreateds { get;private set; }
 
     }
 }

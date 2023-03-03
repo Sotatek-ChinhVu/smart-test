@@ -353,7 +353,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                   join drvalrgyCode in NoTrackingDataContext.M56DrvalrgyCode
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
                   join listItemCodes in listItemCode
-                  on drugMst.ItemCd equals listItemCodes.Id
+                  on drugMst.ItemCd equals listItemCodes.ItemCd
                   select new
                   {
                       listItemCodes.Id,
