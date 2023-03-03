@@ -25,7 +25,7 @@ namespace Domain.Models.Insurance
 
         bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId);
 
-        bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId);
+        bool DeleteInsuranceScan(int hpId, long seqNo, int userId);
 
         bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid);
 

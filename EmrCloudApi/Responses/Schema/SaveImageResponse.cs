@@ -1,11 +1,16 @@
-﻿namespace EmrCloudApi.Responses.Schema;
+﻿using Schema.Insurance.SaveInsuranceScan;
+
+namespace EmrCloudApi.Responses.Schema;
 
 public class SaveImageResponse
 {
-    public SaveImageResponse(string urlImage)
+    public SaveImageResponse(SaveInsuranceScanStatus state, IEnumerable<string> filePaths)
     {
-        UrlImage = urlImage;
+        Status = state;
+        FilePaths = filePaths;
     }
 
-    public string UrlImage { get; private set; }
+    public SaveInsuranceScanStatus Status { get; private set; }
+
+    public IEnumerable<string> FilePaths { get; private set; }
 }
