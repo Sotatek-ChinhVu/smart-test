@@ -38,7 +38,7 @@ namespace Interactor.Schema
                 {
                     if (item.IsDeleted == DeleteTypes.Deleted) // Delete
                     {
-                        if (string.IsNullOrEmpty(item.FileName))
+                        if (!string.IsNullOrEmpty(item.FileName))
                         {
                             _amazonS3Service.DeleteObjectAsync(item.FileName);
                         }
