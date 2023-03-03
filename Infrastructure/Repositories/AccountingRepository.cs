@@ -1105,11 +1105,11 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var syuno = TrackingDataContext.SyunoNyukin.FirstOrDefault(x =>
-                                                                               x.HpId == item.SyunoNyukinModels[0].HpId &&
-                                                                               x.PtId == item.SyunoNyukinModels[0].PtId &&
-                                                                               x.RaiinNo == item.SyunoNyukinModels[0].RaiinNo &&
-                                                                               x.SortNo == item.SyunoNyukinModels[0].SortNo &&
-                                                                               x.SeqNo == item.SyunoNyukinModels[0].SeqNo
+                                                                               x.HpId == item.SyunoNyukinModels?.FirstOrDefault().HpId ?? 0 &&
+                                                                               x.PtId == item.SyunoNyukinModels?.FirstOrDefault().PtId ?? 0 &&
+                                                                               x.RaiinNo == item.SyunoNyukinModels?.FirstOrDefault().RaiinNo ?? 0 &&
+                                                                               x.SortNo == item.SyunoNyukinModels?.FirstOrDefault().SortNo ?? 0 &&
+                                                                               x.SeqNo == item.SyunoNyukinModels?.FirstOrDefault().SeqNo ?? 0
                                                                                );
                     syuno.AdjustFutan = outAdjustFutan;
                     syuno.NyukinGaku = outNyukinGaku;
