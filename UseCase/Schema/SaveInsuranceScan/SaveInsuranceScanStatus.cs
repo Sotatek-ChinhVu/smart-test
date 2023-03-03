@@ -3,14 +3,9 @@
     public enum SaveInsuranceScanStatus
     {
         Successful,
-        Failed,
-        FailedSaveToDb,
-        Exception,
-        InvalidImageScan,
+        Error,
         InvalidHpId,
         InvalidPtId,
-        RemoveOldImageFailed,
-        RemoveOldImageSuccessful,
-        OldImageNotFound
+        InvalidNoDataSave
     }
 }

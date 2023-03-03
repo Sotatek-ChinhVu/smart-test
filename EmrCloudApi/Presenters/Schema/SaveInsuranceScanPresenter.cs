@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Schema
 
         public void Complete(SaveInsuranceScanOutputData outputData)
         {
-            Result.Data = new SaveImageResponse(outputData.UrlImage);
+            Result.Data = new SaveImageResponse(outputData.Status, outputData.UrlCreateds);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
@@ -19,15 +19,10 @@ namespace EmrCloudApi.Presenters.Schema
         private string GetMessage(SaveInsuranceScanStatus status) => status switch
         {
             SaveInsuranceScanStatus.Successful => ResponseMessage.Success,
-            SaveInsuranceScanStatus.Failed => ResponseMessage.Failed,
-            SaveInsuranceScanStatus.FailedSaveToDb => ResponseMessage.SaveInsuranceScanFailedSaveToDb,
-            SaveInsuranceScanStatus.Exception => ResponseMessage.ExceptionError,
-            SaveInsuranceScanStatus.InvalidImageScan => ResponseMessage.InvalidImageScan,
+            SaveInsuranceScanStatus.Error => ResponseMessage.Error,
             SaveInsuranceScanStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-            SaveInsuranceScanStatus.RemoveOldImageFailed => ResponseMessage.RemoveOldScanImageFailed,
-            SaveInsuranceScanStatus.RemoveOldImageSuccessful => ResponseMessage.RemoveOldScanImageSuccessful,
             SaveInsuranceScanStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-            SaveInsuranceScanStatus.OldImageNotFound => ResponseMessage.OldScanImageIsNotFound,
+            SaveInsuranceScanStatus.InvalidNoDataSave => ResponseMessage.InvalidNoDataSave,
             _ => string.Empty
         };
     }
