@@ -55,27 +55,6 @@ public class SyunoSeikyuModel
         HokenId = hokenId;
     }
 
-    [JsonConstructor]
-    public SyunoSeikyuModel(int hpId, long ptId, int sinDate, long raiinNo, int nyukinKbn, int seikyuTensu, int adjustFutan, int seikyuGaku, string seikyuDetail, int newSeikyuTensu, int newAdjustFutan, int newSeikyuGaku, string newSeikyuDetail, List<SyunoNyukinModel> syunoNyukinModels)
-    {
-        HpId = hpId;
-        PtId = ptId;
-        SinDate = sinDate;
-        RaiinNo = raiinNo;
-        NyukinKbn = nyukinKbn;
-        SeikyuTensu = seikyuTensu;
-        AdjustFutan = adjustFutan;
-        SeikyuGaku = seikyuGaku;
-        SeikyuDetail = seikyuDetail;
-        NewSeikyuTensu = newSeikyuTensu;
-        NewAdjustFutan = newAdjustFutan;
-        NewSeikyuGaku = newSeikyuGaku;
-        NewSeikyuDetail = newSeikyuDetail;
-        SyunoNyukinModels = syunoNyukinModels;
-        RaiinInfModel = new();
-        KaikeiInfModels = new();
-    }
-
     public int HpId { get; private set; }
 
     public long PtId { get; private set; }

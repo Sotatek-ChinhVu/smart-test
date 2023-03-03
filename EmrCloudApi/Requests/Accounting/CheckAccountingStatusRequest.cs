@@ -1,4 +1,4 @@
-﻿using Domain.Models.AccountDue;
+﻿using UseCase.Accounting.CheckAccountingStatus;
 
 namespace EmrCloudApi.Requests.Accounting
 {
@@ -15,7 +15,7 @@ namespace EmrCloudApi.Requests.Accounting
         public bool IsDisCharge { get; set; }
         public bool IsDeletedSyuno { get; set; }
         public bool IsSaveAccounting { get; set; }
-        public List<SyunoSeikyuModel> SyunoSeikyus { get; set; } = new();
-        public List<SyunoSeikyuModel> AllSyunoSeiKyus { get; set; } = new();
+        public List<SyunoSeikyuDto> SyunoSeikyuDtos { get; set; } = new();
+        public List<SyunoSeikyuDto> AllSyunoSeikyuDtos { get; set; } = new();
     }
 }

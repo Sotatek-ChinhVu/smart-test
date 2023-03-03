@@ -1104,13 +1104,16 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
+                    var firstSyunoNyukinModel = item.SyunoNyukinModels?.FirstOrDefault();
+
                     var syuno = TrackingDataContext.SyunoNyukin.FirstOrDefault(x =>
-                                                                               x.HpId == item.SyunoNyukinModels?.FirstOrDefault().HpId ?? 0 &&
-                                                                               x.PtId == item.SyunoNyukinModels?.FirstOrDefault().PtId ?? 0 &&
-                                                                               x.RaiinNo == item.SyunoNyukinModels?.FirstOrDefault().RaiinNo ?? 0 &&
-                                                                               x.SortNo == item.SyunoNyukinModels?.FirstOrDefault().SortNo ?? 0 &&
-                                                                               x.SeqNo == item.SyunoNyukinModels?.FirstOrDefault().SeqNo ?? 0
-                                                                               );
+                        x.HpId == (firstSyunoNyukinModel.HpId) &&
+                        x.PtId == (firstSyunoNyukinModel.PtId) &&
+                        x.RaiinNo == (firstSyunoNyukinModel.RaiinNo) &&
+                        x.SortNo == (firstSyunoNyukinModel.SortNo) &&
+                        x.SeqNo == (firstSyunoNyukinModel.SeqNo)
+                    );
+
                     syuno.AdjustFutan = outAdjustFutan;
                     syuno.NyukinGaku = outNyukinGaku;
                     syuno.PaymentMethodCd = payType;

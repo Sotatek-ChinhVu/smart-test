@@ -48,7 +48,7 @@ namespace Interactor.Accounting
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
 
-                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, inputData.AllSyunoSeiKyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
+                    var syunoChanged = CheckSyunoChanged(inputData.SyunoSeikyuDtos, inputData.AllSyunoSeikyuDtos, syunoSeikyusChecking, allSyunoSeikyusChecking);
                     if (syunoChanged)
                     {
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
@@ -82,7 +82,7 @@ namespace Interactor.Accounting
                         return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
                     }
 
-                    var syunoChanged = CheckSyunoChanged(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SyunoSeikyus, inputData.AllSyunoSeiKyus, syunoSeikyusChecking, allSyunoSeikyusChecking);
+                    var syunoChanged = CheckSyunoChanged(inputData.SyunoSeikyuDtos, inputData.AllSyunoSeikyuDtos, syunoSeikyusChecking, allSyunoSeikyusChecking);
 
                     if (syunoChanged)
                     {
@@ -118,7 +118,7 @@ namespace Interactor.Accounting
             }
         }
 
-        private bool CheckSyunoChanged(int hpId, long ptId, int sinDate, long raiinNo, List<SyunoSeikyuModel> currentList, List<SyunoSeikyuModel> allCurrentSyuno, List<SyunoSeikyuModel> syunoSeikyusChecking, List<SyunoSeikyuModel> allSyunoSeikyusChecking)
+        private bool CheckSyunoChanged(List<SyunoSeikyuDto> currentList, List<SyunoSeikyuDto> allCurrentSyuno, List<SyunoSeikyuModel> syunoSeikyusChecking, List<SyunoSeikyuModel> allSyunoSeikyusChecking)
         {
 
             if (CheckSyunoDifferent(currentList, syunoSeikyusChecking))
@@ -134,7 +134,7 @@ namespace Interactor.Accounting
             return false;
         }
 
-        private bool CheckSyunoDifferent(List<SyunoSeikyuModel> syunoSeikyusOld, List<SyunoSeikyuModel> syunoSeikyusNew)
+        private bool CheckSyunoDifferent(List<SyunoSeikyuDto> syunoSeikyusOld, List<SyunoSeikyuModel> syunoSeikyusNew)
         {
             if (syunoSeikyusOld.Count != syunoSeikyusNew.Count)
             {
