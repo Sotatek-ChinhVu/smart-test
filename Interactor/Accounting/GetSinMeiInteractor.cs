@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using EmrCalculateApi.Receipt.Constants;
 using EmrCalculateApi.Receipt.ViewModels;
 using Helper.Constants;
 using UseCase.Accounting.GetSinMei;
@@ -17,7 +18,8 @@ namespace Interactor.Accounting
         {
             try
             {
-                var sinMeiVm = new SinMeiViewModel(SinMeiMode.Kaikei, includeOutDrg: false, Session.HospitalID, PtId, SinDate, listRaiinNo);
+                var raiinNos = _accountingRepository.
+                var sinMeiVm = new SinMeiViewModel(SinMeiMode.Kaikei, includeOutDrg: false, inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo);
             }
             finally
             {
