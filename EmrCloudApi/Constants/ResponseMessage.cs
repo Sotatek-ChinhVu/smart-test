@@ -47,6 +47,7 @@
         public static readonly string InvalidGrpItemEdaNo = "Invalid GrpItemEdaNo";
         public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
+        public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -147,6 +148,7 @@
         public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
         public static readonly string InvalidException = "Invalid Exception";
+        public static readonly string InvalidNoDataSave = "Does not exist data to save";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
