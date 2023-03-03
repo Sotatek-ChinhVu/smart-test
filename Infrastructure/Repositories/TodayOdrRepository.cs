@@ -2835,5 +2835,11 @@ namespace Infrastructure.Repositories
 
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
+
+        public bool IsHolidayForDefaultTime(int hpId, int sinDate)
+        {
+            var holidayMst = NoTrackingDataContext.HolidayMsts.Where(t => t.HpId == hpId && t.SinDate == sinDate && t.IsDeleted != 1).FirstOrDefault();
+            return holidayMst != null && holidayMst.HolidayKbn != 0;
+        }
     }
 }

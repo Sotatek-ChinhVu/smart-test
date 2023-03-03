@@ -47,6 +47,7 @@
         public static readonly string InvalidGrpItemEdaNo = "Invalid GrpItemEdaNo";
         public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
+        public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
 
         //Common
         public static readonly string NotFound = "Not found";
