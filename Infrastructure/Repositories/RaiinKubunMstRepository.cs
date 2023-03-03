@@ -192,7 +192,7 @@ namespace Infrastructure.Repositories
                 yoyakuKbnCd = currentKubunYoyakuList.Max(x => x.YoyakuCd);
             }
 
-            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunMstList, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
+            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
 
             if (result.Any())
             {
@@ -201,7 +201,7 @@ namespace Infrastructure.Repositories
 
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
-            var resultExecute = executionStrategy.Execute(
+            executionStrategy.Execute(
                 () =>
                 {
                     // execute your logic here
@@ -313,8 +313,10 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listRaiinKbnMst)
                 {
-                    if (listColumnName.Select(i => i.Item2).Contains(item.Key) == false)
+                    if (!listColumnName.Select(i => i.Item2).Contains(item.Key))
+                    {
                         listColumnName.Add(new(item.Value.ToString(), item.Key));
+                    }
                 }
             }
 
@@ -621,7 +623,7 @@ namespace Infrastructure.Repositories
                 raiinKbnKouiModels.ForEach(x =>
                 {
                     kouiKbnCd++;
-                    x = new RaiinKbnKouiModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, kouiKbnCd, x.IsDeleted);
+                    x.ChangeKouiKbnCd(kouiKbnCd);
                 });
 
                 TrackingDataContext.RaiinKbnKouis.AddRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
@@ -863,7 +865,7 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region Validate
-        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnMst> currentKubunMstList, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
+        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
         {
             List<string> result = new List<string>();
 
@@ -873,10 +875,8 @@ namespace Infrastructure.Repositories
                 return result;
             }
 
-            var currentRaiinKubunMsts = currentKubunMstList.Where(x => x.IsDeleted == 0).ToList();
-            var currentSortNos = currentRaiinKubunMsts.Select(x => new Tuple<int, int>(x.GrpCd, x.SortNo)).ToList();
             var newSortNos = raiinKubunMstModels.Select(x => new Tuple<int, int>(x.GroupId, x.SortNo)).ToList();
-            if (!ValidateSortNo(currentSortNos, newSortNos))
+            if (!ValidateSortNo(newSortNos))
             {
                 result.Add(KubunSettingConstant.InvalidRaiinKbnMstSortNo);
                 return result;
@@ -900,10 +900,9 @@ namespace Infrastructure.Repositories
                     }
 
                     var currentDetails = currentRaiinKubunDetails.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunMst.GroupId).ToList();
-                    var currentRaiinKubunDetailSortNos = currentDetails.Select(x => new Tuple<int, int>(x.KbnCd, x.SortNo)).ToList();
                     var newSortRaiinKubunDetailNos = raiinKubunDetailModels.Select(x => new Tuple<int, int>(x.KubunCd, x.SortNo)).ToList();
 
-                    if (!ValidateSortNo(currentRaiinKubunDetailSortNos, newSortRaiinKubunDetailNos))
+                    if (!ValidateSortNo(newSortRaiinKubunDetailNos))
                     {
                         result.Add(KubunSettingConstant.InvalidRaiinKbnDetailSortNo);
                         return result;
@@ -936,10 +935,9 @@ namespace Infrastructure.Repositories
                             }
 
                             var currentRaiinKbnItems = raiinKbItems.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            var currentRaiinKbnItemSortNos = currentRaiinKbnItems.Select(x => new Tuple<int, int>((int)x.SeqNo, x.SortNo)).ToList();
                             var newRRaiinKbnItemSortNos = raiinKbItemModels.Select(x => new Tuple<int, int>((int)x.SeqNo, x.SortNo)).ToList();
 
-                            if (!ValidateSortNo(currentRaiinKbnItemSortNos, newRRaiinKbnItemSortNos))
+                            if (!ValidateSortNo(newRRaiinKbnItemSortNos))
                             {
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnItemSortNo);
                                 return result;
@@ -969,10 +967,9 @@ namespace Infrastructure.Repositories
                                 return result;
                             }
                             var currentRaiinKbnYayokus = raiinKbnYayokus.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            var currentRaiinKbnYayokuSortNos = currentRaiinKbnYayokus.Select(x => new Tuple<int, int>(x.YoyakuCd, (int)x.SeqNo)).ToList();
                             var newRaiinKbnYayokuSortNos = raiinKbnYayokuModels.Select(x => new Tuple<int, int>(x.YoyakuCd, (int)x.SeqNo)).ToList();
 
-                            if (!ValidateSortNo(currentRaiinKbnYayokuSortNos, newRaiinKbnYayokuSortNos))
+                            if (!ValidateSortNo(newRaiinKbnYayokuSortNos))
                             {
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnYayokuSortNo);
                                 return result;
@@ -998,23 +995,10 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
-        private bool ValidateSortNo(List<Tuple<int, int>> currentValue, List<Tuple<int, int>> newValue)
+        private bool ValidateSortNo(List<Tuple<int, int>> newValue)
         {
-            if (newValue.Any(x => x.Item1 < 0 || x.Item2 < 0)) return false;
-            var ids = newValue.Select(x => x.Item1).ToList();
-
-            currentValue.ForEach(x =>
-            {
-                if (ids.Contains(x.Item1)) x = newValue.FirstOrDefault(y => y.Item1 == x.Item1) ?? new Tuple<int, int>(0, 0);
-            });
-
-            var value = currentValue.Union(newValue).Select(x => x.Item2).ToList();
-            value.Sort();
-
-            if (value.Zip(value.Skip(1), (curr, next) => curr < next).All(x => x))
-                return true;
-
-            return false;
+            if (newValue.Any(x => x.Item1 < 0 || x.Item2 < 0)) { return false; }
+            return true;
         }
         #endregion
         #endregion
