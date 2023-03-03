@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Accounting
         public Response<GetSinMeiResponse> Result { get; private set; } = new();
         public void Complete(GetSinMeiOutputData outputData)
         {
-            Result.Data = new GetSinMeiResponse(outputData.SinMeiModels);
+            Result.Data = new GetSinMeiResponse(outputData.SinMeiModels, outputData.SinHoModels, outputData.SinGaiModels);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

@@ -21,5 +21,7 @@ namespace Domain.Models.Accounting
                                    int payType, string comment, bool isDisCharged);
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
         List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo);
+        List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
+        int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
     }
 }
