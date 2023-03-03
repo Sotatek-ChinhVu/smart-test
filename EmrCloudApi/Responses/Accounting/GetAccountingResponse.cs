@@ -5,7 +5,7 @@ namespace EmrCloudApi.Responses.Accounting
 {
     public class GetAccountingResponse
     {
-        public GetAccountingResponse(List<SyunoSeikyuModel> syunoSeikyuModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels)
+        public GetAccountingResponse(List<SyunoSeikyuModel> syunoSeikyuModels, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModel)
         {
             SyunoSeikyuModels = syunoSeikyuModels;
             TotalPoint = totalPoint;
@@ -21,6 +21,7 @@ namespace EmrCloudApi.Responses.Accounting
             PayType = payType;
             Comment = comment;
             KohiInfModels = kohiInfModels;
+            AllSyunoSeikyuModel = allSyunoSeikyuModel;
         }
 
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
@@ -37,5 +38,6 @@ namespace EmrCloudApi.Responses.Accounting
         public int PayType { get; private set; }
         public string Comment { get; private set; }
         public List<KohiInfModel> KohiInfModels { get; private set; }
+        public List<SyunoSeikyuModel> AllSyunoSeikyuModel { get; private set; }
     }
 }

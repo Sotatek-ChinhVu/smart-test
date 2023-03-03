@@ -211,6 +211,7 @@
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
+        public const string CheckAccounting = "CheckAccounting";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
