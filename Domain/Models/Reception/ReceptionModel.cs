@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace Domain.Models.Reception
 {
@@ -91,6 +92,10 @@ namespace Domain.Models.Reception
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
             Comment = comment;
+            SName = String.Empty;
+            KaSname = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
@@ -104,6 +109,10 @@ namespace Domain.Models.Reception
             SinStartTime = String.Empty;
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
+            SName = String.Empty;
+            KaSname = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
@@ -120,6 +129,10 @@ namespace Domain.Models.Reception
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
             Comment = String.Empty;
+            SName = String.Empty;
+            KaSname = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel()
@@ -148,6 +161,10 @@ namespace Domain.Models.Reception
             SyosaisinKbn = 0;
             JikanKbn = 0;
             Comment = String.Empty;
+            SName = String.Empty;
+            KaSname = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionModel(int tantoId, int kaId)
@@ -187,6 +204,38 @@ namespace Domain.Models.Reception
             SinStartTime = string.Empty;
             SinEndTime = string.Empty;
             KaikeiTime = string.Empty;
+        }
+
+        public ReceptionModel(ReceptionUpsertItem receptionUpsertItem)
+        {
+            HpId = receptionUpsertItem.HpId;
+            PtId = receptionUpsertItem.PtId;
+            SinDate = receptionUpsertItem.SinDate;
+            RaiinNo = receptionUpsertItem.RaiinNo;
+            OyaRaiinNo = receptionUpsertItem.OyaRaiinNo;
+            HokenPid = receptionUpsertItem.HokenPid;
+            SanteiKbn = receptionUpsertItem.SanteiKbn;
+            Status = receptionUpsertItem.Status;
+            IsYoyaku = receptionUpsertItem.IsYoyaku;
+            YoyakuTime = receptionUpsertItem.YoyakuTime;
+            YoyakuId = receptionUpsertItem.YoyakuId;
+            UketukeSbt = receptionUpsertItem.UketukeSbt;
+            UketukeTime = receptionUpsertItem.UketukeTime;
+            UketukeId = receptionUpsertItem.UketukeId;
+            UketukeNo = receptionUpsertItem.UketukeNo;
+            SinStartTime = receptionUpsertItem.SinStartTime;
+            SinEndTime = receptionUpsertItem.SinEndTime;
+            KaikeiTime = receptionUpsertItem.KaikeiTime;
+            KaikeiId = receptionUpsertItem.KaikeiId;
+            KaId = receptionUpsertItem.KaId;
+            TantoId = receptionUpsertItem.TantoId;
+            SyosaisinKbn = receptionUpsertItem.SyosaisinKbn;
+            JikanKbn = receptionUpsertItem.JikanKbn;
+            Comment = receptionUpsertItem.Comment;
+            SName = String.Empty;
+            KaSname = String.Empty;
+            Houbetu = String.Empty;
+            HokensyaNo = String.Empty;
         }
 
         public ReceptionDto ToDto()

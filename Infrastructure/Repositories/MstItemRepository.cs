@@ -173,7 +173,9 @@ namespace Infrastructure.Repositories
                 tenMst?.SanteiItemCd ?? string.Empty,
                 tenMst?.OdrTermVal ?? 0,
                 tenMst?.CnvTermVal ?? 0,
-                tenMst?.DefaultVal ?? 0
+                tenMst?.DefaultVal ?? 0,
+                tenMst?.Kokuji1 ?? string.Empty,
+                tenMst?.Kokuji2 ?? string.Empty
             );
         }
 
@@ -220,7 +222,9 @@ namespace Infrastructure.Repositories
                 tenMst.SanteiItemCd ?? string.Empty,
                 tenMst.OdrTermVal,
                 tenMst.CnvTermVal,
-                tenMst.DefaultVal
+                tenMst.DefaultVal,
+                tenMst.Kokuji1 ?? string.Empty,
+                tenMst.Kokuji2 ?? string.Empty
             )).ToList();
         }
 
@@ -574,10 +578,10 @@ namespace Infrastructure.Repositories
                                select new { tenKN.ItemCd, ten.Ten }).ToList();
 
             var queryFinal = (from ten in tenKnList
-                             join tenKN in knTensuList
-                             on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
-                             from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { TenMst = ten, tenKN }).ToList();
+                              join tenKN in knTensuList
+                              on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
+                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                              select new { TenMst = ten, tenKN }).ToList();
 
             var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
             var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
@@ -637,7 +641,9 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.SanteiItemCd ?? string.Empty,
                                                            item.TenMst?.OdrTermVal ?? 0,
                                                            item.TenMst?.CnvTermVal ?? 0,
-                                                           item.TenMst?.DefaultVal ?? 0
+                                                           item.TenMst?.DefaultVal ?? 0,
+                                                           item.TenMst?.Kokuji1 ?? string.Empty,
+                                                           item.TenMst?.Kokuji2 ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -729,7 +735,9 @@ namespace Infrastructure.Repositories
                                                            item.SanteiItemCd ?? string.Empty,
                                                            item.OdrTermVal,
                                                            item.CnvTermVal,
-                                                           item.DefaultVal
+                                                           item.DefaultVal,
+                                                           item.Kokuji1 ?? string.Empty,
+                                                           item.Kokuji2 ?? string.Empty
                                                            )).ToList();
             }
 
@@ -888,7 +896,9 @@ namespace Infrastructure.Repositories
                     entity?.SanteiItemCd ?? string.Empty,
                     entity?.OdrTermVal ?? 0,
                     entity?.CnvTermVal ?? 0,
-                    entity?.DefaultVal ?? 0
+                    entity?.DefaultVal ?? 0,
+                    entity?.Kokuji1 ?? string.Empty,
+                    entity?.Kokuji2 ?? string.Empty
                );
         }
 
@@ -939,7 +949,61 @@ namespace Infrastructure.Repositories
                     entity.SanteiItemCd ?? string.Empty,
                     entity.OdrTermVal,
                     entity.CnvTermVal,
-                    entity.DefaultVal
+                    entity.DefaultVal,
+                    entity.Kokuji1 ?? string.Empty,
+                    entity.Kokuji2 ?? string.Empty
+               )).ToList();
+        }
+
+        public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
+        {
+            itemCds = itemCds.Distinct().ToList();
+            var entities = NoTrackingDataContext.TenMsts.Where(p =>
+                  p.HpId == hpId &&
+                  itemCds.Contains(p.ItemCd));
+
+            return entities.Select(entity => new TenItemModel(
+                    entity.HpId,
+                    entity.ItemCd,
+                    entity.RousaiKbn,
+                    entity.KanaName1 ?? string.Empty,
+                    entity.Name ?? string.Empty,
+                    entity.KohatuKbn,
+                    entity.MadokuKbn,
+                    entity.KouseisinKbn,
+                    entity.OdrUnitName ?? string.Empty,
+                    entity.EndDate,
+                    entity.DrugKbn,
+                    entity.MasterSbt ?? string.Empty,
+                    entity.BuiKbn,
+                    entity.IsAdopted,
+                    entity.Ten,
+                    entity.TenId,
+                    string.Empty,
+                    string.Empty,
+                    entity.CmtCol1,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.SinKouiKbn,
+                    entity.YjCd ?? string.Empty,
+                    entity.CnvUnitName ?? string.Empty,
+                    entity.StartDate,
+                    entity.YohoKbn,
+                    entity.CmtColKeta1,
+                    entity.CmtColKeta2,
+                    entity.CmtColKeta3,
+                    entity.CmtColKeta4,
+                    entity.CmtCol2,
+                    entity.CmtCol3,
+                    entity.CmtCol4,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.MinAge ?? string.Empty,
+                    entity.MaxAge ?? string.Empty,
+                    entity.SanteiItemCd ?? string.Empty,
+                    entity.OdrTermVal,
+                    entity.CnvTermVal,
+                    entity.DefaultVal,
+                    entity.Kokuji1 ?? string.Empty,
+                    entity.Kokuji2 ?? string.Empty
                )).ToList();
         }
 
@@ -1014,6 +1078,7 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds)
         {
+            itemGrpCds = itemGrpCds.Distinct().ToList();
             List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
 
             var query =
@@ -1023,6 +1088,29 @@ namespace Infrastructure.Repositories
                     itemGrpCds.Contains(p.ItemGrpCd) &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+            foreach (var entity in query)
+            {
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
+            }
+            return result;
+        }
+
+        public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int minSinDate, int maxSinDate, int grpSbt, List<long> itemGrpCds)
+        {
+            itemGrpCds = itemGrpCds.Distinct().ToList();
+            List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
+
+            var query =
+                NoTrackingDataContext.itemGrpMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.GrpSbt == grpSbt &&
+                    itemGrpCds.Contains(p.ItemGrpCd) &&
+                    p.StartDate <= minSinDate &&
+                    p.EndDate >= maxSinDate)
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
                 .ThenBy(p => p.SeqNo)
@@ -1285,7 +1373,9 @@ namespace Infrastructure.Repositories
                         tenMst?.SanteiItemCd ?? string.Empty,
                         0,
                         0,
-                        tenMst?.DefaultVal ?? 0
+                        tenMst?.DefaultVal ?? 0,
+                        tenMst?.Kokuji1 ?? string.Empty,
+                        tenMst?.Kokuji2 ?? string.Empty
                         );
         }
 

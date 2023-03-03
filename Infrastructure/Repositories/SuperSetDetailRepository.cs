@@ -39,11 +39,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         if (rootSuperSet == null) return (new(), new(), new());
 
         if (rootSuperSet.Level2 == 0)
-            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId && rootSuperSet.SetKbnEdaNo == s.SetKbnEdaNo).Select(s => s.SetCd).ToList();
         else if (rootSuperSet.Level3 == 0)
-            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId && rootSuperSet.SetKbnEdaNo == s.SetKbnEdaNo).Select(s => s.SetCd).ToList();
         else
-            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId && s.SetKbnEdaNo == rootSuperSet.SetKbnEdaNo).Select(s => s.SetCd).ToList();
 
         var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         List<string> codeLists = new();

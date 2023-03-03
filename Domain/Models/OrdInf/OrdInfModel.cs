@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.OrdInfDetails;
 using Domain.Types;
+using Helper.Constants;
 using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfs
@@ -194,6 +195,18 @@ namespace Domain.Models.OrdInfs
         public OrdInfModel ChangeOdrDetail(List<OrdInfDetailModel> ordInfDetails)
         {
             OrdInfDetails = ordInfDetails;
+            return this;
+        }
+
+        public OrdInfModel ChangeOdrKouiKbn(int odrKouiKbn)
+        {
+            OdrKouiKbn = odrKouiKbn;
+            return this;
+        }
+
+        public OrdInfModel Delete()
+        {
+            IsDeleted = DeleteTypes.Deleted;
             return this;
         }
     }
