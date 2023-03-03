@@ -1102,6 +1102,33 @@ namespace Infrastructure.Repositories
                     UpdateStatusRaiinInf(userId, item, raiinInLists);
                     UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
                 }
+                else
+                {
+                    var firstSyunoNyukinModel = item.SyunoNyukinModels?.FirstOrDefault();
+
+                    var syuno = TrackingDataContext.SyunoNyukin.FirstOrDefault(x =>
+                        x.HpId == (firstSyunoNyukinModel.HpId) &&
+                        x.PtId == (firstSyunoNyukinModel.PtId) &&
+                        x.RaiinNo == (firstSyunoNyukinModel.RaiinNo) &&
+                        x.SortNo == (firstSyunoNyukinModel.SortNo) &&
+                        x.SeqNo == (firstSyunoNyukinModel.SeqNo)
+                    );
+
+                    syuno.AdjustFutan = outAdjustFutan;
+                    syuno.NyukinGaku = outNyukinGaku;
+                    syuno.PaymentMethodCd = payType;
+                    syuno.UketukeSbt = item.RaiinInfModel.UketukeSbt;
+                    syuno.NyukinCmt = comment;
+                    syuno.NyukinjiTensu = item.SeikyuTensu;
+                    syuno.NyukinjiDetail = item.SeikyuDetail;
+                    syuno.NyukinjiSeikyu = item.SeikyuGaku;
+                    syuno.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    syuno.UpdateId = userId;
+                    syuno.NyukinDate = item.SinDate;
+
+                    UpdateStatusRaiinInf(userId, item, raiinInLists);
+                    UpdateStatusSyunoSeikyu(userId, item.RaiinNo, outNyukinKbn, seikyuLists);
+                }
 
             }
             if (accDue != 0 && thisCredit != 0)
@@ -1267,6 +1294,31 @@ namespace Infrastructure.Repositories
 
             thisSeikyuGaku = thisSeikyuGaku - outAdjustFutan - outNyukinGaku;
             outNyukinKbn = thisSeikyuGaku == 0 ? 3 : 1;
+        }
+
+        public bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo)
+        {
+            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item =>
+                item.HpId == hpId &&
+                item.PtId == ptId &&
+                item.RaiinNo == raiinNo &&
+                item.IsDeleted == DeleteTypes.None);
+
+            return raiinInf != null;
+        }
+
+        public List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo)
+        {
+            var raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.OyaRaiinNo == oyaRaiinNo &&
+                                                                x.Status > RaiinState.TempSave &&
+                                                                x.IsDeleted == DeleteTypes.None
+                                                                ).Select(x => x.RaiinNo).ToList();
+            if (raiinNos.Any()) return raiinNos;
+
+            return new();
         }
     }
 }
