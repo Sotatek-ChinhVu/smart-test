@@ -1311,6 +1311,22 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
+    public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList)
+    {
+        sinYmList = sinYmList.Distinct().ToList();
+        ptIdList = ptIdList.Distinct().ToList();
+        hokenIdList = hokenIdList.Distinct().ToList();
+        var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                               && sinYmList.Contains(item.SinYm)
+                                                                               && ptIdList.Contains(item.PtId)
+                                                                               && hokenIdList.Contains(item.HokenId)
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .ToList();
+
+        var result = syobyoKeikaList.Select(item => ConvertToSyobyoKeikaModel(item)).ToList();
+        return result;
+    }
+
     public bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList)
     {
         var syoukiInfUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
@@ -2043,6 +2059,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                  item.TermCnt,
                                                                  item.TermSbt))
                                              .ToList();
+    }
+
+    public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(item => item.HpId == hpId
+                                                                                    && item.IsDeleted == DeleteTypes.None
+                                                                                    && item.PtId == ptId
+                                                                                    && item.SinYm == sinYm
+                                                                                    && item.HokenId == hokenId);
+        return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
     }
     #endregion
 
