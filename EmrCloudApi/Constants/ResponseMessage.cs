@@ -942,6 +942,12 @@
         public static readonly string InvalidThisWari = "Invalid ThisWari";
         public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
-        public static readonly string InvalidComment = "Invalid ThisWari";
+        public static readonly string InvalidComment = "Invalid Comment";
+        public static readonly string StateChanged = "State Changed";
+        public static readonly string VisitRemoved = "Visit Removed";
+        public static readonly string BillUpdated = "Bill Updated";
+        public static readonly string ValidPaymentAmount = "Valid Payment Amount";
+        public static readonly string DateNotVerify = "Date Not Verify";
+        public static readonly string InvalidThisCredit = "Invalid This Credit";
     }
 }
