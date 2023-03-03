@@ -183,4 +183,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
         return result.ToString();
     }
+
+    public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
 }
