@@ -126,16 +126,16 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckAccountingStatusResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetSinMei)]
-        public ActionResult<Response<GetSinMeiResponse>> GetList([FromQuery] GetSinMeiRequest request)
+        [HttpGet(ApiPath.GetMeiHoGai)]
+        public ActionResult<Response<GetMeiHoGaiResponse>> GetList([FromQuery] GetMeiHoGaiRequest request)
         {
-            var input = new GetSinMeiInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
-            var presenter = new GetSinMeiPresenter();
+            var presenter = new GetMeiHoGaiPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetSinMeiResponse>>(presenter.Result);
+            return new ActionResult<Response<GetMeiHoGaiResponse>>(presenter.Result);
         }
     }
 }

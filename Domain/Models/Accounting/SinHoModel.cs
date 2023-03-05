@@ -30,10 +30,5 @@ namespace Domain.Models.Accounting
         public string PointKohi2Binding { get => PointKohi2 > 0 ? PointKohi2.AsString() : ""; }
         public string PointKohi3Binding { get => PointKohi3 > 0 ? PointKohi3.AsString() : ""; }
         public string PointKohi4Binding { get => PointKohi4 > 0 ? PointKohi4.AsString() : ""; }
-        public bool CheckDefaultValue()
-        {
-            return false;
-        }
-
     }
 }

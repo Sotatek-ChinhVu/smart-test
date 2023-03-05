@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Accounting
 {
-    public class GetSinMeiRequest
+    public class GetMeiHoGaiRequest
     {
         public int HpId { get; set; }
         public long PtId { get; set; }

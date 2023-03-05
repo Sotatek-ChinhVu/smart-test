@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Accounting.GetSinMei
 {
-    public enum GetSinMeiStatus
+    public enum GetMeiHoGaiStatus
     {
         Successed = 1,
         Failed = 2,

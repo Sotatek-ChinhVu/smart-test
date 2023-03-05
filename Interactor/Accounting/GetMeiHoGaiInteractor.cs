@@ -11,14 +11,14 @@ using UseCase.Accounting.GetSinMei;
 
 namespace Interactor.Accounting
 {
-    public class GetSinMeiInteractor : IGetSinMeiInputPort
+    public class GetMeiHoGaiInteractor : IGetMeiHoGaiInputPort
     {
         private readonly IAccountingRepository _accountingRepository;
         private readonly ITenantProvider _tenantProvider;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
 
-        public GetSinMeiInteractor(IAccountingRepository accountingRepository, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _accountingRepository = accountingRepository;
             _tenantProvider = tenantProvider;
@@ -26,13 +26,13 @@ namespace Interactor.Accounting
             _emrLogger = emrLogger;
         }
 
-        public GetSinMeiOutputData Handle(GetSinMeiInputData inputData)
+        public GetMeiHoGaiOutputData Handle(GetMeiHoGaiInputData inputData)
         {
             try
             {
                 var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
 
-                if (!raiinNos.Any()) { return new GetSinMeiOutputData(new(), new(), new(), GetSinMeiStatus.NoData); }
+                if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinMei = GetSinMei(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos);
 
@@ -40,7 +40,7 @@ namespace Interactor.Accounting
 
                 var sinGai = GetSinGai(inputData.HpId, inputData.PtId, raiinNos, sinMei);
 
-                return new GetSinMeiOutputData(sinMei, sinHo, sinGai, GetSinMeiStatus.Successed);
+                return new GetMeiHoGaiOutputData(sinMei, sinHo, sinGai, GetMeiHoGaiStatus.Successed);
 
             }
             finally
@@ -82,47 +82,50 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> EditSinMei(List<SinMeiModel> listSinMei)
         {
-            if (listSinMei == null || listSinMei.Count <= 0) return new();
+            if (listSinMei == null || listSinMei.Count <= 0) return new List<SinMeiModel>();
 
             int oldSinId = 0;
+            var result = new List<SinMeiModel>();
 
-            for (int i = 0; i < listSinMei.Count; i++)
+            foreach (SinMeiModel sinMei in listSinMei)
             {
-                if (listSinMei[i].SinId != 0 && listSinMei[i].SinId != oldSinId)
+                if (sinMei.SinId != 0 && sinMei.SinId != oldSinId)
                 {
-                    oldSinId = listSinMei[i].SinId;
-                    listSinMei[i].SinIdBinding = oldSinId.AsString();
+                    oldSinId = sinMei.SinId;
+                    sinMei.SinIdBinding = oldSinId.AsString();
                 }
 
-                if (i == listSinMei.Count - 1) continue;
+                result.Add(sinMei);
 
-                if (listSinMei[i + 1].SinId != 0 && listSinMei[i + 1].SinId != oldSinId)
+                if (sinMei == listSinMei.Last()) continue;
+
+                SinMeiModel nextSinMei = listSinMei[listSinMei.IndexOf(sinMei) + 1];
+                if (nextSinMei.SinId != 0 && nextSinMei.SinId != oldSinId)
                 {
-                    listSinMei.Insert(i + 1, new SinMeiModel(listSinMei[i].SinId,
-                                                            listSinMei[i].SinIdBinding,
-                                                            listSinMei[i].ItemName,
-                                                            listSinMei[i].Suryo,
-                                                            listSinMei[i].UnitName,
-                                                            listSinMei[i].TenKai,
-                                                            listSinMei[i].TotalTen,
-                                                            listSinMei[i].TotalKingaku,
-                                                            listSinMei[i].Kingaku,
-                                                            listSinMei[i].FutanS,
-                                                            listSinMei[i].FutanK1,
-                                                            listSinMei[i].FutanK2,
-                                                            listSinMei[i].FutanK3,
-                                                            listSinMei[i].FutanK4,
-                                                            listSinMei[i].CdKbn,
-                                                            listSinMei[i].JihiSbt,
-                                                            listSinMei[i].EnTenKbn,
-                                                            listSinMei[i].SanteiKbn,
-                                                            listSinMei[i].InOutKbn,
-                                                            true));
-                    i++;
+                    result.Add(new SinMeiModel(sinMei.SinId,
+                                                sinMei.SinIdBinding,
+                                                sinMei.ItemName,
+                                                sinMei.Suryo,
+                                                sinMei.UnitName,
+                                                sinMei.TenKai,
+                                                sinMei.TotalTen,
+                                                sinMei.TotalKingaku,
+                                                sinMei.Kingaku,
+                                                sinMei.FutanS,
+                                                sinMei.FutanK1,
+                                                sinMei.FutanK2,
+                                                sinMei.FutanK3,
+                                                sinMei.FutanK4,
+                                                sinMei.CdKbn,
+                                                sinMei.JihiSbt,
+                                                sinMei.EnTenKbn,
+                                                sinMei.SanteiKbn,
+                                                sinMei.InOutKbn,
+                                                true));
                 }
             }
 
-            return listSinMei;
+            return result;
         }
 
         private List<SinHoModel> GetSinHo(List<SinMeiModel> sinMeiModels)
@@ -164,12 +167,12 @@ namespace Interactor.Accounting
 
             if (jihis != null && jihis.Count > 0)
             {
-                for (int i = 0; i < jihis.Count; i++)
+                foreach (var jihi in jihis)
                 {
-                    sinGai.Add(new SinGaiModel(jihis[i].Name,
-                                                sinMeiModels.Where(item => item.JihiSbt == jihis[i].JihiSbt)
-                                                .Sum(item => item.TotalKingaku).AsInteger(),
-                                                false));
+                    sinGai.Add(new SinGaiModel(jihi.Name,
+                                               sinMeiModels.Where(item => item.JihiSbt == jihi.JihiSbt)
+                                               .Sum(item => item.TotalKingaku).AsInteger(),
+                                               false));
                 }
             }
 
@@ -178,8 +181,6 @@ namespace Interactor.Accounting
                                         false));
 
             sinGai.Add(new SinGaiModel("合計金額",
-                                        //自費項目 --> item.JihiSbt = 0
-                                        //自費算定項目 --> item.JihiSbt == 0 && item.SanteiKbn == 2
                                         sinMeiModels.Where(item => item.JihiSbt > 0 || (item.JihiSbt == 0 && item.SanteiKbn == 2)).Sum(item => item.TotalKingaku)
                                             .AsInteger(),
                                         true));

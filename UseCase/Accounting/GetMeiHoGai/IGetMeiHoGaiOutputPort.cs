@@ -2,7 +2,7 @@
 
 namespace UseCase.Accounting.GetSinMei
 {
-    public interface IGetSinMeiOutputPort : IOutputPort<GetSinMeiOutputData>
+    public interface IGetMeiHoGaiOutputPort : IOutputPort<GetMeiHoGaiOutputData>
     {
     }
 }

@@ -2,9 +2,9 @@
 
 namespace UseCase.Accounting.GetSinMei
 {
-    public class GetSinMeiInputData : IInputData<GetSinMeiOutputData>
+    public class GetMeiHoGaiInputData : IInputData<GetMeiHoGaiOutputData>
     {
-        public GetSinMeiInputData(int hpId, long ptId, int sinDate, long raiinNo)
+        public GetMeiHoGaiInputData(int hpId, long ptId, int sinDate, long raiinNo)
         {
             HpId = hpId;
             PtId = ptId;
