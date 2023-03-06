@@ -82,8 +82,8 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveListFileResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.GetListInsuranceScan + "{ptId}")]
-        public ActionResult<Response<GetListInsuranceScanResponse>> GetListInsuranceScan(long ptId)
+        [HttpGet(ApiPath.GetListInsuranceScan)]
+        public ActionResult<Response<GetListInsuranceScanResponse>> GetListInsuranceScan([FromQuery] long ptId)
         {
             var input = new GetListInsuranceScanInputData(HpId, ptId);
             var output = _bus.Handle(input);
