@@ -10,6 +10,7 @@ namespace UseCase.Accounting.CheckAccountingStatus
             Status = status;
         }
 
+        public string MyProperty { get; set; }
         public string Message { get; private set; }
         public CheckAccountingStatus Status { get; private set; }
     }

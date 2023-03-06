@@ -4,7 +4,7 @@ namespace UseCase.Accounting.CheckAccountingStatus
 {
     public class CheckAccountingStatusInputData : IInputData<CheckAccountingStatusOutputData>
     {
-        public CheckAccountingStatusInputData(int hpId, long ptId, int sinDate, long raiinNo, int debitBalance, int sumAdjust, int thisCredit, int wari, bool isDisCharge, bool isDeletedSyuno, bool isSaveAccounting, List<SyunoSeikyuDto> syunoSeikyuDtos, List<SyunoSeikyuDto> allSyunoSeikyuDtos)
+        public CheckAccountingStatusInputData(int hpId, long ptId, int sinDate, long raiinNo, int debitBalance, int sumAdjust, int thisCredit, int wari, bool isDisCharge, bool isSaveAccounting, List<SyunoSeikyuDto> syunoSeikyuDtos, List<SyunoSeikyuDto> allSyunoSeikyuDtos)
         {
             HpId = hpId;
             PtId = ptId;
@@ -15,7 +15,6 @@ namespace UseCase.Accounting.CheckAccountingStatus
             ThisCredit = thisCredit;
             Wari = wari;
             IsDisCharge = isDisCharge;
-            IsDeletedSyuno = isDeletedSyuno;
             IsSaveAccounting = isSaveAccounting;
             SyunoSeikyuDtos = syunoSeikyuDtos;
             AllSyunoSeikyuDtos = allSyunoSeikyuDtos;
@@ -30,7 +29,6 @@ namespace UseCase.Accounting.CheckAccountingStatus
         public int ThisCredit { get; private set; }
         public int Wari { get; private set; }
         public bool IsDisCharge { get; private set; }
-        public bool IsDeletedSyuno { get; private set; }
         public bool IsSaveAccounting { get; private set; }
         public List<SyunoSeikyuDto> SyunoSeikyuDtos { get; private set; }
         public List<SyunoSeikyuDto> AllSyunoSeikyuDtos { get; private set; }
