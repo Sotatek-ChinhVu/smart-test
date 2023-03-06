@@ -1,14 +1,15 @@
 ﻿using Domain.Models.MstItem;
+using UseCase.MedicalExamination.CheckedExpired;
 
 namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class CheckedExpiredResponse
     {
-        public CheckedExpiredResponse(Dictionary<string, (string, List<TenItemModel>)> messages)
+        public CheckedExpiredResponse(List<CheckedExpiredOutputItem> messages)
         {
             Messages = messages;
         }
 
-        public Dictionary<string, (string, List<TenItemModel>)> Messages { get; private set; }
+        public List<CheckedExpiredOutputItem> Messages { get; private set; }
     }
 }

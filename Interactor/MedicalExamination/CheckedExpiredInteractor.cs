@@ -58,7 +58,15 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                var result = _mstItemRepository.GetConversionItem(expiredItems, inputData.HpId, inputData.SinDate);
+                var convertItems = _mstItemRepository.GetConversionItem(expiredItems, inputData.HpId, inputData.SinDate);
+
+                List<CheckedExpiredOutputItem> result = new();
+
+                foreach (var convertItem in convertItems)
+                {
+
+                    result.Add(new CheckedExpiredOutputItem(convertItem.Key, convertItem.Value.Item1, convertItem.Value.Item2));
+                }
 
                 return new CheckedExpiredOutputData(CheckedExpiredStatus.Successed, result);
             }
