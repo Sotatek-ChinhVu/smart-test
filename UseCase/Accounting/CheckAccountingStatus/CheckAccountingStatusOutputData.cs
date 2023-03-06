@@ -11,7 +11,7 @@ namespace UseCase.Accounting.CheckAccountingStatus
             Status = status;
         }
 
-        public string ErrorType { get; set; }
+        public string ErrorType { get; private set; }
         public string Message { get; private set; }
         public CheckAccountingStatus Status { get; private set; }
     }
