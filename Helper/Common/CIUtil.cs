@@ -3049,21 +3049,21 @@ namespace Helper.Common
             int result = 0;
             int delimiterCount = 0;
             string sTemp;
-            string WYm = Ym.Trim();
+            string wYm = Ym.Trim();
             DateTime CurrentDate = DateTime.Now;
 
             // Input month only
-            int iYm = WYm.AsInteger();
+            int iYm = wYm.AsInteger();
             if (iYm <= 12 && iYm >= 1)
             {
-                WYm = CurrentDate.Year + WYm.AsInteger().ToString("D2");
-                result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
+                wYm = CurrentDate.Year + wYm.AsInteger().ToString("D2");
+                result = DateTime.ParseExact(wYm, "yyyyMM", CultureInfo.InvariantCulture)
                     .ToString("yyyyMM").AsInteger();
 
                 return result;
             }
 
-            if (WYm.IndexOf('.') > 0 || WYm.IndexOf('/') > 0)
+            if (wYm.IndexOf('.') > 0 || wYm.IndexOf('/') > 0)
             {
                 delimiterCount = 1;
             }
@@ -3073,47 +3073,47 @@ namespace Helper.Common
             {
                 // 区切りが「.」のとき「/」に変換
                 // Replace [.] character with [/]
-                WYm = WYm.Replace(".", "/");
+                wYm = wYm.Replace(".", "/");
 
-                if (WYm.IndexOf('/') > 0)
+                if (wYm.IndexOf('/') > 0)
                 {
                     // Character [/] exists
                     // Get year part
-                    sTemp = WYm.Substring(0, WYm.IndexOf('/'));
+                    sTemp = wYm.Substring(0, wYm.IndexOf('/'));
                     // Year is equal to 0, then error
                     if (sTemp == "0" || sTemp == "00")
                     {
-                        WYm = "";
+                        wYm = "";
                     }
                     else
                     {
                         int SYear = sTemp.AsInteger();
-                        string SMonth = WYm.Substring(WYm.IndexOf('/') + 1);
+                        string SMonth = wYm.Substring(wYm.IndexOf('/') + 1);
                         //Zero padding
                         SMonth = SMonth.PadLeft(2, '0');
-                        WYm = SYear + SMonth;
+                        wYm = SYear + SMonth;
                     }
                 }
             }
             else
             {
-                if (WYm.Length == 4)
+                if (wYm.Length == 4)
                 {
-                    int WYear = WYm.Substring(0, 2).AsInteger();
+                    int WYear = wYm.Substring(0, 2).AsInteger();
                     int SYear = WYearToSYear(WYear, ' ');
-                    WYm = SYear.ToString() + WYm.Substring(2, 2);
+                    wYm = SYear.ToString() + wYm.Substring(2, 2);
                 }
                 // Delimiter character does not exists
                 // Length != 6 is error
-                if (WYm.Length != 6)
+                if (wYm.Length != 6)
                 {
-                    WYm = "";
+                    wYm = "";
                 }
             }
 
             try
             {
-                result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
+                result = DateTime.ParseExact(wYm, "yyyyMM", CultureInfo.InvariantCulture)
                     .ToString("yyyyMM").AsInteger();
                 return result;
             }
