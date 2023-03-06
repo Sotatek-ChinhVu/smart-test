@@ -28,5 +28,6 @@ namespace Domain.Models.InsuranceMst
 
         bool UpdateHokenMaster(int hpId, int userId, HokenMstModel insurance);
 
+        List<IsKantokuCdValidModel> GetIsKantokuCdValidList(int hpId, List<IsKantokuCdValidModel> kantokuCdValidList);
     }
 }

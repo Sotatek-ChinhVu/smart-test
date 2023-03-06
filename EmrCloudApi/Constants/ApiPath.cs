@@ -165,6 +165,7 @@
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
+        public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -211,6 +212,7 @@
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
+        public const string CheckAccounting = "CheckAccounting";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 

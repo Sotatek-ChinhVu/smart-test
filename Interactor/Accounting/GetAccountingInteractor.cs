@@ -31,8 +31,8 @@ namespace Interactor.Accounting
                 var syunoSeikyu = listSyunoSeikyu.FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
 
                 if (syunoSeikyu == null)
-                {
-                    return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new());
+                { 
+                    return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new(), new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
                 {
@@ -45,7 +45,7 @@ namespace Interactor.Accounting
 
                 var syunoNyukinModel = syunoSeikyu.SyunoNyukinModels
                             .FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
-                            
+
                 var comment = syunoNyukinModel?.NyukinCmt ?? string.Empty;
                 var paytype = syunoNyukinModel?.PaymentMethodCd ?? 0;
 
@@ -58,7 +58,7 @@ namespace Interactor.Accounting
 
                 var listKohi = GetVisibilityPtKohiModelList(listRaiinInf, inputData.HpId, inputData.PtId, inputData.SinDate);
 
-                return GetAccountingInf(listKohi, listSyunoSeikyu, debitBalance, checkDebitBalance, comment, paytype);
+                return GetAccountingInf(listKohi, listSyunoSeikyu, debitBalance, checkDebitBalance, comment, paytype, listAllSyunoSeikyu);
             }
             finally
             {
@@ -112,7 +112,7 @@ namespace Interactor.Accounting
             return listKohi.Where(item => item.HokenMstModel != null && (item.HokenMstModel.MoneyLimitListFlag != 0 || item.HokenMstModel.MonthLimitCount > 0)).ToList();
         }
 
-        private GetAccountingOutputData GetAccountingInf(List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> listSyunoSeikyu, int debitBalance, bool checkDebitBalance, string comment, int paytype)
+        private GetAccountingOutputData GetAccountingInf(List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> listSyunoSeikyu, int debitBalance, bool checkDebitBalance, string comment, int paytype, List<SyunoSeikyuModel> allSyunoSeikyuModels)
         {
             var isSettled = listSyunoSeikyu.Select(item => item.NyukinKbn != 0).FirstOrDefault();
 
@@ -149,7 +149,7 @@ namespace Interactor.Accounting
                 thisCredit = sumAdjust;
             }
 
-            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari, paytype, comment, kohiInfModels);
+            return new GetAccountingOutputData(listSyunoSeikyu, GetAccountingStatus.Successed, totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, debitBalance, sumAdjust, sumAdjustView, thisCredit, thisWari, paytype, comment, kohiInfModels, allSyunoSeikyuModels);
         }
     }
 }

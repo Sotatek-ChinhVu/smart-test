@@ -19,21 +19,17 @@ namespace Interactor.Insurance
                 {
                     return new GetInsuranceComboListOutputData(new(), GetInsuranceComboListStatus.InvalidHpId);
                 }
-
-
                 if (inputData.PtId < 0)
                 {
                     return new GetInsuranceComboListOutputData(new(), GetInsuranceComboListStatus.InvalidPtId);
                 }
-
-
                 if (inputData.SinDate < 0)
                 {
                     return new GetInsuranceComboListOutputData(new(), GetInsuranceComboListStatus.InvalidSinDate);
                 }
 
                 var data = _insuranceResponsitory.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate);
-                return new GetInsuranceComboListOutputData(data.Select(x => new GetInsuranceComboItemOuputData(x.HokenPid, x.HokenName, x.IsExpirated, x.DisplayRateOnly)).ToList(), GetInsuranceComboListStatus.Successed);
+                return new GetInsuranceComboListOutputData(data.Select(x => new GetInsuranceComboItemOuputData(x.HokenPid, x.HokenName, x.IsExpirated, x.DisplayRateOnly, x.IsShaho, x.IsKokuho)).ToList(), GetInsuranceComboListStatus.Successed);
             }
             catch
             {
