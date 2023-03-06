@@ -4,7 +4,7 @@ namespace Domain.Models.Receipt.Recalculation;
 
 public class SinKouiDetailModel
 {
-    public SinKouiDetailModel(long ptId, long sinYm, int sinDate, long ptNum, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, bool tenMstIsNull, List<ItemCommentSuggestionModel> listCmtSelect)
+    public SinKouiDetailModel(long ptId, long sinYm, int sinDate, long ptNum, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, bool tenMstIsNull, List<ItemCommentSuggestionModel> cmtSelectList)
     {
         PtId = ptId;
         SinYm = sinYm;
@@ -20,7 +20,7 @@ public class SinKouiDetailModel
         IsNodspRece = isNodspRece;
         MasterSbt = masterSbt;
         TenMstIsNotNull = tenMstIsNull;
-        ListCmtSelect = listCmtSelect;
+        CmtSelectList = cmtSelectList;
     }
 
     public SinKouiDetailModel(long ptId, long sinYm, int sinDate, long ptNum, string maxAge, string minAge, string itemCd, string cmtOpt, string itemName, string receName, double suryo, int isNodspRece, string masterSbt, bool tenMstIsNull)
@@ -39,7 +39,7 @@ public class SinKouiDetailModel
         IsNodspRece = isNodspRece;
         MasterSbt = masterSbt;
         TenMstIsNotNull = tenMstIsNull;
-        ListCmtSelect = new();
+        CmtSelectList = new();
     }
 
     public long PtId { get; private set; }
@@ -70,5 +70,5 @@ public class SinKouiDetailModel
 
     public bool TenMstIsNotNull { get; private set; }
 
-    public List<ItemCommentSuggestionModel> ListCmtSelect { get; private set; }
+    public List<ItemCommentSuggestionModel> CmtSelectList { get; private set; }
 }
