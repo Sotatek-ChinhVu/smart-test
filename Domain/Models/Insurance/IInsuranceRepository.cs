@@ -30,5 +30,7 @@ namespace Domain.Models.Insurance
         bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid);
 
         List<KohiPriorityModel> GetKohiPriorityList();
+
+        List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId);
     }
 }

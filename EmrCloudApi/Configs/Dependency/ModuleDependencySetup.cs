@@ -325,6 +325,7 @@ using UseCase.ReceSeikyu.GetList;
 using UseCase.Santei.GetListSanteiInf;
 using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
+using UseCase.Schema.GetListInsuranceScan;
 using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
@@ -819,6 +820,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+            busBuilder.RegisterUseCase<GetListInsuranceScanInputData, GetListInsuranceScanInteractor>();
 
             //Hoki PriorityList
             busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
