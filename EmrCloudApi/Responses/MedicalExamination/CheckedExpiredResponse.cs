@@ -1,12 +1,14 @@
-﻿namespace EmrCloudApi.Responses.MedicalExamination
+﻿using Domain.Models.MstItem;
+
+namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class CheckedExpiredResponse
     {
-        public CheckedExpiredResponse(List<string> messages)
+        public CheckedExpiredResponse(Dictionary<string, (string, List<TenItemModel>)> messages)
         {
             Messages = messages;
         }
 
-        public List<string> Messages { get; private set; }
+        public Dictionary<string, (string, List<TenItemModel>)> Messages { get; private set; }
     }
 }

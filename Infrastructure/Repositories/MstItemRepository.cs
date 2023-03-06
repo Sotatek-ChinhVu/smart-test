@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿using Amazon.Runtime.Internal.Transform;
+using Domain.Constant;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
@@ -1403,5 +1404,61 @@ namespace Infrastructure.Repositories
 
         }
 
+
+        public Dictionary<string, (string, List<TenItemModel>)> GetConversionItem(List<(string, string)> expiredItems, int sinDate, int hpId)
+        {
+            Dictionary<string, (string, List<TenItemModel>)> result = new();
+            var expiredItemCds = expiredItems.Select(e => e.Item1).Distinct().ToList();
+            expiredItems = expiredItems.Where(e =>  expiredItemCds.Contains(e.Item1)).ToList();
+            var conversionItemInfs = NoTrackingDataContext.ConversionItemInfs.Where(
+                            c => expiredItemCds.Contains(c.SourceItemCd) && c.HpId == hpId
+                           );
+            var desItemCds = conversionItemInfs.Select(c => c.DestItemCd).Distinct().ToList();
+            var desTenMstItems = NoTrackingDataContext.TenMsts.Where(t => desItemCds.Contains(t.ItemCd) && t.HpId == hpId && t.StartDate <= sinDate && sinDate <= t.EndDate);
+            foreach (var expiredItem in expiredItems)
+            {
+                var conversionItemInfsOfOnes = conversionItemInfs.Where(c => c.SourceItemCd == expiredItem.Item1).Select(c => c.DestItemCd).Distinct().ToList();
+                var tenMstItemsOfOne = desTenMstItems.Where(d => conversionItemInfsOfOnes.Contains(d.ItemCd)).Select(t => ConvertTenMstToModel(t)).ToList();
+                result.Add(new(expiredItem.Item1, new(expiredItem.Item2,tenMstItemsOfOne)));
+            }
+
+            return result;
+        }
+
+        public bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values)
+        {
+            foreach (var value in values)
+            {
+                var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).Select(c => c.SortNo).DefaultIfEmpty(0).Max();
+                foreach (var tenItem in value.Value)
+                {
+                    if (tenItem.HpId == -1)
+                    {
+                        var conversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == tenItem.HpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
+                        if (conversionItem != null)
+                        {
+                            TrackingDataContext.ConversionItemInfs.Remove(conversionItem);
+                        }
+                    }
+                    else
+                    {
+                        var conversionItem = new ConversionItemInf
+                        {
+                            HpId = tenItem.HpId,
+                            SourceItemCd = value.Key,
+                            DestItemCd = tenItem.ItemCd,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            SortNo = ++maxSortNo
+                        };
+                        TrackingDataContext.ConversionItemInfs.Add(conversionItem);
+                    }
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+        }
     }
 }

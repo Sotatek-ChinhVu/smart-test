@@ -1,16 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.MstItem;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.CheckedExpired
 {
     public class CheckedExpiredOutputData : IOutputData
     {
-        public CheckedExpiredOutputData(CheckedExpiredStatus status, List<string> messages)
+        public CheckedExpiredOutputData(CheckedExpiredStatus status, Dictionary<string, (string, List<TenItemModel>)> result)
         {
             Status = status;
-            Messages = messages;
+            Result = result;
         }
 
         public CheckedExpiredStatus Status { get; private set; }
-        public List<string> Messages { get; private set; }
+        public Dictionary<string, (string, List<TenItemModel>)> Result { get; private set; }
     }
 }
