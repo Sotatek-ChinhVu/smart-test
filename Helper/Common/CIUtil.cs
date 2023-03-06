@@ -3046,8 +3046,8 @@ namespace Helper.Common
         // yyyy/mmをyyyymmに変換
         public static int ShowSMonthToSMonth(string Ym)
         {
-            int Result = 0;
-            int DelimiterCount = 0;
+            int result = 0;
+            int delimiterCount = 0;
             string sTemp;
             string WYm = Ym.Trim();
             DateTime CurrentDate = DateTime.Now;
@@ -3057,19 +3057,19 @@ namespace Helper.Common
             if (iYm <= 12 && iYm >= 1)
             {
                 WYm = CurrentDate.Year + WYm.AsInteger().ToString("D2");
-                Result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
+                result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
                     .ToString("yyyyMM").AsInteger();
 
-                return Result;
+                return result;
             }
 
             if (WYm.IndexOf('.') > 0 || WYm.IndexOf('/') > 0)
             {
-                DelimiterCount = 1;
+                delimiterCount = 1;
             }
 
             // Delimter character exists
-            if (DelimiterCount > 0)
+            if (delimiterCount > 0)
             {
                 // 区切りが「.」のとき「/」に変換
                 // Replace [.] character with [/]
@@ -3113,15 +3113,15 @@ namespace Helper.Common
 
             try
             {
-                Result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
+                result = DateTime.ParseExact(WYm, "yyyyMM", CultureInfo.InvariantCulture)
                     .ToString("yyyyMM").AsInteger();
-                return Result;
+                return result;
             }
             catch
             {
-                Result = 0;
+                result = 0;
             }
-            return Result;
+            return result;
         }
     }
 }
