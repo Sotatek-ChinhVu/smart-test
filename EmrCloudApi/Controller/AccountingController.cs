@@ -5,7 +5,6 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
@@ -23,10 +22,12 @@ namespace EmrCloudApi.Controller
     public class AccountingController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly ICalculateService _calculateService;
 
-        public AccountingController(UseCaseBus bus, IUserService userService) : base(userService)
+        public AccountingController(UseCaseBus bus, IUserService userService, ICalculateService calculateService) : base(userService)
         {
             _bus = bus;
+            _calculateService = calculateService;
         }
 
         [HttpGet(ApiPath.GetList)]
@@ -127,33 +128,36 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckAccountingStatusResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.Recaculation)]
+        [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromQuery] RecaculationRequest request)
         {
             var input = new RecaculationInputData(request.HpId, request.PtId, request.SinDate);
-            var output = _bus.Handle(input);
-
+            var output = _calculateService.Recaculate("https://localhost:7146/api/Calculate/RunCalculate", input);
+           // var output = _bus.Handle(input);
+            
             var presenter = new RecaculationPresenter();
-            presenter.Complete(output);
+          //  presenter.Complete(output);
 
             return new ActionResult<Response<RecaculationResponse>>(presenter.Result);
         }
 
-        public async Task<string> Recaculate(string apiUrl)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(apiUrl);
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    return content;
-                }
-                else
-                {
-                    throw new Exception("Failed to call API: " + response.StatusCode);
-                }
-            }
-        }
+        //public async Task<Response<RecaculateTestResponse>> Recaculate(string apiUrl)
+        //{
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var response = await httpClient.GetAsync(apiUrl);
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var content = await response.Content.ReadAsStringAsync();
+        //            return new Task<Response<RecaculateTestResponse>>(content);
+        //        }
+        //        else
+        //        {
+        //            throw new Exception("Failed to call API: " + response.StatusCode);
+        //        }
+        //    }
+        //}
+
+
     }
 }

@@ -401,6 +401,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ICalculateService, CalculateService>();
 
             //Cache data
             services.AddScoped<IUserInfoService, UserInfoService>();
