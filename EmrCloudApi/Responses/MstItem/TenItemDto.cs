@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using System.Text.Json.Serialization;
 
 namespace EmrCloudApi.Responses.MstItem
 {
@@ -49,6 +50,54 @@ namespace EmrCloudApi.Responses.MstItem
             OdrTermVal = model.OdrTermVal;
             CnvTermVal = model.CnvTermVal;
             DefaultValue = model.DefaultValue;
+        }
+
+        [JsonConstructor]
+        public TenItemDto(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCD, string rousaiKbnDisplay, string kouseisinKbnDisplay, string kubunToDisplay, string kohatuKbnDisplay, string kensaCenterItemCDDisplay, string tenDisplay, string kouiName, double odrTermVal, double cnvTermVal, double defaultValue)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            RousaiKbn = rousaiKbn;
+            KanaName1 = kanaName1;
+            Name = name;
+            KohatuKbn = kohatuKbn;
+            MadokuKbn = madokuKbn;
+            KouseisinKbn = kouseisinKbn;
+            OdrUnitName = odrUnitName;
+            EndDate = endDate;
+            DrugKbn = drugKbn;
+            MasterSbt = masterSbt;
+            BuiKbn = buiKbn;
+            IsAdopted = isAdopted;
+            Ten = ten;
+            TenId = tenId;
+            KensaMstCenterItemCd1 = kensaMstCenterItemCd1;
+            KensaMstCenterItemCd2 = kensaMstCenterItemCd2;
+            CmtCol1 = cmtCol1;
+            IpnNameCd = ipnNameCd;
+            SinKouiKbn = sinKouiKbn;
+            YjCd = yjCd;
+            CnvUnitName = cnvUnitName;
+            StartDate = startDate;
+            YohoKbn = yohoKbn;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            IpnCD = ipnCD;
+            RousaiKbnDisplay = rousaiKbnDisplay;
+            KouseisinKbnDisplay = kouseisinKbnDisplay;
+            KubunToDisplay = kubunToDisplay;
+            KohatuKbnDisplay = kohatuKbnDisplay;
+            KensaCenterItemCDDisplay = kensaCenterItemCDDisplay;
+            TenDisplay = tenDisplay;
+            KouiName = kouiName;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            DefaultValue = defaultValue;
         }
 
         public int HpId { get; private set; }

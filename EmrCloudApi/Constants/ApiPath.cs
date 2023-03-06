@@ -59,6 +59,7 @@
         public const string CheckedExpired = "CheckedExpired";
         public const string AutoCheckOrder = "AutoCheckOrder";
         public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
+        public const string ConvertItem = "ConvertItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";

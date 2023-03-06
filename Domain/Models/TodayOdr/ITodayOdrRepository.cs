@@ -39,5 +39,7 @@ namespace Domain.Models.TodayOdr
         List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs);
 
         List<(int position, OrdInfModel odrInfModel)> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems);
+
+        List<OrdInfModel> ConvertConversionItemToOrderInfModel(int hpId, long raiinNo, long ptId, int sinDate, List<OrdInfModel> OdrInfItems, Dictionary<string, TenItemModel> expiredItems);
     }
 }

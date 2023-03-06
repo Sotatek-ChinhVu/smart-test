@@ -1,7 +1,4 @@
 ﻿using Domain.Models.MstItem;
-using Domain.Models.TodayOdr;
-using Helper.Common;
-using Helper.Constants;
 using UseCase.MedicalExamination.CheckedExpired;
 
 namespace Interactor.MedicalExamination
@@ -32,8 +29,8 @@ namespace Interactor.MedicalExamination
                     return new CheckedExpiredOutputData(CheckedExpiredStatus.InputNotData, new());
                 }
                 var checkedItems = new List<string>();
-                var itemCds = inputData.CheckedExpiredItems.Select(i => i.ItemCd).ToList();
-                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds, inputData.SinDate, inputData.SinDate) ?? new();
+                var itemCds = inputData.CheckedExpiredItems.Select(i => i.ItemCd).Distinct().ToList();
+                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds) ?? new();
                 List<(string, string)> expiredItems = new();
 
                 foreach (var detail in inputData.CheckedExpiredItems)

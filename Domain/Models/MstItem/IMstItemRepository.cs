@@ -57,5 +57,7 @@ namespace Domain.Models.MstItem
         Dictionary<string, (string, List<TenItemModel>)> GetConversionItem(List<(string, string)> expiredItems, int sinDate, int hpId);
 
         bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values);
+
+        List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
     }
 }

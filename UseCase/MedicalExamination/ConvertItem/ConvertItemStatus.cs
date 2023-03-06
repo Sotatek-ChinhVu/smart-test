@@ -5,6 +5,10 @@
         Successed = 1,
         InValidHpId,
         InValidUserId,
+        InValidRaiinNo,
+        InValidPtId,
+        InValidSinDate,
         InputNotData,
+        Failed,
     }
 }

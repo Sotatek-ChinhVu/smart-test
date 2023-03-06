@@ -13,7 +13,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
@@ -1192,6 +1191,65 @@ namespace Infrastructure.Repositories
         }
 
         private static int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
+        {
+            if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
+                   string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
+                   odrInfDetail?.SinKouiKbn == 0)
+            {
+                return KensaGaichuTextConst.NONE;
+            }
+
+            if (odrInfDetail?.SinKouiKbn == 61 || odrInfDetail?.SinKouiKbn == 64)
+            {
+                bool kensaCondition;
+                if (kensaIraiCondition == 0)
+                {
+                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                }
+                else
+                {
+                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                }
+
+                if (kensaCondition && inOutKbn == 1)
+                {
+                    int kensaSetting = kensaIrai;
+                    if (kensaMst == null)
+                    {
+                        if (kensaSetting > 0)
+                        {
+                            return KensaGaichuTextConst.GAICHU_NONE;
+                        }
+                    }
+                    else if (string.IsNullOrEmpty(kensaMst.CenterItemCd1)
+                        && string.IsNullOrEmpty(kensaMst.CenterItemCd2) && kensaSetting > 1)
+                    {
+                        return KensaGaichuTextConst.GAICHU_NOT_SET;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(odrInfDetail?.ItemName) && string.IsNullOrEmpty(odrInfDetail.ItemCd))
+            {
+                if (inOutKbn == 1 && (odrKouiKbn >= 20 && odrKouiKbn <= 23) || odrKouiKbn == 28)
+                {
+                    if (odrInfDetail.IsNodspRece == 0)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_ON;
+                    }
+                }
+                else
+                {
+                    if (odrInfDetail.IsNodspRece == 1)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_OFF;
+                    }
+                }
+            }
+            return KensaGaichuTextConst.NONE;
+        }
+
+        private static int GetKensaGaichu(OrdInfDetailModel? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
         {
             if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
                    string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
@@ -2532,10 +2590,11 @@ namespace Infrastructure.Repositories
                 ) : new();
 
         }
-        public OrdInfModel ConvertConversionItemToOrderInfModel(int hpId, int sinDate,List<OrdInfModel> OdrInfItems, Dictionary<string, TenItemModel> expiredItems)
+        public List<OrdInfModel> ConvertConversionItemToOrderInfModel(int hpId, long raiinNo, long ptId, int sinDate, List<OrdInfModel> odrInfItems, Dictionary<string, TenItemModel> expiredItems)
         {
             List<string> ipnCds = new();
-            foreach (var odrInfItem in OdrInfItems)
+            List<(int, int, OrdInfDetailModel, bool)> track = new();
+            foreach (var odrInfItem in odrInfItems)
             {
                 ipnCds.AddRange(odrInfItem.OrdInfDetails.Select(od => od.IpnCd));
             }
@@ -2555,7 +2614,7 @@ namespace Infrastructure.Repositories
             var tenMstDbs = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && sinDate <= t.EndDate);
             var kensaItemCds = tenMstDbs.Select(t => t.KensaItemCd).Distinct().ToList();
             var kensaItemSeqNos = tenMstDbs.Select(t => t.KensaItemSeqNo).Distinct().ToList();
-          
+
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(e =>
                  e.HpId == hpId &&
                  kensaItemCds.Contains(e.KensaItemCd) &&
@@ -2573,9 +2632,14 @@ namespace Infrastructure.Repositories
             int autoSetSyohoLimitKohatuDrug = (int)_systemConf.GetSettingValue(2020, 1, hpId);
             int autoSetSyohoKbnSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 0, hpId);
             int autoSetSyohoLimitSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 1, hpId);
-
-            foreach (var order in OdrInfItems)
+            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
+            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var kensaIrai = checkKensaIrai?.Val ?? 0;
+            var orderIndex = 0;
+            foreach (var order in odrInfItems)
             {
+                var orderDetailIndex = 0;
                 foreach (var orderDetail in order.OrdInfDetails)
                 {
                     if (expiredItems.ContainsKey(orderDetail.ItemCd))
@@ -2583,13 +2647,30 @@ namespace Infrastructure.Repositories
                         var tenMst = expiredItems[orderDetail.ItemCd];
 
                         var tenMstDb = tenMstDbs.FirstOrDefault(t => t.ItemCd == orderDetail.ItemCd);
-                        var newOrderDetail = ConvertConversionItemToDetailModel(hpId, orderDetail, tenMstDb ?? new(), ipnItems, autoSetKohatu, autoSetSenpatu, autoSetSyohoKbnKohatuDrug, autoSetSyohoLimitKohatuDrug, autoSetSyohoKbnSenpatuDrug, autoSetSyohoLimitSenpatuDrug, kensaMsts, ipnMinYakkaMsts, sinDate);
+                        track.Add(new(orderIndex, orderDetailIndex, new(), true));
+                        var newOrderDetail = ConvertConversionItemToDetailModel(hpId, orderDetail, tenMstDb ?? new(), ipnItems, autoSetKohatu, autoSetSenpatu, autoSetSyohoKbnKohatuDrug, autoSetSyohoLimitKohatuDrug, autoSetSyohoKbnSenpatuDrug, autoSetSyohoLimitSenpatuDrug, kensaMsts, ipnMinYakkaMsts, sinDate, raiinNo, ptId, order.OdrKouiKbn, (int)kensaIraiCondition, (int)kensaIrai);
+                        track.Add(new(orderIndex, orderDetailIndex, newOrderDetail, false));
                     }
+                    orderDetailIndex++;
+                }
+                orderIndex++;
+            }
+
+            foreach (var item in track)
+            {
+                if (item.Item4)
+                {
+                    odrInfItems[item.Item1].OrdInfDetails.RemoveAt(item.Item2);
+                }
+                else
+                {
+                    odrInfItems[item.Item1].OrdInfDetails.Insert(item.Item2, item.Item3);
                 }
             }
+            return odrInfItems;
         }
 
-        private OrdInfDetailModel ConvertConversionItemToDetailModel(int hpId, OrdInfDetailModel sourceDetail, TenMst tenMst, List<IpnNameMst> ipnNameMsts, int autoSetKohatu, int autoSetSenpatu, int autoSetSyohoKbnKohatuDrug, int autoSetSyohoLimitKohatuDrug, int autoSetSyohoKbnSenpatuDrug, int autoSetSyohoLimitSenpatuDrug, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> ipnMinYakkaMsts, int sinDate, long raiinNo, int ptId)
+        private OrdInfDetailModel ConvertConversionItemToDetailModel(int hpId, OrdInfDetailModel sourceDetail, TenMst tenMst, List<IpnNameMst> ipnNameMsts, int autoSetKohatu, int autoSetSenpatu, int autoSetSyohoKbnKohatuDrug, int autoSetSyohoLimitKohatuDrug, int autoSetSyohoKbnSenpatuDrug, int autoSetSyohoLimitSenpatuDrug, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> ipnMinYakkaMsts, int sinDate, long raiinNo, long ptId, int odrKouiKbn, int kensaIraiCondition, int kensaIrai)
         {
             string itemCd = tenMst.ItemCd;
             string itemName = tenMst.Name ?? string.Empty;
@@ -2728,10 +2809,36 @@ namespace Infrastructure.Repositories
                     ipnName,
                     sourceDetail.JissiKbn,
                     sourceDetail.JissiDate,
-                    sourceDetail.
+                    sourceDetail.JissiId,
+                    sourceDetail.JissiMachine,
+                    sourceDetail.ReqCd,
+                    sourceDetail.Bunkatu,
+                    cmtName,
+                    cmtOpt,
+                    sourceDetail.FontColor,
+                   sourceDetail.CommentNewline,
+                   masterSbt,
+                   sourceDetail.InOutKbn,
+                   ipnMinYakkaMstModel?.Yakka ?? 0,
+                   CheckIsGetYakkaPrice(hpId, tenMst, sinDate),
+                   sourceDetail.RefillSetting,
+                   cmtCol1,
+                   ten,
+                   sourceDetail.BunkatuKoui,
+                   sourceDetail.AlternationIndex,
+                   GetKensaGaichu(sourceDetail, tenMst, sourceDetail.InOutKbn, odrKouiKbn, kensaMstModel, kensaIraiCondition, kensaIrai),
+                   tenMst?.OdrTermVal ?? 0,
+                   tenMst?.CnvTermVal ?? 0,
+                   tenMst?.YjCd ?? string.Empty,
+                   sourceDetail.YohoSets,
+                   sourceDetail.Kasan1,
+                   sourceDetail.Kasan2,
+                   tenMst?.CnvUnitName ?? string.Empty,
+                   tenMst?.OdrUnitName ?? string.Empty,
+                   sourceDetail.CenterItemCd1,
+                   sourceDetail.CenterItemCd2);
 
-                );
-
+            return result;
         }
     }
 }

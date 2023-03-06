@@ -956,6 +956,57 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
+        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds)
+        {
+            var entities = NoTrackingDataContext.TenMsts.Where(p =>
+                   p.HpId == hpId &&
+                   itemCds.Contains(p.ItemCd));
+
+            return entities.Select(entity => new TenItemModel(
+                    entity.HpId,
+                    entity.ItemCd,
+                    entity.RousaiKbn,
+                    entity.KanaName1 ?? string.Empty,
+                    entity.Name ?? string.Empty,
+                    entity.KohatuKbn,
+                    entity.MadokuKbn,
+                    entity.KouseisinKbn,
+                    entity.OdrUnitName ?? string.Empty,
+                    entity.EndDate,
+                    entity.DrugKbn,
+                    entity.MasterSbt ?? string.Empty,
+                    entity.BuiKbn,
+                    entity.IsAdopted,
+                    entity.Ten,
+                    entity.TenId,
+                    string.Empty,
+                    string.Empty,
+                    entity.CmtCol1,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.SinKouiKbn,
+                    entity.YjCd ?? string.Empty,
+                    entity.CnvUnitName ?? string.Empty,
+                    entity.StartDate,
+                    entity.YohoKbn,
+                    entity.CmtColKeta1,
+                    entity.CmtColKeta2,
+                    entity.CmtColKeta3,
+                    entity.CmtColKeta4,
+                    entity.CmtCol2,
+                    entity.CmtCol3,
+                    entity.CmtCol4,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.MinAge ?? string.Empty,
+                    entity.MaxAge ?? string.Empty,
+                    entity.SanteiItemCd ?? string.Empty,
+                    entity.OdrTermVal,
+                    entity.CnvTermVal,
+                    entity.DefaultVal,
+                    entity.Kokuji1 ?? string.Empty,
+                    entity.Kokuji2 ?? string.Empty
+               )).ToList();
+        }
+
         public List<TenItemModel> GetTenMstList(int hpId, List<string> itemCds)
         {
             itemCds = itemCds.Distinct().ToList();
@@ -1409,17 +1460,17 @@ namespace Infrastructure.Repositories
         {
             Dictionary<string, (string, List<TenItemModel>)> result = new();
             var expiredItemCds = expiredItems.Select(e => e.Item1).Distinct().ToList();
-            expiredItems = expiredItems.Where(e =>  expiredItemCds.Contains(e.Item1)).ToList();
+            expiredItems = expiredItems.Where(e => expiredItemCds.Contains(e.Item1)).ToList();
             var conversionItemInfs = NoTrackingDataContext.ConversionItemInfs.Where(
                             c => expiredItemCds.Contains(c.SourceItemCd) && c.HpId == hpId
                            );
             var desItemCds = conversionItemInfs.Select(c => c.DestItemCd).Distinct().ToList();
-            var desTenMstItems = NoTrackingDataContext.TenMsts.Where(t => desItemCds.Contains(t.ItemCd) && t.HpId == hpId && t.StartDate <= sinDate && sinDate <= t.EndDate);
+            var desTenMstItems = NoTrackingDataContext.TenMsts.Where(t => desItemCds.Contains(t.ItemCd) && t.HpId == hpId && t.StartDate <= sinDate && sinDate <= t.EndDate).ToList();
             foreach (var expiredItem in expiredItems)
             {
                 var conversionItemInfsOfOnes = conversionItemInfs.Where(c => c.SourceItemCd == expiredItem.Item1).Select(c => c.DestItemCd).Distinct().ToList();
                 var tenMstItemsOfOne = desTenMstItems.Where(d => conversionItemInfsOfOnes.Contains(d.ItemCd)).Select(t => ConvertTenMstToModel(t)).ToList();
-                result.Add(new(expiredItem.Item1, new(expiredItem.Item2,tenMstItemsOfOne)));
+                result.Add(new(expiredItem.Item1, new(expiredItem.Item2, tenMstItemsOfOne)));
             }
 
             return result;
@@ -1429,7 +1480,7 @@ namespace Infrastructure.Repositories
         {
             foreach (var value in values)
             {
-                var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).Select(c => c.SortNo).DefaultIfEmpty(0).Max();
+                var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                 foreach (var tenItem in value.Value)
                 {
                     if (tenItem.HpId == -1)
