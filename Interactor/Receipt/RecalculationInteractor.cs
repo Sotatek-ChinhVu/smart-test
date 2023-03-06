@@ -95,6 +95,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                 newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
             var count = newReceCheckErrList.Count;
+            if (!_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
+            {
+                return new RecalculationOutputData(RecalculationStatus.Failed, errorText.Append(count.ToString()).ToString());
+            }
             return new RecalculationOutputData(RecalculationStatus.Successed, errorText.Append(count.ToString()).ToString());
         }
         finally
@@ -106,6 +110,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             _mstItemRepository.ReleaseResource();
             _todayOdrRepository.ReleaseResource();
             _insuranceMstRepository.ReleaseResource();
+            _commonMedicalCheck.ReleaseResource();
         }
     }
 
@@ -637,6 +642,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
         return result;
     }
+
     internal class BuiErrorModel
     {
         public OrdInfDetailModel OdrInfDetail { get; }
@@ -1703,12 +1709,12 @@ public class RecalculationInteractor : IRecalculationInputPort
             {
                 if (sinKoui.ExistItemWithCommentSelect)
                 {
-                    var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.ListCmtSelect != null && s.ListCmtSelect.Count > 0).ToList();
+                    var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.CmtSelectList != null && s.CmtSelectList.Count > 0).ToList();
 
                     listItemWithCmtSelect.ForEach((sinKouiDetail) =>
                     {
                         List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
-                        sinKouiDetail.ListCmtSelect.ForEach((cmtSelect) =>
+                        sinKouiDetail.CmtSelectList.ForEach((cmtSelect) =>
                         {
                             var filteredCmtSelect = cmtSelect.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
                             if (filteredCmtSelect.Count > 0)

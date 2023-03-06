@@ -1266,4 +1266,9 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return subResult;
     }
     #endregion
+
+    public void ReleaseResource()
+    {
+        _tenantProvider.DisposeDataContext();
+    }
 }
