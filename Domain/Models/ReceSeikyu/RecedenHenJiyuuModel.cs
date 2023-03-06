@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Helper.Common;
+using Helper.Constants;
 
 namespace Domain.Models.ReceSeikyu
 {
