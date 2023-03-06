@@ -1,12 +1,20 @@
-﻿using Domain.Models.Diseases;
+﻿using CommonChecker.Models.OrdInf;
+using CommonChecker.Models.OrdInfDetailModel;
+using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.Diseases;
+using Domain.Models.InsuranceMst;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Interactor.CommonChecker.CommonMedicalCheck;
+using System.Text;
 using UseCase.Receipt.Recalculation;
 
 namespace Interactor.Receipt;
@@ -17,12 +25,16 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly ISystemConfRepository _systemConfRepository;
     private readonly IPtDiseaseRepository _ptDiseaseRepository;
     private readonly IOrdInfRepository _ordInfRepository;
+    private readonly IMstItemRepository _mstItemRepository;
+    private readonly ITodayOdrRepository _todayOdrRepository;
+    private readonly ICommonMedicalCheck _commonMedicalCheck;
+    private readonly IInsuranceMstRepository _insuranceMstRepository;
+
     private const string _hokenChar = "0";
     private const string _kohi1Char = "1";
     private const string _kohi2Char = "2";
     private const string _kohi3Char = "3";
     private const string _kohi4Char = "4";
-    private const string _freeWord = "0000999";
     private const string _suspectedSuffix = "の疑い";
     private const string _left = "左";
     private const string _right = "右";
@@ -30,12 +42,16 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
         _ptDiseaseRepository = ptDiseaseRepository;
         _ordInfRepository = ordInfRepository;
+        _mstItemRepository = mstItemRepository;
+        _todayOdrRepository = todayOdrRepository;
+        _commonMedicalCheck = commonMedicalCheck;
+        _insuranceMstRepository = insuranceMstRepository;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -43,14 +59,20 @@ public class RecalculationInteractor : IRecalculationInputPort
         try
         {
             List<ReceCheckErrModel> newReceCheckErrList = new();
-            string errorMessage = string.Empty;
+            StringBuilder errorText = new();
             var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
-            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList.Distinct().ToList());
+            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
             var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
             var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
             var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
-            var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
             int allCheckCount = receRecalculationList.Count;
+            var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
+
+            var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
+            var systemConfigList = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
+            var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
+            var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
+
             foreach (var recalculationItem in receRecalculationList)
             {
                 if (inputData.IsStopCalc)
@@ -60,11 +82,20 @@ public class RecalculationInteractor : IRecalculationInputPort
                 List<BuiErrorModel> errorOdrInfDetails = new();
                 var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
                 var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
+                List<string> itemCdList = new();
+                foreach (var sinKouiCount in sinKouiCountList)
+                {
+                    itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
+                }
+                var tenMstByItemCdList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCdList);
                 newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
-                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails);
+                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
+                newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
+                newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+                newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             }
             var count = newReceCheckErrList.Count;
-            return new RecalculationOutputData(RecalculationStatus.Successed, errorMessage + count.ToString());
+            return new RecalculationOutputData(RecalculationStatus.Successed, errorText.Append(count.ToString()).ToString());
         }
         finally
         {
@@ -72,6 +103,9 @@ public class RecalculationInteractor : IRecalculationInputPort
             _systemConfRepository.ReleaseResource();
             _ptDiseaseRepository.ReleaseResource();
             _ordInfRepository.ReleaseResource();
+            _mstItemRepository.ReleaseResource();
+            _todayOdrRepository.ReleaseResource();
+            _insuranceMstRepository.ReleaseResource();
         }
     }
 
@@ -498,7 +532,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
-    public bool CheckDuplicateByomei(bool checkDuplicateByomei, bool checkDuplicateSyusyokuByomei, PtDiseaseModel currentPtByomeiModel, PtDiseaseModel comparedPtByomeiModel, int recehokenId)
+    private bool CheckDuplicateByomei(bool checkDuplicateByomei, bool checkDuplicateSyusyokuByomei, PtDiseaseModel currentPtByomeiModel, PtDiseaseModel comparedPtByomeiModel, int recehokenId)
     {
         if (!checkDuplicateByomei)
         {
@@ -544,6 +578,65 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
+    private double GetSettingValue(List<SystemConfModel> systemConfList, int groupCd, int grpEdaNo = 0)
+    {
+        var systemConf = systemConfList.FirstOrDefault(item => item.GrpCd == groupCd && item.GrpEdaNo == grpEdaNo);
+        return systemConf != null ? systemConf.Val : 0;
+    }
+
+    private string GetSettingParam(List<SystemConfModel> systemConfList, int groupCd, int grpEdaNo = 0)
+    {
+        var systemConf = systemConfList.FirstOrDefault(item => item.GrpCd == groupCd && item.GrpEdaNo == grpEdaNo);
+        return systemConf != null ? systemConf.Param : string.Empty;
+    }
+
+    private List<DayLimitResultModel> CheckOnlyDayLimitOrder(int hpId, long ptId, int sinDate, OrdInfModel orderInf)
+    {
+        List<DayLimitResultModel> result = new();
+        RealTimeCheckerCondition condition = new RealTimeCheckerCondition(
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 true,
+                                                 false,
+                                                 false,
+                                                 false,
+                                                 false);
+        List<OrdInfoModel> orderInfList = new();
+        orderInfList.Add(new OrdInfoModel(
+                             orderInf.OdrKouiKbn,
+                             orderInf.SanteiKbn,
+                             orderInf.OrdInfDetails.Select(detail => new OrdInfoDetailModel(
+                                                                         string.Empty,
+                                                                         detail.SinKouiKbn,
+                                                                         detail.ItemCd,
+                                                                         detail.ItemName,
+                                                                         detail.Suryo,
+                                                                         detail.UnitName,
+                                                                         detail.TermVal,
+                                                                         detail.SyohoKbn,
+                                                                         detail.SyohoLimitKbn,
+                                                                         detail.DrugKbn,
+                                                                         detail.YohoKbn,
+                                                                         detail.IpnCd,
+                                                                         detail.Bunkatu,
+                                                                         detail.MasterSbt,
+                                                                         detail.BunkatuKoui
+                                                                     ))
+                             .ToList()));
+
+        var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition);
+        foreach (var errorInfo in checkedResult)
+        {
+            var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;
+            if (dayLimitList != null && dayLimitList.Any())
+            {
+                result.AddRange(dayLimitList);
+            }
+        }
+        return result;
+    }
     internal class BuiErrorModel
     {
         public OrdInfDetailModel OdrInfDetail { get; }
@@ -723,9 +816,9 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails)
+    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
     {
-        bool visibleBuiOrderCheck = _systemConfRepository.GetSettingValue(6003, 0, hpId) == 1;
+        bool visibleBuiOrderCheck = GetSettingValue(systemConfList, 6003, 0) == 1;
         var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
         if (ptByomeis.Count == 0)
         {
@@ -994,6 +1087,802 @@ public class RecalculationInteractor : IRecalculationInputPort
                         AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrCd, ReceErrCdConst.ByomeiBuiOrderByomeiChekkuErrMsg, msg, aCd: errorOdrInfDetail.ItemName, bCd: errorOdrInfDetail.OdrKouiKbn.ToString(), sinDate: errorOdrInfDetail.SinDate);
                     }
                 }
+            }
+        }
+        return newReceCheckErrList;
+    }
+
+    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList)
+    {
+        bool isCheckExceedDosage = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExceededDosageOdrErrCd);
+        bool isCheckDuplicateOdr = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateOdrErrCd);
+        bool isCheckExpiredOdr = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExpiredEndDateOdrErrCd);
+        bool isCheckFirstExamFee = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.FirstExamFeeCheckErrCd);
+        bool isCheckSanteiCount = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.SanteiCountCheckErrCd);
+        bool isCheckTokuzaiItem = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.TokuzaiItemCheckErrCd);
+        bool isCheckItemAge = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ItemAgeCheckErrCd);
+        bool isCheckComment = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.CommentCheckErrCd);
+        bool isCheckAdditionItem = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.AdditionItemErrCd);
+
+        var odrInfModels = _ordInfRepository.GetList(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+        List<OrdInfDetailModel> odrInfDetailModels = new();
+
+        //OrderInf
+        foreach (var odrInfModel in odrInfModels)
+        {
+            //E4001 check exceeded dosage
+            if (isCheckExceedDosage)
+            {
+                var resultOdrs = CheckOnlyDayLimitOrder(hpId, odrInfModel.PtId, odrInfModel.SinDate, odrInfModel);
+                foreach (var odr in resultOdrs)
+                {
+                    string msg2 = string.Format("（{0}: {1} [{2}日/{3}日]）", odr.ItemName, CIUtil.SDateToShowSWDate(odrInfModel.SinDate), odr.UsingDay, odr.LimitDay);
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExceededDosageOdrErrCd, ReceErrCdConst.ExceededDosageOdrErrMsg,
+                                                    msg2, odr.ItemCd, sinDate: odrInfModel.SinDate);
+                }
+            }
+            odrInfDetailModels.AddRange(odrInfModel.OrdInfDetails);
+        }
+
+        #region Duplicate check
+        if (isCheckDuplicateOdr)
+        {
+            List<string> checkedOdrItemCds = new();
+            foreach (var odrDetail in odrInfDetailModels)
+            {
+                //E4002 check order with same effect
+                if (isCheckDuplicateOdr && odrDetail.IsDrugOrInjection && !string.IsNullOrEmpty(odrDetail.YjCd))
+                {
+                    var duplicatedOdr = odrInfDetailModels.FirstOrDefault(item => CIUtil.Copy(item.YjCd, 1, 4) == CIUtil.Copy(odrDetail.YjCd, 1, 4) &&
+                                                                               item.SinDate == odrDetail.SinDate &&
+                                                                               item.RaiinNo == odrDetail.RaiinNo &&
+                                                                               item.ItemCd != odrDetail.ItemCd);
+                    if (duplicatedOdr != null)
+                    {
+                        if (!checkedOdrItemCds.Contains(odrDetail.ItemCd) || !checkedOdrItemCds.Contains(duplicatedOdr.ItemCd))
+                        {
+                            string msg2 = string.Format("（{0} : {1} [{2}]）", odrDetail.ItemName, duplicatedOdr.ItemName, CIUtil.SDateToShowSWDate(odrDetail.SinDate));
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.DuplicateOdrErrCd, ReceErrCdConst.DuplicateOdrErrMsg,
+                                             msg2, odrDetail.ItemCd, sinDate: odrDetail.SinDate);
+                        }
+                        checkedOdrItemCds.Add(odrDetail.ItemCd);
+                        checkedOdrItemCds.Add(duplicatedOdr.ItemCd);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Expired check
+        //E3001,E3002 check expired end date and start date
+        if (isCheckExpiredOdr)
+        {
+            List<string> checkedItemCds = new List<string>();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    string itemCd = sinKouiDetailModel.ItemCd;
+                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+                    {
+                        var lastTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderByDescending(item => item.EndDate).FirstOrDefault();
+                        if (lastTenMst != null && sinKouiCount.SinDate > lastTenMst.EndDate)
+                        {
+                            string msg2 = string.Format("（{0} {1}: ～{2}）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(lastTenMst.EndDate));
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredEndDateOdrErrCd, ReceErrCdConst.ExpiredEndDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                        }
+
+                        var firstTenMst = tenMstModelList.Where(item => item.ItemCd == itemCd).OrderBy(item => item.StartDate).FirstOrDefault();
+                        if (firstTenMst != null && sinKouiCount.SinDate < firstTenMst.StartDate)
+                        {
+                            string msg2 = string.Format("（{0} {1}: {2}～）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate), CIUtil.SDateToShowSWDate(firstTenMst.StartDate));
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ExpiredStartDateOdrErrCd, ReceErrCdConst.ExpiredStartDateOdrErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                        }
+
+                        checkedItemCds.Add(itemCd);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Santei count check
+        //E3004 check santei count as file checkingViewModel function CalculationCountCheck
+        if (isCheckSanteiCount)
+        {
+            List<string> checkedItemCds = new List<string>();
+            var minSinDate = !sinKouiCountList.Any() ? 0 : sinKouiCountList.Min(o => o.SinDate);
+            var maxSinDate = !sinKouiCountList.Any() ? 0 : sinKouiCountList.Max(o => o.SinDate);
+            var allDensiSanteiKaisuModelList = _todayOdrRepository.FindDensiSanteiKaisuList(hpId, itemCdList, minSinDate, maxSinDate);
+            var allItemGrpMstList = _mstItemRepository.FindItemGrpMst(hpId, minSinDate, maxSinDate, 1, allDensiSanteiKaisuModelList?.Select(item => item.ItemGrpCd).Distinct().ToList() ?? new());
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                int sinDate = sinKouiCount.SinDate;
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    string itemCd = sinKouiDetailModel.ItemCd;
+                    if (!string.IsNullOrEmpty(itemCd) && sinKouiDetailModel.TenMstIsNotNull)
+                    {
+                        #region Sub function
+                        int WeeksBefore(int baseDate, int term)
+                        {
+                            return CIUtil.WeeksBefore(baseDate, term);
+                        }
+
+                        int MonthsBefore(int baseDate, int term)
+                        {
+                            return CIUtil.MonthsBefore(baseDate, term);
+                        }
+
+                        int YearsBefore(int baseDate, int term)
+                        {
+                            return CIUtil.YearsBefore(baseDate, term);
+                        }
+
+                        int DaysBefore(int baseDate, int term)
+                        {
+                            return CIUtil.DaysBefore(baseDate, term);
+                        }
+
+                        int GetHokenKbn(int receHokenKbn)
+                        {
+                            int hokenKbn = 0;
+
+                            if (new int[] { 0 }.Contains(receHokenKbn))
+                            {
+                                hokenKbn = 4;
+                            }
+                            else if (new int[] { 1, 2 }.Contains(receHokenKbn))
+                            {
+                                hokenKbn = 0;
+                            }
+                            else if (new int[] { 11, 12 }.Contains(receHokenKbn))
+                            {
+                                hokenKbn = 1;
+                            }
+                            else if (new int[] { 13 }.Contains(receHokenKbn))
+                            {
+                                hokenKbn = 2;
+                            }
+                            else if (new int[] { 14 }.Contains(receHokenKbn))
+                            {
+                                hokenKbn = 3;
+                            }
+
+                            return hokenKbn;
+                        }
+
+                        List<int> GetCheckHokenKbns(int receHokenKbn)
+                        {
+
+                            List<int> results = new List<int>();
+
+                            int hokenKbn = GetHokenKbn(receHokenKbn);
+
+
+                            if (GetSettingValue(systemConfList, 3013) == 0)
+                            {
+                                // 同一に考える
+                                if (hokenKbn <= 3)
+                                {
+                                    results.AddRange(new List<int> { 0, 1, 2, 3 });
+                                }
+                                else
+                                {
+                                    results.Add(hokenKbn);
+                                }
+                            }
+                            else if (GetSettingValue(systemConfList, 3013) == 1)
+                            {
+                                // すべて同一に考える
+                                results.AddRange(new List<int> { 0, 1, 2, 3, 4 });
+                            }
+                            else
+                            {
+                                // 別に考える
+                                results.Add(hokenKbn);
+                            }
+
+                            if (hokenKbn == 4)
+                            {
+                                results.Add(0);
+                            }
+
+                            return results;
+                        }
+
+                        List<int> GetCheckSanteiKbns()
+                        {
+                            List<int> results = new List<int> { 0 };
+                            if (GetSettingValue(systemConfList, 3013) == 1)
+                            {
+                                // すべて同一に考える
+                                results.Add(2);
+                            }
+                            return results;
+                        }
+                        #endregion
+
+                        List<DensiSanteiKaisuModel> densiSanteiKaisuModels = allDensiSanteiKaisuModelList?.Where(item => item.ItemCd == itemCd
+                                                                                                                     && item.StartDate <= sinDate
+                                                                                                                     && item.EndDate >= sinDate)
+                                                                                                          .ToList() ?? new();
+                        foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
+                        {
+                            string sTerm = string.Empty;
+                            int startDate = 0;
+
+                            List<int> checkHokenKbnTmp = new List<int>();
+                            checkHokenKbnTmp.AddRange(GetCheckHokenKbns(recalculationModel.HokenKbn));
+
+                            if (densiSanteiKaisu.TargetKbn == 1)
+                            {
+                                // 健保のみ対象の場合はすべて対象
+                            }
+                            else if (densiSanteiKaisu.TargetKbn == 2)
+                            {
+                                // 労災のみ対象の場合、健保は抜く
+                                checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
+                            }
+
+                            List<int> checkSanteiKbnTmp = new List<int>();
+                            checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns());
+
+                            switch (densiSanteiKaisu.UnitCd)
+                            {
+                                case 53:    //患者あたり
+                                    sTerm = "患者あたり";
+                                    break;
+                                case 121:   //1日
+                                    startDate = sinDate;
+                                    sTerm = "日";
+                                    break;
+                                case 131:   //1月
+                                    startDate = sinDate / 100 * 100 + 1;
+                                    sTerm = "月";
+                                    break;
+                                case 138:   //1週
+                                    startDate = WeeksBefore(sinDate, 1);
+                                    sTerm = "週";
+                                    break;
+                                case 141:   //一連
+                                    startDate = -1;
+                                    sTerm = "一連";
+                                    break;
+                                case 142:   //2週
+                                    startDate = WeeksBefore(sinDate, 2);
+                                    sTerm = "2週";
+                                    break;
+                                case 143:   //2月
+                                    startDate = MonthsBefore(sinDate, 1);
+                                    sTerm = "2月";
+                                    break;
+                                case 144:   //3月
+                                    startDate = MonthsBefore(sinDate, 2);
+                                    sTerm = "3月";
+                                    break;
+                                case 145:   //4月
+                                    startDate = MonthsBefore(sinDate, 3);
+                                    sTerm = "4月";
+                                    break;
+                                case 146:   //6月
+                                    startDate = MonthsBefore(sinDate, 5);
+                                    sTerm = "6月";
+                                    break;
+                                case 147:   //12月
+                                    startDate = MonthsBefore(sinDate, 11);
+                                    sTerm = "12月";
+                                    break;
+                                case 148:   //5年
+                                    startDate = YearsBefore(sinDate, 5);
+                                    sTerm = "5年";
+                                    break;
+                                case 999:   //カスタム
+                                    if (densiSanteiKaisu.TermSbt == 2)
+                                    {
+                                        //日
+                                        startDate = DaysBefore(sinDate, densiSanteiKaisu.TermCount);
+                                        if (densiSanteiKaisu.TermCount == 1)
+                                        {
+                                            sTerm = "日";
+                                        }
+                                        else
+                                        {
+                                            sTerm = densiSanteiKaisu.TermCount + "日";
+                                        }
+                                    }
+                                    else if (densiSanteiKaisu.TermSbt == 3)
+                                    {
+                                        //週
+                                        startDate = WeeksBefore(sinDate, densiSanteiKaisu.TermCount);
+                                        if (densiSanteiKaisu.TermCount == 1)
+                                        {
+                                            sTerm = "週";
+                                        }
+                                        else
+                                        {
+                                            sTerm = densiSanteiKaisu.TermCount + "週";
+                                        }
+                                    }
+                                    else if (densiSanteiKaisu.TermSbt == 4)
+                                    {
+                                        //月
+                                        startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount);
+                                        if (densiSanteiKaisu.TermCount == 1)
+                                        {
+                                            sTerm = "月";
+                                        }
+                                        else
+                                        {
+                                            sTerm = densiSanteiKaisu.TermCount + "月";
+                                        }
+                                    }
+                                    else if (densiSanteiKaisu.TermSbt == 5)
+                                    {
+                                        //年間
+                                        startDate = (sinDate / 10000 - (densiSanteiKaisu.TermCount - 1)) * 10000 + 101;
+                                        if (densiSanteiKaisu.TermCount == 1)
+                                        {
+                                            sTerm = "年間";
+                                        }
+                                        else
+                                        {
+                                            sTerm = densiSanteiKaisu.TermCount + "年間";
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    startDate = -1;
+                                    break;
+                            }
+
+                            List<string> itemCds = new List<string>();
+
+                            List<ItemGrpMstModel> itemGrpMsts = new();
+
+                            if (densiSanteiKaisu.ItemGrpCd > 0)
+                            {
+                                // 項目グループの設定がある場合
+                                itemGrpMsts = allItemGrpMstList.Where(item => item.ItemGrpCd == densiSanteiKaisu.ItemGrpCd
+                                                                              && item.StartDate <= sinDate
+                                                                              && item.EndDate >= sinDate)
+                                                               .ToList();
+                            }
+
+                            if (itemGrpMsts != null && itemGrpMsts.Any())
+                            {
+                                // 項目グループの設定がある場合
+                                itemCds.AddRange(itemGrpMsts.Select(x => x.ItemCd));
+                            }
+                            else
+                            {
+                                itemCds.Add(itemCd);
+                            }
+
+                            double santeiCount = 0;
+                            if (startDate >= 0)
+                            {
+                                santeiCount = _receiptRepository.SanteiCount(hpId, recalculationModel.PtId, startDate, sinDate,
+                                                               sinDate, 0, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                            }
+
+                            if (santeiCount > densiSanteiKaisu.MaxCount)
+                            {
+                                string msg2 = string.Format("({0}: {1}回 [{2}回/{3}])", sinKouiDetailModel.ItemName, santeiCount, densiSanteiKaisu.MaxCount, sTerm);
+                                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.SanteiCountCheckErrCd, ReceErrCdConst.SanteiCountCheckErrMsg, msg2, itemCd);
+                            }
+                        }
+                        checkedItemCds.Add(itemCd);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        //E3003 check first exam fee
+        if (isCheckFirstExamFee)
+        {
+            double suryoSum = 0;
+            StringBuilder msg2 = new();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                if (sinKouiCount.IsFirstVisit)
+                {
+                    //msg2 max length = 100
+                    string formatSinDate = CIUtil.SDateToShowSWDate(sinKouiCount.SinDate);
+                    if (!msg2.ToString().Contains(formatSinDate) && msg2.Length + formatSinDate.Length + 2 <= 100)
+                    {
+                        if (!string.IsNullOrEmpty(msg2.ToString()))
+                        {
+                            msg2.Append(", ");
+                        }
+                        msg2.Append(formatSinDate);
+                    }
+                    suryoSum += sinKouiCount.SinKouiDetailModels.Where(p => ReceErrCdConst.IsFirstVisitCd.Contains(p.ItemCd)).Sum(p => p.Suryo);
+                }
+            }
+            if (suryoSum > 1)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.FirstExamFeeCheckErrCd, ReceErrCdConst.FirstExamFeeCheckErrMsg, msg2.ToString());
+            }
+        }
+
+        //E3005 check tokuzai item
+        if (isCheckTokuzaiItem)
+        {
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                if (sinKouiCount.SinKouiDetailModels.Any(item => item.ItemCd == ReceErrCdConst.TokuzaiItemCd))
+                {
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.TokuzaiItemCheckErrCd, ReceErrCdConst.TokuzaiItemCheckErrMsg,
+                                                    "（2017(H29)/04/01～使用不可）", ReceErrCdConst.TokuzaiItemCd, sinDate: sinKouiCount.SinDate);
+                    continue;
+                }
+            }
+        }
+
+        //E3007 check patient age to use order
+        if (isCheckItemAge)
+        {
+            List<string> checkedItemCds = new List<string>();
+            int iBirthDay = recalculationModel.Birthday;
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    string itemCd = sinKouiDetailModel.ItemCd;
+                    string maxAge = sinKouiDetailModel.MaxAge;
+                    string minAge = sinKouiDetailModel.MinAge;
+                    if (!string.IsNullOrEmpty(sinKouiDetailModel.ItemCd) && sinKouiDetailModel.TenMstIsNotNull && !checkedItemCds.Contains(itemCd))
+                    {
+                        #region sub function
+                        int iYear = 0;
+                        int iMonth = 0;
+                        int iDay = 0;
+                        CIUtil.SDateToDecodeAge(iBirthDay, sinKouiCount.SinDate, ref iYear, ref iMonth, ref iDay);
+
+                        // Total day from birthday to sindate
+                        int iDays = 0;
+                        if (iBirthDay < sinKouiCount.SinDate)
+                        {
+                            iDays = CIUtil.DaysBetween(CIUtil.StrToDate(CIUtil.SDateToShowSDate(iBirthDay)), CIUtil.StrToDate(CIUtil.SDateToShowSDate(sinKouiCount.SinDate)));
+                        }
+
+                        // tenMstAgeCheck = TenMst.MinAge or TenMst.MaxAge
+                        bool _CheckInBirthMonth(int tenMstAgeCheck, int sinDate)
+                        {
+                            return (iYear > tenMstAgeCheck) ||
+                                   ((iYear == tenMstAgeCheck) && ((iBirthDay % 10000 / 100) < (sinDate % 10000 / 100)));
+                        }
+
+                        // tenMstAgeCheck = TenMst.MinAge or TenMst.MaxAge
+                        bool _CheckAge(string tenMstAgeCheck, int sinDate)
+                        {
+                            bool subResult = false;
+
+                            if (tenMstAgeCheck == "AA")
+                            {
+                                // 生後２８日
+                                subResult = (iDays >= 28);
+                            }
+                            else if (tenMstAgeCheck == "B3")
+                            {
+                                //３歳に達した日の翌月の１日
+                                subResult = _CheckInBirthMonth(3, sinDate);
+                            }
+                            else if (tenMstAgeCheck == "B6")
+                            {
+                                //６歳に達した日の翌月の１日
+                                subResult = _CheckInBirthMonth(6, sinDate);
+                            }
+                            else if (tenMstAgeCheck == "BF")
+                            {
+                                //１５歳に達した日の翌月の１日（現状入院項目のみ）
+                                subResult = _CheckInBirthMonth(15, sinDate);
+                            }
+                            else if (tenMstAgeCheck == "BK")
+                            {
+                                //２０歳に達した日の翌月の１日（現状入院項目のみ）
+                                subResult = _CheckInBirthMonth(20, sinDate);
+                            }
+                            else if (tenMstAgeCheck == "AE")
+                            {
+                                //生後９０日
+                                subResult = (iDays >= 90);
+                            }
+                            else if (tenMstAgeCheck == "MG")
+                            {
+                                //未就学
+                                subResult = CIUtil.IsStudent(iBirthDay, sinDate);
+                            }
+                            else
+                            {
+                                subResult = iYear >= CIUtil.StrToIntDef(tenMstAgeCheck, 0);
+                            }
+                            return subResult;
+                        }
+
+                        // tenMstAgeCheck = TenMst.MinAge or TenMst.MaxAge
+                        string FormatDisplayMessage(string tenMstAgeCheck)
+                        {
+                            string formatedCheckKbn = string.Empty;
+
+                            if (tenMstAgeCheck == "AA")
+                            {
+                                // 生後２８日
+                                formatedCheckKbn = "生後２８日";
+                            }
+                            else if (tenMstAgeCheck == "B3")
+                            {
+                                //３歳に達した日の翌月の１日
+                                formatedCheckKbn = "３歳に達した日の翌月の１日";
+                            }
+                            else if (tenMstAgeCheck == "B6")
+                            {
+                                //６歳に達した日の翌月の１日
+                                formatedCheckKbn = "６歳に達した日の翌月の１日";
+                            }
+                            else if (tenMstAgeCheck == "BF")
+                            {
+                                //１５歳に達した日の翌月の１日（現状入院項目のみ）
+                                formatedCheckKbn = "１５歳に達した日の翌月の１日";
+                            }
+                            else if (tenMstAgeCheck == "BK")
+                            {
+                                //２０歳に達した日の翌月の１日（現状入院項目のみ）
+                                formatedCheckKbn = "２０歳に達した日の翌月の１日";
+                            }
+                            else if (tenMstAgeCheck == "AE")
+                            {
+                                //生後９０日
+                                formatedCheckKbn = "生後９０日";
+                            }
+                            else if (tenMstAgeCheck == "MG")
+                            {
+                                //未就学
+                                formatedCheckKbn = "未就学";
+                            }
+                            else
+                            {
+                                formatedCheckKbn = CIUtil.StrToIntDef(tenMstAgeCheck, 0) + "歳";
+                            }
+                            return formatedCheckKbn;
+                        }
+                        #endregion
+                        bool needCheckMaxAage = !string.IsNullOrEmpty(maxAge) && maxAge != "00" && maxAge != "0";
+                        bool needCheckMinAge = !string.IsNullOrEmpty(minAge) && minAge != "00" && minAge != "0";
+                        string msg2 = string.Empty;
+                        if (needCheckMaxAage
+                            && needCheckMinAge
+                            && (_CheckAge(maxAge, sinKouiCount.SinDate) || !_CheckAge(minAge, sinKouiCount.SinDate)))
+                        {
+                            msg2 = string.Format("（{0}: {1} [{2}～{3}]）",
+                                sinKouiDetailModel.ItemName,
+                                CIUtil.SDateToShowSWDate(sinKouiCount.SinDate),
+                                FormatDisplayMessage(minAge),
+                                FormatDisplayMessage(maxAge));
+                        }
+                        else if (needCheckMaxAage && _CheckAge(maxAge, sinKouiCount.SinDate))
+                        {
+                            msg2 = string.Format("（{0}: {1} [～{2}]）",
+                                sinKouiDetailModel.ItemName,
+                                CIUtil.SDateToShowSWDate(sinKouiCount.SinDate),
+                                FormatDisplayMessage(maxAge));
+                        }
+                        else if (needCheckMinAge && !_CheckAge(minAge, sinKouiCount.SinDate))
+                        {
+                            msg2 = string.Format("（{0}: {1} [{2}～]）",
+                                sinKouiDetailModel.ItemName,
+                                CIUtil.SDateToShowSWDate(sinKouiCount.SinDate),
+                                FormatDisplayMessage(minAge));
+                        }
+                        if (!string.IsNullOrEmpty(msg2))
+                        {
+                            AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.ItemAgeCheckErrCd, ReceErrCdConst.ItemAgeCheckErrMsg, msg2, itemCd, sinDate: sinKouiCount.SinDate);
+                        }
+
+                        checkedItemCds.Add(itemCd);
+                    }
+                }
+            }
+        }
+
+        //E3008 check comment into order
+        if (isCheckComment)
+        {
+            List<SinKouiMstModel> listSinKoui = _receiptRepository.GetListSinKoui(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+            List<string> listReceCmtItemCode = _receiptRepository.GetListReceCmtItemCode(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+
+            List<SinKouiDetailModel> listItemCdOfMonth = new();
+            listSinKoui.ForEach((sinKoui) =>
+            {
+                listItemCdOfMonth.AddRange(sinKoui.SinKouiDetailModels);
+            });
+
+            listSinKoui.ForEach((sinKoui) =>
+            {
+                if (sinKoui.ExistItemWithCommentSelect)
+                {
+                    var listItemWithCmtSelect = sinKoui.SinKouiDetailModels.Where(s => s.ListCmtSelect != null && s.ListCmtSelect.Count > 0).ToList();
+
+                    listItemWithCmtSelect.ForEach((sinKouiDetail) =>
+                    {
+                        List<string> listItemCd = sinKoui.SinKouiDetailModels.Select(s => s.ItemCd).ToList();
+                        sinKouiDetail.ListCmtSelect.ForEach((cmtSelect) =>
+                        {
+                            var filteredCmtSelect = cmtSelect.ItemCmtModels.Where(r => r.CondKbn == 1).ToList();
+                            if (filteredCmtSelect.Count > 0)
+                            {
+                                bool existCmtSelect = false;
+                                foreach (var recedenCmtSelect in filteredCmtSelect)
+                                {
+                                    if (recedenCmtSelect.IsSatsueiBui)
+                                    {
+                                        // If recedenCmtSelect is 撮影部位 type => have to check in the same RP
+                                        if (listItemCd.Contains(recedenCmtSelect.CmtCd))
+                                        {
+                                            existCmtSelect = true;
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // If recedenCmtSelect isn't 撮影部位 type => have to check in the same month
+                                        // If exist recedenCmtSelect in ReceCmt => it's Ok
+                                        bool isExistInReceCmt = listReceCmtItemCode.Contains(recedenCmtSelect.CmtCd);
+                                        if (isExistInReceCmt || listItemCdOfMonth.Any(x => x.ItemCd == recedenCmtSelect.CmtCd))
+                                        {
+                                            existCmtSelect = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (recedenCmtSelect.CmtSbt == 3 && listItemCdOfMonth.Any(x => x.ItemCd == ItemCdConst.CommentJissiRekkyoItemNameDummy && x.CmtOpt == sinKouiDetail.ItemCd))
+                                    {
+                                        existCmtSelect = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!existCmtSelect)
+                                {
+                                    string itemCd = sinKouiDetail.ItemCd;
+                                    string itemName = sinKouiDetail.ItemName;
+                                    string cmtCd = filteredCmtSelect.First().CmtCd;
+
+                                    string comment = filteredCmtSelect.First().CommentName;
+                                    if (filteredCmtSelect.Count > 1)
+                                    {
+                                        comment += "...など";
+                                    }
+
+                                    string message = string.Format("（{0}: {1}）", itemName, comment);
+                                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.CommentCheckErrCd, ReceErrCdConst.CommentCheckErrMsg, message, itemCd, cmtCd, 0);
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        if (isCheckAdditionItem)
+        {
+            var addtionItems = _receiptRepository.GetAddtionItems(hpId, recalculationModel.PtId, recalculationModel.SinYm, recalculationModel.HokenId);
+            if (addtionItems.Any())
+            {
+                foreach (var item in addtionItems)
+                {
+                    AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.AdditionItemErrCd, CIUtil.Copy(item.Text, 1, 100), "（" + CIUtil.SDateToShowSWDate(item.SinDate) + "）",
+                        item.ItemCd + "," + item.DelItemCd, item.TermCnt + "," + item.TermSbt + "," + item.IsWarning, item.SinDate);
+                }
+            }
+        }
+
+        return newReceCheckErrList;
+    }
+
+    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ref StringBuilder errorText, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<SinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
+    {
+        //check use normal hoken but order Rosai item
+        //■健康保険のレセプトで労災項目がオーダーされています。
+        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
+        {
+            List<string> orderRosaiErrors = new();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    if (sinKouiDetailModel.MasterSbt == "R")
+                    {
+                        orderRosaiErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", recalculationModel.SeikyuYm / 100, recalculationModel.SeikyuYm % 100, recalculationModel.PtNum, sinKouiDetailModel.ItemCd, sinKouiDetailModel.ReceName));
+                    }
+                }
+            }
+            if (orderRosaiErrors.Count > 0)
+            {
+                orderRosaiErrors.Insert(0, "■健康保険のレセプトで労災項目がオーダーされています。");
+                foreach (var error in orderRosaiErrors)
+                {
+                    errorText.AppendLine(error);
+                }
+                errorText.AppendLine();
+            }
+        }
+
+        // check rosai can using
+        if (GetSettingValue(systemConfList, 100003, 0) == 1
+            && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger()
+            && (recalculationModel.HokenKbn == 11 || recalculationModel.HokenKbn == 12) //check using Rosai Receden
+            && recalculationModel.IsPaperRece == 0)
+        {
+            // check error Rousai kantoku cd empty
+            bool isKantokuCdValid = allIsKantokuCdValidList.FirstOrDefault(item => item.HokenId == recalculationModel.HokenId && item.HokenId == recalculationModel.PtId)?.IsKantokuCdValid ?? false;
+            if (!isKantokuCdValid)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HasNotRousaiKantokuErrCd, ReceErrCdConst.HasNotRousaiKantokuErrMsg);
+            }
+
+            // check error Rousai Saigai
+            if (recalculationModel.RousaiSaigaiKbn != 1 &&
+                recalculationModel.RousaiSaigaiKbn != 2)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HasNotSaigaiKbnErrCd, ReceErrCdConst.HasNotSaigaiKbnErrMsg);
+            }
+
+            // check error Syobyo
+            if (recalculationModel.RousaiSyobyoDate <= 0)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HasNotSyobyoDateErrCd, ReceErrCdConst.HasNotSyobyoDateErrMsg);
+            }
+
+            //check error SyobyoKeika
+            var syobyoKeikaData = allSyobyoKeikaList.FirstOrDefault(item => item.PtId == recalculationModel.PtId
+                                                                            && item.SinYm == recalculationModel.SinYm
+                                                                            && item.HokenId == recalculationModel.HokenId);
+            bool existSyobyoKeikaData = syobyoKeikaData != null && !string.IsNullOrEmpty(syobyoKeikaData.Keika);
+            if (!existSyobyoKeikaData)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
+            }
+        }
+
+        //check use normal hoken but order Rosai item
+        //■健康保険のレセプトで労災項目がオーダーされています。
+        if (recalculationModel.HokenKbn == 1 || recalculationModel.HokenKbn == 2)
+        {
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                foreach (var sinKouiDetailModel in sinKouiCount.SinKouiDetailModels)
+                {
+                    if (sinKouiDetailModel.MasterSbt == "R")
+                    {
+                        string msg2 = string.Format("（{0}: {1}）", sinKouiDetailModel.ItemName, CIUtil.SDateToShowSWDate(sinKouiCount.SinDate));
+                        AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HokenUsingRosaiItemErrCd, ReceErrCdConst.HokenUsingRosaiItemErrMsg, msg2,
+                                         sinKouiDetailModel.ItemCd, sinKouiDetailModel.ItemName, sinDate: sinKouiCount.SinDate);
+                    }
+                }
+            }
+        }
+        return newReceCheckErrList;
+    }
+
+    private List<ReceCheckErrModel> CheckAftercare(int seikyuYm, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<SystemConfModel> systemConfList, List<SyobyoKeikaModel> allSyobyoKeikaList)
+    {
+        // check aftercare can using
+        if (GetSettingValue(systemConfList, 100003, 1) == 1
+            && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger()
+            && recalculationModel.HokenKbn == 13
+            && recalculationModel.IsPaperRece == 0)
+        {
+            //check error SyobyoKeika
+            var syobyoKeikaData = allSyobyoKeikaList.FirstOrDefault(item => item.PtId == recalculationModel.PtId
+                                                                        && item.SinYm == recalculationModel.SinYm
+                                                                        && item.HokenId == recalculationModel.HokenId);
+            bool existSyobyoKeikaData = syobyoKeikaData != null && !string.IsNullOrEmpty(syobyoKeikaData.Keika);
+            if (!existSyobyoKeikaData)
+            {
+                AddReceCmtErrNew(oldReceCheckErrList, newReceCheckErrList, recalculationModel, ReceErrCdConst.HasNotSyobyoKeikaErrCd, ReceErrCdConst.HasNotSyobyoKeikaErrMsg);
             }
         }
         return newReceCheckErrList;

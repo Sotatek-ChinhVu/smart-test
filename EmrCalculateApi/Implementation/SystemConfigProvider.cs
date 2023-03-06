@@ -1,4 +1,5 @@
-﻿using EmrCalculateApi.Interface;
+﻿using Amazon.S3.Model.Internal.MarshallTransformations;
+using EmrCalculateApi.Interface;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -140,6 +141,21 @@ namespace EmrCalculateApi.Implementation
         public int GetSameRpMerge()
         {
             return (int)GetSettingValue(3014);
+        }
+
+        public int GetChokiTokki()
+        {
+            return (int)GetSettingValue(3006, 1, 0);
+        }
+
+        public int GetReceKyufuKisai()
+        {
+            return (int)GetSettingValue(3010, 0, 0);
+        }
+
+        public int GetReceKyufuKisai2()
+        {
+            return (int)GetSettingValue(3010, 1, 0);
         }
 
         private double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0)

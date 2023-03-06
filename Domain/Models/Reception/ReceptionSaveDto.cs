@@ -4,7 +4,7 @@ namespace Domain.Models.Reception;
 
 public class ReceptionSaveDto
 {
-    public ReceptionSaveDto(ReceptionModel reception, string receptionComment,
+    public ReceptionSaveDto(ReceptionUpsertItem reception, string receptionComment,
         List<RaiinKbnInfDto> kubunInfs, List<InsuranceDto> insurances, List<DiseaseDto> diseases)
     {
         Reception = reception;
@@ -14,7 +14,7 @@ public class ReceptionSaveDto
         Diseases = diseases;
     }
 
-    public ReceptionModel Reception { get; private set; }
+    public ReceptionUpsertItem Reception { get; private set; }
     public string ReceptionComment { get; private set; }
     public List<RaiinKbnInfDto> KubunInfs { get; private set; }
     public List<InsuranceDto> Insurances { get; private set; }

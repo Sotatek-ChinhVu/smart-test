@@ -56,6 +56,9 @@
         public const string GetAddedAutoItem = "GetAddedAutoItem";
         public const string AddAutoItem = "AddAutoItem";
         public const string ConvertInputItemToTodayOrder = "ConvertInputItemToTodayOrder";
+        public const string CheckedExpired = "CheckedExpired";
+        public const string AutoCheckOrder = "AutoCheckOrder";
+        public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -160,11 +163,14 @@
         public const string GetHistoryIndex = "GetHistoryIndex";
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
+        public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
+        public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
+        public const string UpsertUserConfList = "UpsertUserConfList";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -205,6 +211,7 @@
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
+        public const string CheckAccounting = "CheckAccounting";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
@@ -216,6 +223,9 @@
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
+
+        //System Conf
+        public const string GetSystemConfForPrint = "GetSystemConfForPrint";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";

@@ -41,7 +41,13 @@
         public static readonly string InvalidPrimaryDoctor = "Invalid PrimaryDoctor";
         public static readonly string InvalidDetailInfs = "Invalid Details";
         public static readonly string InvalidOrderInfs = "Invalid OrderInfs";
+        public static readonly string InvalidUserConfs = "Invalid UserConfs";
+        public static readonly string DuplicateUserConf = "Duplicate UserConf";
+        public static readonly string InvalidGrpItemCd = "Invalid GrpItemCd";
+        public static readonly string InvalidGrpItemEdaNo = "Invalid GrpItemEdaNo";
+        public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
+        public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -142,6 +148,7 @@
         public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
         public static readonly string InvalidException = "Invalid Exception";
+        public static readonly string InvalidNoDataSave = "Does not exist data to save";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
@@ -935,6 +942,12 @@
         public static readonly string InvalidThisWari = "Invalid ThisWari";
         public static readonly string InvalidCredit = "Invalid Credit";
         public static readonly string InvalidPayType = "Invalid PayType";
-        public static readonly string InvalidComment = "Invalid ThisWari";
+        public static readonly string InvalidComment = "Invalid Comment";
+        public static readonly string StateChanged = "State Changed";
+        public static readonly string VisitRemoved = "Visit Removed";
+        public static readonly string BillUpdated = "Bill Updated";
+        public static readonly string ValidPaymentAmount = "Valid Payment Amount";
+        public static readonly string DateNotVerify = "Date Not Verify";
+        public static readonly string InvalidThisCredit = "Invalid This Credit";
     }
 }

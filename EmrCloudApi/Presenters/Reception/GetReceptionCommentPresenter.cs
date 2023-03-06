@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Reception
 
         public void Complete(GetReceptionCommentOutputData output)
         {
-            Result.Data = new GetReceptionCommentResponse(output.ReceptionModel);
+            Result.Data = new GetReceptionCommentResponse(output.ReceptionDto);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }

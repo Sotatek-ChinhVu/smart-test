@@ -11,6 +11,12 @@
         int GetRoundKogakuPtFutan();
 
         double GetJibaiRousaiRate();
+
+        int GetChokiTokki();
+
+        int GetReceKyufuKisai();
+
+        int GetReceKyufuKisai2();
         int GetReceiptTantoIdTarget();
         int GetReceiptKaIdTarget();
 
@@ -38,6 +44,5 @@
         int GetReceiptCommentTenCount();
         int GetReceiptOutDrgSinId();
         int GetSameRpMerge();
-
     }
 }

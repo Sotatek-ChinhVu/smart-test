@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.InsuranceMst
             Result = new Response<GetInsuranceMasterDetailResponse>()
             {
                 Data = new GetInsuranceMasterDetailResponse(
-                    output.InsuranceMstData.Select(x=> new InsuranceMasterDto(x.Master, x.Details.Select(m=> new InsuranceDetailDto(m.HokenEdaNo, m.SortNo, m.HokenSName, m.PrefNo, m.HokenEdaNo))))),
+                    output.InsuranceMstData.Select(x=> new InsuranceMasterDto(x.Master, x.Details.Select(m=> new InsuranceDetailDto(m.HokenEdaNo, m.SortNo, m.HokenSName, m.PrefNo, m.HokenEdaNo, m.StartDate))))),
                 Status = (int)output.Status
             };
             switch (output.Status)

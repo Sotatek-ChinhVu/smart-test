@@ -35,7 +35,7 @@ namespace Helper.Common
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            if (input.Length < endIndex)
+            if (endIndex < input.Length)
             {
                 return input.Substring(startIndex, endIndex);
             }
@@ -2066,6 +2066,7 @@ namespace Helper.Common
 
             return retDate;
         }
+
         public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
         {
             //法別番号を求める
@@ -2984,6 +2985,40 @@ namespace Helper.Common
             }
 
             return string.Empty;
+        }
+
+        public static int GetGroupKoui(int kouiCode)
+        {
+            int result = kouiCode / 10 * 10;
+
+            if (11 <= kouiCode && kouiCode <= 13)
+            {
+                // NuiTran recommend handle this case
+                result = 11;
+            }
+            else if (kouiCode == 14)
+            {
+                // 在宅
+                result = kouiCode;
+            }
+            else if (kouiCode >= 68 && kouiCode < 70)
+            {
+                // 画像
+                result = kouiCode;
+            }
+            else if (kouiCode >= 95 && kouiCode < 99)
+            {
+                // コメント以外
+                result = kouiCode;
+            }
+            else if (kouiCode == 100 || kouiCode == 101)
+            {
+                // コメント（処方箋）
+                // コメント（処方箋備考）
+                result = 20;
+            }
+
+            return result;
         }
 
         // yyyymmをyyyy/mmに変換

@@ -198,25 +198,75 @@ namespace EmrCalculateApi.Ika.ViewModels
                         }
                         */
                         string tyuCD = "0";
-                        bool firstKihon = true;
+                        bool firstSItem = true;
+
+                        // TYU_CD=0の加算項目を上書きするかどうか
+                        // TYU_CD=0の基本項目がなく、TYU_CD!=0の基本項目が存在する場合、true
+                        bool zeroOverWrite =
+                            (filteredOdrDtl.Any(p => p.TyuCd == "0" && p.IsKihonKoumoku) == false &&
+                            filteredOdrDtl.Any(p => p.TyuCd != "0" && !string.IsNullOrEmpty(p.TyuCd)));
 
                         for (int i = 0; i < filteredOdrDtl.Count; i++)
                         {
                             if (filteredOdrDtl[i].IsSItem)
                             {
-                                tyuCD = filteredOdrDtl[i].TyuCd;
-                                if (firstKihon)
+
+                                if ((string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) == false && filteredOdrDtl[i].TyuCd != "0") ||
+                                    zeroOverWrite == false)
                                 {
-                                    firstKihon = false;
-                                    for(int j = i -1; j >= 0; j--)
+                                    // TYU_CD=0の上書きをしない場合
+                                    // または、TYU_CD != 0の場合
+                                    // これ以降の項目に反映するため、TYU_CDを記憶する
+                                    // ※先頭S項目の場合は、この前の項目にも反映
+                                    tyuCD = filteredOdrDtl[i].TyuCd;
+                                }
+
+                                if (firstSItem)
+                                {
+
+                                    if ((string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) == false && filteredOdrDtl[i].TyuCd != "0") ||
+                                        zeroOverWrite == false)
                                     {
-                                        filteredOdrDtl[j].TyuCd = tyuCD + "D";
+                                        // TYU_CD != 0 の場合
+                                        // または、TYU_CD=0の上書きをしない場合
+                                        // この項目より上にある項目のTYU_CDを、この項目のTYU_CDで上書きする
+                                        firstSItem = false;
+                                        for (int j = i - 1; j >= 0; j--)
+                                        {
+                                            if (filteredOdrDtl[j].IsSItem == false ||
+                                                (zeroOverWrite &&
+                                                    filteredOdrDtl[j].IsKihonKoumoku == false &&
+                                                    (filteredOdrDtl[j].TyuCd == "0" || string.IsNullOrEmpty(filteredOdrDtl[j].TyuCd))))
+                                            {
+                                                // S項目以外、またはTYU_CD=0を上書き可能な場合
+                                                filteredOdrDtl[j].TyuCd = tyuCD + "D";
+                                            }
+                                        }
                                     }
+                                }
+                                else if (zeroOverWrite &&
+                                    filteredOdrDtl[i].IsKihonKoumoku == false &&
+                                    (string.IsNullOrEmpty(filteredOdrDtl[i].TyuCd) || filteredOdrDtl[i].TyuCd == "0"))
+                                {
+                                    // TYU_CD=0を上書きする場合で、
+                                    // 基本項目ではない、TYU_CD=0の項目の場合
+                                    // 直前のS項目のTYU_CDで上書き
+                                    filteredOdrDtl[i].TyuCd = tyuCD + "D";
                                 }
                             }
                             else
                             {
-                                filteredOdrDtl[i].TyuCd = tyuCD + "D";
+                                if (firstSItem == false && (tyuCD != "0" || zeroOverWrite == false))
+                                {
+                                    // 最初のS項目を処理済みで、
+                                    // 　TYU_CDが0ではない
+                                    // 　または、TYU_CD=0を上書きしない場合
+                                    filteredOdrDtl[i].TyuCd = tyuCD + "D";
+                                }
+                                else
+                                {
+                                    filteredOdrDtl[i].TyuCd = "0";
+                                }
                             }
                         }
 
@@ -395,7 +445,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                         _common.Wrk.AppendOrUpdateKoui(odrInf.HokenPid, odrInf.HokenId, ReceSyukeisaki.Kensayakuzai, cdKbn, ref firstSinryoKoui, odrInf.RpNo);
 
-                        foreach (OdrDtlTenModel odrDtl in filteredOdrDtl.FindAll(p=>p.TyuCd.StartsWith(tyuCd)))
+                        foreach (OdrDtlTenModel odrDtl in filteredOdrDtl.FindAll(p => p.TyuCd.StartsWith(tyuCd)))
                         {
                             if (_common.IsSelectComment(odrDtl.ItemCd))
                             {

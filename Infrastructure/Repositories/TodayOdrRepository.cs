@@ -7,6 +7,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
+using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -14,7 +15,10 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -1832,6 +1836,297 @@ namespace Infrastructure.Repositories
             return ordInfs;
         }
 
+        public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
+        {
+            List<OrdInfModel> ordInfModels = new();
+            List<OrdInfDetailModel> odrInfDetails = new List<OrdInfDetailModel>();
+            int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
+            int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
+            int rowNo = 0;
+            var itemCds = new List<string>();
+            var ipnCds = new List<string>();
+            foreach (var historyOdrInfModel in historyOdrInfModels)
+            {
+                itemCds.AddRange(historyOdrInfModel.OrdInfDetails.Select(od => od.ItemCd));
+                ipnCds.AddRange(historyOdrInfModel.OrdInfDetails.Select(od => od.IpnCd));
+            }
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
+            var kensaItemCds = tenMsts.Select(k => k.KensaItemCd).Distinct().ToList();
+            var KensaSeqNos = tenMsts.Select(k => k.KensaItemSeqNo).Distinct().ToList();
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId && kensaItemCds.Contains(t.KensaItemCd) && KensaSeqNos.Contains(t.KensaItemSeqNo)).ToList();
+            var ipnNameCds = tenMsts.Select(k => k.IpnNameCd).Distinct().ToList();
+            var ipnMinYakkaMsts = NoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   ipnNameCds.Contains(p.IpnNameCd)).ToList();
+
+            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   ipnCds.Contains(p.IpnNameCd));
+
+            var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   ipnCds.Contains(p.IpnNameCd)).ToList();
+
+            var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(p =>
+                p.HpId == hpId &&
+                p.StartDate <= sinDate &&
+                p.EndDate >= sinDate &&
+                ipnCds.Contains(p.ItemCd)).ToList();
+
+            int autoSetSyohoKbnKohatuDrug = (int)_systemConf.GetSettingValue(2020, 0, hpId);
+            int autoSetSyohoLimitKohatuDrug = (int)_systemConf.GetSettingValue(2020, 1, hpId);
+            int autoSetSyohoKbnSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 0, hpId);
+            int autoSetSyohoLimitSenpatuDrug = (int)_systemConf.GetSettingValue(2021, 1, hpId);
+
+            foreach (var historyOdrInfModel in historyOdrInfModels)
+            {
+                foreach (var detail in historyOdrInfModel.OrdInfDetails)
+                {
+                    string ipnCd = "";
+                    string ipnName = "";
+                    string kokuji1 = "";
+                    string kokuji2 = "";
+                    string cmtName = "";
+                    string cmtOpt = "";
+                    string fontColor = "";
+                    int commentNewline = 0;
+                    int kohatuKbn = 0;
+                    int sinKouiKbn = detail.SinKouiKbn;
+                    string itemCd = detail.ItemCd;
+                    string itemName = detail.ItemName;
+                    double suryo = detail.Suryo;
+                    string unitName = detail.UnitName;
+                    int unitSBT = detail.UnitSbt;
+                    double termVal = detail.TermVal;
+                    string bunkatu = detail.Bunkatu;
+
+                    kohatuKbn = detail.KohatuKbn;
+                    int drugKbn = detail.DrugKbn;
+                    int yohoKbn = detail.YohoKbn;
+                    int isNodspRece = detail.IsNodspRece;
+
+                    TenMst? tenMst = null;
+                    if (!string.IsNullOrEmpty(detail.ItemCd))
+                    {
+                        tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == detail.ItemCd);
+                    }
+                    ipnCd = tenMst == null ? "" : tenMst.IpnNameCd ?? string.Empty;
+                    if (!string.IsNullOrEmpty(detail.IpnCd))
+                    {
+                        ipnName = ipnNameMsts.FirstOrDefault(ipn => ipn.IpnNameCd == detail.IpnCd)?.IpnName ?? string.Empty;
+                    }
+                    else
+                    {
+                        ipnName = string.Empty;
+                    }
+
+                    kokuji1 = tenMst == null ? "" : tenMst.Kokuji1 ?? string.Empty;
+                    kokuji2 = tenMst == null ? "" : tenMst.Kokuji2 ?? string.Empty;
+
+                    //detail.JissiKbn = odrDetail.JissiKbn;
+                    //detail.ReqCd = odrDetail.ReqCd;
+                    cmtName = detail.CmtName;
+                    cmtOpt = detail.CmtOpt;
+                    fontColor = detail.FontColor;
+                    commentNewline = detail.CommentNewline;
+                    var syohoKbn = detail.SyohoKbn;
+                    var syohoLimitKbn = detail.SyohoLimitKbn;
+
+                    if ((detail.SinKouiKbn == 20 && detail.DrugKbn > 0) || (((detail.SinKouiKbn >= 20 && detail.SinKouiKbn <= 23) || detail.SinKouiKbn == 28) && detail.IsInjection))
+                    {
+                        bool isChangeKouhatu = tenMst != null && detail.KohatuKbn != tenMst.KohatuKbn;
+                        if (isChangeKouhatu)
+                        {
+                            switch (tenMst?.KohatuKbn)
+                            {
+                                case 0:
+                                    // 先発品
+                                    syohoKbn = 0;
+                                    syohoLimitKbn = 0;
+                                    break;
+                                case 1:
+                                    // 後発品
+                                    syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                                    syohoLimitKbn = autoSetSyohoLimitKohatuDrug;
+                                    break;
+                                case 2:
+                                    // 後発品のある先発品
+                                    syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                                    syohoLimitKbn = autoSetSyohoLimitSenpatuDrug;
+                                    break;
+                            }
+                            if (syohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
+                            {
+                                // 一般名マスタに登録がない
+                                syohoKbn = 2;
+                            }
+                        }
+                    }
+                    kohatuKbn = tenMst == null ? detail.KohatuKbn : tenMst.KohatuKbn;
+
+                    if ((detail.SinKouiKbn == 20 && detail.DrugKbn > 0) || (((detail.SinKouiKbn >= 20 && detail.SinKouiKbn <= 23) || detail.SinKouiKbn == 28) && detail.IsInjection))
+                    {
+                        switch (detail.KohatuKbn)
+                        {
+                            case 0:
+                                // 先発品
+                                syohoKbn = 0;
+                                syohoLimitKbn = 0;
+                                break;
+                            case 1:
+                                // 後発品
+                                if (autoSetKohatu == 0)
+                                {
+                                    //マスタ設定に準じる
+                                    syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                                    syohoLimitKbn = autoSetSyohoLimitKohatuDrug;
+                                }
+                                //else
+                                //{
+                                //    //各セットの設定に準じる
+                                //    detail.SyohoKbn = syohoKbn;
+                                //    detail.SyohoLimitKbn = syohoLimitKbn;
+                                //}
+                                if (detail.SyohoKbn == 0 && autoSetSyohoKbnKohatuDrug == 2 && !string.IsNullOrEmpty(detail.IpnName))
+                                {
+                                    syohoKbn = autoSetSyohoKbnKohatuDrug + 1;
+                                }
+                                break;
+                            case 2:
+                                // 後発品のある先発品
+                                if (autoSetSenpatu == 0)
+                                {
+                                    //マスタ設定に準じる
+                                    syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                                    syohoLimitKbn = autoSetSyohoLimitSenpatuDrug;
+                                }
+                                //else
+                                //{
+                                //    //各セットの設定に準じる
+                                //    detail.SyohoKbn = syohoKbn;
+                                //    detail.SyohoLimitKbn = syohoLimitKbn;
+                                //}
+                                if (detail.SyohoKbn == 0 && autoSetSyohoKbnSenpatuDrug == 2 && !string.IsNullOrEmpty(detail.IpnName))
+                                {
+                                    syohoKbn = autoSetSyohoKbnSenpatuDrug + 1;
+                                }
+                                break;
+                        }
+
+                        if (tenMst != null && detail.SyohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
+                        {
+                            // 一般名マスタに登録がない
+                            syohoKbn = 2;
+                        }
+                    }
+
+                    // Correct TermVal
+                    termVal = CorrectTermVal(detail.UnitSbt, tenMst ?? new(), detail.TermVal);
+
+                    ++rowNo;
+
+                    var kensaMstModel = tenMst != null ? kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == k.KensaItemSeqNo) : new();
+                    var ipnMinYakkaMstModel = tenMst != null ? ipnMinYakkaMsts.FirstOrDefault(i => i.IpnNameCd == tenMst.IpnNameCd) : new();
+                    var isGetYakkaPrice = CheckIsGetYakkaPrice(hpId, tenMst ?? new(), sinDate, ipnKasanExcludes, ipnKasanExcludeItems);
+
+                    var odrInfDetail = new OrdInfDetailModel(
+                            hpId,
+                            raiinNo,
+                            0,
+                            0,
+                            rowNo,
+                            ptId,
+                            sinDate,
+                            sinKouiKbn,
+                            itemCd,
+                            itemName,
+                            suryo,
+                            unitName,
+                            unitSBT,
+                            termVal,
+                            kohatuKbn,
+                            syohoKbn,
+                            syohoLimitKbn,
+                            drugKbn,
+                            yohoKbn,
+                            kokuji1,
+                            kokuji2,
+                            isNodspRece,
+                            ipnCd,
+                            ipnName,
+                            0,
+                            DateTime.MinValue,
+                            0,
+                            string.Empty,
+                            string.Empty,
+                            bunkatu,
+                            cmtName,
+                            cmtOpt,
+                            fontColor,
+                            commentNewline,
+                            tenMst?.MasterSbt ?? string.Empty,
+                            0,
+                            ipnMinYakkaMstModel?.Yakka ?? 0,
+                            isGetYakkaPrice,
+                            0,
+                            tenMst?.CmtCol1 ?? 0,
+                            tenMst?.Ten ?? 0,
+                            0,
+                            0,
+                            0,
+                            tenMst?.OdrTermVal ?? 0,
+                            tenMst?.CnvTermVal ?? 0,
+                            tenMst?.YjCd ?? string.Empty,
+                            detail.YohoSets,
+                            0,
+                            0,
+                            tenMst?.CnvUnitName ?? string.Empty,
+                            tenMst?.OdrUnitName ?? string.Empty,
+                            kensaMstModel?.CenterItemCd1 ?? string.Empty,
+                            kensaMstModel?.CenterItemCd2 ?? string.Empty
+                        );
+
+                    odrInfDetails.Add(odrInfDetail);
+                }
+                var newTodayOdrInfModel = new OrdInfModel(
+                   hpId,
+                   raiinNo,
+                   0,
+                   0,
+                   ptId,
+                   sinDate,
+                   historyOdrInfModel.HokenPid,
+                   historyOdrInfModel.OdrKouiKbn,
+                   historyOdrInfModel.RpName,
+                   historyOdrInfModel.InoutKbn,
+                   historyOdrInfModel.SikyuKbn,
+                   historyOdrInfModel.SyohoSbt,
+                   historyOdrInfModel.SanteiKbn,
+                   historyOdrInfModel.TosekiKbn,
+                   historyOdrInfModel.DaysCnt,
+                   historyOdrInfModel.SortNo,
+                   0,
+                   0,
+                   odrInfDetails,
+                   DateTime.MinValue,
+                   userId,
+                   string.Empty,
+                   DateTime.MinValue,
+                   userId,
+                   string.Empty
+               );
+                ordInfModels.Add(newTodayOdrInfModel);
+            }
+
+            return ordInfModels;
+        }
+
         public List<OrdInfModel> ConvertToDetailModel(int hpId, long raiinNo, int sinDate, int userId, List<RsvkrtOrderInfModel> rsvkrtOdrInfModels, List<IpnNameMst> ipns, List<TenMst> tenMsts, List<KensaMst> kensMsts, List<IpnMinYakkaMst> ipnMinYakkas)
         {
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
@@ -1999,6 +2294,7 @@ namespace Infrastructure.Repositories
             }
             return (syohoKbn, syohoLimitKbn);
         }
+
         public static double CorrectTermVal(int unitSbt, TenMst tenMst, double originTermVal)
         {
             if (tenMst == null || (string.IsNullOrEmpty(tenMst.ItemCd) && tenMst.StartDate == 0 && tenMst.HpId == 0)) return 0;
@@ -2021,6 +2317,529 @@ namespace Infrastructure.Repositories
 
             var ipnKasanExcludeItem = NoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        public List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
+        {
+            var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+            List<(int type, string message, int positionOdr, int odrInfDetailPosition, TenItemModel temItemMst, double suryo)> result = new();
+            int odrInfIndex = 0, odrInfDetailIndex = 0;
+            foreach (var checkingOdr in addingOdrList)
+            {
+                var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                foreach (var detail in odrInfDetails)
+                {
+                    if (string.IsNullOrEmpty(detail.ItemCd))
+                    {
+                        continue;
+                    }
+
+                    var santeiGrpDetailList = FindSanteiGrpDetailList(detail.ItemCd);
+                    if (santeiGrpDetailList.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var santeiGrpDetail in santeiGrpDetailList)
+                    {
+                        var santeiCntCheck = FindSanteiCntCheck(hpId, santeiGrpDetail.SanteiGrpCd, sinDate);
+                        if (santeiCntCheck == null)
+                        {
+                            continue;
+                        }
+                        // Now, check TermCnt = 1 and TermSbt = 4 and CntType = 2 only. In other case, just ignore
+                        if (santeiCntCheck.TermCnt == 1 && santeiCntCheck.TermSbt == 4 && (santeiCntCheck.CntType == 2 || santeiCntCheck.CntType == 3))
+                        {
+                            double santeiCntInMonth = GetOdrCountInMonth(ptId, sinDate, detail.ItemCd);
+                            double countInCurrentOdr = 0;
+
+                            if (santeiCntCheck.CntType == 2)
+                            {
+                                foreach (var item in currentListOrder)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in currentListOrder)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            double totalSanteiCount = santeiCntInMonth + countInCurrentOdr;
+
+                            if (totalSanteiCount >= santeiCntCheck.MaxCnt)
+                            {
+                                var targetItem = FindTenMst(hpId, santeiCntCheck.TargetCd ?? string.Empty, sinDate);
+                                if (targetItem == null)
+                                {
+                                    continue;
+                                }
+
+                                StringBuilder stringBuilder = new StringBuilder("");
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(detail.DisplayItemName);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append("が");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("1ヶ月 ");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt);
+                                stringBuilder.Append("単位を超えています。");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(targetItem.Name);
+                                stringBuilder.Append("'に置き換えますか？");
+
+                                string msg = stringBuilder.ToString();
+
+                                result.Add(new(1, msg, odrInfIndex, odrInfDetailIndex, targetItem, 0));
+                            }
+                            else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
+                            {
+                                StringBuilder stringBuilder = new StringBuilder("");
+                                stringBuilder.Append("'");
+                                stringBuilder.Append(detail.DisplayItemName);
+                                stringBuilder.Append("'");
+                                stringBuilder.Append("が");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("1ヶ月 ");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt);
+                                stringBuilder.Append("単位を超えます。");
+                                stringBuilder.Append(Environment.NewLine);
+                                stringBuilder.Append("数量を'");
+                                stringBuilder.Append(santeiCntCheck.MaxCnt - totalSanteiCount);
+                                stringBuilder.Append("'に変更しますか？");
+
+                                string msg = stringBuilder.ToString();
+                                var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
+                                result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
+                            }
+                        }
+                    }
+
+                    odrInfDetailIndex++;
+                }
+                odrInfIndex++;
+            }
+            return result;
+        }
+
+        public List<OrdInfModel> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems)
+        {
+            List<OrdInfModel> result = new();
+            var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+            int odrInfIndex = 0, odrInfDetailIndex = 0;
+            List<string> ipnNameCds = new List<string>();
+            foreach (var ordInfDetails in odrInfs.Select(o => o.OrdInfDetails))
+            {
+                ipnNameCds.AddRange(ordInfDetails.Select(od => od.IpnCd));
+            }
+            ipnNameCds = ipnNameCds.Distinct().ToList();
+            var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(i =>
+                   i.HpId == hpId &&
+                   i.StartDate <= sinDate &&
+                   i.EndDate >= sinDate &&
+                   ipnNameCds.Contains(i.IpnNameCd)).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty));
+            var autoSetSyohoKbnKohatuDrug = _systemConf.GetSettingValue(2020, 0, hpId);
+            var autoSetSyohoLimitKohatuDrug = _systemConf.GetSettingValue(2020, 1, hpId);
+            var autoSetSyohoKbnSenpatuDrug = _systemConf.GetSettingValue(2021, 0, hpId);
+            var autoSetSyohoLimitSenpatuDrug = _systemConf.GetSettingValue(2021, 1, hpId);
+
+            foreach (var checkingOdr in addingOdrList)
+            {
+                var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
+                                                     && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
+                                                     && odrInf.InoutKbn == checkingOdr?.InoutKbn
+                                                     && odrInf.SyohoSbt == checkingOdr?.SyohoSbt
+                                                     && odrInf.SikyuKbn == checkingOdr.SikyuKbn
+                                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
+                                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
+                var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                foreach (var detail in odrInfDetails)
+                {
+                    var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
+
+                    if (targetItem == null) return new();
+
+                    if (targetItem.Item1 == 1)
+                    {
+                        var tenItemMst = targetItem.Item5;
+                        var grpKouiDetail = CIUtil.GetGroupKoui(detail.SinKouiKbn);
+                        var grpKouiTarget = CIUtil.GetGroupKoui(tenItemMst.SinKouiKbn);
+                        var itemShugiList = odrInfDetails.Where(d => d.IsShugi).ToList();
+                        string itemCd = tenItemMst.ItemCd;
+                        string itemName = tenItemMst.Name;
+                        int sinKouiKbn = tenItemMst.SinKouiKbn;
+                        int kohatuKbn = tenItemMst.KohatuKbn;
+                        int drugKbn = tenItemMst.DrugKbn;
+                        string unitNameBefore = detail.UnitName;
+                        int unitSBT = 0;
+                        string unitName = "";
+                        double termVal = 0;
+                        double suryo = 0;
+                        int yohoKbn = tenItemMst.YohoKbn;
+                        string ipnCd = tenItemMst.IpnNameCd;
+                        string ipnName = "";
+                        string kokuji1 = tenItemMst.Kokuji1;
+                        string kokuji2 = tenItemMst.Kokuji2;
+                        int syohoKbn = 0;
+                        int syohoLimitKbn = 0;
+
+                        if (grpKouiDetail == grpKouiTarget || itemShugiList.Count == 1)
+                        {
+                            if (!string.IsNullOrEmpty(tenItemMst.OdrUnitName))
+                            {
+                                unitSBT = 1;
+                                unitName = tenItemMst.OdrUnitName;
+                                termVal = tenItemMst.OdrTermVal;
+                            }
+                            else if (!string.IsNullOrEmpty(tenItemMst.CnvUnitName))
+                            {
+                                unitSBT = 2;
+                                unitName = tenItemMst.CnvUnitName;
+                                termVal = tenItemMst.CnvTermVal;
+                            }
+                            else
+                            {
+                                unitSBT = 0;
+                                unitName = string.Empty;
+                                termVal = 0;
+                                suryo = 0;
+                            }
+                            if (!string.IsNullOrEmpty(detail.UnitName) && detail.UnitName != unitNameBefore)
+                            {
+                                suryo = 1;
+                            }
+
+                            if (!string.IsNullOrEmpty(detail.IpnCd))
+                            {
+                                ipnName = ipnNameMsts.FirstOrDefault(i => i.Item1 == tenItemMst.IpnNameCd)?.Item2 ?? string.Empty;
+                            }
+                            else
+                            {
+                                ipnName = string.Empty;
+                            }
+
+                            if (detail.SinKouiKbn == 20 && detail.DrugKbn > 0)
+                            {
+                                switch (detail.KohatuKbn)
+                                {
+                                    case 0:
+                                        // 先発品
+                                        syohoKbn = 0;
+                                        syohoLimitKbn = 0;
+                                        break;
+                                    case 1:
+                                        // 後発品
+                                        syohoKbn = (int)autoSetSyohoKbnKohatuDrug + 1;
+                                        syohoLimitKbn = (int)autoSetSyohoLimitKohatuDrug;
+                                        break;
+                                    case 2:
+                                        // 後発品のある先発品
+                                        syohoKbn = (int)autoSetSyohoKbnSenpatuDrug + 1;
+                                        syohoLimitKbn = (int)autoSetSyohoLimitSenpatuDrug;
+                                        break;
+                                }
+                                if (detail.SyohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
+                                {
+                                    // 一般名マスタに登録がない
+                                    syohoKbn = 2;
+                                }
+                            }
+
+                            if (itemShugiList.Count == 1)
+                            {
+                                checkingOdr.ChangeOdrKouiKbn(detail.SinKouiKbn);
+                                if (checkGroupOrder != null)
+                                {
+                                    checkingOdr.Delete();
+                                    result.Add(checkingOdr);
+                                }
+                            }
+                            detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
+                            result.Add(checkingOdr);
+                        }
+                        else
+                        {
+                            // Difference group koui
+                            sinKouiKbn = tenItemMst.SinKouiKbn;
+                            itemCd = tenItemMst.ItemCd;
+                            itemName = tenItemMst.Name;
+                            unitNameBefore = detail.UnitName;
+                            if (!string.IsNullOrEmpty(tenItemMst.OdrUnitName))
+                            {
+                                unitSBT = 1;
+                                unitName = tenItemMst.OdrUnitName;
+                                termVal = tenItemMst.OdrTermVal;
+                            }
+                            else if (!string.IsNullOrEmpty(tenItemMst.CnvUnitName))
+                            {
+                                unitSBT = 2;
+                                unitName = tenItemMst.CnvUnitName;
+                                termVal = tenItemMst.CnvTermVal;
+                            }
+                            else
+                            {
+                                unitSBT = 0;
+                                unitName = string.Empty;
+                                termVal = 0;
+                                suryo = 0;
+                            }
+                            if (!string.IsNullOrEmpty(detail.UnitName) && detail.UnitName != unitNameBefore)
+                            {
+                                suryo = 1;
+                            }
+
+                            kohatuKbn = tenItemMst.KohatuKbn;
+                            yohoKbn = tenItemMst.YohoKbn;
+                            drugKbn = tenItemMst.DrugKbn;
+                            ipnCd = tenItemMst.IpnNameCd;
+                            if (!string.IsNullOrEmpty(detail.IpnCd))
+                            {
+                                ipnName = ipnNameMsts.FirstOrDefault(t => t.Item1 == tenItemMst.IpnNameCd)?.Item2 ?? string.Empty;
+                            }
+                            else
+                            {
+                                ipnName = string.Empty;
+                            }
+
+                            kokuji1 = tenItemMst.Kokuji1;
+                            kokuji2 = tenItemMst.Kokuji2;
+
+                            if (detail.SinKouiKbn == 20 && detail.DrugKbn > 0)
+                            {
+                                switch (detail.KohatuKbn)
+                                {
+                                    case 0:
+                                        // 先発品
+                                        syohoKbn = 0;
+                                        syohoLimitKbn = 0;
+                                        break;
+                                    case 1:
+                                        // 後発品
+                                        syohoKbn = (int)autoSetSyohoKbnKohatuDrug + 1;
+                                        syohoLimitKbn = (int)autoSetSyohoLimitKohatuDrug;
+                                        break;
+                                    case 2:
+                                        // 後発品のある先発品
+                                        syohoKbn = (int)autoSetSyohoKbnSenpatuDrug + 1;
+                                        syohoLimitKbn = (int)autoSetSyohoLimitSenpatuDrug;
+                                        break;
+                                }
+                                if (detail.SyohoKbn == 3 && string.IsNullOrEmpty(detail.IpnName))
+                                {
+                                    // 一般名マスタに登録がない
+                                    syohoKbn = 2;
+                                }
+                            }
+
+                            List<OrdInfDetailModel> odrInfDetail = new();
+                            var odrInfDetailModel = new OrdInfDetailModel(
+                                hpId,
+                                raiinNo,
+                                0,
+                                0,
+                                1,
+                                ptId,
+                                sinDate,
+                                sinKouiKbn,
+                                itemCd,
+                                itemName,
+                                suryo,
+                                unitName,
+                                unitSBT,
+                                termVal,
+                                kohatuKbn,
+                                syohoKbn,
+                                syohoLimitKbn,
+                                drugKbn,
+                                yohoKbn,
+                                kokuji1,
+                                kokuji2,
+                                0,
+                                ipnCd,
+                                ipnName,
+                                0,
+                                DateTime.MinValue,
+                                0,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                0,
+                                string.Empty,
+                                0,
+                                0,
+                                false,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                string.Empty,
+                                new(),
+                                0,
+                                0,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty
+                            );
+                            odrInfDetail.Add(odrInfDetailModel);
+
+                            OrdInfModel odrInf = new OrdInfModel(
+                                    hpId,
+                                    raiinNo,
+                                    0,
+                                    0,
+                                    ptId,
+                                    sinDate,
+                                    0,
+                                    tenItemMst.SinKouiKbn,
+                                    string.Empty,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    1,
+                                    0,
+                                    0,
+                                    0,
+                                    odrInfDetail,
+                                    DateTime.MinValue,
+                                    userId,
+                                    string.Empty,
+                                    DateTime.MinValue,
+                                    userId,
+                                    string.Empty
+                                );
+
+                            result.Add(odrInf);
+                            checkingOdr.Delete();
+                        }
+                    }
+                    else
+                    {
+                        detail.ChangeSuryo(targetItem.Item6);
+                        result.Add(checkingOdr);
+                    }
+                    odrInfDetailIndex++;
+                }
+
+                odrInfIndex++;
+            }
+
+            return result;
+        }
+
+        private List<SanteiGrpDetail> FindSanteiGrpDetailList(string itemCd)
+        {
+            var entities = NoTrackingDataContext.SanteiGrpDetails
+                                    .Where(s => s.ItemCd == itemCd);
+            return entities.ToList();
+        }
+
+        private SanteiCntCheck FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
+        {
+            var entity = NoTrackingDataContext.SanteiCntChecks.Where(e =>
+                 e.HpId == hpId &&
+                 e.SanteiGrpCd == santeiGrpCd &&
+                 e.StartDate <= sinDate &&
+                 e.EndDate >= sinDate)
+                 .FirstOrDefault();
+            return entity ?? new SanteiCntCheck();
+        }
+
+        public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
+        {
+            var entity = NoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   p.ItemCd == itemCd &&
+                   p.IsDeleted == DeleteTypes.None);
+
+            return entity != null ? new TenItemModel(
+                   entity.HpId,
+                   entity.ItemCd,
+                   entity.RousaiKbn,
+                   entity.KanaName1 ?? string.Empty,
+                   entity.Name ?? string.Empty,
+                   entity.KohatuKbn,
+                   entity.MadokuKbn,
+                   entity.KouseisinKbn,
+                   entity.OdrUnitName ?? string.Empty,
+                   entity.EndDate,
+                   entity.DrugKbn,
+                   entity.MasterSbt ?? string.Empty,
+                   entity.BuiKbn,
+                   entity.IsAdopted,
+                   entity.Ten,
+                   entity.TenId,
+                   string.Empty,
+                   string.Empty,
+                   entity.CmtCol1,
+                   entity.IpnNameCd ?? string.Empty,
+                   entity.SinKouiKbn,
+                   entity.YjCd ?? string.Empty,
+                   entity.CnvUnitName ?? string.Empty,
+                   entity.StartDate,
+                   entity.YohoKbn,
+                   entity.CmtColKeta1,
+                   entity.CmtColKeta2,
+                   entity.CmtColKeta3,
+                   entity.CmtColKeta4,
+                   entity.CmtCol2,
+                   entity.CmtCol3,
+                   entity.CmtCol4,
+                   entity.IpnNameCd ?? string.Empty,
+                   entity.MinAge ?? string.Empty,
+                   entity.MaxAge ?? string.Empty,
+                   entity.SanteiItemCd ?? string.Empty,
+                   entity.OdrTermVal,
+                   entity.CnvTermVal,
+                   entity.DefaultVal,
+                   entity.Kokuji1 ?? string.Empty,
+                   entity.Kokuji2 ?? string.Empty
+                ) : new();
+
+        }
+
+        private bool CheckIsGetYakkaPrice(int hpId, TenMst tenMst, int sinDate, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
+        {
+            if (tenMst == null) return false;
+            var ipnKasanExclude = ipnKasanExcludes.FirstOrDefault(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate);
+            var ipnKasanExcludeItem = ipnKasanExcludeItems.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate);
+
+            return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        public bool IsHolidayForDefaultTime(int hpId, int sinDate)
+        {
+            var holidayMst = NoTrackingDataContext.HolidayMsts.Where(t => t.HpId == hpId && t.SinDate == sinDate && t.IsDeleted != 1).FirstOrDefault();
+            return holidayMst != null && holidayMst.HolidayKbn != 0;
         }
     }
 }

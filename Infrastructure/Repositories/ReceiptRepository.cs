@@ -1,4 +1,6 @@
 ﻿using Domain.Constant;
+using Domain.Models.Accounting;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
@@ -16,8 +18,10 @@ namespace Infrastructure.Repositories;
 
 public class ReceiptRepository : RepositoryBase, IReceiptRepository
 {
-    public ReceiptRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+    private readonly IMstItemRepository _mstItemRepository;
+    public ReceiptRepository(ITenantProvider tenantProvider, IMstItemRepository mstItemRepository) : base(tenantProvider)
     {
+        _mstItemRepository = mstItemRepository;
     }
 
     #region Rece check list
@@ -1307,6 +1311,22 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
+    public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, List<int> sinYmList, List<long> ptIdList, List<int> hokenIdList)
+    {
+        sinYmList = sinYmList.Distinct().ToList();
+        ptIdList = ptIdList.Distinct().ToList();
+        hokenIdList = hokenIdList.Distinct().ToList();
+        var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
+                                                                               && sinYmList.Contains(item.SinYm)
+                                                                               && ptIdList.Contains(item.PtId)
+                                                                               && hokenIdList.Contains(item.HokenId)
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .ToList();
+
+        var result = syobyoKeikaList.Select(item => ConvertToSyobyoKeikaModel(item)).ToList();
+        return result;
+    }
+
     public bool SaveSyoukiInfList(int hpId, int userId, List<SyoukiInfModel> syoukiInfList)
     {
         var syoukiInfUpdateList = syoukiInfList.Where(item => item.SeqNo > 0).ToList();
@@ -1745,7 +1765,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                      item.TenMst.ReceName ?? string.Empty,
                                                                      item.SinKouiDetail.Suryo,
                                                                      item.SinKouiDetail.IsNodspPaperRece,
-                                                                     item.TenMst.MasterSbt ?? string.Empty))
+                                                                     item.TenMst.MasterSbt ?? string.Empty,
+                                                                     item.TenMst != null))
                                                 .ToList();
 
             var ptHokenPatternModelList = entities.Select(item => new PtHokenPatternModel(
@@ -1869,6 +1890,185 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                     && item.IsInvalid == 0)
                                                      .Select(p => p.ByomeiCd)
                                                      .ToList();
+    }
+
+    public double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns)
+    {
+        int startYm = startDate / 100;
+        int endYm = endDate / 100;
+
+        itemCds = itemCds.Distinct().ToList();
+        List<int> checkHokenKbn = new();
+
+        if (hokenKbns != null)
+        {
+            checkHokenKbn = hokenKbns.Distinct().ToList();
+        }
+
+        List<int> checkSanteiKbn = new();
+
+        if (santeiKbns != null)
+        {
+            checkSanteiKbn = santeiKbns.Distinct().ToList();
+        }
+
+        var sinRpInfs = NoTrackingDataContext.SinRpInfs.Where(item => item.HpId == hpId
+                                                                      && item.PtId == ptId
+                                                                      && item.SinYm >= startYm
+                                                                      && item.SinYm <= endYm
+                                                                      && checkHokenKbn.Contains(item.HokenKbn)
+                                                                      && checkSanteiKbn.Contains(item.SanteiKbn))
+                                                       .ToList();
+
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                              && item.PtId == ptId
+                                                                              && item.SinDate >= startDate
+                                                                              && item.SinDate <= endDate
+                                                                              && item.RaiinNo != raiinNo)
+                                                                .ToList();
+
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.SinYm >= startYm
+                                                                                && item.SinYm <= endYm
+                                                                                && item.ItemCd != null
+                                                                                && itemCds.Contains(item.ItemCd)
+                                                                                && item.FmtKbn != 10  // 在がん医総のダミー項目を除く
+                                                                 ).ToList();
+
+        var joinQuery = (from sinKouiDetail in sinKouiDetails
+                         join sinKouiCount in sinKouiCounts on
+                             new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                             new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                         join sinRpInf in sinRpInfs on
+                             new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                             new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                         where
+                             sinKouiDetail.HpId == hpId
+                             && sinKouiDetail.PtId == ptId
+                             && sinKouiDetail.SinYm >= startYm
+                             && sinKouiDetail.SinYm <= endYm
+                             && sinKouiDetail.ItemCd != null
+                             && itemCds.Contains(sinKouiDetail.ItemCd)
+                             && sinKouiCount.SinDate >= startDate
+                             && sinKouiCount.SinDate <= endDate
+                             && sinKouiCount.RaiinNo != raiinNo
+                         group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
+                         select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || (a.sinKouiDetail.ItemCd != null && ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd)) ? 1 : a.sinKouiDetail.Suryo)) }
+        );
+
+        return joinQuery.FirstOrDefault()?.sum ?? 0;
+    }
+
+    public List<SinKouiMstModel> GetListSinKoui(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        List<SinKouiMstModel> result = new();
+        List<SinKoui> listSinKoui = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && item.SinYm == sinYm
+                                                                                 && item.HokenId == hokenId
+                                                                                 && item.IsNodspRece == 0)
+                                                                  .ToList();
+
+        var sinKouiCountList = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                                 && item.PtId == ptId
+                                                                                 && item.SinYm == sinYm)
+                                                                  .ToList();
+
+        var rpNoList = listSinKoui.Select(item => item.RpNo).Distinct().ToList();
+        var seqNoList = listSinKoui.Select(item => item.SeqNo).Distinct().ToList();
+        var allSinKouiDetailList = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                      && item.PtId == ptId
+                                                                                      && item.SinYm == sinYm
+                                                                                      && item.IsNodspRece == 0
+                                                                                      && rpNoList.Contains(item.RpNo)
+                                                                                      && seqNoList.Contains(item.SeqNo))
+                                                                       .ToList();
+
+        listSinKoui.ForEach((sinKoui) =>
+        {
+            var sinKouiDetailList = allSinKouiDetailList.Where(item => item.RpNo == sinKoui.RpNo && item.SeqNo == sinKoui.SeqNo).ToList();
+            var listSinKouiDetailEntity = (from sinKouiDetail in sinKouiDetailList
+                                           join sinKouiCount in sinKouiCountList
+                                           on new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals new { sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                                           select new
+                                           {
+                                               sinKouiDetail,
+                                               sinKouiCount
+                                           })
+                                          .ToList();
+
+            List<SinKouiDetailModel> listSinKouiDetailModel = new();
+            listSinKouiDetailEntity.ForEach((sinKouiDetail) =>
+            {
+                string itemCd = sinKouiDetail.sinKouiDetail?.ItemCd ?? string.Empty;
+                int sinDate = sinKouiDetail.sinKouiCount.SinDate;
+                var listCmtSelect = _mstItemRepository.GetSelectiveComment(hpId, new List<string> { itemCd }, sinDate, new List<int> { 0 }, true);
+                listSinKouiDetailModel.Add(new SinKouiDetailModel(sinKouiDetail.sinKouiDetail?.PtId ?? 0,
+                                                                     sinKouiDetail.sinKouiDetail?.SinYm ?? 0,
+                                                                     sinKouiDetail.sinKouiCount?.SinDate ?? 0,
+                                                                     sinKouiDetail.sinKouiDetail?.PtId ?? 0,
+                                                                     string.Empty,
+                                                                     string.Empty,
+                                                                     sinKouiDetail.sinKouiDetail?.ItemCd ?? string.Empty,
+                                                                     sinKouiDetail.sinKouiDetail?.CmtOpt ?? string.Empty,
+                                                                     sinKouiDetail.sinKouiDetail?.ItemName ?? string.Empty,
+                                                                     string.Empty,
+                                                                     sinKouiDetail.sinKouiDetail?.Suryo ?? 0,
+                                                                     sinKouiDetail.sinKouiDetail?.IsNodspPaperRece ?? 0,
+                                                                     string.Empty,
+                                                                     false,
+                                                                     listCmtSelect));
+            });
+            result.Add(AddNewSinKouiMstModel(sinKoui, listSinKouiDetailModel));
+        });
+
+        return result;
+    }
+
+    public List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        return NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                            && item.SinYm == sinYm
+                                                            && item.PtId == ptId
+                                                            && item.HokenId == hokenId
+                                                            && item.IsDeleted == DeleteTypes.None)
+                                             .Select(item => item.ItemCd ?? string.Empty)
+                                             .ToList();
+    }
+
+    public List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        return NoTrackingDataContext.CalcLogs.Where(item => item.HpId == hpId
+                                                            && item.DelSbt == 13
+                                                            && item.PtId == ptId
+                                                            && item.SinDate / 100 == sinYm
+                                                            && item.HokenId == hokenId)
+                                             .Select(item => new CalcLogModel(
+                                                                 item.RaiinNo,
+                                                                 item.LogSbt,
+                                                                 item.Text ?? string.Empty,
+                                                                 item.PtId,
+                                                                 item.SinDate,
+                                                                 item.SeqNo,
+                                                                 item.HokenId,
+                                                                 item.ItemCd ?? string.Empty,
+                                                                 item.DelItemCd ?? string.Empty,
+                                                                 item.DelSbt,
+                                                                 item.IsWarning,
+                                                                 item.TermCnt,
+                                                                 item.TermSbt))
+                                             .ToList();
+    }
+
+    public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(item => item.HpId == hpId
+                                                                                    && item.IsDeleted == DeleteTypes.None
+                                                                                    && item.PtId == ptId
+                                                                                    && item.SinYm == sinYm
+                                                                                    && item.HokenId == hokenId);
+        return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
     }
     #endregion
 
@@ -2126,6 +2326,74 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 hokenInf?.Kigo ?? string.Empty,
                 hokenInf?.Bango ?? string.Empty,
                 hokenInf?.EdaNo ?? string.Empty
+            );
+    }
+
+    private SinKouiMstModel AddNewSinKouiMstModel(SinKoui sinKoui, List<SinKouiDetailModel> listSinKouiDetailModel)
+    {
+        bool existItemWithCommentSelect = false;
+        if (listSinKouiDetailModel == null || listSinKouiDetailModel.Count == 0)
+        {
+            existItemWithCommentSelect = false;
+        }
+        existItemWithCommentSelect = listSinKouiDetailModel?.Any(item => item.ListCmtSelect != null && item.ListCmtSelect.Count > 0) ?? false;
+        return new SinKouiMstModel(
+                sinKoui.PtId,
+                sinKoui.SinYm,
+                sinKoui.RpNo,
+                sinKoui.SeqNo,
+                sinKoui.HokenPid,
+                sinKoui.HokenId,
+                sinKoui.SyukeiSaki ?? string.Empty,
+                sinKoui.HokatuKensa,
+                sinKoui.TotalTen,
+                sinKoui.Ten,
+                sinKoui.Zei,
+                sinKoui.Count,
+                sinKoui.TenCount ?? string.Empty,
+                sinKoui.TenColCount,
+                sinKoui.IsNodspRece,
+                sinKoui.IsNodspPaperRece,
+                sinKoui.InoutKbn,
+                sinKoui.EntenKbn,
+                sinKoui.CdKbn ?? string.Empty,
+                sinKoui.RecId ?? string.Empty,
+                sinKoui.JihiSbt,
+                sinKoui.KazeiKbn,
+                sinKoui.DetailData ?? string.Empty,
+                sinKoui.Day1,
+                sinKoui.Day2,
+                sinKoui.Day3,
+                sinKoui.Day4,
+                sinKoui.Day5,
+                sinKoui.Day6,
+                sinKoui.Day7,
+                sinKoui.Day8,
+                sinKoui.Day9,
+                sinKoui.Day10,
+                sinKoui.Day11,
+                sinKoui.Day12,
+                sinKoui.Day13,
+                sinKoui.Day14,
+                sinKoui.Day15,
+                sinKoui.Day16,
+                sinKoui.Day17,
+                sinKoui.Day18,
+                sinKoui.Day19,
+                sinKoui.Day20,
+                sinKoui.Day21,
+                sinKoui.Day22,
+                sinKoui.Day23,
+                sinKoui.Day24,
+                sinKoui.Day25,
+                sinKoui.Day26,
+                sinKoui.Day27,
+                sinKoui.Day28,
+                sinKoui.Day29,
+                sinKoui.Day30,
+                sinKoui.Day31,
+                listSinKouiDetailModel ?? new(),
+                existItemWithCommentSelect
             );
     }
     #endregion

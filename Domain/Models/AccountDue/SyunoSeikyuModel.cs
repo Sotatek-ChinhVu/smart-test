@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.AccountDue;
 
