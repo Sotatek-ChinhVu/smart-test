@@ -227,5 +227,8 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+
+        //ReceSeikyus
+        public const string GetListReceSeikyu = "GetListReceSeikyu";
     }
 }

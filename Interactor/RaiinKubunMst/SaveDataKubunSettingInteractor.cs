@@ -20,7 +20,7 @@ namespace Interactor.RaiinKubunMst
             {
                 if (inputData.RaiinKubunMstModels != null && inputData.RaiinKubunMstModels.Any())
                 {
-                    var result = _raiinKubunMstRepository.SaveDataKubunSetting(inputData.RaiinKubunMstModels, inputData.UserId);
+                    var result = _raiinKubunMstRepository.SaveDataKubunSetting(inputData.RaiinKubunMstModels, inputData.UserId, inputData.HpId);
                     return new SaveDataKubunSettingOutputData(result);
                 }
                 return new SaveDataKubunSettingOutputData(new List<string>() { KubunSettingConstant.Nodata });

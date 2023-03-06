@@ -363,6 +363,11 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using UseCase.Receipt.Recalculation;
+using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
+using UseCase.ReceSeikyu.GetList;
+using Interactor.ReceSeikyu;
+using Domain.Models.ReceSeikyu;
 using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
@@ -488,6 +493,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
+            services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -853,6 +859,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceReceInfListInputData, GetInsuranceReceInfListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
             busBuilder.RegisterUseCase<RecalculationInputData, RecalculationInteractor>();
+
+            //ReceSeikyu
+            busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

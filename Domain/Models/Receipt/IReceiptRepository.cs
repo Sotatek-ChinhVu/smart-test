@@ -70,5 +70,7 @@ public interface IReceiptRepository : IRepositoryBase
     List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId);
 
     List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
+
+    bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList);
     #endregion
 }
