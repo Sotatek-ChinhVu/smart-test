@@ -13,6 +13,7 @@ using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
+using UseCase.MedicalExamination.GetDefaultSelectedTime;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -345,6 +346,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetMaxAuditTrailLogDateForPrintPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetMaxAuditTrailLogDateForPrintResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultSelectedTime)]
+        public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
+        {
+            var input = new GetDefaultSelectedTimeInputData(request.DayOfWeek, request.UketukeTime, request.FromOutOfSystem, HpId, request.SinDate, request.BirthDay);
+            var output = _bus.Handle(input);
+            var presenter = new GetDefaultSelectedTimePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDefaultSelectedTimeResponse>>(presenter.Result);
         }
     }
 }

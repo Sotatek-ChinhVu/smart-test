@@ -6,7 +6,7 @@ namespace UseCase.Accounting.GetAccountingInf
 {
     public class GetAccountingOutputData : IOutputData
     {
-        public GetAccountingOutputData(List<SyunoSeikyuModel> syunoSeikyuModels, GetAccountingStatus getAccountingStatus, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels)
+        public GetAccountingOutputData(List<SyunoSeikyuModel> syunoSeikyuModels, GetAccountingStatus getAccountingStatus, int totalPoint, int kanFutan, int totalSelfExpense, int tax, int adjustFutan, int debitBalance, int sumAdjust, int sumAdjustView, int thisCredit, int thisWari, int payType, string comment, List<KohiInfModel> kohiInfModels, List<SyunoSeikyuModel> allSyunoSeikyuModels)
         {
             SyunoSeikyuModels = syunoSeikyuModels;
             GetAccountingStatus = getAccountingStatus;
@@ -23,6 +23,7 @@ namespace UseCase.Accounting.GetAccountingInf
             PayType = payType;
             Comment = comment;
             KohiInfModels = kohiInfModels;
+            AllSyunoSeikyuModels = allSyunoSeikyuModels;
         }
 
         public List<SyunoSeikyuModel> SyunoSeikyuModels { get; private set; }
@@ -40,5 +41,6 @@ namespace UseCase.Accounting.GetAccountingInf
         public int PayType { get; private set; }
         public string Comment { get; private set; }
         public List<KohiInfModel> KohiInfModels { get; private set; }
+        public List<SyunoSeikyuModel> AllSyunoSeikyuModels { get; private set; }
     }
 }

@@ -20,6 +20,7 @@ using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.CheckedItemName;
+using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.MedicalExamination.ConvertItem;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
@@ -484,6 +485,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ChangeAfterAutoCheckOrderResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ConvertFromHistoryToTodayOrder)]
+        public ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>> ConvertFromHistoryToTodayOrder([FromBody] ConvertFromHistoryToTodayOrderRequest request)
+        {
+            var input = new ConvertFromHistoryTodayOrderInputData(HpId, request.SinDate, request.RaiinNo, UserId, request.PtId, request.HistoryOdrInfModels);
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertFromHistoryToTodayOrderPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>>(presenter.Result);
         }
 
         private Dictionary<string, List<TenItemModel>> ConvertExpiredItem(Dictionary<string, List<TenItemDto>> request)
