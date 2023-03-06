@@ -117,7 +117,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<CheckAccountingStatusResponse>> ActionResult([FromBody] CheckAccountingStatusRequest request)
         {
             var input = new CheckAccountingStatusInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.DebitBalance,
-                request.SumAdjust, request.ThisCredit, request.Wari, request.IsDisCharge, request.IsDeletedSyuno, request.IsSaveAccounting,
+                request.SumAdjust, request.ThisCredit, request.Wari, request.IsDisCharge, request.IsSaveAccounting,
                 request.SyunoSeikyuDtos, request.AllSyunoSeikyuDtos);
             var output = _bus.Handle(input);
             var presenter = new CheckAccountingStatusPresenter();
