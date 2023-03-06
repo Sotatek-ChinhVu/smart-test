@@ -64,9 +64,6 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
-using EmrCalculateApi.Futan.ViewModels;
-using EmrCalculateApi.Implementation;
-using EmrCalculateApi.Interface;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
@@ -491,9 +488,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceiptRepository, ReceiptRepository>();
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
-            services.AddTransient<IFutancalcViewModel, FutancalcViewModel>();
-            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
-            services.AddTransient<IEmrLogger, EmrLogger>();
         }
 
         private void SetupUseCase(IServiceCollection services)

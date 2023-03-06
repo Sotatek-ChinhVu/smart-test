@@ -5,6 +5,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
@@ -136,6 +137,23 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<RecaculationResponse>>(presenter.Result);
+        }
+
+        public async Task<string> Recaculate(string apiUrl)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return content;
+                }
+                else
+                {
+                    throw new Exception("Failed to call API: " + response.StatusCode);
+                }
+            }
         }
     }
 }
