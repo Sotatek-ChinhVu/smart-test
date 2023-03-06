@@ -885,7 +885,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                              select new { gcs.Key.AYjCd, gcs.Key.BYjCd, gcs.Key.ItemCd, gcs.Key.KinkiItemCd, gcs.Key.Id }
                                    ).ToList();
 
-        for (int x = 0; x < listKinkiCode.Count(); x++)
+        for (int x = 0; x < listKinkiCode.Count; x++)
         {
             var kikinCode = listKinkiCode[x];
             List<KinkiResultModel> listFilteredData =
@@ -898,7 +898,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 )
                 .ToList();
 
-            if (listFilteredData.Count() == 0) continue;
+            if (listFilteredData.Count == 0) continue;
 
             string itemAName = _realtimeOrderErrorFinder.FindItemName(kikinCode.AYjCd, _sinday);
             string itemBName = string.Empty;
