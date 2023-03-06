@@ -3050,13 +3050,13 @@ namespace Helper.Common
             int delimiterCount = 0;
             string sTemp;
             string wYm = Ym.Trim();
-            DateTime CurrentDate = DateTime.Now;
+            DateTime currentDate = DateTime.Now;
 
             // Input month only
             int iYm = wYm.AsInteger();
             if (iYm <= 12 && iYm >= 1)
             {
-                wYm = CurrentDate.Year + wYm.AsInteger().ToString("D2");
+                wYm = currentDate.Year + wYm.AsInteger().ToString("D2");
                 result = DateTime.ParseExact(wYm, "yyyyMM", CultureInfo.InvariantCulture)
                     .ToString("yyyyMM").AsInteger();
 
@@ -3087,11 +3087,11 @@ namespace Helper.Common
                     }
                     else
                     {
-                        int SYear = sTemp.AsInteger();
-                        string SMonth = wYm.Substring(wYm.IndexOf('/') + 1);
+                        int sYear = sTemp.AsInteger();
+                        string sMonth = wYm.Substring(wYm.IndexOf('/') + 1);
                         //Zero padding
-                        SMonth = SMonth.PadLeft(2, '0');
-                        wYm = SYear + SMonth;
+                        sMonth = sMonth.PadLeft(2, '0');
+                        wYm = sYear + sMonth;
                     }
                 }
             }
@@ -3099,9 +3099,9 @@ namespace Helper.Common
             {
                 if (wYm.Length == 4)
                 {
-                    int WYear = wYm.Substring(0, 2).AsInteger();
-                    int SYear = WYearToSYear(WYear, ' ');
-                    wYm = SYear.ToString() + wYm.Substring(2, 2);
+                    int wYear = wYm.Substring(0, 2).AsInteger();
+                    int sYear = WYearToSYear(wYear, ' ');
+                    wYm = sYear.ToString() + wYm.Substring(2, 2);
                 }
                 // Delimiter character does not exists
                 // Length != 6 is error
