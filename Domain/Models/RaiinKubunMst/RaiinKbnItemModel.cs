@@ -1,6 +1,4 @@
-﻿using Domain.Models.MstItem;
-
-namespace Domain.Models.RaiinKubunMst
+﻿namespace Domain.Models.RaiinKubunMst
 {
     public class RaiinKbnItemModel
     {
@@ -31,5 +29,11 @@ namespace Domain.Models.RaiinKubunMst
         public int IsDeleted { get; private set; }
 
         public int SortNo { get; private set; }
+
+        public RaiinKbnItemModel ChangeSeqNo(long seqNo)
+        {
+            SeqNo = seqNo;
+            return this;
+        }
     }
 }

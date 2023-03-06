@@ -9,7 +9,7 @@ namespace Domain.Models.RaiinKubunMst
 
         List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId);
 
-        List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId);
+        List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId);
 
         List<(string, string)> GetListColumnName(int hpId);
 
@@ -27,7 +27,8 @@ namespace Domain.Models.RaiinKubunMst
 
         IEnumerable<RaiinKbnModel> GetPatientRaiinKubuns(int hpId, long ptId, int raiinNo, int sinDate);
 
-
         bool SaveRaiinKbnInfs(int hpId, long ptId, int sinDate, long raiinNo, int userId, IEnumerable<RaiinKbnInfDto> kbnInfDtos);
+
+        int GetMaxGrpId(int hpId);
     }
 }
