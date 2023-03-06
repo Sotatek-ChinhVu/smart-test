@@ -7,13 +7,13 @@ using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Models;
 using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
 
-namespace Reporting
+namespace Reporting.ReportServices
 {
-    public class ReportService : IReportService
+    public class Karte1ReportService : IReportService
     {
         private readonly ITenantProvider _tenantProvider;
 
-        public ReportService(ITenantProvider tenantProvider)
+        public Karte1ReportService(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
         }
