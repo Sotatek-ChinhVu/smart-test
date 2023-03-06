@@ -42,14 +42,12 @@ public interface IReceiptRepository : IRepositoryBase
 
     InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId);
 
-    List<ReceCheckOptionModel> GetReceCheckOptionList(int hpId, List<string> errCdList);
-
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
     List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
+    List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
 
     bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
 

@@ -1800,17 +1800,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public List<ReceCheckOptModel> GetReceCheckOptList(int hpId)
+    public List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList)
     {
-        var receCheckOptList = NoTrackingDataContext.ReceCheckOpts.Where(p => p.HpId == hpId).ToList();
-        return receCheckOptList.Select(item => new ReceCheckOptModel(
-                                                   item.ErrCd,
-                                                   item.CheckOpt,
-                                                   item.Biko ?? string.Empty,
-                                                   item.IsInvalid))
-                               .ToList();
+        var receCheckOption = NoTrackingDataContext.ReceCheckOpts.Where(item => item.HpId == hpId
+                                                                                && (errCdList.Count == 0 || errCdList.Contains(item.ErrCd)))
+                                                                 .Select(item => new ReceCheckOptModel(
+                                                                                     item.ErrCd,
+                                                                                     item.CheckOpt,
+                                                                                     item.Biko ?? string.Empty,
+                                                                                     item.IsInvalid))
+                                                                 .ToList();
+        return receCheckOption;
     }
-
     public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
     {
         var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId

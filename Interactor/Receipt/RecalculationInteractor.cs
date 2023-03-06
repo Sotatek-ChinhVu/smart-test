@@ -117,7 +117,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     #region Private funciton
     private List<ReceCheckOptModel> GetReceCheckOptModelList(int hpId)
     {
-        var receCheckOptList = _receiptRepository.GetReceCheckOptList(hpId);
+        var receCheckOptList = _receiptRepository.GetReceCheckOptList(hpId, new());
         if (!receCheckOptList.Any(p => p.ErrCd == ReceErrCdConst.ExpiredEndDateHokenErrCd))
         {
             receCheckOptList.Add(GetDefaultReceCheckOpt(ReceErrCdConst.ExpiredEndDateHokenErrCd));
