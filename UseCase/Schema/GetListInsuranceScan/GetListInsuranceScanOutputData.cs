@@ -5,7 +5,7 @@ namespace UseCase.Schema.GetListInsuranceScan
 {
     public class GetListInsuranceScanOutputData : IOutputData
     {
-        public GetListInsuranceScanOutputData(GetListInsuranceScanStatus status, IEnumerable<InsuranceScanModel> datas)
+        public GetListInsuranceScanOutputData(GetListInsuranceScanStatus status, List<InsuranceScanModel> datas)
         {
             Status = status;
             InsuranceScans = datas;
@@ -13,6 +13,6 @@ namespace UseCase.Schema.GetListInsuranceScan
 
         public GetListInsuranceScanStatus Status { get; private set; }
 
-        public IEnumerable<InsuranceScanModel> InsuranceScans { get; private set; }
+        public List<InsuranceScanModel> InsuranceScans { get; private set; }
     }
 }

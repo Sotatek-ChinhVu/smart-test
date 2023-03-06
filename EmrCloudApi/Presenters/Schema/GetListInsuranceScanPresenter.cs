@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Schema
 
         public void Complete(GetListInsuranceScanOutputData outputData)
         {
-            Result.Data = new GetListInsuranceScanResponse(outputData.InsuranceScans.Select(x=> new InsuranceScanDto(x)));
+            Result.Data = new GetListInsuranceScanResponse(outputData.InsuranceScans.Select(x=> new InsuranceScanDto(x)).ToList());
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.Schema
 {
     public class GetListInsuranceScanResponse
     {
-        public GetListInsuranceScanResponse(IEnumerable<InsuranceScanDto> datas)
+        public GetListInsuranceScanResponse(List<InsuranceScanDto> datas)
         {
             Datas = datas;
         }
 
-        public IEnumerable<InsuranceScanDto> Datas { get; private set; }
+        public List<InsuranceScanDto> Datas { get; private set; }
     }
 }
