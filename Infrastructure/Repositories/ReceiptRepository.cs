@@ -1659,9 +1659,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return receRecalculationList;
     }
 
-    public List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId)
+    public List<ReceSinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId)
     {
-        var result = new List<SinKouiCountModel>();
+        var result = new List<ReceSinKouiCountModel>();
 
         var sinKouiList = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId
                                                                        && item.PtId == ptId
@@ -1786,7 +1786,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                     .Distinct()
                                                     .ToList();
 
-            result.Add(new SinKouiCountModel(
+            result.Add(new ReceSinKouiCountModel(
                             ptHokenPatternModelList,
                             sinKouiDetailModelList,
                             groupKey!.PtId,
