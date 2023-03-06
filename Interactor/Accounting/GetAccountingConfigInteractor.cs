@@ -26,7 +26,6 @@ namespace Interactor.Accounting
                 if (!raiinNos.Any()) return new GetAccountingConfigOutputData(new(), GetAccountingConfigStatus.NoData);
 
                 return GetSystemConfigPrints(inputData.HpId, inputData.PtId, raiinNos, inputData.SumAdjust);
-
             }
             finally
             {
