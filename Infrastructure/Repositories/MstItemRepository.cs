@@ -1491,7 +1491,7 @@ namespace Infrastructure.Repositories
                             TrackingDataContext.ConversionItemInfs.Remove(conversionItem);
                         }
                     }
-                    else
+                    else if(tenItem.HpId == 0)
                     {
                         var conversionItem = new ConversionItemInf
                         {
