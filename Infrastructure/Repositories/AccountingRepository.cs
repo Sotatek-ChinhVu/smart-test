@@ -12,6 +12,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -1339,6 +1340,29 @@ namespace Infrastructure.Repositories
             var kaikeis = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && item.PtId == ptId && raiinNos.Contains(item.RaiinNo));
 
             return kaikeis?.Sum(item => item.JihiOuttax) ?? 0;
+        }
+
+        public void CheckOrdInfInOutDrug(int hpId,long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
+        {
+
+            inDrugExist = false;
+            outDrugExist = false;
+            var odrInfList = NoTrackingDataContext.OdrInfs.Where(item => raiinNos.Contains(item.RaiinNo)
+                                                                                && item.PtId == ptId
+                                                                                && item.IsDeleted == 0
+                                                                                && item.OdrKouiKbn >= 20 && item.OdrKouiKbn <= 29
+                                                                                && item.HpId == hpId)
+                                                        .Select(item => new { item.InoutKbn })
+                                                        .ToList();
+
+            if (odrInfList != null && odrInfList.FirstOrDefault(item => item.InoutKbn == 0) != null)
+            {
+                inDrugExist = true;
+            }
+            if (odrInfList != null && odrInfList.FirstOrDefault(item => item.InoutKbn == 1) != null)
+            {
+                outDrugExist = true;
+            }
         }
     }
 }

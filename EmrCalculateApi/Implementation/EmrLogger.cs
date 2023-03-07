@@ -1,4 +1,5 @@
 ﻿using EmrCalculateApi.Interface;
+using Helper.Common;
 using Infrastructure.Interfaces;
 using System;
 
@@ -44,7 +45,7 @@ namespace EmrCalculateApi.Implementation
 
         private void WriteLog(string messageType, string prefix, string className, string functionName, string message)
         {
-            string dateTime = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm:ss.fff");
+            string dateTime = CIUtil.GetJapanDateTimeNow().ToString("MM/dd/yyyy HH:mm:ss.fff");
             string logContent = $"{_tenantInfo} {messageType} {dateTime} {prefix} {className}.{functionName} {message}";
             _logger.LogInformation(logContent);
         }

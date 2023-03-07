@@ -23,5 +23,10 @@
 
         public int IsDeleted { get; private set; }
 
+        public RaiinKbnKouiModel ChangeKouiKbnCd(int kouiKbnId)
+        {
+            KouiKbnId = kouiKbnId;
+            return this;
+        }
     }
 }
