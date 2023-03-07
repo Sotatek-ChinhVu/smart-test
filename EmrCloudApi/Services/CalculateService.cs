@@ -51,6 +51,8 @@ namespace EmrCloudApi.Services
         public SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData)
         {
             Task<string> task = CallCalculate(path, inputData);
+            if (!task.IsCompletedSuccessfully)
+                return new();
 
             var result = task.Result;
 

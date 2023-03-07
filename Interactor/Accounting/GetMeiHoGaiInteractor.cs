@@ -26,12 +26,12 @@ namespace Interactor.Accounting
             try
             {
                 var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-
                 if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinMeiInputData = new GetSinMeiDtoInputData(raiinNos, inputData.PtId, inputData.SinDate, inputData.HpId);
 
                 var sinMei = GetSinMei(sinMeiInputData);
+                if (!sinMei.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinHo = GetSinHo(sinMei);
 
