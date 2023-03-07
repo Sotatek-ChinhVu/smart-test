@@ -126,7 +126,7 @@ namespace Infrastructure.Repositories
                         };
 
             return query.AsEnumerable().Select(u => new RegisterRequestModel(ptInf.PtId, 
-                                                                            ptInf.Name,
+                                                                            ptInf.Name ?? string.Empty,
                                                                             u.ReceInf.SinYm,
                                                                             u.ReceInf.SeikyuYm,
                                                                             u.ReceInf.SeikyuKbn,
@@ -134,11 +134,11 @@ namespace Infrastructure.Repositories
                                                                             u.ReceInf.HokenId,
                                                                             u.ReceInf.HokensyaNo ?? string.Empty,
                                                                             u.ReceInf.HokenKbn,
-                                                                            u.ReceInf.Houbetu,
+                                                                            u.ReceInf.Houbetu ?? string.Empty,
                                                                             u.ReceInf.HonkeKbn,
                                                                             u.PtHokenInfo.StartDate,
                                                                             u.PtHokenInfo.EndDate,
-                                                                            false)).OrderByDescending(u => u.SeikyuYm);
+                                                                            false)).OrderByDescending(u => u.SeikyuYm).ToList();
         }
 
         public void ReleaseResource()

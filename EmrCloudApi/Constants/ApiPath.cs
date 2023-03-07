@@ -229,5 +229,6 @@
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
+        public const string SearchReceInf = "SearchReceInf";
     }
 }
