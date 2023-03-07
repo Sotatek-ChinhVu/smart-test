@@ -48,7 +48,7 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            SinMeiDataModelDto sinMeiViewModelDto = _calculateService.GetSinMeiList("SinMei/GetSinMeiList", sinMeiInputData);
+            SinMeiDataModelDto sinMeiViewModelDto = _calculateService.GetSinMeiList(CalculateApiPath.GetSinMeiList, sinMeiInputData);
 
             if (sinMeiViewModelDto == null) return new();
 

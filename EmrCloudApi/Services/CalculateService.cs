@@ -1,4 +1,5 @@
 ﻿using Domain.Models.CalculateModel;
+using Helper.Enum;
 using Interactor.CalculateService;
 using System.Text;
 using System.Text.Json;
@@ -15,17 +16,25 @@ namespace EmrCloudApi.Services
             _configuration = configuration;
         }
 
-        public async Task<string> CallCalculate(string apiUrl, object inputData)
+        public async Task<string> CallCalculate(CalculateApiPath path, object inputData)
         {
             using (var httpClient = new HttpClient())
             {
                 var jsonContent = JsonSerializer.Serialize(inputData);
 
                 var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
-
+                string functionName = string.Empty;
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                switch (path)
+                {
+                    case CalculateApiPath.GetSinMeiList:
+                        functionName = "SinMei/GetSinMeiList";
+                        break;
+                    default:
+                        throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
+                }
 
-                var response = await _httpClient.PostAsync($"{basePath}{apiUrl}", content);
+                var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -39,9 +48,9 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public SinMeiDataModelDto GetSinMeiList(string apiUrl, object inputData)
+        public SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData)
         {
-            Task<string> task = CallCalculate(apiUrl, inputData);
+            Task<string> task = CallCalculate(path, inputData);
 
             var result = task.Result;
 
