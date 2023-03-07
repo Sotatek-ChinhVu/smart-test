@@ -201,26 +201,5 @@ namespace Interactor.Accounting
             return _accountingRepository.GetListJihiSbtMst(hpId);
         }
 
-        //public async Task<string> GetSinMei(string apiUrl, GetSinMeiDtoInputData sinMei)
-        //{
-        //    using (var httpClient = new HttpClient())
-        //    {
-        //        var jsonContent = JsonSerializer.Serialize(sinMei);
-        //        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        //        var response = await httpClient.PostAsync(apiUrl, content);
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var responseContent = await response.Content.ReadAsStringAsync();
-        //            return responseContent;
-        //        }
-        //        else
-        //        {
-        //            throw new Exception("Failed: " + response.StatusCode);
-        //        }
-        //    }
-        //}
-
-
     }
 }
