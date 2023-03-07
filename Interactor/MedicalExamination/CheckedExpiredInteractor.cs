@@ -35,7 +35,7 @@ namespace Interactor.MedicalExamination
 
                 foreach (var detail in inputData.CheckedExpiredItems)
                 {
-                    var tenMsts = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd);
+                    
                     if (checkedItems.Contains(detail.ItemCd))
                     {
                         continue;
@@ -48,8 +48,15 @@ namespace Interactor.MedicalExamination
                     {
                         continue;
                     }
-                    int minStartDate = tenMstItemList.Min(item => item.StartDate);
-                    int maxEndDate = tenMstItemList.Max(item => item.EndDate);
+
+                    var tenMstByItemCdList = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd).ToList();
+                    if (tenMstByItemCdList.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    int minStartDate = tenMstByItemCdList.Min(item => item.StartDate);
+                    int maxEndDate = tenMstByItemCdList.Max(item => item.EndDate);
 
 
                     if (minStartDate > inputData.SinDate || maxEndDate < inputData.SinDate)
@@ -64,7 +71,6 @@ namespace Interactor.MedicalExamination
 
                 foreach (var convertItem in convertItems)
                 {
-
                     result.Add(new CheckedExpiredOutputItem(convertItem.Key, convertItem.Value.Item1, convertItem.Value.Item2));
                 }
 
