@@ -50,7 +50,7 @@ namespace Interactor.Accounting
 
             var result = task.Result;
 
-            SinMeiViewModelDto sinMeiViewModelDto = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiViewModelDto>(result);
+            SinMeiDataModelDto sinMeiViewModelDto = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(result);
 
             if (sinMeiViewModelDto == null) return new();
 

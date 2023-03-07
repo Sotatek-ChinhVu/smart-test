@@ -1,10 +1,10 @@
 ﻿namespace Domain.Models.CalculateModel
 {
-    public class SinMeiViewModelDto
+    public class SinMeiDataModelDto
     {
-        public List<SinMeiViewModel> sinMeiList { get; set; } = new();
+        public List<SinMeiDataModel> sinMeiList { get; set; } = new();
     }
-    public class SinMeiViewModel
+    public class SinMeiDataModel
     {
         public int PtId { get; set; }
         public string RecId { get; set; } = string.Empty;
