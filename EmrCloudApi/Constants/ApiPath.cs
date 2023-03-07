@@ -206,6 +206,7 @@
         public const string GetDiseaseReceList = "GetDiseaseReceList";
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
+        public const string SaveReceCheckOpt = "SaveReceCheckOpt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

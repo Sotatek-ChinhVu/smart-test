@@ -1547,6 +1547,41 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
         return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
     }
+
+    public bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList)
+    {
+        var errCdList = receCheckOptList.Select(item => item.ErrCd).Distinct().ToList();
+        if (errCdList.Count == 0)
+        {
+            return true;
+        }
+        var receCheckOptDBList = TrackingDataContext.ReceCheckOpts.Where(item => item.HpId == hpId && errCdList.Contains(item.ErrCd)).ToList();
+        foreach (var model in receCheckOptList)
+        {
+            var receOptItem = receCheckOptDBList.FirstOrDefault(item => item.ErrCd == model.ErrCd);
+            if (receOptItem != null)
+            {
+                receOptItem.CheckOpt = model.CheckOpt;
+                receOptItem.Biko = model.Biko;
+                receOptItem.IsInvalid = model.IsInvalid;
+                receOptItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                receOptItem.UpdateId = userId;
+                continue;
+            }
+            receOptItem = new ReceCheckOpt();
+            receOptItem.HpId = hpId;
+            receOptItem.ErrCd = model.ErrCd;
+            receOptItem.CheckOpt = model.CheckOpt;
+            receOptItem.Biko = model.Biko;
+            receOptItem.IsInvalid = model.IsInvalid;
+            receOptItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+            receOptItem.CreateId = userId;
+            receOptItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            receOptItem.UpdateId = userId;
+            TrackingDataContext.ReceCheckOpts.Add(receOptItem);
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
     #endregion
 
     #region Recalculation Check
