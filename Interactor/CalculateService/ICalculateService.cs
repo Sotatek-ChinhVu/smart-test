@@ -2,6 +2,6 @@
 {
     public interface ICalculateService
     {
-        public Task<string> CallCalculate(string apiUrl, string jsonContent);
+        public Task<string> CallCalculate(string apiUrl, object inputData);
     }
 }

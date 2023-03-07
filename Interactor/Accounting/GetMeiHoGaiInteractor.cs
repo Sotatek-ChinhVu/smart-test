@@ -49,9 +49,7 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            var jsonContent = JsonSerializer.Serialize(sinMeiInputData);
-
-            Task<string> task = _calculateService.CallCalculate("https://localhost:7146/api/SinMei/GetSinMeiList", jsonContent);
+            Task<string> task = _calculateService.CallCalculate("SinMei/GetSinMeiList", sinMeiInputData);
 
             var result = task.Result;
 

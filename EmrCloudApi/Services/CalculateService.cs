@@ -1,16 +1,30 @@
 ﻿using Interactor.CalculateService;
 using System.Text;
+using System.Text.Json;
 
 namespace EmrCloudApi.Services
 {
     public class CalculateService : ICalculateService
     {
-        public async Task<string> CallCalculate(string apiUrl, string jsonContent)
+        private static HttpClient _httpClient = new HttpClient();
+        private readonly IConfiguration _configuration;
+
+        public CalculateService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public async Task<string> CallCalculate(string apiUrl, object inputData)
         {
             using (var httpClient = new HttpClient())
             {
+                var jsonContent = JsonSerializer.Serialize(inputData);
+
+                var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
+
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync(apiUrl, content);
+
+                var response = await _httpClient.PostAsync($"{basePath}{apiUrl}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
