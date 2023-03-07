@@ -1,8 +1,6 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Interactor.CalculateService;
-using System.Text;
-using System.Text.Json;
 
 namespace EmrCloudApi.Services
 {
@@ -18,11 +16,10 @@ namespace EmrCloudApi.Services
 
         public async Task<string> CallCalculate(CalculateApiPath path, object inputData)
         {
-            var jsonContent = JsonSerializer.Serialize(inputData);
+            var content = JsonContent.Create(inputData);
 
             var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
             string functionName = string.Empty;
-            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             switch (path)
             {
                 case CalculateApiPath.GetSinMeiList:
@@ -32,28 +29,38 @@ namespace EmrCloudApi.Services
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
 
-            var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
+            try
+            {
+                var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                return responseContent;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return responseContent;
+                }
+
+                return response.StatusCode.ToString();
+
             }
-            else
+            catch (HttpRequestException ex)
             {
-                return "Failed: " + response.StatusCode;
+                return "Failed: Could not connect to Calculate API";
             }
         }
 
         public SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData)
         {
-            Task<string> task = CallCalculate(path, inputData);
-            if (!task.IsCompletedSuccessfully)
+            try
+            {
+                Task<string> task = CallCalculate(path, inputData);
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result);
+                return result;
+            }
+            catch (Exception ex)
+            {
                 return new();
-
-            var result = task.Result;
-
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(result);
+            }
         }
     }
 }
