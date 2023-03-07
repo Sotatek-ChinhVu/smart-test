@@ -1,4 +1,5 @@
-﻿using Interactor.CalculateService;
+﻿using Domain.Models.CalculateModel;
+using Interactor.CalculateService;
 using System.Text;
 using System.Text.Json;
 
@@ -36,6 +37,16 @@ namespace EmrCloudApi.Services
                     return "Failed: " + response.StatusCode;
                 }
             }
+        }
+
+
+        public object GetCalculateData(string apiUrl, object inputData)
+        {
+            Task<string> task = CallCalculate(apiUrl, inputData);
+
+            var result = task.Result;
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(result);
         }
     }
 }

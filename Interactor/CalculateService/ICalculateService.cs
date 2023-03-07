@@ -2,6 +2,7 @@
 {
     public interface ICalculateService
     {
-        public Task<string> CallCalculate(string apiUrl, object inputData);
+        Task<string> CallCalculate(string apiUrl, object inputData);
+        object GetCalculateData(string apiUrl, object inputData);
     }
 }

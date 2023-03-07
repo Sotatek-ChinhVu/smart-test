@@ -48,11 +48,9 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            Task<string> task = _calculateService.CallCalculate("SinMei/GetSinMeiList", sinMeiInputData);
+            var output = _calculateService.GetCalculateData("SinMei/GetSinMeiList", sinMeiInputData);
 
-            var result = task.Result;
-
-            SinMeiDataModelDto sinMeiViewModelDto = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(result);
+            SinMeiDataModelDto sinMeiViewModelDto = (SinMeiDataModelDto)output;
 
             if (sinMeiViewModelDto == null) return new();
 
