@@ -12,6 +12,7 @@ using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
+using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
@@ -21,6 +22,7 @@ using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
+using UseCase.Receipt.SaveReceCheckOpt;
 
 namespace EmrCloudApi.Controller;
 
@@ -181,10 +183,41 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetDiseaseReceListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetReceCheckOptionList)]
+    public ActionResult<Response<GetReceCheckOptionListResponse>> GetReceCheckOptionList()
+    {
+        var input = new GetReceCheckOptionListInputData(HpId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceCheckOptionListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceCheckOptionListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceCheckOpt)]
+    public ActionResult<Response<SaveReceCheckOptResponse>> SaveReceCheckOpt([FromBody] SaveReceCheckOptRequest request)
+    {
+        var receCheckOptList = request.ReceCheckOptList.Select(item => new ReceCheckOptItem(
+                                                                           item.ErrCd,
+                                                                           item.CheckOpt,
+                                                                           string.Empty,
+                                                                           item.IsInvalid))
+                                                       .ToList();
+
+        var input = new SaveReceCheckOptInputData(HpId, UserId, receCheckOptList);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceCheckOptPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
+    }
+
     [HttpPost(ApiPath.Recalculation)]
     public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
     {
-        var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList, request.IsStopCalc);
+        var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsStopCalc);
         var output = _bus.Handle(input);
 
         var presenter = new RecalculationPresenter();

@@ -1547,6 +1547,41 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var ptKohi4 = kohiRepoList.FirstOrDefault(item => item.HokenId == receInf.Kohi4Id);
         return ConvertToInsuranceReceInfModel(receInf, hokenInf ?? new(), ptKohi1 ?? new(), ptKohi2 ?? new(), ptKohi3 ?? new(), ptKohi4 ?? new());
     }
+
+    public bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList)
+    {
+        var errCdList = receCheckOptList.Select(item => item.ErrCd).Distinct().ToList();
+        if (errCdList.Count == 0)
+        {
+            return true;
+        }
+        var receCheckOptDBList = TrackingDataContext.ReceCheckOpts.Where(item => item.HpId == hpId && errCdList.Contains(item.ErrCd)).ToList();
+        foreach (var model in receCheckOptList)
+        {
+            var receOptItem = receCheckOptDBList.FirstOrDefault(item => item.ErrCd == model.ErrCd);
+            if (receOptItem != null)
+            {
+                receOptItem.CheckOpt = model.CheckOpt;
+                receOptItem.Biko = model.Biko;
+                receOptItem.IsInvalid = model.IsInvalid;
+                receOptItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                receOptItem.UpdateId = userId;
+                continue;
+            }
+            receOptItem = new ReceCheckOpt();
+            receOptItem.HpId = hpId;
+            receOptItem.ErrCd = model.ErrCd;
+            receOptItem.CheckOpt = model.CheckOpt;
+            receOptItem.Biko = model.Biko;
+            receOptItem.IsInvalid = model.IsInvalid;
+            receOptItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+            receOptItem.CreateId = userId;
+            receOptItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            receOptItem.UpdateId = userId;
+            TrackingDataContext.ReceCheckOpts.Add(receOptItem);
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
     #endregion
 
     #region Recalculation Check
@@ -1800,17 +1835,18 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
-    public List<ReceCheckOptModel> GetReceCheckOptList(int hpId)
+    public List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList)
     {
-        var receCheckOptList = NoTrackingDataContext.ReceCheckOpts.Where(p => p.HpId == hpId).ToList();
-        return receCheckOptList.Select(item => new ReceCheckOptModel(
-                                                   item.ErrCd,
-                                                   item.CheckOpt,
-                                                   item.Biko ?? string.Empty,
-                                                   item.IsInvalid))
-                               .ToList();
+        var receCheckOption = NoTrackingDataContext.ReceCheckOpts.Where(item => item.HpId == hpId
+                                                                                && (errCdList.Count == 0 || errCdList.Contains(item.ErrCd)))
+                                                                 .Select(item => new ReceCheckOptModel(
+                                                                                     item.ErrCd,
+                                                                                     item.CheckOpt,
+                                                                                     item.Biko ?? string.Empty,
+                                                                                     item.IsInvalid))
+                                                                 .ToList();
+        return receCheckOption;
     }
-
     public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
     {
         var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
@@ -2061,14 +2097,63 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                              .ToList();
     }
 
-    public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
+    public bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList)
     {
-        var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(item => item.HpId == hpId
-                                                                                    && item.IsDeleted == DeleteTypes.None
-                                                                                    && item.PtId == ptId
-                                                                                    && item.SinYm == sinYm
-                                                                                    && item.HokenId == hokenId);
-        return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
+        if (!receCheckErrList.Any())
+        {
+            return true;
+        }
+        var ptIdList = receCheckErrList.Select(item => item.PtId).Distinct().ToList();
+        var hokenIdList = receCheckErrList.Select(item => item.HokenId).Distinct().ToList();
+        var sinYmList = receCheckErrList.Select(item => item.SinYm).Distinct().ToList();
+        var errorCdList = receCheckErrList.Select(item => item.ErrCd).Distinct().ToList();
+        var oldReceCheckErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                                  && ptIdList.Contains(item.PtId)
+                                                                                  && hokenIdList.Contains(item.HokenId)
+                                                                                  && sinYmList.Contains(item.SinYm)
+                                                                                  && errorCdList.Contains(item.ErrCd))
+                                                                    .ToList();
+
+        foreach (var receErr in receCheckErrList)
+        {
+            var receErrUpdate = oldReceCheckErrList.FirstOrDefault(item => item.PtId == receErr.PtId
+                                                                           && item.HokenId == receErr.HokenId
+                                                                           && item.SinYm == receErr.SinYm
+                                                                           && item.ErrCd == receErr.ErrCd
+                                                                           && item.SinDate == receErr.SinDate
+                                                                           && item.ACd == receErr.ACd
+                                                                           && item.BCd == receErr.BCd);
+
+            if (receErrUpdate != null)
+            {
+                receErrUpdate.Message1 = receErr.Message1;
+                receErrUpdate.Message2 = receErr.Message2;
+                receErrUpdate.IsChecked = receErr.IsChecked;
+                receErrUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                receErrUpdate.UpdateId = userId;
+                continue;
+            }
+            TrackingDataContext.ReceCheckErrs.Add(new ReceCheckErr()
+            {
+                HpId = hpId,
+                PtId = receErr.PtId,
+                HokenId = receErr.HokenId,
+                SinYm = receErr.SinYm,
+                ErrCd = receErr.ErrCd,
+                SinDate = receErr.SinDate,
+                ACd = receErr.ACd,
+                BCd = receErr.BCd,
+                Message1 = receErr.Message1,
+                Message2 = receErr.Message2,
+                IsChecked = receErr.IsChecked,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId
+            });
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
     }
     #endregion
 
@@ -2336,7 +2421,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         {
             existItemWithCommentSelect = false;
         }
-        existItemWithCommentSelect = listSinKouiDetailModel?.Any(item => item.ListCmtSelect != null && item.ListCmtSelect.Count > 0) ?? false;
+        existItemWithCommentSelect = listSinKouiDetailModel?.Any(item => item.CmtSelectList != null && item.CmtSelectList.Count > 0) ?? false;
         return new SinKouiMstModel(
                 sinKoui.PtId,
                 sinKoui.SinYm,

@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
+using UseCase.Accounting.GetAccountingSystemConf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
@@ -106,7 +108,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetHeaderInf)]
         public ActionResult<Response<GetAccountingHeaderResponse>> GetList([FromQuery] GetAccountingHeaderRequest request)
         {
-            var input = new GetAccountingHeaderInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetAccountingHeaderInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetAccountingHeaderPresenter();
@@ -119,13 +121,37 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<CheckAccountingStatusResponse>> ActionResult([FromBody] CheckAccountingStatusRequest request)
         {
             var input = new CheckAccountingStatusInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.DebitBalance,
-                request.SumAdjust, request.ThisCredit, request.Wari, request.IsDisCharge, request.IsDeletedSyuno, request.IsSaveAccounting,
+                request.SumAdjust, request.ThisCredit, request.Wari, request.IsDisCharge, request.IsSaveAccounting,
                 request.SyunoSeikyuDtos, request.AllSyunoSeikyuDtos);
             var output = _bus.Handle(input);
             var presenter = new CheckAccountingStatusPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckAccountingStatusResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSystemConfig)]
+        public ActionResult<Response<GetAccountingConfigResponse>> GetList([FromQuery] GetAccountingConfigRequest request)
+        {
+            var input = new GetAccountingConfigInputData(HpId, request.PtId, request.RaiinNo, request.SumAdjust);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetAccountingConfigPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAccountingConfigResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMeiHoGai)]
+        public ActionResult<Response<GetMeiHoGaiResponse>> GetList([FromQuery] GetMeiHoGaiRequest request)
+        {
+            var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetMeiHoGaiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetMeiHoGaiResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Recaculation)]
