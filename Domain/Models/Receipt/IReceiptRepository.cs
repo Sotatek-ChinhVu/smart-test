@@ -42,6 +42,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId);
 
+    bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 

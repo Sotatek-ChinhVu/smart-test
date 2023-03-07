@@ -22,6 +22,7 @@ using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
+using UseCase.Receipt.SaveReceCheckOpt;
 
 namespace EmrCloudApi.Controller;
 
@@ -192,6 +193,25 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceCheckOptionListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceCheckOpt)]
+    public ActionResult<Response<SaveReceCheckOptResponse>> SaveReceCheckOpt([FromBody] SaveReceCheckOptRequest request)
+    {
+        var receCheckOptList = request.ReceCheckOptList.Select(item => new ReceCheckOptItem(
+                                                                           item.ErrCd,
+                                                                           item.CheckOpt,
+                                                                           string.Empty,
+                                                                           item.IsInvalid))
+                                                       .ToList();
+
+        var input = new SaveReceCheckOptInputData(HpId, UserId, receCheckOptList);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceCheckOptPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Recalculation)]
