@@ -7,6 +7,6 @@ namespace Interactor.CalculateService
     {
         Task<string> CallCalculate(CalculateApiPath path, object inputData);
         SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData);
-        bool RunCalculate(CalculateApiPath path, object inputData);
+        string RunCalculate(CalculateApiPath path, object inputData);
     }
 }

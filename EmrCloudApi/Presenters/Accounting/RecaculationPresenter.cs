@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Accounting
         public Response<RecaculationResponse> Result { get; private set; } = new();
         public void Complete(RecaculationOutputData outputData)
         {
-            Result.Data = new RecaculationResponse(outputData.Status);
+            Result.Data = new RecaculationResponse(outputData.Message);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

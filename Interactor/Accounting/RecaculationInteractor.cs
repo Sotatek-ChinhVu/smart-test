@@ -17,9 +17,7 @@ namespace Interactor.Accounting
             var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
             var result = _calculateService.RunCalculate(CalculateApiPath.RunCalculate, callCalculateInputData);
 
-            if (!result) return new RecaculationOutputData(RecaculationStatus.Failed);
-
-            return new RecaculationOutputData(RecaculationStatus.Successed);
+            return new RecaculationOutputData(result,RecaculationStatus.Successed);
         }
 
     }

@@ -55,5 +55,14 @@ namespace EmrCloudApi.Services
 
             return Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(result);
         }
+
+        public string RunCalculate(CalculateApiPath path, object inputData)
+        {
+            Task<string> task = CallCalculate(path, inputData);
+
+            var result = task.Result;
+
+            return result;
+        }
     }
 }
