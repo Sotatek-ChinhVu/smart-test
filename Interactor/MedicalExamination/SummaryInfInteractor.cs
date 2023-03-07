@@ -163,14 +163,14 @@ namespace Interactor.MedicalExamination
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
                 header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
-                listUserconfig = _userConfRepository.GetList(hpId, userId, 912).ToList();
+                listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> {912}).ToList();
                 _notifications = GetNotification(hpId, ptId, sinDate, userId);
                 _notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
             }
             else if (infoType == InfoType.SumaryInfo)
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 913);
-                listUserconfig = _userConfRepository.GetList(hpId, userId, 914).ToList();
+                listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 914 }).ToList();
             }
 
             var objKey = new object();

@@ -5,7 +5,6 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.PatientInfor;
-using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -13,13 +12,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
@@ -1893,7 +1886,7 @@ namespace Infrastructure.Repositories
         public PatientInforModel GetPtInf(int hpId, long ptId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete != 1) ?? new PtInf();
-            return  new PatientInforModel(
+            return new PatientInforModel(
                         ptInf.HpId,
                         ptInf.PtId,
                         ptInf.ReferenceNo,
@@ -2007,6 +2000,19 @@ namespace Infrastructure.Repositories
                                                                             item.Sex))
                                                      .ToList();
             return result;
+        }
+
+        public bool IsRyosyoFuyou(int hpId, long ptId)
+        {
+            var ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
+            if (ptInf != null)
+            {
+                if (ptInf.IsRyosyoDetail == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

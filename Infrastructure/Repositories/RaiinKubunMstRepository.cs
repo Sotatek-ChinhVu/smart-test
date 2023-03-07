@@ -125,7 +125,7 @@ namespace Infrastructure.Repositories
                 x.kbnItem.SeqNo,
                 x.kbnItem.ItemCd ?? string.Empty,
                 x.kbnItem.IsExclude,
-                x.kbnItem.IsDeleted,
+                x.kbnItem.IsDeleted == 1,
                 x.kbnItem.SortNo,
                 tenMstList.FirstOrDefault(item => item.ItemCd == x.kbnItem.ItemCd)?.Name ?? string.Empty
                 )).Distinct()
@@ -339,7 +339,7 @@ namespace Infrastructure.Repositories
                                     p.SeqNo,
                                     p.ItemCd ?? string.Empty,
                                     p.IsExclude,
-                                    p.IsExclude,
+                                    p.IsExclude == 1,
                                     p.SortNo
                                 )).ToList();
         }
@@ -646,7 +646,7 @@ namespace Infrastructure.Repositories
                 {
                     raiinKbnItem.ItemCd = model.ItemCd;
                     raiinKbnItem.IsExclude = model.IsExclude;
-                    raiinKbnItem.IsDeleted = model.IsDeleted;
+                    raiinKbnItem.IsDeleted = model.IsDeleted ? 1 : 0;
                     raiinKbnItem.SortNo = model.SortNo;
                     raiinKbnItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     raiinKbnItem.UpdateId = userId;
@@ -660,7 +660,7 @@ namespace Infrastructure.Repositories
                     SeqNo = 0,
                     ItemCd = model.ItemCd,
                     IsExclude = model.IsExclude,
-                    IsDeleted = model.IsDeleted,
+                    IsDeleted = model.IsDeleted ? 1 : 0,
                     SortNo = model.SortNo,
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId,

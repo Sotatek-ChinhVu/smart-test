@@ -1535,5 +1535,27 @@ namespace Infrastructure.Repositories
         {
             DisposeDataContext();
         }
+
+        public List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId)
+        {
+            Stream nullMemory = Stream.Null;
+            var datas = NoTrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+            if(datas.Any())
+            {
+                return datas.Select(x => new InsuranceScanModel(
+                                    x.HpId, 
+                                    x.PtId, 
+                                    x.SeqNo,
+                                    x.HokenGrp,
+                                    x.HokenId,
+                                    x.FileName ?? string.Empty, 
+                                    nullMemory, 
+                                    x.IsDeleted)).ToList();
+            }   
+            else
+            {
+                return new List<InsuranceScanModel>();
+            }
+        }
     }
 }

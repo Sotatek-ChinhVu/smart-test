@@ -21,22 +21,17 @@ namespace Interactor.Accounting
         {
             try
             {
+                var billUpdate = "今回請求額が更新されています。\n窓口精算画面を開きなおしてください。";
+                var validCredit = "今回入金額\nを入力してください。";
+                var verifyDate = "請求金額が変更されているため、以下の請求日の領収証を印刷できません";
+                var validAmount = "入金額が正しくありません。・入金額を確認し、再実行してください。";
+                var mbOk = "mbOk";
+                var mbClose = "mbClose";
+                var yesNoCancel = "YesNoCancel";
+
                 var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
 
                 var syunoSeikyusChecking = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos);
-
-                //CloseWindowWhenSyunoDeleted
-                if (inputData.IsDeletedSyuno)
-                {
-                    if (syunoSeikyusChecking == null)
-                    {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.StateChanged);
-                    }
-                    else
-                    {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.VisitRemoved);
-                    }
-                }
 
                 var allSyunoSeikyusChecking = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos, true);
 
@@ -45,13 +40,13 @@ namespace Interactor.Accounting
                 {
                     if (syunoSeikyusChecking == null)
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
+                        return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
                     var syunoChanged = CheckSyunoChanged(inputData.SyunoSeikyuDtos, inputData.AllSyunoSeikyuDtos, syunoSeikyusChecking, allSyunoSeikyusChecking);
                     if (syunoChanged)
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
+                        return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
                     var accDue = 0;
@@ -63,14 +58,14 @@ namespace Interactor.Accounting
 
                     if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, true))
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.ValidPaymentAmount);
+                        return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
                     }
 
                     var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking, inputData.IsDisCharge);
                     if (!string.IsNullOrEmpty(dateNotVerify))
                     {
                         var mess = $"{dateNotVerify}{Environment.NewLine}{Environment.NewLine}収納一覧を開いて、請求金額を変更しますか？";
-                        return new CheckAccountingStatusOutputData(mess, CheckAccountingStatus.DateNotVerify);
+                        return new CheckAccountingStatusOutputData(yesNoCancel, string.Concat(mess, verifyDate), CheckAccountingStatus.DateNotVerify);
                     }
                 }
 
@@ -79,37 +74,38 @@ namespace Interactor.Accounting
                 {
                     if (syunoSeikyusChecking == null)
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
+                        return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
                     var syunoChanged = CheckSyunoChanged(inputData.SyunoSeikyuDtos, inputData.AllSyunoSeikyuDtos, syunoSeikyusChecking, allSyunoSeikyusChecking);
 
                     if (syunoChanged)
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.BillUpdated);
+                        return new CheckAccountingStatusOutputData(mbOk, billUpdate, CheckAccountingStatus.BillUpdated);
                     }
 
                     if (inputData.ThisCredit < 0)
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.ValidThisCredit);
+                        return new CheckAccountingStatusOutputData(mbClose, validCredit, CheckAccountingStatus.ValidThisCredit);
                     }
 
                     var accDue = 0;
                     var setting = _systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
                     if (!CheckCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari))
                     {
-                        return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.ValidPaymentAmount);
+                        return new CheckAccountingStatusOutputData(mbClose, validAmount, CheckAccountingStatus.ValidPaymentAmount);
                     }
 
                     var dateNotVerify = VerifyCredit(accDue, inputData.SumAdjust, inputData.ThisCredit, inputData.Wari, syunoSeikyusChecking, allSyunoSeikyusChecking);
                     if (!string.IsNullOrEmpty(dateNotVerify))
                     {
+
                         var mess = $"{dateNotVerify}{Environment.NewLine}{Environment.NewLine}収納一覧を開いて、請求金額を変更しますか？";
-                        return new CheckAccountingStatusOutputData(mess, CheckAccountingStatus.DateNotVerify);
+                        return new CheckAccountingStatusOutputData(yesNoCancel, string.Concat(mess, verifyDate), CheckAccountingStatus.DateNotVerify);
                     }
                 }
 
-                return new CheckAccountingStatusOutputData(string.Empty, CheckAccountingStatus.Successed);
+                return new CheckAccountingStatusOutputData(string.Empty, string.Empty, CheckAccountingStatus.Successed);
             }
             finally
             {
