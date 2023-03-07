@@ -1,12 +1,12 @@
 ﻿using Domain.Models.Accounting;
+using Domain.Models.CalculateModel;
 using Domain.Models.MstItem;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Constants;
-using EmrCalculateApi.Receipt.ViewModels;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
-using Infrastructure.Interfaces;
+using System.Text;
+using System.Text.Json;
+using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.GetSinMei;
 
 namespace Interactor.Accounting
@@ -14,16 +14,10 @@ namespace Interactor.Accounting
     public class GetMeiHoGaiInteractor : IGetMeiHoGaiInputPort
     {
         private readonly IAccountingRepository _accountingRepository;
-        private readonly ITenantProvider _tenantProvider;
-        private readonly ISystemConfigProvider _systemConfigProvider;
-        private readonly IEmrLogger _emrLogger;
 
-        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository)
         {
             _accountingRepository = accountingRepository;
-            _tenantProvider = tenantProvider;
-            _systemConfigProvider = systemConfigProvider;
-            _emrLogger = emrLogger;
         }
 
         public GetMeiHoGaiOutputData Handle(GetMeiHoGaiInputData inputData)
@@ -34,7 +28,8 @@ namespace Interactor.Accounting
 
                 if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
-                var sinMei = GetSinMei(inputData.HpId, inputData.PtId, inputData.SinDate, raiinNos);
+                var sinMeiInputData = new GetSinMeiDtoInputData(raiinNos, inputData.PtId, inputData.SinDate, inputData.HpId);
+                var sinMei = GetSinMei(sinMeiInputData);
 
                 var sinHo = GetSinHo(sinMei);
 
@@ -49,12 +44,15 @@ namespace Interactor.Accounting
             }
         }
 
-        private List<SinMeiModel> GetSinMei(int hpId, long ptId, int sinDate, List<long> raiinNos)
+        private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            var sinMeiVm = new SinMeiViewModel(SinMeiMode.Kaikei, includeOutDrg: false, hpId, ptId,
-                                                    sinDate, raiinNos, _tenantProvider, _systemConfigProvider, _emrLogger);
+            Task<string> task = GetSinMei("https://localhost:7146/api/SinMei/GetSinMeiList", sinMeiInputData);
 
-            var sinMei = sinMeiVm.SinMei.Select(item => new SinMeiModel(
+            var result = task.Result;
+
+            Root myDeserializedClass = Newtonsoft.Json.JsonConvert.DeserializeObject<Root>(result);
+
+            var sinMei = myDeserializedClass.sinMeiList.Select(item => new SinMeiModel(
                                                                         item.SinId,
                                                                         string.Empty,
                                                                         item.ItemName,
@@ -197,6 +195,26 @@ namespace Interactor.Accounting
         private List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {
             return _accountingRepository.GetListJihiSbtMst(hpId);
+        }
+
+        public async Task<string> GetSinMei(string apiUrl, GetSinMeiDtoInputData sinMei)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var jsonContent = JsonSerializer.Serialize(sinMei);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    return responseContent;
+                }
+                else
+                {
+                    throw new Exception("Failed: " + response.StatusCode);
+                }
+            }
         }
     }
 }

@@ -14,6 +14,6 @@ namespace UseCase.Accounting.GetSinMei
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
-        public long RaiinNo { get; set; }
+        public long RaiinNo { get;private set; }
     }
 }

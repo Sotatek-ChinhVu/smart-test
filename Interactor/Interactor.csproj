@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CommonChecker\CommonChecker.csproj" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>
