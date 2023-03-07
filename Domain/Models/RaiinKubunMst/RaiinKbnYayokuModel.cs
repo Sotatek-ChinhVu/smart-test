@@ -22,5 +22,11 @@
         public int YoyakuCd { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public RaiinKbnYayokuModel ChangeYoyakuCd(int yoyakuCd)
+        {
+            YoyakuCd = yoyakuCd;
+            return this;
+        }
     }
 }

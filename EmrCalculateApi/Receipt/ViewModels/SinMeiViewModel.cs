@@ -183,7 +183,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
 
     }
 
-    public class SinMeiViewModel
+    public class SinMeiViewModel : IDisposable
     {
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
 
@@ -5819,6 +5819,11 @@ namespace EmrCalculateApi.Receipt.ViewModels
             }
 
             return ret;
+        }
+
+        public void Dispose()
+        {
+            _tenantDataContext?.Dispose();
         }
     }
 }

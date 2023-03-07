@@ -1,23 +1,26 @@
 ﻿using Domain.Models.RaiinKubunMst;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.RaiinKubunMst.LoadData
+namespace UseCase.RaiinKubunMst.LoadData;
+
+public class LoadDataKubunSettingOutputData : IOutputData
 {
-    public class LoadDataKubunSettingOutputData : IOutputData
+    public List<RaiinKubunMstModel> RaiinKubunList { get; private set; }
+
+    public int MaxGrpId { get; private set; }
+
+    public LoadDataKubunSettingStatus Status { get; private set; }
+
+    public LoadDataKubunSettingOutputData(List<RaiinKubunMstModel> raiinKubunList, int maxGrpId, LoadDataKubunSettingStatus status)
     {
-        public List<RaiinKubunMstModel> RaiinKubunList { get; private set; }
-        public LoadDataKubunSettingStatus Status { get; private set; }
+        RaiinKubunList = raiinKubunList;
+        MaxGrpId = maxGrpId;
+        Status = status;
+    }
 
-        public LoadDataKubunSettingOutputData(List<RaiinKubunMstModel> raiinKubunList, LoadDataKubunSettingStatus status)
-        {
-            RaiinKubunList = raiinKubunList;
-            Status = status;
-        }
-
-        public LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus status)
-        {
-            RaiinKubunList = new List<RaiinKubunMstModel>();
-            Status = status;
-        }
+    public LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus status)
+    {
+        RaiinKubunList = new();
+        Status = status;
     }
 }

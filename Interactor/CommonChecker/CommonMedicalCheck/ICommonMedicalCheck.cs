@@ -11,4 +11,6 @@ public interface ICommonMedicalCheck
     List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> listCheckingOrder, RealTimeCheckerCondition checkerCondition);
 
     List<ErrorInfoModel> GetErrorDetails(int hpId, long ptId, int sinday, List<UnitCheckInfoModel> listErrorInfo);
+
+    void ReleaseResource();
 }

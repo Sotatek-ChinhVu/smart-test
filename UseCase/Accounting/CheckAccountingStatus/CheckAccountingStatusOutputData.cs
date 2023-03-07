@@ -4,12 +4,14 @@ namespace UseCase.Accounting.CheckAccountingStatus
 {
     public class CheckAccountingStatusOutputData : IOutputData
     {
-        public CheckAccountingStatusOutputData(string message, CheckAccountingStatus status)
+        public CheckAccountingStatusOutputData(string errorType, string message, CheckAccountingStatus status)
         {
+            ErrorType = errorType;
             Message = message;
             Status = status;
         }
 
+        public string ErrorType { get; private set; }
         public string Message { get; private set; }
         public CheckAccountingStatus Status { get; private set; }
     }

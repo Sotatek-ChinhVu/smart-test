@@ -42,6 +42,7 @@
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
         public const string UploadListFileKarte = "UploadListFileKarte";
+        public const string GetListInsuranceScan = "GetListInsuranceScan";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -205,6 +206,7 @@
         public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
         public const string GetDiseaseReceList = "GetDiseaseReceList";
         public const string Recalculation = "Recalculation";
+        public const string GetReceCheckOptionList = "GetReceCheckOptionList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -213,6 +215,7 @@
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
+        public const string GetSystemConfig = "GetSystemConfig";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
@@ -227,5 +230,8 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+
+        //ReceSeikyus
+        public const string GetListReceSeikyu = "GetListReceSeikyu";
     }
 }

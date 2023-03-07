@@ -12,6 +12,7 @@ using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
+using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
@@ -181,10 +182,22 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetDiseaseReceListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetReceCheckOptionList)]
+    public ActionResult<Response<GetReceCheckOptionListResponse>> GetReceCheckOptionList()
+    {
+        var input = new GetReceCheckOptionListInputData(HpId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceCheckOptionListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceCheckOptionListResponse>>(presenter.Result);
+    }
+
     [HttpPost(ApiPath.Recalculation)]
     public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
     {
-        var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList, request.IsStopCalc);
+        var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsStopCalc);
         var output = _bus.Handle(input);
 
         var presenter = new RecalculationPresenter();
