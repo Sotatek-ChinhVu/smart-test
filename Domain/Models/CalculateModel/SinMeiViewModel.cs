@@ -2,7 +2,7 @@
 {
     public class SinMeiViewModelDto
     {
-        public List<SinMeiViewModel> sinMeiList { get; set; }
+        public List<SinMeiViewModel> sinMeiList { get; set; } = new();
     }
     public class SinMeiViewModel
     {
