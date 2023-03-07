@@ -25,6 +25,9 @@ namespace EmrCloudApi.Services
                 case CalculateApiPath.GetSinMeiList:
                     functionName = "SinMei/GetSinMeiList";
                     break;
+                case CalculateApiPath.RunCalculate:
+                    functionName = "Calculate/RunCalculate";
+                    break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
@@ -66,9 +69,7 @@ namespace EmrCloudApi.Services
         public string RunCalculate(CalculateApiPath path, object inputData)
         {
             Task<string> task = CallCalculate(path, inputData);
-
             var result = task.Result;
-
             return result;
         }
     }
