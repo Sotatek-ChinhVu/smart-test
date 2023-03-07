@@ -65,8 +65,6 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
-using EmrCalculateApi.Implementation;
-using EmrCalculateApi.Interface;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
@@ -80,6 +78,7 @@ using Interactor.AccountDue;
 using Interactor.Accounting;
 using Interactor.ApprovalInfo;
 using Interactor.Byomei;
+using Interactor.CalculateService;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.CommonChecker;
@@ -417,6 +416,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
+
+            //call Calculate API
+            services.AddTransient<ICalculateService, CalculateService>();
         }
 
         private void SetupRepositories(IServiceCollection services)

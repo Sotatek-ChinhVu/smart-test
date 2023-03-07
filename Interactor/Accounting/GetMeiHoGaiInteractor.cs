@@ -4,7 +4,7 @@ using Domain.Models.MstItem;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
-using System.Text;
+using Interactor.CalculateService;
 using System.Text.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.GetSinMei;
@@ -14,10 +14,12 @@ namespace Interactor.Accounting
     public class GetMeiHoGaiInteractor : IGetMeiHoGaiInputPort
     {
         private readonly IAccountingRepository _accountingRepository;
+        private readonly ICalculateService _calculateService;
 
-        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository)
+        public GetMeiHoGaiInteractor(IAccountingRepository accountingRepository, ICalculateService calculateService)
         {
             _accountingRepository = accountingRepository;
+            _calculateService = calculateService;
         }
 
         public GetMeiHoGaiOutputData Handle(GetMeiHoGaiInputData inputData)
@@ -29,6 +31,7 @@ namespace Interactor.Accounting
                 if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinMeiInputData = new GetSinMeiDtoInputData(raiinNos, inputData.PtId, inputData.SinDate, inputData.HpId);
+
                 var sinMei = GetSinMei(sinMeiInputData);
 
                 var sinHo = GetSinHo(sinMei);
@@ -46,7 +49,9 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            Task<string> task = GetSinMei("https://localhost:7146/api/SinMei/GetSinMeiList", sinMeiInputData);
+            var jsonContent = JsonSerializer.Serialize(sinMeiInputData);
+
+            Task<string> task = _calculateService.CallCalculate("https://localhost:7146/api/SinMei/GetSinMeiList", jsonContent);
 
             var result = task.Result;
 
@@ -199,24 +204,26 @@ namespace Interactor.Accounting
             return _accountingRepository.GetListJihiSbtMst(hpId);
         }
 
-        public async Task<string> GetSinMei(string apiUrl, GetSinMeiDtoInputData sinMei)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var jsonContent = JsonSerializer.Serialize(sinMei);
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                var response = await httpClient.PostAsync(apiUrl, content);
+        //public async Task<string> GetSinMei(string apiUrl, GetSinMeiDtoInputData sinMei)
+        //{
+        //    using (var httpClient = new HttpClient())
+        //    {
+        //        var jsonContent = JsonSerializer.Serialize(sinMei);
+        //        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        //        var response = await httpClient.PostAsync(apiUrl, content);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    return responseContent;
-                }
-                else
-                {
-                    throw new Exception("Failed: " + response.StatusCode);
-                }
-            }
-        }
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var responseContent = await response.Content.ReadAsStringAsync();
+        //            return responseContent;
+        //        }
+        //        else
+        //        {
+        //            throw new Exception("Failed: " + response.StatusCode);
+        //        }
+        //    }
+        //}
+
+
     }
 }
