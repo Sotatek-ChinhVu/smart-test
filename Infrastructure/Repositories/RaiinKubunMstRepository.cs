@@ -114,6 +114,10 @@ namespace Infrastructure.Repositories
                 x.kbnKoui.KouiKbnId,
                 x.kbnKoui.IsDeleted)).GroupBy(x => new { x.HpId, x.GrpId, x.KbnCd, x.SeqNo }).Select(x => x.First());
 
+
+            var itemCdList = query.Where(x => x.kbnItem != null).Select(item => item.kbnItem.ItemCd).Distinct().ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
+
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
                 x.kbnItem.GrpCd,
@@ -121,9 +125,13 @@ namespace Infrastructure.Repositories
                 x.kbnItem.SeqNo,
                 x.kbnItem.ItemCd ?? string.Empty,
                 x.kbnItem.IsExclude,
-                x.kbnItem.IsDeleted,
-                x.kbnItem.SortNo
-                )).Distinct().GroupBy(x => new { x.HpId, x.GrpCd, x.KbnCd, x.SeqNo }).Select(x => x.First());
+                x.kbnItem.IsDeleted == 1,
+                x.kbnItem.SortNo,
+                tenMstList.FirstOrDefault(item => item.ItemCd == x.kbnItem.ItemCd)?.Name ?? string.Empty
+                )).Distinct()
+                .GroupBy(x => new { x.HpId, x.GrpCd, x.KbnCd, x.SeqNo })
+                .Select(x => x.First())
+                .ToList();
 
             var raiinKbnYayokuList = query.Where(x => x.kbnYoyaku != null).Select(x => new RaiinKbnYayokuModel(
                 x.kbnYoyaku.HpId,
@@ -331,7 +339,7 @@ namespace Infrastructure.Repositories
                                     p.SeqNo,
                                     p.ItemCd ?? string.Empty,
                                     p.IsExclude,
-                                    p.IsExclude,
+                                    p.IsExclude == 1,
                                     p.SortNo
                                 )).ToList();
         }
@@ -638,7 +646,7 @@ namespace Infrastructure.Repositories
                 {
                     raiinKbnItem.ItemCd = model.ItemCd;
                     raiinKbnItem.IsExclude = model.IsExclude;
-                    raiinKbnItem.IsDeleted = model.IsDeleted;
+                    raiinKbnItem.IsDeleted = model.IsDeleted ? 1 : 0;
                     raiinKbnItem.SortNo = model.SortNo;
                     raiinKbnItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     raiinKbnItem.UpdateId = userId;
@@ -652,7 +660,7 @@ namespace Infrastructure.Repositories
                     SeqNo = 0,
                     ItemCd = model.ItemCd,
                     IsExclude = model.IsExclude,
-                    IsDeleted = model.IsDeleted,
+                    IsDeleted = model.IsDeleted ? 1 : 0,
                     SortNo = model.SortNo,
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId,

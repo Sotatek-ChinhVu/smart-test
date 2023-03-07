@@ -21,5 +21,6 @@ namespace Domain.Models.Accounting
                                    int payType, string comment, bool isDisCharged);
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
         List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo);
+        void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
     }
 }

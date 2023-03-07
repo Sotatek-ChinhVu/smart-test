@@ -57,5 +57,7 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize);
 
         List<PatientInforModel> SearchPatient(int hpId, int startDate, string startTime, int endDate, string endTime);
+
+        public bool IsRyosyoFuyou(int hpId, long ptId);
     }
 }
