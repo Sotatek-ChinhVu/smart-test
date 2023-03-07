@@ -1,44 +1,44 @@
 ﻿namespace Domain.Models.CalculateModel
 {
-    public class Root
+    public class SinMeiViewModelDto
     {
         public List<SinMeiViewModel> sinMeiList { get; set; }
     }
     public class SinMeiViewModel
     {
         public int PtId { get; set; }
-        public string RecId { get; set; }
+        public string RecId { get; set; } = string.Empty;
         public int SinId { get; set; }
         public int SinIdOrg { get; set; }
-        public string FutanKbn { get; set; }
+        public string FutanKbn { get; set; } = string.Empty;
         public int FutanSortNo { get; set; }
-        public string ItemCd { get; set; }
-        public string OdrItemCd { get; set; }
-        public string ItemName { get; set; }
-        public string CommentData { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
+        public string OdrItemCd { get; set; } = string.Empty;
+        public string ItemName { get; set; } = string.Empty;
+        public string CommentData { get; set; } = string.Empty;
         public int Suryo { get; set; }
-        public string SuryoDsp { get; set; }
+        public string SuryoDsp { get; set; } = string.Empty;
         public int TotalTen { get; set; }
         public int TotalKingaku { get; set; }
         public int Ten { get; set; }
         public int Kingaku { get; set; }
         public int Count { get; set; }
-        public string TenKai { get; set; }
+        public string TenKai { get; set; } = string.Empty;
         public bool DspZeroTenKai { get; set; }
         public int UnitCd { get; set; }
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
         public int Price { get; set; }
-        public string TokuzaiName { get; set; }
-        public object ProductName { get; set; }
-        public string Comment1 { get; set; }
-        public string CommentCd1 { get; set; }
-        public string CommentData1 { get; set; }
-        public string Comment2 { get; set; }
-        public string CommentCd2 { get; set; }
-        public string CommentData2 { get; set; }
-        public string Comment3 { get; set; }
-        public string CommentCd3 { get; set; }
-        public string CommentData3 { get; set; }
+        public string TokuzaiName { get; set; } = string.Empty;
+        public object ProductName { get; set; } = string.Empty;
+        public string Comment1 { get; set; } = string.Empty;
+        public string CommentCd1 { get; set; } = string.Empty;
+        public string CommentData1 { get; set; } = string.Empty;
+        public string Comment2 { get; set; } = string.Empty;
+        public string CommentCd2 { get; set; } = string.Empty;
+        public string CommentData2 { get; set; } = string.Empty;
+        public string Comment3 { get; set; } = string.Empty;
+        public string CommentCd3 { get; set; } = string.Empty;
+        public string CommentData3 { get; set; } = string.Empty;
         public int Day1 { get; set; }
         public int Day2 { get; set; }
         public int Day3 { get; set; }
@@ -105,7 +105,7 @@
         public int RpNo { get; set; }
         public int SeqNo { get; set; }
         public int RowNo { get; set; }
-        public string CdKbn { get; set; }
+        public string CdKbn { get; set; } = string.Empty;
         public int JihiSbt { get; set; }
         public int FutanS { get; set; }
         public int FutanK1 { get; set; }
@@ -121,12 +121,12 @@
         public int ZeiKigoEdaNo { get; set; }
         public int ZeiInOut { get; set; }
         public int TaxRate { get; set; }
-        public string RecedenRecord { get; set; }
-        public string RousaiRecedenRecord { get; set; }
-        public string AfterCareRecedenRecord { get; set; }
+        public string RecedenRecord { get; set; } = string.Empty;
+        public string RousaiRecedenRecord { get; set; } = string.Empty;
+        public string AfterCareRecedenRecord { get; set; } = string.Empty;
         public int ReceSortKey { get; set; }
         public int FutanSortKey { get; set; }
-        public string SyukeiSaki { get; set; }
+        public string SyukeiSaki { get; set; } = string.Empty;
         public int EnTenKbn { get; set; }
         public int DrugKbn { get; set; }
         public int SinRpNo { get; set; }

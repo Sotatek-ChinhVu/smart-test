@@ -50,9 +50,11 @@ namespace Interactor.Accounting
 
             var result = task.Result;
 
-            Root myDeserializedClass = Newtonsoft.Json.JsonConvert.DeserializeObject<Root>(result);
+            SinMeiViewModelDto sinMeiViewModelDto = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiViewModelDto>(result);
 
-            var sinMei = myDeserializedClass.sinMeiList.Select(item => new SinMeiModel(
+            if (sinMeiViewModelDto == null) return new();
+
+            var sinMei = sinMeiViewModelDto.sinMeiList.Select(item => new SinMeiModel(
                                                                         item.SinId,
                                                                         string.Empty,
                                                                         item.ItemName,
