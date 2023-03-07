@@ -18,33 +18,30 @@ namespace EmrCloudApi.Services
 
         public async Task<string> CallCalculate(CalculateApiPath path, object inputData)
         {
-            using (var httpClient = new HttpClient())
+            var jsonContent = JsonSerializer.Serialize(inputData);
+
+            var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
+            string functionName = string.Empty;
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            switch (path)
             {
-                var jsonContent = JsonSerializer.Serialize(inputData);
+                case CalculateApiPath.GetSinMeiList:
+                    functionName = "SinMei/GetSinMeiList";
+                    break;
+                default:
+                    throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
+            }
 
-                var basePath = _configuration.GetSection("CalculateApi")["BasePath"]!;
-                string functionName = string.Empty;
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-                switch (path)
-                {
-                    case CalculateApiPath.GetSinMeiList:
-                        functionName = "SinMei/GetSinMeiList";
-                        break;
-                    default:
-                        throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
-                }
+            var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
 
-                var response = await _httpClient.PostAsync($"{basePath}{functionName}", content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    return responseContent;
-                }
-                else
-                {
-                    return "Failed: " + response.StatusCode;
-                }
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return responseContent;
+            }
+            else
+            {
+                return "Failed: " + response.StatusCode;
             }
         }
 
