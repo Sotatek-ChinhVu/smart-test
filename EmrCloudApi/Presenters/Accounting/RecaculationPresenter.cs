@@ -19,7 +19,6 @@ namespace EmrCloudApi.Presenters.Accounting
         {
             RecaculationStatus.Successed => ResponseMessage.Success,
             RecaculationStatus.Failed => ResponseMessage.Failed,
-            RecaculationStatus.NoData => ResponseMessage.NoData,
             _ => string.Empty
         };
     }
