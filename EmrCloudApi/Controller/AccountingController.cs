@@ -11,6 +11,7 @@ using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
 using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
+using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
@@ -136,6 +137,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetAccountingConfigResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetMeiHoGai)]
+        public ActionResult<Response<GetMeiHoGaiResponse>> GetList([FromQuery] GetMeiHoGaiRequest request)
+        {
+            var input = new GetMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetMeiHoGaiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetMeiHoGaiResponse>>(presenter.Result);
         }
     }
 }

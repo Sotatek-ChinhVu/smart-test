@@ -216,6 +216,7 @@
         public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
+        public const string GetMeiHoGai = "GetMeiHoGai";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
