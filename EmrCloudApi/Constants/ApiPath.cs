@@ -205,6 +205,7 @@
         public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
         public const string GetDiseaseReceList = "GetDiseaseReceList";
         public const string Recalculation = "Recalculation";
+        public const string GetReceCheckOptionList = "GetReceCheckOptionList";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
