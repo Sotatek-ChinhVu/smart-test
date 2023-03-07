@@ -5,7 +5,6 @@ using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
 using Interactor.CalculateService;
-using System.Text.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.GetSinMei;
 
