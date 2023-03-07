@@ -48,9 +48,8 @@ namespace Interactor.Accounting
 
         private List<SinMeiModel> GetSinMei(GetSinMeiDtoInputData sinMeiInputData)
         {
-            var output = _calculateService.GetCalculateData("SinMei/GetSinMeiList", sinMeiInputData);
+            SinMeiDataModelDto sinMeiViewModelDto = _calculateService.GetSinMeiList("SinMei/GetSinMeiList", sinMeiInputData);
 
-            SinMeiDataModelDto sinMeiViewModelDto = (SinMeiDataModelDto)output;
 
             if (sinMeiViewModelDto == null) return new();
 

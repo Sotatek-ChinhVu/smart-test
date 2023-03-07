@@ -40,7 +40,7 @@ namespace EmrCloudApi.Services
         }
 
 
-        public object GetCalculateData(string apiUrl, object inputData)
+        public SinMeiDataModelDto GetSinMeiList(string apiUrl, object inputData)
         {
             Task<string> task = CallCalculate(apiUrl, inputData);
 
