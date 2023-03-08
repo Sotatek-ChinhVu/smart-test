@@ -1364,17 +1364,25 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckIsOpenAccounting(int hpId, long ptId,int sinDate, long raiinNo)
+        public bool CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
         {
             var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
 
             if (checkStatusRaiinNo == null) return false;
 
+            int numberCheck = 0;
+
             var isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
 
+            while (numberCheck < 50 && (isCompletedCalculation != null && !isCompletedCalculation.Value))
+            {
+                Thread.Sleep(100);
+                numberCheck++;
+                isCompletedCalculation = CheckCompletedCalculation();
+            }
         }
 
-        public bool CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
+        public bool? CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
         {
             var timeMax = NoTrackingDataContext.CalcStatus.Where(item =>
                     item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
