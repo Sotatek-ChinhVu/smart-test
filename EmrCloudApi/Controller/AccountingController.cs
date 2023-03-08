@@ -4,7 +4,6 @@ using EmrCloudApi.Requests.Accounting;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
-using Interactor.CalculateService;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.CheckAccountingStatus;
 using UseCase.Accounting.GetAccountingHeader;
@@ -25,12 +24,10 @@ namespace EmrCloudApi.Controller
     public class AccountingController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly ICalculateService _calculateService;
 
-        public AccountingController(UseCaseBus bus, IUserService userService, ICalculateService calculateService) : base(userService)
+        public AccountingController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _calculateService = calculateService;
         }
 
         [HttpGet(ApiPath.GetList)]

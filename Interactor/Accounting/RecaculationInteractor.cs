@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Accounting;
-using Helper.Enum;
 using Interactor.CalculateService;
 using UseCase.Accounting.Recaculate;
 
@@ -26,7 +25,7 @@ namespace Interactor.Accounting
 
                 var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
 
-                var result = _calculateService.RunCalculate(CalculateApiPath.RunCalculate, callCalculateInputData);
+                var result = _calculateService.RunCalculate(callCalculateInputData);
                 if (string.IsNullOrEmpty(result))
                     return new RecaculationOutputData(result, RecaculationStatus.Successed);
 

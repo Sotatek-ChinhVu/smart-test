@@ -1366,11 +1366,11 @@ namespace Infrastructure.Repositories
 
         public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)
         {
-            var result = NoTrackingDataContext.SyunoSeikyus.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.NyukinKbn <= 0);
-
-            if (result != null)
-                return true;
-            return false;
+            return NoTrackingDataContext.SyunoSeikyus.Any(x =>
+                                                            x.HpId == hpId &&
+                                                            x.PtId == ptId &&
+                                                            x.RaiinNo == raiinNo &&
+                                                            x.NyukinKbn <= 0);
         }
     }
 }

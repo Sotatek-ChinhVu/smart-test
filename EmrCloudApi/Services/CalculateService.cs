@@ -51,11 +51,11 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData)
+        public SinMeiDataModelDto GetSinMeiList(object inputData)
         {
             try
             {
-                Task<string> task = CallCalculate(path, inputData);
+                Task<string> task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
 
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result);
                 return result;
@@ -66,11 +66,11 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public string RunCalculate(CalculateApiPath path, object inputData)
+        public string RunCalculate(object inputData)
         {
             try
             {
-                Task<string> task = CallCalculate(path, inputData);
+                Task<string> task = CallCalculate(CalculateApiPath.RunCalculate, inputData);
                 var result = task.Result;
                 return result;
             }
