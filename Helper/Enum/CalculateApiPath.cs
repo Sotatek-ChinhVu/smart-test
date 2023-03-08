@@ -4,5 +4,6 @@
     {
         GetSinMeiList = 1,
         RunCalculate = 2,
+        GetListReceInf = 3,
     }
 }

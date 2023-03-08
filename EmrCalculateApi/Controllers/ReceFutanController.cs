@@ -28,7 +28,7 @@ namespace EmrCalculateApi.Controllers
         }
 
         [HttpPost("GetListReceInf")]
-        public ActionResult<GetListReceInfResponse> GetSinMeiList([FromBody] GetListReceInfRequest request)
+        public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
         {
             int hpId = request.HpId;
             long ptId = request.PtId;

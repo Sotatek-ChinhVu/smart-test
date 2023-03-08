@@ -30,6 +30,9 @@ namespace EmrCloudApi.Services
                 case CalculateApiPath.RunCalculate:
                     functionName = "Calculate/RunCalculate";
                     break;
+                case CalculateApiPath.GetListReceInf:
+                    functionName = "ReceFutan/GetListReceInf";
+                    break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
@@ -84,6 +87,24 @@ namespace EmrCloudApi.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public SinMeiDataModelDto GetListReceInf(GetSinMeiDtoInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetListReceInf, inputData);
+
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new();
             }
         }
     }
