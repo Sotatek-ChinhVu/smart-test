@@ -2956,7 +2956,7 @@ namespace Infrastructure.Repositories
                     {
                         var tenMst = expiredItems[orderDetail.ItemCd];
 
-                        var tenMstDb = tenMstDbs.FirstOrDefault(t => t.ItemCd == orderDetail.ItemCd);
+                        var tenMstDb = tenMstDbs.FirstOrDefault(t => t.ItemCd == tenMst.ItemCd);
                         track.Add(new(orderIndex, orderDetailIndex, new(), true));
                         var newOrderDetail = ConvertConversionItemToDetailModel(hpId, orderDetail, tenMstDb ?? new(), ipnItems, autoSetKohatu, autoSetSenpatu, autoSetSyohoKbnKohatuDrug, autoSetSyohoLimitKohatuDrug, autoSetSyohoKbnSenpatuDrug, autoSetSyohoLimitSenpatuDrug, kensaMsts, ipnMinYakkaMsts, sinDate, raiinNo, ptId, order.OdrKouiKbn, (int)kensaIraiCondition, (int)kensaIrai);
                         track.Add(new(orderIndex, orderDetailIndex, newOrderDetail, false));
