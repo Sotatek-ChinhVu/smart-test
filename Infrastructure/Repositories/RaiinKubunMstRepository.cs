@@ -114,6 +114,10 @@ namespace Infrastructure.Repositories
                 x.kbnKoui.KouiKbnId,
                 x.kbnKoui.IsDeleted)).GroupBy(x => new { x.HpId, x.GrpId, x.KbnCd, x.SeqNo }).Select(x => x.First());
 
+
+            var itemCdList = query.Where(x => x.kbnItem != null).Select(item => item.kbnItem.ItemCd).Distinct().ToList();
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.IsDeleted == 0 && itemCdList.Contains(item.ItemCd)).ToList();
+
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
                 x.kbnItem.GrpCd,
@@ -121,9 +125,13 @@ namespace Infrastructure.Repositories
                 x.kbnItem.SeqNo,
                 x.kbnItem.ItemCd ?? string.Empty,
                 x.kbnItem.IsExclude,
-                x.kbnItem.IsDeleted,
-                x.kbnItem.SortNo
-                )).Distinct().GroupBy(x => new { x.HpId, x.GrpCd, x.KbnCd, x.SeqNo }).Select(x => x.First());
+                x.kbnItem.IsDeleted == 1,
+                x.kbnItem.SortNo,
+                tenMstList.FirstOrDefault(item => item.ItemCd == x.kbnItem.ItemCd)?.Name ?? string.Empty
+                )).Distinct()
+                .GroupBy(x => new { x.HpId, x.GrpCd, x.KbnCd, x.SeqNo })
+                .Select(x => x.First())
+                .ToList();
 
             var raiinKbnYayokuList = query.Where(x => x.kbnYoyaku != null).Select(x => new RaiinKbnYayokuModel(
                 x.kbnYoyaku.HpId,
@@ -139,6 +147,7 @@ namespace Infrastructure.Repositories
                 x.SortNo,
                 x.GrpName ?? string.Empty,
                 x.IsDeleted == 1,
+                GetMaxKbnCd(hpId, x.GrpCd),
                 raiinKubunDetailList.Where(y => y.GrpCd == x.GrpCd)
                                     .Select(z => new RaiinKubunDetailModel(
                                         z.HpId,
@@ -161,14 +170,14 @@ namespace Infrastructure.Repositories
             return raiinKubunMstModels;
         }
 
-        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId)
+        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId, int hpId)
         {
             List<string> result = new List<string>();
-            var currentKubunMstList = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunDetailList = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunKouiList = NoTrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunItemList = NoTrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunYoyakuList = NoTrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunMstList = TrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunDetailList = TrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunKouiList = TrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunItemList = TrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunYoyakuList = TrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
 
             int detailKbnCd = 0;
             if (currentKubunDetailList != null && currentKubunDetailList.Any())
@@ -191,7 +200,7 @@ namespace Infrastructure.Repositories
                 yoyakuKbnCd = currentKubunYoyakuList.Max(x => x.YoyakuCd);
             }
 
-            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunMstList, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
+            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
 
             if (result.Any())
             {
@@ -200,7 +209,7 @@ namespace Infrastructure.Repositories
 
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
-            var resultExecute = executionStrategy.Execute(
+            executionStrategy.Execute(
                 () =>
                 {
                     // execute your logic here
@@ -210,71 +219,43 @@ namespace Infrastructure.Repositories
                         {
                             if (raiinKubunMstModels != null && raiinKubunMstModels.Any())
                             {
-                                var raiinKubunMstAddList = raiinKubunMstModels.Where(x => x.GroupId == 0).ToList();
-
-                                if (raiinKubunMstAddList != null && raiinKubunMstAddList.Any())
-                                {
-                                    var currentGrpCd = currentKubunMstList.Max(x => x.GrpCd);
-                                    raiinKubunMstAddList.ForEach(x =>
-                                    {
-                                        currentGrpCd++;
-
-                                        x = new RaiinKubunMstModel(x.HpId, currentGrpCd, x.SortNo, x.GroupName, x.IsDeleted, x.RaiinKubunDetailModels);
-
-                                        var resultIds = AddRaiinKubunDetail(currentGrpCd, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
-                                        detailKbnCd = resultIds.Item1;
-                                        kouiKbnCd = resultIds.Item2;
-                                        itemSeqNo = resultIds.Item3;
-                                        yoyakuKbnCd = resultIds.Item4;
-                                    });
-
-                                    TrackingDataContext.RaiinKbnMsts.AddRange(raiinKubunMstAddList.Select(x => new RaiinKbnMst()
-                                    {
-                                        HpId = x.HpId,
-                                        GrpCd = x.GroupId,
-                                        SortNo = x.SortNo,
-                                        GrpName = x.GroupName,
-                                        IsDeleted = x.IsDeleted ? 1 : 0,
-                                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                        UpdateId = userId,
-                                        CreateId = userId
-                                    }).ToList());
-                                    TrackingDataContext.SaveChanges();
-                                }
-
                                 var raiinKubunMstUpdateList = raiinKubunMstModels.Where(x => x.GroupId != 0).ToList();
 
                                 if (raiinKubunMstUpdateList != null && raiinKubunMstUpdateList.Any())
                                 {
                                     raiinKubunMstUpdateList.ForEach(x =>
                                     {
-                                        if (x.RaiinKubunDetailModels.Any(x => x.KubunCd == 0))
-                                        {
-                                            var resultIds = AddRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
-                                            detailKbnCd = resultIds.Item1;
-                                            kouiKbnCd = resultIds.Item2;
-                                            itemSeqNo = resultIds.Item3;
-                                            yoyakuKbnCd = resultIds.Item4;
-                                        }
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd != 0))
                                         {
                                             UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                         }
                                     });
-                                    TrackingDataContext.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
+                                    foreach (var model in raiinKubunMstUpdateList)
                                     {
-                                        HpId = x.HpId,
-                                        GrpCd = x.GroupId,
-                                        SortNo = x.SortNo,
-                                        GrpName = x.GroupName,
-                                        IsDeleted = x.IsDeleted ? 1 : 0,
-                                        CreateDate = DateTime.SpecifyKind(DateTime.SpecifyKind(currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc), DateTimeKind.Utc),
-                                        CreateId = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateId ?? 0,
-                                        CreateMachine = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateMachine ?? string.Empty,
-                                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                                        UpdateId = userId
-                                    }));
+                                        var raiinKubunMst = currentKubunMstList.FirstOrDefault(item => item.HpId == model.HpId && item.GrpCd == model.GroupId);
+                                        if (raiinKubunMst != null)
+                                        {
+                                            raiinKubunMst.SortNo = model.SortNo;
+                                            raiinKubunMst.GrpName = model.GroupName;
+                                            raiinKubunMst.IsDeleted = model.IsDeleted ? 1 : 0;
+                                            raiinKubunMst.UpdateId = userId;
+                                            raiinKubunMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                            continue;
+                                        }
+                                        TrackingDataContext.RaiinKbnMsts.Add(new RaiinKbnMst()
+                                        {
+                                            HpId = model.HpId,
+                                            GrpCd = model.GroupId,
+                                            SortNo = model.SortNo,
+                                            GrpName = model.GroupName,
+                                            IsDeleted = model.IsDeleted ? 1 : 0,
+                                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                            CreateId = userId,
+                                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                            UpdateId = userId
+                                        });
+                                    }
+                                    TrackingDataContext.SaveChanges();
                                 }
                             }
                             TrackingDataContext.SaveChanges();
@@ -317,8 +298,10 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listRaiinKbnMst)
                 {
-                    if (listColumnName.Select(i => i.Item2).Contains(item.Key) == false)
+                    if (!listColumnName.Select(i => i.Item2).Contains(item.Key))
+                    {
                         listColumnName.Add(new(item.Value.ToString(), item.Key));
+                    }
                 }
             }
 
@@ -356,7 +339,7 @@ namespace Infrastructure.Repositories
                                     p.SeqNo,
                                     p.ItemCd ?? string.Empty,
                                     p.IsExclude,
-                                    p.IsExclude,
+                                    p.IsExclude == 1,
                                     p.SortNo
                                 )).ToList();
         }
@@ -418,13 +401,11 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-
         public List<RaiinKbnModel> GetRaiinKbns(int hpId, long ptId, long raiinNo, int sinDate)
         {
             var raiinKbnMstRespo = NoTrackingDataContext.RaiinKbnMsts.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
             var raiinKbnDetailRespo = NoTrackingDataContext.RaiinKbnDetails.Where(p => p.IsDeleted == 0 && p.HpId == hpId);
             var raiinKbnInfRespo = NoTrackingDataContext.RaiinKbnInfs.Where(p => p.IsDelete == 0 && p.HpId == hpId && p.RaiinNo == raiinNo && p.PtId == ptId && p.SinDate == sinDate);
-            var r = raiinKbnInfRespo.ToList();
             var result = (from kbnMst in raiinKbnMstRespo.AsEnumerable()
                           join kbnDetail in raiinKbnDetailRespo on
                           new { kbnMst.HpId, kbnMst.GrpCd } equals
@@ -459,7 +440,7 @@ namespace Infrastructure.Repositories
 
                 foreach (var detail in raiinKbnMst.RaiinKbnDetailModels)
                 {
-                    var raiinKbnRsvs = raiinKbnYoyakus.Where(x => x.GrpId == detail.GrpCd && x.KbnCd == detail.KbnCd).FirstOrDefault();
+                    var raiinKbnRsvs = raiinKbnYoyakus.FirstOrDefault(x => x.GrpId == detail.GrpCd && x.KbnCd == detail.KbnCd);
                     if (raiinKbnRsvs != null)
                     {
                         raiinKbnMst.RaiinKbnInfModel.ChangeKbnCd(detail.KbnCd);
@@ -574,273 +555,155 @@ namespace Infrastructure.Repositories
                 }
             }
         }
-
         #region RaiinKbn
-        #region Add
-        private (int, int, int, int) AddRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int currentKbnCd, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd, int userId)
-        {
-            if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
-            {
-                raiinKubunDetailModels.ForEach(x =>
-                {
-                    currentKbnCd++;
-                    x = new RaiinKubunDetailModel(x.HpId, grpCd, currentKbnCd, x.SortNo, x.KubunName, x.ColorCd, x.IsConfirmed, x.IsAuto, x.IsAutoDeleted, x.IsDeleted,
-                        x.RaiinKbnKouiModels,
-                        x.RaiinKbnItemModels,
-                        new List<RsvFrameMstModel>(),
-                        new List<RsvGrpMstModel>(),
-                        x.RaiinKbnYayokuModels);
-
-                    kouiKbnCd = AddRaiinKbnKoui(currentKbnCd, grpCd, x.RaiinKbnKouiModels, kouiKbnCd, userId);
-                    itemSeqNo = AddRaiinKbItem(currentKbnCd, grpCd, x.RaiinKbnItemModels, itemSeqNo, userId);
-                    yoyakuKbnCd = AddRaiinKbnYayoku(currentKbnCd, grpCd, x.RaiinKbnYayokuModels, yoyakuKbnCd, userId);
-                });
-
-                TrackingDataContext.RaiinKbnDetails.AddRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
-                {
-                    HpId = x.HpId,
-                    GrpCd = grpCd,
-                    KbnCd = x.KubunCd,
-                    SortNo = x.SortNo,
-                    KbnName = x.KubunName,
-                    ColorCd = x.ColorCd,
-                    IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto,
-                    IsAutoDelete = x.IsAutoDeleted,
-                    IsDeleted = x.IsDeleted ? 1 : 0,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    CreateId = userId
-                }));
-            }
-            TrackingDataContext.SaveChanges();
-            return (currentKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
-        }
-
-        private int AddRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, int kouiKbnCd, int userId)
-        {
-            if (raiinKbnKouiModels != null && raiinKbnKouiModels.Any())
-            {
-                raiinKbnKouiModels.ForEach(x =>
-                {
-                    kouiKbnCd++;
-                    x = new RaiinKbnKouiModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, kouiKbnCd, x.IsDeleted);
-                });
-
-                TrackingDataContext.RaiinKbnKouis.AddRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
-                {
-                    HpId = x.HpId,
-                    GrpId = grpCd,
-                    KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    KouiKbnId = x.KouiKbnId,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    IsDeleted = x.IsDeleted,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = userId
-                }));
-            }
-            TrackingDataContext.SaveChanges();
-            return kouiKbnCd;
-        }
-
-        private int AddRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, int itemKbnCd, int userId)
-        {
-            if (raiinKbItemModels != null && raiinKbItemModels.Any())
-            {
-                raiinKbItemModels.ForEach(x =>
-                {
-                    itemKbnCd++;
-                    x = new RaiinKbnItemModel(x.HpId, x.GrpCd, x.KbnCd, itemKbnCd, x.ItemCd, x.IsExclude, x.IsDeleted, x.SortNo);
-                });
-
-                TrackingDataContext.RaiinKbItems.AddRange(raiinKbItemModels.Select(x => new RaiinKbItem()
-                {
-                    HpId = x.HpId,
-                    GrpCd = grpCd,
-                    KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    ItemCd = x.ItemCd,
-                    IsExclude = x.IsExclude,
-                    IsDeleted = x.IsDeleted,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    SortNo = x.SortNo,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = userId,
-                }));
-            }
-            TrackingDataContext.SaveChanges();
-            return itemKbnCd;
-        }
-
-        private int AddRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, int yoyakuCd, int userId)
-        {
-            if (raiinKbnYayokuModels != null && raiinKbnYayokuModels.Any())
-            {
-                raiinKbnYayokuModels.ForEach(x =>
-                {
-                    yoyakuCd++;
-                    x = new RaiinKbnYayokuModel(x.HpId, x.KbnCd, x.SeqNo, yoyakuCd, x.IsDeleted);
-                });
-                TrackingDataContext.RaiinKbnYayokus.AddRange(raiinKbnYayokuModels.Select(x => new RaiinKbnYayoku()
-                {
-                    HpId = x.HpId,
-                    GrpId = grpCd,
-                    KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    YoyakuCd = x.YoyakuCd,
-                    IsDeleted = x.IsDeleted,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    CreateId = userId
-                }));
-            }
-            TrackingDataContext.SaveChanges();
-            return yoyakuCd;
-        }
-        #endregion
 
         #region Update
         private void UpdateRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus, int kouiId, int itemSeqNo, int yoyakuId, int userId)
         {
             if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
             {
+                foreach (var model in raiinKubunDetailModels)
+                {
+                    var raiinKubun = currentRaiinKubunDetails.FirstOrDefault(kubun => kubun.GrpCd == model.GroupId && kubun.KbnCd == model.KubunCd);
+                    if (raiinKubun != null)
+                    {
+                        raiinKubun.SortNo = model.SortNo;
+                        raiinKubun.KbnName = model.KubunName;
+                        raiinKubun.ColorCd = model.ColorCd != null && model.ColorCd.Contains("#") ? model.ColorCd.Replace("#", string.Empty) : model.ColorCd;
+                        raiinKubun.IsConfirmed = model.IsConfirmed ? 1 : 0;
+                        raiinKubun.IsAuto = model.IsAuto;
+                        raiinKubun.IsAutoDelete = model.IsAutoDeleted;
+                        raiinKubun.IsDeleted = model.IsDeleted ? 1 : 0;
+                        raiinKubun.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinKubun.UpdateId = userId;
+                        continue;
+                    }
+                    TrackingDataContext.RaiinKbnDetails.Add(new RaiinKbnDetail()
+                    {
+                        HpId = model.HpId,
+                        GrpCd = grpCd,
+                        KbnCd = model.KubunCd,
+                        SortNo = model.SortNo,
+                        KbnName = model.KubunName,
+                        ColorCd = model.ColorCd != null && model.ColorCd.Contains("#") ? model.ColorCd.Replace("#", string.Empty) : model.ColorCd,
+                        IsConfirmed = model.IsConfirmed ? 1 : 0,
+                        IsAuto = model.IsAuto,
+                        IsAutoDelete = model.IsAutoDeleted,
+                        IsDeleted = model.IsDeleted ? 1 : 0,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+                TrackingDataContext.SaveChanges();
+
                 raiinKubunDetailModels.ForEach(x =>
                 {
-                    var kouiModelAdd = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId == 0).ToList();
-                    if (kouiModelAdd != null && kouiModelAdd.Any())
-                    {
-                        kouiId = AddRaiinKbnKoui(x.KubunCd, x.GroupId, kouiModelAdd, kouiId, userId);
-                    }
-
-                    var kouiModelUpdate = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId != 0).ToList();
-                    if (kouiModelUpdate != null && kouiModelUpdate.Any())
-                    {
-                        UpdateRaiinKbnKoui(x.KubunCd, grpCd, kouiModelUpdate, raiinKbnKouis, userId);
-                    }
-
-                    var itemModelAdd = x.RaiinKbnItemModels.Where(x => x.SeqNo == 0).ToList();
-                    if (itemModelAdd != null && itemModelAdd.Any())
-                    {
-                        itemSeqNo = AddRaiinKbItem(x.KubunCd, x.GroupId, itemModelAdd, itemSeqNo, userId);
-                    }
-
-                    var itemModelUpdate = x.RaiinKbnItemModels.Where(x => x.SeqNo != 0).ToList();
-                    if (itemModelUpdate != null && itemModelUpdate.Any())
-                    {
-                        UpdateRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, raiinKbItems, userId);
-                    }
-
-                    var yoyakuModelAdd = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd == 0).ToList();
-                    if (yoyakuModelAdd != null && yoyakuModelAdd.Any())
-                    {
-                        yoyakuId = AddRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, yoyakuId, userId);
-                    }
-
-                    var yoyakuModelUpdate = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd != 0).ToList();
-                    if (yoyakuModelUpdate != null && yoyakuModelUpdate.Any())
-                    {
-                        UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, yoyakuModelUpdate, raiinKbnYayokus, userId);
-                    }
+                    UpdateRaiinKbnKoui(x.KubunCd, grpCd, x.RaiinKbnKouiModels, raiinKbnKouis, userId);
+                    UpdateRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, raiinKbItems, userId);
+                    UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, raiinKbnYayokus, userId);
                 });
-                TrackingDataContext.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
-                {
-                    HpId = x.HpId,
-                    GrpCd = grpCd,
-                    KbnCd = x.KubunCd,
-                    SortNo = x.SortNo,
-                    KbnName = x.KubunName,
-                    ColorCd = x.ColorCd,
-                    IsConfirmed = x.IsConfirmed ? 1 : 0,
-                    IsAuto = x.IsAuto,
-                    IsAutoDelete = x.IsAutoDeleted,
-                    IsDeleted = x.IsDeleted ? 1 : 0,
-                    CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                    CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
-                    CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                }));
-                TrackingDataContext.SaveChanges();
             }
         }
 
         private void UpdateRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, List<RaiinKbnKoui> raiinKbnKouis, int userId)
         {
-            if (raiinKbnKouiModels != null && raiinKbnKouiModels.Any())
+            foreach (var model in raiinKbnKouiModels)
             {
-                TrackingDataContext.RaiinKbnKouis.UpdateRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
+                var raiinKbnKoui = raiinKbnKouis.FirstOrDefault(item => item.GrpId == model.GrpId && item.SeqNo == model.SeqNo && item.KbnCd == model.KbnCd);
+                if (raiinKbnKoui != null)
                 {
-                    HpId = x.HpId,
+                    raiinKbnKoui.KouiKbnId = model.KouiKbnId;
+                    raiinKbnKoui.IsDeleted = model.IsDeleted;
+                    raiinKbnKoui.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    raiinKbnKoui.UpdateId = userId;
+                    continue;
+                }
+                TrackingDataContext.RaiinKbnKouis.Add(new RaiinKbnKoui()
+                {
+                    HpId = model.HpId,
                     GrpId = grpCd,
                     KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    KouiKbnId = x.KouiKbnId,
-                    IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.SpecifyKind(raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                    CreateId = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateId ?? 0,
-                    CreateMachine = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateMachine ?? string.Empty,
+                    SeqNo = 0,
+                    KouiKbnId = model.KouiKbnId,
+                    IsDeleted = model.IsDeleted,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
-                }));
+                });
             }
             TrackingDataContext.SaveChanges();
         }
 
         private void UpdateRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, List<RaiinKbItem> raiinKbItems, int userId)
         {
-            if (raiinKbItemModels != null && raiinKbItemModels.Any())
+            foreach (var model in raiinKbItemModels)
             {
-                TrackingDataContext.RaiinKbItems.UpdateRange(raiinKbItemModels.Select(x => new RaiinKbItem()
+                var raiinKbnItem = raiinKbItems.FirstOrDefault(item => item.GrpCd == model.GrpCd && item.SeqNo == model.SeqNo && item.KbnCd == model.KbnCd);
+                if (raiinKbnItem != null)
                 {
-                    HpId = x.HpId,
+                    raiinKbnItem.ItemCd = model.ItemCd;
+                    raiinKbnItem.IsExclude = model.IsExclude;
+                    raiinKbnItem.IsDeleted = model.IsDeleted ? 1 : 0;
+                    raiinKbnItem.SortNo = model.SortNo;
+                    raiinKbnItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    raiinKbnItem.UpdateId = userId;
+                    continue;
+                }
+                TrackingDataContext.RaiinKbItems.Add(new RaiinKbItem()
+                {
+                    HpId = model.HpId,
                     GrpCd = grpCd,
                     KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    ItemCd = x.ItemCd,
-                    IsExclude = x.IsExclude,
-                    IsDeleted = x.IsDeleted,
-                    SortNo = x.SortNo,
-                    CreateDate = DateTime.SpecifyKind(raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                    CreateId = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateId ?? 0,
-                    CreateMachine = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateMachine ?? string.Empty,
+                    SeqNo = 0,
+                    ItemCd = model.ItemCd,
+                    IsExclude = model.IsExclude,
+                    IsDeleted = model.IsDeleted ? 1 : 0,
+                    SortNo = model.SortNo,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
-                }));
+                });
             }
             TrackingDataContext.SaveChanges();
         }
 
         private void UpdateRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, List<RaiinKbnYayoku> raiinKbnYayokus, int userId)
         {
-            if (raiinKbnYayokuModels != null && raiinKbnYayokuModels.Any())
+            foreach (var model in raiinKbnYayokuModels)
             {
-                var updateModel = raiinKbnYayokuModels.Select(x => new RaiinKbnYayoku()
+                var raiinKbnYayoku = raiinKbnYayokus.FirstOrDefault(item => item.GrpId == model.GrpId && item.SeqNo == model.SeqNo && item.KbnCd == model.KbnCd);
+                if (raiinKbnYayoku != null)
                 {
-                    HpId = x.HpId,
+                    raiinKbnYayoku.YoyakuCd = model.YoyakuCd;
+                    raiinKbnYayoku.IsDeleted = model.IsDeleted;
+                    raiinKbnYayoku.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    raiinKbnYayoku.UpdateId = userId;
+                    continue;
+                }
+                TrackingDataContext.RaiinKbnYayokus.Add(new RaiinKbnYayoku()
+                {
+                    HpId = model.HpId,
                     GrpId = grpCd,
                     KbnCd = kbnCd,
-                    SeqNo = x.SeqNo,
-                    YoyakuCd = x.YoyakuCd,
-                    IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.SpecifyKind(raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
-                    CreateId = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateId ?? 0,
-                    CreateMachine = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateMachine ?? string.Empty,
+                    SeqNo = 0,
+                    YoyakuCd = model.YoyakuCd,
+                    IsDeleted = model.IsDeleted,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId
-                }).ToList();
-                TrackingDataContext.RaiinKbnYayokus.UpdateRange(updateModel);
-                TrackingDataContext.SaveChanges();
+                });
             }
+            TrackingDataContext.SaveChanges();
         }
         #endregion
 
         #region Validate
-        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnMst> currentKubunMstList, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
+        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
         {
             List<string> result = new List<string>();
 
@@ -850,27 +713,10 @@ namespace Infrastructure.Repositories
                 return result;
             }
 
-            var currentRaiinKubunMsts = currentKubunMstList.Where(x => x.IsDeleted == 0).ToList();
-            var currentSortNos = currentRaiinKubunMsts.Select(x => new Tuple<int, int>(x.GrpCd, x.SortNo)).ToList();
             var newSortNos = raiinKubunMstModels.Select(x => new Tuple<int, int>(x.GroupId, x.SortNo)).ToList();
-            if (!ValidateSortNo(currentSortNos, newSortNos))
+            if (!ValidateSortNo(newSortNos))
             {
                 result.Add(KubunSettingConstant.InvalidRaiinKbnMstSortNo);
-                return result;
-            }
-
-            var raiinKubunMstModel = raiinKubunMstModels.Where(x => x.HpId != 0 && x.GroupId != 0).ToList();
-            var raiinKubunMstUpdate = from raiinKbnMst in raiinKubunMstModel
-                                      join current in currentRaiinKubunMsts
-                                      on new { raiinKbnMst.HpId, GrpCd = raiinKbnMst.GroupId }
-                                      equals new { current.HpId, current.GrpCd }
-                                      into msts
-                                      from mst in msts.DefaultIfEmpty()
-                                      select new { raiinKbnMst, mst };
-
-            if (raiinKubunMstUpdate.Any(x => x.mst == null))
-            {
-                result.Add(KubunSettingConstant.RaiinKbnMstNotExisted);
                 return result;
             }
 
@@ -892,27 +738,11 @@ namespace Infrastructure.Repositories
                     }
 
                     var currentDetails = currentRaiinKubunDetails.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunMst.GroupId).ToList();
-                    var currentRaiinKubunDetailSortNos = currentDetails.Select(x => new Tuple<int, int>(x.KbnCd, x.SortNo)).ToList();
                     var newSortRaiinKubunDetailNos = raiinKubunDetailModels.Select(x => new Tuple<int, int>(x.KubunCd, x.SortNo)).ToList();
 
-                    if (!ValidateSortNo(currentRaiinKubunDetailSortNos, newSortRaiinKubunDetailNos))
+                    if (!ValidateSortNo(newSortRaiinKubunDetailNos))
                     {
                         result.Add(KubunSettingConstant.InvalidRaiinKbnDetailSortNo);
-                        return result;
-                    }
-
-                    raiinKubunDetailModels = raiinKubunDetailModels.Where(x => x.HpId != 0 && x.GroupId != 0 && x.KubunCd != 0).ToList();
-                    var raiinKbnDetailUpdate = from raiinKbndetail in raiinKubunDetailModels
-                                               join current in currentDetails
-                                               on new { raiinKbndetail.HpId, GrpCd = raiinKbndetail.GroupId, KbnCd = raiinKbndetail.KubunCd }
-                                               equals new { current.HpId, current.GrpCd, current.KbnCd }
-                                               into details
-                                               from detail in details.DefaultIfEmpty()
-                                               select new { raiinKbndetail, detail };
-
-                    if (raiinKbnDetailUpdate.Any(x => x.detail == null))
-                    {
-                        result.Add(KubunSettingConstant.RaiinKbnDetailNotExisted);
                         return result;
                     }
 
@@ -925,30 +755,6 @@ namespace Infrastructure.Repositories
                             if (raiinKbnKouiModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnKouiKbnCd);
-                                return result;
-                            }
-
-                            var currentRaiinKbnKouis = raiinKbnKouis.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            var currentRaiinKbnKouiSortNos = currentRaiinKbnKouis.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
-                            var newRaiinKbnKouiSortNos = raiinKbnKouiModels.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
-                            if (!ValidateSortNo(currentRaiinKbnKouiSortNos, newRaiinKbnKouiSortNos))
-                            {
-                                result.Add(KubunSettingConstant.InvalidRaiinKbnKouiSortNo);
-                                return result;
-                            }
-
-                            raiinKbnKouiModels = raiinKbnKouiModels.Where(x => x.HpId != 0 && x.GrpId != 0 && x.KbnCd != 0 && x.KouiKbnId != 0).ToList();
-                            var raiinKbnKouiUpdate = from raiinKbnKoui in raiinKbnKouiModels
-                                                     join current in currentRaiinKbnKouis
-                                                     on new { raiinKbnKoui.HpId, raiinKbnKoui.GrpId, raiinKbnKoui.KbnCd, raiinKbnKoui.KouiKbnId }
-                                                     equals new { current.HpId, current.GrpId, current.KbnCd, current.KouiKbnId }
-                                                     into Kouis
-                                                     from koui in Kouis.DefaultIfEmpty()
-                                                     select new { raiinKbnKoui, koui };
-
-                            if (raiinKbnKouiUpdate.Any(x => x.koui == null))
-                            {
-                                result.Add(KubunSettingConstant.RaiinKbnKouiNotExisted);
                                 return result;
                             }
                         }
@@ -967,27 +773,11 @@ namespace Infrastructure.Repositories
                             }
 
                             var currentRaiinKbnItems = raiinKbItems.Where(x => x.IsDeleted == 0 && x.GrpCd == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            var currentRaiinKbnItemSortNos = currentRaiinKbnItems.Select(x => new Tuple<int, int>((int)x.SeqNo, x.SortNo)).ToList();
                             var newRRaiinKbnItemSortNos = raiinKbItemModels.Select(x => new Tuple<int, int>((int)x.SeqNo, x.SortNo)).ToList();
 
-                            if (!ValidateSortNo(currentRaiinKbnItemSortNos, newRRaiinKbnItemSortNos))
+                            if (!ValidateSortNo(newRRaiinKbnItemSortNos))
                             {
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnItemSortNo);
-                                return result;
-                            }
-
-                            raiinKbItemModels = raiinKbItemModels.Where(x => x.HpId != 0 && x.GrpCd != 0 && x.KbnCd != 0).ToList();
-                            var raiinKbnItemUpdate = from raiinKbnItem in raiinKbItemModels
-                                                     join current in raiinKbItems
-                                                       on new { raiinKbnItem.HpId, raiinKbnItem.GrpCd, raiinKbnItem.KbnCd }
-                                                       equals new { current.HpId, current.GrpCd, current.KbnCd }
-                                                       into items
-                                                     from item in items.DefaultIfEmpty()
-                                                     select new { raiinKbnItem, item };
-
-                            if (raiinKbnItemUpdate.Any(x => x.item == null))
-                            {
-                                result.Add(KubunSettingConstant.RaiinKbnItemNotExisted);
                                 return result;
                             }
                         }
@@ -1000,27 +790,11 @@ namespace Infrastructure.Repositories
                                 return result;
                             }
                             var currentRaiinKbnYayokus = raiinKbnYayokus.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
-                            var currentRaiinKbnYayokuSortNos = currentRaiinKbnYayokus.Select(x => new Tuple<int, int>(x.YoyakuCd, (int)x.SeqNo)).ToList();
                             var newRaiinKbnYayokuSortNos = raiinKbnYayokuModels.Select(x => new Tuple<int, int>(x.YoyakuCd, (int)x.SeqNo)).ToList();
 
-                            if (!ValidateSortNo(currentRaiinKbnYayokuSortNos, newRaiinKbnYayokuSortNos))
+                            if (!ValidateSortNo(newRaiinKbnYayokuSortNos))
                             {
                                 result.Add(KubunSettingConstant.InvalidRaiinKbnYayokuSortNo);
-                                return result;
-                            }
-
-                            raiinKbnYayokuModels = raiinKbnYayokuModels.Where(x => x.HpId != 0 && x.GrpId != 0 && x.KbnCd != 0 && x.YoyakuCd != 0).ToList();
-                            var raiinKbnYayokuUpdate = from raiinKbnYayoku in raiinKbnYayokuModels
-                                                       join current in currentRaiinKbnYayokus
-                                                       on new { raiinKbnYayoku.HpId, raiinKbnYayoku.GrpId, raiinKbnYayoku.KbnCd, raiinKbnYayoku.YoyakuCd }
-                                                       equals new { current.HpId, current.GrpId, current.KbnCd, current.YoyakuCd }
-                                                       into yayokus
-                                                       from yoyaku in yayokus.DefaultIfEmpty()
-                                                       select new { raiinKbnYayoku, yoyaku };
-
-                            if (raiinKbnYayokuUpdate.Any(x => x.yoyaku == null))
-                            {
-                                result.Add(KubunSettingConstant.RaiinKbnYayokuNotExisted);
                                 return result;
                             }
                         }
@@ -1029,23 +803,11 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
-        private bool ValidateSortNo(List<Tuple<int, int>> currentValue, List<Tuple<int, int>> newValue)
+
+        private bool ValidateSortNo(List<Tuple<int, int>> newValue)
         {
-            if (newValue.Any(x => x.Item1 < 0 || x.Item2 < 0)) return false;
-            var ids = newValue.Select(x => x.Item1).ToList();
-
-            currentValue.ForEach(x =>
-            {
-                if (ids.Contains(x.Item1)) x = newValue.FirstOrDefault(y => y.Item1 == x.Item1) ?? new Tuple<int, int>(0, 0);
-            });
-
-            var value = currentValue.Union(newValue).Select(x => x.Item2).ToList();
-            value.Sort();
-
-            if (value.Zip(value.Skip(1), (curr, next) => curr < next).All(x => x))
-                return true;
-
-            return false;
+            if (newValue.Any(x => x.Item1 < 0 || x.Item2 < 0)) { return false; }
+            return true;
         }
         #endregion
         #endregion
@@ -1053,6 +815,17 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public int GetMaxGrpId(int hpId)
+        {
+            return NoTrackingDataContext.RaiinKbnMsts.Where(item => item.HpId == hpId)?.Max(item => item.GrpCd) ?? 0;
+        }
+
+        private int GetMaxKbnCd(int hpId, int grpId)
+        {
+            var raiinKbnDetailKbnCdList = NoTrackingDataContext.RaiinKbnDetails.Where(item => item.HpId == hpId && item.GrpCd == grpId).Select(item => item.KbnCd).ToList();
+            return raiinKbnDetailKbnCdList.Any() ? raiinKbnDetailKbnCdList.Max() : 0;
         }
     }
 }

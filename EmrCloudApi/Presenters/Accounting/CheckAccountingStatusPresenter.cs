@@ -10,7 +10,7 @@ namespace EmrCloudApi.Presenters.Accounting
         public Response<CheckAccountingStatusResponse> Result { get; private set; } = new();
         public void Complete(CheckAccountingStatusOutputData outputData)
         {
-            Result.Data = new CheckAccountingStatusResponse(outputData.Message);
+            Result.Data = new CheckAccountingStatusResponse(outputData.ErrorType, outputData.Message);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

@@ -13,7 +13,6 @@ namespace EmrCloudApi.Requests.Accounting
         public int ThisCredit { get; set; }
         public int Wari { get; set; }
         public bool IsDisCharge { get; set; }
-        public bool IsDeletedSyuno { get; set; }
         public bool IsSaveAccounting { get; set; }
         public List<SyunoSeikyuDto> SyunoSeikyuDtos { get; set; } = new();
         public List<SyunoSeikyuDto> AllSyunoSeikyuDtos { get; set; } = new();

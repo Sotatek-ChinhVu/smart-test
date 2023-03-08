@@ -7,6 +7,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Domain.Constant;
 using EmrCalculateApi.Constants;
+using Helper.Common;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -648,7 +649,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                                             .Sum(p =>
                                                 p.Count));
                                 }
-                                sinKouiUp.UpdateDate = DateTime.UtcNow;
+                                sinKouiUp.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 sinKouiUp.UpdateId = 0;
                                 sinKouiUp.UpdateMachine = Hardcode.ComputerName;
                             }

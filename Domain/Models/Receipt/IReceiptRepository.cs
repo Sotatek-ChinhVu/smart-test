@@ -42,12 +42,14 @@ public interface IReceiptRepository : IRepositoryBase
 
     InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId);
 
+    bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
     List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
+    List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
 
     bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
 
@@ -70,5 +72,7 @@ public interface IReceiptRepository : IRepositoryBase
     List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId);
 
     List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
+
+    bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList);
     #endregion
 }
