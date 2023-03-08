@@ -1321,6 +1321,26 @@ namespace Infrastructure.Repositories
 
             return new();
         }
+        public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
+        {
+            return NoTrackingDataContext.JihiSbtMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None)
+                .OrderBy(item => item.SortNo)
+                .Select(item => new JihiSbtMstModel(
+                                                    item.HpId,
+                                                    item.JihiSbt,
+                                                    item.SortNo,
+                                                    item.Name,
+                                                    item.IsDeleted))
+                .ToList();
+        }
+
+        public int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos)
+        {
+            var kaikeis = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && item.PtId == ptId && raiinNos.Contains(item.RaiinNo));
+
+            return kaikeis?.Sum(item => item.JihiOuttax) ?? 0;
+        }
 
         public void CheckOrdInfInOutDrug(int hpId,long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
         {

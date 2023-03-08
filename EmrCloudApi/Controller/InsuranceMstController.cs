@@ -62,7 +62,6 @@ namespace EmrCloudApi.Controller
             return Ok(presenter.Result);
         }
 
-
         [HttpPost(ApiPath.Save + "InsuranceMst")]
         public ActionResult<Response<SaveHokenMasterResponse>> SaveInsuranceMst([FromBody] SaveHokenMasterRequest request)
         {
@@ -80,7 +79,7 @@ namespace EmrCloudApi.Controller
                                                           request.Insurance.AgeEnd,
                                                           request.Insurance.IsFutansyaNoCheck,
                                                           request.Insurance.IsJyukyusyaNoCheck,
-                                                          request.Insurance.JyukyuCheckDigit,
+                                                          request.Insurance.JyuKyuCheckDigit,
                                                           request.Insurance.IsTokusyuNoCheck,
                                                           request.Insurance.HokenName ?? string.Empty,
                                                           request.Insurance.HokenNameCd ?? string.Empty,
