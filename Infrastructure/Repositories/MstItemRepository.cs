@@ -1456,9 +1456,9 @@ namespace Infrastructure.Repositories
         }
 
 
-        public Dictionary<string, (string, List<TenItemModel>)> GetConversionItem(List<(string, string)> expiredItems, int sinDate, int hpId)
+        public Dictionary<string, (int, string, List<TenItemModel>)> GetConversionItem(List<(string, int, string)> expiredItems, int sinDate, int hpId)
         {
-            Dictionary<string, (string, List<TenItemModel>)> result = new();
+            Dictionary<string, (int, string, List<TenItemModel>)> result = new();
             var expiredItemCds = expiredItems.Select(e => e.Item1).Distinct().ToList();
             expiredItems = expiredItems.Where(e => expiredItemCds.Contains(e.Item1)).ToList();
             var conversionItemInfs = NoTrackingDataContext.ConversionItemInfs.Where(
@@ -1470,7 +1470,7 @@ namespace Infrastructure.Repositories
             {
                 var conversionItemInfsOfOnes = conversionItemInfs.Where(c => c.SourceItemCd == expiredItem.Item1).Select(c => c.DestItemCd).Distinct().ToList();
                 var tenMstItemsOfOne = desTenMstItems.Where(d => conversionItemInfsOfOnes.Contains(d.ItemCd)).Select(t => ConvertTenMstToModel(t)).ToList();
-                result.Add(new(expiredItem.Item1, new(expiredItem.Item2, tenMstItemsOfOne)));
+                result.Add(new(expiredItem.Item1, new(expiredItem.Item2, expiredItem.Item3, tenMstItemsOfOne)));
             }
 
             return result;

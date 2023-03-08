@@ -54,7 +54,7 @@ namespace Domain.Models.MstItem
 
         List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
 
-        Dictionary<string, (string, List<TenItemModel>)> GetConversionItem(List<(string, string)> expiredItems, int sinDate, int hpId);
+        Dictionary<string, (int, string, List<TenItemModel>)> GetConversionItem(List<(string, int, string)> expiredItems, int sinDate, int hpId);
 
         bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values);
 

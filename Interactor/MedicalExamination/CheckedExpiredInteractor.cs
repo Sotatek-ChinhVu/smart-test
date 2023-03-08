@@ -28,12 +28,24 @@ namespace Interactor.MedicalExamination
                 {
                     return new CheckedExpiredOutputData(CheckedExpiredStatus.InputNotData, new());
                 }
-                var checkedItems = new List<string>();
-                var itemCds = inputData.CheckedExpiredItems.Select(i => i.ItemCd).Distinct().ToList();
-                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds) ?? new();
-                List<(string, string)> expiredItems = new();
 
-                foreach (var detail in inputData.CheckedExpiredItems)
+                var checkedItems = new List<string>();
+                List<CheckedExpiredItem> filterCheckedExpiredItem = new();
+
+                foreach (var item in inputData.CheckedExpiredItems)
+                {
+                    if (!filterCheckedExpiredItem.Any(f => f.ItemCd == item.ItemCd && f.SinKouiKbn == item.SinKouiKbn))
+                    {
+                        filterCheckedExpiredItem.Add(item);
+                    }
+                }
+
+                var itemCds = filterCheckedExpiredItem.Select(i => i.ItemCd).Distinct().ToList();
+
+                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds) ?? new();
+                List<(string, int, string)> expiredItems = new();
+
+                foreach (var detail in filterCheckedExpiredItem)
                 {
 
                     if (checkedItems.Contains(detail.ItemCd))
@@ -61,7 +73,7 @@ namespace Interactor.MedicalExamination
 
                     if (minStartDate > inputData.SinDate || maxEndDate < inputData.SinDate)
                     {
-                        expiredItems.Add(new(detail.ItemCd, detail.ItemName));
+                        expiredItems.Add(new(detail.ItemCd, detail.SinKouiKbn, detail.ItemName));
                     }
                 }
 
@@ -71,7 +83,7 @@ namespace Interactor.MedicalExamination
 
                 foreach (var convertItem in convertItems)
                 {
-                    result.Add(new CheckedExpiredOutputItem(convertItem.Key, convertItem.Value.Item1, convertItem.Value.Item2));
+                    result.Add(new CheckedExpiredOutputItem(convertItem.Key, convertItem.Value.Item2, convertItem.Value.Item1, convertItem.Value.Item3));
                 }
 
                 return new CheckedExpiredOutputData(CheckedExpiredStatus.Successed, result);
