@@ -158,7 +158,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {
-            var input = new RecaculationInputData(request.HpId, request.PtId, request.SinDate);
+            var input = new RecaculationInputData(request.HpId, request.RaiinNo, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new RecaculationPresenter();
