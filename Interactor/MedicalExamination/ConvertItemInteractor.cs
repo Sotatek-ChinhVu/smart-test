@@ -66,7 +66,7 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                bool saveHistory = false;
+                bool saveHistory = true;
                 if (filterSaveHistoryItems.Count > 0)
                     saveHistory = _mstItemRepository.ExceConversionItem(inputData.HpId, inputData.UserId, filterSaveHistoryItems);
 
