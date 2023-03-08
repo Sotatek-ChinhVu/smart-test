@@ -337,12 +337,11 @@ namespace Domain.Models.ReceSeikyu
 
         public string SeikyuKbnDisplay
         {
-            get => SeikyuKbns[SeikyuKbn];
+            get => SeikyuKbns.ContainsKey(SeikyuKbn) ? SeikyuKbns[SeikyuKbn] : string.Empty;
         }
 
         private Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
         {
-            { 0,string.Empty },
             { 1,"月遅れ" },
             { 2,"返戻" },
             { 3,"電算返戻" }
