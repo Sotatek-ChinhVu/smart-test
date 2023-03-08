@@ -49,6 +49,52 @@ namespace Domain.Models.MstItem
             Kokuji2 = kokuji2;
         }
 
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd, string minAge, string maxAge, string santeiItemCd, double odrTermVal, double cnvTermVal, double defaultValue, string kokuji1, string kokuji2, int modeStatus)
+        {
+            HpId = hpId;
+            ItemCd = itemCd;
+            RousaiKbn = rousaiKbn;
+            KanaName1 = kanaName1;
+            Name = name;
+            KohatuKbn = kohatuKbn;
+            MadokuKbn = madokuKbn;
+            KouseisinKbn = kouseisinKbn;
+            OdrUnitName = odrUnitName;
+            EndDate = endDate;
+            DrugKbn = drugKbn;
+            MasterSbt = masterSbt;
+            BuiKbn = buiKbn;
+            Ten = ten;
+            TenId = tenId;
+            KensaMstCenterItemCd1 = kensaMstCenterItemCd1;
+            KensaMstCenterItemCd2 = kensaMstCenterItemCd2;
+            IsAdopted = isAdopted;
+            CmtCol1 = cmtCol1;
+            IpnNameCd = ipnNameCd;
+            SinKouiKbn = sinKouiKbn;
+            YjCd = yjCd;
+            CnvUnitName = cnvUnitName;
+            StartDate = startDate;
+            YohoKbn = yohoKbn;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            IpnCD = ipnCd;
+            MinAge = minAge;
+            MaxAge = maxAge;
+            SanteiItemCd = santeiItemCd;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            DefaultValue = defaultValue;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            ModeStatus = modeStatus;
+        }
+
         public TenItemModel()
         {
             HpId = 0;
@@ -190,6 +236,8 @@ namespace Domain.Models.MstItem
         public string Kokuji2 { get; private set; }
 
         public int HandanGrpKbn { get; private set; }
+
+        public int ModeStatus { get; private set; }
 
         public string RousaiKbnDisplay
         {

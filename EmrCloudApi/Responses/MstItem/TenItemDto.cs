@@ -53,7 +53,7 @@ namespace EmrCloudApi.Responses.MstItem
         }
 
         [JsonConstructor]
-        public TenItemDto(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCD, string rousaiKbnDisplay, string kouseisinKbnDisplay, string kubunToDisplay, string kohatuKbnDisplay, string kensaCenterItemCDDisplay, string tenDisplay, string kouiName, double odrTermVal, double cnvTermVal, double defaultValue)
+        public TenItemDto(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCD, string rousaiKbnDisplay, string kouseisinKbnDisplay, string kubunToDisplay, string kohatuKbnDisplay, string kensaCenterItemCDDisplay, string tenDisplay, string kouiName, double odrTermVal, double cnvTermVal, double defaultValue, int modeStatus)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -98,6 +98,7 @@ namespace EmrCloudApi.Responses.MstItem
             OdrTermVal = odrTermVal;
             CnvTermVal = cnvTermVal;
             DefaultValue = defaultValue;
+            ModeStatus = modeStatus;
         }
 
         public int HpId { get; private set; }
@@ -185,5 +186,7 @@ namespace EmrCloudApi.Responses.MstItem
         public double CnvTermVal { get; private set; }
 
         public double DefaultValue { get; private set; }
+
+        public int ModeStatus { get; private set; }
     }
 }

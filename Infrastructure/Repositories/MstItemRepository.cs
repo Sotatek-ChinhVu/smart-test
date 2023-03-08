@@ -1483,7 +1483,7 @@ namespace Infrastructure.Repositories
                 var maxSortNo = NoTrackingDataContext.ConversionItemInfs.Where(c => c.HpId == hpId && c.SourceItemCd == value.Key).AsEnumerable().Select(c => c.SortNo).DefaultIfEmpty(0).Max();
                 foreach (var tenItem in value.Value)
                 {
-                    if (tenItem.HpId == -1)
+                    if (tenItem.ModeStatus == -1)
                     {
                         var conversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == hpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
                         if (conversionItem != null)
@@ -1491,7 +1491,7 @@ namespace Infrastructure.Repositories
                             TrackingDataContext.ConversionItemInfs.Remove(conversionItem);
                         }
                     }
-                    else if (tenItem.HpId == 0)
+                    else if (tenItem.ModeStatus == 0)
                     {
                         var conversionItem = new ConversionItemInf
                         {

@@ -550,7 +550,8 @@ namespace EmrCloudApi.Controller
                                 item.CnvTermVal,
                                 item.DefaultValue,
                                 string.Empty,
-                                string.Empty
+                                string.Empty,
+                                item.ModeStatus
                             );
                         tenItemDtos.Add(tenItemDto);
                     }
