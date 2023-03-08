@@ -1,6 +1,8 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Interactor.CalculateService;
+using UseCase.Accounting.GetMeiHoGai;
+using UseCase.Accounting.Recaculate;
 
 namespace EmrCloudApi.Services
 {
@@ -14,7 +16,7 @@ namespace EmrCloudApi.Services
             _configuration = configuration;
         }
 
-        public async Task<string> CallCalculate(CalculateApiPath path, object inputData)
+        public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
         {
             var content = JsonContent.Create(inputData);
 
@@ -24,6 +26,9 @@ namespace EmrCloudApi.Services
             {
                 case CalculateApiPath.GetSinMeiList:
                     functionName = "SinMei/GetSinMeiList";
+                    break;
+                case CalculateApiPath.RunCalculate:
+                    functionName = "Calculate/RunCalculate";
                     break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
@@ -36,30 +41,49 @@ namespace EmrCloudApi.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    return responseContent;
+                    return new CalculateResponse(responseContent, ResponseStatus.Successed);
                 }
 
-                return response.StatusCode.ToString();
+                return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
             catch (HttpRequestException ex)
             {
-                return "Failed: Could not connect to Calculate API";
+                return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
 
-        public SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData)
+        public SinMeiDataModelDto GetSinMeiList(GetSinMeiDtoInputData inputData)
         {
             try
             {
-                Task<string> task = CallCalculate(path, inputData);
+                var task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
             catch (Exception ex)
             {
                 return new();
+            }
+        }
+
+        public bool RunCalculate(RecaculationInputDto inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculate, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }
