@@ -18,8 +18,8 @@ namespace EmrCloudApi.Presenters.Accounting
         {
             CheckOpenAccountingStatus.Successed => ResponseMessage.Success,
             CheckOpenAccountingStatus.Failed => ResponseMessage.Failed,
-            CheckOpenAccountingStatus.NoPaymentInfo => ResponseMessage.NoData,
-            CheckOpenAccountingStatus.TryAgainLater => ResponseMessage.StateChanged,
+            CheckOpenAccountingStatus.NoPaymentInfo => ResponseMessage.NoPaymentInfo,
+            CheckOpenAccountingStatus.TryAgainLater => ResponseMessage.TryAgainLater,
             _ => string.Empty
         };
     }
