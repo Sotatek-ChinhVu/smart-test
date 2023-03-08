@@ -1,6 +1,6 @@
 ﻿using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
-using Microsoft.AspNetCore.Http;
+using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCalculateApi.Controllers
@@ -25,6 +25,18 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.SeikyuYm
             );
             return Ok();
+        }
+
+        [HttpPost("GetListReceInf")]
+        public ActionResult<GetListReceInfResponse> GetSinMeiList([FromBody] GetListReceInfRequest request)
+        {
+            int hpId = request.HpId;
+            long ptId = request.PtId;
+            int sinYm = request.SinYm;
+
+            var response = _receFutanCalculate.KaikeiTotalCalculate(ptId, sinYm);
+
+            return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));
         }
     }
 }
