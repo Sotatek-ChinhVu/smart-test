@@ -72,5 +72,15 @@ public interface IReceiptRepository : IRepositoryBase
     List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
 
     bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList);
+
+    List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIdList, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth);
+
+    Dictionary<long, int> GetSanteiStartDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    Dictionary<long, int> GetSanteiEndDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
     #endregion
 }
