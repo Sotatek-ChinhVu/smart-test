@@ -127,6 +127,10 @@ namespace Infrastructure.Repositories
             foreach (var ptInf in ptInfList)
             {
                 var receSeikyu = receSeikyus.FirstOrDefault(item => item.PtId == ptInf.PtId);
+                if (receSeikyu == null)
+                {
+                    continue;
+                }
                 result.Add(new ReceSeikyuModel(
                                ptInf.PtId,
                                receSeikyu?.SinYm ?? 0,
