@@ -2312,10 +2312,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 result.Add(ptId, ptInf.DeathDate);
                 continue;
             }
-            else if (result.Any(item => item.Key == ptId))
-            {
-                continue;
-            }
             result.Add(ptId, CIUtil.DateTimeToInt(new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddMonths(1).AddDays(-1)));
         }
         return result;
