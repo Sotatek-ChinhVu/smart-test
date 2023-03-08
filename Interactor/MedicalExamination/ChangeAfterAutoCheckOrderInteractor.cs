@@ -3,7 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.TodayOdr;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
-using UseCase.MedicalExamination.UpsertTodayOrd;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace Interactor.MedicalExamination
 {
@@ -131,26 +131,27 @@ namespace Interactor.MedicalExamination
                     inputData.TargetItems.Select(t => new Tuple<int, string, int, int, TenItemModel, double>(t.Type, t.Message, t.OdrInfPosition, t.OdrInfDetailPosition, t.TenItemMst, t.Suryo)).ToList()
                     );
 
-                return new ChangeAfterAutoCheckOrderOutputData(ChangeAfterAutoCheckOrderStatus.Successed, result.Select(o => new OdrInfItemInputData(
-                        o.HpId,
-                        o.RaiinNo,
-                        o.RpNo,
-                        o.RpEdaNo,
-                        o.PtId,
-                        o.SinDate,
-                        o.HokenPid,
-                        o.OdrKouiKbn,
-                        o.RpName,
-                        o.InoutKbn,
-                        o.SikyuKbn,
-                        o.SyohoSbt,
-                        o.SanteiKbn,
-                        o.TosekiKbn,
-                        o.DaysCnt,
-                        o.SortNo,
-                        o.Id,
-                        o.OrdInfDetails.Select(
-                                od => new OdrInfDetailItemInputData(
+                return new ChangeAfterAutoCheckOrderOutputData(ChangeAfterAutoCheckOrderStatus.Successed, result.Select(o => new ChangeAfterAutoCheckOrderItem( o.position, new OdrInfItem(
+                        o.odrInfModel.HpId,
+                        o.odrInfModel.RaiinNo,
+                        o.odrInfModel.RpNo,
+                        o.odrInfModel.RpEdaNo,
+                        o.odrInfModel.PtId,
+                        o.odrInfModel.SinDate,
+                        o.odrInfModel.HokenPid,
+                        o.odrInfModel.OdrKouiKbn,
+                        o.odrInfModel.RpName,
+                        o.odrInfModel.InoutKbn,
+                        o.odrInfModel.SikyuKbn,
+                        o.odrInfModel.SyohoSbt,
+                        o.odrInfModel.SanteiKbn,
+                        o.odrInfModel.TosekiKbn,
+                        o.odrInfModel.DaysCnt,
+                        o.odrInfModel.SortNo,
+                        o.odrInfModel.Id,
+                        o.odrInfModel.GroupKoui.Value,
+                        o.odrInfModel.OrdInfDetails.Select(
+                                od => new OdrInfDetailItem(
                                         od.HpId,
                                         od.RaiinNo,
                                         od.RpNo,
@@ -184,11 +185,31 @@ namespace Interactor.MedicalExamination
                                         od.CmtName,
                                         od.CmtOpt,
                                         od.FontColor,
-                                        od.CommentNewline
+                                        od.CommentNewline,
+                                        od.Yakka,
+                                        od.IsGetPriceInYakka,
+                                        od.Ten,
+                                        od.BunkatuKoui,
+                                        od.AlternationIndex,
+                                        od.KensaGaichu,
+                                        od.OdrTermVal,
+                                        od.CnvTermVal,
+                                        od.YjCd,
+                                        od.MasterSbt,
+                                        od.YohoSets,
+                                        od.Kasan1,
+                                        od.Kasan2,
+                                        od.CnvUnitName,
+                                        od.OdrUnitName,
+                                        od.HasCmtName,
+                                        od.CenterItemCd1,
+                                        od.CenterItemCd2
                                     )
                             ).ToList(),
-                        o.IsDeleted
-                    )).ToList()
+                        o.odrInfModel.CreateDate,
+                        o.odrInfModel.CreateId,
+                        o.odrInfModel.CreateName
+                    ))).ToList()
                     );
             }
             finally

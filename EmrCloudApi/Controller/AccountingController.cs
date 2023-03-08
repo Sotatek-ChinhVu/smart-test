@@ -14,6 +14,7 @@ using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
+using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
 using UseCase.Core.Sync;
@@ -162,6 +163,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<CheckOpenAccountingResponse>>(presenter.Result);
+        }
+        
+        [HttpPost(ApiPath.Recaculation)]
+        public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
+        {
+            var input = new RecaculationInputData(request.HpId, request.RaiinNo, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new RecaculationPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<RecaculationResponse>>(presenter.Result);
         }
     }
 }

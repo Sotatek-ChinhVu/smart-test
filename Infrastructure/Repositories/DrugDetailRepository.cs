@@ -1,6 +1,7 @@
 ﻿using Domain.Models.DrugDetail;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -500,6 +501,22 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public List<TenMstByomeiModel> GetZaiganIsoItems(int hpId, int seikyuYm)
+        {
+            int firstDateOfMonth = seikyuYm * 100 + 1;
+            int lastDateOfMonth = seikyuYm * 100 + 31;
+            return NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                               && item.StartDate <= lastDateOfMonth
+                                                               && item.EndDate >= firstDateOfMonth
+                                                               && item.CdKbn == "C"
+                                                               && item.CdKbnno == 3
+                                                               && item.CdEdano == 0
+                                                               && (item.CdKouno == 1 || item.CdKouno == 2 || item.CdKouno == 4)
+                                                               && item.IsDeleted == DeleteTypes.None)
+                                                .Select(item => new TenMstByomeiModel(item.ItemCd, item.Name ?? string.Empty))
+                                                .ToList();
         }
     }
 }

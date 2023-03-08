@@ -25,5 +25,6 @@ namespace Domain.Models.Accounting
         List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
         int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
         bool? CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo);
+        bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
     }
 }

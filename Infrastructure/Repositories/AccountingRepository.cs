@@ -1418,5 +1418,13 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)
+        {
+            return NoTrackingDataContext.SyunoSeikyus.Any(x =>
+                                                            x.HpId == hpId &&
+                                                            x.PtId == ptId &&
+                                                            x.RaiinNo == raiinNo &&
+                                                            x.NyukinKbn <= 0);
+        }
     }
 }
