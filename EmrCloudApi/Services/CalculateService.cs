@@ -1,6 +1,8 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Interactor.CalculateService;
+using UseCase.Accounting.GetMeiHoGai;
+using UseCase.Accounting.Recaculate;
 
 namespace EmrCloudApi.Services
 {
@@ -51,8 +53,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-
-        public SinMeiDataModelDto GetSinMeiList(object inputData)
+        public SinMeiDataModelDto GetSinMeiList(GetSinMeiDtoInputData inputData)
         {
             try
             {
@@ -70,7 +71,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public bool RunCalculate(object inputData)
+        public bool RunCalculate(RecaculationInputDto inputData)
         {
             try
             {
