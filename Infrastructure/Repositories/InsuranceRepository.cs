@@ -1473,36 +1473,6 @@ namespace Infrastructure.Repositories
             return new HokenMstModel();
         }
 
-        public bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId)
-        {
-            var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == insuranceScan.HpId
-                                                                       && x.PtId == insuranceScan.PtId
-                                                                       && x.HokenGrp == insuranceScan.HokenGrp
-                                                                       && x.HokenId == insuranceScan.HokenId
-                                                                       && x.IsDeleted == DeleteStatus.None);
-            if (model is null)
-            {
-                TrackingDataContext.Add(new PtHokenScan()
-                {
-                    PtId = insuranceScan.PtId,
-                    HpId = insuranceScan.HpId,
-                    HokenGrp = insuranceScan.HokenGrp,
-                    HokenId = insuranceScan.HokenId,
-                    FileName = insuranceScan.FileName,
-                    IsDeleted = DeleteStatus.None,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = userId
-                });
-            }
-            else
-            {
-                model.FileName = insuranceScan.FileName;
-                model.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                model.UpdateId = userId;
-            }
-            return TrackingDataContext.SaveChanges() > 0;
-        }
-
         public bool DeleteInsuranceScan(int hpId, long seqNo, int userId)
         {
             var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == hpId && x.SeqNo == seqNo && x.IsDeleted == DeleteStatus.None);

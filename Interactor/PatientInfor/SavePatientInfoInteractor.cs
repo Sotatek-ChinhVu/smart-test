@@ -7,6 +7,7 @@ using Helper;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Interfaces;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -15,11 +16,13 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
+            _amazonS3Service = amazonS3Service;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
@@ -31,11 +34,56 @@ namespace Interactor.PatientInfor
             }
             try
             {
+                IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
+                {
+                    var listFolders = new List<string>() { CommonConstants.Store, CommonConstants.InsuranceScan };
+                    string path = string.Empty;
+                    foreach (var item in inputData.InsuranceScans)
+                    {
+                        if (item.IsDeleted == DeleteTypes.Deleted) // Delete
+                        {
+                            if (!string.IsNullOrEmpty(item.FileName))
+                                _amazonS3Service.DeleteObjectAsync(item.FileName);
+
+                            yield return item;
+                        }
+                        else
+                        {
+                            if (item.File.Length > 0) //File is existings
+                            {
+                                path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
+                                string fileName = $"{ptId.ToString().PadLeft(10, '0')}{item.HokenId}.png";
+                                fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
+                                string pathScan = _amazonS3Service.UploadObjectAsync(path, fileName, item.File, true).Result;
+                                //Create or update
+
+                                yield return new InsuranceScanModel(hpId,
+                                                                    ptId,
+                                                                    item.SeqNo,
+                                                                    item.HokenGrp,
+                                                                    item.HokenId,
+                                                                    pathScan,
+                                                                    Stream.Null,
+                                                                    0);
+
+                                if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
+                                {
+                                    _amazonS3Service.DeleteObjectAsync(item.FileName);
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+
                 (bool, long) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, inputData.UserId);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys , HandlerInsuranceScan, inputData.UserId);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, inputData.UserId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
 
                 if (result.Item1)
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.Item2);
@@ -49,6 +97,7 @@ namespace Interactor.PatientInfor
             finally
             {
                 _patientInforRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
             }
         }
 

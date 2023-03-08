@@ -137,7 +137,6 @@ using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -820,7 +819,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConfirmReplaceDocParamInputData, ConfirmReplaceDocParamInteractor>();
 
             //InsuranceScan
-            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
             busBuilder.RegisterUseCase<GetListInsuranceScanInputData, GetListInsuranceScanInteractor>();
 
             //Hoki PriorityList
