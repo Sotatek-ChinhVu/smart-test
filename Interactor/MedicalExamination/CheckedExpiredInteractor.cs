@@ -1,19 +1,14 @@
 ﻿using Domain.Models.MstItem;
-using Domain.Models.TodayOdr;
-using Helper.Common;
-using Helper.Constants;
 using UseCase.MedicalExamination.CheckedExpired;
 
 namespace Interactor.MedicalExamination
 {
     public class CheckedExpiredInteractor : ICheckedExpiredInputPort
     {
-        private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IMstItemRepository _mstItemRepository;
 
-        public CheckedExpiredInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository)
+        public CheckedExpiredInteractor(IMstItemRepository mstItemRepository)
         {
-            _todayOdrRepository = todayOdrRepository;
             _mstItemRepository = mstItemRepository;
         }
 
@@ -33,12 +28,26 @@ namespace Interactor.MedicalExamination
                 {
                     return new CheckedExpiredOutputData(CheckedExpiredStatus.InputNotData, new());
                 }
+
                 var checkedItems = new List<string>();
-                var itemCds = inputData.CheckedExpiredItems.Select(i => i.ItemCd).ToList();
-                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds, inputData.SinDate, inputData.SinDate) ?? new();
-                foreach (var detail in inputData.CheckedExpiredItems)
+                List<CheckedExpiredItem> filterCheckedExpiredItem = new();
+
+                foreach (var item in inputData.CheckedExpiredItems)
                 {
-                    var tenMsts = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd);
+                    if (!filterCheckedExpiredItem.Any(f => f.ItemCd == item.ItemCd && f.SinKouiKbn == item.SinKouiKbn))
+                    {
+                        filterCheckedExpiredItem.Add(item);
+                    }
+                }
+
+                var itemCds = filterCheckedExpiredItem.Select(i => i.ItemCd).Distinct().ToList();
+
+                var tenMstItemList = _mstItemRepository.FindTenMst(inputData.HpId, itemCds) ?? new();
+                List<(string, int, string)> expiredItems = new();
+
+                foreach (var detail in filterCheckedExpiredItem)
+                {
+
                     if (checkedItems.Contains(detail.ItemCd))
                     {
                         continue;
@@ -51,49 +60,37 @@ namespace Interactor.MedicalExamination
                     {
                         continue;
                     }
-                    int minStartDate = tenMstItemList.Min(item => item.StartDate);
 
-                    if (minStartDate > inputData.SinDate)
+                    var tenMstByItemCdList = tenMstItemList.Where(t => t.ItemCd == detail.ItemCd).ToList();
+                    if (tenMstByItemCdList.Count == 0)
                     {
-                        checkedItems.Add(FormatDisplayMessage(DisplayItemName(detail.ItemCd, detail.ItemName, detail.BunkatuKoui, detail.Bunkatu), minStartDate, true));
+                        continue;
                     }
 
-                    int maxEndDate = tenMstItemList.Max(item => item.EndDate);
+                    int minStartDate = tenMstByItemCdList.Min(item => item.StartDate);
+                    int maxEndDate = tenMstByItemCdList.Max(item => item.EndDate);
 
-                    if (maxEndDate < inputData.SinDate)
+
+                    if (minStartDate > inputData.SinDate || maxEndDate < inputData.SinDate)
                     {
-                        checkedItems.Add(FormatDisplayMessage(DisplayItemName(detail.ItemCd, detail.ItemName, detail.BunkatuKoui, detail.Bunkatu), maxEndDate, false));
+                        expiredItems.Add(new(detail.ItemCd, detail.SinKouiKbn, detail.ItemName));
                     }
                 }
-                return new CheckedExpiredOutputData(CheckedExpiredStatus.Successed, checkedItems);
+
+                var convertItems = _mstItemRepository.GetConversionItem(expiredItems, inputData.SinDate, inputData.HpId);
+
+                List<CheckedExpiredOutputItem> result = new();
+
+                foreach (var convertItem in convertItems)
+                {
+                    result.Add(new CheckedExpiredOutputItem(convertItem.Key, convertItem.Value.Item2, convertItem.Value.Item1, convertItem.Value.Item3));
+                }
+
+                return new CheckedExpiredOutputData(CheckedExpiredStatus.Successed, result);
             }
             finally
             {
-                _todayOdrRepository.ReleaseResource();
                 _mstItemRepository.ReleaseResource();
-            }
-        }
-
-        private string DisplayItemName(string itemCd, string itemName, int bunkatuKoui, string bunkatu)
-        {
-            if (itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
-            {
-                return itemName + TenUtils.GetBunkatu(bunkatuKoui, bunkatu);
-            }
-            return itemName;
-        }
-
-        private string FormatDisplayMessage(string itemName, int dateCheck, bool isCheckStartDate)
-        {
-            string dateString = CIUtil.SDateToShowSDate(dateCheck);
-
-            if (isCheckStartDate)
-            {
-                return $"\"{itemName}\"は{dateString}から使用可能です。";
-            }
-            else
-            {
-                return $"\"{itemName}\"は{dateString}まで使用可能です。";
             }
         }
     }
