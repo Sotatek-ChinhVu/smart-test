@@ -32,7 +32,6 @@ namespace Domain.Models.ReceSeikyu
             OriginSeikyuYm = originSeikyuYm;
             OriginSinYm = originSinYm;
             ListRecedenHenJiyuuModel = listRecedenHenJiyuuModel;
-            SeikyuKbnDisplay = string.Empty;
         }
 
         public ReceSeikyuModel(long ptId, int sinYm, int hokenId, long ptNum, int seikyuKbn)
@@ -48,7 +47,6 @@ namespace Domain.Models.ReceSeikyu
             PtNum = ptNum;
             Houbetu = string.Empty;
             ListRecedenHenJiyuuModel = new();
-            SeikyuKbnDisplay = SeikyuKbns[seikyuKbn];
         }
 
         public int SinDay { get; private set; }
@@ -337,9 +335,12 @@ namespace Domain.Models.ReceSeikyu
 
         public bool IsDefaultValue => CheckDefaultValue();
 
-        public string SeikyuKbnDisplay { get; private set; }
+        public string SeikyuKbnDisplay
+        {
+            get => SeikyuKbns[SeikyuKbn];
+        }
 
-        public Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
+        private Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
         {
             { 0,string.Empty },
             { 1,"月遅れ" },

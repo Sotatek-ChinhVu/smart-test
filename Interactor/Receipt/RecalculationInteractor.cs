@@ -1971,7 +1971,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             if (!receRecalculationList.Any(p => p.PtId == receSeiKyuModel.PtId && p.HokenId == receSeiKyuModel.HokenId && p.SinYm == receSeiKyuModel.SinYm))
             {
                 receSeiKyuErrors.Add(string.Format("    {0}/{1} ID:{2} [保険:{3}] {4}",
-                    receSeiKyuModel.SinYm / 100, receSeiKyuModel.SinYm % 100, receSeiKyuModel.PtNum, receSeiKyuModel.HokenId, receSeiKyuModel.SeikyuKbn));
+                    receSeiKyuModel.SinYm / 100, receSeiKyuModel.SinYm % 100, receSeiKyuModel.PtNum, receSeiKyuModel.HokenId, receSeiKyuModel.SeikyuKbnDisplay));
             }
         }
         if (receSeiKyuErrors.Count > 0)
