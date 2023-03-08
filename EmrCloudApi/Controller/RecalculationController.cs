@@ -23,6 +23,8 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
+            HttpContext.Response.ContentType = "application/json";
+            HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
             StringBuilder errorTextSinKouiCount = new();
@@ -30,7 +32,8 @@ public class RecalculationController : AuthorizeControllerBase
 
             int allCheckCount = dataForLoop.ReceRecalculationList.Count;
             HttpContext.Response.Headers.Add("AllCheckCount", allCheckCount.ToString());
-            HttpContext.Response.Body.Flush();
+            HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(""), 0, Encoding.UTF8.GetBytes("").Length);
+            HttpContext.Response.Body.FlushAsync();
 
             foreach (var recalculationItem in dataForLoop.ReceRecalculationList)
             {
@@ -48,8 +51,8 @@ public class RecalculationController : AuthorizeControllerBase
                 // Send the chunk to the client
                 var resultForFrontEnd = Encoding.UTF8.GetBytes(recalculationItem.PtId + " done!\n");
 
-                HttpContext.Response.Body.Write(resultForFrontEnd, 0, resultForFrontEnd.Length);
-                HttpContext.Response.Body.Flush();
+                HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+                HttpContext.Response.Body.FlushAsync();
             }
             var count = newReceCheckErrList.Count;
 
@@ -58,10 +61,10 @@ public class RecalculationController : AuthorizeControllerBase
             var bytes = Encoding.UTF8.GetBytes(count + " ReceCheckErr, save action error!");
             if (!_recalculationService.SaveReceCheckErrList(HpId, UserId, newReceCheckErrList))
             {
-                HttpContext.Response.Body.Write(bytes, 0, bytes.Length);
+                HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
             }
             bytes = Encoding.UTF8.GetBytes("\n\"" + errorText + "\"\n" + count + " ReceCheckErr, save action success!");
-            HttpContext.Response.Body.Write(bytes, 0, bytes.Length);
+            HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
         finally
         {
