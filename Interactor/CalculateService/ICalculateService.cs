@@ -5,6 +5,6 @@ namespace Interactor.CalculateService
     public interface ICalculateService
     {
         SinMeiDataModelDto GetSinMeiList(object inputData);
-        string RunCalculate(object inputData);
+        bool RunCalculate(object inputData);
     }
 }

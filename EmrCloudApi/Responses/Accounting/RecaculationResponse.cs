@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.Accounting
 {
     public class RecaculationResponse
     {
-        public RecaculationResponse(string message)
+        public RecaculationResponse(RecaculationStatus recaculationStatus)
         {
-            Message = message;
+            RecaculationStatus = recaculationStatus;
         }
 
-        public string Message { get; private set; }
+        public RecaculationStatus RecaculationStatus { get; private set; }
     }
 }

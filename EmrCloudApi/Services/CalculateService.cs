@@ -14,7 +14,7 @@ namespace EmrCloudApi.Services
             _configuration = configuration;
         }
 
-        public async Task<string> CallCalculate(CalculateApiPath path, object inputData)
+        public async Task<CalculateResponse> CallCalculate(CalculateApiPath path, object inputData)
         {
             var content = JsonContent.Create(inputData);
 
@@ -39,25 +39,29 @@ namespace EmrCloudApi.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    return responseContent;
+                    return new CalculateResponse(responseContent, ResponseStatus.Successed);
                 }
 
-                return response.StatusCode.ToString();
+                return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
             catch (HttpRequestException ex)
             {
-                return "Failed: Could not connect to Calculate API";
+                return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
+
 
         public SinMeiDataModelDto GetSinMeiList(object inputData)
         {
             try
             {
-                Task<string> task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
+                var task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
             catch (Exception ex)
@@ -66,18 +70,19 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public string RunCalculate(object inputData)
+        public bool RunCalculate(object inputData)
         {
             try
             {
-                Task<string> task = CallCalculate(CalculateApiPath.RunCalculate, inputData);
-                var result = task.Result;
-                return result;
+                var task = CallCalculate(CalculateApiPath.RunCalculate, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
             }
             catch (Exception)
             {
-
-                return "Failed";
+                return false;
             }
         }
     }

@@ -21,15 +21,15 @@ namespace Interactor.Accounting
                 var syunoStatus = _accountingRepository.CheckSyunoStatus(inputData.HpId, inputData.RaiinNo, inputData.PtId);
 
                 if (!syunoStatus)
-                    return new RecaculationOutputData(string.Empty, RecaculationStatus.Failed);
+                    return new RecaculationOutputData(RecaculationStatus.Failed);
 
                 var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
 
-                var result = _calculateService.RunCalculate(callCalculateInputData);
-                if (string.IsNullOrEmpty(result))
-                    return new RecaculationOutputData(result, RecaculationStatus.Successed);
+                var responseStatus = _calculateService.RunCalculate(callCalculateInputData);
+                if (responseStatus)
+                    return new RecaculationOutputData(RecaculationStatus.Successed);
 
-                return new RecaculationOutputData(result, RecaculationStatus.Failed);
+                return new RecaculationOutputData(RecaculationStatus.Failed);
             }
             finally
             {
