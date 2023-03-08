@@ -12,7 +12,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -1342,7 +1341,7 @@ namespace Infrastructure.Repositories
             return kaikeis?.Sum(item => item.JihiOuttax) ?? 0;
         }
 
-        public void CheckOrdInfInOutDrug(int hpId,long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
+        public void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
         {
 
             inDrugExist = false;
@@ -1363,6 +1362,15 @@ namespace Infrastructure.Repositories
             {
                 outDrugExist = true;
             }
+        }
+
+        public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)
+        {
+            var result = NoTrackingDataContext.SyunoSeikyus.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.NyukinKbn <= 0);
+
+            if (result != null)
+                return true;
+            return false;
         }
     }
 }
