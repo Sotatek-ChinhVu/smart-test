@@ -25,11 +25,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCalculateApi/out/ .
-COPY *.ttf /usr/share/fonts/
-#RUN rm -rf EmrCalculateApi.runtimeconfig.json
-#COPY --from=build-env /app/EmrCalculateApi.runtimeconfig.json .
-RUN ls /usr/share/fonts
-RUN fc-cache -fv
 
 ENV ASPNETCORE_URLS=http://+:5286
 EXPOSE 5286
