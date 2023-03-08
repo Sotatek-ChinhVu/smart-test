@@ -272,6 +272,8 @@ public class RecalculationService : IRecalculationService
         _todayOdrRepository.ReleaseResource();
         _insuranceMstRepository.ReleaseResource();
         _commonMedicalCheck.ReleaseResource();
+        _receSeikyuRepository.ReleaseResource();
+        _drugDetailRepository.ReleaseResource();
     }
 
     #region Private funciton
