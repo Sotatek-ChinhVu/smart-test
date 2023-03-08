@@ -68,9 +68,17 @@ namespace EmrCloudApi.Services
 
         public string RunCalculate(CalculateApiPath path, object inputData)
         {
-            Task<string> task = CallCalculate(path, inputData);
-            var result = task.Result;
-            return result;
+            try
+            {
+                Task<string> task = CallCalculate(path, inputData);
+                var result = task.Result;
+                return result;
+            }
+            catch (Exception)
+            {
+
+                return "Failed";
+            }
         }
     }
 }

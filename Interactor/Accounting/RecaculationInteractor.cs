@@ -17,18 +17,25 @@ namespace Interactor.Accounting
 
         public RecaculationOutputData Handle(RecaculationInputData inputData)
         {
-            var syunoStatus = _accountingRepository.CheckSyunoStatus(inputData.HpId, inputData.RaiinNo, inputData.PtId);
+            try
+            {
+                var syunoStatus = _accountingRepository.CheckSyunoStatus(inputData.HpId, inputData.RaiinNo, inputData.PtId);
 
-            if (!syunoStatus)
-                return new RecaculationOutputData(string.Empty, RecaculationStatus.Failed);
+                if (!syunoStatus)
+                    return new RecaculationOutputData(string.Empty, RecaculationStatus.Failed);
 
-            var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
+                var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
 
-            var result = _calculateService.RunCalculate(CalculateApiPath.RunCalculate, callCalculateInputData);
-            if (string.IsNullOrEmpty(result))
-                return new RecaculationOutputData(result, RecaculationStatus.Successed);
+                var result = _calculateService.RunCalculate(CalculateApiPath.RunCalculate, callCalculateInputData);
+                if (string.IsNullOrEmpty(result))
+                    return new RecaculationOutputData(result, RecaculationStatus.Successed);
 
-            return new RecaculationOutputData(result, RecaculationStatus.Failed);
+                return new RecaculationOutputData(result, RecaculationStatus.Failed);
+            }
+            finally
+            {
+                _accountingRepository.ReleaseResource();
+            }
         }
 
     }
