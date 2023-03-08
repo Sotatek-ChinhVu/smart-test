@@ -12,7 +12,19 @@ namespace Interactor.Accounting
         }
         public CheckOpenAccountingOutputData Handle(CheckOpenAccountingInputData inputData)
         {
-            throw new NotImplementedException();
+            var checkIsOpen = _accountingRepository.CheckIsOpenAccounting(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+
+            if (checkIsOpen == null)
+            {
+                return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.NoPaymentInfo);
+            }
+            else if (checkIsOpen.Value == false)
+            {
+                return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.TryAgainLater);
+            }
+
+            return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.Successed);
         }
+
     }
 }

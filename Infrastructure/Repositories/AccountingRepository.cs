@@ -1364,11 +1364,11 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
+        public bool? CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
+            var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.Any(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
 
-            if (checkStatusRaiinNo == null) return false;
+            if (!checkStatusRaiinNo) return false;
 
             int numberCheck = 0;
 
@@ -1378,7 +1378,17 @@ namespace Infrastructure.Repositories
             {
                 Thread.Sleep(100);
                 numberCheck++;
-                isCompletedCalculation = CheckCompletedCalculation();
+                isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
+            }
+
+            if (isCompletedCalculation == null)
+            {
+                return null;
+            }
+            else
+            {
+                return isCompletedCalculation != null &&
+                       isCompletedCalculation.Value;
             }
         }
 
@@ -1394,7 +1404,7 @@ namespace Infrastructure.Repositories
 
             var listStatus = NoTrackingDataContext.CalcStatus.Where(item =>
                 item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
-                item.CalcMode == calcMode && item.CreateDate == timeMax.CreateDate);
+                item.CalcMode == calcMode && item.CreateDate == DateTime.SpecifyKind(timeMax.CreateDate, DateTimeKind.Utc)).ToList();
 
             if (!listStatus.Any())
                 return true;
