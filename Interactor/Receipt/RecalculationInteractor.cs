@@ -121,6 +121,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             _todayOdrRepository.ReleaseResource();
             _insuranceMstRepository.ReleaseResource();
             _commonMedicalCheck.ReleaseResource();
+            _receSeikyuRepository.ReleaseResource();
+            _drugDetailRepository.ReleaseResource();
         }
     }
 
