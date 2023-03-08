@@ -12,7 +12,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -1342,7 +1341,7 @@ namespace Infrastructure.Repositories
             return kaikeis?.Sum(item => item.JihiOuttax) ?? 0;
         }
 
-        public void CheckOrdInfInOutDrug(int hpId,long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
+        public void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
         {
 
             inDrugExist = false;
@@ -1364,5 +1363,42 @@ namespace Infrastructure.Repositories
                 outDrugExist = true;
             }
         }
+
+        public bool CheckIsOpenAccounting(int hpId, long ptId,int sinDate, long raiinNo)
+        {
+            var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
+
+            if (checkStatusRaiinNo == null) return false;
+
+            var isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
+
+        }
+
+        public bool CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
+        {
+            var timeMax = NoTrackingDataContext.CalcStatus.Where(item =>
+                    item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                    item.CalcMode == calcMode)
+                .OrderByDescending(item => item.CreateDate).FirstOrDefault();
+
+            if (timeMax == null)
+                return true;
+
+            var listStatus = NoTrackingDataContext.CalcStatus.Where(item =>
+                item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                item.CalcMode == calcMode && item.CreateDate == timeMax.CreateDate);
+
+            if (!listStatus.Any())
+                return true;
+
+            foreach (var item in listStatus)
+            {
+                if (item.Status != 8 && item.Status != 9)
+                    return false;
+            }
+
+            return true;
+        }
+
     }
 }
