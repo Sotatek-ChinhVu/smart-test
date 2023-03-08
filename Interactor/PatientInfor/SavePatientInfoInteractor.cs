@@ -68,7 +68,7 @@ namespace Interactor.PatientInfor
 
                                 if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
                                 {
-                                    _amazonS3Service.DeleteObjectAsync(item.FileName);
+                                    _amazonS3Service.DeleteObjectAsync(item.FileName).Wait();
                                 }
                             }
                             else
