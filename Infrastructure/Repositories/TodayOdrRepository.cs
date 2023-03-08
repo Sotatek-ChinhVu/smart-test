@@ -2376,8 +2376,8 @@ namespace Infrastructure.Repositories
 
         public List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
         {
-            var currentListOrder = odrInfs.Where(o => o.Id > 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id == 0).ToList();
+            var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id  == -1).ToList();
             List<(int type, string message, int positionOdr, int odrInfDetailPosition, TenItemModel temItemMst, double suryo)> result = new();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             foreach (var checkingOdr in addingOdrList)
