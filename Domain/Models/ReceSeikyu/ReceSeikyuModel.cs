@@ -337,7 +337,7 @@ namespace Domain.Models.ReceSeikyu
 
         public string SeikyuKbnDisplay
         {
-            get => SeikyuKbns.Any(item => item.Key != SeikyuKbn) ? SeikyuKbns[SeikyuKbn] : string.Empty;
+            get => SeikyuKbns.ContainsKey(SeikyuKbn) ? SeikyuKbns[SeikyuKbn] : string.Empty;
         }
 
         private Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
