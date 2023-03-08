@@ -2155,6 +2155,249 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIdList, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth)
+    {
+        List<SinKouiDetailModel> result = new();
+        int firstDateOfWeek = 0;
+        int lastDateOfWeek = 0;
+        int checkMonth = 0;
+
+        ptIdList = ptIdList.Distinct().ToList();
+        zaiganIsoItemCds = zaiganIsoItemCds.Distinct().ToList();
+        if (isCheckPartOfNextMonth)
+        {
+            var firstDateOfNextMonth = new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddMonths(1);
+            checkMonth = firstDateOfNextMonth.ToString("yyyyMM").AsInteger();
+            firstDateOfWeek = CIUtil.DateTimeToInt(firstDateOfNextMonth);
+            lastDateOfWeek = CIUtil.DateTimeToInt(firstDateOfNextMonth.AddDays(6 - (int)firstDateOfNextMonth.DayOfWeek));
+        }
+        else
+        {
+            var endDateOfLastMonth = new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddDays(-1);
+            checkMonth = endDateOfLastMonth.ToString("yyyyMM").AsInteger();
+            firstDateOfWeek = CIUtil.DateTimeToInt(endDateOfLastMonth.AddDays(-(int)endDateOfLastMonth.DayOfWeek));
+            lastDateOfWeek = CIUtil.DateTimeToInt(endDateOfLastMonth);
+        }
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                              && item.SinYm == checkMonth
+                                                                              && item.SinDate >= firstDateOfWeek
+                                                                              && item.SinDate <= lastDateOfWeek
+                                                                              && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
+                                                               .ToList();
+
+        ptIdList = sinKouiCounts.Select(item => item.PtId).Distinct().ToList();
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                && item.SinYm == checkMonth
+                                                                                && item.ItemCd != null
+                                                                                && zaiganIsoItemCds.Contains(item.ItemCd)
+                                                                                && ptIdList.Contains(item.PtId))
+                                                                 .ToList();
+
+        zaiganIsoItemCds = sinKouiDetails.Select(item => item.ItemCd ?? string.Empty).Distinct().ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                  && item.IsDeleted == DeleteTypes.None
+                                                                  && zaiganIsoItemCds.Contains(item.ItemCd))
+                                                    .ToList();
+
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                && item.IsDelete == DeleteTypes.None
+                                                                && ptIdList.Contains(item.PtId))
+                                                 .ToList();
+
+        var joinKouiCountWithDetailQuery = from sinKouiCount in sinKouiCounts
+                                           join sinKouiDetail in sinKouiDetails
+                                           on new { sinKouiCount.PtId, sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.PtId, sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                                           select new
+                                           {
+                                               SinKouiCount = sinKouiCount,
+                                               SinKouiDetail = sinKouiDetail
+                                           };
+
+        var joinTenMstQuery = from kouiCountDetail in joinKouiCountWithDetailQuery
+                              join tenMst in tenMsts
+                              on kouiCountDetail.SinKouiDetail.ItemCd equals tenMst.ItemCd
+                              where tenMst.StartDate <= kouiCountDetail.SinKouiCount.SinDate &&
+                              tenMst.EndDate >= kouiCountDetail.SinKouiCount.SinDate
+                              select new
+                              {
+                                  SinKouiDetail = kouiCountDetail.SinKouiDetail,
+                                  TenMst = tenMst
+                              };
+
+        var joinWithPtInf = from joinTenMst in joinTenMstQuery
+                            join ptInf in ptInfs
+                            on joinTenMst.SinKouiDetail.PtId equals ptInf.PtId
+                            select new
+                            {
+                                SinKouiDetail = joinTenMst.SinKouiDetail,
+                                TenMst = joinTenMst.TenMst,
+                                PtInf = ptInf
+                            };
+
+        foreach (var entity in joinWithPtInf)
+        {
+            result.Add(new SinKouiDetailModel(
+                           entity.SinKouiDetail?.PtId ?? 0,
+                           entity.SinKouiDetail?.SinYm ?? 0,
+                           0,
+                           entity.PtInf.PtNum,
+                           entity.TenMst?.MaxAge ?? string.Empty,
+                           entity.TenMst?.MinAge ?? string.Empty,
+                           entity.SinKouiDetail?.ItemCd ?? string.Empty,
+                           entity.SinKouiDetail?.CmtOpt ?? string.Empty,
+                           entity.SinKouiDetail?.ItemName ?? string.Empty,
+                           entity.TenMst?.ReceName ?? string.Empty,
+                           entity.SinKouiDetail?.Suryo ?? 0,
+                           entity.SinKouiDetail?.IsNodspRece ?? 0,
+                           entity.TenMst?.MasterSbt ?? string.Empty,
+                           entity.TenMst != null
+                       ));
+        }
+        return result;
+    }
+
+    public Dictionary<long, int> GetSanteiStartDateList(int hpId, List<long> ptIdList, int seikyuYm)
+    {
+        Dictionary<long, int> result = new();
+        ptIdList = ptIdList.Distinct().ToList();
+        var sinKouiCountList = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                                 && ptIdList.Contains(item.PtId)
+                                                                                 && item.SinYm == seikyuYm)
+                                                                  .ToList();
+
+        ptIdList = sinKouiCountList.Select(item => item.PtId).Distinct().ToList();
+        var rpNoList = sinKouiCountList.Select(item => item.RpNo).Distinct().ToList();
+        var seqNoList = sinKouiCountList.Select(item => item.SeqNo).Distinct().ToList();
+
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                && ptIdList.Contains(item.PtId)
+                                                                                && item.SinYm == seikyuYm
+                                                                                && item.ItemCd == "X00013"
+                                                                                && rpNoList.Contains(item.RpNo)
+                                                                                && seqNoList.Contains(item.SeqNo))
+                                                                 .ToList();
+
+        foreach (var sinKouiCount in sinKouiCountList)
+        {
+            if (sinKouiDetails.Any(item => item.RpNo == sinKouiCount.RpNo && item.SeqNo == sinKouiCount.SeqNo))
+            {
+                if (result.Any(item => item.Key == sinKouiCount.PtId))
+                {
+                    result[sinKouiCount.PtId] = sinKouiCount.SinDate;
+                    continue;
+                }
+                result.Add(sinKouiCount.PtId, sinKouiCount.SinDate);
+                continue;
+            }
+            else if (result.Any(item => item.Key == sinKouiCount.PtId))
+            {
+                continue;
+            }
+            result.Add(sinKouiCount.PtId, seikyuYm * 100 + 1);
+        }
+        return result;
+    }
+
+    public Dictionary<long, int> GetSanteiEndDateList(int hpId, List<long> ptIdList, int seikyuYm)
+    {
+        Dictionary<long, int> result = new();
+        ptIdList = ptIdList.Distinct().ToList();
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId && ptIdList.Contains(item.PtId)).ToList();
+        foreach (var ptId in ptIdList)
+        {
+            var ptInf = ptInfList.FirstOrDefault(item => item.PtId == ptId);
+            if (ptInf != null && ptInf.DeathDate > 0 && ptInf.DeathDate < seikyuYm * 100 + 1)
+            {
+                result.Add(ptId, ptInf.DeathDate);
+                continue;
+            }
+            result.Add(ptId, CIUtil.DateTimeToInt(new DateTime(seikyuYm / 100, seikyuYm % 100, 1).AddMonths(1).AddDays(-1)));
+        }
+        return result;
+    }
+
+    public List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList)
+    {
+        List<HasErrorWithSanteiModel> result = new();
+        var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
+        var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
+        int minSindate = hasErrorList.Select(item => item.Sindate)?.Min() ?? 0;
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                              && ptIdList.Contains(item.PtId)
+                                                                              && item.SinYm == seikyuYm
+                                                                              && item.SinDate >= minSindate)
+                                                               .ToList();
+
+        ptIdList = sinKouiCounts.Select(item => item.PtId).Distinct().ToList();
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                && ptIdList.Contains(item.PtId)
+                                                                                && item.SinYm == seikyuYm
+                                                                                && item.ItemCd != null
+                                                                                && itemCdList.Contains(item.ItemCd))
+                                                                 .ToList();
+
+        foreach (var model in hasErrorList)
+        {
+            var sinKouiCountItems = sinKouiCounts.Where(item => item.PtId == model.PtId && item.SinDate >= model.Sindate).ToList();
+            var sinKouiDetailItems = sinKouiDetails.Where(item => item.PtId == model.PtId && item.ItemCd == model.ItemCd).ToList();
+            var query = from sinKouiCount in sinKouiCountItems
+                        join sinKouiDetail in sinKouiDetailItems
+                        on new { sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                        select new
+                        {
+                            SinKouiCount = sinKouiCount
+                        };
+
+            result.Add(new HasErrorWithSanteiModel(
+                           model.PtId,
+                           model.ItemCd,
+                           model.Sindate,
+                           query?.Count() == 0));
+        }
+        return result;
+    }
+
+    public List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList)
+    {
+        List<HasErrorWithSanteiModel> result = new();
+        var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
+        var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
+        int maxSindate = hasErrorList.Select(item => item.Sindate)?.Max() ?? 0;
+        var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
+                                                                              && ptIdList.Contains(item.PtId)
+                                                                              && item.SinYm == seikyuYm
+                                                                              && item.SinDate <= maxSindate)
+                                                               .ToList();
+
+        ptIdList = sinKouiCounts.Select(item => item.PtId).Distinct().ToList();
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
+                                                                                && ptIdList.Contains(item.PtId)
+                                                                                && item.SinYm == seikyuYm
+                                                                                && item.ItemCd != null
+                                                                                && itemCdList.Contains(item.ItemCd))
+                                                                 .ToList();
+
+        foreach (var model in hasErrorList)
+        {
+            var sinKouiCountItems = sinKouiCounts.Where(item => item.PtId == model.PtId && item.SinDate <= model.Sindate).ToList();
+            var sinKouiDetailItems = sinKouiDetails.Where(item => item.PtId == model.PtId && item.ItemCd == model.ItemCd).ToList();
+            var query = from sinKouiCount in sinKouiCountItems
+                        join sinKouiDetail in sinKouiDetailItems
+                        on new { sinKouiCount.RpNo, sinKouiCount.SeqNo } equals new { sinKouiDetail.RpNo, sinKouiDetail.SeqNo }
+                        select new
+                        {
+                            SinKouiCount = sinKouiCount
+                        };
+
+            result.Add(new HasErrorWithSanteiModel(
+                           model.PtId,
+                           model.ItemCd,
+                           model.Sindate,
+                           query?.Count() == 0));
+        }
+        return result;
+    }
     #endregion
 
     #region Private function
