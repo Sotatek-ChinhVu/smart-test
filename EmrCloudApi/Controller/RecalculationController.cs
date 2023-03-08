@@ -32,9 +32,9 @@ public class RecalculationController : AuthorizeControllerBase
 
             int allCheckCount = dataForLoop.ReceRecalculationList.Count;
             HttpContext.Response.Headers.Add("AllCheckCount", allCheckCount.ToString());
-            HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(""), 0, Encoding.UTF8.GetBytes("").Length);
-            HttpContext.Response.Body.FlushAsync();
+            AddMessageCheckErrorInMonth(allCheckCount, 0);
 
+            int successCount = 1;
             foreach (var recalculationItem in dataForLoop.ReceRecalculationList)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -42,28 +42,25 @@ public class RecalculationController : AuthorizeControllerBase
                     break;
                 }
                 var dataInsideLoop = _recalculationService.GetDataInsideLoop(HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
-
                 var resultCheckError = _recalculationService.CheckError(HpId, recalculationItem.SinYm, recalculationItem, dataForLoop.ReceCheckOptList, dataForLoop.ReceRecalculationList, dataForLoop.AllReceCheckErrList, dataForLoop.AllSystemConfigList, dataForLoop.AllSyobyoKeikaList, dataForLoop.AllIsKantokuCdValidList, dataInsideLoop.SinKouiCountList, dataInsideLoop.TenMstByItemCdList, dataInsideLoop.ItemCdList);
 
                 newReceCheckErrList.AddRange(resultCheckError.Item1);
                 errorText.Append(resultCheckError.Item2);
                 errorTextSinKouiCount.Append(resultCheckError.Item3);
-                // Send the chunk to the client
-                var resultForFrontEnd = Encoding.UTF8.GetBytes(recalculationItem.PtId + " done!\n");
 
-                HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
-                HttpContext.Response.Body.FlushAsync();
+                // Send the chunk to the client
+                AddMessageCheckErrorInMonth(allCheckCount, successCount);
+                successCount++;
             }
-            var count = newReceCheckErrList.Count;
 
             errorText.Append(errorTextSinKouiCount);
             errorText = _recalculationService.GetErrorTextAfterCheck(HpId, request.SinYm, ref errorText, request.PtIdList, dataForLoop.AllSystemConfigList, dataForLoop.ReceRecalculationList);
-            var bytes = Encoding.UTF8.GetBytes(count + " ReceCheckErr, save action error!");
+            var bytes = Encoding.UTF8.GetBytes("Loop success!");
             if (!_recalculationService.SaveReceCheckErrList(HpId, UserId, newReceCheckErrList))
             {
                 HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
             }
-            bytes = Encoding.UTF8.GetBytes("\n\"" + errorText + "\"\n" + count + " ReceCheckErr, save action success!");
+            bytes = Encoding.UTF8.GetBytes("\n\"" + errorText + "\"\n" + "Loop success!");
             HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
         finally
@@ -71,5 +68,17 @@ public class RecalculationController : AuthorizeControllerBase
             _recalculationService.ReleaseResource();
             HttpContext.Response.Body.Close();
         }
+    }
+
+    private void AddMessageCheckErrorInMonth(int allCheckCount, int successCount)
+    {
+        StringBuilder titleProgressbar = new();
+        titleProgressbar.Append("レセチェック処理中..残り[");
+        titleProgressbar.Append(allCheckCount - successCount);
+        titleProgressbar.Append("件]です\n");
+
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
+        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.FlushAsync();
     }
 }
