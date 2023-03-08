@@ -1507,7 +1507,88 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
-        
+
+        private List<string> TrialCalculate(int hpId, int sinDate, List<CheckedOrderModel> checkingOrderModelList)
+        {
+            List<string> itemCds = checkingOrderModelList.Select(c => c.ItemCd).Distinct().ToList();
+          
+            var temMsts = NoTrackingDataContext.TenMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   itemCds.Contains(p.ItemCd) &&
+                   p.IsDeleted == DeleteTypes.None)
+               .FirstOrDefault();
+
+            List<IkaTodayOdrInfModel> todayOdrInfModels = TodayOrderList
+               .Select(item => new IkaTodayOdrInfModel(item.OdrInf, item.OdrInfDetailModels
+                   .Where(detail => !detail.IsEmpty)
+                   .Select(detail => detail.OdrInfDetail)
+                   .ToList()))
+               .ToList();
+            todayOdrInfModels.Add(new IkaTodayOdrInfModel(HeaderOdrInf.OdrInf, HeaderOdrInf.OdrInfDetailModels
+                                                                                            .Where(detail => !detail.IsEmpty)
+                                                                                            .Select(detail => detail.OdrInfDetail)
+                                                                                            .ToList()));
+
+            long maxRpNoOnApp = AllOrder.Count > 0 ? AllOrder.Max(odr => odr.RpNo) : 0;
+            long maxRpNoOnDB = odrInfFinder.GetMaxRpNo(Session.HospitalID, _ptId, _raiinNo, _sinDate);
+            long maxRpNo = Math.Max(maxRpNoOnDB, maxRpNoOnApp);
+            maxRpNo = Math.Max(HeaderOdrInf.RpNo, maxRpNo);
+
+            foreach (var itemCd in checkingOrderModelList.Select(c => c.ItemCd))
+            {
+                todayOdrInfModels.Add(CreateIkaTodayOdrInfModel(itemCd, maxRpNo));
+
+                // 追加した項目のDummyフラグをセット
+                foreach (var detail in todayOdrInfModels.Last().OdrInfDetailModels)
+                {
+                    detail.IsDummy = true;
+                }
+
+                maxRpNo++;
+            }
+            var data = _ikaCalculateViewModel.RunTraialCalculate(todayOdrInfModels, IkaReceptionModel, false);
+
+            return data.Item1.Select(d => d.ItemCd).Distinct().ToList();
+        }
+
+        private OrdInfModel CreateIkaTodayOdrInfModel(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, string itemCd, long maxRpNo, List<TenMst> temMsts)
+        {
+            OdrInf odrInf = new OdrInf();
+            List<OdrInfDetail> odrInfDetails = new List<OdrInfDetail>();
+
+            odrInf.HpId = hpId;
+            odrInf.PtId = ptId;
+            odrInf.SinDate = sinDate;
+            odrInf.RaiinNo = raiinNo;
+            odrInf.HokenPid = hokenPid;
+            odrInf.RpNo = maxRpNo + 1;
+            odrInf.RpEdaNo = 1;
+
+            OdrInfDetail detail = new OdrInfDetail();
+            detail.HpId = hpId;
+            detail.PtId = ptId;
+            detail.SinDate = sinDate;
+            detail.RaiinNo = raiinNo;
+
+            detail.ItemCd = itemCd;
+            var tenMst = temMsts.FirstOrDefault(t => t.ItemCd == detail.ItemCd);
+            detail.ItemName = tenMst?.Name ?? string.Empty;
+
+            odrInf.OdrKouiKbn = tenMst?.SinKouiKbn ?? 0;
+            detail.SinKouiKbn = tenMst?.SinKouiKbn ?? 0;
+
+            detail.RpNo = odrInf.RpNo;
+            detail.RpEdaNo = odrInf.RpEdaNo;
+            detail.RowNo = 1;
+
+            odrInfDetails.Add(detail);
+
+            IkaTodayOdrInfModel odrInfModel = new IkaTodayOdrInfModel(odrInf, odrInfDetails);
+            return odrInfModel;
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();
