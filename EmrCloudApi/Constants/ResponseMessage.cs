@@ -936,6 +936,8 @@
         public static readonly string InvalidKeika = "Invalid Keika!";
         public static readonly string InvalidSinDay = "Invalid SinDay!";
         public static readonly string InvalidStatusColor = "Invalid StatusColor!";
+        public static readonly string InvalidErrCd = "Invalid ErrCd!";
+        public static readonly string InvalidCheckOpt = "Invalid CheckOpt!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";

@@ -14,9 +14,11 @@ public interface IRecalculationService
 
     RecalculationConverter.InsideLoop GetDataInsideLoop(int hpId, int sinYm, long ptId, int hokenId);
 
-    (List<ReceCheckErrModel>, StringBuilder) CheckError(int hpId, int sinYm, ReceRecalculationModel recalculationItem, List<ReceCheckOptModel> receCheckOptList, List<ReceRecalculationModel> receRecalculationList, List<ReceCheckErrModel> allReceCheckErrList, List<SystemConfModel> allSystemConfigList, List<SyobyoKeikaModel> allSyobyoKeikaList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstByItemCdList, List<string> itemCdList);
+    (List<ReceCheckErrModel>, StringBuilder, StringBuilder) CheckError(int hpId, int sinYm, ReceRecalculationModel recalculationItem, List<ReceCheckOptModel> receCheckOptList, List<ReceRecalculationModel> receRecalculationList, List<ReceCheckErrModel> allReceCheckErrList, List<SystemConfModel> allSystemConfigList, List<SyobyoKeikaModel> allSyobyoKeikaList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstByItemCdList, List<string> itemCdList);
 
     bool SaveReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> newReceCheckErrList);
+
+    StringBuilder GetErrorTextAfterCheck(int hpId, int seikyuYm, ref StringBuilder errorText, List<long> ptIdList, List<SystemConfModel> systemConfList, List<ReceRecalculationModel> receRecalculationList);
 
     void ReleaseResource();
 }

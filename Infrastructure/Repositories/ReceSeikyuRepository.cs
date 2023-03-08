@@ -48,9 +48,9 @@ namespace Infrastructure.Repositories
                                       && !(sinYm > 0 && receSeikyu.SeikyuYm != 999999 && receSeikyu.SeikyuYm != sinYm)
 
                                       && (ptNumSearch == 0 || ptInf.PtNum == ptNumSearch)
-                                      && (noFilter || 
+                                      && (noFilter ||
                                             (isFilterMonthlyDelay && receSeikyu.SeikyuKbn == 1) ||
-                                            (isFilterReturn && receSeikyu.SeikyuKbn == 2) || 
+                                            (isFilterReturn && receSeikyu.SeikyuKbn == 2) ||
                                             (isFilterOnlineReturn && receSeikyu.SeikyuKbn == 3)
                                           )
                                 select new
@@ -106,7 +106,36 @@ namespace Infrastructure.Repositories
                                                                                                                     m.PtHokenInfItem.SikakuDate,
                                                                                                                     m.PtHokenInfItem.EndDate,
                                                                                                                     m.PtHokenInfItem.HokensyaNo ?? string.Empty)).ToList()
-                                                          )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u=>u.SinYm).ThenBy(i=>i.PtNum).ToList();
+                                                          )).OrderByDescending(o => o.SeikyuKbn).ThenBy(u => u.SinYm).ThenBy(i => i.PtNum).ToList();
+        }
+
+        public List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList)
+        {
+            List<ReceSeikyuModel> result = new();
+            var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete == DeleteTypes.None
+                                                                    && (ptIdList.Count <= 0 || ptIdList.Contains(item.PtId)))
+                                                     .ToList();
+
+            ptIdList = ptInfList.Select(item => item.PtId).Distinct().ToList();
+            var receSeikyus = NoTrackingDataContext.ReceSeikyus.Where(item => item.HpId == hpId
+                                                                              && item.SeikyuYm == seikyuYm
+                                                                              && item.IsDeleted == DeleteTypes.None
+                                                                              && ptIdList.Contains(item.PtId))
+                                                                .ToList();
+
+            foreach (var ptInf in ptInfList)
+            {
+                var receSeikyu = receSeikyus.FirstOrDefault(item => item.PtId == ptInf.PtId);
+                result.Add(new ReceSeikyuModel(
+                               ptInf.PtId,
+                               receSeikyu?.SinYm ?? 0,
+                               receSeikyu?.HokenId ?? 0,
+                               ptInf.PtNum,
+                               receSeikyu?.SeikyuKbn ?? 0
+                          ));
+            }
+            return result;
         }
 
         public void ReleaseResource()

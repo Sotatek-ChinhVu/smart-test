@@ -2,7 +2,7 @@
 {
     public class RaiinKbnItemModel
     {
-        public RaiinKbnItemModel(int hpId, int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, int isDeleted, int sortNo)
+        public RaiinKbnItemModel(int hpId, int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, bool isDeleted, int sortNo)
         {
             HpId = hpId;
             GrpCd = grpCd;
@@ -15,7 +15,7 @@
             InputName = string.Empty;
         }
 
-        public RaiinKbnItemModel(int hpId, int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, int isDeleted, int sortNo, string inputName)
+        public RaiinKbnItemModel(int hpId, int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, bool isDeleted, int sortNo, string inputName)
         {
             HpId = hpId;
             GrpCd = grpCd;
@@ -40,7 +40,7 @@
 
         public int IsExclude { get; private set; }
 
-        public int IsDeleted { get; private set; }
+        public bool IsDeleted { get; private set; }
 
         public int SortNo { get; private set; }
 

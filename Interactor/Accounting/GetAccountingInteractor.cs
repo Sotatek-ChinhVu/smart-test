@@ -54,7 +54,7 @@ namespace Interactor.Accounting
                 var debitBalance = listAllSyunoSeikyu.Sum(item => item.SeikyuGaku -
                                                   item.SyunoNyukinModels.Sum(itemNyukin =>
                                                       itemNyukin.NyukinGaku + itemNyukin.AdjustFutan));
-                var checkDebitBalance = (int)_systemConfRepository.GetSettingValue(3020, 0, 0) == 1;
+                var checkDebitBalance = (int)_systemConfRepository.GetSettingValue(3020, 0, inputData.HpId) == 1;
 
                 var listKohi = GetVisibilityPtKohiModelList(listRaiinInf, inputData.HpId, inputData.PtId, inputData.SinDate);
 
