@@ -1455,11 +1455,11 @@ namespace Infrastructure.Repositories
 
         }
 
-
-        public Dictionary<string, (int, string, List<TenItemModel>)> GetConversionItem(List<(string, int, string)> expiredItems, int sinDate, int hpId)
+        //Key of Dictionary is itemCd
+        public Dictionary<string, (int sinkouiKbn, string itemName, List<TenItemModel>)> GetConversionItem(List<(string itemCd, int sinKouiKbn, string itemName)> expiredItems, int sinDate, int hpId)
         {
-            Dictionary<string, (int, string, List<TenItemModel>)> result = new();
-            var expiredItemCds = expiredItems.Select(e => e.Item1).Distinct().ToList();
+            Dictionary<string, (int sinkouiKbn, string itemName, List<TenItemModel>)> result = new();
+            var expiredItemCds = expiredItems.Select(e => e.itemCd).Distinct().ToList();
             expiredItems = expiredItems.Where(e => expiredItemCds.Contains(e.Item1)).ToList();
             var conversionItemInfs = NoTrackingDataContext.ConversionItemInfs.Where(
                             c => expiredItemCds.Contains(c.SourceItemCd) && c.HpId == hpId
@@ -1470,7 +1470,7 @@ namespace Infrastructure.Repositories
             {
                 var conversionItemInfsOfOnes = conversionItemInfs.Where(c => c.SourceItemCd == expiredItem.Item1).Select(c => c.DestItemCd).Distinct().ToList();
                 var tenMstItemsOfOne = desTenMstItems.Where(d => conversionItemInfsOfOnes.Contains(d.ItemCd)).Select(t => ConvertTenMstToModel(t)).ToList();
-                result.Add(new(expiredItem.Item1, new(expiredItem.Item2, expiredItem.Item3, tenMstItemsOfOne)));
+                result.Add(new(expiredItem.itemCd, new(expiredItem.sinKouiKbn, expiredItem.itemName, tenMstItemsOfOne)));
             }
 
             return result;

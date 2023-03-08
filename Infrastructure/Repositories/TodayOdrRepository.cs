@@ -7,7 +7,6 @@ using Domain.Models.OrdInfs;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
-using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -15,10 +14,7 @@ using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -2900,6 +2896,8 @@ namespace Infrastructure.Repositories
             var holidayMst = NoTrackingDataContext.HolidayMsts.Where(t => t.HpId == hpId && t.SinDate == sinDate && t.IsDeleted != 1).FirstOrDefault();
             return holidayMst != null && holidayMst.HolidayKbn != 0;
         }
+
+        //Key of Dictionary is ItemCd
         public List<OrdInfModel> ConvertConversionItemToOrderInfModel(int hpId, long raiinNo, long ptId, int sinDate, List<OrdInfModel> odrInfItems, Dictionary<string, TenItemModel> expiredItems)
         {
             List<string> ipnCds = new();

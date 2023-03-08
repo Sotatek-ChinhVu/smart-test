@@ -42,6 +42,7 @@ namespace Domain.Models.TodayOdr
 
         bool IsHolidayForDefaultTime(int hpId, int sinDate);
 
+        //Key of Dictionary is ItemCd
         List<OrdInfModel> ConvertConversionItemToOrderInfModel(int hpId, long raiinNo, long ptId, int sinDate, List<OrdInfModel> OdrInfItems, Dictionary<string, TenItemModel> expiredItems);
 
         List<(int position, OrdInfModel odrInfModel)> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems);
