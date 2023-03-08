@@ -404,7 +404,8 @@ namespace Interactor.MedicalExamination
 
                     spaceHeaderName = 5.0;
                     spaceHeaderInfo = 30.0;
-                    var result = new SummaryInfItem(headerInfo, headerName, propertyColor, spaceHeaderName, spaceHeaderInfo, summaryInfItem.HeaderNameSize, grpItemCd, summaryInfItem.Text);
+                    var splitHeaderInf = headerInfo.Split("\r\n").ToList();
+                    var result = new SummaryInfItem(headerInfo, headerName, propertyColor, spaceHeaderName, spaceHeaderInfo, summaryInfItem.HeaderNameSize, grpItemCd, summaryInfItem.Text, splitHeaderInf);
                     return summaryInfItem;
                 }
             }
@@ -466,7 +467,9 @@ namespace Interactor.MedicalExamination
                         //家族歴
                         break;
                 }
-                summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+                var splitHeaderInfo = headerInf.Split("\r\n").ToList();
+
+                summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
             }
 
             summaryInfItem = summaryInfItem.ChangePropertyColor("000000");
@@ -596,7 +599,8 @@ namespace Interactor.MedicalExamination
             }
             headerInf = headerInf.TrimEnd('/') ?? string.Empty;
 
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -652,8 +656,9 @@ namespace Interactor.MedicalExamination
             }
 
             string strHeaderInf = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+            var splitHeaderInf = strHeaderInf.Split("\r\n").ToList();
 
-            var summaryInfItem = new SummaryInfItem(strHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var summaryInfItem = new SummaryInfItem(strHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -693,7 +698,9 @@ namespace Interactor.MedicalExamination
                 }
             }
             string strHeaderInfo = headerInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var splitHeaderInfo = strHeaderInfo.Split("\r\n").ToList();
+
+            var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
 
             return summaryInfItem;
         }
@@ -745,7 +752,9 @@ namespace Interactor.MedicalExamination
                 }
             }
             string strHeaderInfo = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var splitHeaderInf = strHeaderInfo.Split("\r\n").ToList();
+
+            var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -763,8 +772,12 @@ namespace Interactor.MedicalExamination
                 {
                     headerInf += santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + "～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine;
                 }
+
                 headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-                var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+                var splitHeaderInf = headerInf.Split("\r\n").ToList();
+
+                var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
+
                 return summaryInfItem;
             }
 
@@ -816,8 +829,11 @@ namespace Interactor.MedicalExamination
                 {
                     headerInf.Append("予定日(" + GetSDateFromDateTime(CIUtil.IntToDate(ptPregnancyModel.OvulationDueDate)) + ")");
                 }
+
                 string strHeaderInfo = headerInf.ToString().TrimEnd('/');
-                var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+                var splitHeaderInf = strHeaderInfo.Split("\r\n").ToList();
+
+                var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
                 return summaryInfItem;
             }
@@ -858,8 +874,11 @@ namespace Interactor.MedicalExamination
                     }
                 }
             }
+
             headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -874,8 +893,11 @@ namespace Interactor.MedicalExamination
             {
                 headerInf += ptCmtInfModel.Text + Environment.NewLine;
             }
+
             headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -890,7 +912,9 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = ptInfModel.HomeAddress1 + space + ptInfModel.HomeAddress2;
             }
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -942,7 +966,9 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = strFutanInfo;
             }
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -1043,7 +1069,9 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = ptInfModel.Tel1 + Environment.NewLine + ptInfModel.Tel2;
             }
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -1058,7 +1086,9 @@ namespace Interactor.MedicalExamination
             {
                 headerInf = seikaturekiInfModel.Text;
             }
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -1090,7 +1120,9 @@ namespace Interactor.MedicalExamination
                     headerInf = headerInfo;
                 }
             }
-            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
@@ -1138,7 +1170,9 @@ namespace Interactor.MedicalExamination
             int grpItemCd = 13;
             string headerName = "◆来院コメント";
             string textRaiinCmtInf = _raiinCmtInfRepository.GetRaiinCmtByPtId(hpId, ptId, sinDate, raiinNo);
-            var summaryInfItem = new SummaryInfItem(textRaiinCmtInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty);
+
+            var splitHeaderInf = textRaiinCmtInf.Split("\r\n").ToList();
+            var summaryInfItem = new SummaryInfItem(textRaiinCmtInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
         }
