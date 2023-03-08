@@ -467,9 +467,9 @@ namespace Interactor.MedicalExamination
                         //家族歴
                         break;
                 }
-                var splitHeaderInfo = headerInf.Split("\r\n").ToList();
+                var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ?headerInf.Split("\r\n").ToList() : summaryInfItem.HeaderInfo.Split("\r\n").ToList();
 
-                summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
+                summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf: summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
             }
 
             summaryInfItem = summaryInfItem.ChangePropertyColor("000000");
