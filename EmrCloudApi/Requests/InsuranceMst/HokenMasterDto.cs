@@ -2,7 +2,7 @@
 {
     public class HokenMasterDto
     {
-        public HokenMasterDto(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, int prefNo, int sortNo, int jyukyuCheckDigit, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, int kogakuTotalExcFutan, int kaiFutangaku, int dayLimitCount, bool isAdded)
+        public HokenMasterDto(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, int prefNo, int sortNo, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, int kogakuTotalExcFutan, int kaiFutangaku, int dayLimitCount, bool isAdded)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -49,7 +49,6 @@
             ReceSpKbn = receSpKbn;
             PrefNo = prefNo;
             SortNo = sortNo;
-            JyukyuCheckDigit = jyukyuCheckDigit;
             SeikyuYm = seikyuYm;
             ReceFutanHide = receFutanHide;
             ReceFutanKbn = receFutanKbn;
@@ -149,8 +148,6 @@
         public int PrefNo { get; private set; }
 
         public int SortNo { get; private set; }
-
-        public int JyukyuCheckDigit { get; private set; }
 
         public int SeikyuYm { get; private set; }
 

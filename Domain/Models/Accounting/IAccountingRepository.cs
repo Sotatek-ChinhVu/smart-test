@@ -22,5 +22,7 @@ namespace Domain.Models.Accounting
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
         List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo);
         void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
+        List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
+        int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
     }
 }

@@ -206,6 +206,7 @@
         public const string GetDiseaseReceList = "GetDiseaseReceList";
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
+        public const string SaveReceCheckOpt = "SaveReceCheckOpt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -215,6 +216,7 @@
         public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
+        public const string GetMeiHoGai = "GetMeiHoGai";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
