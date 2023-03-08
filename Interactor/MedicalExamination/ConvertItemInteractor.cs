@@ -54,7 +54,7 @@ namespace Interactor.MedicalExamination
                 foreach (var expiredItem in inputData.ExpiredItems)
                 {
                     var tenItem = expiredItem.Value.FirstOrDefault(e => e.HpId != -1) ?? new();
-                    var tenItemHistories = expiredItem.Value.Where(e => e.HpId == 0 && e.HpId == -1).ToList();
+                    var tenItemHistories = expiredItem.Value.Where(e => e.HpId == 0 || e.HpId == -1).ToList();
                     if (tenItem != null && !string.IsNullOrEmpty(tenItem.ItemCd))
                     {
                         filterExpiredItems.Add(expiredItem.Key, tenItem);
