@@ -1485,17 +1485,17 @@ namespace Infrastructure.Repositories
                 {
                     if (tenItem.HpId == -1)
                     {
-                        var conversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == tenItem.HpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
+                        var conversionItem = TrackingDataContext.ConversionItemInfs.FirstOrDefault(c => c.HpId == hpId && c.SourceItemCd == value.Key && c.DestItemCd == tenItem.ItemCd);
                         if (conversionItem != null)
                         {
                             TrackingDataContext.ConversionItemInfs.Remove(conversionItem);
                         }
                     }
-                    else if(tenItem.HpId == 0)
+                    else if (tenItem.HpId == 0)
                     {
                         var conversionItem = new ConversionItemInf
                         {
-                            HpId = tenItem.HpId,
+                            HpId = hpId,
                             SourceItemCd = value.Key,
                             DestItemCd = tenItem.ItemCd,
                             CreateDate = CIUtil.GetJapanDateTimeNow(),

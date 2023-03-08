@@ -35,7 +35,7 @@ namespace Interactor.MedicalExamination
 
                 foreach (var detail in inputData.CheckedExpiredItems)
                 {
-                    
+
                     if (checkedItems.Contains(detail.ItemCd))
                     {
                         continue;
@@ -65,7 +65,7 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                var convertItems = _mstItemRepository.GetConversionItem(expiredItems, inputData.HpId, inputData.SinDate);
+                var convertItems = _mstItemRepository.GetConversionItem(expiredItems, inputData.SinDate, inputData.HpId);
 
                 List<CheckedExpiredOutputItem> result = new();
 

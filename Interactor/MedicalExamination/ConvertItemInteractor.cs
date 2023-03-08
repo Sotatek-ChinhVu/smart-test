@@ -50,16 +50,25 @@ namespace Interactor.MedicalExamination
                     return new ConvertItemOutputData(ConvertItemStatus.InputNotData, new());
                 }
                 Dictionary<string, TenItemModel> filterExpiredItems = new();
+                Dictionary<string, List<TenItemModel>> filterSaveHistoryItems = new();
                 foreach (var expiredItem in inputData.ExpiredItems)
                 {
                     var tenItem = expiredItem.Value.FirstOrDefault(e => e.HpId != -1) ?? new();
+                    var tenItemHistories = expiredItem.Value.Where(e => e.HpId == 0 && e.HpId == -1).ToList();
                     if (tenItem != null && !string.IsNullOrEmpty(tenItem.ItemCd))
                     {
                         filterExpiredItems.Add(expiredItem.Key, tenItem);
                     }
+
+                    if (tenItemHistories?.Count > 0)
+                    {
+                        filterSaveHistoryItems.Add(expiredItem.Key, tenItemHistories);
+                    }
                 }
 
-                var saveHistory = _mstItemRepository.ExceConversionItem(inputData.HpId, inputData.UserId, inputData.ExpiredItems);
+                bool saveHistory = false;
+                if (filterSaveHistoryItems.Count > 0)
+                    saveHistory = _mstItemRepository.ExceConversionItem(inputData.HpId, inputData.UserId, filterSaveHistoryItems);
 
                 var conversionItem = _todayOrderRepository.ConvertConversionItemToOrderInfModel(inputData.HpId, inputData.RaiinNo, inputData.PtId, inputData.SinDate, inputData.OdrInfItems.Select(item =>
                     new OrdInfModel(
