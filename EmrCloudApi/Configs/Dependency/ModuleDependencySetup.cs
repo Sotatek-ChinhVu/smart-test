@@ -230,6 +230,7 @@ using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
+using UseCase.MedicalExamination.ConvertItem;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
@@ -622,6 +623,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckedExpiredInputData, CheckedExpiredInteractor>();
             busBuilder.RegisterUseCase<ConvertFromHistoryTodayOrderInputData, ConvertFromHistoryToTodayOdrInteractor>();
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
+            busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
