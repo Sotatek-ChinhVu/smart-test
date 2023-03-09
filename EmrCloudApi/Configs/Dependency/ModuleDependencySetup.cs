@@ -372,9 +372,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.ReceSeikyu.GetList;
-using Interactor.ReceSeikyu;
-using Domain.Models.ReceSeikyu;
 using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
@@ -504,6 +501,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IRsvInfRepository, RsvInfRepository>();
             services.AddScoped<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddScoped<IReceSeikyuRepository, ReceSeikyuRepository>();
+            services.AddScoped<IRecalculationService, RecalculationService>();
         }
 
         private void SetupUseCase(IServiceCollection services)

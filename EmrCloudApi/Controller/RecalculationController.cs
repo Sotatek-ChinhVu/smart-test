@@ -25,7 +25,8 @@ public class RecalculationController : AuthorizeControllerBase
         {
             HttpContext.Response.ContentType = "application/json";
             HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
-            HttpContext.Response.StatusCode = 202;
+            HttpResponse response = HttpContext.Response;
+            response.StatusCode = 202;
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
             StringBuilder errorTextSinKouiCount = new();
