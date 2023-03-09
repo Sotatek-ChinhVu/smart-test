@@ -686,10 +686,12 @@ namespace EmrCloudApi.Controller
                     request.DoctorId,
                     request.ByomeiLogicalOperator,
                     request.Byomeis,
+                    request.TenMsts,
                     request.ByomeiStartDate,
                     request.ByomeiEndDate,
                     request.ResultKbn,
-                    request.IsSuspectedDisease
+                    request.IsSuspectedDisease,
+                    request.IsOrderOr
                 );
         }
 

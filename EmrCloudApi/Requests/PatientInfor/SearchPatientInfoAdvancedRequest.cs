@@ -89,6 +89,8 @@ public class SearchPatientInfoAdvancedRequest
 
     public List<ByomeiSearchInput> Byomeis { get; set; } = new();
 
+    public List<TenMstSearchInput> TenMsts { get; private set; } = new();
+
     public int ByomeiStartDate { get; set; }
 
     public int ByomeiEndDate { get; set; }
@@ -100,4 +102,6 @@ public class SearchPatientInfoAdvancedRequest
     public int PageIndex { get; set; }
 
     public int PageSize { get; set; }
+
+    public bool IsOrderOr { get; private set; }
 }
