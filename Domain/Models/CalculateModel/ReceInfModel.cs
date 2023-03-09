@@ -1,244 +1,154 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.CalculateModel
+﻿namespace Domain.Models.CalculateModel
 {
+
+    public class ReceInfModelDto
+    {
+        public List<ReceInfModel> ReceInfModels { get; set; }
+    }
     public class ReceInfModel
     {
-        // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-        public class ReceInf
-        {
-            public int IsChoki { get; set; }
-            public object Kohi1ReceKyufu10en { get; set; }
-            public object Kohi2ReceKyufu10en { get; set; }
-            public object Kohi3ReceKyufu10en { get; set; }
-            public object Kohi4ReceKyufu10en { get; set; }
-            public object Kohi1Priority { get; set; }
-            public object Kohi2Priority { get; set; }
-            public object Kohi3Priority { get; set; }
-            public object Kohi4Priority { get; set; }
-            public int Kohi1HokenSbtKbn { get; set; }
-            public int Kohi2HokenSbtKbn { get; set; }
-            public int Kohi3HokenSbtKbn { get; set; }
-            public int Kohi4HokenSbtKbn { get; set; }
-            public int IsNinpu { get; set; }
-            public ReceInf ReceInf { get; set; }
-            public int HpId { get; set; }
-            public int SeikyuYm { get; set; }
-            public int PtId { get; set; }
-            public int SinYm { get; set; }
-            public int HokenId { get; set; }
-            public int HokenId2 { get; set; }
-            public int Kohi1Id { get; set; }
-            public int Kohi2Id { get; set; }
-            public int Kohi3Id { get; set; }
-            public int Kohi4Id { get; set; }
-            public int HokenKbn { get; set; }
-            public int HokenSbtCd { get; set; }
-            public string ReceSbt { get; set; }
-            public string HokensyaNo { get; set; }
-            public string Houbetu { get; set; }
-            public string Kohi1Houbetu { get; set; }
-            public string Kohi2Houbetu { get; set; }
-            public string Kohi3Houbetu { get; set; }
-            public string Kohi4Houbetu { get; set; }
-            public int HonkeKbn { get; set; }
-            public int KogakuKbn { get; set; }
-            public int KogakuTekiyoKbn { get; set; }
-            public int IsTokurei { get; set; }
-            public int IsTasukai { get; set; }
-            public int KogakuKohi1Limit { get; set; }
-            public int KogakuKohi2Limit { get; set; }
-            public int KogakuKohi3Limit { get; set; }
-            public int KogakuKohi4Limit { get; set; }
-            public int TotalKogakuLimit { get; set; }
-            public int GenmenKbn { get; set; }
-            public int HokenRate { get; set; }
-            public int PtRate { get; set; }
-            public int EnTen { get; set; }
-            public int Kohi1Limit { get; set; }
-            public int Kohi1OtherFutan { get; set; }
-            public int Kohi2Limit { get; set; }
-            public int Kohi2OtherFutan { get; set; }
-            public int Kohi3Limit { get; set; }
-            public int Kohi3OtherFutan { get; set; }
-            public int Kohi4Limit { get; set; }
-            public int Kohi4OtherFutan { get; set; }
-            public int Tensu { get; set; }
-            public int TotalIryohi { get; set; }
-            public int HokenFutan { get; set; }
-            public int KogakuFutan { get; set; }
-            public int Kohi1Futan { get; set; }
-            public int Kohi2Futan { get; set; }
-            public int Kohi3Futan { get; set; }
-            public int Kohi4Futan { get; set; }
-            public int IchibuFutan { get; set; }
-            public int GenmenGaku { get; set; }
-            public int HokenFutan10en { get; set; }
-            public int KogakuFutan10en { get; set; }
-            public int Kohi1Futan10en { get; set; }
-            public int Kohi2Futan10en { get; set; }
-            public int Kohi3Futan10en { get; set; }
-            public int Kohi4Futan10en { get; set; }
-            public int IchibuFutan10en { get; set; }
-            public int GenmenGaku10en { get; set; }
-            public int PtFutan { get; set; }
-            public int KogakuOverKbn { get; set; }
-            public int HokenTensu { get; set; }
-            public int HokenIchibuFutan { get; set; }
-            public int HokenIchibuFutan10en { get; set; }
-            public int Kohi1Tensu { get; set; }
-            public int Kohi1IchibuSotogaku { get; set; }
-            public int Kohi1IchibuSotogaku10en { get; set; }
-            public int Kohi1IchibuFutan { get; set; }
-            public int Kohi2Tensu { get; set; }
-            public int Kohi2IchibuSotogaku { get; set; }
-            public int Kohi2IchibuSotogaku10en { get; set; }
-            public int Kohi2IchibuFutan { get; set; }
-            public int Kohi3Tensu { get; set; }
-            public int Kohi3IchibuSotogaku { get; set; }
-            public int Kohi3IchibuSotogaku10en { get; set; }
-            public int Kohi3IchibuFutan { get; set; }
-            public int Kohi4Tensu { get; set; }
-            public int Kohi4IchibuSotogaku { get; set; }
-            public int Kohi4IchibuSotogaku10en { get; set; }
-            public int Kohi4IchibuFutan { get; set; }
-            public int TotalIchibuFutan { get; set; }
-            public int TotalIchibuFutan10en { get; set; }
-            public int HokenReceTensu { get; set; }
-            public object HokenReceFutan { get; set; }
-            public object Kohi1ReceTensu { get; set; }
-            public object Kohi1ReceFutan { get; set; }
-            public object Kohi1ReceKyufu { get; set; }
-            public object Kohi2ReceTensu { get; set; }
-            public object Kohi2ReceFutan { get; set; }
-            public object Kohi2ReceKyufu { get; set; }
-            public object Kohi3ReceTensu { get; set; }
-            public object Kohi3ReceFutan { get; set; }
-            public object Kohi3ReceKyufu { get; set; }
-            public object Kohi4ReceTensu { get; set; }
-            public object Kohi4ReceFutan { get; set; }
-            public object Kohi4ReceKyufu { get; set; }
-            public int HokenNissu { get; set; }
-            public object Kohi1Nissu { get; set; }
-            public object Kohi2Nissu { get; set; }
-            public object Kohi3Nissu { get; set; }
-            public object Kohi4Nissu { get; set; }
-            public bool Kohi1ReceKisai { get; set; }
-            public bool Kohi2ReceKisai { get; set; }
-            public bool Kohi3ReceKisai { get; set; }
-            public bool Kohi4ReceKisai { get; set; }
-            public object Kohi1NameCd { get; set; }
-            public object Kohi2NameCd { get; set; }
-            public object Kohi3NameCd { get; set; }
-            public object Kohi4NameCd { get; set; }
-            public int SeikyuKbn { get; set; }
-            public object Tokki { get; set; }
-            public object Tokki1 { get; set; }
-            public object Tokki2 { get; set; }
-            public object Tokki3 { get; set; }
-            public object Tokki4 { get; set; }
-            public object Tokki5 { get; set; }
-            public object PtStatus { get; set; }
-            public int RousaiIFutan { get; set; }
-            public int RousaiRoFutan { get; set; }
-            public int JibaiITensu { get; set; }
-            public int JibaiRoTensu { get; set; }
-            public int JibaiHaFutan { get; set; }
-            public int JibaiNiFutan { get; set; }
-            public int JibaiHoSindan { get; set; }
-            public int JibaiHoSindanCount { get; set; }
-            public int JibaiHeMeisai { get; set; }
-            public int JibaiHeMeisaiCount { get; set; }
-            public int JibaiAFutan { get; set; }
-            public int JibaiBFutan { get; set; }
-            public int JibaiCFutan { get; set; }
-            public int JibaiDFutan { get; set; }
-            public int JibaiKenpoTensu { get; set; }
-            public int JibaiKenpoFutan { get; set; }
-            public int Sinkei { get; set; }
-            public int Tenki { get; set; }
-            public int KaId { get; set; }
-            public int TantoId { get; set; }
-            public int IsTester { get; set; }
-            public int IsZaiiso { get; set; }
-            public int ChokiKbn { get; set; }
-            public DateTime CreateDate { get; set; }
-            public int CreateId { get; set; }
-            public object CreateMachine { get; set; }
-            public bool IsNoHoken { get; set; }
-            public bool IsSiteiKohi { get; set; }
-            public bool IsElder { get; set; }
-            public bool IsKouki { get; set; }
-            public bool IsKokuhoKumiai { get; set; }
-            public int AgeKbn { get; set; }
-            public int Kohi0Id { get; set; }
-            public int Kohi0Limit { get; set; }
-            public int Nissu { get; set; }
-            public string Kigo { get; set; }
-            public string Bango { get; set; }
-            public string EdaNo { get; set; }
-            public object Kohi1FutansyaNo { get; set; }
-            public object Kohi2FutansyaNo { get; set; }
-            public object Kohi3FutansyaNo { get; set; }
-            public object Kohi4FutansyaNo { get; set; }
-            public object Kohi1JyukyusyaNo { get; set; }
-            public object Kohi2JyukyusyaNo { get; set; }
-            public object Kohi3JyukyusyaNo { get; set; }
-            public object Kohi4JyukyusyaNo { get; set; }
-            public object Kohi1TokusyuNo { get; set; }
-            public object Kohi2TokusyuNo { get; set; }
-            public object Kohi3TokusyuNo { get; set; }
-            public object Kohi4TokusyuNo { get; set; }
-            public int KogakuIchibuFutan { get; set; }
-            public int SiteiKohiIchibuFutan { get; set; }
-        }
-
-        public class Root
-        {
-            public ReceInf ReceInf { get; set; }
-            public int HokenId { get; set; }
-            public int Kohi1Id { get; set; }
-            public int Kohi2Id { get; set; }
-            public int Kohi3Id { get; set; }
-            public int Kohi4Id { get; set; }
-            public string HokensyaNo { get; set; }
-            public string EdaNo { get; set; }
-            public string Kigo { get; set; }
-            public string Bango { get; set; }
-            public int HokenKbn { get; set; }
-            public int HokenSbtCd { get; set; }
-            public int Kohi1HokenSbtKbn { get; set; }
-            public int Kohi2HokenSbtKbn { get; set; }
-            public int Kohi3HokenSbtKbn { get; set; }
-            public int Kohi4HokenSbtKbn { get; set; }
-            public string Houbetu { get; set; }
-            public string Kohi1Houbetu { get; set; }
-            public string Kohi2Houbetu { get; set; }
-            public string Kohi3Houbetu { get; set; }
-            public string Kohi4Houbetu { get; set; }
-            public bool Kohi1ReceKisai { get; set; }
-            public bool Kohi2ReceKisai { get; set; }
-            public bool Kohi3ReceKisai { get; set; }
-            public bool Kohi4ReceKisai { get; set; }
-            public object Kohi1FutansyaNo { get; set; }
-            public object Kohi2FutansyaNo { get; set; }
-            public object Kohi3FutansyaNo { get; set; }
-            public object Kohi4FutansyaNo { get; set; }
-            public object Kohi1JyukyusyaNo { get; set; }
-            public object Kohi2JyukyusyaNo { get; set; }
-            public object Kohi3JyukyusyaNo { get; set; }
-            public object Kohi4JyukyusyaNo { get; set; }
-            public int Nissu { get; set; }
-            public int Tensu { get; set; }
-            public int IchibuFutan { get; set; }
-            public int PtFutan { get; set; }
-            public string InsuranceName { get; set; }
-        }
-
-
+        public int hpId { get; set; }
+        public int seikyuYm { get; set; }
+        public int ptId { get; set; }
+        public int sinYm { get; set; }
+        public int hokenId { get; set; }
+        public int hokenId2 { get; set; }
+        public int kohi1Id { get; set; }
+        public int kohi2Id { get; set; }
+        public int kohi3Id { get; set; }
+        public int kohi4Id { get; set; }
+        public int hokenKbn { get; set; }
+        public int hokenSbtCd { get; set; }
+        public string receSbt { get; set; } = string.Empty;
+        public string hokensyaNo { get; set; } = string.Empty;
+        public string houbetu { get; set; } = string.Empty;
+        public string kohi1Houbetu { get; set; } = string.Empty;
+        public string kohi2Houbetu { get; set; } = string.Empty;
+        public string kohi3Houbetu { get; set; } = string.Empty;
+        public string kohi4Houbetu { get; set; } = string.Empty;
+        public int honkeKbn { get; set; }
+        public int kogakuKbn { get; set; }
+        public int kogakuTekiyoKbn { get; set; }
+        public int isTokurei { get; set; }
+        public int isTasukai { get; set; }
+        public int kogakuKohi1Limit { get; set; }
+        public int kogakuKohi2Limit { get; set; }
+        public int kogakuKohi3Limit { get; set; }
+        public int kogakuKohi4Limit { get; set; }
+        public int totalKogakuLimit { get; set; }
+        public int genmenKbn { get; set; }
+        public int hokenRate { get; set; }
+        public int ptRate { get; set; }
+        public int enTen { get; set; }
+        public int kohi1Limit { get; set; }
+        public int kohi1OtherFutan { get; set; }
+        public int kohi2Limit { get; set; }
+        public int kohi2OtherFutan { get; set; }
+        public int kohi3Limit { get; set; }
+        public int kohi3OtherFutan { get; set; }
+        public int kohi4Limit { get; set; }
+        public int kohi4OtherFutan { get; set; }
+        public int tensu { get; set; }
+        public int totalIryohi { get; set; }
+        public int hokenFutan { get; set; }
+        public int kogakuFutan { get; set; }
+        public int kohi1Futan { get; set; }
+        public int kohi2Futan { get; set; }
+        public int kohi3Futan { get; set; }
+        public int kohi4Futan { get; set; }
+        public int ichibuFutan { get; set; }
+        public int genmenGaku { get; set; }
+        public int hokenFutan10en { get; set; }
+        public int kogakuFutan10en { get; set; }
+        public int kohi1Futan10en { get; set; }
+        public int kohi2Futan10en { get; set; }
+        public int kohi3Futan10en { get; set; }
+        public int kohi4Futan10en { get; set; }
+        public int ichibuFutan10en { get; set; }
+        public int genmenGaku10en { get; set; }
+        public int ptFutan { get; set; }
+        public int kogakuOverKbn { get; set; }
+        public int hokenTensu { get; set; }
+        public int hokenIchibuFutan { get; set; }
+        public int hokenIchibuFutan10en { get; set; }
+        public int kohi1Tensu { get; set; }
+        public int kohi1IchibuSotogaku { get; set; }
+        public int kohi1IchibuSotogaku10en { get; set; }
+        public int kohi1IchibuFutan { get; set; }
+        public int kohi2Tensu { get; set; }
+        public int kohi2IchibuSotogaku { get; set; }
+        public int kohi2IchibuSotogaku10en { get; set; }
+        public int kohi2IchibuFutan { get; set; }
+        public int kohi3Tensu { get; set; }
+        public int kohi3IchibuSotogaku { get; set; }
+        public int kohi3IchibuSotogaku10en { get; set; }
+        public int kohi3IchibuFutan { get; set; }
+        public int kohi4Tensu { get; set; }
+        public int kohi4IchibuSotogaku { get; set; }
+        public int kohi4IchibuSotogaku10en { get; set; }
+        public int kohi4IchibuFutan { get; set; }
+        public int totalIchibuFutan { get; set; }
+        public int totalIchibuFutan10en { get; set; }
+        public int hokenReceTensu { get; set; }
+        public string hokenReceFutan { get; set; } = string.Empty;
+        public int? kohi1ReceTensu { get; set; }
+        public string kohi1ReceFutan { get; set; } = string.Empty;
+        public string kohi1ReceKyufu { get; set; } = string.Empty;
+        public string kohi2ReceTensu { get; set; } = string.Empty;
+        public string kohi2ReceFutan { get; set; } = string.Empty;
+        public string kohi2ReceKyufu { get; set; } = string.Empty;
+        public string kohi3ReceTensu { get; set; } = string.Empty;
+        public string kohi3ReceFutan { get; set; } = string.Empty;
+        public string kohi3ReceKyufu { get; set; } = string.Empty;
+        public string kohi4ReceTensu { get; set; } = string.Empty;
+        public string kohi4ReceFutan { get; set; } = string.Empty;
+        public string kohi4ReceKyufu { get; set; } = string.Empty;
+        public int hokenNissu { get; set; }
+        public int? kohi1Nissu { get; set; }
+        public string kohi2Nissu { get; set; } = string.Empty;
+        public string kohi3Nissu { get; set; } = string.Empty;
+        public string kohi4Nissu { get; set; } = string.Empty;
+        public int kohi1ReceKisai { get; set; }
+        public int kohi2ReceKisai { get; set; }
+        public int kohi3ReceKisai { get; set; }
+        public int kohi4ReceKisai { get; set; }
+        public string kohi1NameCd { get; set; } = string.Empty;
+        public string kohi2NameCd { get; set; } = string.Empty;
+        public string kohi3NameCd { get; set; } = string.Empty;
+        public string kohi4NameCd { get; set; } = string.Empty;
+        public int seikyuKbn { get; set; }
+        public string tokki { get; set; } = string.Empty;
+        public string tokki1 { get; set; } = string.Empty;
+        public string tokki2 { get; set; } = string.Empty;
+        public string tokki3 { get; set; } = string.Empty;
+        public string tokki4 { get; set; } = string.Empty;
+        public string tokki5 { get; set; } = string.Empty;
+        public string ptStatus { get; set; } = string.Empty;
+        public int rousaiIFutan { get; set; }
+        public int rousaiRoFutan { get; set; }
+        public int jibaiITensu { get; set; }
+        public int jibaiRoTensu { get; set; }
+        public int jibaiHaFutan { get; set; }
+        public int jibaiNiFutan { get; set; }
+        public int jibaiHoSindan { get; set; }
+        public int jibaiHoSindanCount { get; set; }
+        public int jibaiHeMeisai { get; set; }
+        public int jibaiHeMeisaiCount { get; set; }
+        public int jibaiAFutan { get; set; }
+        public int jibaiBFutan { get; set; }
+        public int jibaiCFutan { get; set; }
+        public int jibaiDFutan { get; set; }
+        public int jibaiKenpoTensu { get; set; }
+        public int jibaiKenpoFutan { get; set; }
+        public int sinkei { get; set; }
+        public int tenki { get; set; }
+        public int kaId { get; set; }
+        public int tantoId { get; set; }
+        public int isTester { get; set; }
+        public int isZaiiso { get; set; }
+        public int chokiKbn { get; set; }
+        public DateTime createDate { get; set; }
+        public int createId { get; set; }
+        public string createMachine { get; set; } = string.Empty;
     }
 }

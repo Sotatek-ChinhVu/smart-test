@@ -90,7 +90,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public SinMeiDataModelDto GetListReceInf(GetSinMeiDtoInputData inputData)
+        public ReceInfModelDto GetListReceInf(GetSinMeiDtoInputData inputData)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
                 return result;
             }
             catch (Exception ex)
