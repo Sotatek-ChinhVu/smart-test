@@ -13,18 +13,26 @@ namespace Interactor.Accounting
         }
         public CheckOpenAccountingOutputData Handle(CheckOpenAccountingInputData inputData)
         {
-            var checkIsOpen = _accountingRepository.CheckIsOpenAccounting(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
-
-            if (checkIsOpen == CIUtil.NoPaymentInfo)
+            try
             {
-                return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.NoPaymentInfo);
+                var checkIsOpen = _accountingRepository.CheckIsOpenAccounting(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+
+                if (checkIsOpen == CIUtil.NoPaymentInfo)
+                {
+                    return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.NoPaymentInfo);
+                }
+                else if (checkIsOpen == CIUtil.TryAgainLater)
+                {
+                    return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.TryAgainLater);
+                }
+
+                return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.Successed);
             }
-            else if (checkIsOpen == CIUtil.TryAgainLater)
+            finally
             {
-                return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.TryAgainLater);
+                _accountingRepository.ReleaseResource();
             }
 
-            return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.Successed);
         }
 
     }
