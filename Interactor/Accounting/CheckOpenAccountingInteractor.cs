@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Accounting;
+using Helper.Common;
 using UseCase.Accounting.CheckOpenAccounting;
 
 namespace Interactor.Accounting
@@ -14,11 +15,11 @@ namespace Interactor.Accounting
         {
             var checkIsOpen = _accountingRepository.CheckIsOpenAccounting(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
-            if (checkIsOpen == byte.MinValue)
+            if (checkIsOpen == CIUtil.NoPaymentInfo)
             {
                 return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.NoPaymentInfo);
             }
-            else if (checkIsOpen == 2)
+            else if (checkIsOpen == CIUtil.TryAgainLater)
             {
                 return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.TryAgainLater);
             }

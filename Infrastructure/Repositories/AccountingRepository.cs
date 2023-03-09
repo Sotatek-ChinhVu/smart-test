@@ -1368,13 +1368,13 @@ namespace Infrastructure.Repositories
         {
             var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.Any(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
 
-            if (!checkStatusRaiinNo) return byte.MinValue;
+            if (!checkStatusRaiinNo) return CIUtil.NoPaymentInfo;
 
             int numberCheck = 0;
 
             var isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
 
-            while (numberCheck < 50 && (isCompletedCalculation == byte.MinValue))
+            while (numberCheck < 50 && (isCompletedCalculation == CIUtil.NoPaymentInfo))
             {
                 Thread.Sleep(100);
                 numberCheck++;
@@ -1392,20 +1392,20 @@ namespace Infrastructure.Repositories
             DateTime maxTime = calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max();
 
             if (maxTime == DateTime.MinValue)
-                return 2;
+                return CIUtil.TryAgainLater;
 
             var listStatus = calcStatuses.Where(item => item.CreateDate == maxTime).ToList();
 
             if (!listStatus.Any())
-                return byte.MinValue;
+                return CIUtil.NoPaymentInfo;
 
             foreach (var item in listStatus)
             {
                 if (item.Status != 8 && item.Status != 9)
-                    return byte.MinValue;
+                    return CIUtil.NoPaymentInfo;
             }
 
-            return 1;
+            return CIUtil.Successed;
         }
 
         public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)

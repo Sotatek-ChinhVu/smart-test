@@ -26,6 +26,11 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        //OpenScreenStatus
+        public static byte NoPaymentInfo = 0;
+        public static byte TryAgainLater = 2;
+        public static byte Successed = 1;
+
         private static T As<T>(this object obj)
         {
             return (T)obj;
