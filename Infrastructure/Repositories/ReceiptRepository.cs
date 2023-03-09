@@ -1229,9 +1229,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.SinYm == sinYm
+                                                                 && (sinYm == 0 || item.SinYm == sinYm)
                                                                  && item.PtId == ptId
-                                                                 && item.HokenId == hokenId
+                                                                 && (hokenId == 0 || item.HokenId == hokenId)
                                                                  && item.IsDeleted == DeleteTypes.None)
                                                      .ToList();
 

@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
