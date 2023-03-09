@@ -142,6 +142,7 @@ using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
+using UseCase.Accounting.CheckOpenAccounting;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
@@ -305,7 +306,6 @@ using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.HistoryReceCmt;
-using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -503,6 +503,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
+            services.AddTransient<IRecalculationService, RecalculationService>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -784,6 +785,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckAccountingStatusInputData, CheckAccountingStatusInteractor>();
             busBuilder.RegisterUseCase<GetAccountingConfigInputData, GetAccountingConfigInteractor>();
             busBuilder.RegisterUseCase<GetMeiHoGaiInputData, GetMeiHoGaiInteractor>();
+            busBuilder.RegisterUseCase<CheckOpenAccountingInputData, CheckOpenAccountingInteractor>();
             busBuilder.RegisterUseCase<RecaculationInputData, RecaculationInteractor>();
 
             //TimeZone
@@ -871,7 +873,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceCheckCmtListInputData, SaveReceCheckCmtListInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceReceInfListInputData, GetInsuranceReceInfListInteractor>();
             busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
-            busBuilder.RegisterUseCase<RecalculationInputData, RecalculationInteractor>();
             busBuilder.RegisterUseCase<GetReceCheckOptionListInputData, GetReceCheckOptionListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckOptInputData, SaveReceCheckOptInteractor>();
             busBuilder.RegisterUseCase<HistoryReceCmtInputData, HistoryReceCmtInteractor>();

@@ -26,6 +26,11 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        //OpenScreenStatus
+        public static byte NoPaymentInfo = 0;
+        public static byte TryAgainLater = 2;
+        public static byte Successed = 1;
+
         private static T As<T>(this object obj)
         {
             return (T)obj;
@@ -3128,9 +3133,9 @@ namespace Helper.Common
         // fmtReki[-1: 表示しない 0: 和暦を英字 1: 和暦を漢字]
         // fmtWeek[0: 曜日なし 1: 曜日あり]
         // fmtDate[0: / 1: 年月日]
-        public static string SMonthToShowSWMonth(int Ym, int fmtReki = 0, int fmtWeek = 0, int fmtDate = 0)
+        public static string SMonthToShowSWMonth(int ym, int fmtReki = 0, int fmtWeek = 0, int fmtDate = 0)
         {
-            string result = SDateToShowSWDate(Ym * 100 + 1, fmtReki, fmtWeek, fmtDate);
+            string result = SDateToShowSWDate(ym * 100 + 1, fmtReki, fmtWeek, fmtDate);
             if (result == string.Empty) return string.Empty;
             return result.Substring(0, result.Length - 3);
         }

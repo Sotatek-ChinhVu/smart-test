@@ -17,7 +17,6 @@ using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.HistoryReceCmt;
-using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -215,18 +214,6 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.Recalculation)]
-    public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
-    {
-        var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsStopCalc);
-        var output = _bus.Handle(input);
-
-        var presenter = new RecalculationPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<RecalculationResponse>>(presenter.Result);
-    }
-
     [HttpGet(ApiPath.HistoryReceCmt)]
     public ActionResult<Response<HistoryReceCmtResponse>> HistoryReceCmt([FromQuery] HistoryReceCmtRequest request)
     {
@@ -238,7 +225,6 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<HistoryReceCmtResponse>>(presenter.Result);
     }
-
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {

@@ -15,13 +15,14 @@ using Domain.Models.TodayOdr;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Converter;
+using Infrastructure.Interfaces;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
-using UseCase.Receipt.Recalculation;
 
 namespace Interactor.Receipt;
 
-public class RecalculationInteractor : IRecalculationInputPort
+public class RecalculationService : IRecalculationService
 {
     private readonly IReceiptRepository _receiptRepository;
     private readonly ISystemConfRepository _systemConfRepository;
@@ -46,7 +47,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
+    public RecalculationService(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -60,70 +61,220 @@ public class RecalculationInteractor : IRecalculationInputPort
         _drugDetailRepository = drugDetailRepository;
     }
 
-    public RecalculationOutputData Handle(RecalculationInputData inputData)
+    public (List<ReceCheckErrModel>, StringBuilder, StringBuilder) CheckError(int hpId, int sinYm, ReceRecalculationModel recalculationItem, List<ReceCheckOptModel> receCheckOptList, List<ReceRecalculationModel> receRecalculationList, List<ReceCheckErrModel> allReceCheckErrList, List<SystemConfModel> allSystemConfigList, List<SyobyoKeikaModel> allSyobyoKeikaList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstByItemCdList, List<string> itemCdList)
     {
-        try
-        {
-            List<ReceCheckErrModel> newReceCheckErrList = new();
-            StringBuilder errorText = new();
-            StringBuilder errorTextSinKouiCount = new();
-            var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
-            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
-            var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
-            var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
-            var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
-            int allCheckCount = receRecalculationList.Count;
-            var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
+        List<BuiErrorModel> errorOdrInfDetails = new();
+        List<ReceCheckErrModel> newReceCheckErrList = new();
+        StringBuilder errorText = new();
+        StringBuilder errorTextSinKouiCount = new();
+        var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
+        newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
+        newReceCheckErrList = CheckByomeiError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, allSystemConfigList);
+        newReceCheckErrList = CheckOrderError(hpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, allSystemConfigList, itemCdList);
+        newReceCheckErrList = CheckRosaiError(sinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, allSystemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+        newReceCheckErrList = CheckAftercare(sinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, allSystemConfigList, allSyobyoKeikaList);
+        errorTextSinKouiCount = GetErrorTextSinKouiCount(sinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+        return (newReceCheckErrList, errorText, errorTextSinKouiCount);
+    }
 
-            var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
-            var systemConfigList = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
-            var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
-            var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
+    public RecalculationConverter.ForLoop GetDataForLoop(int hpId, int sinYm, List<long> ptIdList)
+    {
+        var receCheckOptList = GetReceCheckOptModelList(hpId);
+        var receRecalculationList = _receiptRepository.GetReceRecalculationList(hpId, sinYm, ptIdList);
+        ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
+        var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
+        var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
+        var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
 
-            foreach (var recalculationItem in receRecalculationList)
-            {
-                if (inputData.IsStopCalc)
-                {
-                    break;
-                }
-                List<BuiErrorModel> errorOdrInfDetails = new();
-                var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
-                var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
-                List<string> itemCdList = new();
-                foreach (var sinKouiCount in sinKouiCountList)
-                {
-                    itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
-                }
-                var tenMstByItemCdList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCdList);
-                newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
-                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
-                newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
-                newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
-                newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
-                errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
-            }
-            errorText.Append(errorTextSinKouiCount);
-            errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, ref errorText, ptIdList, systemConfigList, receRecalculationList);
-            var count = newReceCheckErrList.Count;
-            if (!_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
-            {
-                return new RecalculationOutputData(RecalculationStatus.Failed, errorText.Append(count.ToString()).ToString());
-            }
-            return new RecalculationOutputData(RecalculationStatus.Successed, errorText.Append(count.ToString()).ToString());
-        }
-        finally
+        var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(hpId, sinYmList, ptIdList, hokenIdList);
+        var allSystemConfigList = _systemConfRepository.GetAllSystemConfig(hpId);
+        var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(hpId, sinYmList, ptIdList, hokenIdList);
+        var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(hpId, kantokuCdValidList);
+        return new RecalculationConverter.ForLoop(
+                   receCheckOptList,
+                   receRecalculationList,
+                   allReceCheckErrList,
+                   allSystemConfigList,
+                   allSyobyoKeikaList,
+                   allIsKantokuCdValidList);
+    }
+
+    public RecalculationConverter.InsideLoop GetDataInsideLoop(int hpId, int sinYm, long ptId, int hokenId)
+    {
+        var sinKouiCountList = _receiptRepository.GetSinKouiCountList(hpId, sinYm, ptId, hokenId);
+        List<string> itemCdList = new();
+        foreach (var sinKouiCount in sinKouiCountList)
         {
-            _receiptRepository.ReleaseResource();
-            _systemConfRepository.ReleaseResource();
-            _ptDiseaseRepository.ReleaseResource();
-            _ordInfRepository.ReleaseResource();
-            _mstItemRepository.ReleaseResource();
-            _todayOdrRepository.ReleaseResource();
-            _insuranceMstRepository.ReleaseResource();
-            _commonMedicalCheck.ReleaseResource();
-            _receSeikyuRepository.ReleaseResource();
-            _drugDetailRepository.ReleaseResource();
+            itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
         }
+        var tenMstByItemCdList = _mstItemRepository.GetTenMstList(hpId, itemCdList);
+        return new RecalculationConverter.InsideLoop(sinKouiCountList, tenMstByItemCdList, itemCdList);
+    }
+
+    public bool SaveReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> newReceCheckErrList)
+    {
+        return _receiptRepository.SaveNewReceCheckErrList(hpId, userId, newReceCheckErrList);
+    }
+
+    public StringBuilder GetErrorTextAfterCheck(int hpId, int seikyuYm, ref StringBuilder errorText, List<long> ptIdList, List<SystemConfModel> systemConfList, List<ReceRecalculationModel> receRecalculationList)
+    {
+        //check use Rosai Receden but not set 災害区分
+        //■災害区分が設定されていません。
+        List<string> rosaiRecedenErrors = new List<string>();
+        if (GetSettingValue(systemConfList, 100003, 0) == 1 && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger())
+        {
+            var rosaiRecedenPts = receRecalculationList.FindAll(p => (p.HokenKbn == 11 || p.HokenKbn == 12) && p.IsPaperRece == 0);
+
+            foreach (var rosaiRecedenPt in rosaiRecedenPts)
+            {
+                if (rosaiRecedenPt.RousaiSaigaiKbn == 1 || rosaiRecedenPt.RousaiSaigaiKbn == 2)
+                {
+                    continue;
+                }
+                rosaiRecedenErrors.Add(string.Format("    {0}/{1} ID:{2} [保険:{3}]", seikyuYm / 100, seikyuYm % 100, rosaiRecedenPt.PtNum, rosaiRecedenPt.HokenId));
+            }
+
+            if (rosaiRecedenErrors.Count > 0)
+            {
+                rosaiRecedenErrors.Insert(0, "■災害区分が設定されていません。");
+                foreach (var error in rosaiRecedenErrors)
+                {
+                    errorText.AppendLine(error);
+                }
+            }
+        }
+
+        //check exist data in RECE_SEIKYU but not exist in RECE_INF
+        //■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。
+        List<string> receSeiKyuErrors = new List<string>();
+        var receSeiKyuModels = _receSeikyuRepository.GetListReceSeikyModel(hpId, seikyuYm, ptIdList);
+        foreach (var receSeiKyuModel in receSeiKyuModels)
+        {
+            if (!receRecalculationList.Any(p => p.PtId == receSeiKyuModel.PtId && p.HokenId == receSeiKyuModel.HokenId && p.SinYm == receSeiKyuModel.SinYm))
+            {
+                receSeiKyuErrors.Add(string.Format("    {0}/{1} ID:{2} [保険:{3}] {4}",
+                    receSeiKyuModel.SinYm / 100, receSeiKyuModel.SinYm % 100, receSeiKyuModel.PtNum, receSeiKyuModel.HokenId, receSeiKyuModel.SeikyuKbnDisplay));
+            }
+        }
+        if (receSeiKyuErrors.Count > 0)
+        {
+            receSeiKyuErrors.Insert(0, "■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。");
+            foreach (var error in receSeiKyuErrors)
+            {
+                errorText.AppendLine(error);
+            }
+        }
+
+        //check patient ZaiganIso(在がん医総）
+        //■週単位計算項目　次月に月またぎで算定要件(暦週)を満たしています。
+        //診療内容を確認してください。
+        if (GetSettingValue(systemConfList, 2028) == 1)
+        {
+            DateTime firstDateOfMonth = CIUtil.IntToDate(seikyuYm * 100 + 1);
+            var lastDateOfMonth = new DateTime(firstDateOfMonth.Year, firstDateOfMonth.Month, DateTime.DaysInMonth(firstDateOfMonth.Year, firstDateOfMonth.Month));
+            var zaiganIsoItems = _drugDetailRepository.GetZaiganIsoItems(hpId, seikyuYm);
+            if (zaiganIsoItems.Count > 0)
+            {
+                var santeiStartDateList = _receiptRepository.GetSanteiStartDateList(hpId, ptIdList, seikyuYm);
+                var santeiEndDateList = _receiptRepository.GetSanteiEndDateList(hpId, ptIdList, seikyuYm);
+
+                //check part of next month
+                if (lastDateOfMonth.DayOfWeek < DayOfWeek.Wednesday)
+                {
+                    List<string> santeiNextMonthErrors = new();
+                    var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), true);
+                    var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
+                    if (keysGroupBy != null)
+                    {
+                        var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
+                                                                                         item?.PtId ?? 0,
+                                                                                         item?.ItemCd ?? string.Empty,
+                                                                                         santeiEndDateList[item?.PtId ?? 0]))
+                                                                     .ToList();
+
+                        var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
+
+                        foreach (var key in keysGroupBy)
+                        {
+                            if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
+                            {
+                                var ptId = key?.PtId ?? 0;
+                                int santeiStartDate = santeiStartDateList.ContainsKey(ptId) ? santeiStartDateList[ptId] : 0;
+                                if (allHasErrorWithSanteiByStartDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiStartDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
+                                {
+                                    var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
+                                    santeiNextMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail?.PtNum, sinKouiDetail?.ItemCd, sinKouiDetail?.ReceName));
+                                }
+                            }
+                        }
+                        if (santeiNextMonthErrors.Count > 0)
+                        {
+                            santeiNextMonthErrors.Insert(0, "■週単位計算項目　次月に月またぎで算定要件(暦週)を満たしています。" +
+                                                            Environment.NewLine + "    診療内容を確認してください。");
+                            foreach (var error in santeiNextMonthErrors)
+                            {
+                                errorText.AppendLine(error);
+                            }
+                        }
+                    }
+                }
+
+                //check part of last month
+                if (firstDateOfMonth.DayOfWeek > DayOfWeek.Wednesday)
+                {
+                    List<string> santeiLastMonthErrors = new List<string>();
+                    var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), false);
+                    var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
+                    if (keysGroupBy != null)
+                    {
+                        var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
+                                                                                          item?.PtId ?? 0,
+                                                                                          item?.ItemCd ?? string.Empty,
+                                                                                          santeiEndDateList[item?.PtId ?? 0]))
+                                                                      .ToList();
+
+                        var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
+
+                        foreach (var key in keysGroupBy)
+                        {
+                            if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
+                            {
+                                int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
+                                if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
+                                {
+                                    var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
+                                    santeiLastMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail?.PtNum, sinKouiDetail?.ItemCd, sinKouiDetail?.ReceName));
+                                }
+                            }
+                        }
+                        if (santeiLastMonthErrors.Any())
+                        {
+                            santeiLastMonthErrors.Insert(0, "■週単位計算項目　前月に月またぎで算定要件(暦週)を満たしています。" +
+                                                            Environment.NewLine + "    診療内容を確認してください。");
+                            foreach (var error in santeiLastMonthErrors)
+                            {
+                                errorText.AppendLine(error);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return errorText;
+    }
+
+    public void ReleaseResource()
+    {
+        _receiptRepository.ReleaseResource();
+        _systemConfRepository.ReleaseResource();
+        _ptDiseaseRepository.ReleaseResource();
+        _ordInfRepository.ReleaseResource();
+        _mstItemRepository.ReleaseResource();
+        _todayOdrRepository.ReleaseResource();
+        _insuranceMstRepository.ReleaseResource();
+        _commonMedicalCheck.ReleaseResource();
+        _receSeikyuRepository.ReleaseResource();
+        _drugDetailRepository.ReleaseResource();
     }
 
     #region Private funciton
@@ -654,28 +805,10 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
         return result;
     }
-
-    internal class BuiErrorModel
-    {
-        public OrdInfDetailModel OdrInfDetail { get; }
-        public int OdrKouiKbn { get; }
-        public int SinDate { get; }
-        public string ItemName { get; }
-        public List<string> Errors { get; }
-
-        public BuiErrorModel(OrdInfDetailModel odrInfDetail, int odrKouiKbn, int sinDate, string itemName)
-        {
-            OdrInfDetail = odrInfDetail;
-            OdrKouiKbn = odrKouiKbn;
-            SinDate = sinDate;
-            ItemName = itemName;
-            Errors = new List<string>();
-        }
-    }
     #endregion
 
     #region Check Error action
-    private List<ReceCheckErrModel> CheckHokenError(ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList)
+    private List<ReceCheckErrModel> CheckHokenError(ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList)
     {
         //expired
         if (receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExpiredEndDateHokenErrCd) && sinKouiCountList.Count > 0)
@@ -834,7 +967,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
+    private List<ReceCheckErrModel> CheckByomeiError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, ref List<BuiErrorModel> errorOdrInfDetails, List<SystemConfModel> systemConfList)
     {
         bool visibleBuiOrderCheck = GetSettingValue(systemConfList, 6003, 0) == 1;
         var ptByomeis = _ptDiseaseRepository.GetByomeiInThisMonth(hpId, recalculationModel.SinYm, recalculationModel.PtId, recalculationModel.HokenId);
@@ -1110,7 +1243,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<SinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList)
+    private List<ReceCheckErrModel> CheckOrderError(int hpId, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceCheckOptModel> receCheckOptList, List<ReceSinKouiCountModel> sinKouiCountList, List<TenItemModel> tenMstModelList, List<SystemConfModel> systemConfList, List<string> itemCdList)
     {
         bool isCheckExceedDosage = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.ExceededDosageOdrErrCd);
         bool isCheckDuplicateOdr = receCheckOptList.Any(p => p.IsInvalid == 0 && p.ErrCd == ReceErrCdConst.DuplicateOdrErrCd);
@@ -1800,7 +1933,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ref StringBuilder errorText, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<SinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
+    private List<ReceCheckErrModel> CheckRosaiError(int seikyuYm, ref StringBuilder errorText, ReceRecalculationModel recalculationModel, List<ReceCheckErrModel> oldReceCheckErrList, List<ReceCheckErrModel> newReceCheckErrList, List<ReceSinKouiCountModel> sinKouiCountList, List<SystemConfModel> systemConfList, List<IsKantokuCdValidModel> allIsKantokuCdValidList, List<SyobyoKeikaModel> allSyobyoKeikaList)
     {
         //check use normal hoken but order Rosai item
         //■健康保険のレセプトで労災項目がオーダーされています。
@@ -1906,7 +2039,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, ref StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<SinKouiCountModel> sinKouiCountList)
+    private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, ref StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
     {
         List<string> errors = new();
         foreach (var sinKouiCount in sinKouiCountList)
@@ -1932,152 +2065,6 @@ public class RecalculationInteractor : IRecalculationInputPort
             }
         }
         return errorTextSinKouiCount;
-    }
-
-    private StringBuilder GetErrorTextAfterCheck(int hpId, int seikyuYm, ref StringBuilder errorText, List<long> ptIdList, List<SystemConfModel> systemConfList, List<ReceRecalculationModel> receRecalculationList)
-    {
-        //check use Rosai Receden but not set 災害区分
-        //■災害区分が設定されていません。
-        List<string> rosaiRecedenErrors = new List<string>();
-        if (GetSettingValue(systemConfList, 100003, 0) == 1 && seikyuYm >= GetSettingParam(systemConfList, 100003, 0).AsInteger())
-        {
-            var rosaiRecedenPts = receRecalculationList.FindAll(p => (p.HokenKbn == 11 || p.HokenKbn == 12) && p.IsPaperRece == 0);
-
-            foreach (var rosaiRecedenPt in rosaiRecedenPts)
-            {
-                if (rosaiRecedenPt.RousaiSaigaiKbn == 1 || rosaiRecedenPt.RousaiSaigaiKbn == 2)
-                {
-                    continue;
-                }
-                rosaiRecedenErrors.Add(string.Format("    {0}/{1} ID:{2} [保険:{3}]", seikyuYm / 100, seikyuYm % 100, rosaiRecedenPt.PtNum, rosaiRecedenPt.HokenId));
-            }
-
-            if (rosaiRecedenErrors.Count > 0)
-            {
-                rosaiRecedenErrors.Insert(0, "■災害区分が設定されていません。");
-                foreach (var error in rosaiRecedenErrors)
-                {
-                    errorText.AppendLine(error);
-                }
-            }
-        }
-
-        //check exist data in RECE_SEIKYU but not exist in RECE_INF
-        //■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。
-        List<string> receSeiKyuErrors = new List<string>();
-        var receSeiKyuModels = _receSeikyuRepository.GetListReceSeikyModel(hpId, seikyuYm, ptIdList);
-        foreach (var receSeiKyuModel in receSeiKyuModels)
-        {
-            if (!receRecalculationList.Any(p => p.PtId == receSeiKyuModel.PtId && p.HokenId == receSeiKyuModel.HokenId && p.SinYm == receSeiKyuModel.SinYm))
-            {
-                receSeiKyuErrors.Add(string.Format("    {0}/{1} ID:{2} [保険:{3}] {4}",
-                    receSeiKyuModel.SinYm / 100, receSeiKyuModel.SinYm % 100, receSeiKyuModel.PtNum, receSeiKyuModel.HokenId, receSeiKyuModel.SeikyuKbnDisplay));
-            }
-        }
-        if (receSeiKyuErrors.Count > 0)
-        {
-            receSeiKyuErrors.Insert(0, "■返戻/月遅れ登録に誤りがあるため、レセプトを作成できません。");
-            foreach (var error in receSeiKyuErrors)
-            {
-                errorText.AppendLine(error);
-            }
-        }
-
-        //check patient ZaiganIso(在がん医総）
-        //■週単位計算項目　次月に月またぎで算定要件(暦週)を満たしています。
-        //診療内容を確認してください。
-        if (GetSettingValue(systemConfList, 2028) == 1)
-        {
-            DateTime firstDateOfMonth = CIUtil.IntToDate(seikyuYm * 100 + 1);
-            var lastDateOfMonth = new DateTime(firstDateOfMonth.Year, firstDateOfMonth.Month, DateTime.DaysInMonth(firstDateOfMonth.Year, firstDateOfMonth.Month));
-            var zaiganIsoItems = _drugDetailRepository.GetZaiganIsoItems(hpId, seikyuYm);
-            if (zaiganIsoItems.Count > 0)
-            {
-                var santeiStartDateList = _receiptRepository.GetSanteiStartDateList(hpId, ptIdList, seikyuYm);
-                var santeiEndDateList = _receiptRepository.GetSanteiEndDateList(hpId, ptIdList, seikyuYm);
-
-                //check part of next month
-                if (lastDateOfMonth.DayOfWeek < DayOfWeek.Wednesday)
-                {
-                    List<string> santeiNextMonthErrors = new();
-                    var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), true);
-                    var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
-                    if (keysGroupBy != null)
-                    {
-                        var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
-                                                                                         item?.PtId ?? 0,
-                                                                                         item?.ItemCd ?? string.Empty,
-                                                                                         santeiEndDateList[item?.PtId ?? 0]))
-                                                                     .ToList();
-
-                        var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
-
-                        foreach (var key in keysGroupBy)
-                        {
-                            if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
-                            {
-                                int santeiStartDate = santeiStartDateList[key?.PtId ?? 0];
-                                if (allHasErrorWithSanteiByStartDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiStartDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
-                                {
-                                    var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
-                                    santeiNextMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail?.PtNum, sinKouiDetail?.ItemCd, sinKouiDetail?.ReceName));
-                                }
-                            }
-                        }
-                        if (santeiNextMonthErrors.Count > 0)
-                        {
-                            santeiNextMonthErrors.Insert(0, "■週単位計算項目　次月に月またぎで算定要件(暦週)を満たしています。" +
-                                                            Environment.NewLine + "    診療内容を確認してください。");
-                            foreach (var error in santeiNextMonthErrors)
-                            {
-                                errorText.AppendLine(error);
-                            }
-                        }
-                    }
-                }
-
-                //check part of last month
-                if (firstDateOfMonth.DayOfWeek > DayOfWeek.Wednesday)
-                {
-                    List<string> santeiLastMonthErrors = new List<string>();
-                    var kouiDetails = _receiptRepository.GetKouiDetailToCheckSantei(hpId, ptIdList, seikyuYm, zaiganIsoItems.Select(p => p.ItemCd).ToList(), false);
-                    var keysGroupBy = kouiDetails.GroupBy(p => new { p.PtId, p.SinYm, p.ItemCd }).Select(p => p.FirstOrDefault());
-                    if (keysGroupBy != null)
-                    {
-                        var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
-                                                                                          item?.PtId ?? 0,
-                                                                                          item?.ItemCd ?? string.Empty,
-                                                                                          santeiEndDateList[item?.PtId ?? 0]))
-                                                                      .ToList();
-
-                        var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
-
-                        foreach (var key in keysGroupBy)
-                        {
-                            if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
-                            {
-                                int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
-                                if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
-                                {
-                                    var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
-                                    santeiLastMonthErrors.Add(string.Format("    {0}/{1} ID:{2} [{3}] {4}", seikyuYm / 100, seikyuYm % 100, sinKouiDetail?.PtNum, sinKouiDetail?.ItemCd, sinKouiDetail?.ReceName));
-                                }
-                            }
-                        }
-                        if (santeiLastMonthErrors.Any())
-                        {
-                            santeiLastMonthErrors.Insert(0, "■週単位計算項目　前月に月またぎで算定要件(暦週)を満たしています。" +
-                                                            Environment.NewLine + "    診療内容を確認してください。");
-                            foreach (var error in santeiLastMonthErrors)
-                            {
-                                errorText.AppendLine(error);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return errorText;
     }
     #endregion
 }
