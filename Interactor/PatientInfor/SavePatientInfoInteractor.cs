@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
+using Entity.Tenant;
 using Helper;
 using Helper.Common;
 using Helper.Constants;
@@ -17,12 +18,14 @@ namespace Interactor.PatientInfor
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private readonly IInsuranceRepository _insuranceRepository;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository, IAmazonS3Service amazonS3Service, IInsuranceRepository insuranceRepository)
         {
             _patientInforRepository = patientInforRepository;
             _systemConfRepository = systemConfRepository;
             _amazonS3Service = amazonS3Service;
+            _insuranceRepository = insuranceRepository;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
@@ -34,7 +37,7 @@ namespace Interactor.PatientInfor
             }
             try
             {
-                IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
+                void HandlerInsuranceScan(int hpId, long ptNum, long ptId)
                 {
                     var listFolders = new List<string>() { CommonConstants.Store, CommonConstants.InsuranceScan };
                     string path = string.Empty;
@@ -45,7 +48,7 @@ namespace Interactor.PatientInfor
                             if (!string.IsNullOrEmpty(item.FileName))
                                 _amazonS3Service.DeleteObjectAsync(item.FileName);
 
-                            yield return item;
+                            _insuranceRepository.DeleteInsuranceScan(hpId, item.SeqNo, inputData.UserId);
                         }
                         else
                         {
@@ -55,16 +58,16 @@ namespace Interactor.PatientInfor
                                 string fileName = $"{ptId.ToString().PadLeft(10, '0')}{item.HokenId}.png";
                                 fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
                                 string pathScan = _amazonS3Service.UploadObjectAsync(path, fileName, item.File, true).Result;
-                                //Create or update
 
-                                yield return new InsuranceScanModel(hpId,
-                                                                    ptId,
-                                                                    item.SeqNo,
-                                                                    item.HokenGrp,
-                                                                    item.HokenId,
-                                                                    pathScan,
-                                                                    Stream.Null,
-                                                                    0);
+                                //Create or update
+                                _insuranceRepository.EntryInsuranceScan(new InsuranceScanModel(hpId,
+                                                                                    ptId,
+                                                                                    item.SeqNo,
+                                                                                    item.HokenGrp,
+                                                                                    item.HokenId,
+                                                                                    pathScan,
+                                                                                    Stream.Null,
+                                                                                    0), inputData.UserId);
 
                                 if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
                                 {
@@ -73,20 +76,31 @@ namespace Interactor.PatientInfor
                             }
                             else
                             {
-                                continue;
+                                _insuranceRepository.EntryInsuranceScan(new InsuranceScanModel(hpId,
+                                                                                   ptId,
+                                                                                   item.SeqNo,
+                                                                                   item.HokenGrp,
+                                                                                   item.HokenId,
+                                                                                   item.FileName,
+                                                                                   Stream.Null,
+                                                                                   0), inputData.UserId);
                             }
                         }
                     }
                 }
 
-                (bool, long) result;
+                (bool success, long ptId) result;
                 if (inputData.Patient.PtId == 0)
                     result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys , HandlerInsuranceScan, inputData.UserId);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                {
+                    HandlerInsuranceScan(inputData.Patient.HpId, inputData.Patient.PtNum, inputData.Patient.PtId);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, inputData.UserId);
+                }
+                   
 
-                if (result.Item1)
-                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.Item2);
+                if (result.success)
+                    return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Successful, result.ptId);
                 else
                     return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>(), SavePatientInfoStatus.Failed, 0);
             }
@@ -98,6 +112,7 @@ namespace Interactor.PatientInfor
             {
                 _patientInforRepository.ReleaseResource();
                 _systemConfRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
             }
         }
 

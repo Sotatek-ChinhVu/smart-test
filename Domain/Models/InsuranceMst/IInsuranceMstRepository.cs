@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Insurance;
 
 namespace Domain.Models.InsuranceMst
 {

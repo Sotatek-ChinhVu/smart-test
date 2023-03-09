@@ -30,5 +30,7 @@ namespace Domain.Models.Insurance
         List<KohiPriorityModel> GetKohiPriorityList();
 
         List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId);
+
+        void EntryInsuranceScan(InsuranceScanModel insuranceScan, int userId);
     }
 }

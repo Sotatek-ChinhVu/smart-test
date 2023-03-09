@@ -1011,7 +1011,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool success, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Action<int, long, long> handlerInsuranceScans, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1208,18 +1208,7 @@ namespace Infrastructure.Repositories
             #endregion Maxmoney
 
             #region insurancesCan
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
-            if(insuranceScanDatas != null && insuranceScanDatas.Any())
-            {
-                TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
-                {
-                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    dest.CreateId = userId;
-                    dest.UpdateId = userId;
-                    return dest;
-                }));
-            }
+            handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
             #endregion
 
             int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
@@ -1271,7 +1260,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1718,50 +1707,6 @@ namespace Infrastructure.Repositories
                 dest.CreateId = userId;
                 return dest;
             }));
-            #endregion
-
-            #region insuranceScan
-            var insuranceScanDatabases = TrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
-            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum, patientInfo.PtId);
-            if (insuranceScanDatas != null && insuranceScanDatas.Any())
-            {
-                foreach(var scan in insuranceScanDatas)
-                {
-                    if(scan.IsDeleted == DeleteTypes.Deleted)
-                    {
-                        var deleteItem = insuranceScanDatabases.FirstOrDefault(x => x.SeqNo == scan.SeqNo);
-                        if(deleteItem is not null)
-                        {
-                            deleteItem.IsDeleted = DeleteTypes.Deleted;
-                            deleteItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                            deleteItem.UpdateId = userId;
-                        }
-                    }
-                    else
-                    {
-                        if(scan.SeqNo == 0) //Create
-                        {
-                            Mapper.Map(scan, new PtHokenScan(), (src, dest) =>
-                            {
-                                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
-                                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                dest.CreateId = userId;
-                                return dest;
-                            });
-                        }
-                        else
-                        {
-                            var updateItem = insuranceScanDatabases.FirstOrDefault(x => x.SeqNo == scan.SeqNo);
-                            if (updateItem is not null)
-                            {
-                                updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                updateItem.UpdateId = userId;
-                                updateItem.FileName = scan.FileName;
-                            }
-                        }
-                    }
-                }
-            }
             #endregion
 
             return (TrackingDataContext.SaveChanges() > 0, patientInfo.PtId);

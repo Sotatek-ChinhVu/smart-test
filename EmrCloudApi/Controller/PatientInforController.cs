@@ -91,6 +91,7 @@ using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -385,10 +386,11 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetInsuranceMasterLinkageResponse>>(presenter.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {
-            var input = new GetPtKyuseiInfInputData(HpId, request.PtId, request.IsDeleted);
+            var input = new GetPtKyuseiInfInputData(1, request.PtId, request.IsDeleted);
             var output = _bus.Handle(input);
 
             var presenter = new GetPtKyuseiInfPresenter();
@@ -407,6 +409,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
         }
 
+        [AllowAnonymous]
         [HttpPost(ApiPath.SavePatientInfo)]
         public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromForm] SavePatientInfoFromFormRequest request)
         {
@@ -414,7 +417,7 @@ namespace EmrCloudApi.Controller
             if (patientInfo is null)
                 return BadRequest();
 
-            PatientInforSaveModel patient = new PatientInforSaveModel(HpId,
+            PatientInforSaveModel patient = new PatientInforSaveModel(1,
                       patientInfo.Patient.PtId,
                       patientInfo.Patient.PtNum,
                       patientInfo.Patient.KanaName,
@@ -452,7 +455,7 @@ namespace EmrCloudApi.Controller
                       patientInfo.Patient.LimitConsFlg,
                       patientInfo.Patient.Memo);
 
-            List<InsuranceModel> insurances = patientInfo.Insurances.Select(x => new InsuranceModel(HpId,
+            List<InsuranceModel> insurances = patientInfo.Insurances.Select(x => new InsuranceModel(1,
                        x.PtId,
                        0,
                        x.SeqNo,
@@ -479,7 +482,7 @@ namespace EmrCloudApi.Controller
                                                 x.GroupCode,
                                                 x.GroupName)).ToList();
 
-            List<HokenInfModel> hokenInfs = patientInfo.HokenInfs.Select(x => new HokenInfModel(HpId,
+            List<HokenInfModel> hokenInfs = patientInfo.HokenInfs.Select(x => new HokenInfModel(1,
                                                                                 x.PtId,
                                                                                 x.HokenId,
                                                                                 x.SeqNo,
@@ -585,7 +588,7 @@ namespace EmrCloudApi.Controller
                                             x.IsAddNew)).ToList();
 
             var insuranceScans = request.ImageScans.Select(x => new InsuranceScanModel(
-                                                                    HpId,
+                                                                    1,
                                                                     0,
                                                                     x.SeqNo,
                                                                     x.HokenGrp,
@@ -604,7 +607,7 @@ namespace EmrCloudApi.Controller
                  patientInfo.ReactSave,
                  patientInfo.MaxMoneys,
                  insuranceScans,
-                 UserId);
+                 2);
             var output = _bus.Handle(input);
 
             if (output.Status == SavePatientInfoStatus.Successful)

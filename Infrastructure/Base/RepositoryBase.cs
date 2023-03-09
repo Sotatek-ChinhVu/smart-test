@@ -23,8 +23,10 @@ namespace Infrastructure.Base
             {
                 if (_trackingDataContext == null)
                 {
+                    System.Console.WriteLine("DI get tracking context before get provider" + _trackingDataContext?.GetHashCode());
                     _trackingDataContext = _tenantProvider.GetTrackingTenantDataContext();
                 }
+                System.Console.WriteLine("DI create tracking context " + _trackingDataContext.GetHashCode());
                 return _trackingDataContext;
             }
         }
@@ -36,14 +38,18 @@ namespace Infrastructure.Base
             {
                 if (_noTrackingDataContext == null)
                 {
+                    System.Console.WriteLine("DI get no tracking context before get provider " + _trackingDataContext?.GetHashCode());
                     _noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext();
                 }
+                System.Console.WriteLine("DI create no tracking context " + _noTrackingDataContext.GetHashCode());
                 return _noTrackingDataContext;
             }
         }
 
         public void DisposeDataContext()
         {
+            System.Console.WriteLine("DI disposable tracking " + _trackingDataContext?.GetHashCode());
+            System.Console.WriteLine("DI disposable no  tracking " + _noTrackingDataContext?.GetHashCode());
             _tenantProvider.DisposeDataContext();
         }
     }
