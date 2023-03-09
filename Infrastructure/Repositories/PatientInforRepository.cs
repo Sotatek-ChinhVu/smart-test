@@ -12,6 +12,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -551,6 +552,56 @@ namespace Infrastructure.Repositories
                 if (ptIds.Count == 0) return new();
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
             }
+
+            // Search with TenMst
+            var listTenMstSearch = input.TenMsts;
+            if (listTenMstSearch.Count > 0)
+            {
+                var odrInf = NoTrackingDataContext.OdrInfs.Where(x => x.IsDeleted == 0);
+                int index = 0;
+                IQueryable<long> ptOdrDetailTemp = Enumerable.Empty<long>().AsQueryable();
+                while (index < listTenMstSearch.Count)
+                {
+                    var item = listTenMstSearch[index];
+                    bool isComment = item.IsComment;
+                    var ptOdrDetailNexts = NoTrackingDataContext.OdrInfDetails.Where(odr => odrInf.Any(x => x.HpId == odr.HpId
+                                                                                                             && x.PtId == odr.PtId
+                                                                                                             && x.SinDate == odr.SinDate
+                                                                                                             && x.RaiinNo == odr.RaiinNo
+                                                                                                             && x.RpNo == odr.RpNo
+                                                                                                             && x.RpEdaNo == odr.RpEdaNo
+                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                           .Select(x => x.PtId).Distinct();
+                    if (index == 0)
+                    {
+                        ptOdrDetailTemp = NoTrackingDataContext.OdrInfDetails.Where(odr => odrInf.Any(x => x.HpId == odr.HpId
+                                                                                                             && x.PtId == odr.PtId
+                                                                                                             && x.SinDate == odr.SinDate
+                                                                                                             && x.RaiinNo == odr.RaiinNo
+                                                                                                             && x.RpNo == odr.RpNo
+                                                                                                             && x.RpEdaNo == odr.RpEdaNo
+                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                          .Select(x => x.PtId).Distinct();
+                    }
+                    else
+                    {
+                        if (!input.IsOrderOr)
+                        {
+                            ptOdrDetailTemp = ptOdrDetailTemp.Where(odr => ptOdrDetailNexts.Any(x => x == odr));
+                        }
+                        else
+                        {
+                            ptOdrDetailTemp = ptOdrDetailTemp.Union(ptOdrDetailNexts).Distinct();
+                        }
+                    }
+
+                    index++;
+                }
+                ptInfQuery = ptInfQuery.Where(pt => ptOdrDetailTemp.Any(x => x == pt.PtId));
+            }
+
             // Department
             if (input.DepartmentId > 0)
             {

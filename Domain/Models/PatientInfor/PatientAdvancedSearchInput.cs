@@ -9,8 +9,8 @@ public class PatientAdvancedSearchInput
         string toSpecialPublicExpensesNum, int hokenNum, int kohi1Num, int kohi1EdaNo, int kohi2Num, int kohi2EdaNo,
         int kohi3Num, int kohi3EdaNo, int kohi4Num, int kohi4EdaNo, List<PatientGroupSearchInput> patientGroups,
         LogicalOperator orderLogicalOperator, List<string> orderItemCodes, int departmentId, int doctorId,
-        LogicalOperator byomeiLogicalOperator, List<ByomeiSearchInput> byomeis, int byomeiStartDate,
-        int byomeiEndDate, int resultKbn, bool isSuspectedDisease)
+        LogicalOperator byomeiLogicalOperator, List<ByomeiSearchInput> byomeis, List<TenMstSearchInput> tenMsts, int byomeiStartDate,
+        int byomeiEndDate, int resultKbn, bool isSuspectedDisease, bool isOrderOr)
     {
         FromPtNum = fromPtNum;
         ToPtNum = toPtNum;
@@ -50,10 +50,12 @@ public class PatientAdvancedSearchInput
         DoctorId = doctorId;
         ByomeiLogicalOperator = byomeiLogicalOperator;
         Byomeis = byomeis;
+        TenMsts = tenMsts;
         ByomeiStartDate = byomeiStartDate;
         ByomeiEndDate = byomeiEndDate;
         ResultKbn = resultKbn;
         IsSuspectedDisease = isSuspectedDisease;
+        IsOrderOr = isOrderOr;
     }
 
     // 基本情報
@@ -103,10 +105,14 @@ public class PatientAdvancedSearchInput
     // 傷病名
     public LogicalOperator ByomeiLogicalOperator { get; private set; }
     public List<ByomeiSearchInput> Byomeis { get; private set; }
+
+    public List<TenMstSearchInput> TenMsts { get; private set; }
+
     public int ByomeiStartDate { get; private set; }
     public int ByomeiEndDate { get; private set; }
     public int ResultKbn { get; private set; }
     public bool IsSuspectedDisease { get; private set; }
+    public bool IsOrderOr { get; private set; }
 }
 
 public class PatientGroupSearchInput
@@ -133,6 +139,23 @@ public class ByomeiSearchInput
     public string Code { get; private set; }
     public string Name { get; private set; }
     public bool IsFreeWord { get; private set; }
+}
+
+
+public class TenMstSearchInput
+{
+    public TenMstSearchInput(string itemCd, string inputName, bool isComment)
+    {
+        ItemCd = itemCd;
+        InputName = inputName;
+        IsComment = isComment;
+    }
+
+    public string ItemCd { get; private set; }
+
+    public string InputName { get; private set; }
+
+    public bool IsComment { get; private set; }
 }
 
 public enum LogicalOperator
