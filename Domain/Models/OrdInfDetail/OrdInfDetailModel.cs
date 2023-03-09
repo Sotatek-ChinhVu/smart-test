@@ -2,6 +2,7 @@
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.Xml.Linq;
 using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfDetails
@@ -62,6 +63,7 @@ namespace Domain.Models.OrdInfDetails
         public string OdrUnitName { get; private set; }
         public string CenterItemCd1 { get; private set; }
         public string CenterItemCd2 { get; private set; }
+        public bool IsDummy { get; private set; }
         public int SinYm
         {
             get
@@ -302,6 +304,41 @@ namespace Domain.Models.OrdInfDetails
             PtId = ptId;
         }
 
+        public OrdInfDetailModel(int hpId, long ptId, int sinDate, long raiinNo, string itemCd, string itemName, int sinKouiKbn, long rpNo, int rpEdaNo, int rowNo
+                )
+        {
+            HpId = hpId;
+            PtId = ptId;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            SinDate = sinDate;
+            SinKouiKbn = sinKouiKbn;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            RowNo = rowNo;
+            ItemName = string.Empty;
+            UnitName = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            IpnCd = string.Empty;
+            IpnName = string.Empty;
+            JissiMachine = string.Empty;
+            ReqCd = string.Empty;
+            Bunkatu = string.Empty;
+            CmtName = string.Empty;
+            CmtOpt = string.Empty;
+            FontColor = string.Empty;
+            MasterSbt = string.Empty;
+            YjCd = string.Empty;
+            YohoSets = new();
+            CnvUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+        }
+
         public bool IsSpecialItem
         {
             get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
@@ -492,6 +529,12 @@ namespace Domain.Models.OrdInfDetails
         public OrdInfDetailModel ChangeSuryo(double suryo)
         {
             Suryo = suryo;
+            return this;
+        }
+
+        public OrdInfDetailModel ChangeIsDummy(bool isDummy)
+        {
+            IsDummy = isDummy;
             return this;
         }
     }

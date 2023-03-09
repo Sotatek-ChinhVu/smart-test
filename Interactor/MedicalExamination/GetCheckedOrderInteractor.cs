@@ -2,7 +2,10 @@
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.Reception;
+using Entity.Tenant;
 using Helper.Constants;
+using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace Interactor.MedicalExamination
@@ -10,9 +13,14 @@ namespace Interactor.MedicalExamination
     public class GetCheckedOrderInteractor : IGetCheckedOrderInputPort
     {
         private readonly IMedicalExaminationRepository _medicalExaminationRepository;
-        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository)
+        private readonly IReceptionRepository _receptionRepository;
+        private readonly ICalculateService _calculateRepository;
+
+        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository, IReceptionRepository receptionRepository, ICalculateService calculateRepository)
         {
             _medicalExaminationRepository = medicalExaminationRepository;
+            _receptionRepository = receptionRepository;
+            _calculateRepository = calculateRepository;
         }
 
         public GetCheckedOrderOutputData Handle(GetCheckedOrderInputData inputData)
@@ -59,7 +67,10 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidTantoId, new());
                 }
-
+                if (inputData.HokenPid <= 0)
+                {
+                    return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidHokenPid, new());
+                }
 
                 if (inputData.PrimaryDoctor < 0)
                 {
@@ -67,12 +78,86 @@ namespace Interactor.MedicalExamination
                 }
 
                 var ordInfs = inputData.OdrInfItems.Select(o => new OrdInfModel(
-                        o.InOutKbn,
+                        o.HpId,
+                        o.RaiinNo,
+                        o.RpNo,
+                        o.RpEdaNo,
+                        o.PtId,
+                        o.SinDate,
+                        o.HokenPid,
                         o.OdrKouiKbn,
-                        o.OdrInfDetailItems.Select(od => new OrdInfDetailModel(
+                        o.RpName,
+                        o.InoutKbn,
+                        o.SikyuKbn,
+                        o.SyohoSbt,
+                        o.SanteiKbn,
+                        o.TosekiKbn,
+                        o.DaysCnt,
+                        o.SortNo,
+                        o.IsDeleted,
+                        o.Id,
+                        o.OdrDetails.Select(od => new OrdInfDetailModel(
+                                od.HpId,
+                                od.RaiinNo,
+                                od.RpNo,
+                                od.RpEdaNo,
+                                od.RowNo,
+                                od.PtId,
+                                od.SinDate,
+                                od.SinKouiKbn,
                                 od.ItemCd,
-                                od.SinKouiKbn
-                            )).ToList()
+                                od.ItemName,
+                                od.Suryo,
+                                od.UnitName,
+                                od.UnitSbt,
+                                od.TermVal,
+                                od.KohatuKbn,
+                                od.SyohoKbn,
+                                od.SyohoLimitKbn,
+                                od.DrugKbn,
+                                od.YohoKbn,
+                                od.Kokuji1,
+                                od.Kokuji2,
+                                od.IsNodspRece,
+                        od.IpnCd,
+                                string.Empty,
+                                od.JissiKbn,
+                                od.JissiDate,
+                                od.JissiId,
+                                od.JissiMachine,
+                                od.ReqCd,
+                                od.Bunkatu,
+                                od.CmtName,
+                                od.CmtOpt,
+                                od.FontColor,
+                                od.CommentNewline,
+                                string.Empty,
+                                o?.InoutKbn ?? 0,
+                                0,
+                                true,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                "",
+                                new List<YohoSetMstModel>(),
+                                0,
+                                0,
+                                "",
+                                "",
+                                "",
+                                ""
+                            )).ToList(),
+                        DateTime.MinValue,
+                        0,
+                        "",
+                        DateTime.MinValue,
+                        0,
+                        ""
                     )).ToList();
 
                 var diseases = inputData.DiseaseItems.Select(i => new PtDiseaseModel(
@@ -106,7 +191,11 @@ namespace Interactor.MedicalExamination
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.YakkuZai(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, ordInfs));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.SiIkuji(inputData.HpId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, isJouhou, inputData.SyosaisinKbn));
 
-                    //checkingOrderModelList.AddRange(OnlineIgaku(allOdrInfDetail));
+                    var checkOrdInfModels = _medicalExaminationRepository.TrialCalculate(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.HokenPid, inputData.SinDate, checkedOrderModelList);
+
+                    var allOrdInf = checkOrdInfModels.Union(ordInfs);
+                    var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
+                    _calculateRepository.CallCalculate(, )
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.Zanyaku(inputData.HpId, inputData.SinDate, allOdrInfDetail, ordInfs));
                 }
 

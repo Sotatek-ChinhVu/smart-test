@@ -41,11 +41,12 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("RunTrialCalculate")]
         public ActionResult RunTrialCalculate([FromBody] RunTraialCalculateRequest calculateRequest)
         {
-            _ikaCalculate.RunTraialCalculate(
+            var data = _ikaCalculate.RunTraialCalculate(
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
-            return Ok();
+
+            return Ok(data.Item1.Select(d => d.ItemCd).Distinct().ToList());
         }
     }
 }
