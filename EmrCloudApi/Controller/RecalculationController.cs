@@ -62,7 +62,7 @@ public class RecalculationController : AuthorizeControllerBase
             errorText.Append(errorTextSinKouiCount);
             errorText = _recalculationService.GetErrorTextAfterCheck(HpId, request.SinYm, ref errorText, request.PtIdList, dataForLoop.AllSystemConfigList, dataForLoop.ReceRecalculationList);
 
-            if (!_recalculationService.SaveReceCheckErrList(HpId, UserId, newReceCheckErrList))
+            if (cancellationToken.IsCancellationRequested || !_recalculationService.SaveReceCheckErrList(HpId, UserId, newReceCheckErrList))
             {
                 AddMessageCheckErrorInMonth(false, 3, allCheckCount, successCount, string.Empty);
             }
