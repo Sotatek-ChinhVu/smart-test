@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.Accounting;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Accounting.CheckAccountingStatus;
+using UseCase.Accounting.CheckOpenAccounting;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
@@ -152,6 +153,18 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetMeiHoGaiResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.CheckOpenAccounting)]
+        public ActionResult<Response<CheckOpenAccountingResponse>> GetList([FromQuery] CheckOpenAccountingRequest request)
+        {
+            var input = new CheckOpenAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckOpenAccountingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckOpenAccountingResponse>>(presenter.Result);
+        }
+        
         [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {
