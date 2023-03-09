@@ -89,7 +89,7 @@ public class SearchPatientInfoAdvancedRequest
 
     public List<ByomeiSearchInput> Byomeis { get; set; } = new();
 
-    public List<TenMstSearchInput> TenMsts { get; private set; } = new();
+    public List<TenMstSearchInput> TenMsts { get; set; } = new();
 
     public int ByomeiStartDate { get; set; }
 
