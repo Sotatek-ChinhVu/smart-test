@@ -77,8 +77,6 @@ public class SearchPatientInfoAdvancedRequest
     // オーダー
     public LogicalOperator OrderLogicalOperator { get; set; }
 
-    public List<string> OrderItemCodes { get; set; } = new();
-
     public int DepartmentId { get; set; }
 
     public int DoctorId { get; set; }

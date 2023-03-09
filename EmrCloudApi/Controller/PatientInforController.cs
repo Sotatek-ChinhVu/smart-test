@@ -681,7 +681,6 @@ namespace EmrCloudApi.Controller
                     request.Kohi4EdaNo,
                     request.PatientGroups,
                     request.OrderLogicalOperator,
-                    request.OrderItemCodes,
                     request.DepartmentId,
                     request.DoctorId,
                     request.ByomeiLogicalOperator,

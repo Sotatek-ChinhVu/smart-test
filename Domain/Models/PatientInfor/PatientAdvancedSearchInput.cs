@@ -8,7 +8,7 @@ public class PatientAdvancedSearchInput
         long toInsuranceNum, long fromPublicExpensesNum, long toPublicExpensesNum, string fromSpecialPublicExpensesNum,
         string toSpecialPublicExpensesNum, int hokenNum, int kohi1Num, int kohi1EdaNo, int kohi2Num, int kohi2EdaNo,
         int kohi3Num, int kohi3EdaNo, int kohi4Num, int kohi4EdaNo, List<PatientGroupSearchInput> patientGroups,
-        LogicalOperator orderLogicalOperator, List<string> orderItemCodes, int departmentId, int doctorId,
+        LogicalOperator orderLogicalOperator, int departmentId, int doctorId,
         LogicalOperator byomeiLogicalOperator, List<ByomeiSearchInput> byomeis, List<TenMstSearchInput> tenMsts, int byomeiStartDate,
         int byomeiEndDate, int resultKbn, bool isSuspectedDisease, bool isOrderOr)
     {
@@ -45,7 +45,6 @@ public class PatientAdvancedSearchInput
         Kohi4EdaNo = kohi4EdaNo;
         PatientGroups = patientGroups;
         OrderLogicalOperator = orderLogicalOperator;
-        OrderItemCodes = orderItemCodes;
         DepartmentId = departmentId;
         DoctorId = doctorId;
         ByomeiLogicalOperator = byomeiLogicalOperator;
@@ -98,7 +97,6 @@ public class PatientAdvancedSearchInput
 
     // オーダー
     public LogicalOperator OrderLogicalOperator { get; private set; }
-    public List<string> OrderItemCodes { get; private set; }
     public int DepartmentId { get; private set; }
     public int DoctorId { get; private set; }
 

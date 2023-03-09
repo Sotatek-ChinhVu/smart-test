@@ -521,38 +521,6 @@ namespace Infrastructure.Repositories
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
 
-            // Orders
-            if (input.OrderItemCodes.Any())
-            {
-                var ptIds = new List<long>();
-                var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails;
-                var trimmedItemCodes = input.OrderItemCodes.Select(code => code.Trim()).ToList();
-                if (input.OrderLogicalOperator == LogicalOperator.Or)
-                {
-                    ptIds = odrInfDetailQuery.Where(o => trimmedItemCodes.Contains(o.ItemCd!.Trim())).Select(o => o.PtId).Distinct().ToList();
-                }
-                else if (input.OrderLogicalOperator == LogicalOperator.And)
-                {
-                    var firstItemCode = trimmedItemCodes.First();
-                    var ptIdsByOrdersQuery = odrInfDetailQuery.Where(o => o.ItemCd!.Trim() == firstItemCode.Trim()).Select(p => p.PtId).Distinct();
-                    // Inner join with another groups
-                    for (int i = 1; i < trimmedItemCodes.Count; i++)
-                    {
-                        var anotherItemCode = trimmedItemCodes[i];
-                        ptIdsByOrdersQuery = (
-                            from ptId in ptIdsByOrdersQuery
-                            join anotherOdrInfDetail in odrInfDetailQuery on ptId equals anotherOdrInfDetail.PtId
-                            where anotherOdrInfDetail.ItemCd!.Trim() == anotherItemCode
-                            select ptId
-                        ).Distinct();
-                    }
-                    ptIds = ptIdsByOrdersQuery.ToList();
-                }
-
-                if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
-            }
-
             // Search with TenMst
             var listTenMstSearch = input.TenMsts;
             if (listTenMstSearch.Count > 0)
