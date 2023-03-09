@@ -1364,58 +1364,48 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool? CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
+        public byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
         {
             var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.Any(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
 
-            if (!checkStatusRaiinNo) return false;
+            if (!checkStatusRaiinNo) return byte.MinValue;
 
             int numberCheck = 0;
 
             var isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
 
-            while (numberCheck < 50 && (isCompletedCalculation != null && !isCompletedCalculation.Value))
+            while (numberCheck < 50 && (isCompletedCalculation == byte.MinValue))
             {
                 Thread.Sleep(100);
                 numberCheck++;
                 isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
             }
 
-            if (isCompletedCalculation == null)
-            {
-                return null;
-            }
-            else
-            {
-                return isCompletedCalculation != null &&
-                       isCompletedCalculation.Value;
-            }
+            return isCompletedCalculation;
         }
 
-        public bool? CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
+        public byte CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
         {
-            var timeMax = NoTrackingDataContext.CalcStatus.Where(item =>
+            List<CalcStatus> calcStatuses = NoTrackingDataContext.CalcStatus.Where(item =>
                     item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
-                    item.CalcMode == calcMode)
-                .OrderByDescending(item => item.CreateDate).FirstOrDefault();
+                    item.CalcMode == calcMode).ToList();
+            DateTime maxTime = calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max();
 
-            if (timeMax == null)
-                return true;
+            if (maxTime == DateTime.MinValue)
+                return 2;
 
-            var listStatus = NoTrackingDataContext.CalcStatus.Where(item =>
-                item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
-                item.CalcMode == calcMode && item.CreateDate == DateTime.SpecifyKind(timeMax.CreateDate, DateTimeKind.Utc)).ToList();
+            var listStatus = calcStatuses.Where(item => item.CreateDate == maxTime).ToList();
 
             if (!listStatus.Any())
-                return true;
+                return byte.MinValue;
 
             foreach (var item in listStatus)
             {
                 if (item.Status != 8 && item.Status != 9)
-                    return false;
+                    return byte.MinValue;
             }
 
-            return true;
+            return 1;
         }
 
         public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)

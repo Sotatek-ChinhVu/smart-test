@@ -9,6 +9,6 @@ namespace UseCase.Accounting.CheckOpenAccounting
             Status = status;
         }
 
-        public CheckOpenAccountingStatus Status { get; set; }
+        public CheckOpenAccountingStatus Status { get; private set; }
     }
 }

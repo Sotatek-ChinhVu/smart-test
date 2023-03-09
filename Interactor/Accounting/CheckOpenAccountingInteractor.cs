@@ -14,11 +14,11 @@ namespace Interactor.Accounting
         {
             var checkIsOpen = _accountingRepository.CheckIsOpenAccounting(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
 
-            if (checkIsOpen == null)
+            if (checkIsOpen == byte.MinValue)
             {
                 return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.NoPaymentInfo);
             }
-            else if (checkIsOpen.Value == false)
+            else if (checkIsOpen == 2)
             {
                 return new CheckOpenAccountingOutputData(CheckOpenAccountingStatus.TryAgainLater);
             }
