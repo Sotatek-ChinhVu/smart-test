@@ -1239,6 +1239,27 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
+    public List<ReceCmtModel> GetReceCmtList(int hpId, long ptId)
+    {
+        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                 && item.PtId == ptId
+                                                                 && item.IsDeleted == DeleteTypes.None)
+                                                     .GroupBy(item => new { item.SinYm, item.HokenId })
+                                                     .Select(item => item.FirstOrDefault())
+                                                     .ToList();
+
+        List<ReceCmtModel> result = new();
+        foreach (var item in receCmts)
+        {
+            if (item == null)
+            {
+                break;
+            }
+            result.Add(ConvertToReceCmtModel(item));
+        }
+        return result;
+    }
+
     public bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList)
     {
         var receCmtUpdateList = receCmtList.Where(item => item.Id > 0).ToList();

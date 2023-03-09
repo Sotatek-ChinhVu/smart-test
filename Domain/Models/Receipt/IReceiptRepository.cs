@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
@@ -11,6 +10,8 @@ public interface IReceiptRepository : IRepositoryBase
     List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
     List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId);
+
+    List<ReceCmtModel> GetReceCmtList(int hpId, long ptId);
 
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
