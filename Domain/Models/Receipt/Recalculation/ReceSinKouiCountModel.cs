@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.Receipt.Recalculation;
 
-public class SinKouiCountModel
+public class ReceSinKouiCountModel
 {
-    public SinKouiCountModel(List<PtHokenPatternModel> ptHokenPatterns, List<SinKouiDetailModel> sinKouiDetailModels, long ptId, int sinDate, long raiinNo, bool isFirstVisit, bool isReVisit, bool existSameFirstVisit)
+    public ReceSinKouiCountModel(List<PtHokenPatternModel> ptHokenPatterns, List<SinKouiDetailModel> sinKouiDetailModels, long ptId, int sinDate, long raiinNo, bool isFirstVisit, bool isReVisit, bool existSameFirstVisit)
     {
         PtHokenPatterns = ptHokenPatterns;
         SinKouiDetailModels = sinKouiDetailModels;
