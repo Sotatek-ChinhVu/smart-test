@@ -1,6 +1,7 @@
 ﻿using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Common;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
 using Domain.Models.InsuranceMst;
@@ -33,6 +34,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IInsuranceMstRepository _insuranceMstRepository;
     private readonly IReceSeikyuRepository _receSeikyuRepository;
     private readonly IDrugDetailRepository _drugDetailRepository;
+    private readonly IObserver _observer;
 
     private const string _hokenChar = "0";
     private const string _kohi1Char = "1";
@@ -46,7 +48,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository, IObserver observer)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -58,6 +60,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         _insuranceMstRepository = insuranceMstRepository;
         _receSeikyuRepository = receSeikyuRepository;
         _drugDetailRepository = drugDetailRepository;
+        _observer = observer;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
@@ -101,6 +104,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
                 newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
                 errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+                _observer.Update(errorTextSinKouiCount.ToString() + "okok");
             }
             errorText.Append(errorTextSinKouiCount);
             errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, ref errorText, ptIdList, systemConfigList, receRecalculationList);

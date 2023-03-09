@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Common;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Receipt;
 using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Requests.Receipt.RequestItem;
@@ -6,6 +7,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
 using UseCase.Receipt.GetDiseaseReceList;
@@ -27,7 +29,7 @@ using UseCase.Receipt.SaveReceCheckOpt;
 namespace EmrCloudApi.Controller;
 
 [Route("api/[controller]")]
-public class ReceiptController : AuthorizeControllerBase
+public class ReceiptController : AuthorizeControllerBase, IObserver
 {
     private readonly UseCaseBus _bus;
     public ReceiptController(UseCaseBus bus, IUserService userService) : base(userService)
@@ -342,6 +344,13 @@ public class ReceiptController : AuthorizeControllerBase
                     item.IsChecked ? 1 : 0,
                     item.SortNo,
                     item.IsDeleted);
+    }
+
+    public void Update(string mess)
+    {
+        var resultForFrontEnd = Encoding.UTF8.GetBytes(mess);
+        HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+        HttpContext.Response.Body.FlushAsync();
     }
     #endregion
 }
