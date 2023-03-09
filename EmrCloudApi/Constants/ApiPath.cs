@@ -209,6 +209,7 @@
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
+        public const string HistoryReceCmt = "HistoryReceCmt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

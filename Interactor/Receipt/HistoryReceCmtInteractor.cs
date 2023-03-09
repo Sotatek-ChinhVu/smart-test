@@ -23,7 +23,7 @@ public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
         {
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
             var hokenInfList = insuranceData.ListHokenInf;
-            var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.PtId);
+            var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0);
 
             var result = ConvertToResult(hokenInfList, receCmtList);
             return new HistoryReceCmtOutputData(result, HistoryReceCmtStatus.Successed);
@@ -38,7 +38,7 @@ public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
     private List<HistoryReceCmtOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<ReceCmtModel> receCmtList)
     {
         List<HistoryReceCmtOutputItem> result = new();
-        var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().ToList();
+        var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
             var receCmtOutputList = receCmtList.Where(item => item.SinYm == sinYm)

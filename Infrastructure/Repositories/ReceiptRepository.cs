@@ -1229,34 +1229,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId)
     {
         var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.SinYm == sinYm
+                                                                 && (sinYm == 0 || item.SinYm == sinYm)
                                                                  && item.PtId == ptId
-                                                                 && item.HokenId == hokenId
+                                                                 && (hokenId == 0 || item.HokenId == hokenId)
                                                                  && item.IsDeleted == DeleteTypes.None)
                                                      .ToList();
 
         var result = receCmts.Select(item => ConvertToReceCmtModel(item)).ToList();
-        return result;
-    }
-
-    public List<ReceCmtModel> GetReceCmtList(int hpId, long ptId)
-    {
-        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
-                                                                 && item.PtId == ptId
-                                                                 && item.IsDeleted == DeleteTypes.None)
-                                                     .GroupBy(item => new { item.SinYm, item.HokenId })
-                                                     .Select(item => item.FirstOrDefault())
-                                                     .ToList();
-
-        List<ReceCmtModel> result = new();
-        foreach (var item in receCmts)
-        {
-            if (item == null)
-            {
-                break;
-            }
-            result.Add(ConvertToReceCmtModel(item));
-        }
         return result;
     }
 

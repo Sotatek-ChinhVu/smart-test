@@ -11,8 +11,6 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<ReceCmtModel> GetReceCmtList(int hpId, long ptId);
-
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
     List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId);

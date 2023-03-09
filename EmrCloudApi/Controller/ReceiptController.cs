@@ -16,6 +16,7 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.HistoryReceCmt;
 using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
@@ -224,6 +225,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<RecalculationResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.HistoryReceCmt)]
+    public ActionResult<Response<HistoryReceCmtResponse>> HistoryReceCmt([FromQuery] HistoryReceCmtRequest request)
+    {
+        var input = new HistoryReceCmtInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new HistoryReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<HistoryReceCmtResponse>>(presenter.Result);
     }
 
     #region Private function
