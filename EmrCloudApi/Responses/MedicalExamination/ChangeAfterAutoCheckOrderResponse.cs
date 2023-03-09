@@ -1,14 +1,14 @@
-﻿using UseCase.MedicalExamination.UpsertTodayOrd;
+﻿using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
 
 namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class ChangeAfterAutoCheckOrderResponse
     {
-        public ChangeAfterAutoCheckOrderResponse(List<OdrInfItemInputData> odrInfItems)
+        public ChangeAfterAutoCheckOrderResponse(List<ChangeAfterAutoCheckOrderItem> odrInfItems)
         {
             OdrInfItems = odrInfItems;
         }
 
-        public List<OdrInfItemInputData> OdrInfItems { get; private set; }
+        public List<ChangeAfterAutoCheckOrderItem> OdrInfItems { get; private set; }
     }
 }

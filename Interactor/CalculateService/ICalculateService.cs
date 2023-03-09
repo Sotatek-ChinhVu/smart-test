@@ -1,11 +1,12 @@
 ﻿using Domain.Models.CalculateModel;
-using Helper.Enum;
+using UseCase.Accounting.GetMeiHoGai;
+using UseCase.Accounting.Recaculate;
 
 namespace Interactor.CalculateService
 {
     public interface ICalculateService
     {
-        Task<string> CallCalculate(CalculateApiPath path, object inputData);
-        SinMeiDataModelDto GetSinMeiList(CalculateApiPath path, object inputData);
+        SinMeiDataModelDto GetSinMeiList(GetSinMeiDtoInputData inputData);
+        bool RunCalculate(RecaculationInputDto inputData);
     }
 }
