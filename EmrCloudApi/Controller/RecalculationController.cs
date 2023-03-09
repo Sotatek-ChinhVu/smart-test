@@ -1,6 +1,8 @@
 ﻿using Domain.Models.Receipt;
 using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Services;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -23,6 +25,8 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
+            Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
+
             HttpContext.Response.ContentType = "application/json";
             HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
@@ -70,9 +74,16 @@ public class RecalculationController : AuthorizeControllerBase
         }
         finally
         {
+            Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
+
             _recalculationService.ReleaseResource();
             HttpContext.Response.Body.Close();
         }
+    }
+
+    private void UpdateRecalculationStatus(RecalculationStatus status)
+    {
+
     }
 
     private void AddMessageCheckErrorInMonth(bool done, int type, int length, int successCount, string messager)
