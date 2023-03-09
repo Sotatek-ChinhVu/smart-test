@@ -198,7 +198,8 @@ public class RecalculationService : IRecalculationService
                         {
                             if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
                             {
-                                int santeiStartDate = santeiStartDateList[key?.PtId ?? 0];
+                                var ptId = key?.PtId ?? 0;
+                                int santeiStartDate = santeiStartDateList.ContainsKey(ptId) ? santeiStartDateList[ptId] : 0;
                                 if (allHasErrorWithSanteiByStartDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiStartDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
                                 {
                                     var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
