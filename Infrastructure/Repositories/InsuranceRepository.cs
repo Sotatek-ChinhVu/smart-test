@@ -163,8 +163,9 @@ namespace Infrastructure.Repositories
 
                 HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo
                                                                 && h.HokenEdaNo == item.HokenEdaNo
-                                                                && h.StartDate <= sinDate
-                                                                && sinDate <= h.EndDate);
+                                                                && (sinDate == 0
+                                                                    || (h.StartDate <= sinDate
+                                                                        && sinDate <= h.EndDate)));
                 if (hokenMst is null)
                 {
                     hokenMst = hokenMstList.Where(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo)
@@ -1540,18 +1541,18 @@ namespace Infrastructure.Repositories
         {
             Stream nullMemory = Stream.Null;
             var datas = NoTrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
-            if(datas.Any())
+            if (datas.Any())
             {
                 return datas.Select(x => new InsuranceScanModel(
-                                    x.HpId, 
-                                    x.PtId, 
+                                    x.HpId,
+                                    x.PtId,
                                     x.SeqNo,
                                     x.HokenGrp,
                                     x.HokenId,
-                                    x.FileName ?? string.Empty, 
-                                    nullMemory, 
+                                    x.FileName ?? string.Empty,
+                                    nullMemory,
                                     x.IsDeleted)).ToList();
-            }   
+            }
             else
             {
                 return new List<InsuranceScanModel>();

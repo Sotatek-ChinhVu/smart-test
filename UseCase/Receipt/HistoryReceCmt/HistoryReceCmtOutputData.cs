@@ -4,13 +4,13 @@ namespace UseCase.Receipt.HistoryReceCmt;
 
 public class HistoryReceCmtOutputData : IOutputData
 {
-    public HistoryReceCmtOutputData(List<ReceCmtItem> receCmtList, HistoryReceCmtStatus status)
+    public HistoryReceCmtOutputData(List<HistoryReceCmtOutputItem> receCmtList, HistoryReceCmtStatus status)
     {
         ReceCmtList = receCmtList;
         Status = status;
     }
 
-    public List<ReceCmtItem> ReceCmtList { get; private set; }
+    public List<HistoryReceCmtOutputItem> ReceCmtList { get; private set; }
 
     public HistoryReceCmtStatus Status { get; private set; }
 }

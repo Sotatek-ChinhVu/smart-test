@@ -11,8 +11,6 @@ namespace Domain.Models.Insurance
 
         IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true);
 
-        IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, int sinDate, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true);
-
         bool CheckExistHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds);
 
         bool CheckExistHokenId(int hokenId);
