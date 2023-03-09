@@ -16,6 +16,7 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.HistoryReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -213,6 +214,17 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.HistoryReceCmt)]
+    public ActionResult<Response<HistoryReceCmtResponse>> HistoryReceCmt([FromQuery] HistoryReceCmtRequest request)
+    {
+        var input = new HistoryReceCmtInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new HistoryReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<HistoryReceCmtResponse>>(presenter.Result);
+    }
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {

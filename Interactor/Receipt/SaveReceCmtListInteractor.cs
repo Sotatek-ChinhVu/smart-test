@@ -113,22 +113,10 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
                 if (cmtInput.ItemCd != string.Empty)
                 {
                     return SaveReceCmtListStatus.InvalidItemCd;
-                }else if (cmtInput.CmtData != string.Empty)
+                }
+                else if (cmtInput.CmtData != string.Empty)
                 {
                     return SaveReceCmtListStatus.InvalidCmtData;
-                }
-                var cmtDB = listReceCmtDB.FirstOrDefault(item => item.CmtKbn == cmtInput.CmtKbn && item.CmtSbt == cmtInput.CmtSbt);
-                if (cmtDB == null)
-                {
-                    if (cmtInput.Id != 0)
-                    {
-                        return SaveReceCmtListStatus.InvalidReceCmtId;
-                    }
-                    continue;
-                }
-                if (cmtDB.Id != cmtInput.Id)
-                {
-                    return SaveReceCmtListStatus.InvalidReceCmtId;
                 }
                 continue;
             }
