@@ -1,11 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace UseCase.MedicalExamination.GetCheckedOrder
 {
     public class GetCheckedOrderInputData : IInputData<GetCheckedOrderOutputData>
     {
-        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, int hokenPid, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItemInputData> odrInfItems, List<DiseaseItem> diseaseItems)
+        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, int hokenPid, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
         {
             HpId = hpId;
             UserId = userId;
@@ -47,7 +46,7 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
 
         public int PrimaryDoctor { get; private set; }
 
-        public List<OdrInfItemInputData> OdrInfItems { get; private set; }
+        public List<OdrInfItem> OdrInfItems { get; private set; }
 
         public List<DiseaseItem> DiseaseItems { get; private set; }
     }

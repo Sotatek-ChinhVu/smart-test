@@ -12,8 +12,8 @@ using UseCase.Core.Sync;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
-using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -299,7 +299,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetCheckedOrder)]
         public ActionResult<Response<GetCheckedOrderResponse>> GetCheckedOrder([FromBody] GetCheckedOrderRequest request)
         {
-            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.TantoId, request.PrimaryDoctor, request.OdrInfItems, request.DiseaseItems);
+            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.HokenPid, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.TantoId, request.PrimaryDoctor, request.OdrInfItems, request.DiseaseItems);
             var output = _bus.Handle(input);
             var presenter = new GetCheckedOrderPresenter();
             presenter.Complete(output);

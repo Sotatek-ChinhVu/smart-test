@@ -22,6 +22,8 @@ namespace EmrCloudApi.Requests.MedicalExamination
 
         public int TantoId { get; set; }
 
+        public int HokenPid { get; set; }
+
         public List<OdrInfItemU> OdrInfItems { get; set; } = new();
 
         public List<DiseaseItem> DiseaseItems { get; set; } = new();

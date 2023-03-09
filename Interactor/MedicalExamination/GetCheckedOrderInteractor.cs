@@ -1,9 +1,9 @@
-﻿using Domain.Models.Diseases;
+﻿using DocumentFormat.OpenXml.VariantTypes;
+using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
-using Entity.Tenant;
 using Helper.Constants;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
@@ -86,17 +86,17 @@ namespace Interactor.MedicalExamination
                         o.SinDate,
                         o.HokenPid,
                         o.OdrKouiKbn,
-                        o.RpName,
+                        string.Empty,
                         o.InoutKbn,
                         o.SikyuKbn,
                         o.SyohoSbt,
                         o.SanteiKbn,
-                        o.TosekiKbn,
+                        0,
                         o.DaysCnt,
                         o.SortNo,
                         o.IsDeleted,
-                        o.Id,
-                        o.OdrDetails.Select(od => new OrdInfDetailModel(
+                        0,
+                        o.OdrInfDetailItems.Select(od => new OrdInfDetailModel(
                                 od.HpId,
                                 od.RaiinNo,
                                 od.RpNo,
@@ -109,11 +109,11 @@ namespace Interactor.MedicalExamination
                                 od.ItemName,
                                 od.Suryo,
                                 od.UnitName,
-                                od.UnitSbt,
+                                0,
                                 od.TermVal,
-                                od.KohatuKbn,
+                                0,
                                 od.SyohoKbn,
-                                od.SyohoLimitKbn,
+                                0,
                                 od.DrugKbn,
                                 od.YohoKbn,
                                 od.Kokuji1,
@@ -121,16 +121,16 @@ namespace Interactor.MedicalExamination
                                 od.IsNodspRece,
                         od.IpnCd,
                                 string.Empty,
-                                od.JissiKbn,
-                                od.JissiDate,
-                                od.JissiId,
-                                od.JissiMachine,
-                                od.ReqCd,
-                                od.Bunkatu,
-                                od.CmtName,
+                                0,
+                                DateTime.MinValue,
+                                0,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
                                 od.CmtOpt,
-                                od.FontColor,
-                                od.CommentNewline,
+                                string.Empty,
+                                0,
                                 string.Empty,
                                 o?.InoutKbn ?? 0,
                                 0,
@@ -194,8 +194,63 @@ namespace Interactor.MedicalExamination
                     var checkOrdInfModels = _medicalExaminationRepository.TrialCalculate(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.HokenPid, inputData.SinDate, checkedOrderModelList);
 
                     var allOrdInf = checkOrdInfModels.Union(ordInfs);
+                    var odrItems = allOrdInf.Select(o => new OdrInfItem(
+                            o.HpId,
+                            o.PtId,
+                            o.SinDate,
+                            o.RaiinNo,
+                            o.RpNo,
+                            o.RpEdaNo,
+                            o.HokenPid,
+                            o.OdrKouiKbn,
+                            o.InoutKbn,
+                            o.SikyuKbn,
+                            o.SyohoSbt,
+                            o.SanteiKbn,
+                            o.DaysCnt,
+                            o.SortNo,
+                            o.IsDeleted,
+                            o.OrdInfDetails.Select(od =>
+                                    new OdrInfDetailItem(
+                                            od.HpId,
+                                            od.PtId,
+                                            od.SinDate,
+                                            od.RaiinNo,
+                                            od.RpNo,
+                                            od.RpEdaNo,
+                                            od.RowNo,
+                                            od.SinKouiKbn,
+                                            od.ItemCd,
+                                            od.Suryo,
+                                            od.UnitName,
+                                            od.TermVal,
+                                            od.SyohoKbn,
+                                            od.DrugKbn,
+                                            od.YohoKbn,
+                                            od.Kokuji1,
+                                            od.Kokuji2,
+                                            od.IsNodspRece,
+                                            od.IpnCd,
+                                            od.IpnName,
+                                            od.CmtOpt,
+                                            od.ItemName,
+                                            od.IsDummy
+                                        )
+                                ).ToList()
+                        )).ToList();
+
                     var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
-                    _calculateRepository.CallCalculate(, )
+                    var requestRaiinInf = new ReceptionItem(raiinInf);
+                    var runTraialCalculateRequest = new RunTraialCalculateRequest(
+                            inputData.HpId,
+                            inputData.PtId,
+                            inputData.SinDate,
+                            inputData.RaiinNo,
+                            odrItems,
+                            requestRaiinInf,
+                            false
+                        );
+
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.Zanyaku(inputData.HpId, inputData.SinDate, allOdrInfDetail, ordInfs));
                 }
 
