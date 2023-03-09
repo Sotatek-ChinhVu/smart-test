@@ -23,8 +23,8 @@ public class RecalculationController : AuthorizeControllerBase
     {
         try
         {
-            HttpContext.Response.ContentType = "application/json";
-            HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+            //HttpContext.Response.ContentType = "application/json";
+            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
             StringBuilder errorTextSinKouiCount = new();
@@ -32,7 +32,7 @@ public class RecalculationController : AuthorizeControllerBase
 
             int allCheckCount = dataForLoop.ReceRecalculationList.Count;
             HttpContext.Response.Headers.Add("AllCheckCount", allCheckCount.ToString());
-            AddMessageCheckErrorInMonth(allCheckCount, 0);
+            AddMessageCheckErrorInMonth(false, 3, allCheckCount, 0, string.Empty);
 
             int successCount = 1;
             foreach (var recalculationItem in dataForLoop.ReceRecalculationList)
@@ -49,19 +49,22 @@ public class RecalculationController : AuthorizeControllerBase
                 errorTextSinKouiCount.Append(resultCheckError.Item3);
 
                 // Send the chunk to the client
-                AddMessageCheckErrorInMonth(allCheckCount, successCount);
+                if (allCheckCount == successCount)
+                {
+                    break;
+                }
+                AddMessageCheckErrorInMonth(false, 3, allCheckCount, successCount, string.Empty);
                 successCount++;
             }
 
             errorText.Append(errorTextSinKouiCount);
             errorText = _recalculationService.GetErrorTextAfterCheck(HpId, request.SinYm, ref errorText, request.PtIdList, dataForLoop.AllSystemConfigList, dataForLoop.ReceRecalculationList);
-            var bytes = Encoding.UTF8.GetBytes("Loop success!");
+
             if (!_recalculationService.SaveReceCheckErrList(HpId, UserId, newReceCheckErrList))
             {
-                HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+                AddMessageCheckErrorInMonth(false, 3, allCheckCount, successCount, string.Empty);
             }
-            bytes = Encoding.UTF8.GetBytes("\n\"" + errorText + "\"\n" + "Loop success!");
-            HttpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length);
+            AddMessageCheckErrorInMonth(true, 3, allCheckCount, successCount, errorText.ToString());
         }
         finally
         {
@@ -70,12 +73,20 @@ public class RecalculationController : AuthorizeControllerBase
         }
     }
 
-    private void AddMessageCheckErrorInMonth(int allCheckCount, int successCount)
+    private void AddMessageCheckErrorInMonth(bool done, int type, int length, int successCount, string messager)
     {
         StringBuilder titleProgressbar = new();
-        titleProgressbar.Append("レセチェック処理中..残り[");
-        titleProgressbar.Append(allCheckCount - successCount);
-        titleProgressbar.Append("件]です\n");
+        titleProgressbar.Append("\n{ status: \"");
+        titleProgressbar.Append(done ? "done" : "inprogess");
+        titleProgressbar.Append("\", type: ");
+        titleProgressbar.Append(type);
+        titleProgressbar.Append(", length: ");
+        titleProgressbar.Append(length);
+        titleProgressbar.Append(", successCount: ");
+        titleProgressbar.Append(successCount);
+        titleProgressbar.Append(", message: \"");
+        titleProgressbar.Append(messager);
+        titleProgressbar.Append("\" }");
 
         var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
         HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
