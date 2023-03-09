@@ -1,5 +1,4 @@
-﻿using Domain.Models.Diseases;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.Accounting.GetPtByoMei
 {

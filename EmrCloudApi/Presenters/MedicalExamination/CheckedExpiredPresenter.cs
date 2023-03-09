@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         {
             Result = new Response<CheckedExpiredResponse>()
             {
-                Data = new CheckedExpiredResponse(outputData.Messages),
+                Data = new CheckedExpiredResponse(outputData.Result),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
