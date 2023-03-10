@@ -2,20 +2,17 @@
 {
     public class CheckedExpiredItem
     {
-        public CheckedExpiredItem(string itemCd, string itemName, int bunkatuKoui, string bunkatu)
+        public CheckedExpiredItem(int sinKouiKbn, string itemCd, string itemName)
         {
+            SinKouiKbn = sinKouiKbn;
             ItemCd = itemCd;
             ItemName = itemName;
-            BunkatuKoui = bunkatuKoui;
-            Bunkatu = bunkatu;
         }
+
+        public int SinKouiKbn { get; private set; }
 
         public string ItemCd { get; private set; }
 
         public string ItemName { get; private set; }
-
-        public int BunkatuKoui { get; private set; }
-
-        public string Bunkatu { get; private set; }
     }
 }

@@ -16,12 +16,13 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
-using UseCase.Receipt.Recalculation;
+using UseCase.Receipt.HistoryReceCmt;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
+using UseCase.Receipt.SaveReceCheckOpt;
 
 namespace EmrCloudApi.Controller;
 
@@ -194,18 +195,36 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetReceCheckOptionListResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.Recalculation)]
-    public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
+    [HttpPost(ApiPath.SaveReceCheckOpt)]
+    public ActionResult<Response<SaveReceCheckOptResponse>> SaveReceCheckOpt([FromBody] SaveReceCheckOptRequest request)
     {
-        var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsStopCalc);
+        var receCheckOptList = request.ReceCheckOptList.Select(item => new ReceCheckOptItem(
+                                                                           item.ErrCd,
+                                                                           item.CheckOpt,
+                                                                           string.Empty,
+                                                                           item.IsInvalid))
+                                                       .ToList();
+
+        var input = new SaveReceCheckOptInputData(HpId, UserId, receCheckOptList);
         var output = _bus.Handle(input);
 
-        var presenter = new RecalculationPresenter();
+        var presenter = new SaveReceCheckOptPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<RecalculationResponse>>(presenter.Result);
+        return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.HistoryReceCmt)]
+    public ActionResult<Response<HistoryReceCmtResponse>> HistoryReceCmt([FromQuery] HistoryReceCmtRequest request)
+    {
+        var input = new HistoryReceCmtInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new HistoryReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<HistoryReceCmtResponse>>(presenter.Result);
+    }
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {

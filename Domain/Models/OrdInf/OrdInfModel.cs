@@ -102,6 +102,18 @@ namespace Domain.Models.OrdInfs
             UpdateName = string.Empty;
         }
 
+        public OrdInfModel(int isDeleted)
+        {
+            IsDeleted = isDeleted;
+            RpName = string.Empty;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = new();
+            CreateDate = DateTime.MinValue;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateName = string.Empty;
+        }
+
         public OrdInfModel(int inoutKbn, int odrKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
         {
             HpId = 0;

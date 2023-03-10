@@ -936,6 +936,8 @@
         public static readonly string InvalidKeika = "Invalid Keika!";
         public static readonly string InvalidSinDay = "Invalid SinDay!";
         public static readonly string InvalidStatusColor = "Invalid StatusColor!";
+        public static readonly string InvalidErrCd = "Invalid ErrCd!";
+        public static readonly string InvalidCheckOpt = "Invalid CheckOpt!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
@@ -949,5 +951,7 @@
         public static readonly string ValidPaymentAmount = "Valid Payment Amount";
         public static readonly string DateNotVerify = "Date Not Verify";
         public static readonly string InvalidThisCredit = "Invalid This Credit";
+        public static readonly string NoPaymentInfo = "NoPaymentInfo";
+        public static readonly string TryAgainLater = "TryAgainLater";
     }
 }

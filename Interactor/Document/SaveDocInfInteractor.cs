@@ -99,8 +99,6 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xlsx|XLSX)$";
-        var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {
             return SaveDocInfStatus.InvalidSindate;
@@ -116,10 +114,6 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         else if (inputData.DisplayFileName.Length == 0)
         {
             return SaveDocInfStatus.InvalidDisplayFileName;
-        }
-        else if (rg.Matches(inputData.FileName).Count == 0 && inputData.SeqNo <= 0)
-        {
-            return SaveDocInfStatus.InvalidDocInfFileName;
         }
         if (inputData.SeqNo > 0)
         {
