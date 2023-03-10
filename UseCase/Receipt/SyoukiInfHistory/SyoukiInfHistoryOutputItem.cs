@@ -1,10 +1,10 @@
 ﻿using Domain.Models.Receipt;
 
-namespace UseCase.Receipt.HistorySyoukiInf;
+namespace UseCase.Receipt.SyoukiInfHistory;
 
-public class HistorySyoukiInfOutputItem
+public class SyoukiInfHistoryOutputItem
 {
-    public HistorySyoukiInfOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
+    public SyoukiInfHistoryOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
     {
         SinYm = sinYm;
         SinYmDisplay = sinYmDisplay;

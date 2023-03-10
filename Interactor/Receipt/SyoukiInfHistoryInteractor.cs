@@ -1,22 +1,22 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.Receipt;
 using Helper.Common;
-using UseCase.Receipt.HistorySyoukiInf;
+using UseCase.Receipt.SyoukiInfHistory;
 
 namespace Interactor.Receipt;
 
-public class HistorySyoukiInfInteractor : IHistorySyoukiInfInputPort
+public class SyoukiInfHistoryInteractor : ISyoukiInfHistoryInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
     private readonly IInsuranceRepository _insuranceRepository;
 
-    public HistorySyoukiInfInteractor(IReceiptRepository receiptRepository, IInsuranceRepository insuranceRepository)
+    public SyoukiInfHistoryInteractor(IReceiptRepository receiptRepository, IInsuranceRepository insuranceRepository)
     {
         _receiptRepository = receiptRepository;
         _insuranceRepository = insuranceRepository;
     }
 
-    public HistorySyoukiInfOutputData Handle(HistorySyoukiInfInputData inputData)
+    public SyoukiInfHistoryOutputData Handle(SyoukiInfHistoryInputData inputData)
     {
         try
         {
@@ -26,7 +26,7 @@ public class HistorySyoukiInfInteractor : IHistorySyoukiInfInputPort
             var syoukiKbnList = _receiptRepository.GetSyoukiKbnMstList(inputData.SinYm);
 
             var result = ConvertToResult(hokenInfList, syoukiInfList, syoukiKbnList);
-            return new HistorySyoukiInfOutputData(result, HistorySyoukiInfStatus.Successed);
+            return new SyoukiInfHistoryOutputData(result, SyoukiInfHistoryStatus.Successed);
         }
         finally
         {
@@ -35,14 +35,14 @@ public class HistorySyoukiInfInteractor : IHistorySyoukiInfInputPort
         }
     }
 
-    private List<HistorySyoukiInfOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
+    private List<SyoukiInfHistoryOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
     {
-        List<HistorySyoukiInfOutputItem> result = new();
+        List<SyoukiInfHistoryOutputItem> result = new();
         var sinYmList = syoukiInfList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
             var hokenId = syoukiInfList.FirstOrDefault(item => item.SinYm == sinYm)?.HokenId ?? 0;
-            var outputItem = new HistorySyoukiInfOutputItem(
+            var outputItem = new SyoukiInfHistoryOutputItem(
                                  sinYm,
                                  CIUtil.SMonthToShowSWMonth(sinYm, 1),
                                  GetHokenName(hokenId, hokenInfList),

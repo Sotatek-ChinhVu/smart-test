@@ -1,10 +1,10 @@
 ﻿using Domain.Models.Receipt;
 
-namespace UseCase.Receipt.HistoryReceCmt;
+namespace UseCase.Receipt.ReceCmtHistory;
 
-public class HistoryReceCmtOutputItem
+public class ReceCmtHistoryOutputItem
 {
-    public HistoryReceCmtOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<ReceCmtModel> receCmtList)
+    public ReceCmtHistoryOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<ReceCmtModel> receCmtList)
     {
         SinYm = sinYm;
         SinYmDisplay = sinYmDisplay;

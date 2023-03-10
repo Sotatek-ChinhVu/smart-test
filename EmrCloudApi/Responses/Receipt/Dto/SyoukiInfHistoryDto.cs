@@ -1,10 +1,10 @@
-﻿using UseCase.Receipt.HistorySyoukiInf;
+﻿using UseCase.Receipt.SyoukiInfHistory;
 
 namespace EmrCloudApi.Responses.Receipt.Dto;
 
-public class HistorySyoukiInfDto
+public class SyoukiInfHistoryDto
 {
-    public HistorySyoukiInfDto(HistorySyoukiInfOutputItem output)
+    public SyoukiInfHistoryDto(SyoukiInfHistoryOutputItem output)
     {
         SinYm = output.SinYm;
         SinYmDisplay = output.SinYmDisplay;

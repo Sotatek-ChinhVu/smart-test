@@ -1,10 +1,10 @@
-﻿using UseCase.Receipt.HistoryReceCmt;
+﻿using UseCase.Receipt.ReceCmtHistory;
 
 namespace EmrCloudApi.Responses.Receipt.Dto;
 
-public class HistoryReceCmtDto
+public class ReceCmtHistoryDto
 {
-    public HistoryReceCmtDto(HistoryReceCmtOutputItem output)
+    public ReceCmtHistoryDto(ReceCmtHistoryOutputItem output)
     {
         SinYm = output.SinYm;
         SinYmDisplay = output.SinYmDisplay;

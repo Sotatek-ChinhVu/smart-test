@@ -305,8 +305,8 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
-using UseCase.Receipt.HistoryReceCmt;
-using UseCase.Receipt.HistorySyoukiInf;
+using UseCase.Receipt.ReceCmtHistory;
+using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -876,8 +876,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
             busBuilder.RegisterUseCase<GetReceCheckOptionListInputData, GetReceCheckOptionListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckOptInputData, SaveReceCheckOptInteractor>();
-            busBuilder.RegisterUseCase<HistoryReceCmtInputData, HistoryReceCmtInteractor>();
-            busBuilder.RegisterUseCase<HistorySyoukiInfInputData, HistorySyoukiInfInteractor>();
+            busBuilder.RegisterUseCase<ReceCmtHistoryInputData, ReceCmtHistoryInteractor>();
+            busBuilder.RegisterUseCase<SyoukiInfHistoryInputData, SyoukiInfHistoryInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

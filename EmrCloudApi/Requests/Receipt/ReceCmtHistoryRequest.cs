@@ -1,8 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Receipt;
 
-public class HistorySyoukiInfRequest
+public class ReceCmtHistoryRequest
 {
-    public int SinYm { get; set; }
-
     public long PtId { get; set; }
 }

@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.HistorySyoukiInf;
+namespace UseCase.Receipt.SyoukiInfHistory;
 
-public class HistorySyoukiInfInputData : IInputData<HistorySyoukiInfOutputData>
+public class SyoukiInfHistoryInputData : IInputData<SyoukiInfHistoryOutputData>
 {
-    public HistorySyoukiInfInputData(int hpId, int sinYm, long ptId)
+    public SyoukiInfHistoryInputData(int hpId, int sinYm, long ptId)
     {
         HpId = hpId;
         SinYm = sinYm;
