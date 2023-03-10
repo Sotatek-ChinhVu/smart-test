@@ -116,5 +116,13 @@ namespace Infrastructure.CommonDB
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
         }
+
+        public void DisposeDataContext()
+        {
+            System.Console.WriteLine("DI disposable tracking " + _trackingDataContext?.GetHashCode());
+            System.Console.WriteLine("DI disposable no  tracking " + _noTrackingDataContext?.GetHashCode());
+            _trackingDataContext?.Dispose();
+            _noTrackingDataContext?.Dispose();
+        }
     }
 }

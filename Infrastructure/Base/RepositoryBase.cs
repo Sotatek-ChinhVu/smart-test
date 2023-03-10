@@ -44,8 +44,7 @@ namespace Infrastructure.Base
 
         public void DisposeDataContext()
         {
-            _trackingDataContext?.Dispose();
-            _noTrackingDataContext?.Dispose();
+            _tenantProvider.DisposeDataContext();
         }
     }
 }
