@@ -10,7 +10,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -1510,65 +1509,6 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
-        }
-
-        private List<string> TrialCalculate(int hpId, long ptId, long raiinNo, int sinDate, List<CheckedOrderModel> checkingOrderModelList, List<OrdInfModel> todayOdrInfModels, List<OrdInfModel> allOrder)
-        {
-            long maxRpNoOnApp = allOrder.Count > 0 ? allOrder.Max(odr => odr.RpNo) : 0;
-            long maxRpNoOnDB = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
-            long maxRpNo = Math.Max(maxRpNoOnDB, maxRpNoOnApp);
-
-            foreach (var itemCd in checkingOrderModelList.Select(c => c.ItemCd))
-            {
-                todayOdrInfModels.Add(CreateIkaTodayOdrInfModel(itemCd, maxRpNo));
-
-                // 追加した項目のDummyフラグをセット
-                foreach (var detail in todayOdrInfModels.Last().OrdInfDetails)
-                {
-                    detail.IsDummy = true;
-                }
-
-                maxRpNo++;
-            }
-            var data = _ikaCalculateViewModel.RunTraialCalculate(todayOdrInfModels, IkaReceptionModel, false);
-
-            return data.Item1.Select(d => d.ItemCd).Distinct().ToList();
-        }
-
-        private OrdInfModel CreateIkaTodayOdrInfModel(long ptId, int sinDate, int raiinNo, int hokenPid, string itemCd, long maxRpNo)
-        {
-            OdrInf odrInf = new OdrInf();
-            List<OdrInfDetail> odrInfDetails = new List<OdrInfDetail>();
-
-            odrInf.HpId = Session.HospitalID;
-            odrInf.PtId = ptId;
-            odrInf.SinDate = sinDate;
-            odrInf.RaiinNo = raiinNo;
-            odrInf.HokenPid = hokenPid;
-            odrInf.RpNo = maxRpNo + 1;
-            odrInf.RpEdaNo = 1;
-
-            OdrInfDetail detail = new OdrInfDetail();
-            detail.HpId = Session.HospitalID;
-            detail.PtId = ptId;
-            detail.SinDate = sinDate;
-            detail.RaiinNo = raiinNo;
-
-            detail.ItemCd = itemCd;
-            var tenMst = masterFinder.FindTenMst(detail.ItemCd, _sinDate);
-            detail.ItemName = tenMst.Name;
-
-            odrInf.OdrKouiKbn = tenMst.SinKouiKbn;
-            detail.SinKouiKbn = tenMst.SinKouiKbn;
-
-            detail.RpNo = odrInf.RpNo;
-            detail.RpEdaNo = odrInf.RpEdaNo;
-            detail.RowNo = 1;
-
-            odrInfDetails.Add(detail);
-
-            IkaTodayOdrInfModel odrInfModel = new IkaTodayOdrInfModel(odrInf, odrInfDetails);
-            return odrInfModel;
         }
 
         public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)

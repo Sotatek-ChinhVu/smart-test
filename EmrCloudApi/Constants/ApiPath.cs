@@ -168,6 +168,7 @@
         public const string GetSummaryInf = "GetSummaryInf";
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
+        public const string Calculate = "Calculate";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
