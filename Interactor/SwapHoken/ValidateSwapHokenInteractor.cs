@@ -38,7 +38,7 @@ namespace Interactor.SwapHoken
                     long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPid , inputData.StartDate, inputData.EndDate);
                     if (count == 0)
                     {
-                        msg = string.Format("変換元の保険は{0}に一度も使用されていないため、" + Environment.NewLine + "選択できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
+                        msg = string.Format("変換元の保険は{0}に一度も使用されていないため、選択できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
                     }
                 }
                 else
