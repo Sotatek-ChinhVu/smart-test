@@ -45,6 +45,7 @@ public class SyoukiInfHistoryInteractor : ISyoukiInfHistoryInputPort
             var outputItem = new SyoukiInfHistoryOutputItem(
                                  sinYm,
                                  CIUtil.SMonthToShowSWMonth(sinYm, 1),
+                                 hokenId,
                                  GetHokenName(hokenId, hokenInfList),
                                  syoukiInfList.Where(item => item.SinYm == sinYm).ToList(),
                                  syoukiKbnList);

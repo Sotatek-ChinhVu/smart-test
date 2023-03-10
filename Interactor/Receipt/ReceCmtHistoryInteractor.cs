@@ -44,6 +44,7 @@ public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
             var outputItem = new ReceCmtHistoryOutputItem(
                     sinYm,
                     CIUtil.SMonthToShowSWMonth(sinYm, 1),
+                    hokenId,
                     GetHokenName(hokenId, hokenInfList),
                     receCmtList.Where(item => item.SinYm == sinYm).ToList()
                 );

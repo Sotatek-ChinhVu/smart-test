@@ -4,10 +4,11 @@ namespace UseCase.Receipt.SyoukiInfHistory;
 
 public class SyoukiInfHistoryOutputItem
 {
-    public SyoukiInfHistoryOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
+    public SyoukiInfHistoryOutputItem(int sinYm, string sinYmDisplay, int hokenId, string hokenName, List<SyoukiInfModel> syoukiInfList, List<SyoukiKbnMstModel> syoukiKbnList)
     {
         SinYm = sinYm;
         SinYmDisplay = sinYmDisplay;
+        HokenId = hokenId;
         HokenName = hokenName;
         SyoukiInfList = syoukiInfList.Select(item => new SyoukiInfItem(item)).ToList();
         SyoukiKbnList = syoukiKbnList.Select(item => new SyoukiKbnMstItem(item)).ToList();
@@ -16,6 +17,8 @@ public class SyoukiInfHistoryOutputItem
     public int SinYm { get; private set; }
 
     public string SinYmDisplay { get; private set; }
+
+    public int HokenId { get; private set; }
 
     public string HokenName { get; private set; }
 

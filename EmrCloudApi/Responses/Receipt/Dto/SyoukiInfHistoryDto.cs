@@ -8,6 +8,7 @@ public class SyoukiInfHistoryDto
     {
         SinYm = output.SinYm;
         SinYmDisplay = output.SinYmDisplay;
+        HokenId = output.HokenId;
         HokenName = output.HokenName;
         SyoukiInfList = output.SyoukiInfList.Select(item => new SyoukiInfDto(item)).ToList();
         SyoukiKbnMstList = output.SyoukiKbnList.Select(item => new SyoukiKbnMstDto(item)).ToList();
@@ -16,6 +17,8 @@ public class SyoukiInfHistoryDto
     public int SinYm { get; private set; }
 
     public string SinYmDisplay { get; private set; }
+
+    public int HokenId { get; private set; }
 
     public string HokenName { get; private set; }
 

@@ -24,6 +24,7 @@ using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
+using UseCase.Receipt.SyobyoKeikaHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -216,7 +217,7 @@ public class ReceiptController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.ReceCmtHistory)]
-    public ActionResult<Response<ReceCmtHistoryResponse>> HistoryReceCmt([FromQuery] ReceCmtHistoryRequest request)
+    public ActionResult<Response<ReceCmtHistoryResponse>> ReceCmtHistory([FromQuery] ReceCmtHistoryRequest request)
     {
         var input = new ReceCmtHistoryInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
@@ -228,7 +229,7 @@ public class ReceiptController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.SyoukiInfHistory)]
-    public ActionResult<Response<SyoukiInfHistoryResponse>> HistorySyoukiInf([FromQuery] SyoukiInfHistoryRequest request)
+    public ActionResult<Response<SyoukiInfHistoryResponse>> SyoukiInfHistory([FromQuery] SyoukiInfHistoryRequest request)
     {
         var input = new SyoukiInfHistoryInputData(HpId, request.SinYm, request.PtId);
         var output = _bus.Handle(input);
@@ -237,6 +238,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SyoukiInfHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.SyobyoKeikaHistory)]
+    public ActionResult<Response<SyobyoKeikaHistoryResponse>> SyobyoKeikaHistory([FromQuery] SyobyoKeikaHistoryRequest request)
+    {
+        var input = new SyobyoKeikaHistoryInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new SyobyoKeikaHistoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SyobyoKeikaHistoryResponse>>(presenter.Result);
     }
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)

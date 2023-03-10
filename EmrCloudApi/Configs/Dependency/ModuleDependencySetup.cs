@@ -382,6 +382,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.Receipt.SyobyoKeikaHistory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -878,6 +879,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceCheckOptInputData, SaveReceCheckOptInteractor>();
             busBuilder.RegisterUseCase<ReceCmtHistoryInputData, ReceCmtHistoryInteractor>();
             busBuilder.RegisterUseCase<SyoukiInfHistoryInputData, SyoukiInfHistoryInteractor>();
+            busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

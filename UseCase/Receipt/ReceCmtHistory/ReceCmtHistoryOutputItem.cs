@@ -4,10 +4,11 @@ namespace UseCase.Receipt.ReceCmtHistory;
 
 public class ReceCmtHistoryOutputItem
 {
-    public ReceCmtHistoryOutputItem(int sinYm, string sinYmDisplay, string hokenName, List<ReceCmtModel> receCmtList)
+    public ReceCmtHistoryOutputItem(int sinYm, string sinYmDisplay, int hokenId, string hokenName, List<ReceCmtModel> receCmtList)
     {
         SinYm = sinYm;
         SinYmDisplay = sinYmDisplay;
+        HokenId = hokenId;
         HokenName = hokenName;
         ReceCmtList = receCmtList.Select(item => new ReceCmtItem(item)).ToList();
     }
@@ -15,6 +16,8 @@ public class ReceCmtHistoryOutputItem
     public int SinYm { get; private set; }
 
     public string SinYmDisplay { get; private set; }
+
+    public int HokenId { get; private set; }
 
     public string HokenName { get; private set; }
 

@@ -1,16 +1,17 @@
-﻿using UseCase.Receipt.ReceCmtHistory;
+﻿using UseCase.Receipt;
+using UseCase.Receipt.SyobyoKeikaHistory;
 
 namespace EmrCloudApi.Responses.Receipt.Dto;
 
-public class ReceCmtHistoryDto
+public class SyobyoKeikaHistoryDto
 {
-    public ReceCmtHistoryDto(ReceCmtHistoryOutputItem output)
+    public SyobyoKeikaHistoryDto(SyobyoKeikaHistoryOutputItem output)
     {
         SinYm = output.SinYm;
         SinYmDisplay = output.SinYmDisplay;
         HokenId = output.HokenId;
         HokenName = output.HokenName;
-        ReceCmtList = output.ReceCmtList.Select(item => new ReceCmtDto(item)).ToList();
+        SyobyoKeikaList = output.SyobyoKeikaList.Select(item => new SyobyoKeikaDto(item)).ToList();
     }
 
     public int SinYm { get; private set; }
@@ -21,5 +22,5 @@ public class ReceCmtHistoryDto
 
     public string HokenName { get; private set; }
 
-    public List<ReceCmtDto> ReceCmtList { get; private set; }
+    public List<SyobyoKeikaDto> SyobyoKeikaList { get; private set; }
 }
