@@ -1269,6 +1269,6 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
     public void ReleaseResource()
     {
-        _tenantProvider.DisposeDataContext();
+        
     }
 }

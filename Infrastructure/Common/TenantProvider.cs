@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 
@@ -39,8 +40,11 @@ namespace Infrastructure.CommonDB
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
                 }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+                System.Console.WriteLine("create facory no tracking " + factory.GetHashCode());
                 _noTrackingDataContext = factory.CreateDbContext();
+                System.Console.WriteLine("create no tracking context " + _noTrackingDataContext.GetHashCode());
             }
+            System.Console.WriteLine("get no tracking context " + _noTrackingDataContext.GetHashCode());
             return _noTrackingDataContext;
         }
 
@@ -54,8 +58,11 @@ namespace Infrastructure.CommonDB
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
                 }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                System.Console.WriteLine("create facory tracking " + factory.GetHashCode());
                 _trackingDataContext = factory.CreateDbContext();
+                System.Console.WriteLine("create tracking context " + _trackingDataContext.GetHashCode());
             }
+            System.Console.WriteLine("get tracking context " + _trackingDataContext.GetHashCode());
             return _trackingDataContext;
         }
 
@@ -108,12 +115,6 @@ namespace Infrastructure.CommonDB
             }).LogTo(Console.WriteLine, LogLevel.Information).Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             return factory.CreateDbContext();
-        }
-
-        public void DisposeDataContext()
-        {
-            _trackingDataContext?.Dispose();
-            _noTrackingDataContext?.Dispose();
         }
     }
 }

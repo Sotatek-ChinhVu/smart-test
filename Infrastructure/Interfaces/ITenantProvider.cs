@@ -26,7 +26,5 @@ namespace Infrastructure.Interfaces
         TenantDataContext CreateNewTrackingDataContext();
 
         TenantNoTrackingDataContext CreateNewNoTrackingDataContext();
-
-        void DisposeDataContext();
     }
 }
