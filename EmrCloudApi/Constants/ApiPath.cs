@@ -210,6 +210,7 @@
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
         public const string HistoryReceCmt = "HistoryReceCmt";
+        public const string HistorySyoukiInf = "HistorySyoukiInf";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
