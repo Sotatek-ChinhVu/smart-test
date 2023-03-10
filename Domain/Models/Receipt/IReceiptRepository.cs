@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 
@@ -42,12 +41,14 @@ public interface IReceiptRepository : IRepositoryBase
 
     InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId);
 
+    bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
-    List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
+    List<ReceSinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
+    List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
 
     bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
 
@@ -70,5 +71,17 @@ public interface IReceiptRepository : IRepositoryBase
     List<string> GetListReceCmtItemCode(int hpId, long ptId, int sinYm, int hokenId);
 
     List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
+
+    bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList);
+
+    List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIdList, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth);
+
+    Dictionary<long, int> GetSanteiStartDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    Dictionary<long, int> GetSanteiEndDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
     #endregion
 }

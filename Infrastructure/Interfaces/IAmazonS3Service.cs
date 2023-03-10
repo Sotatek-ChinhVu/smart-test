@@ -27,4 +27,6 @@ public interface IAmazonS3Service
     string GetFolderUploadOther(List<string> folders);
 
     string GetUniqueFileNameKey(string fileName);
+
+    string GetAccessBaseS3();
 }

@@ -434,7 +434,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         public bool CheckCalcStatus(CalcStatusModel calcStatus)
         {
             string computerName = Hardcode.ComputerName.ToUpper();
-            DateTime dtCheck = DateTime.UtcNow.AddMinutes(-5);
+            DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
                 p.HpId == calcStatus.HpId &&
@@ -456,7 +456,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         public bool CheckCalcStatusOther(CalcStatusModel calcStatus)
         {
             string computerName = Hardcode.ComputerName.ToUpper();
-            DateTime dtCheck = DateTime.UtcNow.AddMinutes(-5);
+            DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
                 p.HpId == calcStatus.HpId &&
@@ -479,7 +479,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         public bool CheckCalcStatusSelf(CalcStatusModel calcStatus)
         {
             string computerName = Hardcode.ComputerName.ToUpper();
-            DateTime dtCheck = DateTime.UtcNow.AddMinutes(-5);
+            DateTime dtCheck = CIUtil.GetJapanDateTimeNow().AddMinutes(-5);
 
             var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
                 p.HpId == calcStatus.HpId &&

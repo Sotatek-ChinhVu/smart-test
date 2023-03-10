@@ -14,7 +14,7 @@ namespace EmrCloudApi.Presenters.RaiinKubun
             var result = outputData.Message.Any();
             Result = new Response<SaveDataKubunSettingResponse>()
             {
-                Data = new SaveDataKubunSettingResponse(!result),
+                Data = new SaveDataKubunSettingResponse(outputData.Message.Contains(ResponseMessage.Success)),
                 Status = result ? 1 : 0
             };
             Result.Message = outputData.ToString() ?? ResponseMessage.Success;

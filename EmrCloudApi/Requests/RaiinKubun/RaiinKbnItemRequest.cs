@@ -16,7 +16,7 @@ namespace EmrCloudApi.Requests.RaiinKubun
 
         public int IsExclude { get;  set; }
 
-        public int IsDeleted { get;  set; }
+        public bool IsDeleted { get;  set; }
 
         public int SortNo { get;  set; }
 

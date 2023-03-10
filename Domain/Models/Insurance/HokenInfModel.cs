@@ -375,5 +375,87 @@ namespace Domain.Models.Insurance
                 return ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate;
             }
         }
+
+        public string HokenSentaku
+        {
+            get
+            {
+                string result = string.Empty;
+                result += HokenId.ToString().PadLeft(2, '0');
+                result += " ";
+                if (string.IsNullOrEmpty(HokensyaNo) && HokenKbn < 10)
+                {
+                    // jihi
+                    if (HokenKbn == 0 || (HokenKbn == 1 && HokenMst != null && HokenMst.HokenSbtKbn == 0))
+                    {
+                        result += HokenMst?.HokenSName;
+                    }
+                    if (IsExpirated)
+                    {
+                        result = "×" + result;
+                    }
+                    return result;
+                }
+                switch (HokenKbn)
+                {
+                    case 1:
+                        result += "社保";
+                        break;
+                    case 2:
+                        if (HokensyaNo.Length == 8 &&
+                            HokensyaNo.StartsWith("39"))
+                        {
+                            result += "後期";
+                        }
+                        else if (HokensyaNo.Length == 8 &&
+                            HokensyaNo.StartsWith("67"))
+                        {
+                            result += "退職";
+                        }
+                        else
+                        {
+                            result += "国保";
+                        }
+                        break;
+                    case 11:
+                        result += "労災（短期給付）";
+                        break;
+                    case 12:
+                        result += "労災（傷病年金）";
+                        break;
+                    case 13:
+                        result += "労災（アフターケア）";
+                        break;
+                    case 14:
+                        result += "自賠責";
+                        break;
+                }
+                if (HonkeKbn != 0)
+                {
+                    result += "(";
+                    if (HonkeKbn == 1)
+                    {
+                        result += "本人";
+                    }
+                    else
+                    {
+                        result += "家族";
+                    }
+                    result += ")";
+                }
+
+                if (!string.IsNullOrEmpty(HokensyaNo))
+                {
+                    result += " ";
+                    result += HokensyaNo;
+                }
+
+                if (IsExpirated)
+                {
+                    result = "×" + result;
+                }
+                return result;
+            }
+        }
     }
 }

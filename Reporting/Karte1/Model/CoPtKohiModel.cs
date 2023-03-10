@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using Helper.Extendsions;
 
 namespace Reporting.Karte1.Model
 {

@@ -13,5 +13,4 @@ public enum SaveDocInfStatus:byte
     InvalidDisplayFileName = 9,
     InvalidRaiinNo = 10,
     InvalidFileInput = 11,
-    InvalidDocInfFileName = 12,
 }

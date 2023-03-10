@@ -1,9 +1,8 @@
 ﻿using Domain.Models.SetKbnMst;
-using Helper.Extendsions;
 
 namespace UseCase.SetKbnMst.GetList
 {
-    public class GetSetKbnMstListOutputItem : ObservableObject
+    public class GetSetKbnMstListOutputItem
     {
         public SetKbnMstModel? SetKbnMst { get; } = null;
 
@@ -27,25 +26,10 @@ namespace UseCase.SetKbnMst.GetList
             get => SetKbnMst != null ? SetKbnMst.SetKbnName : string.Empty;
         }
 
-        private bool _isSelected;
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set => Set(ref _isSelected, value);
-        }
+        public bool IsSelected { get; set; }
 
-        private int _setKbnEdaLastSelected;
-        public int SetKbnEdaLastSelected
-        {
-            get => _setKbnEdaLastSelected;
-            set => Set(ref _setKbnEdaLastSelected, value);
-        }
+        public int SetKbnEdaLastSelected { get; set; }
 
-        private int _sortNo;
-        public int SortNo
-        {
-            get => _sortNo;
-            set => Set(ref _sortNo, value);
-        }
+        public int SortNo { get; set; }
     }
 }

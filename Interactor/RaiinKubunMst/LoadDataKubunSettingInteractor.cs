@@ -17,8 +17,9 @@ namespace Interactor.RaiinKubunMst
             {
                 if (inputData.HpId <= 0) return new LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus.InvalidHpId);
 
+                var maxGrpId = _raiinKubunMstRepository.GetMaxGrpId(inputData.HpId);
                 List<RaiinKubunMstModel> raiinKubunList = _raiinKubunMstRepository.LoadDataKubunSetting(inputData.HpId, inputData.UserId);
-                return new LoadDataKubunSettingOutputData(raiinKubunList, LoadDataKubunSettingStatus.Successed);
+                return new LoadDataKubunSettingOutputData(raiinKubunList, maxGrpId, LoadDataKubunSettingStatus.Successed);
             }
             finally
             {

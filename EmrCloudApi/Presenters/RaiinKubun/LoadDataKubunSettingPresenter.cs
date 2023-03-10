@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.RaiinKubun
         {
             Result = new Response<LoadDataKubunSettingResponse>()
             {
-                Data = new LoadDataKubunSettingResponse(outputData.RaiinKubunList),
+                Data = new LoadDataKubunSettingResponse(outputData.MaxGrpId, outputData.RaiinKubunList),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)

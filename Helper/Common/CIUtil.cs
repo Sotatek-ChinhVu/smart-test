@@ -26,6 +26,11 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        //OpenScreenStatus
+        public static byte NoPaymentInfo = 0;
+        public static byte TryAgainLater = 2;
+        public static byte Successed = 1;
+
         private static T As<T>(this object obj)
         {
             return (T)obj;
@@ -3019,6 +3024,120 @@ namespace Helper.Common
             }
 
             return result;
+        }
+
+        // yyyymmをyyyy/mmに変換
+        public static String SMonthToShowSMonth(int tgtYm)
+        {
+            string rs = "";
+            string sTgtYm = tgtYm.ToString();
+            sTgtYm = sTgtYm.Replace("/", "");
+            if (sTgtYm.Length != 6) return "";
+            int iBuf = 0;
+            bool isInt = int.TryParse(sTgtYm, out iBuf);
+            if (isInt)
+            {
+                if (iBuf.ToString().Length != 6)
+                    return "";
+                string sBuf = SDateToShowSDate(iBuf * 100 + 1);
+                if (sBuf == "")
+                    return "";
+                var dtBuf = DateTime.Parse(sBuf);
+                return dtBuf.ToString("yyyy/MM");
+            }
+            return rs;
+        }
+
+        // yyyy/mmをyyyymmに変換
+        public static int ShowSMonthToSMonth(string Ym)
+        {
+            int result = 0;
+            int delimiterCount = 0;
+            string sTemp;
+            string wYm = Ym.Trim();
+            DateTime currentDate = DateTime.Now;
+
+            // Input month only
+            int iYm = wYm.AsInteger();
+            if (iYm <= 12 && iYm >= 1)
+            {
+                wYm = currentDate.Year + wYm.AsInteger().ToString("D2");
+                result = DateTime.ParseExact(wYm, "yyyyMM", CultureInfo.InvariantCulture)
+                    .ToString("yyyyMM").AsInteger();
+
+                return result;
+            }
+
+            if (wYm.IndexOf('.') > 0 || wYm.IndexOf('/') > 0)
+            {
+                delimiterCount = 1;
+            }
+
+            // Delimter character exists
+            if (delimiterCount > 0)
+            {
+                // 区切りが「.」のとき「/」に変換
+                // Replace [.] character with [/]
+                wYm = wYm.Replace(".", "/");
+
+                if (wYm.IndexOf('/') > 0)
+                {
+                    // Character [/] exists
+                    // Get year part
+                    sTemp = wYm.Substring(0, wYm.IndexOf('/'));
+                    // Year is equal to 0, then error
+                    if (sTemp == "0" || sTemp == "00")
+                    {
+                        wYm = "";
+                    }
+                    else
+                    {
+                        int sYear = sTemp.AsInteger();
+                        string sMonth = wYm.Substring(wYm.IndexOf('/') + 1);
+                        //Zero padding
+                        sMonth = sMonth.PadLeft(2, '0');
+                        wYm = sYear + sMonth;
+                    }
+                }
+            }
+            else
+            {
+                if (wYm.Length == 4)
+                {
+                    int wYear = wYm.Substring(0, 2).AsInteger();
+                    int sYear = WYearToSYear(wYear, ' ');
+                    wYm = sYear.ToString() + wYm.Substring(2, 2);
+                }
+                // Delimiter character does not exists
+                // Length != 6 is error
+                if (wYm.Length != 6)
+                {
+                    wYm = "";
+                }
+            }
+
+            try
+            {
+                result = DateTime.ParseExact(wYm, "yyyyMM", CultureInfo.InvariantCulture)
+                    .ToString("yyyyMM").AsInteger();
+                return result;
+            }
+            catch
+            {
+                result = 0;
+            }
+            return result;
+        }
+
+        //西暦を表示用西暦+和暦（yyyy(gee)/mm）に変換
+        // fmtReki[-1: 表示しない 0: 和暦を英字 1: 和暦を漢字]
+        // fmtWeek[0: 曜日なし 1: 曜日あり]
+        // fmtDate[0: / 1: 年月日]
+        public static string SMonthToShowSWMonth(int ym, int fmtReki = 0, int fmtWeek = 0, int fmtDate = 0)
+        {
+            string result = SDateToShowSWDate(ym * 100 + 1, fmtReki, fmtWeek, fmtDate);
+            if (result == string.Empty) return string.Empty;
+            return result.Substring(0, result.Length - 3);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.MstItem;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.MedicalExamination;
@@ -8,17 +9,19 @@ using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.InsuranceList;
 using EmrCloudApi.Responses.MedicalExamination;
+using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
-using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.AutoCheckOrder;
 using UseCase.MedicalExamination.ChangeAfterAutoCheckOrder;
+using UseCase.MedicalExamination.CheckedExpired;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
+using UseCase.MedicalExamination.ConvertItem;
 using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
@@ -447,6 +450,19 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<CheckedExpiredResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.ConvertItem)]
+        public ActionResult<Response<ConvertItemResponse>> ConvertItem([FromBody] ConvertItemRequest request)
+        {
+
+            var input = new ConvertItemInputData(HpId, UserId, request.RaiinNo, request.PtId, request.SinDate, request.OdrInfItems, ConvertExpiredItem(request.ExpiredItems));
+            var output = _bus.Handle(input);
+
+            var presenter = new ConvertItemPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ConvertItemResponse>>(presenter.Result);
+        }
+
         [HttpPost(ApiPath.AutoCheckOrder)]
         public ActionResult<Response<AutoCheckOrderResponse>> AutoCheckOrder([FromBody] AutoCheckOrderRequest request)
         {
@@ -481,6 +497,69 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ConvertFromHistoryToTodayOrderResponse>>(presenter.Result);
+        }
+
+        private Dictionary<string, List<TenItemModel>> ConvertExpiredItem(Dictionary<string, List<TenItemDto>> request)
+        {
+            Dictionary<string, List<TenItemModel>> result = new();
+            foreach (var keyValuePair in request)
+            {
+                List<TenItemModel> tenItemDtos = new();
+                foreach (var item in keyValuePair.Value)
+                {
+                    if (!string.IsNullOrEmpty(item.ItemCd))
+                    {
+                        var tenItemDto = new TenItemModel(
+                                item.HpId,
+                                item.ItemCd,
+                                item.RousaiKbn,
+                                item.KanaName1,
+                                item.Name,
+                                item.KohatuKbn,
+                                item.MadokuKbn,
+                                item.KouseisinKbn,
+                                item.OdrUnitName,
+                                item.EndDate,
+                                item.DrugKbn,
+                                item.MasterSbt,
+                                item.BuiKbn,
+                                item.IsAdopted,
+                                item.Ten,
+                                item.TenId,
+                                item.KensaMstCenterItemCd1,
+                                item.KensaMstCenterItemCd2,
+                                item.CmtCol1,
+                                item.IpnNameCd,
+                                item.SinKouiKbn,
+                                item.YjCd,
+                                item.CnvUnitName,
+                                item.StartDate,
+                                item.YohoKbn,
+                                item.CmtColKeta1,
+                                item.CmtColKeta2,
+                                item.CmtColKeta3,
+                                item.CmtColKeta4,
+                                item.CmtCol2,
+                                item.CmtCol3,
+                                item.CmtCol4,
+                                item.IpnCD,
+                                string.Empty,
+                                string.Empty,
+                                string.Empty,
+                                item.OdrTermVal,
+                                item.CnvTermVal,
+                                item.DefaultValue,
+                                string.Empty,
+                                string.Empty,
+                                item.ModeStatus
+                            );
+                        tenItemDtos.Add(tenItemDto);
+                    }
+                }
+                result.Add(keyValuePair.Key, tenItemDtos);
+            }
+
+            return result;
         }
     }
 }
