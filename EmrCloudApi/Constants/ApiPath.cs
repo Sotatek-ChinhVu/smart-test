@@ -42,6 +42,7 @@
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
         public const string UploadListFileKarte = "UploadListFileKarte";
+        public const string GetListInsuranceScan = "GetListInsuranceScan";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -59,6 +60,8 @@
         public const string CheckedExpired = "CheckedExpired";
         public const string AutoCheckOrder = "AutoCheckOrder";
         public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
+        public const string Recaculation = "Recaculation";
+        public const string ConvertItem = "ConvertItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -164,6 +167,7 @@
         public const string ConvertNextOrderToTodayOrder = "ConvertNextOrderToTodayOrder";
         public const string GetSummaryInf = "GetSummaryInf";
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
+        public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -203,6 +207,10 @@
         public const string GetInsuranceReceInfList = "GetInsuranceReceInfList";
         public const string GetDiseaseReceList = "GetDiseaseReceList";
         public const string Recalculation = "Recalculation";
+        public const string GetReceCheckOptionList = "GetReceCheckOptionList";
+        public const string SaveReceCheckOpt = "SaveReceCheckOpt";
+        public const string HistoryReceCmt = "HistoryReceCmt";
+        public const string HistorySyoukiInf = "HistorySyoukiInf";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -210,6 +218,10 @@
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
         public const string HistoryOrder = "HistoryOrder";
+        public const string CheckAccounting = "CheckAccounting";
+        public const string GetSystemConfig = "GetSystemConfig";
+        public const string GetMeiHoGai = "GetMeiHoGai";
+        public const string CheckOpenAccounting = "CheckOpenAccounting";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 
@@ -224,5 +236,8 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+
+        //ReceSeikyus
+        public const string GetListReceSeikyu = "GetListReceSeikyu";
     }
 }

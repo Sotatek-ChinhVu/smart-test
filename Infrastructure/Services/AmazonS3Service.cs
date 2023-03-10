@@ -112,13 +112,13 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         return listObjects;
     }
 
-    public async Task<string> UploadObjectAsync(string path, string fileName, Stream stream)
+    public async Task<string> UploadObjectAsync(string path, string fileName, Stream stream, bool getOnlyId = false)
     {
         var memoryStream = await stream.ToMemoryStreamAsync();
-        return await UploadObjectAsync(path, fileName, memoryStream);
+        return await UploadObjectAsync(path, fileName, memoryStream, getOnlyId);
     }
 
-    public async Task<string> UploadObjectAsync(string path, string fileName, MemoryStream memoryStream)
+    public async Task<string> UploadObjectAsync(string path, string fileName, MemoryStream memoryStream, bool getOnlyId = false)
     {
         try
         {
@@ -129,7 +129,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                 InputStream = memoryStream,
             };
             var response = await _s3Client.PutObjectAsync(request);
-            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
+            return response.HttpStatusCode == HttpStatusCode.OK ? getOnlyId ? request.Key : GetAccessUrl(request.Key) : string.Empty;
         }
         catch (AmazonS3Exception)
         {
@@ -183,4 +183,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
         return result.ToString();
     }
+
+    public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
 }

@@ -1,9 +1,4 @@
 ﻿using Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Models.DrugDetail
 {
@@ -12,5 +7,7 @@ namespace Domain.Models.DrugDetail
         public IEnumerable<DrugMenuItemModel> GetDrugMenu(int hpId, int sinDate, string itemCd);
 
         DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode);
+
+        List<TenMstByomeiModel> GetZaiganIsoItems(int hpId, int seikyuYm);
     }
 }

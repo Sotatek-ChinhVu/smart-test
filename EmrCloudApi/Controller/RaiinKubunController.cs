@@ -50,7 +50,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
         public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), UserId);
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), UserId, HpId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveDataKubunSettingPresenter();
