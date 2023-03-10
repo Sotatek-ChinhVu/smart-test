@@ -24,20 +24,21 @@ public class RecalculationController : AuthorizeControllerBase
     }
 
 
-    [HttpPost(ApiPath.Recalculation)]
+    [HttpPost]
     public void HistoryReceCmt([FromBody] RecalculationRequest request, CancellationToken cancellationToken)
     {
         try
         {
             Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
 
-            var input = new RecalculationInputData(HpId, request.SinYm, request.PtIdList);
-            var output = _bus.Handle(input);
-
             HttpContext.Response.ContentType = "application/json";
             HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
             response.StatusCode = 202;
+
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList);
+            _bus.Handle(input);
+            Messenger.Instance.Send(new StopCalcStatus(cancellationToken.IsCancellationRequested));
         }
         finally
         {

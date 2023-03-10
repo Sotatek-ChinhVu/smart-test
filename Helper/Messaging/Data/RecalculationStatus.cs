@@ -2,6 +2,15 @@
 
 public class RecalculationStatus
 {
+    public RecalculationStatus(bool done, int type, int length, int successCount, string message)
+    {
+        Done = done;
+        Type = type;
+        Length = length;
+        SuccessCount = successCount;
+        Message = message;
+    }
+
     public bool Done { get; set; }
 
     public int Type { get; set; }
@@ -10,5 +19,5 @@ public class RecalculationStatus
 
     public int SuccessCount { get; set; }
 
-    public string Message { get; set; } = string.Empty;
+    public string Message { get; set; }
 }
