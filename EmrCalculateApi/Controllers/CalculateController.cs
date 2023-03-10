@@ -50,5 +50,17 @@ namespace EmrCalculateApi.Controllers
             var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList());
             return Ok(data);
         }
+
+        [HttpPost("RunCalculateMonth")]
+        public ActionResult RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest)
+        {
+            _ikaCalculate.RunCalculateMonth(
+                monthRequest.HpId, 
+                monthRequest.SeikyuYm, 
+                monthRequest.PtIds, 
+                monthRequest.PreFix);
+
+            return Ok();
+        }
     }
 }

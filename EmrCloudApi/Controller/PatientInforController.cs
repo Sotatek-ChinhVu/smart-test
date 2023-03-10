@@ -681,15 +681,16 @@ namespace EmrCloudApi.Controller
                     request.Kohi4EdaNo,
                     request.PatientGroups,
                     request.OrderLogicalOperator,
-                    request.OrderItemCodes,
                     request.DepartmentId,
                     request.DoctorId,
                     request.ByomeiLogicalOperator,
                     request.Byomeis,
+                    request.TenMsts,
                     request.ByomeiStartDate,
                     request.ByomeiEndDate,
                     request.ResultKbn,
-                    request.IsSuspectedDisease
+                    request.IsSuspectedDisease,
+                    request.IsOrderOr
                 );
         }
 
