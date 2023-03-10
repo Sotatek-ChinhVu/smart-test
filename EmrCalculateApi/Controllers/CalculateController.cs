@@ -1,5 +1,7 @@
-﻿using EmrCalculateApi.Interface;
+﻿using Domain.Models.Futan;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
+using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCalculateApi.Controllers
@@ -45,8 +47,8 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
-
-            return Ok(data.Item1.Select(d => d.ItemCd).Distinct().ToList());
+            var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList());
+            return Ok(data);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -250,6 +249,10 @@ namespace Interactor.MedicalExamination
                             requestRaiinInf,
                             false
                         );
+
+                    var runTrialCalculate = _calculateRepository.RunTrialCalculate(runTraialCalculateRequest);
+
+                    checkedOrderModelList = checkedOrderModelList.Where(c => runTrialCalculate.Contains(c.ItemCd)).ToList();
 
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.Zanyaku(inputData.HpId, inputData.SinDate, allOdrInfDetail, ordInfs));
                 }

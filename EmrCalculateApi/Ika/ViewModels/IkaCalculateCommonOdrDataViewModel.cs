@@ -1,15 +1,12 @@
-﻿using Entity.Tenant;
-using EmrCalculateApi.Ika.DB.Finder;
-using EmrCalculateApi.Ika.DB.CommandHandler;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.Constants;
-using Helper.Constants;
-using EmrCalculateApi.Utils;
-using Infrastructure.Interfaces;
-using EmrCalculateApi.Interface;
-using Domain.Constant;
+﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
+using EmrCalculateApi.Utils;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -29,7 +26,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             _sisiKbn = sisiKbn;
             _sisiKasan = sisiKasan;
         }
-        
+
         public long rpNo
         {
             get { return _rpNo; }
@@ -83,13 +80,13 @@ namespace EmrCalculateApi.Ika.ViewModels
         long _raiinNo;
 
         int _existIngaiSyoho;
-        int _existsIngaiSyohoInMonth;        
+        int _existsIngaiSyohoInMonth;
         int _existsInnaiSyoho;
         int _existsInnaiSyohoInMonth;
 
-        
+
         int _existsIngaiSyohoInMonthHokenSyu;
-        
+
         int _existsInnaiSyohoInMonthHokenSyu;
 
         int _isRefill;
@@ -112,10 +109,10 @@ namespace EmrCalculateApi.Ika.ViewModels
             _systemConfigProvider = systemConfigProvider;
             _emrLogger = emrLogger;
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             SetArgData(odrInfFinder, masterFinder, tenMstCommon, hpId, ptId, sinDate);
-            
+
             //指定の診療日のオーダー情報を取得する
             _emrLogger.WriteLogMsg(this, conFncName, "get odrinf start");
             //_odrInfModels = odrInfFinder.FindOdrInfData(hpId, ptId, sinDate);
@@ -144,7 +141,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                             );
                 }
             }
-            _emrLogger.WriteLogMsg( this, conFncName, "get odrdtlcmt start");
+            _emrLogger.WriteLogMsg(this, conFncName, "get odrdtlcmt start");
             _odrInfCmtModels = odrInfFinder.FindOdrInfCmtData(hpId, ptId, sinDate);
 
             // 検査重複オーダー削除
@@ -156,11 +153,14 @@ namespace EmrCalculateApi.Ika.ViewModels
             // オーダーで使用している保険種のリスト
             _hokenSyuList = GetHokenSyuList();
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
-        public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
+        public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate, IEmrLogger emrLogger, ISystemConfigProvider systemConfigProvider)
         {
+            _emrLogger = emrLogger;
+            _systemConfigProvider = systemConfigProvider;
+
             const string conFncName = nameof(IkaCalculateCommonOdrDataViewModel);
 
             _emrLogger.WriteLogStart(this, conFncName, "");
@@ -454,21 +454,21 @@ namespace EmrCalculateApi.Ika.ViewModels
         private void SetArgData(OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
         {
             const string conFncName = nameof(SetArgData);
-            
+
             // ローカルデータ初期化
             InitializeLocalData();
 
-            _emrLogger.WriteLogMsg( this, conFncName, "init end");
+            _emrLogger.WriteLogMsg(this, conFncName, "init end");
 
             _odrInfFinder = odrInfFinder;
 
-            _emrLogger.WriteLogMsg( this, conFncName, "get odrfinder end");
+            _emrLogger.WriteLogMsg(this, conFncName, "get odrfinder end");
             _masterFinder = masterFinder;
-            _emrLogger.WriteLogMsg( this, conFncName, "get mstfinder end");
+            _emrLogger.WriteLogMsg(this, conFncName, "get mstfinder end");
 
             _tenMstCommon = tenMstCommon;
 
-            _emrLogger.WriteLogMsg( this, conFncName, "mstCommon end");
+            _emrLogger.WriteLogMsg(this, conFncName, "mstCommon end");
 
             _hpId = hpId;
             _ptId = ptId;
@@ -609,15 +609,15 @@ namespace EmrCalculateApi.Ika.ViewModels
                     _hokenPids = new List<(int, int, int)>();
 
                     // 検査で使用しているHOKEN_PID
-                    var ret = _odrDtlTenModels.FindAll(p => 
-                                    p.HpId == _hpId && 
-                                    p.PtId == _ptId && 
-                                    p.RaiinNo == _raiinNo && 
+                    var ret = _odrDtlTenModels.FindAll(p =>
+                                    p.HpId == _hpId &&
+                                    p.PtId == _ptId &&
+                                    p.RaiinNo == _raiinNo &&
                                     p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                                     p.SinKouiKbn >= OdrKouiKbnConst.KensaMin &&
                                     p.SinKouiKbn <= OdrKouiKbnConst.KensaMax)
                                 .OrderBy(p => p.HokenPid)
-                                .GroupBy(p => new { hokenPid = p.HokenPid, hokenId = p.HokenId, santeiKbn = p.SanteiKbn});
+                                .GroupBy(p => new { hokenPid = p.HokenPid, hokenId = p.HokenId, santeiKbn = p.SanteiKbn });
 
                     foreach (var odrDtl in ret)
                     {
@@ -669,7 +669,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                           p.SinKouiKbn <= OdrKouiKbnConst.KensaMax &&
                           //p.UnitName == "" && 
                           p.SanteiKbn != SanteiKbnConst.SanteiGai &&
-                          (p.TenMst == null || new string[] { "1","3","5" }.Contains(p.Kokuji2)) &&
+                          (p.TenMst == null || new string[] { "1", "3", "5" }.Contains(p.Kokuji2)) &&
                           (
                             //(p.KensaFukusuSantei == 0 && (p.OdrItemCd.StartsWith("KN") || p.KensaItemCd != "")) ||
                             (p.KensaFukusuSantei == 0 && (p.OdrItemCd.StartsWith("KN") || p.OdrItemCd.StartsWith("IGE"))) ||
@@ -686,7 +686,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             foreach (OdrDtlTenModel odrDtl in sortOdrDtls)
             {
-                if(
+                if (
                     (!(odrDtl.OdrItemCd.StartsWith("IGE")) && (!preOdrItemCd.StartsWith("IGE")) && (odrDtl.SanteiItemCd == preItemCd)) ||
                     ((odrDtl.OdrItemCd.StartsWith("IGE")) && (odrDtl.SanteiItemCd == preItemCd && odrDtl.OdrItemCd == preOdrItemCd))
                     )
@@ -743,15 +743,15 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             foreach ((string upItemCd, long upRaiinNo) in upItemCds)
             {
-                foreach (OdrDtlTenModel upOdrDtl in chusyaAmpoules.FindAll(p => 
+                foreach (OdrDtlTenModel upOdrDtl in chusyaAmpoules.FindAll(p =>
                     p.ItemCd == upItemCd && p.RaiinNo == upRaiinNo))
                 {
                     if (upOdrDtl.OdrKouiKbn == OdrKouiKbnConst.Tenteki &&
-                       _odrDtlTenModels.Any(p => 
-                         p.RaiinNo == upOdrDtl.RaiinNo && 
-                         p.RpNo == upOdrDtl.RpNo && 
-                         p.RpEdaNo == upOdrDtl.RpEdaNo && 
-                         new string[] { ItemCdConst.ChusyaSyuginasi33, ItemCdConst.ChusyaHoumonTenteki }.Contains(p.ItemCd) ) == false)
+                       _odrDtlTenModels.Any(p =>
+                         p.RaiinNo == upOdrDtl.RaiinNo &&
+                         p.RpNo == upOdrDtl.RpNo &&
+                         p.RpEdaNo == upOdrDtl.RpEdaNo &&
+                         new string[] { ItemCdConst.ChusyaSyuginasi33, ItemCdConst.ChusyaHoumonTenteki }.Contains(p.ItemCd)) == false)
                     {
                         // 点滴で、手技なしダミーも訪問点滴もないRpに属している場合は、調整しない
                     }
@@ -777,9 +777,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                     ItemCdConst.SyotiZanryoHaki,
                     ItemCdConst.SyujyutuZanryoHaki
                 };
-    
+
             // 残量破棄しない薬剤をチェック
-            foreach (OdrDtlTenModel zanryoHakiDrug in 
+            foreach (OdrDtlTenModel zanryoHakiDrug in
                         _odrDtlTenModels.FindAll(p =>
                             p.TenMst != null &&
                             new int[] { 0, 1 }.Contains(p.TenMst.SuryoRoundupKbn) &&
@@ -789,14 +789,14 @@ namespace EmrCalculateApi.Ika.ViewModels
                 if (zanryoHakiDrug.OdrKouiKbn == OdrKouiKbnConst.Tenteki)
                 {
                     // 点滴の場合、注射行為のオーダー内に残量破棄があるかチェック
-                    if (_odrDtlTenModels.Any(p => 
-                            p.OdrKouiKbn >= OdrKouiKbnConst.ChusyaMin && 
+                    if (_odrDtlTenModels.Any(p =>
+                            p.OdrKouiKbn >= OdrKouiKbnConst.ChusyaMin &&
                             p.OdrKouiKbn <= OdrKouiKbnConst.ChusyaMax &&
-                            p.RaiinNo == zanryoHakiDrug.RaiinNo && 
+                            p.RaiinNo == zanryoHakiDrug.RaiinNo &&
                             zanryoHakils.Contains(p.ItemCd)))
                     {
                         zanryoHakiDrug.TenMst.SuryoRoundupKbn = 2;
-                        
+
                         //break;
                     }
 
@@ -806,8 +806,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                     // 同一Rp内に残量破棄があるか？
                     if (_odrDtlTenModels.Any(p =>
                             p.RaiinNo == zanryoHakiDrug.RaiinNo &&
-                            p.RpNo == zanryoHakiDrug.RpNo && 
-                            p.RpEdaNo == zanryoHakiDrug.RpEdaNo && 
+                            p.RpNo == zanryoHakiDrug.RpNo &&
+                            p.RpEdaNo == zanryoHakiDrug.RpEdaNo &&
                             zanryoHakils.Contains(p.ItemCd)))
                     {
                         zanryoHakiDrug.TenMst.SuryoRoundupKbn = 2;
@@ -826,184 +826,364 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             //if (IsRosai)
             //{
-                // 労災の場合
+            // 労災の場合
 
-                //労災四肢加算１．５倍
-                List<string> rousaiSisi1_5 =
-                    new List<string>
-                    {
+            //労災四肢加算１．５倍
+            List<string> rousaiSisi1_5 =
+                new List<string>
+                {
                                     ItemCdConst.SonotaRosaiSisiKasan,
                                     ItemCdConst.SyotiRosaiSisiKasan,
                                     ItemCdConst.SyujyutuRosaiSisiKasan
-                    };
+                };
 
-                //労災四肢加算２倍
-                List<string> rousaiSisi2 =
-                    new List<string>
-                    {
+            //労災四肢加算２倍
+            List<string> rousaiSisi2 =
+                new List<string>
+                {
                                     ItemCdConst.SyotiRosaiSisiKasan2,
                                     ItemCdConst.SyujyutuRosaiSisiKasan2
-                    };
+                };
 
-                // 保険種
-                List<int> hokensyus =
-                    new List<int>
-                    {
+            // 保険種
+            List<int> hokensyus =
+                new List<int>
+                {
                         HokenSyu.Rosai,
                         HokenSyu.After
-                    };
-                if(_systemConfigProvider.GetJibaiJunkyo() == 1)
+                };
+            if (_systemConfigProvider.GetJibaiJunkyo() == 1)
+            {
+                hokensyus.Add(HokenSyu.Jibai);
+            }
+
+            // 合成になるかもしれない項目のリスト
+            List<RousaiGoseiItemInfModel> roOdrls =
+                new List<RousaiGoseiItemInfModel>();
+
+            // 新しいRpNo
+            int newRpNo = 0;
+
+            if (RousaiGoseiMsts == null || RousaiGoseiMsts.Any() == false)
+            {
+                // マスタがない場合は処理しない
+                return;
+            }
+
+            // 最大の合成グループコードを取得
+            var maxGrp = RousaiGoseiMsts.Max(p => p.GoseiGrp);
+
+            if (maxGrp != null)
+            {
+                for (int i = 1; i <= maxGrp; i++)
                 {
-                    hokensyus.Add(HokenSyu.Jibai);
-                }
+                    // 合成グループコードの回数回す
 
-                // 合成になるかもしれない項目のリスト
-                List<RousaiGoseiItemInfModel> roOdrls =
-                    new List<RousaiGoseiItemInfModel>();
+                    // このグループに含まれるITEM_CDを取得（合成化する可能性がある診療行為コード）
+                    var grp = RousaiGoseiMsts.Where(p =>
+                            p.GoseiGrp == i)
+                            .GroupBy(p => new { itemCd = p.ItemCd })
+                            .ToList();
 
-                // 新しいRpNo
-                int newRpNo = 0;
-                
-                if(RousaiGoseiMsts == null || RousaiGoseiMsts.Any() == false)
-                {
-                    // マスタがない場合は処理しない
-                    return;
-                }
-
-                // 最大の合成グループコードを取得
-                var maxGrp = RousaiGoseiMsts.Max(p => p.GoseiGrp);
-
-                if (maxGrp != null)
-                {
-                    for (int i = 1; i <= maxGrp; i++)
+                    if (grp != null)
                     {
-                        // 合成グループコードの回数回す
+                        List<string> itemCds = new List<string>();
 
-                        // このグループに含まれるITEM_CDを取得（合成化する可能性がある診療行為コード）
-                        var grp = RousaiGoseiMsts.Where(p => 
-                                p.GoseiGrp == i)
-                                .GroupBy(p => new { itemCd = p.ItemCd })
-                                .ToList();
-
-                        if (grp != null)
+                        foreach (var rousaiGoseiMst in grp)
                         {
-                            List<string> itemCds = new List<string>();
+                            itemCds.Add(rousaiGoseiMst.Key.itemCd);
+                        }
 
-                            foreach (var rousaiGoseiMst in grp)
+                        // 対象となりうる項目を含むオーダー詳細を取得
+                        List<OdrDtlTenModel> filteredOdrDtls =
+                            _odrDtlTenModels.FindAll(p =>
+                                p.RaiinNo == _raiinNo &&
+                                itemCds.Contains(p.ItemCd) &&
+                                hokensyus.Contains(p.HokenSyu) &&
+                                p.SanteiKbn != SanteiKbnConst.SanteiGai);
+
+                        if (filteredOdrDtls.Any())
+                        {
+                            // 対象項目がオーダーされている場合
+
+                            foreach (OdrDtlTenModel odrDtl in filteredOdrDtls)
                             {
-                                itemCds.Add(rousaiGoseiMst.Key.itemCd);
+                                // RpNo, RpEdaNoを記憶する
+                                roOdrls.Add(new RousaiGoseiItemInfModel(odrDtl.RpNo, odrDtl.RpEdaNo, odrDtl.ItemCd, odrDtl.SisiKbn, 0));
                             }
 
-                            // 対象となりうる項目を含むオーダー詳細を取得
-                            List<OdrDtlTenModel> filteredOdrDtls =
-                                _odrDtlTenModels.FindAll(p =>
-                                    p.RaiinNo == _raiinNo &&
-                                    itemCds.Contains(p.ItemCd) &&
-                                    hokensyus.Contains(p.HokenSyu) &&
-                                    p.SanteiKbn != SanteiKbnConst.SanteiGai);
+                            // roOdrlsの重複カット
+                            List<RousaiGoseiItemInfModel> uniqueRoOdrls =
+                                roOdrls.Distinct()
+                                .OrderBy(p => p.rpNo)
+                                .ThenBy(p => p.edaNo)
+                                .ToList();
 
-                            if (filteredOdrDtls.Any())
+                            // Rp内をチェックし、加算対象かどうかチェック
+                            for (int j = 0; j < uniqueRoOdrls.Count; j++)
                             {
-                                // 対象項目がオーダーされている場合
+                                filteredOdrDtls =
+                                    _odrDtlTenModels.FindAll(p =>
+                                        p.RpNo == uniqueRoOdrls[j].rpNo &&
+                                        p.RpEdaNo == uniqueRoOdrls[j].edaNo &&
+                                        p.SanteiKbn != SanteiKbnConst.SanteiGai);
 
                                 foreach (OdrDtlTenModel odrDtl in filteredOdrDtls)
                                 {
-                                    // RpNo, RpEdaNoを記憶する
-                                    roOdrls.Add(new RousaiGoseiItemInfModel(odrDtl.RpNo, odrDtl.RpEdaNo, odrDtl.ItemCd, odrDtl.SisiKbn, 0));
+                                    int kasanKbn = 0;
+
+                                    if (rousaiSisi2.Contains(odrDtl.ItemCd) ||
+                                       (odrDtl.BuiKbn == 10 &&
+                                            (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 3)))
+                                    {
+                                        // 労災四肢加算2.0倍の項目を含んでいる or 
+                                        // 指の部位(BUI_KBN=10)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、2.0倍のみ対象(SISI_KBN=3)
+                                        // の場合
+                                        kasanKbn = 2;
+                                    }
+                                    else if (rousaiSisi1_5.Contains(odrDtl.ItemCd) ||
+                                            (odrDtl.BuiKbn == 3 &&
+                                                (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 2)) ||
+                                            (odrDtl.BuiKbn == 10 &&
+                                                (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 3)))
+                                    {
+                                        // 労災四肢加算1.5倍の項目を含んでいる or 
+                                        // 四肢の部位(BUI_KBN=3)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、1.5倍のみ対象(SISI_KBN=2) or
+                                        // 指の部位(BUI_KBN=10)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、2.0倍のみ対象(SISI_KBN=3)
+                                        // の場合
+                                        kasanKbn = 1;
+                                    }
+
+                                    if (kasanKbn > 0)
+                                    {
+                                        // 加算区分を更新
+                                        uniqueRoOdrls[j] =
+                                            (new RousaiGoseiItemInfModel(uniqueRoOdrls[j].rpNo, uniqueRoOdrls[j].edaNo, uniqueRoOdrls[j].itemCd, uniqueRoOdrls[j].sisiKbn, kasanKbn));
+                                        break;
+                                    }
+
+                                }
+                            }
+
+                            // 取得したオーダー情報と一致するマスタは存在するかチェック
+
+                            // 労災合成コードマスタの、合成診療行為コード, カウントのリスト生成
+                            var rousaiGoseiMstCounts =
+                                RousaiGoseiMsts
+                                    .Where(p =>
+                                        p.GoseiGrp == i)
+                                    .GroupBy(p =>
+                                        new { gouseiItemCd = p.GoseiItemCd })
+                                    .Select(p => new { p.Key, count = p.Count() });
+
+                            List<(string gouseiItemCd, int count)> rousaiGoseiMstCountls =
+                                new List<(string, int)>();
+
+                            // 件数が一致するものに絞り込む
+                            // この合成診療行為コードのリストが候補となる
+                            for (int uq = uniqueRoOdrls.Count; uq > 1; uq--)
+                            {
+                                foreach (var rousaiGoseiMstCount in rousaiGoseiMstCounts)
+                                {
+                                    rousaiGoseiMstCountls.Add((rousaiGoseiMstCount.Key.gouseiItemCd, rousaiGoseiMstCount.count));
                                 }
 
-                                // roOdrlsの重複カット
-                                List<RousaiGoseiItemInfModel> uniqueRoOdrls =
-                                    roOdrls.Distinct()
-                                    .OrderBy(p => p.rpNo)
-                                    .ThenBy(p => p.edaNo)
-                                    .ToList();
+                                rousaiGoseiMstCountls =
+                                    rousaiGoseiMstCountls.FindAll(p => p.count == uq);
 
-                                // Rp内をチェックし、加算対象かどうかチェック
-                                for (int j = 0; j < uniqueRoOdrls.Count; j++)
+
+                                // 診療行為コードの組み合わせをチェック
+                                // 診療行為コードと四肢加算区分が一致するマスタのレコードを取得
+                                List<string> gouseiItemCds = GetGouseiItemCds(uniqueRoOdrls, uq);
+
+                                int k = 0;
+                                while (k < rousaiGoseiMstCountls.Count)
                                 {
-                                    filteredOdrDtls =
-                                        _odrDtlTenModels.FindAll(p =>
-                                            p.RpNo == uniqueRoOdrls[j].rpNo &&
-                                            p.RpEdaNo == uniqueRoOdrls[j].edaNo &&
-                                            p.SanteiKbn != SanteiKbnConst.SanteiGai);
-
-                                    foreach (OdrDtlTenModel odrDtl in filteredOdrDtls)
+                                    // 取得したレコードの中にないものは候補から外す
+                                    if (gouseiItemCds.Any(p =>
+                                            p == rousaiGoseiMstCountls[k].gouseiItemCd) == false)
                                     {
-                                        int kasanKbn = 0;
+                                        rousaiGoseiMstCountls.RemoveAt(k);
+                                    }
+                                    else
+                                    {
+                                        k++;
+                                    }
+                                }
 
-                                        if (rousaiSisi2.Contains(odrDtl.ItemCd) ||
-                                           (odrDtl.BuiKbn == 10 &&
-                                                (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 3)))
-                                        {
-                                            // 労災四肢加算2.0倍の項目を含んでいる or 
-                                            // 指の部位(BUI_KBN=10)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、2.0倍のみ対象(SISI_KBN=3)
-                                            // の場合
-                                            kasanKbn = 2;
-                                        }
-                                        else if (rousaiSisi1_5.Contains(odrDtl.ItemCd) ||
-                                                (odrDtl.BuiKbn == 3 &&
-                                                    (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 2)) ||
-                                                (odrDtl.BuiKbn == 10 &&
-                                                    (uniqueRoOdrls[j].sisiKbn == 1 || uniqueRoOdrls[j].sisiKbn == 3)))
-                                        {
-                                            // 労災四肢加算1.5倍の項目を含んでいる or 
-                                            // 四肢の部位(BUI_KBN=3)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、1.5倍のみ対象(SISI_KBN=2) or
-                                            // 指の部位(BUI_KBN=10)を含んでおり、当該項目が1.5倍又は2.0倍の対象(SISI_KBN=1)か、2.0倍のみ対象(SISI_KBN=3)
-                                            // の場合
-                                            kasanKbn = 1;
-                                        }
 
-                                        if (kasanKbn > 0)
+                                if (rousaiGoseiMstCountls.Count > 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                            int newRpEdaNo = 1;
+                            int newRowNo = 1;
+
+                            if (rousaiGoseiMstCountls.Any())
+                            {
+                                // マスタが存在する場合、該当するRpを１つのRpにまとめる
+                                List<RousaiGoseiMstModel> tgtRousaiGoseiMsts =
+                                    RousaiGoseiMsts.FindAll(p => p.GoseiItemCd == rousaiGoseiMstCountls.First().gouseiItemCd).ToList();
+
+                                int uidx = 0;
+                                while (uidx < uniqueRoOdrls.Count)
+                                {
+                                    if (tgtRousaiGoseiMsts.Any(p => p.ItemCd == uniqueRoOdrls[uidx].itemCd) == false)
+                                    {
+                                        uniqueRoOdrls.RemoveAt(uidx);
+                                    }
+                                    else
+                                    {
+                                        uidx++;
+                                    }
+                                }
+
+                                List<RousaiGoseiItemInfModel> convertRoOdrls = new List<RousaiGoseiItemInfModel>();
+
+                                foreach (RousaiGoseiMstModel tgtRousaiGoseiMst in tgtRousaiGoseiMsts)
+                                {
+                                    foreach (RousaiGoseiItemInfModel uniqueRoOdr in uniqueRoOdrls)
+                                    {
+                                        if (tgtRousaiGoseiMst.ItemCd == uniqueRoOdr.itemCd &&
+                                           tgtRousaiGoseiMst.SisiKbn == uniqueRoOdr.sisiKasan)
                                         {
-                                            // 加算区分を更新
-                                            uniqueRoOdrls[j] =
-                                                (new RousaiGoseiItemInfModel(uniqueRoOdrls[j].rpNo, uniqueRoOdrls[j].edaNo, uniqueRoOdrls[j].itemCd, uniqueRoOdrls[j].sisiKbn, kasanKbn));
+                                            convertRoOdrls.Add(uniqueRoOdr);
                                             break;
                                         }
-
                                     }
                                 }
 
-                                // 取得したオーダー情報と一致するマスタは存在するかチェック
+                                // ODR_INF
 
-                                // 労災合成コードマスタの、合成診療行為コード, カウントのリスト生成
-                                var rousaiGoseiMstCounts =
-                                    RousaiGoseiMsts
-                                        .Where(p =>
-                                            p.GoseiGrp == i)
-                                        .GroupBy(p =>
-                                            new { gouseiItemCd = p.GoseiItemCd })
-                                        .Select(p => new { p.Key, count = p.Count() });
+                                // 一時変数にフィルタの結果を受ける
+                                OdrInfModel tmpOdrInf =
+                                    _odrInfModels.FindAll(p =>
+                                        p.RpNo == convertRoOdrls[0].rpNo &&
+                                        p.RpEdaNo == convertRoOdrls[0].edaNo)
+                                    .ToList()
+                                    .First();
 
-                                List<(string gouseiItemCd, int count)> rousaiGoseiMstCountls =
-                                    new List<(string, int)>();
+                                // ODR_INF追加用（新たに生成、こうしないと元データを変更してしまう為）
+                                OdrInfModel addOdrInf =
+                                    new OdrInfModel(tmpOdrInf.OdrInf, tmpOdrInf.PtHokenPattern, tmpOdrInf.RaiinInf);
 
-                                // 件数が一致するものに絞り込む
-                                // この合成診療行為コードのリストが候補となる
-                                for (int uq = uniqueRoOdrls.Count; uq > 1; uq--)
+                                // 新しく追加するオーダー情報のRpNoはマイナス値
+                                newRpNo--;
+
+                                // RpNo, RpEdaNoをセット
+                                addOdrInf.RpNo = newRpNo;
+                                addOdrInf.RpEdaNo = newRpEdaNo;
+
+                                // ODR_INF追加
+                                _odrInfModels.Add(addOdrInf);
+
+                                // ODR_INF_DETAIL
+                                long preRpNo = 0;
+                                long preRpEdaNo = 0;
+                                bool replaceItemCd = false;
+
+                                // 該当項目を含むRpの数、ループ
+                                for (int j = 0; j < convertRoOdrls.Count; j++)
                                 {
-                                    foreach (var rousaiGoseiMstCount in rousaiGoseiMstCounts)
+                                    // ODR_INF_DETAIL 追加用
+                                    List<OdrDtlTenModel> addOdrDtls = new List<OdrDtlTenModel>();
+
+                                    // まとめる対象のRpの詳細を取得する
+                                    // 一時変数にフィルタの結果を受ける
+                                    var tmpOdrDtls =
+                                        _odrDtlTenModels.FindAll(p => p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo && p.SanteiKbn != SanteiKbnConst.SanteiGai);
+
+                                    // 追加用変数にAddする（新たに生成、こうしないと元データを変更してしまう為）
+                                    tmpOdrDtls?.ForEach(entity =>
                                     {
-                                        rousaiGoseiMstCountls.Add((rousaiGoseiMstCount.Key.gouseiItemCd, rousaiGoseiMstCount.count));
-                                    }
+                                        //addOdrDtls.Add(new OdrDtlTenModel(entity.OdrInfDetail, entity.TenMst, entity.PtHokenPattern, entity.OdrInf, entity.IpnKasanMst, entity.RaiinInf));
+                                        addOdrDtls.Add(
+                                            new OdrDtlTenModel(
+                                                entity.OdrInfDetail,
+                                                entity.TenMst,
+                                                entity.CmtKbnMst,
+                                                entity.ReceName,
+                                                //entity.PtHokenPattern, 
+                                                entity.HokenSyu,
+                                                entity.HokenPid,
+                                                entity.HokenId,
+                                                entity.HokenSbt,
+                                                //entity.OdrInf, 
+                                                entity.OdrKouiKbn,
+                                                entity.SanteiKbn,
+                                                entity.InoutKbn,
+                                                entity.SyohoSbt,
+                                                entity.DaysCnt,
+                                                entity.SortNo,
+                                                //entity.IpnKasanMst, 
+                                                entity.Kasan1,
+                                                entity.Kasan2,
+                                                //entity.RaiinInf
+                                                entity.SinStartTime,
+                                                entity.MinYakka
+                                                //entity.Kbn,
+                                                //entity.JunSenpatu
+                                                ));
+                                    });
 
-                                    rousaiGoseiMstCountls =
-                                        rousaiGoseiMstCountls.FindAll(p => p.count == uq);
-
-
-                                    // 診療行為コードの組み合わせをチェック
-                                    // 診療行為コードと四肢加算区分が一致するマスタのレコードを取得
-                                    List<string> gouseiItemCds = GetGouseiItemCds(uniqueRoOdrls, uq);
 
                                     int k = 0;
-                                    while (k < rousaiGoseiMstCountls.Count)
+                                    bool del = false;
+
+                                    // まとめる対象のRpを加工する
+                                    while (k < addOdrDtls.Count)
                                     {
-                                        // 取得したレコードの中にないものは候補から外す
-                                        if (gouseiItemCds.Any(p =>
-                                                p == rousaiGoseiMstCountls[k].gouseiItemCd) == false)
+                                        del = false;
+
+                                        addOdrDtls[k].RpNo = newRpNo;
+                                        addOdrDtls[k].RpEdaNo = newRpEdaNo;
+                                        addOdrDtls[k].RowNo = newRowNo;
+                                        newRowNo++;
+
+                                        // 合成する診療行為であるかどうかをチェックする
+                                        bool hit = false;
+
+                                        for (int l = 0; l < convertRoOdrls.Count; l++)
                                         {
-                                            rousaiGoseiMstCountls.RemoveAt(k);
+                                            if (addOdrDtls[k].ItemCd == convertRoOdrls[l].itemCd)
+                                            {
+                                                hit = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (hit)
+                                        {
+                                            // 合成する診療行為の場合
+
+                                            if (replaceItemCd == false)
+                                            {
+                                                // まだ置き換えしてない場合
+                                                // 最初に該当した項目は合成診療行為コードに置き換える
+
+                                                replaceItemCd = true;
+
+                                                UpdateOdrDtlItemCd(addOdrDtls[k], rousaiGoseiMstCountls.First().gouseiItemCd);
+
+                                            }
+                                            else
+                                            {
+                                                // すでに1つでも置き換えている場合、削除する
+                                                del = true;
+                                            }
+                                        }
+                                        else if (rousaiSisi1_5.Contains(addOdrDtls[k].ItemCd) ||
+                                                rousaiSisi2.Contains(addOdrDtls[k].ItemCd))
+                                        {
+                                            // 労災四肢加算は削除
+                                            del = true;
+                                        }
+
+                                        if (del)
+                                        {
+                                            addOdrDtls.RemoveAt(k);
                                         }
                                         else
                                         {
@@ -1011,210 +1191,30 @@ namespace EmrCalculateApi.Ika.ViewModels
                                         }
                                     }
 
-
-                                    if (rousaiGoseiMstCountls.Count > 0)
+                                    // 前に処理したRpと違うRpの場合、追加する
+                                    if (convertRoOdrls[j].rpNo != preRpNo || convertRoOdrls[j].edaNo != preRpEdaNo)
                                     {
-                                        break;
+                                        _odrDtlTenModels.AddRange(addOdrDtls);
+
+                                        preRpNo = convertRoOdrls[j].rpNo;
+                                        preRpEdaNo = convertRoOdrls[j].edaNo;
                                     }
+
+                                    // オーダーから削除
+                                    _odrInfModels.RemoveAll(p => p.RaiinNo == _raiinNo && p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo);
+                                    _odrDtlTenModels.RemoveAll(p => p.RaiinNo == _raiinNo && p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo);
+
                                 }
 
-                                int newRpEdaNo = 1;
-                                int newRowNo = 1;
-
-                                if (rousaiGoseiMstCountls.Any())
-                                {
-                                    // マスタが存在する場合、該当するRpを１つのRpにまとめる
-                                    List<RousaiGoseiMstModel> tgtRousaiGoseiMsts =
-                                        RousaiGoseiMsts.FindAll(p => p.GoseiItemCd == rousaiGoseiMstCountls.First().gouseiItemCd).ToList();
-
-                                    int uidx = 0;
-                                    while (uidx < uniqueRoOdrls.Count)
-                                    {
-                                        if (tgtRousaiGoseiMsts.Any(p => p.ItemCd == uniqueRoOdrls[uidx].itemCd) == false)
-                                        {
-                                            uniqueRoOdrls.RemoveAt(uidx);
-                                        }
-                                        else
-                                        {
-                                            uidx++;
-                                        }
-                                    }
-
-                                    List<RousaiGoseiItemInfModel> convertRoOdrls = new List<RousaiGoseiItemInfModel>();
-
-                                    foreach (RousaiGoseiMstModel tgtRousaiGoseiMst in tgtRousaiGoseiMsts)
-                                    {
-                                        foreach(RousaiGoseiItemInfModel uniqueRoOdr in uniqueRoOdrls)
-                                        {
-                                            if(tgtRousaiGoseiMst.ItemCd == uniqueRoOdr.itemCd &&
-                                               tgtRousaiGoseiMst.SisiKbn == uniqueRoOdr.sisiKasan)
-                                            {
-                                                convertRoOdrls.Add(uniqueRoOdr);
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    // ODR_INF
-
-                                    // 一時変数にフィルタの結果を受ける
-                                    OdrInfModel tmpOdrInf =
-                                        _odrInfModels.FindAll(p =>
-                                            p.RpNo == convertRoOdrls[0].rpNo &&
-                                            p.RpEdaNo == convertRoOdrls[0].edaNo)
-                                        .ToList()
-                                        .First();
-
-                                    // ODR_INF追加用（新たに生成、こうしないと元データを変更してしまう為）
-                                    OdrInfModel addOdrInf =
-                                        new OdrInfModel(tmpOdrInf.OdrInf, tmpOdrInf.PtHokenPattern, tmpOdrInf.RaiinInf);
-
-                                    // 新しく追加するオーダー情報のRpNoはマイナス値
-                                    newRpNo--;
-
-                                    // RpNo, RpEdaNoをセット
-                                    addOdrInf.RpNo = newRpNo;
-                                    addOdrInf.RpEdaNo = newRpEdaNo;
-
-                                    // ODR_INF追加
-                                    _odrInfModels.Add(addOdrInf);
-
-                                    // ODR_INF_DETAIL
-                                    long preRpNo = 0;
-                                    long preRpEdaNo = 0;
-                                    bool replaceItemCd = false;
-
-                                    // 該当項目を含むRpの数、ループ
-                                    for (int j = 0; j < convertRoOdrls.Count; j++)
-                                    {
-                                        // ODR_INF_DETAIL 追加用
-                                        List<OdrDtlTenModel> addOdrDtls = new List<OdrDtlTenModel>();
-
-                                        // まとめる対象のRpの詳細を取得する
-                                        // 一時変数にフィルタの結果を受ける
-                                        var tmpOdrDtls =
-                                            _odrDtlTenModels.FindAll(p => p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo && p.SanteiKbn != SanteiKbnConst.SanteiGai);
-
-                                        // 追加用変数にAddする（新たに生成、こうしないと元データを変更してしまう為）
-                                        tmpOdrDtls?.ForEach(entity =>
-                                        {
-                                            //addOdrDtls.Add(new OdrDtlTenModel(entity.OdrInfDetail, entity.TenMst, entity.PtHokenPattern, entity.OdrInf, entity.IpnKasanMst, entity.RaiinInf));
-                                            addOdrDtls.Add(
-                                                new OdrDtlTenModel(
-                                                    entity.OdrInfDetail,
-                                                    entity.TenMst,
-                                                    entity.CmtKbnMst,
-                                                    entity.ReceName,
-                                                    //entity.PtHokenPattern, 
-                                                    entity.HokenSyu,
-                                                    entity.HokenPid,
-                                                    entity.HokenId,
-                                                    entity.HokenSbt,
-                                                    //entity.OdrInf, 
-                                                    entity.OdrKouiKbn,
-                                                    entity.SanteiKbn,
-                                                    entity.InoutKbn,
-                                                    entity.SyohoSbt,
-                                                    entity.DaysCnt,
-                                                    entity.SortNo,
-                                                    //entity.IpnKasanMst, 
-                                                    entity.Kasan1,
-                                                    entity.Kasan2,
-                                                    //entity.RaiinInf
-                                                    entity.SinStartTime,
-                                                    entity.MinYakka
-                                                    //entity.Kbn,
-                                                    //entity.JunSenpatu
-                                                    ));
-                                        });
-
-
-                                        int k = 0;
-                                        bool del = false;
-
-                                        // まとめる対象のRpを加工する
-                                        while (k < addOdrDtls.Count)
-                                        {
-                                            del = false;
-
-                                            addOdrDtls[k].RpNo = newRpNo;
-                                            addOdrDtls[k].RpEdaNo = newRpEdaNo;
-                                            addOdrDtls[k].RowNo = newRowNo;
-                                            newRowNo++;
-
-                                            // 合成する診療行為であるかどうかをチェックする
-                                            bool hit = false;
-
-                                            for (int l = 0; l < convertRoOdrls.Count; l++)
-                                            {
-                                                if (addOdrDtls[k].ItemCd == convertRoOdrls[l].itemCd)
-                                                {
-                                                    hit = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            if (hit)
-                                            {
-                                                // 合成する診療行為の場合
-
-                                                if (replaceItemCd == false)
-                                                {
-                                                    // まだ置き換えしてない場合
-                                                    // 最初に該当した項目は合成診療行為コードに置き換える
-
-                                                    replaceItemCd = true;
-
-                                                    UpdateOdrDtlItemCd(addOdrDtls[k], rousaiGoseiMstCountls.First().gouseiItemCd);
-
-                                                }
-                                                else
-                                                {
-                                                    // すでに1つでも置き換えている場合、削除する
-                                                    del = true;
-                                                }
-                                            }
-                                            else if (rousaiSisi1_5.Contains(addOdrDtls[k].ItemCd) ||
-                                                    rousaiSisi2.Contains(addOdrDtls[k].ItemCd))
-                                            {
-                                                // 労災四肢加算は削除
-                                                del = true;
-                                            }
-
-                                            if (del)
-                                            {
-                                                addOdrDtls.RemoveAt(k);
-                                            }
-                                            else
-                                            {
-                                                k++;
-                                            }
-                                        }
-
-                                        // 前に処理したRpと違うRpの場合、追加する
-                                        if (convertRoOdrls[j].rpNo != preRpNo || convertRoOdrls[j].edaNo != preRpEdaNo)
-                                        {
-                                            _odrDtlTenModels.AddRange(addOdrDtls);
-
-                                            preRpNo = convertRoOdrls[j].rpNo;
-                                            preRpEdaNo = convertRoOdrls[j].edaNo;
-                                        }
-
-                                        // オーダーから削除
-                                        _odrInfModels.RemoveAll(p => p.RaiinNo == _raiinNo && p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo);
-                                        _odrDtlTenModels.RemoveAll(p => p.RaiinNo == _raiinNo && p.RpNo == convertRoOdrls[j].rpNo && p.RpEdaNo == convertRoOdrls[j].edaNo);
-
-                                    }
-
-                                }
                             }
                         }
                     }
                 }
+            }
             //}
         }
 
-        private  List<string> GetGouseiItemCds(List<RousaiGoseiItemInfModel> uniqueRoOdrls, int uq)
+        private List<string> GetGouseiItemCds(List<RousaiGoseiItemInfModel> uniqueRoOdrls, int uq)
         {
             List<string> ret = new List<string>();
 
@@ -1229,7 +1229,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                             )
                         .GroupBy(p =>
                             new { gouseiItemCd = p.GoseiItemCd })
-                        .Select(p=> new { gouseiItemCd = p.Key.gouseiItemCd, count = p.Count()});
+                        .Select(p => new { gouseiItemCd = p.Key.gouseiItemCd, count = p.Count() });
 
                 gouseiItemCds = gouseiItemCds.Where(p => p.count == uq);
 
@@ -1248,11 +1248,11 @@ namespace EmrCalculateApi.Ika.ViewModels
                     RousaiGoseiMsts
                         .Where(p =>
                             (p.ItemCd == uniqueRoOdrls[0].itemCd && p.SisiKbn == uniqueRoOdrls[0].sisiKasan) ||
-                            (p.ItemCd == uniqueRoOdrls[1].itemCd && p.SisiKbn == uniqueRoOdrls[1].sisiKasan) 
+                            (p.ItemCd == uniqueRoOdrls[1].itemCd && p.SisiKbn == uniqueRoOdrls[1].sisiKasan)
                             )
                         .GroupBy(p =>
                             new { gouseiItemCd = p.GoseiItemCd })
-                        .Select(p=>new { gouseiItemCd = p.Key.gouseiItemCd, count = p.Count() });
+                        .Select(p => new { gouseiItemCd = p.Key.gouseiItemCd, count = p.Count() });
 
                 gouseiItemCds = gouseiItemCds.Where(p => p.count == uq);
 
@@ -1290,7 +1290,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             return ret;
         }
-        
+
         /// <summary>
         /// この来院で院外処方オーダーがあるかどうか
         ///     true:ある
@@ -1437,10 +1437,10 @@ namespace EmrCalculateApi.Ika.ViewModels
                 // 当来院に存在する
                 ret = 1;
             }
-            else if(inout == 1 &&
+            else if (inout == 1 &&
                     (
                         incTokusyo &&
-                        _odrDtlTenModels.Any(p=>
+                        _odrDtlTenModels.Any(p =>
                         p.HokenSyu == _hokenKbn &&
                         (term == 0 ? p.RaiinNo == _raiinNo : true) &&
                         (inout >= 0 ? p.InoutKbn == inout : true) &&
@@ -1518,9 +1518,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             int hokenPid = -1;
             int hokenId = -1;
             int santeiKbn = -1;
-            int index = _odrDtlTenModels.FindIndex(p => 
-                            p.HokenSyu == _hokenKbn && 
-                            p.RaiinNo == _raiinNo && 
+            int index = _odrDtlTenModels.FindIndex(p =>
+                            p.HokenSyu == _hokenKbn &&
+                            p.RaiinNo == _raiinNo &&
                             p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                             p.SaiketuKbn > 0);
             if (index > 0)
@@ -1552,18 +1552,18 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <returns>true: ある</returns>
         public bool ExistKensaHandanGrpKbn(int handanGrpKbn)
         {
-            return (_odrDtlTenModels.Any(p => 
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
+            return (_odrDtlTenModels.Any(p =>
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.HandanGrpKbn == handanGrpKbn));
         }
 
         public bool ExistKensaHandanGrpKbn(int[] handanGrpKbn)
         {
-            return (_odrDtlTenModels.Any(p => 
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
+            return (_odrDtlTenModels.Any(p =>
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         handanGrpKbn.Contains(p.HandanGrpKbn)));
         }
@@ -1591,8 +1591,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.RaiinNo == _raiinNo &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.TenMst != null &&
-                        (p.TenMst.JihiSbt > 0 && 
-                            (string.IsNullOrEmpty(p.ItemCd) == true || 
+                        (p.TenMst.JihiSbt > 0 &&
+                            (string.IsNullOrEmpty(p.ItemCd) == true ||
                                 (p.ItemCd.StartsWith("FCR") == false && p.ItemCd.StartsWith("KONI") == false))));
 
             var _join = (
@@ -1636,15 +1636,15 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <returns>指定の検査判断グループのオーダー</returns>
         public List<OdrDtlTenModel> FilterKensaHandanGrpKbn(int[] handanGrpKbn)
         {
-            return _odrDtlTenModels.FindAll(p => 
+            return _odrDtlTenModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         handanGrpKbn.Contains(p.HandanGrpKbn));
         }
-        
+
         /// <summary>
         /// この来院で麻薬処方オーダーがあるかどうか
         /// </summary>
@@ -1657,15 +1657,15 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             bool ret = false;
 
-            if (_odrDtlTenModels.Any(p => 
+            if (_odrDtlTenModels.Any(p =>
                     p.HpId == _hpId &&
                     p.PtId == _ptId &&
-                    p.HokenSyu == _hokenKbn && 
-                    p.RaiinNo == _raiinNo && 
+                    p.HokenSyu == _hokenKbn &&
+                    p.RaiinNo == _raiinNo &&
                     p.SanteiKbn != SanteiKbnConst.SanteiGai &&
-                    p.OdrKouiKbn >= OdrKouiKbnConst.Naifuku && 
+                    p.OdrKouiKbn >= OdrKouiKbnConst.Naifuku &&
                     p.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo &&
-                    p.InoutKbn == inOut && 
+                    p.InoutKbn == inOut &&
                     new int[] { 1, 2, 3, 5 }.Contains(p.MadokuKbn)))
             {
                 ret = true;
@@ -1685,11 +1685,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.Any(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai && 
-                        p.RpNo == rpNo && 
-                        p.RpEdaNo == rpEdaNo && 
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai &&
+                        p.RpNo == rpNo &&
+                        p.RpEdaNo == rpEdaNo &&
                         p.KouseisinKbn > 0);
         }
 
@@ -1733,9 +1733,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfModels.Any(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
-                        p.OdrKouiKbn >= kouiMin && 
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
+                        p.OdrKouiKbn >= kouiMin &&
                         p.OdrKouiKbn <= kouiMax);
         }
 
@@ -1750,7 +1750,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfModels.FindAll(p =>
                     p.HpId == _hpId &&
                     p.PtId == _ptId &&
-                    p.HokenSyu == _hokenKbn && 
+                    p.HokenSyu == _hokenKbn &&
                     p.RaiinNo == _raiinNo &&
                     //p.SanteiKbn != 1 &&
                     p.OdrKouiKbn == kouiKbn);
@@ -1767,10 +1767,10 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
+                        p.HokenSyu == _hokenKbn &&
                         p.RaiinNo == _raiinNo &&
                         //p.SanteiKbn != 1 && 
-                        p.OdrKouiKbn >= kouiKbnMin && 
+                        p.OdrKouiKbn >= kouiKbnMin &&
                         p.OdrKouiKbn <= kouiKbnMax);
         }
 
@@ -1785,10 +1785,10 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
+                        p.HokenSyu == _hokenKbn &&
                         //p.SanteiKbn != 1 && 
-                        p.OdrKouiKbn >= kouiKbnMin && 
-                        p.OdrKouiKbn <= kouiKbnMax);            
+                        p.OdrKouiKbn >= kouiKbnMin &&
+                        p.OdrKouiKbn <= kouiKbnMax);
         }
 
         //public List<OdrInfModel> FilterOdrInfTentekiToday(int kouiKbnMin, int kouiKbnMax)
@@ -1814,13 +1814,13 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.SanteiKbn == santeiKbn &&
                         (p.OdrKouiKbn == OdrKouiKbnConst.Tenteki ||
                         p.ItemCd == ItemCdConst.ChusyaSyuginasi33))
-                .GroupBy(p=> new { rpNo = p.RpNo, rpEdaNo = p.RpEdaNo})
+                .GroupBy(p => new { rpNo = p.RpNo, rpEdaNo = p.RpEdaNo })
                 .ToList();
 
             List<OdrInfModel> results = new List<OdrInfModel>();
 
             entities?.ForEach(data =>
-                    { results.AddRange(_odrInfModels.FindAll(p=>p.RpNo == data.Key.rpNo && p.RpEdaNo == data.Key.rpEdaNo)); }
+                    { results.AddRange(_odrInfModels.FindAll(p => p.RpNo == data.Key.rpNo && p.RpEdaNo == data.Key.rpEdaNo)); }
                 );
 
             return results;
@@ -1838,7 +1838,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.PtId == _ptId &&
                         p.HokenSyu == _hokenKbn &&
                         //p.RaiinNo == _raiinNo &&
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.SinDate == _sinDate &&
                         itemCds.Contains(p.ItemCd));
         }
@@ -1849,7 +1849,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.PtId == _ptId &&
                         p.HokenSyu == _hokenKbn &&
                         //p.RaiinNo == _raiinNo &&
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.SinDate == _sinDate &&
                         p.ItemCd == itemCd);
         }
@@ -1864,11 +1864,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
                         //p.SanteiKbn != 1 &&
-                        p.RpNo == rpNo && 
-                        p.RpEdaNo == rpEdaNo && 
+                        p.RpNo == rpNo &&
+                        p.RpEdaNo == rpEdaNo &&
                         p.ItemCd == itemCd);
         }
 
@@ -1884,11 +1884,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
-                        p.RaiinNo == _raiinNo && 
+                        p.HokenSyu == _hokenKbn &&
+                        p.RaiinNo == _raiinNo &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
-                        p.RpNo == rpNo && 
-                        p.RpEdaNo == rpEdaNo && 
+                        p.RpNo == rpNo &&
+                        p.RpEdaNo == rpEdaNo &&
                         itemCds.Contains(p.ItemCd));
         }
 
@@ -1918,9 +1918,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                         p.HpId == _hpId &&
                         p.PtId == _ptId &&
-                        p.HokenSyu == _hokenKbn && 
+                        p.HokenSyu == _hokenKbn &&
                         p.RaiinNo == _raiinNo &&
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.ItemCd == itemCd);
         }
 
@@ -2082,23 +2082,23 @@ namespace EmrCalculateApi.Ika.ViewModels
             int maxIndex = -1;
             long itemRaiinNo, itemRpNo, itemRpEdaNo;
 
-            int itemIndex = 
+            int itemIndex =
                 _odrDtlTenModels.FindIndex(p =>
                     p.HpId == _hpId &&
                     p.PtId == _ptId &&
-                    p.HokenSyu == _hokenKbn && 
-                    p.RaiinNo == _raiinNo && 
-                    p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                    p.HokenSyu == _hokenKbn &&
+                    p.RaiinNo == _raiinNo &&
+                    p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                     itemCd.Contains(p.ItemCd));
 
-            if(startIndex > 0)
+            if (startIndex > 0)
             {
-                if(itemIndex < startIndex)
+                if (itemIndex < startIndex)
                 {
                     itemIndex = -1;
                     for (int i = startIndex; i < _odrDtlTenModels.Count; i++)
                     {
-                        if(itemCd.Contains(_odrDtlTenModels[i].ItemCd))
+                        if (itemCd.Contains(_odrDtlTenModels[i].ItemCd))
                         {
                             itemIndex = i;
                             break;
@@ -2115,7 +2115,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 // 上方向に検索
                 bool findNotComment = false;
-                minIndex = itemIndex;                
+                minIndex = itemIndex;
 
                 while (minIndex > 0)
                 {
@@ -2123,11 +2123,11 @@ namespace EmrCalculateApi.Ika.ViewModels
                     //    itemRpNo != _odrDtlTenModels[minIndex - 1].RpNo ||
                     //    itemRpEdaNo != _odrDtlTenModels[minIndex - 1].RpEdaNo)
                     if (itemRpEdaNo != _odrDtlTenModels[minIndex - 1].RpEdaNo ||
-                        itemRpNo != _odrDtlTenModels[minIndex - 1].RpNo || 
-                        itemRaiinNo != _odrDtlTenModels[minIndex - 1].RaiinNo                         
+                        itemRpNo != _odrDtlTenModels[minIndex - 1].RpNo ||
+                        itemRaiinNo != _odrDtlTenModels[minIndex - 1].RaiinNo
                         )
-                        {
-                            break;
+                    {
+                        break;
                     }
                     else if (IsCommentItemCd(_odrDtlTenModels[minIndex - 1].ItemCd) == false)
                     {
@@ -2137,11 +2137,11 @@ namespace EmrCalculateApi.Ika.ViewModels
                     else
                     {
                         minIndex--;
-                    }                    
+                    }
                 }
 
                 //if (minIndex != 0)
-                if(findNotComment)
+                if (findNotComment)
                 {
                     // 上方向に別のコメント以外の項目がある場合は、
                     // 下に続くコメントのみ付随すると考える
@@ -2156,7 +2156,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     if (IsCommentItemCd(_odrDtlTenModels[maxIndex + 1].ItemCd) &&
                         itemRpEdaNo == _odrDtlTenModels[maxIndex + 1].RpEdaNo &&
                         itemRpNo == _odrDtlTenModels[maxIndex + 1].RpNo &&
-                        itemRaiinNo == _odrDtlTenModels[maxIndex + 1].RaiinNo                         
+                        itemRaiinNo == _odrDtlTenModels[maxIndex + 1].RaiinNo
                         )
                     {
                         maxIndex++;
@@ -2198,9 +2198,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.HokenSyu == _hokenKbn && 
-                p.RaiinNo == _raiinNo && 
-                p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                p.HokenSyu == _hokenKbn &&
+                p.RaiinNo == _raiinNo &&
+                p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                 p.HokatuKensa == hokatuKensa);
         }
 
@@ -2234,11 +2234,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             int itemIndex = _odrDtlTenModels.FindIndex(p =>
                 p.HokatuKensa == hokatuKensa &&
                 p.RaiinNo == _raiinNo &&
-                p.HokenSyu == _hokenKbn &&                
+                p.HokenSyu == _hokenKbn &&
                 p.HokenPid == pid &&
                 p.SanteiKbn == santeiKbn &&
                 p.PtId == _ptId &&
-                p.HpId == _hpId                 
+                p.HpId == _hpId
                 );
 
             if (itemIndex >= 0)
@@ -2254,8 +2254,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                 while (minIndex > 0)
                 {
                     if (itemRpEdaNo != _odrDtlTenModels[minIndex - 1].RpEdaNo ||
-                        itemRpNo != _odrDtlTenModels[minIndex - 1].RpNo || 
-                        itemRaiinNo != _odrDtlTenModels[minIndex - 1].RaiinNo                         
+                        itemRpNo != _odrDtlTenModels[minIndex - 1].RpNo ||
+                        itemRaiinNo != _odrDtlTenModels[minIndex - 1].RaiinNo
                         )
                     {
                         break;
@@ -2287,7 +2287,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     if (IsCommentItemCd(_odrDtlTenModels[maxIndex + 1].ItemCd) &&
                         itemRpEdaNo == _odrDtlTenModels[maxIndex + 1].RpEdaNo &&
                         itemRpNo == _odrDtlTenModels[maxIndex + 1].RpNo &&
-                        itemRaiinNo == _odrDtlTenModels[maxIndex + 1].RaiinNo                        
+                        itemRaiinNo == _odrDtlTenModels[maxIndex + 1].RaiinNo
                         )
                     {
                         maxIndex++;
@@ -2315,7 +2315,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <returns></returns>
         public int CountHokatuKensa(int hokatuKensa, int santeiKbn)
         {
-            if(_odrDtlTenModels == null || _odrDtlTenModels.Any() == false)
+            if (_odrDtlTenModels == null || _odrDtlTenModels.Any() == false)
             {
                 return 0;
             }
@@ -2339,7 +2339,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 p.SanteiKbn == santeiKbn &&
                 p.PtId == _ptId &&
                 p.HpId == _hpId
-                ).Select(p=>p.HokatuKensa).Distinct().ToList();
+                ).Select(p => p.HokatuKensa).Distinct().ToList();
         }
 
         public (List<OdrDtlTenModel>, int, int) FilterOdrDetailRangeByHoukatuKbn(int houkatuKbn)
@@ -2453,11 +2453,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.HokenSyu == _hokenKbn && 
+                p.HokenSyu == _hokenKbn &&
                 p.RaiinNo == _raiinNo &&
-                p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                 p.KouseisinKbn > 0 &&
-                p.OdrKouiKbn >= OdrKouiKbnConst.Naifuku && 
+                p.OdrKouiKbn >= OdrKouiKbnConst.Naifuku &&
                 p.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo);
 
         }
@@ -2472,7 +2472,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfModels.FindAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.HokenSyu == _hokenKbn && 
+                p.HokenSyu == _hokenKbn &&
                 p.RaiinNo == _raiinNo &&
                 //p.SanteiKbn != 1 && 
                 p.OdrKouiKbn == OdrKouiKbnConst.Naifuku);
@@ -2489,11 +2489,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrDtlTenModels.FindAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.HokenSyu == _hokenKbn && 
+                p.HokenSyu == _hokenKbn &&
                 p.RaiinNo == _raiinNo &&
                 p.SanteiKbn != SanteiKbnConst.SanteiGai &&
-                p.OdrKouiKbn >= OdrKouiKbnConst.Touyaku && 
-                p.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo && 
+                p.OdrKouiKbn >= OdrKouiKbnConst.Touyaku &&
+                p.OdrKouiKbn <= OdrKouiKbnConst.Gaiyo &&
                 p.InoutKbn == 1);
         }
 
@@ -2512,7 +2512,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.HokenSyu == _hokenKbn &&
                         p.RaiinNo == _raiinNo &&
                         p.InoutKbn == inOut &&
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.OdrKouiKbn >= kouiKbnMin &&
                         p.OdrKouiKbn <= kouiKbnMax);
         }
@@ -2528,8 +2528,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                             (p.InoutKbn == inOut &&
                             p.OdrKouiKbn >= kouiKbnMin &&
                             p.OdrKouiKbn <= kouiKbnMax) ||
-                        itemCds.Contains(p.ItemCd) )&&
-                        p.SanteiKbn != SanteiKbnConst.SanteiGai 
+                        itemCds.Contains(p.ItemCd)) &&
+                        p.SanteiKbn != SanteiKbnConst.SanteiGai
                         );
         }
 
@@ -2559,9 +2559,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
                 //p.HokenSyu == _hokenKbn && 
-                p.RaiinNo == _raiinNo && 
+                p.RaiinNo == _raiinNo &&
                 //p.SanteiKbn != 1 && 
-                p.RpNo == rpNo && 
+                p.RpNo == rpNo &&
                 p.RpEdaNo == rpEdaNo);
         }
 
@@ -2598,9 +2598,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
                 p.RaiinNo == raiinNo &&
-                p.HokenSyu == _hokenKbn && 
+                p.HokenSyu == _hokenKbn &&
                 //p.SanteiKbn != 1 && 
-                p.RpNo == rpNo && 
+                p.RpNo == rpNo &&
                 p.RpEdaNo == rpEdaNo);
         }
 
@@ -2613,9 +2613,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             _odrDtlTenModels.RemoveAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.HokenSyu == _hokenKbn && 
-                p.RaiinNo == _raiinNo && 
-                p.SanteiKbn != SanteiKbnConst.SanteiGai && 
+                p.HokenSyu == _hokenKbn &&
+                p.RaiinNo == _raiinNo &&
+                p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                 itemCds.Contains(p.ItemCd));
         }
 
@@ -2639,9 +2639,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             return _odrInfCmtModels.FindAll(p =>
                 p.HpId == _hpId &&
                 p.PtId == _ptId &&
-                p.RaiinNo == _raiinNo && 
-                p.RpNo == rpNo && 
-                p.RpEdaNo == rpEdaNo && 
+                p.RaiinNo == _raiinNo &&
+                p.RpNo == rpNo &&
+                p.RpEdaNo == rpEdaNo &&
                 p.RowNo == rowNo);
         }
 
@@ -2710,13 +2710,14 @@ namespace EmrCalculateApi.Ika.ViewModels
                         p.OdrKouiKbn == kouiKbn &&
                         p.SanteiKbn != SanteiKbnConst.SanteiGai &&
                         p.IsDeleted == DeleteStatus.None)
-                .Select(p=>new { p.HokenPid, p.HokenId, p.SanteiKbn })
+                .Select(p => new { p.HokenPid, p.HokenId, p.SanteiKbn })
                 .Distinct()
                 .ToList();
-            
+
             List<(int, int, int)> results = new List<(int, int, int)>();
 
-            odrInfs?.ForEach(entity => {
+            odrInfs?.ForEach(entity =>
+            {
                 results.Add((entity.HokenPid, entity.HokenId, entity.SanteiKbn));
             });
 
@@ -2784,7 +2785,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
                 )
             .ToList();
-    
+
             bool ret = false;
             if (joinQuery.Any(p => p.count > 5))
             {
@@ -2804,7 +2805,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 o.SanteiKbn == SanteiKbnConst.Santei &&
                 o.IsDeleted == DeleteStatus.None);
 
-            var tenMsts = _masterFinder.FindTenMstByKouseisinKbn(_hpId, _sinDate, new List<int> { 1, 2, 3, 4});
+            var tenMsts = _masterFinder.FindTenMstByKouseisinKbn(_hpId, _sinDate, new List<int> { 1, 2, 3, 4 });
 
             var joinQuery = (
                 from odrInfDetail in odrInfDetails
@@ -2818,10 +2819,10 @@ namespace EmrCalculateApi.Ika.ViewModels
                     //odrInf.OdrKouiKbn == 21 &&
                     new int[] { 21, 22, 23 }.Contains(odrInf.OdrKouiKbn) &&
                     odrInf.SanteiKbn == SanteiKbnConst.Santei &&
-                    !(odrInf.OdrKouiKbn == 21 && 
-                        new int[] { 3, 4 }.Contains(tenMst.KouseisinKbn) && 
+                    !(odrInf.OdrKouiKbn == 21 &&
+                        new int[] { 3, 4 }.Contains(tenMst.KouseisinKbn) &&
                         (odrInf.SyohoSbt == 1 || (odrInf.SyohoSbt == 0 && odrInf.DaysCnt <= _systemConfigProvider.GetSyohoRinjiDays()))) &&
-                    odrInf.IsDeleted == DeleteStatus.None 
+                    odrInf.IsDeleted == DeleteStatus.None
                 group new { odrInfDetail, tenMst } by new { odrInfDetail.RaiinNo, ipnCd7 = tenMst.IpnNameCd.Substring(0, 7) } into A
                 select new
                 {
