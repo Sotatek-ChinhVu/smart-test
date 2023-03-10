@@ -1,7 +1,6 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.Receipt;
 using Helper.Common;
-using UseCase.Receipt;
 using UseCase.Receipt.HistoryReceCmt;
 
 namespace Interactor.Receipt;
@@ -41,16 +40,12 @@ public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
         var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var receCmtOutputList = receCmtList.Where(item => item.SinYm == sinYm)
-                                               .Select(item => new ReceCmtItem(item))
-                                               .ToList();
-
             var hokenId = receCmtList.FirstOrDefault(item => item.SinYm == sinYm)?.HokenId ?? 0;
             var outputItem = new HistoryReceCmtOutputItem(
                     sinYm,
                     CIUtil.SMonthToShowSWMonth(sinYm, 1),
                     GetHokenName(hokenId, hokenInfList),
-                    receCmtOutputList
+                    receCmtList.Where(item => item.SinYm == sinYm).ToList()
                 );
             result.Add(outputItem);
         }
