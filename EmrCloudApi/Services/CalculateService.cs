@@ -1,8 +1,10 @@
 ﻿using Domain.Models.CalculateModel;
+using EmrCloudApi.Responses;
 using Helper.Enum;
 using Interactor.CalculateService;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
+using UseCase.Receipt.GetListReceInf;
 
 namespace EmrCloudApi.Services
 {
@@ -50,7 +52,7 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
@@ -68,7 +70,7 @@ namespace EmrCloudApi.Services
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new();
             }
@@ -90,7 +92,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public ReceInfModelDto GetListReceInf(GetSinMeiDtoInputData inputData)
+        public ReceInfModelDto GetListReceInf(GetInsuranceInfInputData inputData)
         {
             try
             {
@@ -102,7 +104,7 @@ namespace EmrCloudApi.Services
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new();
             }
