@@ -12,6 +12,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
@@ -520,37 +521,55 @@ namespace Infrastructure.Repositories
                 ptInfQuery = ptInfQuery.Where(p => ptIds.Distinct().Contains(p.PtId));
             }
 
-            // Orders
-            if (input.OrderItemCodes.Any())
+            // Search with TenMst
+            var listTenMstSearch = input.TenMsts;
+            if (listTenMstSearch.Count > 0)
             {
-                var ptIds = new List<long>();
-                var odrInfDetailQuery = NoTrackingDataContext.OdrInfDetails;
-                var trimmedItemCodes = input.OrderItemCodes.Select(code => code.Trim()).ToList();
-                if (input.OrderLogicalOperator == LogicalOperator.Or)
+                var odrInf = NoTrackingDataContext.OdrInfs.Where(x => x.IsDeleted == 0);
+                int index = 0;
+                IQueryable<long> ptOdrDetailTemp = Enumerable.Empty<long>().AsQueryable();
+                while (index < listTenMstSearch.Count)
                 {
-                    ptIds = odrInfDetailQuery.Where(o => trimmedItemCodes.Contains(o.ItemCd!.Trim())).Select(o => o.PtId).Distinct().ToList();
-                }
-                else if (input.OrderLogicalOperator == LogicalOperator.And)
-                {
-                    var firstItemCode = trimmedItemCodes.First();
-                    var ptIdsByOrdersQuery = odrInfDetailQuery.Where(o => o.ItemCd!.Trim() == firstItemCode.Trim()).Select(p => p.PtId).Distinct();
-                    // Inner join with another groups
-                    for (int i = 1; i < trimmedItemCodes.Count; i++)
+                    var item = listTenMstSearch[index];
+                    bool isComment = item.IsComment;
+                    var ptOdrDetailNexts = NoTrackingDataContext.OdrInfDetails.Where(odr => odrInf.Any(x => x.HpId == odr.HpId
+                                                                                                             && x.PtId == odr.PtId
+                                                                                                             && x.SinDate == odr.SinDate
+                                                                                                             && x.RaiinNo == odr.RaiinNo
+                                                                                                             && x.RpNo == odr.RpNo
+                                                                                                             && x.RpEdaNo == odr.RpEdaNo
+                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                           .Select(x => x.PtId).Distinct();
+                    if (index == 0)
                     {
-                        var anotherItemCode = trimmedItemCodes[i];
-                        ptIdsByOrdersQuery = (
-                            from ptId in ptIdsByOrdersQuery
-                            join anotherOdrInfDetail in odrInfDetailQuery on ptId equals anotherOdrInfDetail.PtId
-                            where anotherOdrInfDetail.ItemCd!.Trim() == anotherItemCode
-                            select ptId
-                        ).Distinct();
+                        ptOdrDetailTemp = NoTrackingDataContext.OdrInfDetails.Where(odr => odrInf.Any(x => x.HpId == odr.HpId
+                                                                                                             && x.PtId == odr.PtId
+                                                                                                             && x.SinDate == odr.SinDate
+                                                                                                             && x.RaiinNo == odr.RaiinNo
+                                                                                                             && x.RpNo == odr.RpNo
+                                                                                                             && x.RpEdaNo == odr.RpEdaNo
+                                                                                                             && (isComment ? string.IsNullOrEmpty(odr.ItemCd) && odr.ItemName != null && odr.ItemName.Contains(item.InputName)
+                                                                                                                            : odr.ItemCd != null && odr.ItemCd.Trim() == item.ItemCd.Trim())))
+                                                                          .Select(x => x.PtId).Distinct();
                     }
-                    ptIds = ptIdsByOrdersQuery.ToList();
-                }
+                    else
+                    {
+                        if (!input.IsOrderOr)
+                        {
+                            ptOdrDetailTemp = ptOdrDetailTemp.Where(odr => ptOdrDetailNexts.Any(x => x == odr));
+                        }
+                        else
+                        {
+                            ptOdrDetailTemp = ptOdrDetailTemp.Union(ptOdrDetailNexts).Distinct();
+                        }
+                    }
 
-                if (ptIds.Count == 0) return new();
-                ptInfQuery = ptInfQuery.Where(p => ptIds.Contains(p.PtId));
+                    index++;
+                }
+                ptInfQuery = ptInfQuery.Where(pt => ptOdrDetailTemp.Any(x => x == pt.PtId));
             }
+
             // Department
             if (input.DepartmentId > 0)
             {
