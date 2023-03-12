@@ -176,18 +176,18 @@
         public string Kigo { get; set; }
         public string Bango { get; set; }
         public string EdaNo { get; set; }
-        public object Kohi1FutansyaNo { get; set; }
-        public object Kohi2FutansyaNo { get; set; }
-        public object Kohi3FutansyaNo { get; set; }
-        public object Kohi4FutansyaNo { get; set; }
-        public object Kohi1JyukyusyaNo { get; set; }
-        public object Kohi2JyukyusyaNo { get; set; }
-        public object Kohi3JyukyusyaNo { get; set; }
-        public object Kohi4JyukyusyaNo { get; set; }
-        public object Kohi1TokusyuNo { get; set; }
-        public object Kohi2TokusyuNo { get; set; }
-        public object Kohi3TokusyuNo { get; set; }
-        public object Kohi4TokusyuNo { get; set; }
+        public string Kohi1FutansyaNo { get; set; }
+        public string Kohi2FutansyaNo { get; set; }
+        public string Kohi3FutansyaNo { get; set; }
+        public string Kohi4FutansyaNo { get; set; }
+        public string Kohi1JyukyusyaNo { get; set; }
+        public string Kohi2JyukyusyaNo { get; set; }
+        public string Kohi3JyukyusyaNo { get; set; }
+        public string Kohi4JyukyusyaNo { get; set; }
+        public string Kohi1TokusyuNo { get; set; }
+        public string Kohi2TokusyuNo { get; set; }
+        public string Kohi3TokusyuNo { get; set; }
+        public string Kohi4TokusyuNo { get; set; }
         public int KogakuIchibuFutan { get; set; }
         public int SiteiKohiIchibuFutan { get; set; }
     }

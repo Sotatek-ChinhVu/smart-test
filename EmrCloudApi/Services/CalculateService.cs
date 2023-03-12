@@ -1,5 +1,4 @@
 ﻿using Domain.Models.CalculateModel;
-using EmrCloudApi.Responses;
 using Helper.Enum;
 using Interactor.CalculateService;
 using UseCase.Accounting.GetMeiHoGai;

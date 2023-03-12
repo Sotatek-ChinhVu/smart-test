@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.Receipt
 
         public void Complete(GetInsuranceInfOutputData outputData)
         {
-            Result.Data = new GetInsuranceInfResponse(outputData.Status);
+            Result.Data = new GetInsuranceInfResponse(outputData.InsuranceInfDtos);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

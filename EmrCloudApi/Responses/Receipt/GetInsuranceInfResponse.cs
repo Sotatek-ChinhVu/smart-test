@@ -1,14 +1,14 @@
-﻿using UseCase.Receipt.GetListReceInf;
+﻿using Domain.Models.Insurance;
 
 namespace EmrCloudApi.Responses.Receipt
 {
     public class GetInsuranceInfResponse
     {
-        public GetInsuranceInfResponse(GetInsuranceInfStatus status)
+        public GetInsuranceInfResponse(List<InsuranceInfDto> insuranceInfDtos)
         {
-            Status = status;
+            InsuranceInfDtos = insuranceInfDtos;
         }
 
-        public GetInsuranceInfStatus Status { get; private set; }
+        public List<InsuranceInfDto> InsuranceInfDtos { get; private set; }
     }
 }
