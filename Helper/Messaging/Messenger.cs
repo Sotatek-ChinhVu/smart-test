@@ -56,6 +56,26 @@ namespace Helper.Messaging
                 PerformAction<T>(a.Action, message);
             }
         }
+
+        public Task<CallbackMessageResult<T>> SendAsync<T>(CallbackMessage<T> message)
+        {
+            SendMessageAsync(message);
+
+            return message.Task;
+        }
+
+        private T SendMessageAsync<T>(T message)
+        {
+            var type = message!.GetType();
+            List<MessageRegistration> listAction = _actions.Where(a => a.Type == type || a.Type == null).ToList();
+
+            foreach (var a in listAction)
+            {
+                PerformAction<T>(a.Action, message);
+
+            }
+            return message;
+        }
     }
 
     internal class MessageRegistration

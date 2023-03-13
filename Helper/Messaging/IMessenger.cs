@@ -10,5 +10,7 @@
         void DeregisterAll();
 
         void Send<T>(T message);
+
+        Task<CallbackMessageResult<T>> SendAsync<T>(CallbackMessage<T> msg);
     }
 }
