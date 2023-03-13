@@ -8,6 +8,6 @@ namespace Domain.Models.ReceSeikyu
 
         List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList);
 
-        bool SaveReceSeiKyu(int hpId, string userId, List<ReceSeikyuModel> data);
+        void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId);
     }
 }

@@ -352,5 +352,10 @@ namespace Domain.Models.ReceSeikyu
             { 2,"返戻" },
             { 3,"電算返戻" }
         };
+
+        public void SetSeikyuYm(int value)
+        {
+            this.SeikyuYm = value;
+        }
     }
 }

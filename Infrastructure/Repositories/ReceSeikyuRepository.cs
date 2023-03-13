@@ -1,8 +1,12 @@
 ﻿using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -93,6 +97,7 @@ namespace Infrastructure.Repositories
                                                           sinYm,
                                                           sinYm,
                                                           false,
+                                                          DeleteTypes.None,
                                                           x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
                                                                                                                     m.RecedenHenJiyuu.PtId,
                                                                                                                     m.PtHokenInfItem.HokenId,
@@ -148,46 +153,59 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public bool SaveReceSeiKyu(int hpId, string userId, List<ReceSeikyuModel> data)
+        public void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId)
         {
-            List<ReceInfo> receInfos = new List<ReceInfo>();
-            foreach (var modifiedReceSeikyu in data)
+            var henJiyuuList = TrackingDataContext.RecedenHenJiyuus.Where(item => item.HpId == Session.HospitalID
+                                                                              && item.PtId == ptId
+                                                                              && item.SinYm == sinYm
+                                                                              && (item.HokenId == preHokenId || preHokenId == 0)
+                                                                              && item.IsDeleted == 0).ToList();
+            foreach (var henJiyuu in henJiyuuList)
             {
-                if (modifiedReceSeikyu.IsAddNew && modifiedReceSeikyu.IsDeleted == 1) continue;
+                henJiyuu.IsDeleted = DeleteTypes.Deleted;
+                henJiyuu.UpdateId = userId;
+                henJiyuu.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            }
+        }
 
-                if (modifiedReceSeikyu.IsAddNew)
+        public bool SaveReceSeiKyu(int hpId, int userId , List<ReceSeikyuModel> data)
+        {
+            #region InsertNewReceSeikyu
+            var addedList = data.FindAll(item => item.IsAddNew && item.SeqNo == 0).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
+            {
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.CreateId = userId;
+                dest.HpId = hpId;
+                if (src.HpId == 0 && src.Cmt == "返戻ファイルより登録")
                 {
-                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
-
-                    if (modifiedReceSeikyu.IsChecked)
-                    {
-                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
-                    }
+                    dest.SeikyuKbn = 3;
                 }
-                else if (modifiedReceSeikyu.IsDeleted == 1)
+                return dest;
+            })).ToList();
+            TrackingDataContext.ReceSeikyus.AddRange(addedList);
+            #endregion;
+
+            var updateList = data.Where(u => u.SeqNo != 0);
+            foreach(var item in updateList)
+            {
+                var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                if(update != null)
                 {
-                    _henTukiokureCommandHanlder.DeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId);
-
-                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
-
-
-                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
-
-                }
-                else if (modifiedReceSeikyu.SeikyuYm != modifiedReceSeikyu.OriginSeikyuYm)
-                {
-                    if (modifiedReceSeikyu.SeikyuYm == 999999)
+                    if(item.IsDeleted == DeleteTypes.Deleted)
                     {
-                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
+                        update.IsDeleted = DeleteTypes.Deleted;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        update.UpdateId = userId;
                     }
-                    else if (modifiedReceSeikyu.SeikyuYm > 0)
+                    else
                     {
-                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
-
-                        if (modifiedReceSeikyu.OriginSeikyuYm > 0 && modifiedReceSeikyu.OriginSeikyuYm != 999999)
-                        {
-                            receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
-                        }
+                        update.SeikyuYm = item.SeikyuYm;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        update.UpdateId = userId;
+                        update.SeikyuKbn = item.SeikyuKbn;
+                        update.PreHokenId = item.PreHokenId;
+                        update.Cmt = item.Cmt;
                     }
                 }
             }
