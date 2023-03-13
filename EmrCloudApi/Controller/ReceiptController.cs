@@ -25,6 +25,7 @@ using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.GetRecePreviewList;
 
 namespace EmrCloudApi.Controller;
 
@@ -250,6 +251,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SyobyoKeikaHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetRecePreviewList)]
+    public ActionResult<Response<GetRecePreviewListResponse>> GetRecePreviewList([FromQuery] GetRecePreviewListRequest request)
+    {
+        var input = new GetRecePreviewListInputData(HpId, request.TypeReceiptPreview, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetRecePreviewListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetRecePreviewListResponse>>(presenter.Result);
     }
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)

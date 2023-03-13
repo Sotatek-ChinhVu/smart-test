@@ -1222,7 +1222,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return result;
     }
-
     #endregion
 
     #region Rece check screeen
@@ -1582,6 +1581,32 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum typeReceiptPreview, long ptId)
+    {
+        var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
+                                                                       && item.PtId == ptId
+                                                                       && item.SeikyuYm != 999999)
+                                                        .ToList();
+
+        if (typeReceiptPreview == ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki && receInfList.Any())
+        {
+            var hokenIdList = receInfList.Select(item => item.HokenId).Distinct().ToList();
+            var sinYmList = receInfList.Select(item => item.SinYm).Distinct().ToList();
+            var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
+                                                                               && item.PtId == ptId
+                                                                               && item.IsDeleted == 0
+                                                                               && hokenIdList.Contains(item.HokenId)
+                                                                               && sinYmList.Contains(item.SinYm))
+                                                                .ToList();
+
+            receInfList = receInfList.Where(receInf => syoukiInfList.Any(item => item.SinYm == receInf.SinYm && item.HokenId == receInf.HokenId)).ToList();
+        }
+
+        return receInfList.Select(item => ConvertToReceInfModel(item))
+                          .OrderByDescending(item => item.SeikyuYm)
+                          .ToList();
+    }
     #endregion
 
     #region Recalculation Check
@@ -1846,20 +1871,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                      item.IsInvalid))
                                                                  .ToList();
         return receCheckOption;
-    }
-    public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
-    {
-        var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
-                                                                             && item.PtId == ptId
-                                                                             && item.SinYm == sinYm
-                                                                             && item.HokenId == hokenId)
-                                                              .ToList();
-        if (receCmtErrList.Any())
-        {
-            TrackingDataContext.ReceCheckErrs.RemoveRange(receCmtErrList);
-            return TrackingDataContext.SaveChanges() > 0;
-        }
-        return true;
     }
 
     public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)
@@ -2722,6 +2733,32 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 sinKoui.Day31,
                 listSinKouiDetailModel ?? new(),
                 existItemWithCommentSelect
+            );
+    }
+
+    private ReceInfModel ConvertToReceInfModel(ReceInf receInf)
+    {
+        return new ReceInfModel(
+                   receInf.SeikyuYm,
+                   receInf.PtId,
+                   receInf.SinYm,
+                   receInf.HokenId,
+                   receInf.HokenId2,
+                   receInf.KaId,
+                   receInf.TantoId,
+                   receInf.ReceSbt ?? string.Empty,
+                   receInf.HokenKbn,
+                   receInf.HokenSbtCd,
+                   receInf.Houbetu ?? string.Empty,
+                   receInf.Kohi1Id,
+                   receInf.Kohi2Id,
+                   receInf.Kohi3Id,
+                   receInf.Kohi4Id,
+                   receInf.Kohi1Houbetu ?? string.Empty,
+                   receInf.Kohi2Houbetu ?? string.Empty,
+                   receInf.Kohi3Houbetu ?? string.Empty,
+                   receInf.Kohi4Houbetu ?? string.Empty,
+                   receInf.HokenKbn
             );
     }
     #endregion
