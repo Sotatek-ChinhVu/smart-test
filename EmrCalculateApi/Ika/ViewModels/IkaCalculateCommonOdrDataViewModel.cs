@@ -159,9 +159,12 @@ namespace EmrCalculateApi.Ika.ViewModels
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
 
-        public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate)
+        public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate, IEmrLogger emrLogger, ISystemConfigProvider systemConfigProvider)
         {
             const string conFncName = nameof(IkaCalculateCommonOdrDataViewModel);
+
+            _emrLogger = emrLogger;
+            _systemConfigProvider = systemConfigProvider;
 
             _emrLogger.WriteLogStart(this, conFncName, "");
 

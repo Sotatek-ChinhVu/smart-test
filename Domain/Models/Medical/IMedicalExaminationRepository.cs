@@ -35,5 +35,7 @@ namespace Domain.Models.MedicalExamination
         (List<string>, List<SinKouiCountModel>) GetCheckedAfter327Screen(int hpId, long ptId, int sinDate, List<CheckedOrderModel> checkedTenMstResult, bool isTokysyoOrder, bool isTokysyosenOrder);
 
         Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(long ptID, int sinDate, long raiinNo);
+
+        List<OrdInfModel> TrialCalculate(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, List<CheckedOrderModel> checkingOrderModelList);
     }
 }
