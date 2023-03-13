@@ -1,18 +1,15 @@
-﻿using Entity.Tenant;
-using EmrCalculateApi.Ika.DB.Finder;
-using EmrCalculateApi.Ika.DB.CommandHandler;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.Constants;
-using Helper.Constants;
-using EmrCalculateApi.Utils;
-using EmrCalculateApi.Interface;
-using Domain.Constant;
-using Helper.Common;
+﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
-using Infrastructure.CommonDB;
-using PostgreDataContext;
-using Infrastructure.Interfaces;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.DB.CommandHandler;
+using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
+using EmrCalculateApi.Utils;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -245,7 +242,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             _emrLogger = emrLogger;
             _systemConfigProvider = systemConfigProvider;
-                        
+
             _emrLogger.WriteLogStart(this, conFncName, "");
 
             _arg = arg;
@@ -299,7 +296,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             _sinCommon = new IkaCalculateCommonSinDataViewModel(_arg.santeiFinder, _mstCommon, _arg.hpId, _arg.ptId, _arg.sinDate, raiinNo, _arg.hokenKbn, _arg.calcMode, _systemConfigProvider, _emrLogger);
 
             checkHokenKbn = CalcUtils.GetCheckHokenKbns(_arg.hokenKbn, _systemConfigProvider.GetHokensyuHandling());
-            checkSanteiKbn = CalcUtils.GetCheckSanteiKbns(_arg.hokenKbn, _systemConfigProvider.GetHokensyuHandling());                        
+            checkSanteiKbn = CalcUtils.GetCheckSanteiKbns(_arg.hokenKbn, _systemConfigProvider.GetHokensyuHandling());
         }
 
         /// <summary>
@@ -368,8 +365,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                 _odrCommon.odrDtlls.FindAll(p =>
                     //(p.OdrKouiKbn >= OdrKouiKbnConst.SyotiMin && p.OdrKouiKbn <= OdrKouiKbnConst.SyotiMax) ||
                     (p.OdrKouiKbn >= EmrCalculateApi.Constants.OdrKouiKbnConst.KensaMin && p.OdrKouiKbn <= OdrKouiKbnConst.KensaMax) //||
-                                                                                                           //(p.OdrKouiKbn >= OdrKouiKbnConst.SyujyutuMin && p.OdrKouiKbn <= OdrKouiKbnConst.SyujyutuMax) ||
-                                                                                                           //(p.OdrKouiKbn >= OdrKouiKbnConst.SonotaMin && p.OdrKouiKbn <= OdrKouiKbnConst.SonotaMax)
+                                                                                                                                     //(p.OdrKouiKbn >= OdrKouiKbnConst.SyujyutuMin && p.OdrKouiKbn <= OdrKouiKbnConst.SyujyutuMax) ||
+                                                                                                                                     //(p.OdrKouiKbn >= OdrKouiKbnConst.SonotaMin && p.OdrKouiKbn <= OdrKouiKbnConst.SonotaMax)
                     ));
         }
         /// <summary>
@@ -1721,31 +1718,31 @@ namespace EmrCalculateApi.Ika.ViewModels
                         sTerm = "初診時";
                         break;
                     case 997:   //初診から1カ月（休日除く）
-                        //if (Wrk.wrkSinKouiDetails.Any(p =>
-                        //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
-                        //{
-                        //    // 初診関連項目を算定している場合、算定不可
-                        //    endDate = 99999999;
-                        //}
-                        //else
-                        //{
-                            // 直近の初診日から１か月後を取得する（休日除く）
-                            endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
-                            endDate = MonthsAfterExcludeHoliday(endDate, 1);
+                                //if (Wrk.wrkSinKouiDetails.Any(p =>
+                                //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
+                                //{
+                                //    // 初診関連項目を算定している場合、算定不可
+                                //    endDate = 99999999;
+                                //}
+                                //else
+                                //{
+                                // 直近の初診日から１か月後を取得する（休日除く）
+                        endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
+                        endDate = MonthsAfterExcludeHoliday(endDate, 1);
                         //}
                         break;
                     case 998:   //初診から1カ月
-                        //if (calcMode != CalcModeConst.Trial && Wrk.wrkSinKouiDetails.Any(p =>
-                        //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
-                        //{
-                        //    // 初診関連項目を算定している場合、算定不可
-                        //    endDate = 99999999;
-                        //}
-                        //else
-                        //{
-                            // 直近の初診日から１か月後を取得する
-                            endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
-                            endDate = MonthsAfter(endDate, 1);
+                                //if (calcMode != CalcModeConst.Trial && Wrk.wrkSinKouiDetails.Any(p =>
+                                //    _syosinls.Contains(p.ItemCd) && checkHokenKbnTmp.Contains(p.HokenKbn) && checkSanteiKbnTmp.Contains(Wrk.GetSanteiKbn(p.RaiinNo, p.RpNo))))
+                                //{
+                                //    // 初診関連項目を算定している場合、算定不可
+                                //    endDate = 99999999;
+                                //}
+                                //else
+                                //{
+                                // 直近の初診日から１か月後を取得する
+                        endDate = GetSyosinDate(sinDate, densiSanteiKaisu.TargetKbn, checkHokenKbnTmp, checkSanteiKbnTmp);
+                        endDate = MonthsAfter(endDate, 1);
                         //}
                         break;
                     case 999:   //カスタム
@@ -3458,7 +3455,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     List<TenMstModel> tenMst = Mst.GetTenMst(itemCd);
                     if (tenMst.Any())
                     {
-                        if (tenMst.First().IsSyotiJikangaiTarget) 
+                        if (tenMst.First().IsSyotiJikangaiTarget)
                         {
                             retTen = tenMst.First().Ten;
                         }
