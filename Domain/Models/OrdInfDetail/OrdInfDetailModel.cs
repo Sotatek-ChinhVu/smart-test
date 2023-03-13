@@ -2,7 +2,6 @@
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using System.Xml.Linq;
 using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfDetails

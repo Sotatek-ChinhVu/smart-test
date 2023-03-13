@@ -1,15 +1,18 @@
-﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.DB.CommandHandler;
+﻿using Entity.Tenant;
 using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.DB.CommandHandler;
 using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
-using EmrCalculateApi.Utils;
-using Entity.Tenant;
-using Helper.Common;
+using EmrCalculateApi.Ika.Constants;
 using Helper.Constants;
+using EmrCalculateApi.Utils;
+using EmrCalculateApi.Interface;
+using Domain.Constant;
+using Helper.Common;
+using EmrCalculateApi.Constants;
+using Infrastructure.CommonDB;
+using PostgreDataContext;
+using Infrastructure.Interfaces;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -321,7 +324,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             _odrCommon = new IkaCalculateCommonOdrDataViewModel(
                 todayOdrInfModels, _arg.raiinInf, _ptHokenPatternModels,
                 _arg.odrInfFinder, _arg.masterFinder, _arg.ikaCalculateFinder,
-            _mstCommon,
+                _mstCommon,
                 _arg.hpId, _arg.ptId, _arg.sinDate, _emrLogger, _systemConfigProvider);
 
             // 検査重複オーダー削除

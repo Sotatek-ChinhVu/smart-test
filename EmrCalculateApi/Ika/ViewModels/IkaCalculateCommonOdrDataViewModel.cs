@@ -1,12 +1,15 @@
-﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Constants;
+﻿using Entity.Tenant;
 using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.DB.CommandHandler;
 using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
-using EmrCalculateApi.Utils;
+using EmrCalculateApi.Ika.Constants;
 using Helper.Constants;
+using EmrCalculateApi.Utils;
+using Infrastructure.Interfaces;
+using EmrCalculateApi.Interface;
+using Domain.Constant;
+using EmrCalculateApi.Constants;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -1820,7 +1823,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             List<OdrInfModel> results = new List<OdrInfModel>();
 
             entities?.ForEach(data =>
-                    { results.AddRange(_odrInfModels.FindAll(p => p.RpNo == data.Key.rpNo && p.RpEdaNo == data.Key.rpEdaNo)); }
+            { results.AddRange(_odrInfModels.FindAll(p => p.RpNo == data.Key.rpNo && p.RpEdaNo == data.Key.rpEdaNo)); }
                 );
 
             return results;
@@ -2716,8 +2719,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             List<(int, int, int)> results = new List<(int, int, int)>();
 
-            odrInfs?.ForEach(entity =>
-            {
+            odrInfs?.ForEach(entity => {
                 results.Add((entity.HokenPid, entity.HokenId, entity.SanteiKbn));
             });
 

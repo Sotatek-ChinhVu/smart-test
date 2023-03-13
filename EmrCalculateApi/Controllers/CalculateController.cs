@@ -48,7 +48,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
             var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList());
-            return Ok(data);
+            return Ok(result);
         }
 
         [HttpPost("RunCalculateMonth")]
