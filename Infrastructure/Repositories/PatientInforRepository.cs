@@ -1760,13 +1760,13 @@ namespace Infrastructure.Repositories
                     {
                         if(scan.SeqNo == 0) //Create
                         {
-                            Mapper.Map(scan, new PtHokenScan(), (src, dest) =>
+                            TrackingDataContext.PtHokenScans.Add(Mapper.Map(scan, new PtHokenScan(), (src, dest) =>
                             {
                                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                                 dest.CreateId = userId;
                                 return dest;
-                            });
+                            }));
                         }
                         else
                         {
