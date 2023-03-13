@@ -161,6 +161,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         public IkaCalculateCommonOdrDataViewModel(List<OrderInfo> todayOdrInfs, RaiinInfModel raiinInfModel, List<PtHokenPatternModel> ptHokenPatternModels, OdrInfFinder odrInfFinder, MasterFinder masterFinder, IkaCalculateFinder ikaCalculateFinder, IkaCalculateCommonMasterViewModel tenMstCommon, int hpId, long ptId, int sinDate, IEmrLogger emrLogger, ISystemConfigProvider systemConfigProvider)
         {
+
             _emrLogger = emrLogger;
             _systemConfigProvider = systemConfigProvider;
 
