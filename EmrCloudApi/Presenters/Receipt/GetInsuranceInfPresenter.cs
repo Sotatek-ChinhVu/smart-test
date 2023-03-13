@@ -20,6 +20,7 @@ namespace EmrCloudApi.Presenters.Receipt
         {
             GetInsuranceInfStatus.Successed => ResponseMessage.Success,
             GetInsuranceInfStatus.Failed => ResponseMessage.Failed,
+            GetInsuranceInfStatus.NoData => ResponseMessage.NoData,
             _ => string.Empty
         };
     }

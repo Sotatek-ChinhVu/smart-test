@@ -20,7 +20,8 @@ namespace Interactor.Receipt
         {
             var receInfs = _calculateService.GetListReceInf(inputData);
 
-            if (!receInfs.ReceInfModels.Any()) return new GetInsuranceInfOutputData(new(), GetInsuranceInfStatus.Failed);
+            if (!receInfs.ReceInfModels.Any()) return new GetInsuranceInfOutputData(new(), GetInsuranceInfStatus.NoData);
+
             return new GetInsuranceInfOutputData(EditReceInf(receInfs.ReceInfModels), GetInsuranceInfStatus.Successed);
         }
 
@@ -49,6 +50,8 @@ namespace Interactor.Receipt
                 var kohi2No2Value1 = string.Empty;
                 var kohi2No2Value2 = string.Empty;
                 var edaNo = string.Empty;
+                var kigo = string.Empty;
+
                 CreateNewInsuranceInf(out string hokenTitle, out string hokenKigoTitle, out string hokenBangoTitle, out string kohi1No1Title,
                                         out string kohi1No2Title, out string kohi2No1Title, out string kohi2No2Title, out string nissuTitle,
                                         out string tensuTitle, out string futanTitle);
@@ -60,7 +63,7 @@ namespace Interactor.Receipt
                     EditReceInfByHoken(receInf, out hokenTitle, out hokenKigoTitle,
                                         out hokenBangoTitle, out kohi1No1Title, out kohi1No2Title, out kohi2No1Title,
                                         out kohi2No2Title, out nissuTitle, out tensuTitle, out futanTitle,
-                                        out hokensyaNo, out edaNo, out kigoBango, out string kigo, out bango,
+                                        out hokensyaNo, out edaNo, out kigoBango, out kigo, out bango,
                                         out kohi1No1Value, out kohi1No2Value, out kohi1No1Value2, out kohi1No2Value2,
                                         out kohi2No1Value, out kohi2No2Value, out kohi2No1Value1, out kohi2No2Value1,
                                         out kohi2No1Value2, out kohi2No2Value2, out kohi1No1Value1, out kohi1No2Value1);
@@ -92,7 +95,7 @@ namespace Interactor.Receipt
                                     hokenBangoTitle, kohi1No1Title, kohi1No2Title, kohi2No1Title, kohi2No2Title, hokensyaNo, kigoBango, bango,
                                     kohi1No1Value, kohi1No1Value1, kohi1No1Value2, kohi1No2Value, kohi1No2Value1, kohi1No2Value2, kohi2No1Value,
                                     kohi2No1Value1, kohi2No1Value2, kohi2No2Value, kohi2No2Value1, kohi2No2Value2, nissuTitle, tensuTitle, futanTitle,
-                                    nissu, tensu, ichibuFutan, edaNo));
+                                    nissu, tensu, ichibuFutan, edaNo, kigo));
             }
             return insuranceInfDtos;
 
