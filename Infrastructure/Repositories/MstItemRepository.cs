@@ -228,8 +228,29 @@ namespace Infrastructure.Repositories
                 tenMst.Kokuji2 ?? string.Empty
             )).ToList();
         }
-
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, bool isIncludeUsage, bool onlyUsage)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="kouiKbn"></param>
+        /// <param name="sinDate"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageCount"></param>
+        /// <param name="genericOrSameItem"></param>
+        /// <param name="yjCd"></param>
+        /// <param name="hpId"></param>
+        /// <param name="pointFrom"></param>
+        /// <param name="pointTo"></param>
+        /// <param name="isRosai"></param>
+        /// <param name="isMirai"></param>
+        /// <param name="isExpired"></param>
+        /// <param name="itemCodeStartWith"></param>
+        /// <param name="isMasterSearch"></param>
+        /// <param name="isSearch831SuffixOnly"></param>
+        /// <param name="isSearchSanteiItem"></param>
+        /// <param name="searchFollowUsage"></param> (0: all, 1: search no usage, 2: search usage) 
+        /// <returns></returns>
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage)
         {
             string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -549,12 +570,12 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
             }
 
-            if (!isIncludeUsage)
+            if (searchFollowUsage == 1)
             {
                 queryResult = queryResult.Where(t => t.YohoKbn == 0);
             }
 
-            if (onlyUsage)
+            if (searchFollowUsage == 2)
             {
                 queryResult = queryResult.Where(t => t.YohoKbn != 0);
             }

@@ -36,8 +36,6 @@
 
         public bool IsSearchSanteiItem { get; set; }
 
-        public bool IsIncludeUsage { get; set; }
-
-        public bool OnlyUsage { get; set; }
+        public byte SearchFollowUsage { get; set; }
     }
 }

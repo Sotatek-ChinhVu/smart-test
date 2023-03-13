@@ -4,7 +4,7 @@ namespace UseCase.MstItem.SearchTenItem
 {
     public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, bool isIncludeUsage, bool onlyUsage)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
@@ -23,8 +23,7 @@ namespace UseCase.MstItem.SearchTenItem
             IsMasterSearch = isMasterSearch;
             IsSearch831SuffixOnly = isSearch831SuffixOnly;
             IsSearchSanteiItem = isSearchSanteiItem;
-            IsIncludeUsage = isIncludeUsage;
-            OnlyUsage = onlyUsage;
+            SearchFollowUsage = searchFollowUsage;
         }
 
         public string Keyword { get; private set; }
@@ -61,8 +60,6 @@ namespace UseCase.MstItem.SearchTenItem
 
         public bool IsSearchSanteiItem { get; private set; }
 
-        public bool IsIncludeUsage { get; private set; }
-
-        public bool OnlyUsage { get; private set; }
+        public byte SearchFollowUsage { get; private set; }
     }
 }
