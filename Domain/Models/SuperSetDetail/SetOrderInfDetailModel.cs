@@ -5,7 +5,7 @@ namespace Domain.Models.SuperSetDetail;
 
 public class SetOrderInfDetailModel
 {
-    public SetOrderInfDetailModel(int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
+    public SetOrderInfDetailModel(int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets)
     {
         SinKouiKbn = sinKouiKbn;
         ItemCd = itemCd;
@@ -30,9 +30,11 @@ public class SetOrderInfDetailModel
         CmtOpt = cmtOpt;
         FontColor = fontColor;
         CommentNewline = commentNewline;
-        CenterItemCd1 = string.Empty;
-        CenterItemCd2 = string.Empty;
-        YohoSets = new();
+        CenterItemCd1 = centerItemCd1;
+        CenterItemCd2 = centerItemCd2;
+        Kasan1 = kasan1;
+        Kasan2 = kasan2;
+        YohoSets = yohoSets;
     }
 
     public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets)
