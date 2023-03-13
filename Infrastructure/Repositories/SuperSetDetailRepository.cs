@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Net.WebSockets;
 using System.Text;
 
 namespace Infrastructure.Repositories;
@@ -32,7 +33,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             );
     }
 
-    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sinDate)
+    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate)
     {
         var rootSuperSet = NoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
         List<int> setCds;
@@ -59,6 +60,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         var ipnCds = allSetOrderInfDetails?.Select(detail => detail.IpnCd);
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
+        var ipnKansanMsts = NoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDate && ipn.IsDeleted == 0).ToList();
         var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
         var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
         var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
@@ -72,6 +74,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                    p.EndDate >= sinDate &&
                    (ipnCds != null && ipnCds.Contains(p.IpnNameCd))).ToList();
         var settingValues = GetSettingValues();
+        var sinKouiKbns = allSetOrderInfDetails?.Select(od => od.SinKouiKbn).Distinct().ToList() ?? new();
+        var listYohoSets = NoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
+        var itemCdYohos = listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
+        var tenMstYohos = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDate && t.EndDate >= sinDate && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
         List<SetByomeiModel> byomeis = new();
         List<SetKarteInfModel> karteInfs = new();
@@ -83,7 +89,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         {
             var taskByomei = Task<List<SetByomeiModel>>.Factory.StartNew(() => ExcuGetByomeisForEachDetailItem(currentSetCd, byomeiObj, allSetByomeis, allByomeiMstList));
             var taskKarte = Task<SetKarteInfModel?>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
-            var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
+            var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
 
             Task.WaitAll(taskByomei, taskKarte, taskOrder);
 
@@ -136,13 +142,13 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return null;
     }
 
-    private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, int sinDate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
+    private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, int sinDate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
     {
         var ordInfs = new List<SetOrderInfModel>();
 
         lock (orderObj)
         {
-            ordInfs.AddRange(GetSetOrdInfModel(hpId, setCd, sinDate, setOdrInfs ?? new(), setOdrInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
+            ordInfs.AddRange(GetSetOrdInfModel(hpId, setCd, sinDate, setOdrInfs ?? new(), setOdrInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
         }
 
         return ordInfs;
@@ -331,7 +337,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     var yakka = yakkas.FirstOrDefault(p => p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
                     var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
                     int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
-                    var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty);
+                    var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, kensaMst ?? new(), ipn yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty);
                     odrDetailModels.Add(odrInfDetailModel);
                     count++;
                 }
@@ -362,7 +368,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
         return result;
     }
 
-    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
+    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, List<IpnKasanMst> ipnKansanMsts, List<TenMst> tenMstYohos, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
     {
         List<SetOrderInfModel> listSetOrderInfModel = new();
 
@@ -412,7 +418,9 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                     var yakka = yakkas.FirstOrDefault(p => p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
                     var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
                     int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
-                    var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, settingValues, yakka, tenMst ?? new(), ipnNameMst ?? new(), isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn);
+                    var ipnKansanMst = ipnKansanMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
+
+                    var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, settingValues, yakka, tenMst ?? new(), ipnNameMst ?? new(), ipnKansanMst ?? new(), kensaMst ?? new(), isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn);
                     odrDetailModels.Add(odrInfDetailModel);
                 }
             }
@@ -496,7 +504,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                );
     }
 
-    private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt)
+    private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, KensaMst kensaMst, IpnKasanMst ipnKansanMst, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt)
     {
         string displayItemName = ordInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ? ordInfDetail.ItemName + TenUtils.GetBunkatu(ordInfDetail.SinKouiKbn, ordInfDetail.Bunkatu ?? string.Empty) : ordInfDetail.ItemName ?? string.Empty;
         return new SetOrderInfDetailModel(
@@ -538,11 +546,14 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         kensaGaichu,
                         odrTermVal,
                         cnvTermVal,
-                        yjCd
+                        yjCd,
+                        kensaMst?.CenterItemCd1 ?? string.Empty,
+                        kensaMst?.CenterItemCd2 ?? string.Empty,
+
             );
     }
 
-    private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, Dictionary<string, int> settingValues, double yakka, TenMst tenMst, IpnNameMst ipnNameMst, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int odrInfOdrKouiKbn)
+    private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, Dictionary<string, int> settingValues, double yakka, TenMst tenMst, IpnNameMst ipnNameMst, IpnKasanMst ipnKansanMst, KensaMst kensaMst, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int odrInfOdrKouiKbn)
     {
         var syohoKbn = CalculateSyoho(ordInfDetail, settingValues, tenMst, odrInfOdrKouiKbn, ipnNameMst.IpnName ?? string.Empty);
         var termVal = CorrectTermVal(ordInfDetail.UnitSbt, tenMst, ordInfDetail.OdrTermVal);
@@ -587,7 +598,11 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                         kensaGaichu,
                         tenMst.OdrTermVal,
                         termVal,
-                        tenMst.YjCd ?? string.Empty
+                        kensaMst?.CenterItemCd1 ?? string.Empty,
+                        kensaMst?.CenterItemCd2 ?? string.Empty,
+                        ipnKansanMst?.Kasan1 ?? 0,
+                        ipnKansanMst?.Kasan2 ?? 0,
+
             );
     }
 
