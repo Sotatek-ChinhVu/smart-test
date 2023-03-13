@@ -8,10 +8,8 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -19,6 +17,7 @@ namespace Infrastructure.Repositories
 {
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
+        
         public MedicalExaminationRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
@@ -1418,7 +1417,7 @@ namespace Infrastructure.Repositories
 
             return new(msgs, lastSanteiInMonth);
         }
-     
+
         string BuildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
         {
             StringBuilder msg = new StringBuilder();
@@ -1502,15 +1501,84 @@ namespace Infrastructure.Repositories
             foreach (var eventCd in eventCds)
             {
                 var eventAuditTrailLogs = auditTrailLogs.Where(a => a.EventCd == eventCd).ToList();
-               var maxDate =  eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
+                var maxDate = eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
                 result.Add(eventCd, maxDate);
             }
             return result;
         }
-        
+
+        public List<OrdInfModel> TrialCalculate(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, List<CheckedOrderModel> checkingOrderModelList)
+        {
+            List<OrdInfModel> ordInfModels = new();
+
+            var itemCds = checkingOrderModelList.Select(c => c.ItemCd).Distinct().ToList();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd)).ToList(); ;
+
+            foreach (var itemCd in checkingOrderModelList.Select(c => c.ItemCd))
+            {
+                var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == itemCd) ?? new();
+                ordInfModels.Add(CreateIkaTodayOdrInfModel(hpId, ptId, raiinNo, hokenPid, sinDate, itemCd, tenMst));
+
+                // 追加した項目のDummyフラグをセット
+                foreach (var detail in ordInfModels.Last().OrdInfDetails)
+                {
+                    detail.ChangeIsDummy(true);
+                }
+            }
+
+            return ordInfModels;
+            //var data = _ikaCalculateViewModel.RunTraialCalculate(todayOdrInfModels, IkaReceptionModel, false);
+
+            //return data.Item1.Select(d => d.ItemCd).Distinct().ToList();
+        }
+
+        private OrdInfModel CreateIkaTodayOdrInfModel(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, string itemCd, TenMst tenMst)
+        {
+            List<OrdInfDetailModel> odrInfDetails = new();
+            var odrInfDetail = new OrdInfDetailModel(
+                    hpId,
+                    ptId,
+                    sinDate,
+                    raiinNo,
+                    itemCd,
+                    tenMst?.Name ?? string.Empty,
+                    tenMst?.SinKouiKbn ?? 0,
+                    0,
+                    0,
+                    1
+                );
+            var odrInf = new OrdInfModel(
+                                hpId,
+                                ptId,
+                                sinDate,
+                                raiinNo,
+                                hokenPid,
+                                0,
+                                0,
+                                tenMst?.SinKouiKbn ?? 0,
+                                odrInfDetails
+                            );
+
+            odrInfDetails.Add(odrInfDetail);
+
+            return odrInf;
+        }
+
+
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var odrListQuery = NoTrackingDataContext.OdrInfs
+                .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate).ToList();
+            if (odrListQuery.Any())
+            {
+                return odrListQuery.Max(odr => odr.RpNo);
+            }
+            return 0;
         }
     }
 }

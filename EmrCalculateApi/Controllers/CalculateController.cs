@@ -1,5 +1,7 @@
-﻿using EmrCalculateApi.Interface;
+﻿using Domain.Models.Futan;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
+using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCalculateApi.Controllers
@@ -41,11 +43,12 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("RunTrialCalculate")]
         public ActionResult RunTrialCalculate([FromBody] RunTraialCalculateRequest calculateRequest)
         {
-            _ikaCalculate.RunTraialCalculate(
+            var data = _ikaCalculate.RunTraialCalculate(
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
-            return Ok();
+            var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList());
+            return Ok(result);
         }
 
         [HttpPost("RunCalculateMonth")]

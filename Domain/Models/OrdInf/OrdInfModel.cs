@@ -143,6 +143,26 @@ namespace Domain.Models.OrdInfs
             UpdateId = 0;
             UpdateName = string.Empty;
         }
+        public OrdInfModel(int hpId, long ptId, int sinDate, long raiinNo, int hokenPid, long rpNo, long rpEdaNo, int sinKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            HokenPid = hokenPid;
+            OdrKouiKbn = sinKouiKbn;
+            RpName = string.Empty;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = ordInfDetailModels;
+            CreateDate = DateTime.MinValue;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+            UpdateName = string.Empty;
+        }
+
+
 
         // 処方 - Drug
         public bool IsDrug

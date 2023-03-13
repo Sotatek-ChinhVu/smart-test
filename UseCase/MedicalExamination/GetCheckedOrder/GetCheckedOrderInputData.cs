@@ -4,21 +4,22 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
 {
     public class GetCheckedOrderInputData : IInputData<GetCheckedOrderOutputData>
     {
-        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
+        public GetCheckedOrderInputData(int hpId, int userId, int sinDate, int hokenId, int hokenPid, long ptId, int iBirthDay, long raiinNo, int syosaisinKbn, long oyaRaiinNo, int tantoId, int primaryDoctor, List<OdrInfItem> odrInfItems, List<DiseaseItem> diseaseItems)
         {
             HpId = hpId;
             UserId = userId;
             SinDate = sinDate;
             HokenId = hokenId;
+            HokenPid = hokenPid;
             PtId = ptId;
             IBirthDay = iBirthDay;
             RaiinNo = raiinNo;
             SyosaisinKbn = syosaisinKbn;
             OyaRaiinNo = oyaRaiinNo;
             TantoId = tantoId;
+            PrimaryDoctor = primaryDoctor;
             OdrInfItems = odrInfItems;
             DiseaseItems = diseaseItems;
-            PrimaryDoctor = primaryDoctor;
         }
 
         public int HpId { get; private set; }
@@ -28,6 +29,8 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
         public int SinDate { get; private set; }
 
         public int HokenId { get; private set; }
+
+        public int HokenPid { get; private set; }
 
         public long PtId { get; private set; }
 
