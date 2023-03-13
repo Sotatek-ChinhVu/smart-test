@@ -1,3 +1,4 @@
+using EmrCalculateApi;
 using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Implementation;
@@ -50,6 +51,8 @@ if (app.Environment.IsDevelopment() ||
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<HttpsRedirectMiddleware>();
 
 app.UseHttpsRedirection();
 
