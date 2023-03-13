@@ -4,6 +4,7 @@ using Interactor.CalculateService;
 using Newtonsoft.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
+using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace EmrCloudApi.Services
@@ -34,6 +35,12 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.RunTrialCalculate:
                     functionName = "Calculate/RunTrialCalculate";
+                    break;
+                case CalculateApiPath.RunCalculateOne:
+                    functionName = "Calculate/RunCalculateOne";
+                    break;
+                case CalculateApiPath.ReceFutanCalculateMain:
+                    functionName = "ReceFutan/ReceFutanCalculateMain";
                     break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
@@ -110,6 +117,38 @@ namespace EmrCloudApi.Services
             catch (Exception)
             {
                 return new();
+            }
+        }
+
+        public bool RunCalculateOne(CalculateOneRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateOne, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

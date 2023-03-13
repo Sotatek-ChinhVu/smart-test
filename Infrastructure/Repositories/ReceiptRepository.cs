@@ -1275,9 +1275,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<SyoukiInfModel> GetSyoukiInfList(int hpId, int sinYm, long ptId, int hokenId)
     {
         var syoukiInfList = NoTrackingDataContext.SyoukiInfs.Where(item => item.HpId == hpId
-                                                                           && item.SinYm == sinYm
+                                                                           && (sinYm == 0 || item.SinYm == sinYm)
                                                                            && item.PtId == ptId
-                                                                           && item.HokenId == hokenId
+                                                                           && (hokenId == 0 || item.HokenId == hokenId)
                                                                            && item.IsDeleted == DeleteTypes.None)
                                                             .OrderBy(item => item.SortNo)
                                                             .ToList();
@@ -1299,9 +1299,9 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
     public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
     {
         var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
-                                                                               && item.SinYm == sinYm
+                                                                               && (sinYm == 0 || item.SinYm == sinYm)
                                                                                && item.PtId == ptId
-                                                                               && item.HokenId == hokenId
+                                                                               && (hokenId == 0 || item.HokenId == hokenId)
                                                                                && item.IsDeleted == DeleteTypes.None)
                                                                 .OrderBy(item => item.SinDay)
                                                                 .ThenByDescending(item => item.SeqNo)

@@ -1564,9 +1564,21 @@ namespace Infrastructure.Repositories
             return odrInf;
         }
 
+
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var odrListQuery = NoTrackingDataContext.OdrInfs
+                .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate).ToList();
+            if (odrListQuery.Any())
+            {
+                return odrListQuery.Max(odr => odr.RpNo);
+            }
+            return 0;
         }
     }
 }
