@@ -1,7 +1,5 @@
 ﻿using Domain.Models.ReceSeikyu;
 using Helper.Constants;
-using Helper.Mapping;
-using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.Save;
 
 namespace Interactor.ReceSeikyu
@@ -80,17 +78,77 @@ namespace Interactor.ReceSeikyu
                             model.SetSeikyuYm(inputData.SinYm);
                         }
                     }
-                    // Get add new list
-                    var addedList = listSourceSeikyu.FindAll(item => item.OriginSinYm != item.SinYm && item.SeqNo == 0).ToList();
-
                     // Add new
-                    isSuccessSeikyuProcess = isSuccessSeikyuProcess && _henTukiokureCommandHanlder.InsertNewReceSeikyu(addedList);
-
-                    // Update
-                    isSuccessSeikyuProcess = isSuccessSeikyuProcess && _henTukiokureCommandHanlder.UpdateReceSeikyu(listSourceSeikyu.FindAll(u => u.OriginSinYm == u.SinYm).Select(u => u.ReceSeikyu).ToList());
+                    isSuccessSeikyuProcess = isSuccessSeikyuProcess && _receSeikyuRepository.SaveReceSeiKyu(inputData.HpId, inputData.UserAct, listSourceSeikyu);
                 }
                 #endregion
 
+                #region complete seikyu
+                bool isSuccessCompletedSeikyu = true;
+                var deletedSourceList = inputData.ReceSeiKyus.Where(item => item.IsCompletedSeikyu).ToList();
+                if (deletedSourceList != null && deletedSourceList.Count > 0)
+                {
+                    var insertDefaultList = new List<Entity.Tenant.ReceSeikyu>();
+                    foreach (var receSeikyu in deletedSourceList)
+                    {
+                        if (listSourceSeikyu != null && listSourceSeikyu.Any(p => p.PtId == receSeikyu.PtId && p.SinYm == receSeikyu.SinYm &&
+                            p.HokenId == receSeikyu.HokenId && p.IsDeleted == DeleteTypes.None)) continue;
+
+                        var entity = receSeikyu.ReceSeikyu.DeepClone();
+                        // Uncheck and deleted = insert 999999 record
+                        if (!receSeikyu.IsChecked // Uncheck = remove
+                            || receSeikyu.SinYm != receSeikyu.OriginSinYm // Add new
+                            || receSeikyu.IsDeleted == 1) // Delete record
+                        {
+                            entity.SeikyuYm = 999999;
+                        }
+                        receSeikyu.ReceSeikyu.SeikyuYm = receSeikyu.OriginSeikyuYm;
+                        insertDefaultList.Add(entity);
+                    }
+                    // Insert new rece_seikyu record with seikyuym = 999999
+                    isSuccessCompletedSeikyu = _henTukiokureCommandHanlder.InsertNewReceSeikyu(insertDefaultList);
+                    if (isSuccessCompletedSeikyu)
+                    {
+                        foreach (var receSeikyu in deletedSourceList)
+                        {
+                            if (listSourceSeikyu.Any(p => p.PtId == receSeikyu.PtId && p.SinYm == receSeikyu.SinYm &&
+                                p.HokenId == receSeikyu.HokenId && p.IsDeleted == DeleteTypes.None)) continue;
+
+                            // Case update seikyuym
+                            if (receSeikyu.SinYm == receSeikyu.OriginSinYm)
+                            {
+                                // Delete update seikyu record
+                                ReceSeikyu receSeikyuDuplicate = _registerRequestFinder.GetReceSeikyuDuplicate(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId);
+                                if (receSeikyuDuplicate != null)
+                                {
+                                    receSeikyuDuplicate.IsDeleted = 1;
+                                    _henTukiokureCommandHanlder.UpdateReceSeikyu(new List<ReceSeikyu>() { receSeikyuDuplicate });
+                                }
+
+                                ReceFutanViewModel receFutanVM = new ReceFutanViewModel();
+                                receFutanVM.ReceFutanCalculateMain(new List<long>() { receSeikyu.PtId }, receSeikyu.OriginSeikyuYm);
+                                receFutanVM.Dispose();
+                            }
+                            // Case insert new sinym
+                            else
+                            {
+                                // Calculation for remove record from receinf
+                                ReceFutanViewModel receFutanVM = new ReceFutanViewModel();
+                                receFutanVM.ReceFutanCalculateMain(new List<long>() { receSeikyu.PtId }, receSeikyu.SinYm);
+                                receFutanVM.Dispose();
+
+                                // Update receip seikyu from seikyuym = 999999 to new seikyuym
+                                ReceSeikyu receSeikyuUpdate = _registerRequestFinder.GetReceSeikyuForUpdate(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId);
+                                if (receSeikyuUpdate != null)
+                                {
+                                    receSeikyuUpdate.SeikyuYm = receSeikyu.SeikyuYm;
+                                    _henTukiokureCommandHanlder.UpdateReceSeikyu(new List<ReceSeikyu>() { receSeikyuUpdate });
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
             }
             finally
             {

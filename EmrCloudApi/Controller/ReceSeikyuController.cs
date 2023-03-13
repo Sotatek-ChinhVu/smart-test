@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.Save;
 
 namespace EmrCloudApi.Controller
 {
@@ -35,6 +36,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListReceSeikyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListReceSeikyuResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveReceSeikyu)]
+        public ActionResult<Response<SaveReceSeiKyuResponse>> SaveReceSeikyu([FromBody] SaveReceSeiKyuRequest request)
+        {
+            var input = new SaveReceSeiKyuInputData(request.Data, request.SinYm, HpId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new SaveReceSeiKyuPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);
         }
     }
 }

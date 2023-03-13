@@ -170,8 +170,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveReceSeiKyu(int hpId, int userId , List<ReceSeikyuModel> data)
         {
-            #region InsertNewReceSeikyu
-            var addedList = data.FindAll(item => item.IsAddNew && item.SeqNo == 0).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
+            var addedList = data.FindAll(item => item.OriginSinYm != item.SinYm).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
             {
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -184,10 +183,9 @@ namespace Infrastructure.Repositories
                 return dest;
             })).ToList();
             TrackingDataContext.ReceSeikyus.AddRange(addedList);
-            #endregion;
 
-            var updateList = data.Where(u => u.SeqNo != 0);
-            foreach(var item in updateList)
+            var updateList = data.Where(u => u.OriginSinYm == u.SinYm);
+            foreach(var item in updateList.Where(x=>x.SeqNo != 0))
             {
                 var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if(update != null)
@@ -210,7 +208,10 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            throw new NotImplementedException();
+            var letSaveForNewItem = updateList.Where(u => u.SeqNo == 0);
+
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }
