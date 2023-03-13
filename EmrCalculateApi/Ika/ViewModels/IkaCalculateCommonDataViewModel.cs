@@ -21,7 +21,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// </summary>
         public int hpId;
         /// <summary>
-        /// 患者ID
+        /// 患者IDa
         /// </summary>
         public long ptId;
         /// <summary>
