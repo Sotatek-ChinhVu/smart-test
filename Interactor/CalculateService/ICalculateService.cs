@@ -2,6 +2,7 @@
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
+using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace Interactor.CalculateService
 {
@@ -10,6 +11,8 @@ namespace Interactor.CalculateService
         SinMeiDataModelDto GetSinMeiList(GetSinMeiDtoInputData inputData);
 
         bool RunCalculate(RecaculationInputDto inputData);
+
+        List<string> RunTrialCalculate(RunTraialCalculateRequest inputData);
 
         bool RunCalculateOne(CalculateOneRequest inputData);
 

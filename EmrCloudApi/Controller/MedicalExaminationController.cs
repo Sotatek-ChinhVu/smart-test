@@ -301,7 +301,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.GetCheckedOrder)]
         public ActionResult<Response<GetCheckedOrderResponse>> GetCheckedOrder([FromBody] GetCheckedOrderRequest request)
         {
-            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.TantoId, request.PrimaryDoctor, request.OdrInfItems, request.DiseaseItems);
+            var input = new GetCheckedOrderInputData(HpId, UserId, request.SinDate, request.HokenId, request.HokenPid, request.PtId, request.IBirthDay, request.RaiinNo, request.SyosaisinKbn, request.OyaRaiinNo, request.TantoId, request.PrimaryDoctor, request.OdrInfItems, request.DiseaseItems);
             var output = _bus.Handle(input);
             var presenter = new GetCheckedOrderPresenter();
             presenter.Complete(output);
