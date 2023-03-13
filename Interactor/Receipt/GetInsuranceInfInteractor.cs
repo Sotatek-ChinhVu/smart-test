@@ -48,16 +48,19 @@ namespace Interactor.Receipt
                 var kohi2No2Value = string.Empty;
                 var kohi2No2Value1 = string.Empty;
                 var kohi2No2Value2 = string.Empty;
+                var edaNo = string.Empty;
                 CreateNewInsuranceInf(out string hokenTitle, out string hokenKigoTitle, out string hokenBangoTitle, out string kohi1No1Title,
                                         out string kohi1No2Title, out string kohi2No1Title, out string kohi2No2Title, out string nissuTitle,
                                         out string tensuTitle, out string futanTitle);
+
+                var insuranceName = receInf.InsuranceName;
 
                 if (receInf.HokenKbn <= 2)
                 {
                     EditReceInfByHoken(receInf, out hokenTitle, out hokenKigoTitle,
                                         out hokenBangoTitle, out kohi1No1Title, out kohi1No2Title, out kohi2No1Title,
                                         out kohi2No2Title, out nissuTitle, out tensuTitle, out futanTitle,
-                                        out hokensyaNo, out string edaNo, out kigoBango, out string kigo, out bango,
+                                        out hokensyaNo, out edaNo, out kigoBango, out string kigo, out bango,
                                         out kohi1No1Value, out kohi1No2Value, out kohi1No1Value2, out kohi1No2Value2,
                                         out kohi2No1Value, out kohi2No2Value, out kohi2No1Value1, out kohi2No2Value1,
                                         out kohi2No1Value2, out kohi2No2Value2, out kohi1No1Value1, out kohi1No2Value1);
@@ -85,11 +88,11 @@ namespace Interactor.Receipt
                 if (string.IsNullOrWhiteSpace(ichibuFutan))
                     ichibuFutan = "0";
 
-                insuranceInfDtos.Add(new InsuranceInfDto(hokenTitle, hokenTitle1, hokenTitle2, hokenKigoBangoTitle, hokenKigoTitle,
+                insuranceInfDtos.Add(new InsuranceInfDto(insuranceName, hokenTitle, hokenTitle1, hokenTitle2, hokenKigoBangoTitle, hokenKigoTitle,
                                     hokenBangoTitle, kohi1No1Title, kohi1No2Title, kohi2No1Title, kohi2No2Title, hokensyaNo, kigoBango, bango,
                                     kohi1No1Value, kohi1No1Value1, kohi1No1Value2, kohi1No2Value, kohi1No2Value1, kohi1No2Value2, kohi2No1Value,
                                     kohi2No1Value1, kohi2No1Value2, kohi2No2Value, kohi2No2Value1, kohi2No2Value2, nissuTitle, tensuTitle, futanTitle,
-                                    nissu, tensu, ichibuFutan));
+                                    nissu, tensu, ichibuFutan, edaNo));
             }
             return insuranceInfDtos;
 
@@ -117,7 +120,7 @@ namespace Interactor.Receipt
             futanTitle = "一部負担金";
 
             hokensyaNo = receInf.HokensyaNo;
-            edaNo = (receInf.HokenKbn > 0 && (receInf.HokenKbn < 11 || receInf.HokenKbn > 14)) ? receInf.EdaNo : string.Empty;
+            edaNo = (receInf.HokenKbn > 0 && (receInf.HokenKbn < 11 || receInf.HokenKbn > 14)) ? "(" + receInf.EdaNo.PadLeft(2, '0') + ")" : string.Empty;
 
             kigoBango = string.Empty;
             kigo = string.Empty;

@@ -19,6 +19,7 @@ namespace EmrCloudApi.Presenters.Receipt
         private string GetMessage(GetInsuranceInfStatus status) => status switch
         {
             GetInsuranceInfStatus.Successed => ResponseMessage.Success,
+            GetInsuranceInfStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }
