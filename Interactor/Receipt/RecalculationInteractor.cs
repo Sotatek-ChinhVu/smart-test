@@ -47,7 +47,6 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _both = "両";
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
-    public bool isStopCalc;
 
     public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
     {
@@ -67,8 +66,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         try
         {
-            isStopCalc = false;
-            Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
+            bool isStopCalc = false;
 
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
@@ -90,6 +88,8 @@ public class RecalculationInteractor : IRecalculationInputPort
             int successCount = 1;
             foreach (var recalculationItem in receRecalculationList)
             {
+                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+                isStopCalc = (bool)statusCallBack.Result.Result;
                 if (isStopCalc)
                 {
                     break;
@@ -139,7 +139,6 @@ public class RecalculationInteractor : IRecalculationInputPort
             _commonMedicalCheck.ReleaseResource();
             _receSeikyuRepository.ReleaseResource();
             _drugDetailRepository.ReleaseResource();
-            Messenger.Instance.Deregister<StopCalcStatus>(this, StopCalculation);
         }
     }
 
@@ -675,11 +674,6 @@ public class RecalculationInteractor : IRecalculationInputPort
     private void SendMessager(RecalculationStatus status)
     {
         Messenger.Instance.Send(status);
-    }
-
-    private void StopCalculation(StopCalcStatus stopCalcStatus)
-    {
-        isStopCalc = stopCalcStatus.Status;
     }
     #endregion
 

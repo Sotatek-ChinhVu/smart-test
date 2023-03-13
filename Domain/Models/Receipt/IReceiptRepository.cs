@@ -50,8 +50,6 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
 
-    bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
-
     List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId);
 
     List<BuiOdrItemByomeiMstModel> GetBuiOdrItemByomeiMstList(int hpId);
