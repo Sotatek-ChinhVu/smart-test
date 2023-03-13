@@ -209,8 +209,9 @@
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
-        public const string HistoryReceCmt = "HistoryReceCmt";
-        public const string HistorySyoukiInf = "HistorySyoukiInf";
+        public const string ReceCmtHistory = "ReceCmtHistory";
+        public const string SyoukiInfHistory = "SyoukiInfHistory";
+        public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
