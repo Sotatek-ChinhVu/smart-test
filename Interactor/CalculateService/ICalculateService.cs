@@ -2,8 +2,8 @@
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
-using UseCase.Receipt.GetListReceInf;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.Receipt.GetListReceInf;
 
 namespace Interactor.CalculateService
 {
@@ -14,7 +14,7 @@ namespace Interactor.CalculateService
         bool RunCalculate(RecaculationInputDto inputData);
 
         ReceInfModelDto GetListReceInf(GetInsuranceInfInputData inputData);
-        
+
         List<string> RunTrialCalculate(RunTraialCalculateRequest inputData);
 
         bool RunCalculateOne(CalculateOneRequest inputData);
