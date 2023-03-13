@@ -72,7 +72,7 @@ namespace EmrCloudApi.Services
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new();
             }
@@ -123,6 +123,24 @@ namespace EmrCloudApi.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiDtoInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetSinMeiListAccountingCard, inputData);
+
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                return result;
+            }
+            catch (Exception)
+            {
+                return new();
             }
         }
     }

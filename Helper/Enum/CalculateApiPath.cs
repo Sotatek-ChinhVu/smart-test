@@ -6,5 +6,6 @@
         RunCalculate = 2,
         RunCalculateOne = 4,
         ReceFutanCalculateMain = 5,
+        GetSinMeiListAccountingCard,
     }
 }
