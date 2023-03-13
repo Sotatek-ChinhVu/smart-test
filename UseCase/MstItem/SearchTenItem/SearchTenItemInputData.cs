@@ -58,5 +58,9 @@ namespace UseCase.MstItem.SearchTenItem
         public bool IsSearch831SuffixOnly { get; private set; }
 
         public bool IsSearchSanteiItem { get; private set; }
+
+        public bool IsIncludeUsage { get; private set; }
+
+        public bool OnlyUsage { get; private set; }
     }
 }

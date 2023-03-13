@@ -229,7 +229,7 @@ namespace Infrastructure.Repositories
             )).ToList();
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, bool isIncludeUsage, bool onlyUsage)
         {
             string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
@@ -485,7 +485,6 @@ namespace Infrastructure.Repositories
                 }
             }
 
-
             string YJCode = "";
             if (genericOrSameItem == 1)
             {
@@ -548,6 +547,16 @@ namespace Infrastructure.Repositories
             if (pointTo > 0)
             {
                 queryResult = queryResult.Where(t => t.Ten <= pointTo);
+            }
+
+            if (!isIncludeUsage)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn == 0);
+            }
+
+            if (onlyUsage)
+            {
+                queryResult = queryResult.Where(t => t.YohoKbn != 0);
             }
 
 
