@@ -325,7 +325,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 todayOdrInfModels, _arg.raiinInf, _ptHokenPatternModels,
                 _arg.odrInfFinder, _arg.masterFinder, _arg.ikaCalculateFinder,
                 _mstCommon,
-                _arg.hpId, _arg.ptId, _arg.sinDate);
+                _arg.hpId, _arg.ptId, _arg.sinDate, _emrLogger, _systemConfigProvider);
 
             // 検査重複オーダー削除
             DelKensa();

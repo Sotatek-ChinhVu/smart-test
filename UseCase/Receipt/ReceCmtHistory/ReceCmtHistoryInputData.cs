@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Receipt.HistoryReceCmt;
+namespace UseCase.Receipt.ReceCmtHistory;
 
-public class HistoryReceCmtInputData : IInputData<HistoryReceCmtOutputData>
+public class ReceCmtHistoryInputData : IInputData<ReceCmtHistoryOutputData>
 {
-    public HistoryReceCmtInputData(int hpId, long ptId)
+    public ReceCmtHistoryInputData(int hpId, long ptId)
     {
         HpId = hpId;
         PtId = ptId;

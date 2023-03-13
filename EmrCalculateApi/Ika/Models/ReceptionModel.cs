@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using System;
 
 namespace EmrCalculateApi.Ika.Models
 {

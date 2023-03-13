@@ -1,23 +1,22 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.Receipt;
 using Helper.Common;
-using UseCase.Receipt;
-using UseCase.Receipt.HistoryReceCmt;
+using UseCase.Receipt.ReceCmtHistory;
 
 namespace Interactor.Receipt;
 
-public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
+public class ReceCmtHistoryInteractor : IReceCmtHistoryInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
     private readonly IInsuranceRepository _insuranceRepository;
 
-    public HistoryReceCmtInteractor(IReceiptRepository receiptRepository, IInsuranceRepository insuranceRepository)
+    public ReceCmtHistoryInteractor(IReceiptRepository receiptRepository, IInsuranceRepository insuranceRepository)
     {
         _receiptRepository = receiptRepository;
         _insuranceRepository = insuranceRepository;
     }
 
-    public HistoryReceCmtOutputData Handle(HistoryReceCmtInputData inputData)
+    public ReceCmtHistoryOutputData Handle(ReceCmtHistoryInputData inputData)
     {
         try
         {
@@ -26,7 +25,7 @@ public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
             var receCmtList = _receiptRepository.GetReceCmtList(inputData.HpId, 0, inputData.PtId, 0);
 
             var result = ConvertToResult(hokenInfList, receCmtList);
-            return new HistoryReceCmtOutputData(result, HistoryReceCmtStatus.Successed);
+            return new ReceCmtHistoryOutputData(result, ReceCmtHistoryStatus.Successed);
         }
         finally
         {
@@ -35,22 +34,19 @@ public class HistoryReceCmtInteractor : IHistoryReceCmtInputPort
         }
     }
 
-    private List<HistoryReceCmtOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<ReceCmtModel> receCmtList)
+    private List<ReceCmtHistoryOutputItem> ConvertToResult(List<HokenInfModel> hokenInfList, List<ReceCmtModel> receCmtList)
     {
-        List<HistoryReceCmtOutputItem> result = new();
+        List<ReceCmtHistoryOutputItem> result = new();
         var sinYmList = receCmtList.Select(item => item.SinYm).Distinct().OrderByDescending(item => item).ToList();
         foreach (var sinYm in sinYmList)
         {
-            var receCmtOutputList = receCmtList.Where(item => item.SinYm == sinYm)
-                                               .Select(item => new ReceCmtItem(item))
-                                               .ToList();
-
             var hokenId = receCmtList.FirstOrDefault(item => item.SinYm == sinYm)?.HokenId ?? 0;
-            var outputItem = new HistoryReceCmtOutputItem(
+            var outputItem = new ReceCmtHistoryOutputItem(
                     sinYm,
                     CIUtil.SMonthToShowSWMonth(sinYm, 1),
+                    hokenId,
                     GetHokenName(hokenId, hokenInfList),
-                    receCmtOutputList
+                    receCmtList.Where(item => item.SinYm == sinYm).ToList()
                 );
             result.Add(outputItem);
         }

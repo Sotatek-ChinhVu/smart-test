@@ -77,8 +77,6 @@ public class SearchPatientInfoAdvancedRequest
     // オーダー
     public LogicalOperator OrderLogicalOperator { get; set; }
 
-    public List<string> OrderItemCodes { get; set; } = new();
-
     public int DepartmentId { get; set; }
 
     public int DoctorId { get; set; }
@@ -88,6 +86,8 @@ public class SearchPatientInfoAdvancedRequest
     public LogicalOperator ByomeiLogicalOperator { get; set; }
 
     public List<ByomeiSearchInput> Byomeis { get; set; } = new();
+
+    public List<TenMstSearchInput> TenMsts { get; set; } = new();
 
     public int ByomeiStartDate { get; set; }
 
@@ -100,4 +100,6 @@ public class SearchPatientInfoAdvancedRequest
     public int PageIndex { get; set; }
 
     public int PageSize { get; set; }
+
+    public bool IsOrderOr { get; private set; }
 }

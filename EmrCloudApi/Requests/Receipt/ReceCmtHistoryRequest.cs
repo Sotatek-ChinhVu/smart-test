@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Receipt;
 
-public class HistoryReceCmtRequest
+public class ReceCmtHistoryRequest
 {
     public long PtId { get; set; }
 }

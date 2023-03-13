@@ -1,13 +1,14 @@
-﻿using UseCase.Receipt.HistoryReceCmt;
+﻿using UseCase.Receipt.ReceCmtHistory;
 
 namespace EmrCloudApi.Responses.Receipt.Dto;
 
-public class HistoryReceCmtDto
+public class ReceCmtHistoryDto
 {
-    public HistoryReceCmtDto(HistoryReceCmtOutputItem output)
+    public ReceCmtHistoryDto(ReceCmtHistoryOutputItem output)
     {
         SinYm = output.SinYm;
         SinYmDisplay = output.SinYmDisplay;
+        HokenId = output.HokenId;
         HokenName = output.HokenName;
         ReceCmtList = output.ReceCmtList.Select(item => new ReceCmtDto(item)).ToList();
     }
@@ -15,6 +16,8 @@ public class HistoryReceCmtDto
     public int SinYm { get; private set; }
 
     public string SinYmDisplay { get; private set; }
+
+    public int HokenId { get; private set; }
 
     public string HokenName { get; private set; }
 
