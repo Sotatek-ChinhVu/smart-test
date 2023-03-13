@@ -6,7 +6,7 @@ namespace Domain.Models.ReceSeikyu
 {
     public class ReceSeikyuModel
     {
-        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, string seikyuYmBinding, int seikyuKbn, int preHokenId, string cmt, bool isChecked, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
+        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, string seikyuYmBinding, int seikyuKbn, int preHokenId, string cmt, bool isChecked, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew , int isDeleted , List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
         {
             SinDay = sinDate;
             HpId = hpId;
@@ -31,6 +31,8 @@ namespace Domain.Models.ReceSeikyu
             IsModified = isModified;
             OriginSeikyuYm = originSeikyuYm;
             OriginSinYm = originSinYm;
+            IsAddNew = isAddNew;
+            IsDeleted = isDeleted;
             ListRecedenHenJiyuuModel = listRecedenHenJiyuuModel;
         }
 
@@ -330,6 +332,10 @@ namespace Domain.Models.ReceSeikyu
         public int OriginSeikyuYm { get; private set; }
 
         public int OriginSinYm { get; private set; }
+
+        public bool IsAddNew { get; private set; }
+
+        public int IsDeleted { get; private set; }
 
         public List<RecedenHenJiyuuModel> ListRecedenHenJiyuuModel { get; private set; }
 

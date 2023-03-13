@@ -92,6 +92,7 @@ namespace Infrastructure.Repositories
                                                           false,
                                                           sinYm,
                                                           sinYm,
+                                                          false,
                                                           x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
                                                                                                                     m.RecedenHenJiyuu.PtId,
                                                                                                                     m.PtHokenInfItem.HokenId,
@@ -145,6 +146,53 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public bool SaveReceSeiKyu(int hpId, string userId, List<ReceSeikyuModel> data)
+        {
+            List<ReceInfo> receInfos = new List<ReceInfo>();
+            foreach (var modifiedReceSeikyu in data)
+            {
+                if (modifiedReceSeikyu.IsAddNew && modifiedReceSeikyu.IsDeleted == 1) continue;
+
+                if (modifiedReceSeikyu.IsAddNew)
+                {
+                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
+
+                    if (modifiedReceSeikyu.IsChecked)
+                    {
+                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
+                    }
+                }
+                else if (modifiedReceSeikyu.IsDeleted == 1)
+                {
+                    _henTukiokureCommandHanlder.DeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId);
+
+                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
+
+
+                    receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
+
+                }
+                else if (modifiedReceSeikyu.SeikyuYm != modifiedReceSeikyu.OriginSeikyuYm)
+                {
+                    if (modifiedReceSeikyu.SeikyuYm == 999999)
+                    {
+                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
+                    }
+                    else if (modifiedReceSeikyu.SeikyuYm > 0)
+                    {
+                        receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SeikyuYm));
+
+                        if (modifiedReceSeikyu.OriginSeikyuYm > 0 && modifiedReceSeikyu.OriginSeikyuYm != 999999)
+                        {
+                            receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.OriginSeikyuYm));
+                        }
+                    }
+                }
+            }
+
+            throw new NotImplementedException();
         }
     }
 }
