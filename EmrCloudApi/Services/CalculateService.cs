@@ -4,6 +4,7 @@ using Interactor.CalculateService;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
+using UseCase.Receipt.MedicalDetail;
 
 namespace EmrCloudApi.Services
 {
@@ -36,6 +37,9 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.ReceFutanCalculateMain:
                     functionName = "ReceFutan/ReceFutanCalculateMain";
+                    break;
+                case CalculateApiPath.GetSinMeiListAccountingCard:
+                    functionName = "SinMei/AccountingCard/GetSinMeiList";
                     break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
@@ -126,7 +130,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiDtoInputData inputData)
+        public SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiAccountingCardDtoInputData inputData)
         {
             try
             {

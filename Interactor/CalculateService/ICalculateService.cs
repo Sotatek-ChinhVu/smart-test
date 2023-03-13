@@ -2,6 +2,7 @@
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
+using UseCase.Receipt.MedicalDetail;
 
 namespace Interactor.CalculateService
 {
@@ -14,5 +15,7 @@ namespace Interactor.CalculateService
         bool RunCalculateOne(CalculateOneRequest inputData);
 
         bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
+
+        SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiAccountingCardDtoInputData inputData);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.FlowSheet;
 
 namespace Domain.Models.MstItem
 {
@@ -60,5 +61,7 @@ namespace Domain.Models.MstItem
         bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values);
 
         List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
+
+        List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate);
     }
 }

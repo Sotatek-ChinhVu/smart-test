@@ -1,8 +1,10 @@
-﻿namespace UseCase.Receipt.MedicalDetail
+﻿using UseCase.Core.Sync.Core;
+
+namespace UseCase.Receipt.MedicalDetail
 {
-    public class GetSinMeiAccountingCardDtoInputData
+    public class GetMedicalDetailsInputData : IInputData<GetMedicalDetailsOutputData>
     {
-        public GetSinMeiAccountingCardDtoInputData(int hpId, long ptId, int sinYm, int hokenId)
+        public GetMedicalDetailsInputData(int hpId, long ptId, int sinYm, int hokenId)
         {
             HpId = hpId;
             PtId = ptId;
