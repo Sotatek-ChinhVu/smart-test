@@ -16,8 +16,8 @@ namespace EmrCalculateApi.Controllers
             _receFutanCalculate = receFutanCalculate;
         }
 
-        [HttpPost("RunReceFutanCalculate")]
-        public ActionResult RunCalculateReceFutan([FromBody] ReceCalculateRequest calculateRequest)
+        [HttpPost("ReceFutanCalculateMain")]
+        public ActionResult ReceFutanCalculateMain([FromBody] ReceCalculateRequest calculateRequest)
         {
             _receFutanCalculate.ReceFutanCalculateMain
             (

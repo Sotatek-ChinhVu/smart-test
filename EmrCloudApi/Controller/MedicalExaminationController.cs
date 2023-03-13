@@ -9,15 +9,17 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CommonChecker;
 using UseCase.Core.Sync;
+using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
-using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
+using CalculateResponseOfMedical = EmrCloudApi.Responses.MedicalExamination.CalculateResponse;
 
 namespace EmrCloudApi.Controllers
 {
@@ -356,6 +358,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetDefaultSelectedTimePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetDefaultSelectedTimeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Calculate)]
+        public ActionResult<Response<CalculateResponseOfMedical>> Calculate([FromBody] CalculateRequest request)
+        {
+            var input = new CalculateInputData(request.FromRcCheck, request.IsSagaku, HpId, request.PtId, request.SinDate, request.SeikyuUp, request.Prefix);
+            var output = _bus.Handle(input);
+            var presenter = new CalculatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
         }
     }
 }

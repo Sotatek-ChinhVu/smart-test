@@ -168,6 +168,7 @@
         public const string GetSummaryInf = "GetSummaryInf";
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
+        public const string Calculate = "Calculate";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -210,6 +211,9 @@
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
         public const string GetInsuranceInf = "GetInsuranceInf";
+        public const string ReceCmtHistory = "ReceCmtHistory";
+        public const string SyoukiInfHistory = "SyoukiInfHistory";
+        public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -220,6 +224,7 @@
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
+        public const string CheckOpenAccounting = "CheckOpenAccounting";
 
         public const string GetMaxMoneyByPtId = "GetMaxMoneyByPtId";
 

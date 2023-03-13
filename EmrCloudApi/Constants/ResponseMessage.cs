@@ -951,5 +951,7 @@
         public static readonly string ValidPaymentAmount = "Valid Payment Amount";
         public static readonly string DateNotVerify = "Date Not Verify";
         public static readonly string InvalidThisCredit = "Invalid This Credit";
+        public static readonly string NoPaymentInfo = "NoPaymentInfo";
+        public static readonly string TryAgainLater = "TryAgainLater";
     }
 }

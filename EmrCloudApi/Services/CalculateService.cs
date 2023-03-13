@@ -4,6 +4,7 @@ using Interactor.CalculateService;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.MedicalExamination.Calculate;
 
 namespace EmrCloudApi.Services
 {
@@ -33,6 +34,12 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.GetListReceInf:
                     functionName = "ReceFutan/GetListReceInf";
+                    break;
+                case CalculateApiPath.RunCalculateOne:
+                    functionName = "Calculate/RunCalculateOne";
+                    break;
+                case CalculateApiPath.ReceFutanCalculateMain:
+                    functionName = "ReceFutan/ReceFutanCalculateMain";
                     break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
@@ -106,6 +113,38 @@ namespace EmrCloudApi.Services
             catch (Exception)
             {
                 return new();
+            }
+         }
+         
+        public bool RunCalculateOne(CalculateOneRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateOne, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

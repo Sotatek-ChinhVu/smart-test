@@ -17,13 +17,15 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
-using UseCase.Receipt.Recalculation;
+using UseCase.Receipt.ReceCmtHistory;
+using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
+using UseCase.Receipt.SyobyoKeikaHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -215,16 +217,16 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SaveReceCheckOptResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.Recalculation)]
-    public ActionResult<Response<RecalculationResponse>> Recalculation([FromBody] RecalculationRequest request)
+    [HttpGet(ApiPath.ReceCmtHistory)]
+    public ActionResult<Response<ReceCmtHistoryResponse>> ReceCmtHistory([FromQuery] ReceCmtHistoryRequest request)
     {
-        var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsStopCalc);
+        var input = new ReceCmtHistoryInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
 
-        var presenter = new RecalculationPresenter();
+        var presenter = new ReceCmtHistoryPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<RecalculationResponse>>(presenter.Result);
+        return new ActionResult<Response<ReceCmtHistoryResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetInsuranceInf)]
@@ -239,6 +241,30 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetInsuranceInfResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.SyoukiInfHistory)]
+    public ActionResult<Response<SyoukiInfHistoryResponse>> SyoukiInfHistory([FromQuery] SyoukiInfHistoryRequest request)
+    {
+        var input = new SyoukiInfHistoryInputData(HpId, request.SinYm, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new SyoukiInfHistoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SyoukiInfHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.SyobyoKeikaHistory)]
+    public ActionResult<Response<SyobyoKeikaHistoryResponse>> SyobyoKeikaHistory([FromQuery] SyobyoKeikaHistoryRequest request)
+    {
+        var input = new SyobyoKeikaHistoryInputData(HpId, request.PtId);
+        var output = _bus.Handle(input);
+
+        var presenter = new SyobyoKeikaHistoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SyobyoKeikaHistoryResponse>>(presenter.Result);
+    }
+    
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {

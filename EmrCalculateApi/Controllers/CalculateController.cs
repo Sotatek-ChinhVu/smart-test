@@ -47,5 +47,17 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.CalcFutan);
             return Ok();
         }
+
+        [HttpPost("RunCalculateMonth")]
+        public ActionResult RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest)
+        {
+            _ikaCalculate.RunCalculateMonth(
+                monthRequest.HpId, 
+                monthRequest.SeikyuYm, 
+                monthRequest.PtIds, 
+                monthRequest.PreFix);
+
+            return Ok();
+        }
     }
 }

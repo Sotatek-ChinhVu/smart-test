@@ -2531,7 +2531,7 @@ namespace Infrastructure.Repositories
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
 
-                    if (targetItem == null) return new();
+                    if (targetItem == null) continue;
 
                     if (targetItem.Item1 == 1)
                     {
