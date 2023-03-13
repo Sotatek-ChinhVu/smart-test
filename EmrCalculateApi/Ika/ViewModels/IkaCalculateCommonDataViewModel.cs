@@ -1,18 +1,15 @@
-﻿using Entity.Tenant;
-using EmrCalculateApi.Ika.DB.Finder;
-using EmrCalculateApi.Ika.DB.CommandHandler;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.Constants;
-using Helper.Constants;
-using EmrCalculateApi.Utils;
-using EmrCalculateApi.Interface;
-using Domain.Constant;
-using Helper.Common;
+﻿using Domain.Constant;
 using EmrCalculateApi.Constants;
-using Infrastructure.CommonDB;
-using PostgreDataContext;
-using Infrastructure.Interfaces;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.DB.CommandHandler;
+using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
+using EmrCalculateApi.Utils;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Constants;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
