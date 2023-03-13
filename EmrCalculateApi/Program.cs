@@ -43,7 +43,9 @@ builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() ||
+    app.Environment.IsProduction() ||
+    app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
