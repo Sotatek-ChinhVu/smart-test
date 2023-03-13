@@ -3,8 +3,8 @@ using Helper.Enum;
 using Interactor.CalculateService;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
-using UseCase.Receipt.GetListReceInf;
 using UseCase.MedicalExamination.Calculate;
+using UseCase.Receipt.GetListReceInf;
 
 namespace EmrCloudApi.Services
 {
@@ -114,8 +114,8 @@ namespace EmrCloudApi.Services
             {
                 return new();
             }
-         }
-         
+        }
+
         public bool RunCalculateOne(CalculateOneRequest inputData)
         {
             try
