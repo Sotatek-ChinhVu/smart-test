@@ -1,15 +1,18 @@
-﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.DB.CommandHandler;
+﻿using Entity.Tenant;
 using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.DB.CommandHandler;
 using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
-using EmrCalculateApi.Utils;
-using Entity.Tenant;
-using Helper.Common;
+using EmrCalculateApi.Ika.Constants;
 using Helper.Constants;
+using EmrCalculateApi.Utils;
+using EmrCalculateApi.Interface;
+using Domain.Constant;
+using Helper.Common;
+using EmrCalculateApi.Constants;
+using Infrastructure.CommonDB;
+using PostgreDataContext;
+using Infrastructure.Interfaces;
+using EmrCalculateApi.Requests;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -21,7 +24,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// </summary>
         public int hpId;
         /// <summary>
-        /// 患者IDa
+        /// 患者ID
         /// </summary>
         public long ptId;
         /// <summary>
