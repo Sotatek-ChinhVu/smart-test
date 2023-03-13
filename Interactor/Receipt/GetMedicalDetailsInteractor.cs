@@ -60,7 +60,11 @@ namespace Interactor.Receipt
                                                                         item.EnTenKbn,
                                                                         item.SanteiKbn,
                                                                         item.InOutKbn,
-                                                                        false
+                                                                        false,
+                                                                        item.Day1, item.Day2, item.Day3, item.Day4, item.Day5, item.Day6, item.Day7, item.Day8, item.Day9, item.Day10,
+                                                                        item.Day11, item.Day12, item.Day13, item.Day14, item.Day15, item.Day16, item.Day17, item.Day18, item.Day19, item.Day20,
+                                                                        item.Day21, item.Day22, item.Day23, item.Day24, item.Day25, item.Day26, item.Day27, item.Day28, item.Day29, item.Day30,
+                                                                        item.Day31
                                                             )).ToList();
             return EditSinMei(sinMei);
         }
@@ -106,7 +110,12 @@ namespace Interactor.Receipt
                                                 sinMei.EnTenKbn,
                                                 sinMei.SanteiKbn,
                                                 sinMei.InOutKbn,
-                                                true));
+                                                true,
+                                                sinMei.Day1, sinMei.Day2, sinMei.Day3, sinMei.Day4, sinMei.Day5, sinMei.Day6, sinMei.Day7, sinMei.Day8, sinMei.Day9, sinMei.Day10,
+                                                sinMei.Day11, sinMei.Day12, sinMei.Day13, sinMei.Day14, sinMei.Day15, sinMei.Day16, sinMei.Day17, sinMei.Day18, sinMei.Day19, sinMei.Day20,
+                                                sinMei.Day21, sinMei.Day22, sinMei.Day23, sinMei.Day24, sinMei.Day25, sinMei.Day26, sinMei.Day27, sinMei.Day28, sinMei.Day29, sinMei.Day30,
+                                                sinMei.Day31
+                                                ));
                 }
             }
 
@@ -119,6 +128,8 @@ namespace Interactor.Receipt
 
             var listHolidayMst = _mstItemRepository.FindHolidayMstList(hpId, SinYm * 100 + 1, SinYm * 100 + 99);
 
+            var listHolidayMstHashSet = new HashSet<int>(listHolidayMst.Select(item => item.SinDate));
+
             DateTime.TryParseExact(SinYm.AsString(), "yyyyMM",
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime currentTime);
 
@@ -127,7 +138,7 @@ namespace Interactor.Receipt
             for (int i = 0; i < countDay; i++)
             {
                 var date = currentTime.AddDays(i);
-                if (date.DayOfWeek == DayOfWeek.Sunday || listHolidayMst.Any(item => item.SinDate == (SinYm * 100 + i + 1)))
+                if (date.DayOfWeek == DayOfWeek.Sunday || listHolidayMstHashSet.Contains(SinYm * 100 + i + 1))
                 {
                     holidayOfMonth.Add(i + 1, "red");
                 }

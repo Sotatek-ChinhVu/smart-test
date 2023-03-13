@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
-using UseCase.Receipt.MedicalDetail;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.Receipt.MedicalDetail;
 
 namespace EmrCloudApi.Services
 {
