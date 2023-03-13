@@ -361,7 +361,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
         /// <summary>
         /// _odrCommon.odrDtllsの並び順を調整。項目に付随する選択式コメントが存在する場合はその項目の下に移動する
-        /// </summary>
+        /// </summary> abc
         public void SortOdrDtl()
         {
             DoSortOdrDtl(
