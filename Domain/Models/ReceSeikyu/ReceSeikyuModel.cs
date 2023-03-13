@@ -34,6 +34,21 @@ namespace Domain.Models.ReceSeikyu
             ListRecedenHenJiyuuModel = listRecedenHenJiyuuModel;
         }
 
+        public ReceSeikyuModel(long ptId, int sinYm, int hokenId, long ptNum, int seikyuKbn)
+        {
+            PtId = ptId;
+            PtName = string.Empty;
+            SinYm = sinYm;
+            HokenId = hokenId;
+            HokensyaNo = string.Empty;
+            SeikyuYmBinding = string.Empty;
+            SeikyuKbn = seikyuKbn;
+            Cmt = string.Empty;
+            PtNum = ptNum;
+            Houbetu = string.Empty;
+            ListRecedenHenJiyuuModel = new();
+        }
+
         public int SinDay { get; private set; }
 
         /// <summary>
@@ -121,7 +136,7 @@ namespace Domain.Models.ReceSeikyu
 
         public bool CheckDefaultValue()
         {
-            return HpId == 0 && SinYm == 0 ;
+            return HpId == 0 && SinYm == 0;
         }
 
         public bool IsChecked { get; private set; }
@@ -165,7 +180,7 @@ namespace Domain.Models.ReceSeikyu
                     if (ListRecedenHenJiyuuModel != null && ListRecedenHenJiyuuModel.Any())
                     {
                         var model = ListRecedenHenJiyuuModel.FirstOrDefault();
-                        if(model is null) return string.Empty;
+                        if (model is null) return string.Empty;
                         else return model.HokenSentaku;
                     }
                     return string.Empty;
@@ -320,5 +335,16 @@ namespace Domain.Models.ReceSeikyu
 
         public bool IsDefaultValue => CheckDefaultValue();
 
+        public string SeikyuKbnDisplay
+        {
+            get => SeikyuKbns.ContainsKey(SeikyuKbn) ? SeikyuKbns[SeikyuKbn] : string.Empty;
+        }
+
+        private Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
+        {
+            { 1,"月遅れ" },
+            { 2,"返戻" },
+            { 3,"電算返戻" }
+        };
     }
 }

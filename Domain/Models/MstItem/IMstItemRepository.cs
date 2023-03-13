@@ -53,5 +53,12 @@ namespace Domain.Models.MstItem
         List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
 
         List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
+
+        //Key of Dictionary is itemCd
+        Dictionary<string, (int sinkouiKbn, string itemName, List<TenItemModel>)> GetConversionItem(List<(string itemCd, int sinKouiKbn, string itemName)> expiredItems, int sinDate, int hpId);
+
+        bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values);
+
+        List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
     }
 }
