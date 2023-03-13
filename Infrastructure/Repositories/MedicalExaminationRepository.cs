@@ -8,10 +8,8 @@ using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -1418,7 +1416,7 @@ namespace Infrastructure.Repositories
 
             return new(msgs, lastSanteiInMonth);
         }
-     
+
         string BuildMessage(string touyaku1Name, string touyaku2Name, string dateSantei)
         {
             StringBuilder msg = new StringBuilder();
@@ -1502,15 +1500,26 @@ namespace Infrastructure.Repositories
             foreach (var eventCd in eventCds)
             {
                 var eventAuditTrailLogs = auditTrailLogs.Where(a => a.EventCd == eventCd).ToList();
-               var maxDate =  eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
+                var maxDate = eventAuditTrailLogs.Count == 0 ? DateTime.MinValue : eventAuditTrailLogs.Max(x => x.LogDate);
                 result.Add(eventCd, maxDate);
             }
             return result;
         }
-        
+
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var odrListQuery = NoTrackingDataContext.OdrInfs
+                .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate).ToList();
+            if (odrListQuery.Any())
+            {
+                return odrListQuery.Max(odr => odr.RpNo);
+            }
+            return 0;
         }
     }
 }
