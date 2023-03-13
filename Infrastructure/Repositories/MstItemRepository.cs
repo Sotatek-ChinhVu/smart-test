@@ -559,7 +559,6 @@ namespace Infrastructure.Repositories
                 queryResult = queryResult.Where(t => t.YohoKbn != 0);
             }
 
-
             //!searchItemCondition.IncludeRosai
             if (!isRosai)
             {

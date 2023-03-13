@@ -35,5 +35,9 @@
         public bool IsSearch831SuffixOnly { get; set; }
 
         public bool IsSearchSanteiItem { get; set; }
+
+        public bool IsIncludeUsage { get; set; }
+
+        public bool OnlyUsage { get; set; }
     }
 }
