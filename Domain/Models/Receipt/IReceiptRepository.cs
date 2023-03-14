@@ -2,6 +2,7 @@
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Helper.Enum;
 
 namespace Domain.Models.Receipt;
 
@@ -45,14 +46,14 @@ public interface IReceiptRepository : IRepositoryBase
 
     bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
 
+    List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
     List<ReceSinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
 
     List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
-
-    bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
 
     List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId);
 
