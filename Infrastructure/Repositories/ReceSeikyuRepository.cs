@@ -168,9 +168,28 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public bool InsertNewReceSeikyu(List<ReceSeikyuModel> listInsert, int userId , int hpId)
+        {
+            var addedList = listInsert.Select(item => Mapper.Map(item, new ReceSeikyu(), (src, dest) =>
+            {
+                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                dest.CreateId = userId;
+                dest.SeqNo = 0;
+                dest.HpId = hpId;
+                if (src.HpId == 0 && src.Cmt == "返戻ファイルより登録")
+                {
+                    dest.SeikyuKbn = 3;
+                }
+                return dest;
+            })).ToList();
+            TrackingDataContext.ReceSeikyus.AddRange(addedList);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
         public bool SaveReceSeiKyu(int hpId, int userId , List<ReceSeikyuModel> data)
         {
-            var addedList = data.FindAll(item => item.OriginSinYm != item.SinYm).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
+            var addedList = data.FindAll(item => item.SeqNo == 0 && item.OriginSinYm != item.SinYm).Select(item => Mapper.Map(item , new ReceSeikyu(), (src,dest) =>
             {
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -184,8 +203,7 @@ namespace Infrastructure.Repositories
             })).ToList();
             TrackingDataContext.ReceSeikyus.AddRange(addedList);
 
-            var updateList = data.Where(u => u.OriginSinYm == u.SinYm);
-            foreach(var item in updateList.Where(x=>x.SeqNo != 0))
+            foreach(var item in data.Where(x => x.SeqNo != 0 && x.OriginSinYm == x.SinYm))
             {
                 var update = TrackingDataContext.ReceSeikyus.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if(update != null)
@@ -207,11 +225,42 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-
-            var letSaveForNewItem = updateList.Where(u => u.SeqNo == 0);
-
-
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool RemoveReceSeikyuDuplicateIfExist(long ptId, int sinYm, int hokenId, int userId, int hpId)
+        {
+            var model = TrackingDataContext.ReceSeikyus.FirstOrDefault(u => u.HpId == hpId &&
+                                                                             u.PtId == ptId &&
+                                                                             u.SinYm == sinYm &&
+                                                                             u.HokenId == hokenId &&
+                                                                             u.SeikyuYm != 999999 &&
+                                                                             u.IsDeleted == 0);
+
+            if (model is null)
+                return true;
+            else
+            {
+                model.IsDeleted = DeleteTypes.Deleted;
+                return TrackingDataContext.SaveChanges() > 0;
+            }
+        }
+
+        public bool UpdateSeikyuYmReceipSeikyuIfExist(long ptId, int sinYm, int hokenId, int seikyuYm, int userId, int hpId)
+        {
+            var model = TrackingDataContext.ReceSeikyus.FirstOrDefault(u => u.HpId == hpId &&
+                                                                             u.PtId == ptId &&
+                                                                             u.SinYm == sinYm &&
+                                                                             u.HokenId == hokenId &&
+                                                                             u.SeikyuYm == 999999 &&
+                                                                             u.IsDeleted == 0);
+            if (model is null)
+                return true;
+            else
+            {
+                model.SeikyuYm = seikyuYm;
+                return TrackingDataContext.SaveChanges() > 0;
+            }
         }
     }
 }
