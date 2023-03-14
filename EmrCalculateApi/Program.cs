@@ -6,6 +6,9 @@ using EmrCalculateApi.Interface;
 using EmrCalculateApi.ReceFutan.ViewModels;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +41,11 @@ services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
 services.AddScoped<IReceFutanViewModel, ReceFutanViewModel>();
 services.AddScoped<IIkaCalculateViewModel, IkaCalculateViewModel>();
 
+//Serilog 
+builder.Host.UseSerilog((ctx, lc) => lc
+       .WriteTo.Console()
+       .ReadFrom.Configuration(ctx.Configuration));
+
 var app = builder.Build();
 
 //Add config from json file
@@ -63,12 +71,31 @@ if (app.Environment.IsDevelopment() ||
     app.UseSwaggerUI();
 }
 
-//app.UseMiddleware<HttpsRedirectMiddleware>();
+// serilog
+var Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("env.json", false, true)
+                .AddJsonFile($"env.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true,
+                    true)
+                .AddCommandLine(args)
+                .AddEnvironmentVariables()
+                .Build();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(Configuration)
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Debug()
+    .CreateLogger();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Serilog 
+app.UseSerilogRequestLogging();
 
 app.Run();
