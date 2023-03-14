@@ -17,8 +17,10 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
+using UseCase.MedicalExamination.Calculate;
 using UseCase.Receipt.Recalculation;
 
 namespace Interactor.Receipt;
@@ -35,6 +37,7 @@ public class RecalculationInteractor : IRecalculationInputPort
     private readonly IInsuranceMstRepository _insuranceMstRepository;
     private readonly IReceSeikyuRepository _receSeikyuRepository;
     private readonly IDrugDetailRepository _drugDetailRepository;
+    private readonly ICalculateService _calculateRepository;
 
     private const string _hokenChar = "0";
     private const string _kohi1Char = "1";
@@ -47,8 +50,9 @@ public class RecalculationInteractor : IRecalculationInputPort
     private const string _both = "両";
     private const string _leftRight = "左右";
     private const string _rightLeft = "右左";
+    bool isStopCalc = false;
 
-    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository)
+    public RecalculationInteractor(IReceiptRepository receiptRepository, ISystemConfRepository systemConfRepository, IPtDiseaseRepository ptDiseaseRepository, IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ITodayOdrRepository todayOdrRepository, ICommonMedicalCheck commonMedicalCheck, IInsuranceMstRepository insuranceMstRepository, IReceSeikyuRepository receSeikyuRepository, IDrugDetailRepository drugDetailRepository, ICalculateService calculateService)
     {
         _receiptRepository = receiptRepository;
         _systemConfRepository = systemConfRepository;
@@ -60,72 +64,36 @@ public class RecalculationInteractor : IRecalculationInputPort
         _insuranceMstRepository = insuranceMstRepository;
         _receSeikyuRepository = receSeikyuRepository;
         _drugDetailRepository = drugDetailRepository;
+        _calculateRepository = calculateService;
     }
 
     public RecalculationOutputData Handle(RecalculationInputData inputData)
     {
         try
         {
-            bool isStopCalc = false;
-
-            List<ReceCheckErrModel> newReceCheckErrList = new();
-            StringBuilder errorText = new();
-            StringBuilder errorTextSinKouiCount = new();
-            var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
+            bool success = false;
             var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
-            var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
-            var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
-            var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
             int allCheckCount = receRecalculationList.Count;
-            var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
 
-            var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
-            var systemConfigList = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
-            var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
-            var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
-
-            SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty));
-            int successCount = 1;
-            foreach (var recalculationItem in receRecalculationList)
+            // run Recalculation
+            if (inputData.IsRecalculationCheckBox)
             {
-                var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-                isStopCalc = (bool)statusCallBack.Result.Result;
-                if (isStopCalc)
-                {
-                    break;
-                }
-                List<BuiErrorModel> errorOdrInfDetails = new();
-                var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
-                var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
-                List<string> itemCdList = new();
-                foreach (var sinKouiCount in sinKouiCountList)
-                {
-                    itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
-                }
-                var tenMstByItemCdList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCdList);
-                newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
-                newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
-                newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
-                newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
-                newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
-                errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+                success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
+            }
 
-                if (allCheckCount == successCount)
-                {
-                    break;
-                }
-                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
-                successCount++;
-            }
-            errorText.Append(errorTextSinKouiCount);
-            errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, ref errorText, ptIdList, systemConfigList, receRecalculationList);
-            if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
+            // run Receipt Aggregation
+            if (inputData.IsReceiptAggregationCheckBox)
             {
-                SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
-                return new RecalculationOutputData(false);
+                success = ReceFutanCalculateMain(inputData.HpId, receRecalculationList, allCheckCount);
             }
-            SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, errorText.ToString()));
-            return new RecalculationOutputData(true);
+
+            // check error in month
+            if (inputData.IsCheckErrorCheckBox)
+            {
+                success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
+            }
+
+            return new RecalculationOutputData(success);
         }
         finally
         {
@@ -140,6 +108,119 @@ public class RecalculationInteractor : IRecalculationInputPort
             _receSeikyuRepository.ReleaseResource();
             _drugDetailRepository.ReleaseResource();
         }
+    }
+
+    private bool RunCalculateMonth(int hpId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    {
+        SendMessager(new RecalculationStatus(false, 1, allCheckCount, 0, string.Empty));
+        int successCount = 1;
+        foreach (var item in receRecalculationList)
+        {
+            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+            isStopCalc = (bool)statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                break;
+            }
+            _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+            {
+                HpId = hpId,
+                PtIds = new List<long>() { item.PtId },
+                SeikyuYm = item.SeikyuYm
+            });
+            if (allCheckCount == successCount)
+            {
+                break;
+            }
+            SendMessager(new RecalculationStatus(false, 1, allCheckCount, successCount, string.Empty));
+            successCount++;
+        }
+        SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
+        return true;
+    }
+
+    private bool ReceFutanCalculateMain(int hpId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    {
+        SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
+        int successCount = 1;
+        foreach (var item in receRecalculationList)
+        {
+            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+            isStopCalc = (bool)statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                break;
+            }
+            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { item.PtId }, item.SeikyuYm));
+            if (allCheckCount == successCount)
+            {
+                break;
+            }
+            SendMessager(new RecalculationStatus(false, 2, allCheckCount, successCount, string.Empty));
+            successCount++;
+        }
+        SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
+        return true;
+    }
+
+    private bool CheckErrorInMonth(RecalculationInputData inputData, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    {
+        List<ReceCheckErrModel> newReceCheckErrList = new();
+        StringBuilder errorText = new();
+        StringBuilder errorTextSinKouiCount = new();
+        var receCheckOptList = GetReceCheckOptModelList(inputData.HpId);
+        var ptIdList = receRecalculationList.Select(item => item.PtId).Distinct().ToList();
+        var sinYmList = receRecalculationList.Select(item => item.SinYm).Distinct().ToList();
+        var hokenIdList = receRecalculationList.Select(item => item.HokenId).Distinct().ToList();
+        var kantokuCdValidList = receRecalculationList.Select(item => new IsKantokuCdValidModel(item.PtId, item.HokenId)).ToList();
+
+        var allReceCheckErrList = _receiptRepository.GetReceCheckErrList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
+        var systemConfigList = _systemConfRepository.GetAllSystemConfig(inputData.HpId);
+        var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
+        var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
+
+        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty));
+        int successCount = 1;
+        foreach (var recalculationItem in receRecalculationList)
+        {
+            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+            isStopCalc = (bool)statusCallBack.Result.Result;
+            if (isStopCalc)
+            {
+                break;
+            }
+            List<BuiErrorModel> errorOdrInfDetails = new();
+            var oldReceCheckErrList = allReceCheckErrList.Where(item => item.SinYm == recalculationItem.SinYm && item.PtId == recalculationItem.PtId && item.HokenId == recalculationItem.HokenId).ToList();
+            var sinKouiCountList = _receiptRepository.GetSinKouiCountList(inputData.HpId, recalculationItem.SinYm, recalculationItem.PtId, recalculationItem.HokenId);
+            List<string> itemCdList = new();
+            foreach (var sinKouiCount in sinKouiCountList)
+            {
+                itemCdList.AddRange(sinKouiCount.SinKouiDetailModels.Select(item => item.ItemCd).Distinct().ToList());
+            }
+            var tenMstByItemCdList = _mstItemRepository.GetTenMstList(inputData.HpId, itemCdList);
+            newReceCheckErrList = CheckHokenError(recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList);
+            newReceCheckErrList = CheckByomeiError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, ref errorOdrInfDetails, systemConfigList);
+            newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
+            newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
+            newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
+            errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+
+            if (allCheckCount == successCount)
+            {
+                break;
+            }
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            successCount++;
+        }
+        errorText.Append(errorTextSinKouiCount);
+        errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, ref errorText, ptIdList, systemConfigList, receRecalculationList);
+        if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
+        {
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
+            return false;
+        }
+        SendMessager(new RecalculationStatus(true, 3, allCheckCount, successCount, errorText.ToString()));
+        return true;
     }
 
     #region Private funciton
