@@ -5,16 +5,16 @@ namespace UseCase.Receipt.GetRecePreviewList;
 
 public class GetRecePreviewListInputData : IInputData<GetRecePreviewListOutputData>
 {
-    public GetRecePreviewListInputData(int hpId, ReceiptPreviewModeEnum typeReceiptPreview, long ptId)
+    public GetRecePreviewListInputData(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId)
     {
         HpId = hpId;
-        TypeReceiptPreview = typeReceiptPreview;
+        ReceiptPreviewType = receiptPreviewType;
         PtId = ptId;
     }
 
     public int HpId { get; private set; }
 
-    public ReceiptPreviewModeEnum TypeReceiptPreview { get; private set; }
+    public ReceiptPreviewModeEnum ReceiptPreviewType { get; private set; }
 
     public long PtId { get; private set; }
 }

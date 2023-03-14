@@ -1582,14 +1582,14 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return TrackingDataContext.SaveChanges() > 0;
     }
 
-    public List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum typeReceiptPreview, long ptId)
+    public List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId)
     {
         var receInfList = NoTrackingDataContext.ReceInfs.Where(item => item.HpId == hpId
                                                                        && item.PtId == ptId
                                                                        && item.SeikyuYm != 999999)
                                                         .ToList();
 
-        if (typeReceiptPreview == ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki && receInfList.Any())
+        if (receiptPreviewType == ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki && receInfList.Any())
         {
             var hokenIdList = receInfList.Select(item => item.HokenId).Distinct().ToList();
             var sinYmList = receInfList.Select(item => item.SinYm).Distinct().ToList();

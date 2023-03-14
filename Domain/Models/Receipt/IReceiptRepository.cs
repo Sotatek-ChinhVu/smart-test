@@ -44,7 +44,7 @@ public interface IReceiptRepository : IRepositoryBase
 
     bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
 
-    List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum typeReceiptPreview, long ptId);
+    List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId);
 
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);

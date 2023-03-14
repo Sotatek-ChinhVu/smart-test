@@ -16,7 +16,7 @@ public class GetRecePreviewListInteractor : IGetRecePreviewListInputPort
     {
         try
         {
-            var result = _receiptRepository.GetReceInf(inputData.HpId, inputData.TypeReceiptPreview, inputData.PtId);
+            var result = _receiptRepository.GetReceInf(inputData.HpId, inputData.ReceiptPreviewType, inputData.PtId);
             return new GetRecePreviewListOutputData(result, GetRecePreviewListStatus.Successed);
         }
         finally

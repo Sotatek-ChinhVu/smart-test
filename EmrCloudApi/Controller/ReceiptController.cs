@@ -256,7 +256,7 @@ public class ReceiptController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetRecePreviewList)]
     public ActionResult<Response<GetRecePreviewListResponse>> GetRecePreviewList([FromQuery] GetRecePreviewListRequest request)
     {
-        var input = new GetRecePreviewListInputData(HpId, request.TypeReceiptPreview, request.PtId);
+        var input = new GetRecePreviewListInputData(HpId, request.ReceiptPreviewType, request.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new GetRecePreviewListPresenter();
@@ -264,6 +264,7 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetRecePreviewListResponse>>(presenter.Result);
     }
+
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
