@@ -2,7 +2,7 @@
 {
     public class SummaryInfItem
     {
-        public SummaryInfItem(string headerInfo, string headerName, string propertyColor, double spaceHeaderName, double spaceHeaderInfo, double headerNameSize, int grpItemCd, string text)
+        public SummaryInfItem(string headerInfo, string headerName, string propertyColor, double spaceHeaderName, double spaceHeaderInfo, double headerNameSize, int grpItemCd, string text, List<string> splitHeaderInf)
         {
             HeaderInfo = headerInfo;
             HeaderName = headerName;
@@ -12,6 +12,8 @@
             HeaderNameSize = headerNameSize;
             GrpItemCd = grpItemCd;
             Text = text;
+            SplitHeaderInf = splitHeaderInf;
+
         }
 
         public SummaryInfItem()
@@ -20,6 +22,7 @@
             HeaderName = string.Empty;
             PropertyColor = string.Empty;
             Text = string.Empty;
+            SplitHeaderInf = new();
         }
 
         public SummaryInfItem ChangePropertyColor(string propertyColor)
@@ -56,5 +59,7 @@
         public int GrpItemCd { get; private set; }
 
         public string Text { get; private set; }
+
+        public List<string> SplitHeaderInf { get; private set; }
     }
 }

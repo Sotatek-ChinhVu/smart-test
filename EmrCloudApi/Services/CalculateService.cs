@@ -7,6 +7,7 @@ using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.Receipt.MedicalDetail;
+using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
 {
@@ -43,6 +44,9 @@ namespace EmrCloudApi.Services
                 case CalculateApiPath.ReceFutanCalculateMain:
                     functionName = "ReceFutan/ReceFutanCalculateMain";
                     break;
+                case CalculateApiPath.RunCalculateMonth:
+                    functionName = "Calculate/RunCalculateMonth";
+                    break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
@@ -60,7 +64,7 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
@@ -143,8 +147,26 @@ namespace EmrCloudApi.Services
             {
                 var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
                     return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return false;
+                }
                 return true;
             }
             catch (Exception)

@@ -7,5 +7,6 @@
         RunTrialCalculate,
         RunCalculateOne,
         ReceFutanCalculateMain,
+        RunCalculateMonth,
     }
 }

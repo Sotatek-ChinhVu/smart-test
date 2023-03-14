@@ -182,7 +182,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             }
 
             var joinQuery = (
-                from raiinInf in raiinInfs
+                from raiinInf in raiinInfs.AsEnumerable()
                 join rs in receSeikyus on
                     new { raiinInf.HpId, raiinInf.PtId, SinYm = (int)Math.Floor((double)raiinInf.SinDate / 100) } equals
                     new { rs.HpId, rs.PtId, rs.SinYm } into rsJoin

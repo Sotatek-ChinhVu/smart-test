@@ -214,6 +214,8 @@
         public const string SyoukiInfHistory = "SyoukiInfHistory";
         public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
         public const string GetMedicalDetails = "GetMedicalDetails";
+        public const string GetRecePreviewList = "GetRecePreviewList";
+        public const string DoReceCmt = "DoReceCmt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -242,5 +244,6 @@
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
+        public const string SearchReceInf = "SearchReceInf";
     }
 }
