@@ -184,7 +184,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         foreach (var recalculationItem in receRecalculationList)
         {
             var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = (bool)statusCallBack.Result.Result;
+            isStopCalc = statusCallBack.Result.Result;
             if (isStopCalc)
             {
                 break;
@@ -203,7 +203,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             newReceCheckErrList = CheckOrderError(inputData.HpId, recalculationItem, oldReceCheckErrList, newReceCheckErrList, receCheckOptList, sinKouiCountList, tenMstByItemCdList, systemConfigList, itemCdList);
             newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
             newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
-            errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, ref errorTextSinKouiCount, recalculationItem, sinKouiCountList);
+            errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
 
             if (allCheckCount == successCount)
             {
@@ -1990,7 +1990,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return newReceCheckErrList;
     }
 
-    private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, ref StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
+    private StringBuilder GetErrorTextSinKouiCount(int seikyuYm, StringBuilder errorTextSinKouiCount, ReceRecalculationModel recalculationModel, List<ReceSinKouiCountModel> sinKouiCountList)
     {
         List<string> errors = new();
         foreach (var sinKouiCount in sinKouiCountList)
