@@ -1,6 +1,6 @@
 ﻿namespace Helper.Messaging.Data;
 
-public class StopCalcStatus : CallbackMessage<object>
+public class StopCalcStatus : CallbackMessage<bool>
 {
     public StopCalcStatus()
     {

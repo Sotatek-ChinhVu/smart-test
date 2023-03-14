@@ -59,12 +59,12 @@ namespace Helper.Messaging
 
         public Task<CallbackMessageResult<T>> SendAsync<T>(CallbackMessage<T> message)
         {
-            SendMessageAsync(message);
+            SendMessage(message);
 
             return message.Task;
         }
 
-        private T SendMessageAsync<T>(T message)
+        private T SendMessage<T>(T message)
         {
             var type = message!.GetType();
             List<MessageRegistration> listAction = _actions.Where(a => a.Type == type || a.Type == null).ToList();

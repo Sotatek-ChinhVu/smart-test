@@ -11,13 +11,13 @@ public class RecalculationStatus
         Message = message;
     }
 
-    public bool Done { get; set; }
+    public bool Done { get; private set; }
 
-    public int Type { get; set; }
+    public int Type { get; private set; }
 
-    public int Length { get; set; }
+    public int Length { get; private set; }
 
-    public int SuccessCount { get; set; }
+    public int SuccessCount { get; private set; }
 
-    public string Message { get; set; }
+    public string Message { get; private set; }
 }
