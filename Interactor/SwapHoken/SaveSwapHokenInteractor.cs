@@ -34,7 +34,7 @@ namespace Interactor.SwapHoken
 
                 if (inputData.StartDate > inputData.EndDate && inputData.StartDate > 0 && inputData.EndDate > 0)
                 {
-                    message = string.Format(ErrorMessage.MessageType_mInp00110, new string[] { "終了日", "開始日" });
+                    message = string.Format(ErrorMessage.MessageType_mInp00110, "終了日", "開始日");
                     return new SaveSwapHokenOutputData(SaveSwapHokenStatus.StartDateGreaterThanEndDate, message, TypeMessage.TypeMessageError);
                 }
 
