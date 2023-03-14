@@ -213,7 +213,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             successCount++;
         }
         errorText.Append(errorTextSinKouiCount);
-        errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, ref errorText, ptIdList, systemConfigList, receRecalculationList);
+        errorText = GetErrorTextAfterCheck(inputData.HpId, inputData.SinYm, errorText, ptIdList, systemConfigList, receRecalculationList);
         if (isStopCalc || !_receiptRepository.SaveNewReceCheckErrList(inputData.HpId, inputData.UserId, newReceCheckErrList))
         {
             SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
@@ -2018,7 +2018,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         return errorTextSinKouiCount;
     }
 
-    private StringBuilder GetErrorTextAfterCheck(int hpId, int seikyuYm, ref StringBuilder errorText, List<long> ptIdList, List<SystemConfModel> systemConfList, List<ReceRecalculationModel> receRecalculationList)
+    private StringBuilder GetErrorTextAfterCheck(int hpId, int seikyuYm, StringBuilder errorText, List<long> ptIdList, List<SystemConfModel> systemConfList, List<ReceRecalculationModel> receRecalculationList)
     {
         //check use Rosai Receden but not set 災害区分
         //■災害区分が設定されていません。
