@@ -1582,6 +1582,39 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId)
+    {
+        var result = new List<ReceCmtModel>();
+        int lastYM = 0;
+        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                    && item.SinYm < (sinDate / 100)
+                                                                    && item.PtId == ptId
+                                                                    && item.IsDeleted == DeleteTypes.None)
+                                                     .OrderByDescending(item => item.SinYm)
+                                                     .ToList();
+
+        lastYM = receCmts.FirstOrDefault()?.SinYm ?? 0;
+        if (lastYM == 0)
+        {
+            return result;
+        }
+        receCmts = receCmts.Where(item => item.SinYm == lastYM).ToList();
+        if (!receCmts.Any())
+        {
+            receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                    && item.SinYm < lastYM
+                                                                    && item.IsDeleted == DeleteTypes.None
+                                                                    && item.PtId == ptId)
+                                                     .ToList();
+        }
+
+        foreach (var receCmt in receCmts)
+        {
+            result.Add(ConvertToReceCmtModel(receCmt));
+        }
+        return result;
+    }
     #endregion
 
     #region Recalculation Check
