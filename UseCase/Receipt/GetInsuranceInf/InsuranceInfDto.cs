@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.Insurance
+﻿namespace UseCase.Receipt.GetInsuranceInf
 {
     public class InsuranceInfDto
     {

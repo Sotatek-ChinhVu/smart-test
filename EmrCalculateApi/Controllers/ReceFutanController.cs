@@ -30,8 +30,6 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("GetListReceInf")]
         public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
         {
-            int hpId = request.HpId;
-
             var response = _receFutanCalculate.KaikeiTotalCalculate(request.PtId, request.SinYm);
 
             return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));

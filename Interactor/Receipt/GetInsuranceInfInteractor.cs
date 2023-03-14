@@ -1,8 +1,8 @@
 ﻿using Domain.Models.CalculateModel;
-using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constants;
 using Interactor.CalculateService;
+using UseCase.Receipt.GetInsuranceInf;
 using UseCase.Receipt.GetListReceInf;
 
 namespace Interactor.Receipt
