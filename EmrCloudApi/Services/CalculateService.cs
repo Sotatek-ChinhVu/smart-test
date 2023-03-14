@@ -43,9 +43,6 @@ namespace EmrCloudApi.Services
                 case CalculateApiPath.ReceFutanCalculateMain:
                     functionName = "ReceFutan/ReceFutanCalculateMain";
                     break;
-                case CalculateApiPath.GetSinMeiListAccountingCard:
-                    functionName = "SinMei/AccountingCard/GetSinMeiList";
-                    break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
@@ -156,22 +153,5 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiAccountingCardDtoInputData inputData)
-        {
-            try
-            {
-                var task = CallCalculate(CalculateApiPath.GetSinMeiListAccountingCard, inputData);
-
-                if (task.Result.ResponseStatus != ResponseStatus.Successed)
-                    return new();
-
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
-                return result;
-            }
-            catch (Exception)
-            {
-                return new();
-            }
-        }
     }
 }

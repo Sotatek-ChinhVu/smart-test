@@ -19,6 +19,5 @@ namespace Interactor.CalculateService
 
         bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
-        SinMeiDataModelDto GetSinMeiAccountingCard(GetSinMeiAccountingCardDtoInputData inputData);
     }
 }

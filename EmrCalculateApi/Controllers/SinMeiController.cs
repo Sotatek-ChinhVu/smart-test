@@ -23,26 +23,18 @@ namespace EmrCalculateApi.Controllers
         }
 
         [HttpPost("GetSinMeiList")]
-        public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromBody] GetSinMeiListRequest getSinMeiListRequest)
+        public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromBody] GetSinMeiListRequest request)
         {
-            int hpId = getSinMeiListRequest.HpId;
-            long ptId = getSinMeiListRequest.PtId;
-            int sinDate = getSinMeiListRequest.SinDate;
-            List<long> raiinNoList = getSinMeiListRequest.RaiinNoList;
 
-            using (SinMeiViewModel sinMeiVM = new SinMeiViewModel(SinMeiMode.Kaikei, false, hpId, ptId, sinDate, raiinNoList, _tenantProvider, _systemConfigProvider, _emrLogger))
+            var sinMeiVM = request.SinMeiMode switch
             {
-                return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM.SinMei));
-            }
-        }
+                3 => new SinMeiViewModel(SinMeiMode.Kaikei, false, request.HpId, request.PtId, request.SinDate, request.RaiinNoList, _tenantProvider, _systemConfigProvider, _emrLogger),
+                21 => new SinMeiViewModel(SinMeiMode.AccountingCard, true, request.HpId, request.PtId, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger),
+                _ => null
+            };
 
-        [HttpPost("AccountingCard/GetSinMeiList")]
-        public ActionResult<GetSinMeiListResponse> AccountingCardGetSinMeiList([FromBody] GetSinMeiAccountingCardRequest request)
-        {
-            using (SinMeiViewModel sinMeiVM = new SinMeiViewModel(SinMeiMode.AccountingCard, true, request.HpId, request.PtId, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger))
-            {
-                return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM.SinMei));
-            }
+            return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM?.SinMei ?? new()));
+
         }
     }
 }
