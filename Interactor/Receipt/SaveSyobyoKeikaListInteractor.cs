@@ -97,7 +97,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             return SaveSyobyoKeikaListStatus.InvalidSeqNo;
         }
         var sindayDBList = syobyoKeikaDBList.Select(item => item.SinDay);
-        if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && sindayDBList.Contains(item.SinDay)))
+        if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.SeqNo == 0 && sindayDBList.Contains(item.SinDay)))
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
