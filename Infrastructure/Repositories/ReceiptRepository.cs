@@ -1905,20 +1905,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                  .ToList();
         return receCheckOption;
     }
-    public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
-    {
-        var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
-                                                                             && item.PtId == ptId
-                                                                             && item.SinYm == sinYm
-                                                                             && item.HokenId == hokenId)
-                                                              .ToList();
-        if (receCmtErrList.Any())
-        {
-            TrackingDataContext.ReceCheckErrs.RemoveRange(receCmtErrList);
-            return TrackingDataContext.SaveChanges() > 0;
-        }
-        return true;
-    }
 
     public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)
     {
