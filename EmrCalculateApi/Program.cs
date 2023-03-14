@@ -63,7 +63,7 @@ if (app.Environment.IsDevelopment() ||
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<HttpsRedirectMiddleware>();
+//app.UseMiddleware<HttpsRedirectMiddleware>();
 
 app.UseHttpsRedirection();
 
