@@ -1,10 +1,7 @@
-﻿using Domain.Models.Receipt;
-using EmrCloudApi.Constants;
-using EmrCloudApi.Requests.Receipt;
+﻿using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Services;
 using Helper.Messaging;
 using Helper.Messaging.Data;
-using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using UseCase.Core.Sync;
@@ -37,7 +34,7 @@ public class RecalculationController : AuthorizeControllerBase
             HttpResponse response = HttpContext.Response;
             response.StatusCode = 202;
 
-            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList);
+            var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox);
             _bus.Handle(input);
         }
         finally
