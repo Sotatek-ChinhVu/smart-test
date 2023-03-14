@@ -28,7 +28,8 @@ public class DoReceCmtInteractor : IDoReceCmtInputPort
 
             var lastCmtByHoken = allHistoryReceCmtList.Where(item => item.HokenId == inputData.HokenId
                                                                      && item.SinYm < inputData.SinYm)
-                                                      ?.MaxBy(item => item.SinYm);
+                                                      .DefaultIfEmpty()
+                                                      ?.MaxBy(item => item?.SinYm);
 
             if (lastCmtByHoken != null)
             {

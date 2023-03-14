@@ -264,6 +264,7 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetReceCmtListResponse>>(presenter.Result);
     }
+
     #region Private function
     private ReceiptListAdvancedSearchInputData ConvertToReceiptListAdvancedSearchInputData(int hpId, ReceiptListAdvancedSearchRequest request)
     {
