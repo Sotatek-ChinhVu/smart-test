@@ -214,6 +214,7 @@
         public const string SyoukiInfHistory = "SyoukiInfHistory";
         public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
         public const string GetRecePreviewList = "GetRecePreviewList";
+        public const string DoReceCmt = "DoReceCmt";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";

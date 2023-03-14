@@ -1,14 +1,46 @@
-﻿using Entity.Tenant;
+﻿using Domain.Models.Reception;
+using Entity.Tenant;
 
-namespace EmrCalculateApi.Ika.Models
+namespace UseCase.MedicalExamination.GetCheckedOrder
 {
-    public class ReceptionModel
+    public class ReceptionItem
     {
-        public RaiinInf RaiinInf { get; } = null;
+        public RaiinInf RaiinInf { get; } = new();
 
-        public ReceptionModel(RaiinInf raiinInf)
+        public ReceptionItem(ReceptionModel receptionModel)
         {
-            RaiinInf = raiinInf;
+            RaiinInf.HpId = receptionModel.HpId;
+            RaiinInf.PtId = receptionModel.PtId;
+            RaiinInf.SinDate = receptionModel.SinDate;
+            RaiinInf.RaiinNo = receptionModel.RaiinNo;
+            RaiinInf.HokenPid = receptionModel.HokenPid;
+            RaiinInf.OyaRaiinNo = receptionModel.OyaRaiinNo;
+            RaiinInf.Status = receptionModel.Status;
+            RaiinInf.IsYoyaku = receptionModel.IsYoyaku;
+            RaiinInf.YoyakuTime = receptionModel.YoyakuTime;
+            RaiinInf.YoyakuId = receptionModel.YoyakuId;
+            RaiinInf.UketukeSbt = receptionModel.UketukeSbt;
+            RaiinInf.UketukeTime = receptionModel.UketukeTime;
+            RaiinInf.UketukeId = receptionModel.UketukeId;
+            RaiinInf.UketukeNo = receptionModel.UketukeNo;
+            RaiinInf.SinStartTime = receptionModel.SinStartTime;
+            RaiinInf.SinEndTime = receptionModel.SinEndTime;
+            RaiinInf.KaikeiTime = receptionModel.KaikeiTime;
+            RaiinInf.KaikeiId = receptionModel.KaikeiId;
+            RaiinInf.KaId = receptionModel.KaId;
+            RaiinInf.TantoId = receptionModel.TantoId;
+            RaiinInf.SanteiKbn = receptionModel.SanteiKbn;
+            RaiinInf.SyosaisinKbn = receptionModel.SyosaisinKbn;
+            RaiinInf.JikanKbn = receptionModel.JikanKbn;
+            RaiinInf.ConfirmationResult = string.Empty;
+            RaiinInf.ConfirmationState = 0;
+            RaiinInf.IsDeleted = 0;
+            RaiinInf.CreateDate = DateTime.MinValue;
+            RaiinInf.UpdateDate = DateTime.MinValue;
+            RaiinInf.CreateMachine = string.Empty;
+            RaiinInf.UpdateMachine = string.Empty;
+            RaiinInf.CreateId = 1;
+            RaiinInf.UpdateId = 1;
         }
 
         public int HpId
@@ -101,7 +133,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string YoyakuTime
         {
-            get => RaiinInf.YoyakuTime;
+            get => RaiinInf.YoyakuTime ?? string.Empty;
             set
             {
                 if (RaiinInf.YoyakuTime == value) return;
@@ -134,7 +166,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string UketukeTime
         {
-            get => RaiinInf.UketukeTime;
+            get => RaiinInf.UketukeTime ?? string.Empty;
             set
             {
                 if (RaiinInf.UketukeTime == value) return;
@@ -167,7 +199,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string SinStartTime
         {
-            get => RaiinInf.SinStartTime;
+            get => RaiinInf.SinStartTime ?? string.Empty;
             set
             {
                 if (RaiinInf.SinStartTime == value) return;
@@ -178,7 +210,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string SinEndTime
         {
-            get => RaiinInf.SinEndTime;
+            get => RaiinInf.SinEndTime ?? string.Empty;
             set
             {
                 if (RaiinInf.SinEndTime == value) return;
@@ -189,7 +221,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string KaikeiTime
         {
-            get => RaiinInf.KaikeiTime;
+            get => RaiinInf.KaikeiTime ?? string.Empty;
             set
             {
                 if (RaiinInf.KaikeiTime == value) return;
@@ -299,7 +331,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string CreateMachine
         {
-            get => RaiinInf.CreateMachine;
+            get => RaiinInf.CreateMachine ?? string.Empty;
             set
             {
                 if (RaiinInf.CreateMachine == value) return;
@@ -310,7 +342,7 @@ namespace EmrCalculateApi.Ika.Models
 
         public string UpdateMachine
         {
-            get => RaiinInf.UpdateMachine;
+            get => RaiinInf.UpdateMachine ?? string.Empty;
             set
             {
                 if (RaiinInf.UpdateMachine == value) return;

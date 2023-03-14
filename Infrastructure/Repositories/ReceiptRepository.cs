@@ -1607,6 +1607,39 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                           .OrderByDescending(item => item.SeikyuYm)
                           .ToList();
     }
+
+    public List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId)
+    {
+        var result = new List<ReceCmtModel>();
+        int lastYM = 0;
+        var receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                    && item.SinYm < (sinDate / 100)
+                                                                    && item.PtId == ptId
+                                                                    && item.IsDeleted == DeleteTypes.None)
+                                                     .OrderByDescending(item => item.SinYm)
+                                                     .ToList();
+
+        lastYM = receCmts.FirstOrDefault()?.SinYm ?? 0;
+        if (lastYM == 0)
+        {
+            return result;
+        }
+        receCmts = receCmts.Where(item => item.SinYm == lastYM).ToList();
+        if (!receCmts.Any())
+        {
+            receCmts = NoTrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
+                                                                    && item.SinYm < lastYM
+                                                                    && item.IsDeleted == DeleteTypes.None
+                                                                    && item.PtId == ptId)
+                                                     .ToList();
+        }
+
+        foreach (var receCmt in receCmts)
+        {
+            result.Add(ConvertToReceCmtModel(receCmt));
+        }
+        return result;
+    }
     #endregion
 
     #region Recalculation Check
@@ -1871,6 +1904,20 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                      item.IsInvalid))
                                                                  .ToList();
         return receCheckOption;
+    }
+    public bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm)
+    {
+        var receCmtErrList = TrackingDataContext.ReceCheckErrs.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.SinYm == sinYm
+                                                                             && item.HokenId == hokenId)
+                                                              .ToList();
+        if (receCmtErrList.Any())
+        {
+            TrackingDataContext.ReceCheckErrs.RemoveRange(receCmtErrList);
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+        return true;
     }
 
     public List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId)

@@ -1,9 +1,11 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Interactor.CalculateService;
+using Newtonsoft.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
+using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace EmrCloudApi.Services
 {
@@ -30,6 +32,9 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.RunCalculate:
                     functionName = "Calculate/RunCalculate";
+                    break;
+                case CalculateApiPath.RunTrialCalculate:
+                    functionName = "Calculate/RunTrialCalculate";
                     break;
                 case CalculateApiPath.RunCalculateOne:
                     functionName = "Calculate/RunCalculateOne";
@@ -69,7 +74,7 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
             catch (Exception ex)
@@ -91,6 +96,27 @@ namespace EmrCloudApi.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public List<string> RunTrialCalculate(RunTraialCalculateRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunTrialCalculate, inputData);
+                if (task.Result.ResponseStatus == ResponseStatus.Successed)
+                {
+                    var result = JsonConvert.DeserializeObject<RunTraialCalculateResponse>(task.Result.ResponseMessage);
+                    return result == null ? new() : result.SinMeiList.Select(s => s.ItemCd).ToList();
+                }
+                else
+                {
+                    return new();
+                }
+            }
+            catch (Exception)
+            {
+                return new();
             }
         }
 

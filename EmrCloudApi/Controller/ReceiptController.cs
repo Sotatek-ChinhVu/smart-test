@@ -26,6 +26,7 @@ using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.DoReceCmt;
 
 namespace EmrCloudApi.Controller;
 
@@ -251,6 +252,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SyobyoKeikaHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.DoReceCmt)]
+    public ActionResult<Response<GetReceCmtListResponse>> DoReceCmt([FromQuery] DoReceCmtRequest request)
+    {
+        var input = new DoReceCmtInputData(HpId, request.SinYm, request.PtId, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new DoReceCmtPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceCmtListResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetRecePreviewList)]
