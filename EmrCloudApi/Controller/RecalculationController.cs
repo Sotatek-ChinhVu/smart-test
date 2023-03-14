@@ -29,8 +29,8 @@ public class RecalculationController : AuthorizeControllerBase
             Messenger.Instance.Register<RecalculationStatus>(this, UpdateRecalculationStatus);
             Messenger.Instance.Register<StopCalcStatus>(this, StopCalculation);
 
-            //HttpContext.Response.ContentType = "application/json";
-            //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+            HttpContext.Response.ContentType = "application/json";
+            HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
             HttpResponse response = HttpContext.Response;
             response.StatusCode = 202;
 
