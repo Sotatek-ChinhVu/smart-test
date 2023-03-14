@@ -71,24 +71,24 @@ public class RecalculationInteractor : IRecalculationInputPort
     {
         try
         {
-            bool success = false;
+            bool success = true;
             var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
             int allCheckCount = receRecalculationList.Count;
 
             // run Recalculation
-            if (inputData.IsRecalculationCheckBox)
+            if (success && !isStopCalc && inputData.IsRecalculationCheckBox)
             {
                 success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
             }
 
             // run Receipt Aggregation
-            if (inputData.IsReceiptAggregationCheckBox)
+            if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
                 success = ReceFutanCalculateMain(inputData.HpId, receRecalculationList, allCheckCount);
             }
 
             // check error in month
-            if (inputData.IsCheckErrorCheckBox)
+            if (success && !isStopCalc && inputData.IsCheckErrorCheckBox)
             {
                 success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
             }
