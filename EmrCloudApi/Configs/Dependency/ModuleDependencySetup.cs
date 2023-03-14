@@ -387,6 +387,7 @@ using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinIn
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
+using UseCase.ReceSeikyu.SearchReceInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -890,6 +891,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
+            busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
