@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Models.Family;
+﻿using Domain.Models.Family;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
@@ -163,7 +162,7 @@ namespace Interactor.MedicalExamination
             {
                 header1Property = _userConfRepository.GetSettingParam(hpId, userId, 910, defaultValue: "234");
                 header2Property = _userConfRepository.GetSettingParam(hpId, userId, 911, defaultValue: "567");
-                listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> {912}).ToList();
+                listUserconfig = _userConfRepository.GetList(hpId, userId, new List<int> { 912 }).ToList();
                 _notifications = GetNotification(hpId, ptId, sinDate, userId);
                 _notificationPopUps = GetPopUpNotification(hpId, userId, _notifications);
             }
@@ -467,9 +466,9 @@ namespace Interactor.MedicalExamination
                         //家族歴
                         break;
                 }
-                var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ?headerInf.Split("\r\n").ToList() : summaryInfItem.HeaderInfo.Split("\r\n").ToList();
+                var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ? headerInf.Split("\r\n").ToList() : summaryInfItem.HeaderInfo.Split("\r\n").ToList();
 
-                summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf: summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
+                summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf : summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
             }
 
             summaryInfItem = summaryInfItem.ChangePropertyColor("000000");
