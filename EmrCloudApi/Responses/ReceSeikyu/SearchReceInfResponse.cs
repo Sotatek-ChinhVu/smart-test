@@ -4,13 +4,13 @@ namespace EmrCloudApi.Responses.ReceSeikyu
 {
     public class SearchReceInfResponse
     {
-        public SearchReceInfResponse(IEnumerable<RegisterRequestModel> data, string ptNameDisplay)
+        public SearchReceInfResponse(IEnumerable<RegisterSeikyuModel> data, string ptNameDisplay)
         {
             Data = data;
             PtNameDisplay = ptNameDisplay;
         }
 
-        public IEnumerable<RegisterRequestModel> Data { get; private set; }
+        public IEnumerable<RegisterSeikyuModel> Data { get; private set; }
 
         public string PtNameDisplay { get; private set; }
     }

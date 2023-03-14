@@ -8,6 +8,6 @@ namespace Domain.Models.ReceSeikyu
 
         List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList);
 
-        IEnumerable<RegisterRequestModel> SearchReceInf(int hpId, long ptNum, int sinYm);
+        IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm);
     }
 }

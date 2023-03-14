@@ -5,7 +5,7 @@ namespace UseCase.ReceSeikyu.SearchReceInf
 {
     public class SearchReceInfOutputData : IOutputData
     {
-        public SearchReceInfOutputData(SearchReceInfStatus status, IEnumerable<RegisterRequestModel> data)
+        public SearchReceInfOutputData(SearchReceInfStatus status, IEnumerable<RegisterSeikyuModel> data)
         {
             Status = status;
             Data = data;
@@ -13,7 +13,7 @@ namespace UseCase.ReceSeikyu.SearchReceInf
 
         public SearchReceInfStatus Status { get; private set; }
 
-        public IEnumerable<RegisterRequestModel> Data { get; private set; }
+        public IEnumerable<RegisterSeikyuModel> Data { get; private set; }
 
         public string PtName
         {

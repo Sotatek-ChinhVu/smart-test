@@ -3,9 +3,9 @@ using Helper.Constants;
 
 namespace Domain.Models.ReceSeikyu
 {
-    public class RegisterRequestModel
+    public class RegisterSeikyuModel
     {
-        public RegisterRequestModel(long ptId, string ptName, int sinYm, int seikyuYm, int seikyuKbn, int newSeikyuKbn, int hokenId, string hokensyaNo, int hokenKbn, string houbetu, int honkeKbn, int hokenStartDate, int hokenEndDate, bool isModified)
+        public RegisterSeikyuModel(long ptId, string ptName, int sinYm, int seikyuYm, int seikyuKbn, int newSeikyuKbn, int hokenId, string hokensyaNo, int hokenKbn, string houbetu, int honkeKbn, int hokenStartDate, int hokenEndDate, bool isModified)
         {
             PtId = ptId;
             PtName = ptName;

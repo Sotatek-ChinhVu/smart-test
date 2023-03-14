@@ -143,10 +143,10 @@ namespace Infrastructure.Repositories
         }
 
         
-        public IEnumerable<RegisterRequestModel> SearchReceInf(int hpId, long ptNum, int sinYm)
+        public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)
         {
             PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum == ptNum && u.IsDelete == 0);
-            if (ptInf == null) return new List<RegisterRequestModel>();
+            if (ptInf == null) return new List<RegisterSeikyuModel>();
 
             var listPtHokenInf = NoTrackingDataContext.PtHokenInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && u.IsDeleted == 0);
             var listReceInf = NoTrackingDataContext.ReceInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && (sinYm <= 0 || u.SinYm <= sinYm)).OrderBy(u => u.SinYm);
@@ -158,7 +158,7 @@ namespace Infrastructure.Repositories
                             PtHokenInfo = ptHoken
                         };
 
-            return query.AsEnumerable().Select(u => new RegisterRequestModel(ptInf.PtId, 
+            return query.AsEnumerable().Select(u => new RegisterSeikyuModel(ptInf.PtId, 
                                                                             ptInf.Name ?? string.Empty,
                                                                             u.ReceInf.SinYm,
                                                                             u.ReceInf.SeikyuYm,

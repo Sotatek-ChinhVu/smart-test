@@ -17,13 +17,13 @@ namespace Interactor.ReceSeikyu
             try
             {
                 if (inputData.HpId <= 0)
-                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidHpId, Enumerable.Empty<RegisterRequestModel>());
+                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidHpId, Enumerable.Empty<RegisterSeikyuModel>());
 
                 if (inputData.PtNum <= 0)
-                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidPtNum, Enumerable.Empty<RegisterRequestModel>());
+                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidPtNum, Enumerable.Empty<RegisterSeikyuModel>());
 
                 if (inputData.SinYm <= 0)
-                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidSinYm, Enumerable.Empty<RegisterRequestModel>());
+                    return new SearchReceInfOutputData(SearchReceInfStatus.InvalidSinYm, Enumerable.Empty<RegisterSeikyuModel>());
 
                 var data = _receSeikyuRepository.SearchReceInf(inputData.HpId, inputData.PtNum, inputData.SinYm);
 
