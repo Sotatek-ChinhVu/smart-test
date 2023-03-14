@@ -34,7 +34,7 @@ namespace Interactor.SwapHoken
 
                 if (inputData.StartDate > inputData.EndDate && inputData.StartDate > 0 && inputData.EndDate > 0)
                 {
-                    message = string.Format(ErrorMessage.MessageType_mInp00110, new string[] { "終了日", "開始日" });
+                    message = string.Format(ErrorMessage.MessageType_mInp00110, "終了日", "開始日");
                     return new SaveSwapHokenOutputData(SaveSwapHokenStatus.StartDateGreaterThanEndDate, message, TypeMessage.TypeMessageError);
                 }
 
@@ -58,12 +58,12 @@ namespace Interactor.SwapHoken
                     {
                         if (!inputData.IsHokenPatternUsed) //IsShowConversionCondition
                         {
-                            message = string.Format(ErrorMessage.MessageType_mDo00012, new string[] { "すべての期間が対象になります。", "保険変換" });
+                            message = "すべての期間が対象になります。保険変換を実行しますか？";
                             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.InvalidIsShowConversionCondition, message, TypeMessage.TypeMessageWarning);
                         }
                         else
                         {
-                            message = string.Format(ErrorMessage.MessageType_mDo00012, new string[] { "対象期間が指定されていないため、すべての期間が対象になります。", "保険変換" });
+                            message = "対象期間が指定されていないため、すべての期間が対象になります。保険変換を実行しますか？";
                             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.InvalidIsShowConversionCondition, message, TypeMessage.TypeMessageWarning);
                         }
                     }
@@ -75,7 +75,7 @@ namespace Interactor.SwapHoken
                     long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
                     if (count == 0)
                     {
-                        message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { string.Format("変換元の保険は{0}に一度も使用されていないため、" + Environment.NewLine + "実行できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate)) });
+                        message = string.Format("変換元の保険は{0}に一度も使用されていないため、選択できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
                         return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate, message , TypeMessage.TypeMessageError );
                     }
                 }
@@ -83,8 +83,9 @@ namespace Interactor.SwapHoken
                 if(!inputData.ConfirmSwapHoken)
                 {
                     // 確認ﾒｯｾｰｼﾞ
-                    message = string.Format(ErrorMessage.MessageType_mDo00010, new string[] { "次の条件で保険変換 " + "期間：       " + sBuff + Environment.NewLine
-                    + "保険：       " + inputData.HokenBeforeName + "  → " + inputData.HokenAfterName + Environment.NewLine });
+                    message = "次の条件で保険変換を実行しますか？" + Environment.NewLine
+                    + "期間：       " + sBuff + Environment.NewLine
+                    + "保険：       " + inputData.HokenBeforeName + "  → " + inputData.HokenAfterName;
                     return new SaveSwapHokenOutputData(SaveSwapHokenStatus.ConfirmSwapHoken, message, TypeMessage.TypeMessageConfirmation);
                 }
 

@@ -985,7 +985,7 @@ namespace Infrastructure.Repositories
 
                 return false;
             }
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate);
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             var historyHokenPattern = hokenPatternModels.FirstOrDefault(p => p.HokenPid == historyPid);
             if (historyHokenPattern == null)
             {
@@ -1000,7 +1000,7 @@ namespace Infrastructure.Repositories
             }
             else if (syosaisinHokenPattern?.HokenSbtCd >= 500)
             {
-                if (!(historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate))
+                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;
@@ -1032,7 +1032,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                if (!(historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate))
+                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;
