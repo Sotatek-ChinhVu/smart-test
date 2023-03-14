@@ -15,6 +15,7 @@ namespace EmrCloudApi.Controller
     public class ReceSeikyuController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
+
         public ReceSeikyuController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
@@ -43,6 +44,10 @@ namespace EmrCloudApi.Controller
         {
             var input = new SaveReceSeiKyuInputData(request.Data, request.SinYm, HpId, UserId);
             var output = _bus.Handle(input);
+            if (output.Status == SaveReceSeiKyuStatus.Successful && output.PtIds.Any() && output.SeikyuYm != 0)
+            {
+               
+            }
             var presenter = new SaveReceSeiKyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);

@@ -4,14 +4,17 @@ namespace UseCase.ReceSeikyu.Save
 {
     public class SaveReceSeiKyuOutputData : IOutputData
     {
-        public SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus status, string message)
+        public SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus status, List<long> ptIds, int seikyuYm)
         {
             Status = status;
-            Message = message;
+            PtIds = ptIds;
+            SeikyuYm = seikyuYm;
         }
 
         public SaveReceSeiKyuStatus Status { get; private set; }
 
-        public string Message { get; private set; }
+        public List<long> PtIds { get; private set; } = new List<long>();
+
+        public int SeikyuYm { get; private set; }
     }
 }

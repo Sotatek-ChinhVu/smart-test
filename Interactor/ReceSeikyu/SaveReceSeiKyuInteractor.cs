@@ -20,10 +20,10 @@ namespace Interactor.ReceSeikyu
             try
             {
                 if (inputData.HpId <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId, string.Empty);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId, new List<long>(), 0);
 
                 if(inputData.UserAct <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId, string.Empty);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId, new List<long>(), 0);
 
                 List<ReceInfo> receInfos = new List<ReceInfo>();
 
@@ -67,6 +67,10 @@ namespace Interactor.ReceSeikyu
                         }
                     }
                 }
+
+                List<long> calculatePtIds = new List<long>();
+                int seikyuYmCalculation = 0;
+
 
                 #region not complete seikyu
                 bool isSuccessSeikyuProcess = true;
@@ -147,18 +151,16 @@ namespace Interactor.ReceSeikyu
                             {
                                 // Delete update seikyu record
                                 _receSeikyuRepository.RemoveReceSeikyuDuplicateIfExist(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId, inputData.UserAct, inputData.HpId);
-                                
-                                //ReceFutanViewModel receFutanVM = new ReceFutanViewModel();
-                                //receFutanVM.ReceFutanCalculateMain(new List<long>() { receSeikyu.PtId }, receSeikyu.OriginSeikyuYm);
-                                //receFutanVM.Dispose();
+
+                                calculatePtIds.Add(receSeikyu.PtId);
+                                seikyuYmCalculation = receSeikyu.OriginSeikyuYm;
+
                             }
                             // Case insert new sinym
                             else
                             {
-                                // Calculation for remove record from receinf
-                                //ReceFutanViewModel receFutanVM = new ReceFutanViewModel();
-                                //receFutanVM.ReceFutanCalculateMain(new List<long>() { receSeikyu.PtId }, receSeikyu.SinYm);
-                                //receFutanVM.Dispose();
+                                calculatePtIds.Add(receSeikyu.PtId);
+                                seikyuYmCalculation = receSeikyu.SinYm;
 
                                 // Update receip seikyu from seikyuym = 999999 to new seikyuym
                                 _receSeikyuRepository.UpdateSeikyuYmReceipSeikyuIfExist(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId, receSeikyu.SeikyuYm, inputData.UserAct, inputData.HpId);
@@ -169,9 +171,9 @@ namespace Interactor.ReceSeikyu
                 #endregion
 
                 if (isSuccessSeikyuProcess && isSuccessCompletedSeikyu)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful, string.Empty);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful, calculatePtIds , seikyuYmCalculation);
                 else
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed, string.Empty);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed, calculatePtIds, seikyuYmCalculation);
             }
             finally
             {
