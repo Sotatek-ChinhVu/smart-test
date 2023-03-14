@@ -1389,6 +1389,9 @@ namespace Infrastructure.Repositories
             List<CalcStatus> calcStatuses = NoTrackingDataContext.CalcStatus.Where(item =>
                     item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
                     item.CalcMode == calcMode).ToList();
+
+            if (!calcStatuses.Any()) return CIUtil.Successed;
+
             DateTime maxTime = calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max();
 
             if (maxTime == DateTime.MinValue)
