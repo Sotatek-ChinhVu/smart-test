@@ -1,10 +1,11 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using System.Collections.Generic;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.SearchTenItem
 {
     public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> kouiKbns)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
@@ -24,6 +25,7 @@ namespace UseCase.MstItem.SearchTenItem
             IsSearch831SuffixOnly = isSearch831SuffixOnly;
             IsSearchSanteiItem = isSearchSanteiItem;
             SearchFollowUsage = searchFollowUsage;
+            KouiKbns = kouiKbns;
         }
 
         public string Keyword { get; private set; }
@@ -61,5 +63,7 @@ namespace UseCase.MstItem.SearchTenItem
         public bool IsSearchSanteiItem { get; private set; }
 
         public byte SearchFollowUsage { get; private set; }
+
+        public List<int> KouiKbns { get; private set; }
     }
 }
