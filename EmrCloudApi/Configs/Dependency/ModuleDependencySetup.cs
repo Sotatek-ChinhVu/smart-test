@@ -385,6 +385,8 @@ using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiin
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.DoReceCmt;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -883,6 +885,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ReceCmtHistoryInputData, ReceCmtHistoryInteractor>();
             busBuilder.RegisterUseCase<SyoukiInfHistoryInputData, SyoukiInfHistoryInteractor>();
             busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
+            busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
+            busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
