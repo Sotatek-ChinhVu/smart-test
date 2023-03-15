@@ -48,6 +48,8 @@
         public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
         public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
+        public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
+        public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
 
         //Common
         public static readonly string NotFound = "Not found";

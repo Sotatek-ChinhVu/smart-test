@@ -15,6 +15,8 @@ using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
+using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
+using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -370,14 +372,24 @@ namespace EmrCloudApi.Controllers
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.GetOrderSheetGroup)]
-        public ActionResult<Response<CalculateResponseOfMedical>> GetOrderSheetGroup([FromBody] CalculateRequest request)
+        [HttpGet(ApiPath.GetOrderSheetGroup)]
+        public ActionResult<Response<GetOrderSheetGroupResponse>> GetOrderSheetGroup([FromQuery] GetOrderSheetGroupRequest request)
         {
-M request.Prefix);
+            var input = new GetOrderSheetGroupInputData(HpId, UserId, request.PtId, request.SelectDefOnLoad);
             var output = _bus.Handle(input);
-            var presenter = new CalculatePresenter();
+            var presenter = new GetOrderSheetGroupPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
+            return new ActionResult<Response<GetOrderSheetGroupResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetOrdersForOneOrderSheetGroup)]
+        public ActionResult<Response<GetOrdersForOneOrderSheetGroupResponse>> GetOrdersForOneOrderSheetGroup([FromQuery] GetOrdersForOneOrderSheetGroupRequest request)
+        {
+            var input = new GetOrdersForOneOrderSheetGroupInputData(request.PtId, HpId, request.SinDate, request.OdrKouiKbn, request.GrpKouiKbn, request.Offset, request.Limit);
+            var output = _bus.Handle(input);
+            var presenter = new GetOrdersForOneOrderSheetGroupPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetOrdersForOneOrderSheetGroupResponse>>(presenter.Result);
         }
     }
 }

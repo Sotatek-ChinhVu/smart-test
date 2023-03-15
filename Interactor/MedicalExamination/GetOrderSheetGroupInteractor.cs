@@ -5,12 +5,12 @@ using UseCase.MedicalExamination.GetOrderSheetGroup;
 
 namespace Interactor.MedicalExamination
 {
-    public class GetOrderSheetGroup : IGetOrderSheetGroupInputPort
+    public class GetOrderSheetGroupInteractor : IGetOrderSheetGroupInputPort
     {
         private readonly IOrdInfRepository _ordInfRepository;
         private readonly IUserConfRepository _userConfRepository;
 
-        public GetOrderSheetGroup(IOrdInfRepository ordInfRepository, IUserConfRepository userConfRepository)
+        public GetOrderSheetGroupInteractor(IOrdInfRepository ordInfRepository, IUserConfRepository userConfRepository)
         {
             _ordInfRepository = ordInfRepository;
             _userConfRepository = userConfRepository;
