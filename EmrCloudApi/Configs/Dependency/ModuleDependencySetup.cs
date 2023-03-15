@@ -425,6 +425,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
         }
 
         private void SetupRepositories(IServiceCollection services)

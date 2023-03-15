@@ -15,10 +15,12 @@ namespace EmrCloudApi.Controller
     public class ReceSeikyuController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly ICalcultateCustomerService _calcultateCustomerService;
 
-        public ReceSeikyuController(UseCaseBus bus, IUserService userService) : base(userService)
+        public ReceSeikyuController(UseCaseBus bus, IUserService userService, ICalcultateCustomerService calcultateCustomerService) : base(userService)
         {
             _bus = bus;
+            _calcultateCustomerService = calcultateCustomerService;
         }
 
         [HttpGet(ApiPath.GetListReceSeikyu)]
@@ -46,8 +48,19 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             if (output.Status == SaveReceSeiKyuStatus.Successful && output.PtIds.Any() && output.SeikyuYm != 0)
             {
-               
+                //Call httpClient 
+                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                {
+                    PtIds = output.PtIds,
+                    SeikyuYm = output.SeikyuYm
+                }).Wait();
             }
+
+            if(output.Status == SaveReceSeiKyuStatus.Successful && output.ReceInfos.Any())
+            {
+
+            }
+
             var presenter = new SaveReceSeiKyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);

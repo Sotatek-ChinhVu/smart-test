@@ -19,13 +19,13 @@ namespace Interactor.ReceSeikyu
         {
             try
             {
+                List<ReceInfo> receInfos = new List<ReceInfo>();
+
                 if (inputData.HpId <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId, new List<long>(), 0);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId, new List<long>(), 0, receInfos);
 
                 if(inputData.UserAct <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId, new List<long>(), 0);
-
-                List<ReceInfo> receInfos = new List<ReceInfo>();
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId, new List<long>(), 0 , receInfos);
 
                 foreach (var modifiedReceSeikyu in inputData.ReceSeiKyus)
                 {
@@ -171,9 +171,9 @@ namespace Interactor.ReceSeikyu
                 #endregion
 
                 if (isSuccessSeikyuProcess && isSuccessCompletedSeikyu)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful, calculatePtIds , seikyuYmCalculation);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful, calculatePtIds , seikyuYmCalculation, receInfos);
                 else
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed, calculatePtIds, seikyuYmCalculation);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed, calculatePtIds, seikyuYmCalculation, receInfos);
             }
             finally
             {
