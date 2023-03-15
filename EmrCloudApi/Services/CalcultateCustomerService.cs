@@ -50,17 +50,24 @@ namespace EmrCloudApi.Services
 
         public async Task<CalcultateCustomerResponse<T>> RunCaculationPostAsync<T>(TypeCalculate type, object input)
         {
-            StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
-            HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
-            result.EnsureSuccessStatusCode();
-
-            if (result.IsSuccessStatusCode)
+            try
             {
-                string resultContentStr = await result.Content.ReadAsStringAsync();
-                T resultContent = JsonConvert.DeserializeObject<T>(resultContentStr);
-                return new CalcultateCustomerResponse<T>(resultContent, result.StatusCode);
+                StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+                HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
+                result.EnsureSuccessStatusCode();
+
+                if (result.IsSuccessStatusCode)
+                {
+                    string resultContentStr = await result.Content.ReadAsStringAsync();
+                    T resultContent = JsonConvert.DeserializeObject<T>(resultContentStr);
+                    return new CalcultateCustomerResponse<T>(resultContent, result.StatusCode);
+                }
+                else return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), result.StatusCode);
             }
-            else return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), result.StatusCode);
+            catch
+            {
+                return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), HttpStatusCode.BadRequest);
+            }
         }
     }
 }

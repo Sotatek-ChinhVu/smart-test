@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.ReceSeikyu.Save;
+using System.Text;
 
 namespace EmrCloudApi.Controller
 {
@@ -67,14 +68,24 @@ namespace EmrCloudApi.Controller
                 }).Wait();
             }
 
-            if(output.Status == SaveReceSeiKyuStatus.Successful && output.ReceInfos.Any())
-            {
-
-            }
-
+            
             var presenter = new SaveReceSeiKyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);
+        }
+
+
+        private void AddMessageCheckErrorInMonth(string displayText , int percent)
+        {
+            StringBuilder titleProgressbar = new();
+            titleProgressbar.Append("\n{ displayText: \"");
+            titleProgressbar.Append(displayText);
+            titleProgressbar.Append("\", percent: ");
+            titleProgressbar.Append(percent);
+            titleProgressbar.Append("\" }");
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
     }
 }

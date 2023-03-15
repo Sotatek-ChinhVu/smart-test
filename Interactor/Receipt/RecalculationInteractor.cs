@@ -134,6 +134,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             }
             SendMessager(new RecalculationStatus(false, 1, allCheckCount, successCount, string.Empty));
             successCount++;
+            Thread.Sleep(2000);
         }
         SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
         return true;
