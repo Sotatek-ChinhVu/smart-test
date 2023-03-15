@@ -14,7 +14,9 @@ using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
+using Interactor.CalculateService;
 using Microsoft.Extensions.Options;
+using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
@@ -35,9 +37,10 @@ namespace Interactor.MedicalExamination
         private readonly ITodayOdrRepository _todayOdrRepository;
         private readonly IKarteInfRepository _karteInfRepository;
         private readonly IAmazonS3Service _amazonS3Service;
+        private readonly ICalculateService _calculateService;
         private readonly AmazonS3Options _options;
 
-        public UpsertTodayOrdInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository)
+        public UpsertTodayOrdInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService)
         {
             _amazonS3Service = amazonS3Service;
             _options = optionsAccessor.Value;
@@ -52,6 +55,7 @@ namespace Interactor.MedicalExamination
             _hpInfRepository = hpInfRepository;
             _todayOdrRepository = todayOdrRepository;
             _karteInfRepository = karteInfRepository;
+            _calculateService = calculateService;
         }
 
         public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputDatas)
@@ -152,6 +156,16 @@ namespace Interactor.MedicalExamination
                         SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                     }
                 }
+
+                Task.Run(() =>
+               _calculateService.RunCalculate(new RecaculationInputDto(
+                        hpId,
+                        ptId,
+                        sinDate,
+                        0,
+                        ""
+                    )));
+
                 return check ?
                     new UpsertTodayOrdOutputData(
                         UpsertTodayOrdStatus.Successed,
