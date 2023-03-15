@@ -10,6 +10,9 @@ using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.ReceSeikyu.Save;
 using System.Text;
+using Helper.Messaging.Data;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Helper.Messaging;
 
 namespace EmrCloudApi.Controller
 {
@@ -17,12 +20,11 @@ namespace EmrCloudApi.Controller
     public class ReceSeikyuController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly ICalcultateCustomerService _calcultateCustomerService;
+        private CancellationToken? _cancellationToken;
 
-        public ReceSeikyuController(UseCaseBus bus, IUserService userService, ICalcultateCustomerService calcultateCustomerService) : base(userService)
+        public ReceSeikyuController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _calcultateCustomerService = calcultateCustomerService;
         }
 
         [HttpGet(ApiPath.GetListReceSeikyu)]
@@ -54,35 +56,54 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.SaveReceSeikyu)]
-        public ActionResult<Response<SaveReceSeiKyuResponse>> SaveReceSeikyu([FromBody] SaveReceSeiKyuRequest request)
+        public ActionResult<Response<SaveReceSeiKyuResponse>> SaveReceSeikyu([FromBody] SaveReceSeiKyuRequest request, CancellationToken cancellationToken)
         {
-            var input = new SaveReceSeiKyuInputData(request.Data, request.SinYm, HpId, UserId);
-            var output = _bus.Handle(input);
-            if (output.Status == SaveReceSeiKyuStatus.Successful && output.PtIds.Any() && output.SeikyuYm != 0)
+            _cancellationToken = cancellationToken;
+            try
             {
-                //Call httpClient 
-                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
-                {
-                    PtIds = output.PtIds,
-                    SeikyuYm = output.SeikyuYm
-                }).Wait();
-            }
+                Messenger.Instance.Register<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                Messenger.Instance.Register<RecalculateInSeikyuPendingStop>(this, StopCalculation);
 
-            
-            var presenter = new SaveReceSeiKyuPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);
+                HttpContext.Response.ContentType = "application/json";
+                HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+                HttpResponse response = HttpContext.Response;
+                response.StatusCode = 202;
+
+                var input = new SaveReceSeiKyuInputData(request.Data, request.SinYm, HpId, UserId);
+                var output = _bus.Handle(input);
+                var presenter = new SaveReceSeiKyuPresenter();
+                presenter.Complete(output);
+                return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);
+            }
+            finally
+            {
+                Messenger.Instance.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
+                Messenger.Instance.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
+                HttpContext.Response.Body.Close();
+            }
         }
 
+        private void StopCalculation(RecalculateInSeikyuPendingStop stopCalcStatus)
+        {
+            if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
 
-        private void AddMessageCheckErrorInMonth(string displayText , int percent)
+        private void UpdateRecalculationSaveReceSeikyu(RecalculateInSeikyuPendingStatus status)
         {
             StringBuilder titleProgressbar = new();
             titleProgressbar.Append("\n{ displayText: \"");
-            titleProgressbar.Append(displayText);
+            titleProgressbar.Append(status.DisplayText);
             titleProgressbar.Append("\", percent: ");
-            titleProgressbar.Append(percent);
+            titleProgressbar.Append(status.Percent);
             titleProgressbar.Append("\" }");
+
             var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();

@@ -1,7 +1,14 @@
-﻿using Domain.Models.ReceSeikyu;
+﻿using DocumentFormat.OpenXml.Vml;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.ReceSeikyu;
+using Entity.Tenant;
 using Helper.Constants;
 using Helper.Mapping;
+using Helper.Messaging;
+using Helper.Messaging.Data;
 using Infrastructure.Repositories;
+using Interactor.CalculateService;
+using System.Net.NetworkInformation;
 using UseCase.ReceSeikyu.Save;
 
 namespace Interactor.ReceSeikyu
@@ -9,10 +16,13 @@ namespace Interactor.ReceSeikyu
     public class SaveReceSeiKyuInteractor : ISaveReceSeiKyuInputPort
     {
         private readonly IReceSeikyuRepository _receSeikyuRepository;
+        private readonly ICalcultateCustomerService _calcultateCustomerService;
+        bool isStopCalc = false;
 
-        public SaveReceSeiKyuInteractor(IReceSeikyuRepository receptionRepository)
+        public SaveReceSeiKyuInteractor(IReceSeikyuRepository receptionRepository, ICalcultateCustomerService calcultateCustomerService)
         {
             _receSeikyuRepository = receptionRepository;
+            _calcultateCustomerService = calcultateCustomerService;
         }
 
         public SaveReceSeiKyuOutputData Handle(SaveReceSeiKyuInputData inputData)
@@ -22,10 +32,10 @@ namespace Interactor.ReceSeikyu
                 List<ReceInfo> receInfos = new List<ReceInfo>();
 
                 if (inputData.HpId <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId, new List<long>(), 0, receInfos);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidHpId);
 
                 if(inputData.UserAct <= 0)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId, new List<long>(), 0 , receInfos);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.InvalidUserId);
 
                 foreach (var modifiedReceSeikyu in inputData.ReceSeiKyus)
                 {
@@ -67,10 +77,6 @@ namespace Interactor.ReceSeikyu
                         }
                     }
                 }
-
-                List<long> calculatePtIds = new List<long>();
-                int seikyuYmCalculation = 0;
-
 
                 #region not complete seikyu
                 bool isSuccessSeikyuProcess = true;
@@ -152,15 +158,22 @@ namespace Interactor.ReceSeikyu
                                 // Delete update seikyu record
                                 _receSeikyuRepository.RemoveReceSeikyuDuplicateIfExist(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId, inputData.UserAct, inputData.HpId);
 
-                                calculatePtIds.Add(receSeikyu.PtId);
-                                seikyuYmCalculation = receSeikyu.OriginSeikyuYm;
 
+                                //Call httpClient 
+                                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                                {
+                                    PtIds = new List<long>() { receSeikyu.PtId },
+                                    SeikyuYm = receSeikyu.SeikyuYm
+                                }).Wait();
                             }
                             // Case insert new sinym
                             else
                             {
-                                calculatePtIds.Add(receSeikyu.PtId);
-                                seikyuYmCalculation = receSeikyu.SinYm;
+                                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                                {
+                                    PtIds = new List<long>() { receSeikyu.PtId },
+                                    SeikyuYm = receSeikyu.SinYm
+                                }).Wait();
 
                                 // Update receip seikyu from seikyuym = 999999 to new seikyuym
                                 _receSeikyuRepository.UpdateSeikyuYmReceipSeikyuIfExist(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId, receSeikyu.SeikyuYm, inputData.UserAct, inputData.HpId);
@@ -170,10 +183,35 @@ namespace Interactor.ReceSeikyu
                 }
                 #endregion
 
+                if(receInfos.Any())
+                {
+
+                    //Rece Calculation
+                    int totalRecord = receInfos.Count;
+                    if (!isStopCalc)
+                    {
+                        for (int i = 0; i < receInfos.Count; i++)
+                        {
+                            _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.RunCalculateMonth, new
+                            {
+                                HpId = inputData.HpId,
+                                SeikyuYm = receInfos[i].SeikyuYm,
+                                PtIds = new List<long> { receInfos[i].PtId }
+                            }).Wait();
+                            Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus($"計算処理中.. 残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord)));
+                        }
+                    }
+
+                    
+
+                    
+
+                }
+
                 if (isSuccessSeikyuProcess && isSuccessCompletedSeikyu)
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful, calculatePtIds , seikyuYmCalculation, receInfos);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Successful);
                 else
-                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed, calculatePtIds, seikyuYmCalculation, receInfos);
+                    return new SaveReceSeiKyuOutputData(SaveReceSeiKyuStatus.Failed);
             }
             finally
             {
