@@ -27,6 +27,7 @@ using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
+using UseCase.Receipt.ReceiptEdit;
 
 namespace EmrCloudApi.Controller;
 
@@ -276,6 +277,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetRecePreviewListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceiptEdit)]
+    public ActionResult<Response<GetReceiptEditResponse>> GetReceiptEdit([FromQuery] GetReceiptEditRequest request)
+    {
+        var input = new GetReceiptEditInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceiptEditPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceiptEditResponse>>(presenter.Result);
     }
 
     #region Private function
