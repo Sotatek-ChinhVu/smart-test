@@ -36,6 +36,7 @@ namespace Interactor.PatientInfor
             {
                 IEnumerable<InsuranceScanModel> HandlerInsuranceScan(int hpId, long ptNum, long ptId)
                 {
+                    var listReturn = new List<InsuranceScanModel>();
                     var listFolders = new List<string>() { CommonConstants.Store, CommonConstants.InsuranceScan };
                     string path = string.Empty;
                     foreach (var item in inputData.InsuranceScans)
@@ -45,7 +46,7 @@ namespace Interactor.PatientInfor
                             if (!string.IsNullOrEmpty(item.FileName))
                                 _amazonS3Service.DeleteObjectAsync(item.FileName);
 
-                            yield return item;
+                            listReturn.Add(item);
                         }
                         else
                         {
@@ -57,14 +58,14 @@ namespace Interactor.PatientInfor
                                 string pathScan = _amazonS3Service.UploadObjectAsync(path, fileName, item.File, true).Result;
                                 //Create or update
 
-                                yield return new InsuranceScanModel(hpId,
+                                listReturn.Add(new InsuranceScanModel(hpId,
                                                                     ptId,
                                                                     item.SeqNo,
                                                                     item.HokenGrp,
                                                                     item.HokenId,
                                                                     pathScan,
                                                                     Stream.Null,
-                                                                    0);
+                                                                    0));
 
                                 if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
                                 {
@@ -77,6 +78,7 @@ namespace Interactor.PatientInfor
                             }
                         }
                     }
+                    return listReturn;
                 }
 
                 (bool, long) result;
