@@ -13,4 +13,8 @@
     <ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Receipt\DB\" />
+  </ItemGroup>
+
 </Project>
