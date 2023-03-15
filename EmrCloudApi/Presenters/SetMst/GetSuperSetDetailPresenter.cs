@@ -21,6 +21,7 @@ public class GetSuperSetDetailPresenter : IGetSuperSetOutputPort
         GetSuperSetDetailListStatus.Successed => ResponseMessage.Success,
         GetSuperSetDetailListStatus.Failed => ResponseMessage.Failed,
         GetSuperSetDetailListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        GetSuperSetDetailListStatus.InvalidUserId => ResponseMessage.InvalidUserId,
         GetSuperSetDetailListStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
         _ => string.Empty
     };
