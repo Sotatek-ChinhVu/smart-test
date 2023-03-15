@@ -92,7 +92,7 @@ public class SetController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        var input = new GetSuperSetDetailInputData(HpId, request.SetCd, request.Sindate);
+        var input = new GetSuperSetDetailInputData(HpId, UserId, request.SetCd, request.Sindate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailPresenter();
@@ -124,7 +124,7 @@ public class SetController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
     public ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
     {
-        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, request.SetCd, request.SinDate);
+        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, UserId, request.SetCd, request.SinDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();
