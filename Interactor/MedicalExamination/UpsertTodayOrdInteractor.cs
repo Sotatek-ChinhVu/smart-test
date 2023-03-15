@@ -157,14 +157,17 @@ namespace Interactor.MedicalExamination
                     }
                 }
 
-                Task.Run(() =>
-               _calculateService.RunCalculate(new RecaculationInputDto(
-                        hpId,
-                        ptId,
-                        sinDate,
-                        0,
-                        ""
-                    )));
+                if (check)
+                {
+                    Task.Run(() =>
+                   _calculateService.RunCalculate(new RecaculationInputDto(
+                            hpId,
+                            ptId,
+                            sinDate,
+                            0,
+                            ""
+                        )));
+                }
 
                 return check ?
                     new UpsertTodayOrdOutputData(
