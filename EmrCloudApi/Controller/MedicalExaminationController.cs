@@ -369,5 +369,15 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
         }
+
+        [HttpPost(ApiPath.GetOrderSheetGroup)]
+        public ActionResult<Response<CalculateResponseOfMedical>> GetOrderSheetGroup([FromBody] CalculateRequest request)
+        {
+M request.Prefix);
+            var output = _bus.Handle(input);
+            var presenter = new CalculatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
+        }
     }
 }
