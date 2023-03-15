@@ -1,4 +1,4 @@
-﻿using Domain.Models.Insurance;
+﻿using UseCase.Receipt.GetInsuranceInf;
 
 namespace EmrCloudApi.Responses.Receipt
 {

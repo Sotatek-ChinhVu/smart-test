@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Insurance;
 using UseCase.Core.Sync.Core;
+using UseCase.Receipt.GetInsuranceInf;
 
 namespace UseCase.Receipt.GetListReceInf
 {

@@ -1,78 +1,61 @@
-﻿namespace UseCase.Receipt.GetInsuranceInf
+﻿using Helper.Common;
+
+namespace UseCase.Receipt.GetInsuranceInf
 {
     public class InsuranceInfDto
     {
-        public InsuranceInfDto(string insuranceName, string hokenTitle, string hokenTitle1, string hokenTitle2, string hokenKigoBangoTitle, string hokenKigoTitle, string hokenBangoTitle, string kohi1No1Title, string kohi1No2Title, string kohi2No1Title, string kohi2No2Title, string hokensyaNo, string kigoBango, string bango, string kohi1No1Value, string kohi1No1Value1, string kohi1No1Value2, string kohi1No2Value, string kohi1No2Value1, string kohi1No2Value2, string kohi2No1Value, string kohi2No1Value1, string kohi2No1Value2, string kohi2No2Value, string kohi2No2Value1, string kohi2No2Value2, string nissuTitle, string tensuTitle, string futanTitle, int nissu, string tensu, string ichibuFutan, string edaNo, string kigo)
+        public InsuranceInfDto(string insuranceName, int hokenKbn, int nissu, int tensu, int ichibuFutan, string edaNo, string kigo, string bango, bool kohi1ReceKisai, int kohi1Id, bool kohi2ReceKisai, int kohi2Id, bool kohi3ReceKisai, int kohi3Id, bool kohi4ReceKisai, string kohi1FutansyaNo, string kohi1JyukyusyaNo, string kohi2FutansyaNo, string kohi2JyukyusyaNo, string kohi3FutansyaNo, string kohi3JyukyusyaNo, string kohi4FutansyaNo, string kohi4JyukyusyaNo, string hokensyaNo)
         {
             InsuranceName = insuranceName;
-            HokenTitle = hokenTitle;
-            HokenTitle1 = hokenTitle1;
-            HokenTitle2 = hokenTitle2;
-            HokenKigoBangoTitle = hokenKigoBangoTitle;
-            HokenKigoTitle = hokenKigoTitle;
-            HokenBangoTitle = hokenBangoTitle;
-            Kohi1No1Title = kohi1No1Title;
-            Kohi1No2Title = kohi1No2Title;
-            Kohi2No1Title = kohi2No1Title;
-            Kohi2No2Title = kohi2No2Title;
-            HokensyaNo = hokensyaNo;
-            KigoBango = kigoBango;
-            Bango = bango;
-            Kohi1No1Value = kohi1No1Value;
-            Kohi1No1Value1 = kohi1No1Value1;
-            Kohi1No1Value2 = kohi1No1Value2;
-            Kohi1No2Value = kohi1No2Value;
-            Kohi1No2Value1 = kohi1No2Value1;
-            Kohi1No2Value2 = kohi1No2Value2;
-            Kohi2No1Value = kohi2No1Value;
-            Kohi2No1Value1 = kohi2No1Value1;
-            Kohi2No1Value2 = kohi2No1Value2;
-            Kohi2No2Value = kohi2No2Value;
-            Kohi2No2Value1 = kohi2No2Value1;
-            Kohi2No2Value2 = kohi2No2Value2;
-            NissuTitle = nissuTitle;
-            TensuTitle = tensuTitle;
-            FutanTitle = futanTitle;
+            HokenKbn = hokenKbn;
             Nissu = nissu;
-            Tensu = tensu;
-            IchibuFutan = ichibuFutan;
-            EdaNo = edaNo;
+            Tensu = CIUtil.FormatIntToString(tensu);
+            IchibuFutan = CIUtil.FormatIntToString(ichibuFutan);
+            EdaNo = (HokenKbn > 0 && (HokenKbn < 11 || HokenKbn > 14)) ? edaNo : string.Empty;
             Kigo = kigo;
+            Bango = bango;
+            Kohi1ReceKisai = kohi1ReceKisai;
+            Kohi1Id = kohi1Id;
+            Kohi2ReceKisai = kohi2ReceKisai;
+            Kohi2Id = kohi2Id;
+            Kohi3ReceKisai = kohi3ReceKisai;
+            Kohi3Id = kohi3Id;
+            Kohi4ReceKisai = kohi4ReceKisai;
+            Kohi1FutansyaNo = kohi1FutansyaNo;
+            Kohi1JyukyusyaNo = kohi1JyukyusyaNo;
+            Kohi2FutansyaNo = kohi2FutansyaNo;
+            Kohi2JyukyusyaNo = kohi2JyukyusyaNo;
+            Kohi3FutansyaNo = kohi3FutansyaNo;
+            Kohi3JyukyusyaNo = kohi3JyukyusyaNo;
+            Kohi4FutansyaNo = kohi4FutansyaNo;
+            Kohi4JyukyusyaNo = kohi4JyukyusyaNo;
+            HokensyaNo = hokensyaNo;
         }
 
         public string InsuranceName { get; private set; }
-        public string HokenTitle { get; private set; }
-        public string HokenTitle1 { get; private set; }
-        public string HokenTitle2 { get; private set; }
-        public string HokenKigoBangoTitle { get; private set; }
-        public string HokenKigoTitle { get; private set; }
-        public string HokenBangoTitle { get; private set; }
-        public string Kohi1No1Title { get; private set; }
-        public string Kohi1No2Title { get; private set; }
-        public string Kohi2No1Title { get; private set; }
-        public string Kohi2No2Title { get; private set; }
-        public string HokensyaNo { get; private set; }
-        public string KigoBango { get; private set; }
-        public string EdaNo { get; private set; }
-        public string Bango { get; private set; }
-        public string Kohi1No1Value { get; private set; }
-        public string Kohi1No1Value1 { get; private set; }
-        public string Kohi1No1Value2 { get; private set; }
-        public string Kohi1No2Value { get; private set; }
-        public string Kohi1No2Value1 { get; private set; }
-        public string Kohi1No2Value2 { get; private set; }
-        public string Kohi2No1Value { get; private set; }
-        public string Kohi2No1Value1 { get; private set; }
-        public string Kohi2No1Value2 { get; private set; }
-        public string Kohi2No2Value { get; private set; }
-        public string Kohi2No2Value1 { get; private set; }
-        public string Kohi2No2Value2 { get; private set; }
-        public string NissuTitle { get; private set; }
-        public string TensuTitle { get; private set; }
-        public string FutanTitle { get; private set; }
+        public int HokenKbn { get; private set; }
         public int Nissu { get; private set; }
         public string Tensu { get; private set; }
         public string IchibuFutan { get; private set; }
+        public string EdaNo { get; private set; }
         public string Kigo { get; private set; }
+        public string Bango { get; private set; }
+        public bool Kohi1ReceKisai { get; private set; }
+        public int Kohi1Id { get; private set; }
+        public bool Kohi2ReceKisai { get; private set; }
+        public int Kohi2Id { get; private set; }
+        public bool Kohi3ReceKisai { get; private set; }
+        public int Kohi3Id { get; private set; }
+        public bool Kohi4ReceKisai { get; private set; }
+        public string Kohi1FutansyaNo { get; private set; }
+        public string Kohi1JyukyusyaNo { get; private set; }
+        public string Kohi2FutansyaNo { get; private set; }
+        public string Kohi2JyukyusyaNo { get; private set; }
+        public string Kohi3FutansyaNo { get; private set; }
+        public string Kohi3JyukyusyaNo { get; private set; }
+        public string Kohi4FutansyaNo { get; private set; }
+        public string Kohi4JyukyusyaNo { get; private set; }
+        public string HokensyaNo { get; private set; }
+
     }
 }
