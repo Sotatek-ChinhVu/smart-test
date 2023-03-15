@@ -306,6 +306,7 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceCmtHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
@@ -386,6 +387,7 @@ using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinIn
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
+using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 
@@ -510,7 +512,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
-            services.AddTransient<IRecalculationService, RecalculationService>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -885,6 +886,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDiseaseReceListInputData, GetDiseaseReceListInteractor>();
             busBuilder.RegisterUseCase<GetReceCheckOptionListInputData, GetReceCheckOptionListInteractor>();
             busBuilder.RegisterUseCase<SaveReceCheckOptInputData, SaveReceCheckOptInteractor>();
+            busBuilder.RegisterUseCase<RecalculationInputData, RecalculationInteractor>();
             busBuilder.RegisterUseCase<ReceCmtHistoryInputData, ReceCmtHistoryInteractor>();
             busBuilder.RegisterUseCase<SyoukiInfHistoryInputData, SyoukiInfHistoryInteractor>();
             busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
@@ -893,6 +895,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
+            busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

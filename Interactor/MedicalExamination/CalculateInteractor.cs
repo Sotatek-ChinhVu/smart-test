@@ -16,7 +16,7 @@ namespace Interactor.MedicalExamination
         public CalculateOutputData Handle(CalculateInputData inputData)
         {
             var check = false;
-            if (inputData.FromRcCheck == true)
+            if (inputData.FromRcCheck)
             {
                 var checkRunCalculateOne = _calculateRepository.RunCalculateOne(new CalculateOneRequest(
                         inputData.HpId,
