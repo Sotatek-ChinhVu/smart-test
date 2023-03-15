@@ -25,7 +25,7 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
                 return new GetReceptionListOutputData(GetReceptionListStatus.InvalidSinDate);
             }
 
-            var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
+            var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, false, inputData.IsGetFamily);
             return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
         }
         finally
