@@ -8,6 +8,8 @@ namespace Domain.Models.ReceSeikyu
 
         List<ReceSeikyuModel> GetListReceSeikyModel(int hpId, int seikyuYm, List<long> ptIdList);
 
+        IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm);
+
         bool InsertNewReceSeikyu(List<ReceSeikyuModel> listInsert, int userId, int hpId);
 
         void EntryDeleteHenJiyuu(long ptId, int sinYm, int preHokenId, int userId);

@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.ReceSeikyu.Save;
 
 namespace EmrCloudApi.Controller
@@ -39,6 +40,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListReceSeikyuPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListReceSeikyuResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.SearchReceInf)]
+        public ActionResult<Response<SearchReceInfResponse>> SearchReceInf([FromQuery] SearchReceInfRequest request)
+        {
+            var input = new SearchReceInfInputData(HpId, request.PtNum, request.SinYm);
+            var output = _bus.Handle(input);
+            var presenter = new SearchReceInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchReceInfResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveReceSeikyu)]

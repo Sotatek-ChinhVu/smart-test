@@ -148,6 +148,38 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        
+        public IEnumerable<RegisterSeikyuModel> SearchReceInf(int hpId, long ptNum, int sinYm)
+        {
+            PtInf? ptInf = NoTrackingDataContext.PtInfs.FirstOrDefault(u => u.HpId == hpId && u.PtNum == ptNum && u.IsDelete == 0);
+            if (ptInf == null) return new List<RegisterSeikyuModel>();
+
+            var listPtHokenInf = NoTrackingDataContext.PtHokenInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && u.IsDeleted == 0);
+            var listReceInf = NoTrackingDataContext.ReceInfs.Where(u => u.HpId == hpId && u.PtId == ptInf.PtId && (sinYm <= 0 || u.SinYm <= sinYm)).OrderBy(u => u.SinYm);
+            var query = from receInf in listReceInf
+                        join ptHoken in listPtHokenInf on receInf.HokenId equals ptHoken.HokenId
+                        select new
+                        {
+                            ReceInf = receInf,
+                            PtHokenInfo = ptHoken
+                        };
+
+            return query.AsEnumerable().Select(u => new RegisterSeikyuModel(ptInf.PtId, 
+                                                                            ptInf.Name ?? string.Empty,
+                                                                            u.ReceInf.SinYm,
+                                                                            u.ReceInf.SeikyuYm,
+                                                                            u.ReceInf.SeikyuKbn,
+                                                                            0,
+                                                                            u.ReceInf.HokenId,
+                                                                            u.ReceInf.HokensyaNo ?? string.Empty,
+                                                                            u.ReceInf.HokenKbn,
+                                                                            u.ReceInf.Houbetu ?? string.Empty,
+                                                                            u.ReceInf.HonkeKbn,
+                                                                            u.PtHokenInfo.StartDate,
+                                                                            u.PtHokenInfo.EndDate,
+                                                                            false)).OrderByDescending(u => u.SeikyuYm).ToList();
+        }
+
         public void ReleaseResource()
         {
             DisposeDataContext();

@@ -14,6 +14,7 @@
         InvalidOyaRaiinNo = 10,
         InvalidTantoId = 11,
         InvalidPrimaryDoctor = 12,
+        InvalidHokenPid = 13,
         Failed
     }
 }

@@ -1,8 +1,12 @@
 ﻿using Domain.Models.CalculateModel;
 using Helper.Enum;
 using Interactor.CalculateService;
+using Newtonsoft.Json;
 using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
+using UseCase.MedicalExamination.Calculate;
+using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
 {
@@ -30,6 +34,18 @@ namespace EmrCloudApi.Services
                 case CalculateApiPath.RunCalculate:
                     functionName = "Calculate/RunCalculate";
                     break;
+                case CalculateApiPath.RunTrialCalculate:
+                    functionName = "Calculate/RunTrialCalculate";
+                    break;
+                case CalculateApiPath.RunCalculateOne:
+                    functionName = "Calculate/RunCalculateOne";
+                    break;
+                case CalculateApiPath.ReceFutanCalculateMain:
+                    functionName = "ReceFutan/ReceFutanCalculateMain";
+                    break;
+                case CalculateApiPath.RunCalculateMonth:
+                    functionName = "Calculate/RunCalculateMonth";
+                    break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
             }
@@ -47,7 +63,7 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
@@ -62,7 +78,7 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
             catch (Exception ex)
@@ -79,6 +95,77 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return false;
 
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public List<string> RunTrialCalculate(RunTraialCalculateRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunTrialCalculate, inputData);
+                if (task.Result.ResponseStatus == ResponseStatus.Successed)
+                {
+                    var result = JsonConvert.DeserializeObject<RunTraialCalculateResponse>(task.Result.ResponseMessage);
+                    return result == null ? new() : result.SinMeiList.Select(s => s.ItemCd).ToList();
+                }
+                else
+                {
+                    return new();
+                }
+            }
+            catch (Exception)
+            {
+                return new();
+            }
+        }
+
+        public bool RunCalculateOne(CalculateOneRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateOne, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return false;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool ReceFutanCalculateMain(ReceCalculateRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return false;
+                }
                 return true;
             }
             catch (Exception)
