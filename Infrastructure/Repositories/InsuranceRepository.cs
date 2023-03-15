@@ -1558,5 +1558,11 @@ namespace Infrastructure.Repositories
                 return new List<InsuranceScanModel>();
             }
         }
+
+        public int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId)
+        {
+            var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+            return ptHokenInf?.HokenKbn ?? 0;
+        }
     }
 }

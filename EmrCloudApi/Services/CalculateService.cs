@@ -7,6 +7,7 @@ using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
 {
@@ -45,6 +46,9 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.ReceFutanCalculateMain:
                     functionName = "ReceFutan/ReceFutanCalculateMain";
+                    break;
+                case CalculateApiPath.RunCalculateMonth:
+                    functionName = "Calculate/RunCalculateMonth";
                     break;
                 default:
                     throw new NotImplementedException("The Api Path Is Incorrect: " + path.ToString());
@@ -164,8 +168,26 @@ namespace EmrCloudApi.Services
             {
                 var task = CallCalculate(CalculateApiPath.ReceFutanCalculateMain, inputData);
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
                     return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
+        public bool RunCalculateMonth(CalculateMonthRequest inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.RunCalculateMonth, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return false;
+                }
                 return true;
             }
             catch (Exception)

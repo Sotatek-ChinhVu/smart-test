@@ -35,5 +35,9 @@
         public bool IsSearch831SuffixOnly { get; set; }
 
         public bool IsSearchSanteiItem { get; set; }
+
+        public byte SearchFollowUsage { get; set; }
+
+        public List<int> KouiKbns { get; set; } = new();
     }
 }

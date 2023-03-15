@@ -4,6 +4,7 @@ using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.Recalculation;
 
 namespace Interactor.CalculateService
 {
@@ -21,5 +22,6 @@ namespace Interactor.CalculateService
 
         bool ReceFutanCalculateMain(ReceCalculateRequest inputData);
 
+        bool RunCalculateMonth(CalculateMonthRequest inputData);
     }
 }
