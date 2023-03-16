@@ -162,13 +162,19 @@ namespace EmrCalculateApi.Ika.ViewModels
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.TouyakuMin, OdrKouiKbnConst.TouyakuMax))
             {
                 // 保険
+                Console.WriteLine("Start caculate CalculateHoken");
                 CalculateHoken();
+                Console.WriteLine("End caculate CalculateHoken");
 
                 // 自費
+                Console.WriteLine("Start caculate CalculateJihi");
                 CalculateJihi();
-            }
+                Console.WriteLine("End caculate CalculateJihi");
 
+            }
+            Console.WriteLine("Start caculate CommitWrkSinRpInf");
             _common.Wrk.CommitWrkSinRpInf();
+            Console.WriteLine("End caculate CommitWrkSinRpInf");
 
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
@@ -192,6 +198,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             IsOrderSyohoryo = _common.Odr.ExistOdrDetailByItemCd(targetItemCds);
 
+            Console.WriteLine("Start caculate 1");
             // 向精神薬チェック
             bool kouseiTazai = CheckKouseisin();
 
@@ -203,7 +210,9 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             // 調剤料
             Chozairyo();
+            Console.WriteLine("End caculate 1");
 
+            Console.WriteLine("Start caculate 2");
             // 調剤基本料
             ChoKiryo();
 
@@ -212,7 +221,9 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             // 特定疾患処方管理加算
             Tokusyo();
+            Console.WriteLine("End caculate 2");
 
+            Console.WriteLine("Start caculate 3");
             // 薬材料
             // 内服薬
             Yakuzai(OdrKouiKbnConst.Naifuku, kouseiTazai, naifukuTazai);
@@ -222,7 +233,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             Yakuzai(OdrKouiKbnConst.Gaiyo, kouseiTazai, naifukuTazai);
             // 自己注
             Yakuzai(OdrKouiKbnConst.JikoCyu, kouseiTazai, naifukuTazai);
+            Console.WriteLine("End caculate 3");
 
+            Console.WriteLine("Start caculate 4");
             // 処方のRpを取得(処方箋コメント29は除く）
             filteredOdrInf = _common.Odr.FilterOdrInfByKouiKbnRange(OdrKouiKbnConst.TouyakuMin, OdrKouiKbnConst.JikoCyu)
                                 .OrderBy(p=>p.SortNo)
@@ -356,6 +369,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 _common.Wrk.CommitWrkSinRpInf();
             }
+            Console.WriteLine("End caculate 4");
 
             #region Local Method
 

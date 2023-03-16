@@ -289,6 +289,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             CommitWrkSinKoui();
 
+            Console.WriteLine("Start caculate CommitWrkSinRpInf 1");
             if (_wrkSinKouis.Any() == false || _wrkSinKouis.Any(p => p.RpNo == _wrkRpNo) == false)
             {
                 _wrkSinRpInfs.RemoveAll(p => p.RpNo == _wrkRpNo);
@@ -390,7 +391,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                     //    }
                     //}
                 }
+                Console.WriteLine("End caculate CommitWrkSinRpInf 1");
 
+                Console.WriteLine("Start caculate CommitWrkSinRpInf 2");
                 if (_wrkSinRpInfs.Last().CdNo == "")
                 {
                     List<WrkSinKouiModel> wrkSins = _wrkSinKouis.FindAll(p => p.RpNo == _wrkRpNo);
@@ -431,6 +434,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 {
                     _wrkSinRpInfs.Last().IsDeleted = DeleteStatus.DeleteFlag;
                 }
+                Console.WriteLine("End caculate CommitWrkSinRpInf 2");
             }
         }
 
