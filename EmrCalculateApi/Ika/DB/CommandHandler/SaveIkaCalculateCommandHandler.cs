@@ -411,6 +411,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine("Log UpdateData Failed");
                                 transaction.Rollback();
                                 _emrLogger.WriteLogError(this, nameof(UpdateData), e);
                                 throw;
