@@ -2176,6 +2176,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                                     if (_systemConfigProvider.GetOutDrugYohoDsp() == 1)
                                     {
+                                        Console.WriteLine("Start first first in for third Yakuzai");
                                         // 院外の場合、コメントとして記録
                                         //string comment = odrDtl.ItemName;
                                         string comment = odrDtl.ReceName;
@@ -2183,9 +2184,14 @@ namespace EmrCalculateApi.Ika.ViewModels
                                         {
                                             comment += "（" + odrDtl.Suryo.ToString() + odrDtl.UnitName + "）";
                                         }
+                                        Console.WriteLine("End first first in for third Yakuzai");
 
+                                        Console.WriteLine("Start second first in for third Yakuzai AppendNewWrkSinKouiDetailCommentRecord");
                                         _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentFree, comment);
+                                        Console.WriteLine("End second first in for third Yakuzai AppendNewWrkSinKouiDetailCommentRecord");
+                                        Console.WriteLine("Start second first in for third Yakuzai Last");
                                         _common.Wrk.wrkSinKouiDetails.Last().IsNodspRece = NoDspConst.NoDspReceden;
+                                        Console.WriteLine("End second first in for third Yakuzai Last");
                                     }
                                 }
                                 else
@@ -2202,7 +2208,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                                     //しかし、それでは分かりにくいので、HAYABUSAは一律出力しないことにする
                                     //後々、問題になるようなら、院内処方用法コメントを出力するかどうかのオプションを作る(2020/08/14)
                                     // オプション追加(2022/03/02)
-
+                                    Console.WriteLine("Start third first in for third Yakuzai");
                                     if (_systemConfigProvider.GetInDrugYohoComment() == 1)
                                     {
                                         commentSkipFlg = false;
@@ -2213,10 +2219,13 @@ namespace EmrCalculateApi.Ika.ViewModels
                                         commentSkipFlg = true;
                                         commentDelFlg = true;
                                     }
+                                    Console.WriteLine("End third first in for third Yakuzai");
                                 }
 
+                                Console.WriteLine("Start fouth first in for third Yakuzai");
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
+                                Console.WriteLine("End fouth first in for third Yakuzai");
                                 Console.WriteLine("End first in for third Yakuzai");
                             }
                             else if (commentDelFlg && _common.IsCommentItemCd(odrDtl.ItemCd) && !odrDtl.IsSelectComment)
