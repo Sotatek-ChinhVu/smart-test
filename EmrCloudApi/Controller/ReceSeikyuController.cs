@@ -132,8 +132,11 @@ namespace EmrCloudApi.Controller
             titleProgressbar.Append(status.DisplayText);
             titleProgressbar.Append("\", percent: ");
             titleProgressbar.Append(status.Percent);
+            titleProgressbar.Append("\", Complete: ");
+            titleProgressbar.Append(status.Complete);
+            titleProgressbar.Append("\", CompleteSuccess: ");
+            titleProgressbar.Append(status.CompleteSuccess);
             titleProgressbar.Append("\" }");
-
             var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
             HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
             HttpContext.Response.Body.FlushAsync();
