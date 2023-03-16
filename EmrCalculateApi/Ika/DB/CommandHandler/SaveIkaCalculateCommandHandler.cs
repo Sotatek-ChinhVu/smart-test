@@ -22,7 +22,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         public SaveIkaCalculateCommandHandler(ITenantProvider tenantProvider, TenantDataContext tenantDataContext, IEmrLogger emrLogger)
         {
             _tenantProvider = tenantProvider;
-            _tenantDataContext = tenantDataContext;
+            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _emrLogger = emrLogger;
         }
 
