@@ -426,8 +426,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
             calcStatus.UpdateId = Hardcode.UserID;
             calcStatus.UpdateMachine = Hardcode.ComputerName;
-
+            Console.WriteLine("Start UpdateCalcStatus One");
             _tenantDataContext.SaveChanges();
+            Console.WriteLine("End UpdateCalcStatus One");
         }
 
         public bool UpdateCalcStatus(List<CalcStatusModel> calcStatusies)
@@ -443,10 +444,11 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     calcStatus.UpdateId = Hardcode.UserID;
                     calcStatus.UpdateMachine = Hardcode.ComputerName;
                 }
-
+                Console.WriteLine("Start UpdateCalcStatus list");
                 _tenantDataContext.SaveChanges();
+                Console.WriteLine("End UpdateCalcStatus list");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ret = false;
                 _emrLogger.WriteLogError( this, conFncName, e);
