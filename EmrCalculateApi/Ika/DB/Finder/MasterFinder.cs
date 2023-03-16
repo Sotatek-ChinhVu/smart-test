@@ -1597,7 +1597,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             {
                 string receName = "";
 
-                TenMstModel tenMst = FindTenMstBySanteiItemCd(CIUtil.ToNarrow(santeiItemCd), sinDate);
+                TenMstModel tenMst = FindTenMstBySanteiItemCd(santeiItemCd, sinDate);
 
                 if (tenMst != null)
                 {
@@ -1646,7 +1646,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         }
 
                         int num; // TryParse dummy
-                        if (comment.Length < maxLen && int.TryParse(CIUtil.ToNarrow(comment), out num))
+                        if (comment.Length < maxLen && int.TryParse(comment, out num))
                         {
                             comment = new string('０', maxLen - comment.Length) + comment;
                         }
@@ -1678,7 +1678,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     {
                         //西暦を和暦に変換
                         int num;
-                        if (int.TryParse(CIUtil.ToNarrow(comment), out num))
+                        if (int.TryParse(comment, out num))
                         {
                             comment = CIUtil.ToWide(CIUtil.SDateToWDate(num).ToString());
                         }
@@ -1727,9 +1727,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         case "５": gengo2 = "令和"; break;
                     }
 
-                    if (CIUtil.StrToIntDef(CIUtil.ToNarrow(cmtOptValue), -1) != 0)
+                    if (CIUtil.StrToIntDef(cmtOptValue, -1) != 0)
                     {
-                        cmtOptValue = CIUtil.ToNarrow(cmtOptValue).TrimStart('0');
+                        cmtOptValue = cmtOptValue.TrimStart('0');
                         if (CIUtil.Copy(cmtOptValue, 1, 1) == ".")
                         {
                             cmtOptValue = "0" + cmtOptValue;
