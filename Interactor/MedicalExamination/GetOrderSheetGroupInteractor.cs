@@ -165,20 +165,20 @@ namespace Interactor.MedicalExamination
                     {
                         parrentGrp.ChangeIsExpanded(false);
                     }
-                    IEnumerable<OrdInfModel> listOdrInf = Enumerable.Empty<OrdInfModel>();
+                    IEnumerable<OrdInfModel> odrInfList = Enumerable.Empty<OrdInfModel>();
                     if (parrentGrp.GroupKouiKbn == 14 ||
                         (parrentGrp.GroupKouiKbn >= 68 && parrentGrp.GroupKouiKbn < 70) ||
                         (parrentGrp.GroupKouiKbn >= 95 && parrentGrp.GroupKouiKbn < 99))
                     {
-                        listOdrInf = odrInfs.Where(p => p.OdrKouiKbn == parrentGrp.GroupKouiKbn);
+                        odrInfList = odrInfs.Where(p => p.OdrKouiKbn == parrentGrp.GroupKouiKbn);
                     }
                     else
                     {
-                        listOdrInf = odrInfs.Where(p => (parrentGrp.GroupKouiKbn == 20 ? (p.OdrKouiKbn / 10 == parrentGrp.GroupKouiKbn / 10 || p.OdrKouiKbn == 100 || p.OdrKouiKbn == 101) :
+                        odrInfList = odrInfs.Where(p => (parrentGrp.GroupKouiKbn == 20 ? (p.OdrKouiKbn / 10 == parrentGrp.GroupKouiKbn / 10 || p.OdrKouiKbn == 100 || p.OdrKouiKbn == 101) :
                                                       p.OdrKouiKbn / 10 == parrentGrp.GroupKouiKbn / 10) &&
                                                       p.OdrKouiKbn != 14 && !(p.OdrKouiKbn >= 68 && p.OdrKouiKbn < 70) && !(p.OdrKouiKbn >= 95 && p.OdrKouiKbn < 99));
                     }
-                    foreach (var sinDate in listOdrInf.OrderByDescending(p => p.SinDate).Select(p => p.SinDate).Distinct())
+                    foreach (var sinDate in odrInfList.OrderByDescending(p => p.SinDate).Select(p => p.SinDate).Distinct())
                     {
                         parrentGrp.Childrens.Add(new OrderSheetItem(2, sinDate, parrentGrp.GroupKouiKbn, CIUtil.SDateToShowSDate(sinDate)));
                     }

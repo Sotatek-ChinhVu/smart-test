@@ -339,7 +339,7 @@ namespace Infrastructure.Repositories
 
                 ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
                 allOrderInfList.TryGetValue(raiinNo, out List<OrdInfModel>? orderInfListTemp);
-                List<OrdInfModel>? orderInfList = orderInfListTemp ?? new();
+                List<OrdInfModel> orderInfList = orderInfListTemp ?? new();
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
 
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
