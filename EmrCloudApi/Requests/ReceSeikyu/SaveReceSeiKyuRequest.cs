@@ -1,10 +1,8 @@
-﻿using Domain.Models.ReceSeikyu;
-
-namespace EmrCloudApi.Requests.ReceSeikyu
+﻿namespace EmrCloudApi.Requests.ReceSeikyu
 {
     public class SaveReceSeiKyuRequest
     {
-        public SaveReceSeiKyuRequest(List<ReceSeikyuModel> data, int sinYm)
+        public SaveReceSeiKyuRequest(List<ReceSeikyuDto> data, int sinYm)
         {
             Data = data;
             SinYm = sinYm;
@@ -13,7 +11,7 @@ namespace EmrCloudApi.Requests.ReceSeikyu
         /// <summary>
         /// only pass modified record (IsModified = true)
         /// </summary>
-        public List<ReceSeikyuModel> Data { get; private set; }
+        public List<ReceSeikyuDto> Data { get; private set; }
 
         public int SinYm { get; private set; }
     }

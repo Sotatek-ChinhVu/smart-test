@@ -5,6 +5,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -12,6 +13,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -2442,6 +2444,69 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return result;
     }
+
+    public int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
+    {
+        return NoTrackingDataContext.ReceInfs.Count(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count == 0 || ptIds.Contains(p.PtId)));
+    }
+
+    public void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos)
+    {
+        if (receInfos == null || receInfos.Count == 0) return;
+
+        List<ReceStatus> newReceStatus = new List<ReceStatus>();
+        foreach (var receInfo in receInfos)
+        {
+            var receStatus = TrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId &&
+                                                                         p.PtId == receInfo.PtId &&
+                                                                         p.SeikyuYm == receInfo.SeikyuYm &&
+                                                                         p.SinYm == receInfo.SinYm &&
+                                                                         p.HokenId == receInfo.HokenId &&
+                                                                         p.IsDeleted == DeleteTypes.None)
+                                .OrderByDescending(u => u.CreateDate).ThenByDescending(u => u.UpdateDate).FirstOrDefault();
+
+            bool hasError = TrackingDataContext.ReceCheckErrs.Any(p => p.SinYm == receInfo.SinYm && p.PtId == receInfo.PtId && p.HokenId == receInfo.HokenId);
+
+            if (receStatus == null)
+            {
+                if (hasError)
+                {
+                    newReceStatus.Add(new ReceStatus()
+                    {
+                        HpId = Session.HospitalID,
+                        PtId = receInfo.PtId,
+                        SeikyuYm = receInfo.SeikyuYm,
+                        SinYm = receInfo.SinYm,
+                        HokenId = receInfo.HokenId,
+                        StatusKbn = (int)ReceCheckStatusEnum.SystemPending,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow()
+                    });
+                }
+                continue;
+            }
+
+            if (hasError)
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.UnConfirmed || receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                }
+            }
+            else
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.SystemPending)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.UnConfirmed;
+                }
+            }
+        }
+        TrackingDataContext.ReceStatuses.AddRange(newReceStatus);
+        TrackingDataContext.SaveChanges();
+    }
+
     #endregion
 
     #region Private function

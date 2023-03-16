@@ -11,8 +11,8 @@ using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.ReceSeikyu.Save;
 using System.Text;
 using Helper.Messaging.Data;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Helper.Messaging;
+using Domain.Models.ReceSeikyu;
 
 namespace EmrCloudApi.Controller
 {
@@ -55,8 +55,13 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SearchReceInfResponse>>(presenter.Result);
         }
 
+        /// <summary>
+        /// Only pass records have IsModified = true;
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
         [HttpPost(ApiPath.SaveReceSeikyu)]
-        public ActionResult<Response<SaveReceSeiKyuResponse>> SaveReceSeikyu([FromBody] SaveReceSeiKyuRequest request, CancellationToken cancellationToken)
+        public void SaveReceSeikyu([FromBody] SaveReceSeiKyuRequest request, CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
             try
@@ -69,17 +74,42 @@ namespace EmrCloudApi.Controller
                 HttpResponse response = HttpContext.Response;
                 response.StatusCode = 202;
 
-                var input = new SaveReceSeiKyuInputData(request.Data, request.SinYm, HpId, UserId);
+                var input = new SaveReceSeiKyuInputData(request.Data.Select(x => new ReceSeikyuModel(0,
+                                                                                                HpId,
+                                                                                                x.PtId,
+                                                                                                string.Empty,
+                                                                                                x.SinYm,
+                                                                                                0,
+                                                                                                x.HokenId,
+                                                                                                string.Empty,
+                                                                                                x.SeqNo,
+                                                                                                x.SeikyuYm,
+                                                                                                x.SeikyuKbn,
+                                                                                                x.PreHokenId,
+                                                                                                x.Cmt ?? string.Empty,
+                                                                                                0,
+                                                                                                0,
+                                                                                                string.Empty,
+                                                                                                0,
+                                                                                                0,
+                                                                                                x.IsModified,
+                                                                                                x.OriginSeikyuYm,
+                                                                                                x.OriginSinYm,
+                                                                                                x.IsAddNew,
+                                                                                                x.IsDeleted,
+                                                                                                x.IsChecked,
+                                                                                                new())).ToList(), request.SinYm, HpId, UserId);
+
                 var output = _bus.Handle(input);
-                var presenter = new SaveReceSeiKyuPresenter();
-                presenter.Complete(output);
-                return new ActionResult<Response<SaveReceSeiKyuResponse>>(presenter.Result);
+                if(output.Status == SaveReceSeiKyuStatus.Successful)
+                    Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, true));
+                else
+                    Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, false));
             }
             finally
             {
                 Messenger.Instance.Deregister<RecalculateInSeikyuPendingStatus>(this, UpdateRecalculationSaveReceSeikyu);
                 Messenger.Instance.Deregister<RecalculateInSeikyuPendingStop>(this, StopCalculation);
-                HttpContext.Response.Body.Close();
             }
         }
 

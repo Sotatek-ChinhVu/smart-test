@@ -5,8 +5,6 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -77,27 +75,26 @@ namespace Infrastructure.Repositories
                                                           x.ReceSeikyuPending.PtInfo.HpId,
                                                           x.ReceSeikyuPending.PtInfo.PtId,
                                                           x.ReceSeikyuPending.PtInfo.Name ?? string.Empty,
-                                                          sinYm,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SinYm,
                                                           sinYm,
                                                           x.ReceSeikyuPending.PtHokenInfItem.HokenId,
                                                           x.ReceSeikyuPending.PtHokenInfItem.HokensyaNo ?? string.Empty,
                                                           x.ReceSeikyuPending.ReceSeikyu.SeqNo,
                                                           x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
-                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm.ToString(),
                                                           x.ReceSeikyuPending.ReceSeikyu.SeikyuKbn,
                                                           x.ReceSeikyuPending.ReceSeikyu.PreHokenId,
                                                           x.ReceSeikyuPending.ReceSeikyu.Cmt ?? string.Empty,
-                                                          false,
                                                           x.ReceSeikyuPending.PtInfo.PtNum,
                                                           x.ReceSeikyuPending.PtHokenInfItem.HokenKbn,
                                                           x.ReceSeikyuPending.PtHokenInfItem.Houbetu ?? string.Empty,
                                                           x.ReceSeikyuPending.PtHokenInfItem.StartDate,
                                                           x.ReceSeikyuPending.PtHokenInfItem.EndDate,
                                                           false,
-                                                          sinYm,
-                                                          sinYm,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SinYm,
                                                           false,
                                                           DeleteTypes.None,
+                                                          x.ReceSeikyuPending.ReceSeikyu.SeikyuYm != 999999,
                                                           x.recedenHenjiyuuList.Select(m => new RecedenHenJiyuuModel(hpId,
                                                                                                                     m.RecedenHenJiyuu.PtId,
                                                                                                                     m.PtHokenInfItem.HokenId,
