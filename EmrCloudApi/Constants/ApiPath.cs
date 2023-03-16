@@ -216,6 +216,7 @@
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
         public const string GetReceiptEdit = "GetReceiptEdit";
+        public const string SaveReceiptEdit = "SaveReceiptEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
