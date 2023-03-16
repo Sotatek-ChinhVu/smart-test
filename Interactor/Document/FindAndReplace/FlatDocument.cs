@@ -35,7 +35,7 @@ namespace FindAndReplace
         {
             foreach (XDocument document in this.documents)
             {
-                FlatTextRange currentRange = null;
+                FlatTextRange? currentRange = null;
                 foreach (XElement run in document.Descendants(FlatConstants.RunElementName))
                 {
                     if (!run.HasElements)
@@ -47,9 +47,9 @@ namespace FindAndReplace
 
                     // If current Run doesn't belong to same parent (like paragraph, hyperlink, etc.)
                     // create new FlatTextRange, otherwise use current one.
-                    if (currentRange == null || currentRange.Parent != run.Parent)
+                    if ((currentRange == null || currentRange.Parent != run.Parent) && run.Parent != null)
                         currentRange = this.CreateFlatTextRange(run.Parent);
-                    currentRange.AddFlatText(flatText);
+                    currentRange?.AddFlatText(flatText);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace FindAndReplace
             }
 
             XElement remainingChild = childs[childCount - 1];
-            return remainingChild.Name == FlatConstants.TextElementName ? new FlatText(remainingChild) : null;
+            return remainingChild.Name == FlatConstants.TextElementName ? new FlatText(remainingChild) : new();
         }
         
         /// <summary>

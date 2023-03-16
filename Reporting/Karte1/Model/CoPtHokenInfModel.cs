@@ -17,6 +17,7 @@ namespace Reporting.Karte1.Model
         public HokenMst KohiMst3 { get; } = new();
         public HokenMst KohiMst4 { get; } = new();
         public List<CoPtKohiModel> PtKohis { get; private set; } = new();
+
         public CoPtHokenInfModel(PtHokenInf ptHokenInf, HokenMst hokenMst,
             PtKohi ptKohi1, HokenMst kohiMst1,
             PtKohi ptKohi2, HokenMst kohiMst2,
@@ -75,6 +76,8 @@ namespace Reporting.Karte1.Model
             }
 
         }
+
+        public CoPtHokenInfModel(){}
 
         /// <summary>
         /// 患者保険情報

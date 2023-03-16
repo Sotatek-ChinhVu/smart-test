@@ -421,7 +421,7 @@ public static class ReadDataSanteiInf
     private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
     {
         var workbookPart = spreadsheetDocument.WorkbookPart;
-        string relationshipId = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name.Equals(sheetName))?.Id;
+        string relationshipId = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name.Equals(sheetName))?.Id ?? string.Empty;
 
         var worksheet = ((WorksheetPart)workbookPart.GetPartById(relationshipId)).Worksheet;
 
