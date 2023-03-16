@@ -877,7 +877,8 @@ namespace Infrastructure.Repositories
         public List<string> GetCheckItemCds(List<string> itemCds)
         {
             itemCds = itemCds.Distinct().ToList();
-            return NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+            var result = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).Distinct().ToList();
+            return result;
         }
 
         public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)

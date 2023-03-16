@@ -4,7 +4,7 @@ namespace Domain.Models.SuperSetDetail;
 
 public interface ISuperSetDetailRepository : IRepositoryBase
 {
-    SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate);
+    SuperSetDetailModel GetSuperSetDetail(int hpId, int userId, int setCd, int sindate);
 
     long GetLastSeqNo(int hpId, int setCd);
 
@@ -14,7 +14,7 @@ public interface ISuperSetDetailRepository : IRepositoryBase
 
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
 
-    (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sinDate);
+    (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate);
 
     bool CheckExistSupperSetDetail(int hpId, int setCd);
 

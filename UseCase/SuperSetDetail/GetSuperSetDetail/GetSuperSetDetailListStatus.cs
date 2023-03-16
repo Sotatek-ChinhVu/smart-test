@@ -7,4 +7,5 @@ public enum GetSuperSetDetailListStatus : byte
     InvalidHpId = 3,
     InvalidSetCd = 4,
     InvalidSindate = 5,
+    InvalidUserId = 6,
 }

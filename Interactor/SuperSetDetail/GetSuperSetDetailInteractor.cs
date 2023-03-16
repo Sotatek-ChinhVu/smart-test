@@ -30,6 +30,10 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
             {
                 return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidHpId);
             }
+            if (inputData.UserId <= 0)
+            {
+                return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidUserId);
+            }
             else if (inputData.SetCd <= 0)
             {
                 return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSetCd);
@@ -38,7 +42,7 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
             {
                 return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSindate);
             }
-            var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.SetCd, inputData.Sindate);
+            var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.UserId, inputData.SetCd, inputData.Sindate);
             return new GetSuperSetDetailOutputData(ConvertSuperSetDetailToItem(inputData.SetCd, result), GetSuperSetDetailListStatus.Successed);
         }
         catch
@@ -161,7 +165,12 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                          od.IsComment,
                          od.IsUsage,
                          od.DisplayedQuantity,
-                         od.EditingQuantity
+                         od.EditingQuantity,
+                         od.CenterItemCd1,
+                         od.CenterItemCd2,
+                         od.Kasan1,
+                         od.Kasan2,
+                         od.YohoSets
                     )
                 ).ToList()
             )).ToList();

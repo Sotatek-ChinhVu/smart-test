@@ -49,6 +49,14 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId);
 
+    ReceInfModel GetReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfPreEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 

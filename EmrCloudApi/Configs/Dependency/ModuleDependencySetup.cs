@@ -138,7 +138,6 @@ using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -389,6 +388,7 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
+using UseCase.Receipt.ReceiptEdit;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -843,7 +843,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConfirmReplaceDocParamInputData, ConfirmReplaceDocParamInteractor>();
 
             //InsuranceScan
-            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
             busBuilder.RegisterUseCase<GetListInsuranceScanInputData, GetListInsuranceScanInteractor>();
 
             //Hoki PriorityList
@@ -890,6 +889,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
+            busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
