@@ -1277,12 +1277,14 @@ namespace EmrCalculateApi.Ika.DB.Finder
         {
             try
             {
+                Console.WriteLine("Log in ipnKasanExcludes");
                 var entities = _tenantDataContext.ipnKasanExcludes.FindListQueryableNoTrack(p =>
                         p.HpId == hpId &&
                         p.StartDate <= sinDate &&
                         p.EndDate >= sinDate
                         )
                     .ToList();
+                Console.WriteLine("Log in ipnKasanExcludes");
 
                 List<IpnKasanExcludeModel> results = new List<IpnKasanExcludeModel>();
 
