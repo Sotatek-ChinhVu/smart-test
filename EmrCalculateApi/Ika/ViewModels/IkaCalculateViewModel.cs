@@ -1328,36 +1328,55 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 if (_common.syosai != SyosaiConst.Jihi)
                 {
-                    Console.WriteLine("Start caculate");
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkIgakuViewModel");
                     // 医学管理
                     new IkaCalculateOdrToWrkIgakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkIgakuViewModel");
 
                     // 在宅
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkZaitakuViewModel");
                     new IkaCalculateOdrToWrkZaitakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkZaitakuViewModel");
 
                     // 検査・病理
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkKensaViewModel");
                     new IkaCalculateOdrToWrkKensaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkKensaViewModel");
 
                     // 画像
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkGazoViewModel");
                     new IkaCalculateOdrToWrkGazoViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkGazoViewModel");
 
                     // 投薬
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkTouyakuViewModel");
                     new IkaCalculateOdrToWrkTouyakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkTouyakuViewModel");
 
                     // 注射
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkChusyaViewModel");
                     new IkaCalculateOdrToWrkChusyaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkChusyaViewModel");
 
                     // その他
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkSonotaViewModel");
                     new IkaCalculateOdrToWrkSonotaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkSonotaViewModel");
 
                     // 処置
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkSyotiViewModel");
                     new IkaCalculateOdrToWrkSyotiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkSyotiViewModel");
 
                     // 手術・麻酔
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkSyujyutuViewModel");
                     new IkaCalculateOdrToWrkSyujyutuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkSyujyutuViewModel");
 
                     // 自費
+                    Console.WriteLine("Start caculate IkaCalculateOdrToWrkJihiViewModel");
                     new IkaCalculateOdrToWrkJihiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate IkaCalculateOdrToWrkJihiViewModel");
                     Console.WriteLine("End caculate");
                 }
                 else

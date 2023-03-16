@@ -285,13 +285,19 @@ namespace EmrCalculateApi.Ika.ViewModels
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Zaitaku, OdrKouiKbnConst.Zaitaku))
             {
                 // 保険
+                Console.WriteLine("Start CalculateHoken IkaCalculateOdrToWrkZaitakuViewModel");
                 CalculateHoken();
+                Console.WriteLine("End CalculateHoken IkaCalculateOdrToWrkZaitakuViewModel");
 
                 // 自費
+                Console.WriteLine("Start CalculateJihi IkaCalculateOdrToWrkZaitakuViewModel");
                 CalculateJihi();
+                Console.WriteLine("End CalculateJihi IkaCalculateOdrToWrkZaitakuViewModel");
             }
 
+            Console.WriteLine("Start CommitWrkSinRpInf IkaCalculateOdrToWrkZaitakuViewModel");
             _common.Wrk.CommitWrkSinRpInf();
+            Console.WriteLine("End CommitWrkSinRpInf IkaCalculateOdrToWrkZaitakuViewModel");
 
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
