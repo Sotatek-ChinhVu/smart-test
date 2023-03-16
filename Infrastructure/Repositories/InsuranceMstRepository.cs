@@ -763,6 +763,7 @@ namespace Infrastructure.Repositories
                 model.HokenKohiKbn = insurance.HokenKohiKbn;
                 model.Houbetu = insurance.Houbetu;
                 model.HokenName = insurance.HokenName;
+                model.HokenSname = insurance.HokenSName;
                 model.HokenNameCd = insurance.HokenNameCd;
                 model.CheckDigit = insurance.CheckDigit;
                 model.JyukyuCheckDigit = insurance.JyuKyuCheckDigit;
