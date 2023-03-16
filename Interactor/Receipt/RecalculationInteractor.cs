@@ -179,6 +179,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         var allSyobyoKeikaList = _receiptRepository.GetSyobyoKeikaList(inputData.HpId, sinYmList, ptIdList, hokenIdList);
         var allIsKantokuCdValidList = _insuranceMstRepository.GetIsKantokuCdValidList(inputData.HpId, kantokuCdValidList);
 
+        SendMessager(new RecalculationStatus(false, 3, allCheckCount, 0, string.Empty));
         int successCount = 1;
         foreach (var recalculationItem in receRecalculationList)
         {
@@ -203,7 +204,12 @@ public class RecalculationInteractor : IRecalculationInputPort
             newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
             newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
-
+            
+            if (allCheckCount == successCount)
+            {
+                break;
+            }
+            SendMessager(new RecalculationStatus(false, 3, allCheckCount, successCount, string.Empty));
             successCount++;
         }
         errorText.Append(errorTextSinKouiCount);
