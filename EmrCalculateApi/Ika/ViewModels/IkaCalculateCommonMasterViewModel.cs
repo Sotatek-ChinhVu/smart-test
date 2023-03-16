@@ -389,7 +389,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             string ret = "";
 
-            TenMstModel tenMst = GetTenMst(itemCd).FirstOrDefault();
+            TenMstModel tenMst = GetTenMst(itemCd).FirstOrDefault() ?? new();
             if (tenMst != null)
             {
                 List<int> cmtCol = new List<int>();
