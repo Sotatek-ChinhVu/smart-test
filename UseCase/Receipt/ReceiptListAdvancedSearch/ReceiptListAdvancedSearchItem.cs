@@ -12,6 +12,7 @@ public class ReceiptListAdvancedSearchItem
         IsReceInfDetailExist = model.IsReceInfDetailExist;
         IsPaperRece = model.IsPaperRece;
         HokenKbn = model.HokenKbn;
+        HokenId = model.HokenId;
         Output = model.Output;
         FusenKbn = model.FusenKbn;
         StatusKbn = model.StatusKbn;
@@ -53,6 +54,8 @@ public class ReceiptListAdvancedSearchItem
     public int IsReceInfDetailExist { get; private set; }
 
     public int IsPaperRece { get; private set; }
+
+    public int HokenId { get; private set; }
 
     public int HokenKbn { get; private set; }
 
