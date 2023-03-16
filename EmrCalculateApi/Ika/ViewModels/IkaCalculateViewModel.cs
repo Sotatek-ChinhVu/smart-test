@@ -1312,9 +1312,14 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// </summary>
         private void OdrToWrk()
         {
+            Console.WriteLine("Start name of");
             const string conFncName = nameof(OdrToWrk);
+            Console.WriteLine("End name of");
+
+            Console.WriteLine("Start log of");
 
             _emrLogger.WriteLogStart( this, conFncName, string.Format("RaiinNo:{0} HokenKbn:{1}", _common.raiinInf.RaiinNo, _common.hokenKbn));
+            Console.WriteLine("End log of");
 
             try
             {
@@ -1323,6 +1328,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 if (_common.syosai != SyosaiConst.Jihi)
                 {
+                    Console.WriteLine("Start caculate");
                     // 医学管理
                     new IkaCalculateOdrToWrkIgakuViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
 
@@ -1352,15 +1358,19 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                     // 自費
                     new IkaCalculateOdrToWrkJihiViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("End caculate");
                 }
                 else
                 {
+                    Console.WriteLine("Start caculate 2");
                     // 医科計算なし
                     new IkaCalculateOdrToWrkNoIkaViewModel(_common, _systemConfigProvider, _emrLogger).Calculate();
+                    Console.WriteLine("Start caculate 2");
                 }
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 _emrLogger.WriteLogError( this, conFncName, e);
                 throw;
             }
