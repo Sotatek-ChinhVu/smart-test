@@ -13,7 +13,10 @@ namespace FindAndReplace
         public int EndIndex { get; private set; }
 
         public FlatText(XElement textElement) { this.textElement = textElement; }
-        
+        public FlatText()
+        {
+        }
+
         public string Text
         {
             get { return this.textElement.Value; }

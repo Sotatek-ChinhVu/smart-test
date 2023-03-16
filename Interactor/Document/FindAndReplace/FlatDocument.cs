@@ -64,7 +64,7 @@ namespace FindAndReplace
         private static FlatText FlattenRunElement(XElement run)
         {
             XElement[] childs = run.Elements().ToArray();
-            XElement runProperties = childs[0].Name == FlatConstants.RunPropertiesElementName ? childs[0] : null;
+            XElement? runProperties = childs[0].Name == FlatConstants.RunPropertiesElementName ? childs[0] : null;
 
             int childCount = childs.Length;
             int flatChildCount = 1 + (runProperties != null ? 1 : 0);

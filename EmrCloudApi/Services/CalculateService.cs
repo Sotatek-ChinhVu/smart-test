@@ -81,7 +81,7 @@ namespace EmrCloudApi.Services
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new();
             }

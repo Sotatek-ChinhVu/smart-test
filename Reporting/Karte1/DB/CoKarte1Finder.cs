@@ -76,7 +76,7 @@ public class CoKarte1Finder
                 ));
         });
 
-        return results.FirstOrDefault();
+        return results.FirstOrDefault() ?? new();
     }
 
     /// <summary>
