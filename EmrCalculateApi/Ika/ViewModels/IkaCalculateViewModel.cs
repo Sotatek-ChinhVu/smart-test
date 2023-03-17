@@ -83,7 +83,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             set
             {
                 _tenantDataContext = value;
-                _ikaCalculateFinder = new IkaCalculateFinder(_tenantDataContext);
+                _ikaCalculateFinder = new IkaCalculateFinder(_tenantDataContext, _tenantProvider);
                 _odrInfFinder = new OdrInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
                 _raiinInfFinder = new RaiinInfFinder(_tenantDataContext, _systemConfigProvider, _emrLogger);
                 _masterFinder = new MasterFinder(_tenantDataContext);

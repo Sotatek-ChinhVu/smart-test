@@ -6,6 +6,7 @@ using Helper.Constants;
 using EmrCalculateApi.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
+using Infrastructure.Interfaces;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
@@ -14,9 +15,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
         private int hospitalId = Hardcode.HospitalID;
         private readonly TenantDataContext _tenantDataContext;
 
-        public IkaCalculateFinder(TenantDataContext tenantDataContext)
+        public IkaCalculateFinder(TenantDataContext tenantDataContext, ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantDataContext;
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         /// <summary>
@@ -355,6 +356,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             if (calcIds != null && calcIds.Any())
             {
+                var test = _tenantDataContext.CalcStatus.Where(c => c.CreateMachine == computerName).ToList();
                 var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
                     p.CreateMachine == computerName &&
                     calcIds.Contains(p.CalcId) &&

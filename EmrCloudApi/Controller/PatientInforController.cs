@@ -91,6 +91,7 @@ using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -385,10 +386,11 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetInsuranceMasterLinkageResponse>>(presenter.Result);
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {
-            var input = new GetPtKyuseiInfInputData(HpId, request.PtId, request.IsDeleted);
+            var input = new GetPtKyuseiInfInputData(1, request.PtId, request.IsDeleted);
             var output = _bus.Handle(input);
 
             var presenter = new GetPtKyuseiInfPresenter();
