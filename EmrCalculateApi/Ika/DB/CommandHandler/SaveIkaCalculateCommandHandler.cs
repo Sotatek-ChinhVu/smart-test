@@ -426,7 +426,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
             //calcStatus.UpdateId = Hardcode.UserID;
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
-
+            _tenantDataContext.ChangeTracker.Clear();
             _tenantDataContext.CalcStatus.Update(new CalcStatus
             {
                 CalcId = calcStatus.CalcId,
@@ -438,7 +438,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 ClearReceChk = calcStatus.ClearReceChk,
                 Status = calcStatus.Status,
                 Biko = calcStatus.Biko,
-                CreateDate = calcStatus.CreateDate,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = calcStatus.CreateId,
                 CreateMachine = calcStatus.CreateMachine,
                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -463,6 +463,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateId = Hardcode.UserID;
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
+                _tenantDataContext.ChangeTracker.Clear();
                 _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
                 {
                     CalcId = c.CalcId,
@@ -474,7 +475,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     ClearReceChk = c.ClearReceChk,
                     Status = c.Status,
                     Biko = c.Biko,
-                    CreateDate = c.CreateDate,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = c.CreateId,
                     CreateMachine = c.CreateMachine,
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -501,6 +502,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateId = Hardcode.UserID;
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
+            _tenantDataContext.ChangeTracker.Clear();
             _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
             {
                 CalcId = c.CalcId,
@@ -512,7 +514,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 ClearReceChk = c.ClearReceChk,
                 Status = c.Status,
                 Biko = c.Biko,
-                CreateDate = c.CreateDate,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = c.CreateId,
                 CreateMachine = c.CreateMachine,
                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
@@ -536,7 +538,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateId = Hardcode.UserID;
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
-
+            _tenantDataContext.ChangeTracker.Clear();
             _tenantDataContext.ReceStatuses.UpdateRange(receStatusies.Select(r => new ReceStatus
             {
                 HpId = r.HpId,
@@ -549,7 +551,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 Output = r.Output,
                 StatusKbn = r.StatusKbn,
                 IsDeleted = r.IsDeleted,
-                CreateDate = r.CreateDate,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
                 CreateId = r.CreateId,
                 CreateMachine = r.CreateMachine,
                 UpdateDate = CIUtil.GetJapanDateTimeNow(),
