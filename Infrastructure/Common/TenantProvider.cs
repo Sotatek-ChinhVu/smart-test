@@ -21,7 +21,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            return "User Id=postgres;password=Emr!23456789;Host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;Database=smartkarte;SSH Host=ec2-18-177-121-22.ap-northeast-1.compute.amazonaws.com;SSH User=ec2-user;SSH Private Key=C:\\Users\\WELCOME\\Desktop\\develop-smartkarte-basion.pem;SSH Authentication Type=PublicKey;";
+            return _configuration["TenantDbSample"];
         }
 
         public string GetClinicID()
@@ -34,10 +34,12 @@ namespace Infrastructure.CommonDB
         {
             if (_noTrackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>()
-                     .UsePostgreSql(GetConnectionString())
-                     .LogTo(Console.WriteLine, LogLevel.Information).Options;
-                _noTrackingDataContext = new TenantNoTrackingDataContext(options);
+                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+                _noTrackingDataContext = factory.CreateDbContext();
             }
             return _noTrackingDataContext;
         }
@@ -47,11 +49,12 @@ namespace Infrastructure.CommonDB
         {
             if (_trackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantDataContext>()
-                    .UsePostgreSql(GetConnectionString())
-                    .LogTo(Console.WriteLine, LogLevel.Information).Options;
-
-                _trackingDataContext = new TenantDataContext(options);
+                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+                var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                _trackingDataContext = factory.CreateDbContext();
             }
             return _trackingDataContext;
         }
@@ -65,10 +68,12 @@ namespace Infrastructure.CommonDB
         {
             _noTrackingDataContext?.Dispose();
 
-            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>()
-                     .UsePostgreSql(GetConnectionString())
-                     .LogTo(Console.WriteLine, LogLevel.Information).Options;
-            _noTrackingDataContext = new TenantNoTrackingDataContext(options);
+            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+            var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+            _noTrackingDataContext = factory.CreateDbContext();
             return _noTrackingDataContext;
         }
 
@@ -76,11 +81,12 @@ namespace Infrastructure.CommonDB
         {
             _trackingDataContext?.Dispose();
 
-            var options = new DbContextOptionsBuilder<TenantDataContext>()
-                   .UsePostgreSql(GetConnectionString())
-                   .LogTo(Console.WriteLine, LogLevel.Information).Options;
-
-            _trackingDataContext = new TenantDataContext(options);
+            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
+            var factory = new PooledDbContextFactory<TenantDataContext>(options);
+            _trackingDataContext = factory.CreateDbContext();
             return _trackingDataContext;
         }
 
