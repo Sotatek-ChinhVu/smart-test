@@ -102,9 +102,9 @@ namespace EmrCloudApi.Controller
 
                 var output = _bus.Handle(input);
                 if(output.Status == SaveReceSeiKyuStatus.Successful)
-                    Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, true));
+                    UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, true));
                 else
-                    Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, false));
+                    UpdateRecalculationSaveReceSeikyu(new RecalculateInSeikyuPendingStatus(string.Empty, 100, true, false));
             }
             finally
             {
