@@ -489,8 +489,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                             Status = check.Status,
                             Biko = check.Biko,
                             CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = calcStatus.CreateId,
-                            CreateMachine = calcStatus.CreateMachine,
+                            CreateId = check.CreateId,
+                            CreateMachine = check.CreateMachine,
                             UpdateDate = CIUtil.GetJapanDateTimeNow(),
                             UpdateId = Hardcode.UserID,
                             UpdateMachine = Hardcode.ComputerName
