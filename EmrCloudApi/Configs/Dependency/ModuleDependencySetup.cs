@@ -334,6 +334,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.Save;
 using UseCase.Santei.GetListSanteiInf;
 using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
@@ -433,6 +434,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -897,6 +899,7 @@ namespace EmrCloudApi.Configs.Dependency
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
+            busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
