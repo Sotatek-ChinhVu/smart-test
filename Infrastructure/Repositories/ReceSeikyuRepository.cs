@@ -204,6 +204,7 @@ namespace Infrastructure.Repositories
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateId = userId;
+                dest.UpdateId = userId;
                 dest.SeqNo = 0;
                 dest.HpId = hpId;
                 if (src.HpId == 0 && src.Cmt == "返戻ファイルより登録")
