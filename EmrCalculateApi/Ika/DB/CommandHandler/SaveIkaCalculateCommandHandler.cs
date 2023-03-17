@@ -426,7 +426,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateId = Hardcode.UserID;
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
 
-            _tenantDataContext.SaveChanges();
+            //_tenantDataContext.SaveChanges();
             var checkExist = _tenantDataContext.CalcStatus.Any(c => calcStatus.CalcId == calcStatus.CalcId);
 
             if (checkExist)
@@ -466,7 +466,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateId = Hardcode.UserID;
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
-                _tenantDataContext.SaveChanges();
+                //_tenantDataContext.SaveChanges();
                 foreach (var calcStatus in calcStatusies)
                 {
                     var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
@@ -510,7 +510,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateId = Hardcode.UserID;
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
-            _tenantDataContext.SaveChanges();
+            //_tenantDataContext.SaveChanges();
             foreach (var calcStatus in calcStatusies)
             {
                 var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
@@ -552,7 +552,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateId = Hardcode.UserID;
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
-            _tenantDataContext.SaveChanges();
+            //_tenantDataContext.SaveChanges();
             foreach (var receStatus in receStatusies)
             {
                 var check = _tenantDataContext.ReceStatuses.Any(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
