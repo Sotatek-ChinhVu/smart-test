@@ -213,6 +213,7 @@
         public const string ReceCmtHistory = "ReceCmtHistory";
         public const string SyoukiInfHistory = "SyoukiInfHistory";
         public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
+        public const string GetMedicalDetails = "GetMedicalDetails";
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
         public const string GetReceiptEdit = "GetReceiptEdit";
