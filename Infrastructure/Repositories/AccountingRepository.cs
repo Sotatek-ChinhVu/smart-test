@@ -1416,8 +1416,7 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.SyunoSeikyus.Any(x =>
                                                             x.HpId == hpId &&
                                                             x.PtId == ptId &&
-                                                            x.RaiinNo == raiinNo &&
-                                                            x.NyukinKbn <= 0);
+                                                            x.RaiinNo == raiinNo);
         }
     }
 }
