@@ -1612,7 +1612,7 @@ namespace Helper.Common
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
+                        ret += s.Substring(i, 1);
                     }
                     else
                     {
