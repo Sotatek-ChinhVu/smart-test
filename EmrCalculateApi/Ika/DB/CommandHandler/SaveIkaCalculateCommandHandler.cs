@@ -378,7 +378,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
             // 先に更新/削除分を反映
  
-            //_tenantDataContext.SaveChanges();
+            _tenantDataContext.SaveChanges();
 
             using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
             {
@@ -396,18 +396,22 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                                 //    AddWrkTalbes
                                 //        (newDbService, _common.Wrk.wrkSinRpInfs, _common.Wrk.wrkSinKouis, _common.Wrk.wrkSinKouiDetails, _common.Wrk.wrkSinKouiDetailDels);
                                 //}
-                                //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");  
+                                //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");
+                                Console.WriteLine("Start Log AddCalcLog");
                                 AddCalcLog(new_tenantDataContext, _common.calcLogs);
+                                Console.WriteLine("End Log AddCalcLog");
                                 //new_tenantDataContext.SaveChanged();
                                 //_emrLogger.WriteLogMsg( this, conFncName, "AddSin");
+                                Console.WriteLine("Start Log AddSin");
                                 AddSin(
                                     new_tenantDataContext, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts);
-
+                                Console.WriteLine("End Log AddSin");
                                 //DelSin(
                                 //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
 
+                                Console.WriteLine("Start Log SaveChanges 1");
                                 new_tenantDataContext.SaveChanges();
-
+                                Console.WriteLine("End Log SaveChanges 1");
                                 transaction.Commit();
                             }
                             catch (Exception e)
