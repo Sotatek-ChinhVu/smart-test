@@ -447,6 +447,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             });
 
             _tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.Clear();
         }
 
         public bool UpdateCalcStatus(List<CalcStatusModel> calcStatusies)
