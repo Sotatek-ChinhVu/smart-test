@@ -28,6 +28,7 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinDateRaiinInfList;
 
 namespace EmrCloudApi.Controller;
 
@@ -289,6 +290,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSinDateRaiinInfList)]
+    public ActionResult<Response<GetSinDateRaiinInfListResponse>> GetSinDateRaiinInfList([FromQuery] GetSinDateRaiinInfListRequest request)
+    {
+        var input = new GetSinDateRaiinInfListInputData(HpId, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinDateRaiinInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSinDateRaiinInfListResponse>>(presenter.Result);
     }
 
     #region Private function

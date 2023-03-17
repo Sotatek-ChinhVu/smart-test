@@ -56,6 +56,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0);
 
+    List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
