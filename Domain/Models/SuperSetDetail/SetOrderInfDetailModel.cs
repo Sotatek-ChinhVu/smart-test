@@ -1,10 +1,11 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.OrdInfDetails;
+using Helper.Constants;
 
 namespace Domain.Models.SuperSetDetail;
 
 public class SetOrderInfDetailModel
 {
-    public SetOrderInfDetailModel(int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
+    public SetOrderInfDetailModel(int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets)
     {
         SinKouiKbn = sinKouiKbn;
         ItemCd = itemCd;
@@ -29,9 +30,14 @@ public class SetOrderInfDetailModel
         CmtOpt = cmtOpt;
         FontColor = fontColor;
         CommentNewline = commentNewline;
+        CenterItemCd1 = centerItemCd1;
+        CenterItemCd2 = centerItemCd2;
+        Kasan1 = kasan1;
+        Kasan2 = kasan2;
+        YohoSets = yohoSets;
     }
 
-    public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd)
+    public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets)
     {
         HpId = hpId;
         SetCd = setCd;
@@ -72,6 +78,11 @@ public class SetOrderInfDetailModel
         OdrTermVal = odrTermVal;
         CnvTermVal = cnvTermVal;
         YjCd = yjCd;
+        CenterItemCd1 = centerItemCd1;
+        CenterItemCd2 = centerItemCd2;
+        Kasan1 = kasan1;
+        Kasan2 = kasan2;
+        YohoSets = yohoSets;
     }
 
     public int HpId { get; private set; }
@@ -151,6 +162,16 @@ public class SetOrderInfDetailModel
     public double CnvTermVal { get; private set; }
 
     public string YjCd { get; private set; } = string.Empty;
+
+    public string CenterItemCd1 { get; private set; } = string.Empty;
+
+    public string CenterItemCd2 { get; private set; } = string.Empty;
+
+    public int Kasan1 { get; private set; }
+
+    public int Kasan2 { get; private set; }
+
+    public List<YohoSetMstModel> YohoSets { get; private set; }
 
     //Exposed properties
     public double Price

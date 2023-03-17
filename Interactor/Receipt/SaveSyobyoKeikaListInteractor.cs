@@ -90,7 +90,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
-        else if (inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
+        else if ((hokenKbn == 13) && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
         {
             return SaveSyobyoKeikaListStatus.InvalidKeika;
         }

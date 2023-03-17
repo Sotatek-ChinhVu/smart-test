@@ -11,13 +11,13 @@ namespace Domain.Models.Reception
 
         ReceptionModel Get(long raiinNo);
 
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily);
+
+        IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
 
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
-
-        IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
         List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate);
 

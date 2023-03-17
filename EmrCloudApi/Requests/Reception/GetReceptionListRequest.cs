@@ -8,4 +8,5 @@ public class GetReceptionListRequest
     public int SinDate { get; set; }
     public long RaiinNo { get; set; } = CommonConstants.InvalidId;
     public long PtId { get; set; } = CommonConstants.InvalidId;
+    public bool IsGetFamily { get; set; } = false;
 }

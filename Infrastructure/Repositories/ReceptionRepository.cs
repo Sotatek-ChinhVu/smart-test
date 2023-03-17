@@ -150,7 +150,7 @@ namespace Infrastructure.Repositories
                     PtId = raiinInf.PtId,
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow()   ,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     GrpId = dto.GrpId,
                     KbnCd = dto.KbnCd,
@@ -446,9 +446,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -521,47 +521,13 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
-        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
-        {
-            var result = NoTrackingDataContext.RaiinInfs.Where
-                                (r =>
-                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3 && r.IsDeleted == 0 && raiinNos.Contains(r.RaiinNo));
-            return result.Select(r => new ReceptionModel(
-                        r.HpId,
-                        r.PtId,
-                        r.SinDate,
-                        r.RaiinNo,
-                        r.OyaRaiinNo,
-                        r.HokenPid,
-                        r.SanteiKbn,
-                        r.Status,
-                        r.IsYoyaku,
-                        r.YoyakuTime ?? String.Empty,
-                        r.YoyakuId,
-                        r.UketukeSbt,
-                        r.UketukeTime ?? String.Empty,
-                        r.UketukeId,
-                        r.UketukeNo,
-                        r.SinStartTime ?? String.Empty,
-                        r.SinEndTime ?? String.Empty,
-                        r.KaikeiTime ?? String.Empty,
-                        r.KaikeiId,
-                        r.KaId,
-                        r.TantoId,
-                        r.SyosaisinKbn,
-                        r.JikanKbn,
-                        string.Empty
-                   ));
-
-        }
-
         public bool CheckListNo(List<long> raininNos)
         {
             var check = NoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return check;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -599,9 +565,16 @@ namespace Infrastructure.Repositories
             }
 
             var filteredPtInfs = ptInfs;
-            if (ptId != CommonConstants.InvalidId)
+            if (ptId != CommonConstants.InvalidId && !isGetFamily)
             {
                 filteredPtInfs = filteredPtInfs.Where(x => x.PtId == ptId);
+            }
+            else if (ptId != CommonConstants.InvalidId && isGetFamily)
+            {
+                var familyIdList = NoTrackingDataContext.PtFamilys.Where(item => item.PtId == ptId && item.IsDeleted == 0).Select(item => item.FamilyPtId).ToList();
+                familyIdList.Add(ptId);
+                familyIdList = familyIdList.Distinct().ToList();
+                filteredPtInfs = filteredPtInfs.Where(item => familyIdList.Contains(item.PtId));
             }
 
             // 3. Perform the join operation
@@ -1013,7 +986,7 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize)
         {
-            var result = new List<ReceptionModel>();
+            List<ReceptionModel> result;
             var usermsts = NoTrackingDataContext.UserMsts.Where(x =>
                         x.HpId == hpId &&
                         x.IsDeleted == 0
