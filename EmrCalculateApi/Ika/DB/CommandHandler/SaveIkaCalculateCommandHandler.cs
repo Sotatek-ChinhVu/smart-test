@@ -1,15 +1,14 @@
 ﻿using EmrCalculateApi.Constants;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
-using PostgreDataContext;
-using Helper.Constants;
-using EmrCalculateApi.Ika.Models;
 using Helper.Common;
-using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.ViewModels;
-using Infrastructure.CommonDB;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using PostgreDataContext;
 
 namespace EmrCalculateApi.Ika.DB.CommandHandler
 {
@@ -77,12 +76,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //);
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
-                    {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        p.CreateId = Hardcode.UserID;
-                        p.CreateMachine = Hardcode.ComputerName;
+                {
+                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    p.CreateId = Hardcode.UserID;
+                    p.CreateMachine = Hardcode.ComputerName;
 
-                    }
+                }
                 );
                 tenantDataContext.WrkSinRpInfs.AddRange(wrkSinRps);
 
@@ -114,12 +113,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 List<WrkSinKouiDetail> wrkSinDtls = wrkSinKouiDetailModels.Select(p => p.WrkSinKouiDetail).ToList();
                 wrkSinDtls?.ForEach(p =>
+                {
+                    if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
                     {
-                        if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
-                        {
-                            p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
-                        }
+                        p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
                     }
+                }
                 );
                 tenantDataContext.WrkSinKouiDetails.AddRange(wrkSinDtls);
 
@@ -427,26 +426,31 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateId = Hardcode.UserID;
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
 
-            _tenantDataContext.CalcStatus.Update(new CalcStatus
-            {
-                CalcId = calcStatus.CalcId,
-                HpId = calcStatus.HpId,
-                PtId = calcStatus.PtId,
-                SinDate = calcStatus.SinDate,
-                SeikyuUp = calcStatus.SeikyuUp,
-                CalcMode = calcStatus.CalcMode,
-                ClearReceChk = calcStatus.ClearReceChk,
-                Status = calcStatus.Status,
-                Biko = calcStatus.Biko,
-                CreateDate = calcStatus.CreateDate,
-                CreateId = calcStatus.CreateId,
-                CreateMachine = calcStatus.CreateMachine,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = Hardcode.UserID,
-                UpdateMachine = Hardcode.ComputerName
-            });
-
             _tenantDataContext.SaveChanges();
+            var checkExist = _tenantDataContext.CalcStatus.Any(c => calcStatus.CalcId == calcStatus.CalcId);
+
+            if (checkExist)
+            {
+                _tenantDataContext.CalcStatus.Update(new CalcStatus
+                {
+                    CalcId = calcStatus.CalcId,
+                    HpId = calcStatus.HpId,
+                    PtId = calcStatus.PtId,
+                    SinDate = calcStatus.SinDate,
+                    SeikyuUp = calcStatus.SeikyuUp,
+                    CalcMode = calcStatus.CalcMode,
+                    ClearReceChk = calcStatus.ClearReceChk,
+                    Status = calcStatus.Status,
+                    Biko = calcStatus.Biko,
+                    CreateDate = calcStatus.CreateDate,
+                    CreateId = calcStatus.CreateId,
+                    CreateMachine = calcStatus.CreateMachine,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = Hardcode.UserID,
+                    UpdateMachine = Hardcode.ComputerName
+                });
+                _tenantDataContext.SaveChanges();
+            }
         }
 
         public bool UpdateCalcStatus(List<CalcStatusModel> calcStatusies)
@@ -462,27 +466,33 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateId = Hardcode.UserID;
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
-                _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
-                {
-                    CalcId = c.CalcId,
-                    HpId = c.HpId,
-                    PtId = c.PtId,
-                    SinDate = c.SinDate,
-                    SeikyuUp = c.SeikyuUp,
-                    CalcMode = c.CalcMode,
-                    ClearReceChk = c.ClearReceChk,
-                    Status = c.Status,
-                    Biko = c.Biko,
-                    CreateDate = c.CreateDate,
-                    CreateId = c.CreateId,
-                    CreateMachine = c.CreateMachine,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = Hardcode.UserID,
-                    UpdateMachine = Hardcode.ComputerName
-                }));
-
                 _tenantDataContext.SaveChanges();
-                _tenantDataContext.ChangeTracker.Clear();
+                foreach (var calcStatus in calcStatusies)
+                {
+                    var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
+                    if (check)
+                    {
+                        _tenantDataContext.CalcStatus.Update(new CalcStatus
+                        {
+                            CalcId = calcStatus.CalcId,
+                            HpId = calcStatus.HpId,
+                            PtId = calcStatus.PtId,
+                            SinDate = calcStatus.SinDate,
+                            SeikyuUp = calcStatus.SeikyuUp,
+                            CalcMode = calcStatus.CalcMode,
+                            ClearReceChk = calcStatus.ClearReceChk,
+                            Status = calcStatus.Status,
+                            Biko = calcStatus.Biko,
+                            CreateDate = calcStatus.CreateDate,
+                            CreateId = calcStatus.CreateId,
+                            CreateMachine = calcStatus.CreateMachine,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = Hardcode.UserID,
+                            UpdateMachine = Hardcode.ComputerName
+                        });
+                    }
+                }
+                _tenantDataContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -500,26 +510,33 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateId = Hardcode.UserID;
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
-            _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
-            {
-                CalcId = c.CalcId,
-                HpId = c.HpId,
-                PtId = c.PtId,
-                SinDate = c.SinDate,
-                SeikyuUp = c.SeikyuUp,
-                CalcMode = c.CalcMode,
-                ClearReceChk = c.ClearReceChk,
-                Status = c.Status,
-                Biko = c.Biko,
-                CreateDate = c.CreateDate,
-                CreateId = c.CreateId,
-                CreateMachine = c.CreateMachine,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = Hardcode.UserID,
-                UpdateMachine = Hardcode.ComputerName
-            }));
             _tenantDataContext.SaveChanges();
-            _tenantDataContext.ChangeTracker.Clear();
+            foreach (var calcStatus in calcStatusies)
+            {
+                var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
+                if (check)
+                {
+                    _tenantDataContext.CalcStatus.Update(new CalcStatus
+                    {
+                        CalcId = calcStatus.CalcId,
+                        HpId = calcStatus.HpId,
+                        PtId = calcStatus.PtId,
+                        SinDate = calcStatus.SinDate,
+                        SeikyuUp = calcStatus.SeikyuUp,
+                        CalcMode = calcStatus.CalcMode,
+                        ClearReceChk = calcStatus.ClearReceChk,
+                        Status = calcStatus.Status,
+                        Biko = calcStatus.Biko,
+                        CreateDate = calcStatus.CreateDate,
+                        CreateId = calcStatus.CreateId,
+                        CreateMachine = calcStatus.CreateMachine,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = Hardcode.UserID,
+                        UpdateMachine = Hardcode.ComputerName
+                    });
+                }
+            }
+            _tenantDataContext.SaveChanges();
         }
 
         /// <summary>
@@ -535,29 +552,34 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateId = Hardcode.UserID;
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
-
-            _tenantDataContext.ReceStatuses.UpdateRange(receStatusies.Select(r => new ReceStatus
-            {
-                HpId = r.HpId,
-                PtId = r.PtId,
-                SeikyuYm = r.SeikyuYm,
-                HokenId = r.HokenId,
-                SinYm = r.SinYm,
-                FusenKbn = r.FusenKbn,
-                IsPaperRece = r.IsPaperRece,
-                Output = r.Output,
-                StatusKbn = r.StatusKbn,
-                IsDeleted = r.IsDeleted,
-                CreateDate = r.CreateDate,
-                CreateId = r.CreateId,
-                CreateMachine = r.CreateMachine,
-                UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                UpdateId = Hardcode.UserID,
-                UpdateMachine = Hardcode.ComputerName
-            }));
-
             _tenantDataContext.SaveChanges();
-            _tenantDataContext.ChangeTracker.Clear();
+            foreach (var receStatus in receStatusies)
+            {
+                var check = _tenantDataContext.ReceStatuses.Any(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
+                if (check)
+                {
+                    _tenantDataContext.ReceStatuses.Update(new ReceStatus
+                    {
+                        HpId = receStatus.HpId,
+                        PtId = receStatus.PtId,
+                        SeikyuYm = receStatus.SeikyuYm,
+                        HokenId = receStatus.HokenId,
+                        SinYm = receStatus.SinYm,
+                        FusenKbn = receStatus.FusenKbn,
+                        IsPaperRece = receStatus.IsPaperRece,
+                        Output = receStatus.Output,
+                        StatusKbn = receStatus.StatusKbn,
+                        IsDeleted = receStatus.IsDeleted,
+                        CreateDate = receStatus.CreateDate,
+                        CreateId = receStatus.CreateId,
+                        CreateMachine = receStatus.CreateMachine,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = Hardcode.UserID,
+                        UpdateMachine = Hardcode.ComputerName
+                    });
+                }
+            }
+            _tenantDataContext.SaveChanges();
         }
     }
 }
