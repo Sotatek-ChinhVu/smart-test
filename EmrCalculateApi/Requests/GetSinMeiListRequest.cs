@@ -14,6 +14,7 @@
 
         public int HokenId { get; set; }
 
+        /*3 Kaikei, 21 AccountingCard*/
         public int SinMeiMode { get; set; }
     }
 }

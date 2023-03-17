@@ -25,7 +25,7 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("GetSinMeiList")]
         public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromBody] GetSinMeiListRequest request)
         {
-
+            /*Mode = 3 Kaikei, 21 AccountingCard*/
             var sinMeiVM = request.SinMeiMode switch
             {
                 3 => new SinMeiViewModel(SinMeiMode.Kaikei, false, request.HpId, request.PtId, request.SinDate, request.RaiinNoList, _tenantProvider, _systemConfigProvider, _emrLogger),

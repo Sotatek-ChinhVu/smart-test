@@ -6,7 +6,6 @@ using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
-using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
@@ -64,8 +63,9 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
+                Console.WriteLine("Function CallCalculate " + ex);
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
@@ -82,8 +82,9 @@ namespace EmrCloudApi.Services
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function GetSinMeiList " + ex);
                 return new();
             }
         }
@@ -98,8 +99,9 @@ namespace EmrCloudApi.Services
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunCalculate " + ex);
                 return false;
             }
         }
@@ -119,8 +121,9 @@ namespace EmrCloudApi.Services
                     return new();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunTrialCalculate " + ex);
                 return new();
             }
         }
@@ -135,8 +138,9 @@ namespace EmrCloudApi.Services
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunCalculateOne " + ex);
                 return false;
             }
         }
@@ -152,8 +156,9 @@ namespace EmrCloudApi.Services
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function ReceFutanCalculateMain " + ex);
                 return false;
             }
         }
@@ -169,8 +174,9 @@ namespace EmrCloudApi.Services
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
                 return false;
             }
         }
