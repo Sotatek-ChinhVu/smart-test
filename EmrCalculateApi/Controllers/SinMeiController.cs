@@ -37,5 +37,14 @@ namespace EmrCalculateApi.Controllers
                 return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM.SinMei));
             }
         }
+
+        [HttpGet("GetSinMeiInMonthList")]
+        public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromQuery] GetSinMeiInMonthListRequest request)
+        {
+            using (SinMeiViewModel sinMeiVM = new SinMeiViewModel(SinMeiMode.ReceCheck, true, request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger))
+            {
+                return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM.SinMei));
+            }
+        }
     }
 }
