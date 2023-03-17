@@ -428,31 +428,31 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
             //_tenantDataContext.SaveChanges();
             //_tenantDataContext.ChangeTracker.Clear();
-            var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => calcStatus.CalcId == calcStatus.CalcId);
-            //_tenantDataContext.ChangeTracker.AcceptAllChanges();
+            //var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => calcStatus.CalcId == calcStatus.CalcId);
+            ////_tenantDataContext.ChangeTracker.AcceptAllChanges();
 
-            if (check != null)
-            {
-                _tenantDataContext.CalcStatus.Update(new CalcStatus
-                {
-                    CalcId = check.CalcId,
-                    HpId = check.HpId,
-                    PtId = check.PtId,
-                    SinDate = check.SinDate,
-                    SeikyuUp = check.SeikyuUp,
-                    CalcMode = check.CalcMode,
-                    ClearReceChk = check.ClearReceChk,
-                    Status = check.Status,
-                    Biko = check.Biko,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = calcStatus.CreateId,
-                    CreateMachine = calcStatus.CreateMachine,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = Hardcode.UserID,
-                    UpdateMachine = Hardcode.ComputerName
-                });
-                _tenantDataContext.SaveChanges();
-            }
+            //if (check != null)
+            //{
+            //    _tenantDataContext.CalcStatus.Update(new CalcStatus
+            //    {
+            //        CalcId = check.CalcId,
+            //        HpId = check.HpId,
+            //        PtId = check.PtId,
+            //        SinDate = check.SinDate,
+            //        SeikyuUp = check.SeikyuUp,
+            //        CalcMode = check.CalcMode,
+            //        ClearReceChk = check.ClearReceChk,
+            //        Status = check.Status,
+            //        Biko = check.Biko,
+            //        CreateDate = CIUtil.GetJapanDateTimeNow(),
+            //        CreateId = calcStatus.CreateId,
+            //        CreateMachine = calcStatus.CreateMachine,
+            //        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            //        UpdateId = Hardcode.UserID,
+            //        UpdateMachine = Hardcode.ComputerName
+            //    });
+            //    _tenantDataContext.SaveChanges();
+            //}
         }
 
         public bool UpdateCalcStatus(List<CalcStatusModel> calcStatusies)
@@ -472,32 +472,32 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //_tenantDataContext.ChangeTracker.AcceptAllChanges();
                 //_tenantDataContext.ChangeTracker.Clear();
 
-                foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
-                {
-                    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
-                    if (check != null)
-                    {
-                        _tenantDataContext.CalcStatus.Update(new CalcStatus
-                        {
-                            CalcId = check.CalcId,
-                            HpId = check.HpId,
-                            PtId = check.PtId,
-                            SinDate = check.SinDate,
-                            SeikyuUp = check.SeikyuUp,
-                            CalcMode = check.CalcMode,
-                            ClearReceChk = check.ClearReceChk,
-                            Status = check.Status,
-                            Biko = check.Biko,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = check.CreateId,
-                            CreateMachine = check.CreateMachine,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = Hardcode.UserID,
-                            UpdateMachine = Hardcode.ComputerName
-                        });
-                    }
-                }
-                _tenantDataContext.SaveChanges();
+                //foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
+                //{
+                //    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
+                //    if (check != null)
+                //    {
+                //        _tenantDataContext.CalcStatus.Update(new CalcStatus
+                //        {
+                //            CalcId = check.CalcId,
+                //            HpId = check.HpId,
+                //            PtId = check.PtId,
+                //            SinDate = check.SinDate,
+                //            SeikyuUp = check.SeikyuUp,
+                //            CalcMode = check.CalcMode,
+                //            ClearReceChk = check.ClearReceChk,
+                //            Status = check.Status,
+                //            Biko = check.Biko,
+                //            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                //            CreateId = check.CreateId,
+                //            CreateMachine = check.CreateMachine,
+                //            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                //            UpdateId = Hardcode.UserID,
+                //            UpdateMachine = Hardcode.ComputerName
+                //        });
+                //    }
+                //}
+                //_tenantDataContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -519,32 +519,32 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //_tenantDataContext.ChangeTracker.AcceptAllChanges();
             //_tenantDataContext.ChangeTracker.Clear();
 
-            foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
-            {
-                var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
-                if (check != null)
-                {
-                    _tenantDataContext.CalcStatus.Update(new CalcStatus
-                    {
-                        CalcId = check.CalcId,
-                        HpId = check.HpId,
-                        PtId = check.PtId,
-                        SinDate = check.SinDate,
-                        SeikyuUp = check.SeikyuUp,
-                        CalcMode = check.CalcMode,
-                        ClearReceChk = check.ClearReceChk,
-                        Status = check.Status,
-                        Biko = check.Biko,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        CreateId = check.CreateId,
-                        CreateMachine = check.CreateMachine,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = Hardcode.UserID,
-                        UpdateMachine = Hardcode.ComputerName
-                    });
-                }
-            }
-            _tenantDataContext.SaveChanges();
+            //foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
+            //{
+            //    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
+            //    if (check != null)
+            //    {
+            //        _tenantDataContext.CalcStatus.Update(new CalcStatus
+            //        {
+            //            CalcId = check.CalcId,
+            //            HpId = check.HpId,
+            //            PtId = check.PtId,
+            //            SinDate = check.SinDate,
+            //            SeikyuUp = check.SeikyuUp,
+            //            CalcMode = check.CalcMode,
+            //            ClearReceChk = check.ClearReceChk,
+            //            Status = check.Status,
+            //            Biko = check.Biko,
+            //            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            //            CreateId = check.CreateId,
+            //            CreateMachine = check.CreateMachine,
+            //            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            //            UpdateId = Hardcode.UserID,
+            //            UpdateMachine = Hardcode.ComputerName
+            //        });
+            //    }
+            //}
+            //_tenantDataContext.SaveChanges();
         }
 
         /// <summary>
@@ -563,33 +563,33 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //_tenantDataContext.SaveChanges();
             //_tenantDataContext.ChangeTracker.AcceptAllChanges();
             //_tenantDataContext.ChangeTracker.Clear();
-            foreach (var receStatus in receStatusies)
-            {
-                var check = _tenantDataContext.ReceStatuses.FirstOrDefault(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
-                if (check != null)
-                {
-                    _tenantDataContext.ReceStatuses.Update(new ReceStatus
-                    {
-                        HpId = check.HpId,
-                        PtId = check.PtId,
-                        SeikyuYm = check.SeikyuYm,
-                        HokenId = check.HokenId,
-                        SinYm = check.SinYm,
-                        FusenKbn = check.FusenKbn,
-                        IsPaperRece = check.IsPaperRece,
-                        Output = check.Output,
-                        StatusKbn = check.StatusKbn,
-                        IsDeleted = check.IsDeleted,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        CreateId = check.CreateId,
-                        CreateMachine = check.CreateMachine,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = Hardcode.UserID,
-                        UpdateMachine = Hardcode.ComputerName
-                    });
-                }
-            }
-            _tenantDataContext.SaveChanges();
+            //foreach (var receStatus in receStatusies)
+            //{
+            //    var check = _tenantDataContext.ReceStatuses.FirstOrDefault(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
+            //    if (check != null)
+            //    {
+            //        _tenantDataContext.ReceStatuses.Update(new ReceStatus
+            //        {
+            //            HpId = check.HpId,
+            //            PtId = check.PtId,
+            //            SeikyuYm = check.SeikyuYm,
+            //            HokenId = check.HokenId,
+            //            SinYm = check.SinYm,
+            //            FusenKbn = check.FusenKbn,
+            //            IsPaperRece = check.IsPaperRece,
+            //            Output = check.Output,
+            //            StatusKbn = check.StatusKbn,
+            //            IsDeleted = check.IsDeleted,
+            //            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            //            CreateId = check.CreateId,
+            //            CreateMachine = check.CreateMachine,
+            //            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            //            UpdateId = Hardcode.UserID,
+            //            UpdateMachine = Hardcode.ComputerName
+            //        });
+            //    }
+            //}
+            //_tenantDataContext.SaveChanges();
         }
     }
 }
