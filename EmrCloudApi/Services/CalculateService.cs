@@ -86,7 +86,7 @@ namespace EmrCloudApi.Services
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Function GetSinMeiList " + ex);
                 return new();
