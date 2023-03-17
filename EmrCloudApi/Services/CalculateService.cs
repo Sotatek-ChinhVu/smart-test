@@ -6,6 +6,7 @@ using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
@@ -33,6 +34,9 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.RunCalculate:
                     functionName = "Calculate/RunCalculate";
+                    break;
+                case CalculateApiPath.GetListReceInf:
+                    functionName = "ReceFutan/GetListReceInf";
                     break;
                 case CalculateApiPath.RunTrialCalculate:
                     functionName = "Calculate/RunTrialCalculate";
@@ -103,6 +107,24 @@ namespace EmrCloudApi.Services
             {
                 Console.WriteLine("Function RunCalculate " + ex);
                 return false;
+            }
+        }
+
+        public ReceInfModelDto GetListReceInf(GetInsuranceInfInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetListReceInf, inputData);
+
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
+                return result;
+            }
+            catch (Exception)
+            {
+                return new();
             }
         }
 

@@ -4,6 +4,7 @@
     {
         GetSinMeiList,
         RunCalculate,
+        GetListReceInf,
         RunTrialCalculate,
         RunCalculateOne,
         ReceFutanCalculateMain,

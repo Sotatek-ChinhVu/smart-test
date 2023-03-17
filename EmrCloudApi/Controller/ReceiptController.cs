@@ -10,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.Receipt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCheckOptionList;
@@ -230,6 +231,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<ReceCmtHistoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetInsuranceInf)]
+    public ActionResult<Response<GetInsuranceInfResponse>> GetDiseaseReceList([FromQuery] GetInsuranceInfRequest request)
+    {
+        var input = new GetInsuranceInfInputData(HpId, request.PtId, request.SinYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetInsuranceInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetInsuranceInfResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.SyoukiInfHistory)]
