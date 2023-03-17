@@ -377,7 +377,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             _emrLogger.WriteLogStart( this, conFncName, "");
 
             // 先に更新/削除分を反映
-            _tenantDataContext.SaveChanges();
+ 
+            //_tenantDataContext.SaveChanges();
 
             using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
             {
