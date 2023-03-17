@@ -427,21 +427,23 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
 
             //_tenantDataContext.SaveChanges();
-            var checkExist = _tenantDataContext.CalcStatus.Any(c => calcStatus.CalcId == calcStatus.CalcId);
+            var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => calcStatus.CalcId == calcStatus.CalcId);
+            _tenantDataContext.ChangeTracker.AcceptAllChanges();
+            _tenantDataContext.ChangeTracker.Clear();
 
-            if (checkExist)
+            if (check != null)
             {
                 _tenantDataContext.CalcStatus.Update(new CalcStatus
                 {
-                    CalcId = calcStatus.CalcId,
-                    HpId = calcStatus.HpId,
-                    PtId = calcStatus.PtId,
-                    SinDate = calcStatus.SinDate,
-                    SeikyuUp = calcStatus.SeikyuUp,
-                    CalcMode = calcStatus.CalcMode,
-                    ClearReceChk = calcStatus.ClearReceChk,
-                    Status = calcStatus.Status,
-                    Biko = calcStatus.Biko,
+                    CalcId = check.CalcId,
+                    HpId = check.HpId,
+                    PtId = check.PtId,
+                    SinDate = check.SinDate,
+                    SeikyuUp = check.SeikyuUp,
+                    CalcMode = check.CalcMode,
+                    ClearReceChk = check.ClearReceChk,
+                    Status = check.Status,
+                    Biko = check.Biko,
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = calcStatus.CreateId,
                     CreateMachine = calcStatus.CreateMachine,
@@ -467,22 +469,25 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
                 //_tenantDataContext.SaveChanges();
+                _tenantDataContext.ChangeTracker.AcceptAllChanges();
+                _tenantDataContext.ChangeTracker.Clear();
+
                 foreach (var calcStatus in calcStatusies)
                 {
-                    var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
-                    if (check)
+                    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcStatus.CalcId);
+                    if (check != null)
                     {
                         _tenantDataContext.CalcStatus.Update(new CalcStatus
                         {
-                            CalcId = calcStatus.CalcId,
-                            HpId = calcStatus.HpId,
-                            PtId = calcStatus.PtId,
-                            SinDate = calcStatus.SinDate,
-                            SeikyuUp = calcStatus.SeikyuUp,
-                            CalcMode = calcStatus.CalcMode,
-                            ClearReceChk = calcStatus.ClearReceChk,
-                            Status = calcStatus.Status,
-                            Biko = calcStatus.Biko,
+                            CalcId = check.CalcId,
+                            HpId = check.HpId,
+                            PtId = check.PtId,
+                            SinDate = check.SinDate,
+                            SeikyuUp = check.SeikyuUp,
+                            CalcMode = check.CalcMode,
+                            ClearReceChk = check.ClearReceChk,
+                            Status = check.Status,
+                            Biko = check.Biko,
                             CreateDate = CIUtil.GetJapanDateTimeNow(),
                             CreateId = calcStatus.CreateId,
                             CreateMachine = calcStatus.CreateMachine,
@@ -511,22 +516,25 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             //_tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.AcceptAllChanges();
+            _tenantDataContext.ChangeTracker.Clear();
+
             foreach (var calcStatus in calcStatusies)
             {
-                var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
-                if (check)
+                var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcStatus.CalcId);
+                if (check != null)
                 {
                     _tenantDataContext.CalcStatus.Update(new CalcStatus
                     {
-                        CalcId = calcStatus.CalcId,
-                        HpId = calcStatus.HpId,
-                        PtId = calcStatus.PtId,
-                        SinDate = calcStatus.SinDate,
-                        SeikyuUp = calcStatus.SeikyuUp,
-                        CalcMode = calcStatus.CalcMode,
-                        ClearReceChk = calcStatus.ClearReceChk,
-                        Status = calcStatus.Status,
-                        Biko = calcStatus.Biko,
+                        CalcId = check.CalcId,
+                        HpId = check.HpId,
+                        PtId = check.PtId,
+                        SinDate = check.SinDate,
+                        SeikyuUp = check.SeikyuUp,
+                        CalcMode = check.CalcMode,
+                        ClearReceChk = check.ClearReceChk,
+                        Status = check.Status,
+                        Biko = check.Biko,
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = calcStatus.CreateId,
                         CreateMachine = calcStatus.CreateMachine,
@@ -553,26 +561,28 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             //_tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.AcceptAllChanges();
+            _tenantDataContext.ChangeTracker.Clear();
             foreach (var receStatus in receStatusies)
             {
-                var check = _tenantDataContext.ReceStatuses.Any(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
-                if (check)
+                var check = _tenantDataContext.ReceStatuses.FirstOrDefault(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
+                if (check != null)
                 {
                     _tenantDataContext.ReceStatuses.Update(new ReceStatus
                     {
-                        HpId = receStatus.HpId,
-                        PtId = receStatus.PtId,
-                        SeikyuYm = receStatus.SeikyuYm,
-                        HokenId = receStatus.HokenId,
-                        SinYm = receStatus.SinYm,
-                        FusenKbn = receStatus.FusenKbn,
-                        IsPaperRece = receStatus.IsPaperRece,
-                        Output = receStatus.Output,
-                        StatusKbn = receStatus.StatusKbn,
-                        IsDeleted = receStatus.IsDeleted,
+                        HpId = check.HpId,
+                        PtId = check.PtId,
+                        SeikyuYm = check.SeikyuYm,
+                        HokenId = check.HokenId,
+                        SinYm = check.SinYm,
+                        FusenKbn = check.FusenKbn,
+                        IsPaperRece = check.IsPaperRece,
+                        Output = check.Output,
+                        StatusKbn = check.StatusKbn,
+                        IsDeleted = check.IsDeleted,
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        CreateId = receStatus.CreateId,
-                        CreateMachine = receStatus.CreateMachine,
+                        CreateId = check.CreateId,
+                        CreateMachine = check.CreateMachine,
                         UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = Hardcode.UserID,
                         UpdateMachine = Hardcode.ComputerName
