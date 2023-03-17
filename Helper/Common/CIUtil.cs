@@ -136,6 +136,18 @@ namespace Helper.Common
             return fullToHalf;
         }
 
+        public static string ToHalfsizeNoKana(string value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            string fullToHalf = HenkanJ.Instance.ToHalfsize(value);
+
+            return fullToHalf;
+        }
+
         public static string ToFullsize(string value)
         {
             if (value == null)
@@ -145,6 +157,18 @@ namespace Helper.Common
 
             string kanaString = RomajiString.Instance.RomajiToKana(value);
             string halfToFull = HenkanJ.Instance.ToFullsize(kanaString);
+
+            return halfToFull;
+        }
+
+        public static string ToFullsizeNoKana(string value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            string halfToFull = HenkanJ.Instance.ToFullsize(value);
 
             return halfToFull;
         }
@@ -1627,7 +1651,7 @@ namespace Helper.Common
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
                         //ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
-                        ret += ToFullsize(s);
+                        ret += ToFullsizeNoKana(s);
                     }
                     else
                     {
@@ -2879,7 +2903,7 @@ namespace Helper.Common
         public static string ToNarrow(string s)
         {
             //return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
-            return ToHalfsize(s);
+            return ToHalfsizeNoKana(s);
         }
 
         /// <summary>
