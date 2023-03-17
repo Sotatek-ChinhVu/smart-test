@@ -1,15 +1,17 @@
-﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
+﻿using EmrCalculateApi.Constants;
 using EmrCalculateApi.Extensions;
-using EmrCalculateApi.Ika.Models;
 using Entity.Tenant;
-using Helper.Common;
-using Helper.Constants;
 using PostgreDataContext;
+using Helper.Constants;
+using EmrCalculateApi.Ika.Models;
+using Helper.Common;
+using Domain.Constant;
+using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
-    public class MasterFinder
+    public class MasterFinder 
     {
         private const string ModuleName = ModuleNameConst.EmrCalculateIka;
         private readonly TenantDataContext _tenantDataContext;
@@ -94,7 +96,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         {
             var entities = _tenantDataContext.TenMsts.FindListQueryableNoTrack(p =>
                     p.HpId == hpId &&
-                    itemCds.Contains(p.ItemCd))
+                    itemCds.Contains(p.ItemCd) )
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
                 .ThenByDescending(p => p.StartDate)
@@ -554,7 +556,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             return results;
         }
 
-        private List<int> unitCdls = new List<int>
+        private List<int> unitCdls  = new List<int>
                 {
                         53,121,131,138,141,142,143,144,145,146,147,148,159,997,998,999
                 };
@@ -705,9 +707,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 s.PtId == ptId &&
                 s.SinYm == sinYm
                 )
-                .Select(p => p.ItemCd)
+                .Select(p=>p.ItemCd)
                 .Distinct().ToList();
-            if (sinDtls != null)
+            if(sinDtls != null)
             {
                 itemCds.AddRange(sinDtls);
             }
@@ -723,8 +725,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     densiHoukatuGrp.EndDate >= sinDate &&
                     itemCds.Contains(densiHoukatuGrp.ItemCd) &&
                     densiHoukatuGrp.IsInvalid == 0 &&
-                      //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
-                      itemCds.Contains(densiHoukatu.ItemCd)
+                    //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
+                      itemCds.Contains(densiHoukatu.ItemCd) 
                 orderby
                     densiHoukatu.HoukatuTerm
                 select new
@@ -742,10 +744,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         data.densiHoukatu
                     )
                 )
-                .OrderBy(p => p.HoukatuGrpNo)
-                .ThenBy(p => p.DensiHoukatu.ItemCd)
-                .ThenBy(p => p.HoukatuTerm)
-                .ThenBy(p => p.ItemCd)
+                .OrderBy(p=>p.HoukatuGrpNo)
+                .ThenBy(p=>p.DensiHoukatu.ItemCd)
+                .ThenBy(p=>p.HoukatuTerm)
+                .ThenBy(p=>p.ItemCd)
                 .ThenByDescending(p => p.DensiHoukatuGrp.UserSetting)
                 .ToList();
 
@@ -755,11 +757,10 @@ namespace EmrCalculateApi.Ika.DB.Finder
             int houkatuTerm = 0;
             string itemCd = "";
             string houkatuItemCd = "";
-
-            entities?.ForEach(entity =>
-            {
+            
+            entities?.ForEach(entity => {
                 if (houkatuGrpNo != entity.HoukatuGrpNo ||
-                   houkatuItemCd != entity.DensiHoukatu.ItemCd ||
+                   houkatuItemCd != entity.DensiHoukatu.ItemCd || 
                    houkatuTerm != entity.HoukatuTerm ||
                    itemCd != entity.ItemCd)
                 {
@@ -826,9 +827,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     densiHoukatuGrp.StartDate <= sinDate &&
                     densiHoukatuGrp.EndDate >= sinDate &&
                     //itemCds.Contains(densiHoukatuGrp.ItemCd) &&
-                    densiHoukatuGrp.IsInvalid == 0
-                //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
-                //itemCds.Contains(densiHoukatu.ItemCd)
+                    densiHoukatuGrp.IsInvalid == 0 
+                      //( sinDtls.Select(p=>p.ItemCd).Contains(densiHoukatu.ItemCd) ||
+                      //itemCds.Contains(densiHoukatu.ItemCd)
                 orderby
                     densiHoukatu.HoukatuTerm
                 select new
@@ -850,8 +851,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             List<DensiHoukatuMstModel> results = new List<DensiHoukatuMstModel>();
 
-            entities?.ForEach(entity =>
-            {
+            entities?.ForEach(entity => {
                 results.Add(new DensiHoukatuMstModel(entity.DensiHoukatuGrp, entity.DensiHoukatu));
             });
 
@@ -881,9 +881,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     (excludeMaybe ? d.SpJyoken == 0 : true) &&
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
-                    .Select(p =>
-                        new
-                        {
+                    .Select(p=>
+                        new {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -895,8 +894,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                             TermSbt = 2,
                             TargetKbn = p.TargetKbn,
                             UserSetting = p.UserSetting,
-                            MstSbt = 0
-                        });
+                            MstSbt = 0});
 
             // 1:同月
             var densiHaihanMonth = _tenantDataContext.DensiHaihanMonths.FindListQueryableNoTrack(d =>
@@ -910,8 +908,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new
-                        {
+                        new {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -938,8 +935,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new
-                        {
+                        new {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -966,8 +962,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new
-                        {
+                        new {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -994,8 +989,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     (excludeMaybe ? d.HaihanKbn != 3 : true) &&
                     d.IsInvalid == 0)
                     .Select(p =>
-                        new
-                        {
+                        new {
                             HpId = p.HpId,
                             StartDate = p.StartDate,
                             EndDate = p.EndDate,
@@ -1010,9 +1004,9 @@ namespace EmrCalculateApi.Ika.DB.Finder
                             MstSbt = 4
                         });
 
-            var unionQuery =
+            var unionQuery = 
                 densiHaihanDay.Union(densiHaihanMonth).Union(densiHaihanWeek).Union(densiHaihanKarte).Union(densiHaihanCustom)
-                    .OrderBy(p => p.MstSbt)
+                    .OrderBy(p => p.MstSbt)    
                     .ThenBy(p => p.TermSbt)
                     .ThenBy(p => p.TermCnt)
                     .ThenBy(p => p.ItemCd1)
@@ -1030,7 +1024,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
 
             List<DensiHaihanMstModel> results = new List<DensiHaihanMstModel>();
-            foreach (var union in unionQuery)
+            foreach(var union in unionQuery)
             {
                 if (mstSbt != union.MstSbt ||
                    termSbt != union.TermSbt ||
@@ -1239,7 +1233,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                         {
                             p
                         });
-
+                        
             List<PriorityHaihanMstModel> results = new List<PriorityHaihanMstModel>();
             foreach (var priorityHaihan in priorityHaihans)
             {
@@ -1275,31 +1269,21 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
         public List<IpnKasanExcludeModel> FindIpnKasanExclude(int hpId, int sinDate)
         {
-            try
+            var entities = _tenantDataContext.ipnKasanExcludes.FindListQueryableNoTrack(p =>
+                    p.HpId == hpId &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate
+                    )
+                .ToList();
+
+            List<IpnKasanExcludeModel> results = new List<IpnKasanExcludeModel>();
+
+            entities?.ForEach(entity =>
             {
-                Console.WriteLine("Log in ipnKasanExcludes");
-                var entities = _tenantDataContext.ipnKasanExcludes.FindListQueryableNoTrack(p =>
-                        p.HpId == hpId &&
-                        p.StartDate <= sinDate &&
-                        p.EndDate >= sinDate
-                        )
-                    .ToList();
-                Console.WriteLine("Log in ipnKasanExcludes");
+                results.Add(new IpnKasanExcludeModel(entity));
+            });
 
-                List<IpnKasanExcludeModel> results = new List<IpnKasanExcludeModel>();
-
-                entities?.ForEach(entity =>
-                {
-                    results.Add(new IpnKasanExcludeModel(entity));
-                });
-
-                return results;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Log error plattform-" + sinDate + "-" + ex.Message);
-                return new();
-            }
+            return results;
         }
 
         public List<IpnKasanExcludeItemModel> FindIpnKasanExcludeItem(int hpId, int sinDate)
@@ -1393,7 +1377,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 i.EndDate >= sinDate &&
                 i.IpnNameCd == ipnNameCd &&
                 i.IsDeleted == DeleteStatus.None)
-                .OrderByDescending(p => p.StartDate)
+                .OrderByDescending(p=>p.StartDate)
                 .ToList();
 
             List<IpnMinYakkaMstModel> results = new List<IpnMinYakkaMstModel>();
@@ -1440,7 +1424,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 p.KaId == kaId &&
                 p.IsDeleted == DeleteStatus.None)
                 .FirstOrDefault();
-
+            
             if (entities == null)
             {
                 return null;
@@ -1488,7 +1472,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     p.HpId == hpId &&
                     p.StartDate <= sinDate &&
                     p.EndDate >= sinDate //&&
-                                         //p.CmtSbt > 0
+                    //p.CmtSbt > 0
                     )
                 .OrderBy(p => p.HpId)
                 .ThenBy(p => p.ItemCd)
@@ -1505,7 +1489,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 from recedenCmtSelect in recedenCmtSelects
                 join tenMst in tenMsts on
                     new { recedenCmtSelect.HpId, ItemCd = recedenCmtSelect.CommentCd } equals
-                    new { tenMst.HpId, tenMst.ItemCd }
+                    new { tenMst.HpId, tenMst.ItemCd } 
                 select new
                 {
                     recedenCmtSelect,
@@ -1527,7 +1511,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 {
                     results.Add(
                         new RecedenCmtSelectModel(
-                            entity.recedenCmtSelect,
+                            entity.recedenCmtSelect, 
                             entity.cmtsbt,
                             entity.cmtcol1,
                             entity.cmtcolketa1,

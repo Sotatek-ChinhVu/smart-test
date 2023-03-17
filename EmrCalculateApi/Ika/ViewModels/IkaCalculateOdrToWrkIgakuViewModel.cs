@@ -293,24 +293,18 @@ namespace EmrCalculateApi.Ika.ViewModels
             _emrLogger.WriteLogStart( this, conFncName, "");
 
             // 自動算定分を先に処理
-
+            
             // 認知症地域包括診療料
-            Console.WriteLine("Start NintiTiikiHoukatu Caculate 1");
             NintiTiikiHoukatu();
-            Console.WriteLine("End NintiTiikiHoukatu Caculate 1");
 
             // 地域包括診療料
-            Console.WriteLine("Start TiikiHoukatu Caculate 2");
             TiikiHoukatu();
-            Console.WriteLine("End TiikiHoukatu Caculate 2");
 
             // 小児かかりつけ診療料
             if (SyouniKakarituke() == false)
             {
                 // 小児科外来診療料
-                Console.WriteLine("Start SyouniGairai Caculate 3");
                 SyouniGairai();
-                Console.WriteLine("End SyouniGairai Caculate 3");
             }
 
             //// 小児かかりつけ診療料
@@ -331,16 +325,12 @@ namespace EmrCalculateApi.Ika.ViewModels
             ////}
 
             //外来腫瘍化学療法診療料
-            Console.WriteLine("Start GairaiSyuyo Caculate 4");
             GairaiSyuyo();
-            Console.WriteLine("End GairaiSyuyo Caculate 4");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Igaku, OdrKouiKbnConst.Igaku))
             {
                 // 保険
-                Console.WriteLine("Start CalculateHoken Caculate 5");
                 CalculateHoken();
-                Console.WriteLine("End CalculateHoken Caculate 5");
 
                 // 自費
                 CalculateJihi();
@@ -350,14 +340,10 @@ namespace EmrCalculateApi.Ika.ViewModels
                     new double[] { SyosaiConst.Saisin }.Contains(_common.syosai))
             {
                 // 再診時療養指導料
-                Console.WriteLine("Start SaisinRyoyo Caculate 6");
                 SaisinRyoyo();
-                Console.WriteLine("End SaisinRyoyo Caculate 6");
             }
 
-            Console.WriteLine("Start SaisinRyoyo Caculate 7");
             _common.Wrk.CommitWrkSinRpInf();
-            Console.WriteLine("End SaisinRyoyo Caculate 7");
 
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }

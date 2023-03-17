@@ -70,19 +70,13 @@ namespace EmrCalculateApi.Ika.ViewModels
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.KensaMin, OdrKouiKbnConst.KensaMax))
             {
                 // 保険
-                Console.WriteLine("Start CalculateHoken IkaCalculateOdrToWrkKensaViewModel");
                 CalculateHoken();
-                Console.WriteLine("End CalculateHoken IkaCalculateOdrToWrkKensaViewModel");
 
                 // 自費
-                Console.WriteLine("Start CalculateJihi IkaCalculateOdrToWrkKensaViewModel");
                 CalculateJihi();
-                Console.WriteLine("End CalculateJihi IkaCalculateOdrToWrkKensaViewModel");
             }
 
-            Console.WriteLine("Start CommitWrkSinRpInf IkaCalculateOdrToWrkKensaViewModel");
             _common.Wrk.CommitWrkSinRpInf();
-            Console.WriteLine("End CommitWrkSinRpInf IkaCalculateOdrToWrkKensaViewModel");
 
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }

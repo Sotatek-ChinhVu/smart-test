@@ -27,8 +27,8 @@ namespace EmrCalculateApi.Ika.ViewModels
             ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _common = common;
-            _systemConfigProvider = systemConfigProvider;
-            _emrLogger = emrLogger;
+            _systemConfigProvider= systemConfigProvider;
+            _emrLogger= emrLogger;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         public void Calculate()
         {
             const string conFncName = nameof(Calculate);
-            _emrLogger.WriteLogStart(this, conFncName, "");
+            _emrLogger.WriteLogStart( this, conFncName, "");
 
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Igaku, 999))
             {
@@ -47,7 +47,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             _common.Wrk.CommitWrkSinRpInf();
 
-            _emrLogger.WriteLogEnd(this, conFncName, "");
+            _emrLogger.WriteLogEnd( this, conFncName, "");
         }
 
         /// <summary>
@@ -178,16 +178,12 @@ namespace EmrCalculateApi.Ika.ViewModels
                                 {
                                     if (odrInf.InoutKbn == 1)
                                     {
-                                        var tempTenZero = _common.Wrk.wrkSinKouiDetails.LastOrDefault();
-                                        if (tempTenZero != null)
-                                            tempTenZero.TenZero = true;
+                                        _common.Wrk.wrkSinKouiDetails.Last().TenZero = true;
 
                                         if (odrDtl.SyohoKbn == 3 && _common.Mst.IsIpnKasanExclude(odrDtl.IpnCd, odrDtl.ItemCd) == false)
                                         {
                                             // 一般名処方の場合、最低薬価で計算
-                                            var minYakkaObject = _common.Wrk.wrkSinKouiDetails.LastOrDefault();
-                                            if (minYakkaObject != null)
-                                                minYakkaObject.MinYakka = odrDtl.MinYakka;
+                                            _common.Wrk.wrkSinKouiDetails.Last().MinYakka = odrDtl.MinYakka;
                                         }
                                     }
                                 }
@@ -293,7 +289,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 #endregion
 
                 int val = 0;
-                if (dic.TryGetValue(AodrInf.OdrKouiKbn, out val))
+                if(dic.TryGetValue(AodrInf.OdrKouiKbn, out val))
                 {
                     ret = val;
                 }

@@ -162,19 +162,13 @@ namespace EmrCalculateApi.Ika.ViewModels
             if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.TouyakuMin, OdrKouiKbnConst.TouyakuMax))
             {
                 // 保険
-                Console.WriteLine("Start caculate CalculateHoken");
                 CalculateHoken();
-                Console.WriteLine("End caculate CalculateHoken");
 
                 // 自費
-                Console.WriteLine("Start caculate CalculateJihi");
                 CalculateJihi();
-                Console.WriteLine("End caculate CalculateJihi");
-
             }
-            Console.WriteLine("Start caculate CommitWrkSinRpInf");
+
             _common.Wrk.CommitWrkSinRpInf();
-            Console.WriteLine("End caculate CommitWrkSinRpInf");
 
             _emrLogger.WriteLogEnd( this, conFncName, "");
         }
@@ -198,7 +192,6 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             IsOrderSyohoryo = _common.Odr.ExistOdrDetailByItemCd(targetItemCds);
 
-            Console.WriteLine("Start caculate 1");
             // 向精神薬チェック
             bool kouseiTazai = CheckKouseisin();
 
@@ -210,9 +203,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             // 調剤料
             Chozairyo();
-            Console.WriteLine("End caculate 1");
 
-            Console.WriteLine("Start caculate 2");
             // 調剤基本料
             ChoKiryo();
 
@@ -221,9 +212,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             // 特定疾患処方管理加算
             Tokusyo();
-            Console.WriteLine("End caculate 2");
 
-            Console.WriteLine("Start caculate 3");
             // 薬材料
             // 内服薬
             Yakuzai(OdrKouiKbnConst.Naifuku, kouseiTazai, naifukuTazai);
@@ -233,9 +222,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             Yakuzai(OdrKouiKbnConst.Gaiyo, kouseiTazai, naifukuTazai);
             // 自己注
             Yakuzai(OdrKouiKbnConst.JikoCyu, kouseiTazai, naifukuTazai);
-            Console.WriteLine("End caculate 3");
 
-            Console.WriteLine("Start caculate 4");
             // 処方のRpを取得(処方箋コメント29は除く）
             filteredOdrInf = _common.Odr.FilterOdrInfByKouiKbnRange(OdrKouiKbnConst.TouyakuMin, OdrKouiKbnConst.JikoCyu)
                                 .OrderBy(p=>p.SortNo)
@@ -369,7 +356,6 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 _common.Wrk.CommitWrkSinRpInf();
             }
-            Console.WriteLine("End caculate 4");
 
             #region Local Method
 
@@ -2048,7 +2034,6 @@ namespace EmrCalculateApi.Ika.ViewModels
         /// <param name="naifukuTazai">true-多剤投与に該当</param>
         private void Yakuzai(int kouiKbn, bool kouseiTazai, bool naifukuTazai)
         {
-            Console.WriteLine("Start first Yakuzai");
             IEnumerable<OdrInfModel> filteredOdrInf;
             List<OdrDtlTenModel> filteredOdrDtl;
 
@@ -2056,11 +2041,9 @@ namespace EmrCalculateApi.Ika.ViewModels
             bool commentDelFlg = false;
 
             List<(int hokenPid, int hokenId, int santeiKbn)> pidList = _common.Odr.GetPidList(kouiKbn);
-            Console.WriteLine("End first Yakuzai");
 
             for (int i = 0; i < pidList.Count; i++)
             {
-                Console.WriteLine("Start filterAll Yakuzai");
                 // 処方のRpを取得
                 filteredOdrInf = null;
 
@@ -2069,13 +2052,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                                     .OrderBy(p => p.SortNo)
                                     .ThenBy(p => p.RpNo)
                                     .ThenBy(p => p.RpEdaNo);
-                Console.WriteLine("End filterAll Yakuzai");
-
 
                 if (filteredOdrInf != null && filteredOdrInf.Any())
                 {
-                    Console.WriteLine("Start Declare variable in for Yakuzai");
-
                     bool firstSinryoKoui;
 
                     bool kouseiExist = false;
@@ -2118,11 +2097,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                         receSinId = ReceSinId.Zaitaku;
                         syukeiSaki = ReceSyukeisaki.ZaiYakuzai;
                     }
-                    Console.WriteLine("End Declare variable in for Yakuzai");
 
                     foreach (OdrInfModel odrInf in filteredOdrInf)
                     {
-                        Console.WriteLine("Start first in for two Yakuzai");
                         string cdKbn = "F";
 
                         if (kouiKbn == OdrKouiKbnConst.JikoCyu)
@@ -2159,15 +2136,11 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                         bool kouseiExistRp = false;
                         bool tazaiExistRp = false;
-                        Console.WriteLine("Start first in for two Yakuzai");
 
                         foreach (OdrDtlTenModel odrDtl in filteredOdrDtl)
                         {
-                            Console.WriteLine("Start if yoho in for third Yakuzai");
                             if (odrDtl.IsYoho)
                             {
-                                Console.WriteLine("End if yoho in for third Yakuzai");
-                                Console.WriteLine("Start first in for third Yakuzai");
                                 // 用法 
                                 //commentSkipFlg = false;
 
@@ -2175,11 +2148,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                                 {
                                     // 院外の場合、用法のコメントは出力する
                                     commentSkipFlg = false;
-                                    Console.WriteLine("Start if in for third Yakuzai");
+
                                     if (_systemConfigProvider.GetOutDrugYohoDsp() == 1)
                                     {
-                                        Console.WriteLine("End if in for third Yakuzai");
-                                        Console.WriteLine("Start first first in for third Yakuzai");
                                         // 院外の場合、コメントとして記録
                                         //string comment = odrDtl.ItemName;
                                         string comment = odrDtl.ReceName;
@@ -2187,14 +2158,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                                         {
                                             comment += "（" + odrDtl.Suryo.ToString() + odrDtl.UnitName + "）";
                                         }
-                                        Console.WriteLine("End first first in for third Yakuzai");
 
-                                        Console.WriteLine("Start second first in for third Yakuzai AppendNewWrkSinKouiDetailCommentRecord");
                                         _common.Wrk.AppendNewWrkSinKouiDetailCommentRecord(ItemCdConst.CommentFree, comment);
-                                        Console.WriteLine("End second first in for third Yakuzai AppendNewWrkSinKouiDetailCommentRecord");
-                                        Console.WriteLine("Start second first in for third Yakuzai Last");
                                         _common.Wrk.wrkSinKouiDetails.Last().IsNodspRece = NoDspConst.NoDspReceden;
-                                        Console.WriteLine("End second first in for third Yakuzai Last");
                                     }
                                 }
                                 else
@@ -2211,7 +2177,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                                     //しかし、それでは分かりにくいので、HAYABUSAは一律出力しないことにする
                                     //後々、問題になるようなら、院内処方用法コメントを出力するかどうかのオプションを作る(2020/08/14)
                                     // オプション追加(2022/03/02)
-                                    Console.WriteLine("Start third first in for third Yakuzai");
+
                                     if (_systemConfigProvider.GetInDrugYohoComment() == 1)
                                     {
                                         commentSkipFlg = false;
@@ -2222,25 +2188,18 @@ namespace EmrCalculateApi.Ika.ViewModels
                                         commentSkipFlg = true;
                                         commentDelFlg = true;
                                     }
-                                    Console.WriteLine("End third first in for third Yakuzai");
                                 }
 
-                                Console.WriteLine("Start fouth first in for third Yakuzai");
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
-                                Console.WriteLine("End fouth first in for third Yakuzai");
-                                Console.WriteLine("End first in for third Yakuzai");
                             }
                             else if (commentDelFlg && _common.IsCommentItemCd(odrDtl.ItemCd) && !odrDtl.IsSelectComment)
                             {
-                                Console.WriteLine("Start second in for third Yakuzai");
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
-                                Console.WriteLine("End second in for third Yakuzai");
                             }
                             else if (odrDtl.IsYorCommentItem(commentSkipFlg) || odrDtl.IsSelectComment)
                             {
-                                Console.WriteLine("Start third in for third Yakuzai");
                                 commentSkipFlg = false;
                                 commentDelFlg = false;
 
@@ -2320,11 +2279,9 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p =>p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
-                                Console.WriteLine("End third in for third Yakuzai");
                             }
                             else if (odrDtl.IsTorCommentItem(commentSkipFlg))
                             {
-                                Console.WriteLine("Start fourth in for third Yakuzai");
                                 // 特材が薬剤の代わりにオーダーされることもある
 
                                 if (kouiKbn == OdrKouiKbnConst.JikoCyu && odrInf.InoutKbn == 0)
@@ -2359,11 +2316,9 @@ namespace EmrCalculateApi.Ika.ViewModels
                                 
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
-                                Console.WriteLine("End fourth in for third Yakuzai");
                             }
                             else if (odrDtl.IsSorCommentItem(commentSkipFlg))
                             {
-                                Console.WriteLine("Start fifth in for third Yakuzai");
                                 if (kouiKbn == OdrKouiKbnConst.JikoCyu && odrInf.InoutKbn == 0 && odrDtl.ItemCd == ItemCdConst.ChusyaJikocyu)
                                 {
                                     // 自己注射で院内の場合、算定しない
@@ -2389,12 +2344,10 @@ namespace EmrCalculateApi.Ika.ViewModels
                                 }
                                 // オーダーから削除
                                 _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
-                                Console.WriteLine("End fifth in for third Yakuzai");
                             }
                             else
                             {
-                                Console.WriteLine("Start sixth in for third Yakuzai");
-                                if (commentDelFlg && odrDtl.IsComment)
+                                if(commentDelFlg && odrDtl.IsComment)
                                 {
                                     // コメント削除指示がある場合、コメントはオーダーから削除
                                     _common.Odr.odrDtlls.RemoveAll(p => p.RaiinNo == odrDtl.RaiinNo && p.RpNo == odrDtl.RpNo && p.RpEdaNo == odrDtl.RpEdaNo && p.RowNo == odrDtl.RowNo);
@@ -2402,9 +2355,8 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                                 commentSkipFlg = true;
                                 commentDelFlg = false;
-                                Console.WriteLine("End sixth in for third Yakuzai");
                             }
-                            Console.WriteLine("Start seventh in for third Yakuzai");
+
                             // 逓減項目有無判定
                             if (odrInf.InoutKbn == 0 &&
                                 kouiKbn != OdrKouiKbnConst.JikoCyu &&
@@ -2423,10 +2375,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                                     tazaiExistRp = true;
                                 }
                             }
-                            Console.WriteLine("End seventh in for third Yakuzai");
                         }
 
-                        Console.WriteLine("Start eighth in for third Yakuzai");
                         if (kouseiExistRp)
                         {
                             // （精減）                        
@@ -2440,7 +2390,6 @@ namespace EmrCalculateApi.Ika.ViewModels
                             _common.Wrk.AppendNewWrkSinKouiDetail(ItemCdConst.TouyakuYakuGenNaifuku, autoAdd: 1, isNodspRece: tazaiCmt);
                             //tazaiCmt = 2;　レセ出力時に対処する
                         }
-                        Console.WriteLine("End eighth in for third Yakuzai");
 
                     }
 
@@ -2452,7 +2401,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     //    // 行為
                     //    _common.Wrk.AppendNewWrkSinKoui(pidList[i].hokenPid, pidList[i].hokenId, syukeiSaki, count: 1, inoutKbn: 0, cdKbn: _common.GetCdKbn(pidList[i].santeiKbn, "F"));
                     //}
-                    Console.WriteLine("Start nineth in for third Yakuzai");
+
                     if (kouseiExist)
                     {
                         // Rp
@@ -2479,7 +2428,6 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                     _common.Wrk.CommitWrkSinRpInf();
                 }
-                Console.WriteLine("End nineth in for third Yakuzai");
             }
         }
 
