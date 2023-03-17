@@ -357,7 +357,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
             if (calcIds != null && calcIds.Any())
             {
                 var test = _tenantDataContext.CalcStatus.Where(c => c.CreateMachine == computerName).ToList();
-                var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
+                var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
                     p.CreateMachine == computerName &&
                     calcIds.Contains(p.CalcId) &&
                     !(new int[] { 8, 9 }.Contains(p.Status)))
