@@ -472,9 +472,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //_tenantDataContext.ChangeTracker.AcceptAllChanges();
                 _tenantDataContext.ChangeTracker.Clear();
 
-                foreach (var calcStatus in calcStatusies)
+                foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
                 {
-                    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcStatus.CalcId);
+                    var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
                     if (check != null)
                     {
                         _tenantDataContext.CalcStatus.Update(new CalcStatus
@@ -519,9 +519,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //_tenantDataContext.ChangeTracker.AcceptAllChanges();
             _tenantDataContext.ChangeTracker.Clear();
 
-            foreach (var calcStatus in calcStatusies)
+            foreach (var calcId in calcStatusies.Select(c => c.CalcId).Distinct())
             {
-                var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcStatus.CalcId);
+                var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => c.CalcId == calcId);
                 if (check != null)
                 {
                     _tenantDataContext.CalcStatus.Update(new CalcStatus
@@ -536,8 +536,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         Status = check.Status,
                         Biko = check.Biko,
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        CreateId = calcStatus.CreateId,
-                        CreateMachine = calcStatus.CreateMachine,
+                        CreateId = check.CreateId,
+                        CreateMachine = check.CreateMachine,
                         UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = Hardcode.UserID,
                         UpdateMachine = Hardcode.ComputerName
