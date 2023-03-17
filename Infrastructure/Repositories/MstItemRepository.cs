@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
-            var query = from main in OtcMains
+            var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
                         join makercode in OtcMakerCodes on main.CompanyCd equals makercode.MakerCd into makerLeft
@@ -66,12 +66,12 @@ namespace Infrastructure.Repositories
                             main.TradeCd ?? string.Empty,
                             main.DrugFormCd ?? string.Empty,
                             main.YohoCd ?? string.Empty,
-                            form.Form ?? string.Empty,
-                            maker.MakerName ?? string.Empty,
-                            maker.MakerKana ?? string.Empty,
-                            usage.Yoho ?? string.Empty,
-                            clas.ClassName ?? string.Empty,
-                            clas.MajorDivCd ?? string.Empty
+                            form?.Form ?? string.Empty,
+                            maker?.MakerName ?? string.Empty,
+                            maker?.MakerKana ?? string.Empty,
+                            usage?.Yoho ?? string.Empty,
+                            clas?.ClassName ?? string.Empty,
+                            clas?.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
