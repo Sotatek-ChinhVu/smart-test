@@ -427,9 +427,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
 
             //_tenantDataContext.SaveChanges();
-            var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => calcStatus.CalcId == calcStatus.CalcId);
-            _tenantDataContext.ChangeTracker.AcceptAllChanges();
             _tenantDataContext.ChangeTracker.Clear();
+            var check = _tenantDataContext.CalcStatus.FirstOrDefault(c => calcStatus.CalcId == calcStatus.CalcId);
+            //_tenantDataContext.ChangeTracker.AcceptAllChanges();
 
             if (check != null)
             {
@@ -469,7 +469,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
                 //_tenantDataContext.SaveChanges();
-                _tenantDataContext.ChangeTracker.AcceptAllChanges();
+                //_tenantDataContext.ChangeTracker.AcceptAllChanges();
                 _tenantDataContext.ChangeTracker.Clear();
 
                 foreach (var calcStatus in calcStatusies)
@@ -516,7 +516,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             //_tenantDataContext.SaveChanges();
-            _tenantDataContext.ChangeTracker.AcceptAllChanges();
+            //_tenantDataContext.ChangeTracker.AcceptAllChanges();
             _tenantDataContext.ChangeTracker.Clear();
 
             foreach (var calcStatus in calcStatusies)
@@ -561,7 +561,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             //_tenantDataContext.SaveChanges();
-            _tenantDataContext.ChangeTracker.AcceptAllChanges();
+            //_tenantDataContext.ChangeTracker.AcceptAllChanges();
             _tenantDataContext.ChangeTracker.Clear();
             foreach (var receStatus in receStatusies)
             {
