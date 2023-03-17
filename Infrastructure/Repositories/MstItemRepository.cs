@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
-            var query = from main in OtcMains
+            var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
                         join makercode in OtcMakerCodes on main.CompanyCd equals makercode.MakerCd into makerLeft
