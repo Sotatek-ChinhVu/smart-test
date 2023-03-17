@@ -66,12 +66,12 @@ namespace Infrastructure.Repositories
                             main.TradeCd ?? string.Empty,
                             main.DrugFormCd ?? string.Empty,
                             main.YohoCd ?? string.Empty,
-                            form.Form ?? string.Empty,
-                            maker.MakerName ?? string.Empty,
-                            maker.MakerKana ?? string.Empty,
-                            usage.Yoho ?? string.Empty,
-                            clas.ClassName ?? string.Empty,
-                            clas.MajorDivCd ?? string.Empty
+                            form?.Form ?? string.Empty,
+                            maker?.MakerName ?? string.Empty,
+                            maker?.MakerKana ?? string.Empty,
+                            usage?.Yoho ?? string.Empty,
+                            clas?.ClassName ?? string.Empty,
+                            clas?.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
