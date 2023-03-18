@@ -529,7 +529,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         });
                     }
                 }
-                //_tenantDataContext.SaveChanges();
+                _tenantDataContext.SaveChanges();
             }
             catch (Exception e)
             {
