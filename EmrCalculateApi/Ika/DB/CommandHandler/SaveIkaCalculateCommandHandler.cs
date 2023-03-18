@@ -299,29 +299,29 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             try
             {
                 List<SinKouiDetail> sinDtls = sinKouiDetailModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiDetail).ToList();
-                foreach (var sinDtl in sinDtls)
-                {
-                    if (sinDtl.ItemName?.Length > 1000)
-                    {
-                        Console.WriteLine("ItemName > 1000 " + sinDtl.ItemName);
-                        sinDtl.ItemName = sinDtl.ItemName.Substring(0, 1000);
-                    }
-                    if (sinDtl.Cmt1?.Length > 1000)
-                    {
-                        Console.WriteLine("Cmt1 > 1000" + sinDtl.Cmt1);
-                        sinDtl.ItemName = sinDtl.Cmt1.Substring(0, 1000);
-                    }
-                    if (sinDtl.Cmt2?.Length > 1000)
-                    {
-                        Console.WriteLine("Cmt2 > 1000" + sinDtl.Cmt2);
-                        sinDtl.Cmt2 = sinDtl.Cmt2.Substring(0, 1000);
-                    }
-                    if (sinDtl.Cmt3?.Length > 1000)
-                    {
-                        Console.WriteLine("Cmt3 > 1000" + sinDtl.Cmt2);
-                        sinDtl.Cmt3 = sinDtl.Cmt3.Substring(0, 1000);
-                    }
-                }
+                //foreach (var sinDtl in sinDtls)
+                //{
+                //    if (sinDtl.ItemName?.Length > 1000)
+                //    {
+                //        Console.WriteLine("ItemName > 1000 " + sinDtl.ItemName);
+                //        sinDtl.ItemName = sinDtl.ItemName.Substring(0, 1000);
+                //    }
+                //    if (sinDtl.Cmt1?.Length > 1000)
+                //    {
+                //        Console.WriteLine("Cmt1 > 1000" + sinDtl.Cmt1);
+                //        sinDtl.ItemName = sinDtl.Cmt1.Substring(0, 1000);
+                //    }
+                //    if (sinDtl.Cmt2?.Length > 1000)
+                //    {
+                //        Console.WriteLine("Cmt2 > 1000" + sinDtl.Cmt2);
+                //        sinDtl.Cmt2 = sinDtl.Cmt2.Substring(0, 1000);
+                //    }
+                //    if (sinDtl.Cmt3?.Length > 1000)
+                //    {
+                //        Console.WriteLine("Cmt3 > 1000" + sinDtl.Cmt2);
+                //        sinDtl.Cmt3 = sinDtl.Cmt3.Substring(0, 1000);
+                //    }
+                //}
                 newDbContext.SinKouiDetails.AddRange(sinDtls);
 
             }
