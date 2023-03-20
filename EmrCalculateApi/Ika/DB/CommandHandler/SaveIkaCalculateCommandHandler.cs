@@ -1,18 +1,19 @@
 ﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
-using Helper.Common;
+using PostgreDataContext;
 using Helper.Constants;
+using EmrCalculateApi.Ika.Models;
+using Helper.Common;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.ViewModels;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace EmrCalculateApi.Ika.DB.CommandHandler
 {
-    public class SaveIkaCalculateCommandHandler
+    public class SaveIkaCalculateCommandHandler 
     {
         private readonly string ModuleName = ModuleNameConst.EmrCalculateIka;
         private readonly TenantDataContext _tenantDataContext;
@@ -49,16 +50,16 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError(this, conFncName, E);
+                _emrLogger.WriteLogError( this, conFncName, E);
             }
             return calcId;
         }
 
         public void AddWrkTalbes
             (TenantDataContext tenantDataContext,
-            List<WrkSinRpInfModel> wrkSinRpInfModels,
-             List<WrkSinKouiModel> wrkSinKouiModels,
-             List<WrkSinKouiDetailModel> wrkSinKouiDetailModels,
+            List<WrkSinRpInfModel> wrkSinRpInfModels, 
+             List<WrkSinKouiModel> wrkSinKouiModels, 
+             List<WrkSinKouiDetailModel> wrkSinKouiDetailModels, 
              List<WrkSinKouiDetailDelModel> wrkSinKouiDetailDelModels
              )
         {
@@ -76,12 +77,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //);
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
-                {
-                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    p.CreateId = Hardcode.UserID;
-                    p.CreateMachine = Hardcode.ComputerName;
+                    {
+                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        p.CreateId = Hardcode.UserID;
+                        p.CreateMachine = Hardcode.ComputerName;
 
-                }
+                    }
                 );
                 tenantDataContext.WrkSinRpInfs.AddRange(wrkSinRps);
 
@@ -99,7 +100,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 {
                     p.CreateDate = CIUtil.GetJapanDateTimeNow();
                     p.CreateId = Hardcode.UserID;
-                    p.CreateMachine = Hardcode.ComputerName;
+                p.CreateMachine = Hardcode.ComputerName;
 
                 }
                 );
@@ -113,12 +114,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 List<WrkSinKouiDetail> wrkSinDtls = wrkSinKouiDetailModels.Select(p => p.WrkSinKouiDetail).ToList();
                 wrkSinDtls?.ForEach(p =>
-                {
-                    if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
                     {
-                        p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
+                        if(string.IsNullOrEmpty(p.TyuCd)==false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
+                        {
+                            p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
+                        }
                     }
-                }
                 );
                 tenantDataContext.WrkSinKouiDetails.AddRange(wrkSinDtls);
 
@@ -128,7 +129,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError(this, conFncName, E);
+                _emrLogger.WriteLogError( this, conFncName, E);
             }
         }
 
@@ -164,7 +165,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError(this, conFncName, E);
+                _emrLogger.WriteLogError( this, conFncName, E);
             }
         }
 
@@ -177,7 +178,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError(this, conFncName, E);
+                _emrLogger.WriteLogError( this, conFncName, E);
             }
         }
 
@@ -300,7 +301,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             newDbContext.SinKouiDetails.AddRange(sinDtls);
 
             List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
-            foreach (SinKouiCount sinKouiCount in sinKouiCounts)
+            foreach(SinKouiCount sinKouiCount in sinKouiCounts)
             {
                 sinKouiCount.CreateDate = CIUtil.GetJapanDateTimeNow();
                 sinKouiCount.CreateId = Hardcode.UserID;
@@ -328,7 +329,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 newDbContext.SaveChanges();
             }
             //catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 //foreach (var errors in ex.EntityValidationErrors)
                 //{
@@ -351,7 +352,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
          List<SinRpNoInfModel> sinRpNoInfModels)
         {
             //string MachineName = Hardcode.ComputerName;
-
+                        
             var delSinRpInf = sinRpInfModels.FindAll(p => p.IsDeleted == 1).ToList();
             delSinRpInf?.ForEach(p =>
                 newDbContext.SinRpInfs.Remove(p.SinRpInf)
@@ -373,7 +374,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         {
             string conFncName = nameof(UpdateData);
 
-            _emrLogger.WriteLogStart(this, conFncName, "");
+            _emrLogger.WriteLogStart( this, conFncName, "");
 
             // 先に更新/削除分を反映
             _tenantDataContext.SaveChanges();
@@ -417,7 +418,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         }
                     });
             }
-            _emrLogger.WriteLogEnd(this, conFncName, "");
+            _emrLogger.WriteLogEnd( this, conFncName, "");
         }
 
         public void UpdateCalcStatus(CalcStatusModel calcStatus)
@@ -442,12 +443,13 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     calcStatus.UpdateId = Hardcode.UserID;
                     calcStatus.UpdateMachine = Hardcode.ComputerName;
                 }
+
                 _tenantDataContext.SaveChanges();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 ret = false;
-                _emrLogger.WriteLogError(this, conFncName, e);
+                _emrLogger.WriteLogError( this, conFncName, e);
             }
 
             return ret;
@@ -460,6 +462,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 calcStatus.UpdateId = Hardcode.UserID;
                 calcStatus.UpdateMachine = Hardcode.ComputerName;
             }
+
             _tenantDataContext.SaveChanges();
         }
 
@@ -476,6 +479,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 receStatus.UpdateId = Hardcode.UserID;
                 receStatus.UpdateMachine = Hardcode.ComputerName;
             }
+
             _tenantDataContext.SaveChanges();
         }
     }

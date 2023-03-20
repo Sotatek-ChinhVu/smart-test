@@ -122,7 +122,6 @@ namespace Helper.Common
             else
                 return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
         }
-
         public static string ToHalfsize(string value)
         {
             if (value == null)
@@ -134,19 +133,6 @@ namespace Helper.Common
             string fullToHalf = HenkanJ.Instance.ToHalfsize(kanaString);
 
             return fullToHalf;
-        }
-
-        public static string ToFullsize(string value)
-        {
-            if (value == null)
-            {
-                return string.Empty;
-            }
-
-            string kanaString = RomajiString.Instance.RomajiToKana(value);
-            string halfToFull = HenkanJ.Instance.ToFullsize(kanaString);
-
-            return halfToFull;
         }
 
         // Format for param: yyyymmdd
@@ -1626,8 +1612,7 @@ namespace Helper.Common
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        //ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
-                        ret += ToFullsize(s);
+                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
                     }
                     else
                     {
@@ -2878,8 +2863,7 @@ namespace Helper.Common
         /// <returns></returns>
         public static string ToNarrow(string s)
         {
-            //return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
-            return ToHalfsize(s);
+            return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
         }
 
         /// <summary>
