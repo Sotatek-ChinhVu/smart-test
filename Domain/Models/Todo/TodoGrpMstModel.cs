@@ -41,7 +41,7 @@ public class TodoGrpMstModel
             return ValidationStatus.InvalidGrpColor;
         }
 
-        if (SortNo <= 0)
+        if (SortNo < 0)
         {
             return ValidationStatus.InvalidSortNo;
         }

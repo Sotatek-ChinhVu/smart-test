@@ -23,6 +23,15 @@ namespace EmrCloudApi.Presenters.TodoGroupMst
         private static string GetMessage(TodoGrpMstConstant status) => status switch
         {
             TodoGrpMstConstant.Success => ResponseMessage.Success,
+            TodoGrpMstConstant.Failed => ResponseMessage.Failed,
+            TodoGrpMstConstant.InvalidGrpColor => ResponseMessage.InvalidGrpColor,
+            TodoGrpMstConstant.InvalidTodoGrpName => ResponseMessage.InvalidTodoGrpName,
+            TodoGrpMstConstant.InvalidTodoGrpNo => ResponseMessage.InvalidTodoGrpNo,
+            TodoGrpMstConstant.InvalidTodoGrpMst => ResponseMessage.InvalidTodoGrpMst,
+            TodoGrpMstConstant.InputNoData => ResponseMessage.InputNoData,
+            TodoGrpMstConstant.InvalidExistedTodoGrpNo => ResponseMessage.InvalidExistedTodoGrpNo,
+            TodoGrpMstConstant.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
+            TodoGrpMstConstant.InvalidSortNo => ResponseMessage.InvalidSortNo,
             _ => string.Empty
         };
     }

@@ -10,4 +10,6 @@ public enum TodoGrpMstConstant
     InvalidGrpColor,
     InvalidSortNo,
     InvalidIsDeleted,
+    InvalidTodoGrpMst,
+    InvalidExistedTodoGrpNo,
 }

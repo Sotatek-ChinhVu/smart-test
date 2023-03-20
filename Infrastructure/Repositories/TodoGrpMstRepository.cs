@@ -19,6 +19,12 @@ namespace Infrastructure.Repositories
         {
         }
 
+        public bool CheckExistedTodoGrpNo(List<int> todoGrpNos)
+        {
+            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Count(x => todoGrpNos.Contains(x.TodoGrpNo));
+            return todoGrpNos.Count == countTodoGrpNos;
+        }
+
         public void Upsert(List<TodoGrpMstModel> upsertTodoGrpMstList, int userId, int hpId)
         {
             foreach (var input in upsertTodoGrpMstList)

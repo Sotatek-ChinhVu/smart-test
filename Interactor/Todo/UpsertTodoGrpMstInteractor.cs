@@ -3,6 +3,7 @@ using UseCase.Todo.TodoGrpMst;
 using static Helper.Constants.TodoGrpMstConstant;
 using UseCase.Todo.UpsertTodoGrpMst;
 using UseCase.UketukeSbtMst.Upsert;
+using UseCase.ApprovalInfo.UpdateApprovalInfList;
 
 namespace Interactor.Todo;
 
@@ -19,9 +20,15 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
     {
         try
         {
-            if(input.ToList() == null || input.ToList().Count == 0)
+            if (input.ToList() == null || input.ToList().Count == 0)
             {
                 return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InputNoData);
+            }
+
+            var checkInputTodoGrpNo = input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo);
+            if (checkInputTodoGrpNo.Count() != checkInputTodoGrpNo.Distinct().Count())
+            {
+                return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InvalidTodoGrpMst);
             }
 
             foreach (var data in input.ToList())
@@ -31,6 +38,11 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
                 {
                     return new UpsertTodoGrpMstOutputData(ConvertStatus(status));
                 }
+            }
+
+            if (!_todoGrpMstRepository.CheckExistedTodoGrpNo(input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
+            {
+                return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InvalidExistedTodoGrpNo);
             }
 
             _todoGrpMstRepository.Upsert(input.ToList(), input.UserId, input.HpId);
@@ -55,6 +67,10 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
             return TodoGrpMstConstant.InvalidSortNo;
         if (status == ValidationStatus.InvalidIsDeleted)
             return TodoGrpMstConstant.InvalidIsDeleted;
+        if (status == ValidationStatus.InvalidTodoGrpMst)
+            return TodoGrpMstConstant.InvalidTodoGrpMst;
+        if (status == ValidationStatus.InvalidExistedTodoGrpNo)
+            return TodoGrpMstConstant.InvalidExistedTodoGrpNo;
 
         return TodoGrpMstConstant.Success;
     }

@@ -12,6 +12,8 @@ public static class TodoGrpMstConstant
         InvalidGrpColor,
         InvalidSortNo,
         InvalidIsDeleted,
+        InvalidTodoGrpMst,
+        InvalidExistedTodoGrpNo,
         Valid,
     }
 
