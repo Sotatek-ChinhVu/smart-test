@@ -422,36 +422,11 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
         public void UpdateCalcStatus(CalcStatusModel calcStatus)
         {
-            //calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            //calcStatus.UpdateId = Hardcode.UserID;
-            //calcStatus.UpdateMachine = Hardcode.ComputerName;
+            calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            calcStatus.UpdateId = Hardcode.UserID;
+            calcStatus.UpdateMachine = Hardcode.ComputerName;
 
             _tenantDataContext.SaveChanges();
-            _tenantDataContext.ChangeTracker.Clear();
-            var checkExist = _tenantDataContext.CalcStatus.Any(c => calcStatus.CalcId == calcStatus.CalcId);
-
-            if (checkExist)
-            {
-                _tenantDataContext.CalcStatus.Update(new CalcStatus
-                {
-                    CalcId = calcStatus.CalcId,
-                    HpId = calcStatus.HpId,
-                    PtId = calcStatus.PtId,
-                    SinDate = calcStatus.SinDate,
-                    SeikyuUp = calcStatus.SeikyuUp,
-                    CalcMode = calcStatus.CalcMode,
-                    ClearReceChk = calcStatus.ClearReceChk,
-                    Status = calcStatus.Status,
-                    Biko = calcStatus.Biko,
-                    CreateDate = calcStatus.CreateDate,
-                    CreateId = calcStatus.CreateId,
-                    CreateMachine = calcStatus.CreateMachine,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = Hardcode.UserID,
-                    UpdateMachine = Hardcode.ComputerName
-                });
-                _tenantDataContext.SaveChanges();
-            }
         }
 
         public bool UpdateCalcStatus(List<CalcStatusModel> calcStatusies)

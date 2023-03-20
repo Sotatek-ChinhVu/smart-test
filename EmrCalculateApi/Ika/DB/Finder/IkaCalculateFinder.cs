@@ -15,7 +15,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         private int hospitalId = Hardcode.HospitalID;
         private readonly TenantDataContext _tenantDataContext;
 
-        public IkaCalculateFinder(TenantDataContext tenantDataContext, ITenantProvider tenantProvider)
+        public IkaCalculateFinder(TenantDataContext tenantDataContext)
         {
             _tenantDataContext = tenantDataContext;
         }
