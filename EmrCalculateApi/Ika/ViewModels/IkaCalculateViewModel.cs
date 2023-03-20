@@ -14,7 +14,6 @@ using PostgreDataContext;
 using Domain.Constant;
 using System.Security.AccessControl;
 using EmrCalculateApi.Requests;
-using Helper.Common;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -1041,7 +1040,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
                     addCalcLog.LogSbt = 2;
                     addCalcLog.Text = "2018年3月以前の計算には対応していません。";
-                    addCalcLog.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    addCalcLog.CreateDate = DateTime.UtcNow;
                     addCalcLog.CreateId = 0;
                     retCalcLogModels.Add(addCalcLog);
 

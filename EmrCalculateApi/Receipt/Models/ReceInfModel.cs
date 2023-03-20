@@ -1505,7 +1505,7 @@ namespace EmrCalculateApi.Receipt.Models
         }
         public DateTime ReceStatusCreateDate
         {
-            get { return ReceStatus == null ? CIUtil.GetJapanDateTimeNow() : ReceStatus.CreateDate; }
+            get { return ReceStatus == null ? DateTime.UtcNow : ReceStatus.CreateDate; }
             set
             {
                 if (ReceStatus == null || ReceStatus.CreateDate == value) return;
@@ -1535,7 +1535,7 @@ namespace EmrCalculateApi.Receipt.Models
         }
         public DateTime ReceStatusUpdateDate
         {
-            get { return ReceStatus == null ? CIUtil.GetJapanDateTimeNow() : ReceStatus.UpdateDate; }
+            get { return ReceStatus == null ? DateTime.UtcNow : ReceStatus.UpdateDate; }
             set
             {
                 if (ReceStatus == null || ReceStatus.UpdateDate == value) return;

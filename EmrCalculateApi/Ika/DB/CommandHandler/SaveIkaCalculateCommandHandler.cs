@@ -36,7 +36,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 List<CalcStatus> CalcStatusies = calcStatusModels.Select(p => p.CalcStatus).ToList();
                 CalcStatusies.ForEach(p =>
                 {
-                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    p.CreateDate = DateTime.UtcNow;
                     p.CreateId = Hardcode.UserID;
                     p.CreateMachine = (preFix + Hardcode.ComputerName).ToUpper();
 
@@ -68,7 +68,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 //wrkSinRpInfModels.ForEach(p =>
                 //    {
-                //        p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                //        p.CreateDate = DateTime.UtcNow;
                 //        p.CreateId = 1; // todo get user from session
                 //        p.CreateMachine = Hardcode.ComputerName;
                 //        _tenantDataContext.WrkSinRpInfs.Add(p.WrkSinRpInf);
@@ -77,7 +77,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
                     {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        p.CreateDate = DateTime.UtcNow;
                         p.CreateId = Hardcode.UserID;
                         p.CreateMachine = Hardcode.ComputerName;
 
@@ -87,7 +87,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 //wrkSinKouiModels.ForEach(p =>
                 //{
-                //    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                //    p.CreateDate = DateTime.UtcNow;
                 //    p.CreateId = 1; // todo get user from session
                 //    p.CreateMachine = Hardcode.ComputerName;
                 //    _tenantDataContext.WrkSinKouis.Add(p.WrkSinKoui);
@@ -97,7 +97,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 List<WrkSinKoui> wrkSinKouis = wrkSinKouiModels.Select(p => p.WrkSinKoui).ToList();
                 wrkSinKouis.ForEach(p =>
                 {
-                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    p.CreateDate = DateTime.UtcNow;
                     p.CreateId = Hardcode.UserID;
                     p.CreateMachine = Hardcode.ComputerName;
 
@@ -142,7 +142,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     string MachinName = Hardcode.ComputerName;
                     //calcLogModels.ForEach(p =>
                     //    {
-                    //        p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    //        p.CreateDate = DateTime.UtcNow;
                     //        p.CreateId = 1; // todo get user from session
                     //        p.CreateMachine = Hardcode.ComputerName;
                     //        _tenantDataContext.CalcLogs.Add(p.CalcLog);
@@ -151,10 +151,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     List<CalcLog> calcLogs = calcLogModels.Select(p => p.CalcLog).ToList();
                     calcLogs.ForEach(p =>
                     {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        p.CreateDate = DateTime.UtcNow;
                         p.CreateId = Hardcode.UserID;
                         p.CreateMachine = MachinName;
-                        p.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        p.UpdateDate = DateTime.UtcNow;
                         p.UpdateId = Hardcode.UserID;
                         p.UpdateMachine = MachinName;
                     }
@@ -231,10 +231,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                             SanteiKbn = sinRpInf.SanteiKbn,
                             KouiData = sinRpInf.KouiData,
                             IsDeleted = sinRpInf.IsDeleted,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateDate = DateTime.UtcNow,
                             CreateId = Hardcode.UserID,
                             CreateMachine = MachineName,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = DateTime.UtcNow,
                             UpdateId = Hardcode.UserID,
                             UpdateMachine = MachineName,
                         }
@@ -243,10 +243,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         UpdateState = sinRpInf.UpdateState,
                         KeyNo = sinRpInf.KeyNo
                     });
-                //sinRpInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                //sinRpInf.CreateDate = DateTime.UtcNow;
                 //sinRpInf.CreateId = Hardcode.UserID;
                 //sinRpInf.CreateMachine = MachineName;
-                //sinRpInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                //sinRpInf.UpdateDate = DateTime.UtcNow;
                 //sinRpInf.UpdateId = Hardcode.UserID;
                 //sinRpInf.UpdateMachine = MachineName;
             }
@@ -267,10 +267,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 foreach (SinKouiModel sinKoui in sinKouiModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
                 {
                     sinKoui.RpNo = sinRpInf.SinRpInf.RpNo;
-                    sinKoui.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    sinKoui.CreateDate = DateTime.UtcNow;
                     sinKoui.CreateId = Hardcode.UserID;
                     sinKoui.CreateMachine = MachineName;
-                    sinKoui.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    sinKoui.UpdateDate = DateTime.UtcNow;
                     sinKoui.UpdateId = Hardcode.UserID;
                     sinKoui.UpdateMachine = MachineName;
                 }
@@ -302,10 +302,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
             foreach (SinKouiCount sinKouiCount in sinKouiCounts)
             {
-                sinKouiCount.CreateDate = CIUtil.GetJapanDateTimeNow();
+                sinKouiCount.CreateDate = DateTime.UtcNow;
                 sinKouiCount.CreateId = Hardcode.UserID;
                 sinKouiCount.CreateMachine = MachineName;
-                sinKouiCount.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                sinKouiCount.UpdateDate = DateTime.UtcNow;
                 sinKouiCount.UpdateId = Hardcode.UserID;
                 sinKouiCount.UpdateMachine = MachineName;
             }
@@ -314,10 +314,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //List<SinRpNoInf> sinRpNoInfs = sinRpNoInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpNoInf).ToList();
             //foreach(SinRpNoInf sinRpNoInf in sinRpNoInfs)
             //{
-            //    sinRpNoInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+            //    sinRpNoInf.CreateDate = DateTime.UtcNow;
             //    sinRpNoInf.CreateId = Session.UserID;
             //    sinRpNoInf.CreateMachine = MachineName;
-            //    sinRpNoInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            //    sinRpNoInf.UpdateDate = DateTime.UtcNow;
             //    sinRpNoInf.UpdateId = Session.UserID;
             //    sinRpNoInf.UpdateMachine = MachineName;
             //}
@@ -422,7 +422,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
         public void UpdateCalcStatus(CalcStatusModel calcStatus)
         {
-            calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            calcStatus.UpdateDate = DateTime.UtcNow;
             calcStatus.UpdateId = Hardcode.UserID;
             calcStatus.UpdateMachine = Hardcode.ComputerName;
 
@@ -463,7 +463,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             {
                 foreach (CalcStatusModel calcStatus in calcStatusies)
                 {
-                    calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    calcStatus.UpdateDate = DateTime.UtcNow;
                     calcStatus.UpdateId = Hardcode.UserID;
                     calcStatus.UpdateMachine = Hardcode.ComputerName;
                 }
@@ -508,7 +508,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         {
             foreach (CalcStatusModel calcStatus in calcStatusies)
             {
-                calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                calcStatus.UpdateDate = DateTime.UtcNow;
                 calcStatus.UpdateId = Hardcode.UserID;
                 calcStatus.UpdateMachine = Hardcode.ComputerName;
             }
@@ -551,7 +551,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             foreach (ReceStatusModel receStatus in receStatusies)
             {
                 receStatus.StatusKbn = 0;
-                receStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                receStatus.UpdateDate = DateTime.UtcNow;
                 receStatus.UpdateId = Hardcode.UserID;
                 receStatus.UpdateMachine = Hardcode.ComputerName;
             }
