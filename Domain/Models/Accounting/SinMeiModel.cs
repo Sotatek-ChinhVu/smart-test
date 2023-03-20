@@ -27,6 +27,32 @@ namespace Domain.Models.Accounting
             InOutKbn = inOutKbn;
             IsRowColorGray = isRowColorGray;
         }
+
+        public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days)
+        {
+            SinId = sinId;
+            SinIdBinding = sinIdBinding;
+            ItemName = itemName;
+            Suryo = suryo;
+            UnitName = unitName;
+            TenKai = tenKai;
+            TotalTen = totalTen;
+            TotalKingaku = totalKingaku;
+            Kingaku = kingaku;
+            FutanS = futanS;
+            FutanK1 = futanK1;
+            FutanK2 = futanK2;
+            FutanK3 = futanK3;
+            FutanK4 = futanK4;
+            CdKbn = cdKbn;
+            JihiSbt = jihiSbt;
+            EnTenKbn = enTenKbn;
+            SanteiKbn = santeiKbn;
+            InOutKbn = inOutKbn;
+            IsRowColorGray = isRowColorGray;
+            Days = days;
+        }
+
         public int SinId { get; private set; }
         public string SinIdBinding { get; set; }
         public string ItemName { get; private set; }
@@ -58,5 +84,6 @@ namespace Domain.Models.Accounting
         public string Asterisk { get => SinId > 0 ? "＊" : ""; }
         public bool IsRowColorGray { get; private set; } = false;
         public bool IsForegroundRed { get => EnTenKbn == 1; }
+        public List<int> Days { get; private set; }
     }
 }
