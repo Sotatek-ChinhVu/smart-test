@@ -426,7 +426,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateDate = CIUtil.GetJapanDateTimeNow();
             //calcStatus.UpdateId = Hardcode.UserID;
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
+            _tenantDataContext.SaveChanges();
             _tenantDataContext.ChangeTracker.Clear();
+
             _tenantDataContext.CalcStatus.Update(new CalcStatus
             {
                 CalcId = calcStatus.CalcId,
@@ -463,7 +465,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateId = Hardcode.UserID;
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
+                _tenantDataContext.SaveChanges();
                 _tenantDataContext.ChangeTracker.Clear();
+
                 _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
                 {
                     CalcId = c.CalcId,
@@ -502,7 +506,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateId = Hardcode.UserID;
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
+            _tenantDataContext.SaveChanges();
             _tenantDataContext.ChangeTracker.Clear();
+
             _tenantDataContext.CalcStatus.UpdateRange(calcStatusies.Select(c => new CalcStatus
             {
                 CalcId = c.CalcId,
@@ -538,7 +544,9 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateId = Hardcode.UserID;
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
+            _tenantDataContext.SaveChanges();
             _tenantDataContext.ChangeTracker.Clear();
+
             _tenantDataContext.ReceStatuses.UpdateRange(receStatusies.Select(r => new ReceStatus
             {
                 HpId = r.HpId,
