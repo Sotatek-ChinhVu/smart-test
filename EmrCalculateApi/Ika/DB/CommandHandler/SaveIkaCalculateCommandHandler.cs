@@ -149,7 +149,16 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     //    }
                     //);
                     List<CalcLog> calcLogs = calcLogModels.Select(p => p.CalcLog).ToList();
-                    calcLogs.ForEach(p =>
+                    List<CalcLog> calcLogFilters = new();
+                    foreach (var calcLog in calcLogs)
+                    {
+                        if (!calcLogFilters.Any(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo))
+                        {
+                            calcLogFilters.Add(calcLog);
+                        }
+                    }
+
+                    calcLogFilters.ForEach(p =>
                     {
                         p.CreateDate = CIUtil.GetJapanDateTimeNow();
                         p.CreateId = Hardcode.UserID;
@@ -159,11 +168,14 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         p.UpdateMachine = MachinName;
                     }
                     );
+                    Console.WriteLine("Start uplicate in here");
                     newDbContext.CalcLogs.AddRange(calcLogs);
+                    Console.WriteLine("End duplicate in here");
                 }
             }
             catch (Exception E)
             {
+                Console.WriteLine("Duplicate in here");
                 _emrLogger.WriteLogError(this, conFncName, E);
             }
         }
@@ -409,6 +421,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
             // 先に更新/削除分を反映
             _tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.Clear();
 
             using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
             {
