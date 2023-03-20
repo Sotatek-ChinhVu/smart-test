@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
+using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
@@ -1547,6 +1548,24 @@ namespace Infrastructure.Repositories
             }
 
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate)
+        {
+            var holidayMsts = NoTrackingDataContext.HolidayMsts
+                .Where(item =>
+                    item.HpId == hpId &&
+                    item.IsDeleted == 0 &&
+                    item.SinDate >= fromDate &&
+                    item.SinDate <= toDate &&
+                    item.HolidayKbn > 0 &&
+                    item.KyusinKbn > 0).AsEnumerable();
+
+                return holidayMsts.Select(item => new HolidayModel(item.SinDate,
+                                                item.HolidayKbn,
+                                                item.HolidayName ?? string.Empty))
+                .OrderBy(item => item.SinDate)
+                .ToList();
         }
     }
 }

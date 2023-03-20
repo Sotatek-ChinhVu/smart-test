@@ -17,5 +17,12 @@
             KyusinKbn = kyusinKbn;
             HolidayName = holidayName;
         }
+
+        public HolidayModel(int sinDate, int holidayKbn, string holidayName)
+        {
+            SinDate = sinDate;
+            HolidayKbn = holidayKbn;
+            HolidayName = holidayName;
+        }
     }
 }

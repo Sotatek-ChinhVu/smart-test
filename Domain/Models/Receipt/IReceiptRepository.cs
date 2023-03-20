@@ -2,6 +2,7 @@
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.ReceSeikyu;
 using Helper.Enum;
 
 namespace Domain.Models.Receipt;
@@ -97,4 +98,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
     #endregion
+
+    int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
+
+    void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos);
 }
