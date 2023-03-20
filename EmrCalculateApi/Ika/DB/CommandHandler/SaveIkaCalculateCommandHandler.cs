@@ -427,6 +427,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //calcStatus.UpdateMachine = Hardcode.ComputerName;
 
             _tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.Clear();
             var checkExist = _tenantDataContext.CalcStatus.Any(c => calcStatus.CalcId == calcStatus.CalcId);
 
             if (checkExist)
@@ -467,6 +468,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    calcStatus.UpdateMachine = Hardcode.ComputerName;
                 //}
                 _tenantDataContext.SaveChanges();
+                _tenantDataContext.ChangeTracker.Clear();
                 foreach (var calcStatus in calcStatusies)
                 {
                     var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
@@ -511,6 +513,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    calcStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             _tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.Clear();
             foreach (var calcStatus in calcStatusies)
             {
                 var check = _tenantDataContext.CalcStatus.Any(c => c.CalcId == calcStatus.CalcId);
@@ -553,6 +556,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //    receStatus.UpdateMachine = Hardcode.ComputerName;
             //}
             _tenantDataContext.SaveChanges();
+            _tenantDataContext.ChangeTracker.Clear();
             foreach (var receStatus in receStatusies)
             {
                 var check = _tenantDataContext.ReceStatuses.Any(r => r.HpId == receStatus.HpId && r.PtId == receStatus.PtId && r.SeikyuYm == receStatus.SeikyuYm && r.HokenId == receStatus.HokenId && r.SinYm == receStatus.SinYm && r.IsDeleted == 0);
