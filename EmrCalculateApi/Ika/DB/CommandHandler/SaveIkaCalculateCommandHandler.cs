@@ -137,8 +137,6 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             const string conFncName = nameof(AddCalcLog);
             try
             {
-                _tenantDataContext.SaveChanges();
-                _tenantDataContext.ChangeTracker.Clear();
                 if (calcLogModels.Any())
                 {
                     string MachinName = Hardcode.ComputerName;
@@ -151,10 +149,13 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     //    }
                     //);
                     List<CalcLog> calcLogs = calcLogModels.Select(p => p.CalcLog).ToList();
+                    var hpId = calcLogs.Select(c => c.HpId).FirstOrDefault();
+                    var ptId = calcLogs.Select(c => c.PtId).FirstOrDefault();
                     List<CalcLog> calcLogFilters = new();
+                    var checkCalcLogs = _tenantDataContext.CalcLogs.Where(c => c.HpId == hpId && c.PtId == ptId);
                     foreach (var calcLog in calcLogs)
                     {
-                        var checkCalcLog =  _tenantDataContext.CalcLogs.FirstOrDefault(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo);
+                        var checkCalcLog = checkCalcLogs.FirstOrDefault(c => c.RaiinNo == calcLog.RaiinNo && c.SeqNo == c.SeqNo);
                         if (checkCalcLog == null && !calcLogFilters.Any(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo))
                         {
                             calcLogFilters.Add(calcLog);
