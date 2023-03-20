@@ -29,6 +29,7 @@ using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.ReceiptEdit;
 using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
 
 namespace EmrCloudApi.Controller;
 
@@ -302,6 +303,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetSinDateRaiinInfListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceByomeiChecking)]
+    public ActionResult<Response<GetReceByomeiCheckingResponse>> GetReceByomeiChecking([FromQuery] GetReceByomeiCheckingRequest request)
+    {
+        var input = new GetReceByomeiCheckingInputData(HpId, request.PtId, request.SinDate, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceByomeiCheckingPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceByomeiCheckingResponse>>(presenter.Result);
     }
 
     #region Private function
