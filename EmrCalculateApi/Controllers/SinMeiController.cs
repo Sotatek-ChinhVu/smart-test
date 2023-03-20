@@ -25,25 +25,17 @@ namespace EmrCalculateApi.Controllers
         [HttpPost("GetSinMeiList")]
         public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromBody] GetSinMeiListRequest request)
         {
-            /*Mode = 3 Kaikei, 21 AccountingCard*/
+            /*Mode = 3 Kaikei, 21 AccountingCard, 2 ReceCheck*/
             var sinMeiVM = request.SinMeiMode switch
             {
                 3 => new SinMeiViewModel(SinMeiMode.Kaikei, false, request.HpId, request.PtId, request.SinDate, request.RaiinNoList, _tenantProvider, _systemConfigProvider, _emrLogger),
                 21 => new SinMeiViewModel(SinMeiMode.AccountingCard, true, request.HpId, request.PtId, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger),
+                2 => new SinMeiViewModel(SinMeiMode.ReceCheck, true, request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger),
                 _ => null
             };
 
             return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM?.SinMei ?? new()));
 
-        }
-
-        [HttpGet("GetSinMeiInMonthList")]
-        public ActionResult<GetSinMeiListResponse> GetSinMeiList([FromQuery] GetSinMeiInMonthListRequest request)
-        {
-            using (SinMeiViewModel sinMeiVM = new SinMeiViewModel(SinMeiMode.ReceCheck, true, request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, _tenantProvider, _systemConfigProvider, _emrLogger))
-            {
-                return new ActionResult<GetSinMeiListResponse>(new GetSinMeiListResponse(sinMeiVM.SinMei));
-            }
         }
     }
 }
