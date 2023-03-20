@@ -17,7 +17,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
         public IkaCalculateFinder(TenantDataContext tenantDataContext, ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContext = tenantDataContext;
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
 
             if (calcIds != null && calcIds.Any())
             {
-                var entities = _tenantDataContext.CalcStatus.FindListQueryableNoTrack(p =>
+                var entities = _tenantDataContext.CalcStatus.FindListQueryable(p =>
                     p.CreateMachine == computerName &&
                     calcIds.Contains(p.CalcId) &&
                     !(new int[] { 8, 9 }.Contains(p.Status)))
