@@ -19,6 +19,7 @@ public class FamilyDto
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
+        IsDeleted = model.IsDeleted;
         PtFamilyRekiList = model.PtFamilyRekiList.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
@@ -47,6 +48,8 @@ public class FamilyDto
     public string Biko { get; private set; }
 
     public int SortNo { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 
     public List<PtFamilyRekiDto> PtFamilyRekiList { get; private set; }
 }
