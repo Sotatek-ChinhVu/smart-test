@@ -137,6 +137,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             const string conFncName = nameof(AddCalcLog);
             try
             {
+                _tenantDataContext.SaveChanges();
+                _tenantDataContext.ChangeTracker.Clear();
                 if (calcLogModels.Any())
                 {
                     string MachinName = Hardcode.ComputerName;
@@ -152,7 +154,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     List<CalcLog> calcLogFilters = new();
                     foreach (var calcLog in calcLogs)
                     {
-                        if (!calcLogFilters.Any(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo))
+                        var checkCalcLog =  _tenantDataContext.CalcLogs.FirstOrDefault(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo);
+                        if (checkCalcLog != null && !calcLogFilters.Any(c => c.HpId == calcLog.HpId && c.PtId == calcLog.PtId && c.SeqNo == calcLog.SeqNo && c.RaiinNo == calcLog.RaiinNo))
                         {
                             calcLogFilters.Add(calcLog);
                         }
@@ -169,7 +172,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     }
                     );
                     Console.WriteLine("Start uplicate in here");
-                    newDbContext.CalcLogs.AddRange(calcLogs);
+                    newDbContext.CalcLogs.AddRange(calcLogFilters);
                     Console.WriteLine("End duplicate in here");
                 }
             }
