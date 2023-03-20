@@ -162,19 +162,22 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                         }
                     }
 
-                    calcLogFilters.ForEach(p =>
+                    if (calcLogFilters.Any())
                     {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        p.CreateId = Hardcode.UserID;
-                        p.CreateMachine = MachinName;
-                        p.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                        p.UpdateId = Hardcode.UserID;
-                        p.UpdateMachine = MachinName;
+                        calcLogFilters.ForEach(p =>
+                        {
+                            p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            p.CreateId = Hardcode.UserID;
+                            p.CreateMachine = MachinName;
+                            p.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            p.UpdateId = Hardcode.UserID;
+                            p.UpdateMachine = MachinName;
+                        }
+                        );
+                        Console.WriteLine("Start uplicate in here");
+                        newDbContext.CalcLogs.AddRange(calcLogFilters);
+                        Console.WriteLine("End duplicate in here");
                     }
-                    );
-                    Console.WriteLine("Start uplicate in here");
-                    newDbContext.CalcLogs.AddRange(calcLogFilters);
-                    Console.WriteLine("End duplicate in here");
                 }
             }
             catch (Exception E)
@@ -269,8 +272,11 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             //List<SinRpInf> sinRpInfs = sinRpInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
             List<SinRpInf> sinRpInfs = addSinRpInfs.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
 
-            newDbContext.SinRpInfs.AddRange(sinRpInfs);
-            newDbContext.SaveChanges();
+            if (sinRpInfs.Any())
+            {
+                newDbContext.SinRpInfs.AddRange(sinRpInfs);
+                newDbContext.SaveChanges();
+            }
 
             //foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
             foreach (SinRpInfModel sinRpInf in addSinRpInfs.FindAll(q => q.UpdateState == UpdateStateConst.Add))
@@ -310,40 +316,45 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             };
 
             List<SinKoui> sinKouis = sinKouiModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKoui).ToList();
-            newDbContext.SinKouis.AddRange(sinKouis);
-
-            try
+            if (sinKouis.Any())
             {
-                List<SinKouiDetail> sinDtls = sinKouiDetailModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiDetail).ToList();
-                foreach (var sinDtl in sinDtls)
+                newDbContext.SinKouis.AddRange(sinKouis);
+
+                try
                 {
-                    if (sinDtl.ItemName?.Length > 1000)
+                    List<SinKouiDetail> sinDtls = sinKouiDetailModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiDetail).ToList();
+                    foreach (var sinDtl in sinDtls)
                     {
-                        Console.WriteLine("ItemName > 1000 " + sinDtl.ItemName);
-                        sinDtl.ItemName = sinDtl.ItemName.Substring(0, 1000);
+                        if (sinDtl.ItemName?.Length > 1000)
+                        {
+                            Console.WriteLine("ItemName > 1000 " + sinDtl.ItemName);
+                            sinDtl.ItemName = sinDtl.ItemName.Substring(0, 1000);
+                        }
+                        if (sinDtl.Cmt1?.Length > 1000)
+                        {
+                            Console.WriteLine("Cmt1 > 1000" + sinDtl.Cmt1);
+                            sinDtl.ItemName = sinDtl.Cmt1.Substring(0, 1000);
+                        }
+                        if (sinDtl.Cmt2?.Length > 1000)
+                        {
+                            Console.WriteLine("Cmt2 > 1000" + sinDtl.Cmt2);
+                            sinDtl.Cmt2 = sinDtl.Cmt2.Substring(0, 1000);
+                        }
+                        if (sinDtl.Cmt3?.Length > 1000)
+                        {
+                            Console.WriteLine("Cmt3 > 1000" + sinDtl.Cmt2);
+                            sinDtl.Cmt3 = sinDtl.Cmt3.Substring(0, 1000);
+                        }
                     }
-                    if (sinDtl.Cmt1?.Length > 1000)
+                    if (sinDtls.Any())
                     {
-                        Console.WriteLine("Cmt1 > 1000" + sinDtl.Cmt1);
-                        sinDtl.ItemName = sinDtl.Cmt1.Substring(0, 1000);
-                    }
-                    if (sinDtl.Cmt2?.Length > 1000)
-                    {
-                        Console.WriteLine("Cmt2 > 1000" + sinDtl.Cmt2);
-                        sinDtl.Cmt2 = sinDtl.Cmt2.Substring(0, 1000);
-                    }
-                    if (sinDtl.Cmt3?.Length > 1000)
-                    {
-                        Console.WriteLine("Cmt3 > 1000" + sinDtl.Cmt2);
-                        sinDtl.Cmt3 = sinDtl.Cmt3.Substring(0, 1000);
+                        newDbContext.SinKouiDetails.AddRange(sinDtls);
                     }
                 }
-                newDbContext.SinKouiDetails.AddRange(sinDtls);
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Log bug SinKouiDetail" + ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Log bug SinKouiDetail" + ex.Message);
+                }
             }
 
             List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
@@ -356,7 +367,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 sinKouiCount.UpdateId = Hardcode.UserID;
                 sinKouiCount.UpdateMachine = MachineName;
             }
-            newDbContext.SinKouiCounts.AddRange(sinKouiCounts);
+            if (sinKouiCounts.Any())
+            {
+                newDbContext.SinKouiCounts.AddRange(sinKouiCounts);
+            }
 
             //List<SinRpNoInf> sinRpNoInfs = sinRpNoInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpNoInf).ToList();
             //foreach(SinRpNoInf sinRpNoInf in sinRpNoInfs)
@@ -452,7 +466,6 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                                 //DelSin(
                                 //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
-
                                 new_tenantDataContext.SaveChanges();
 
                                 transaction.Commit();
