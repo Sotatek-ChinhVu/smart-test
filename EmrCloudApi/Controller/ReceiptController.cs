@@ -30,6 +30,7 @@ using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinMeiInMonthList;
 
 namespace EmrCloudApi.Controller;
 
@@ -315,6 +316,19 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceiptEditResponse>>(presenter.Result);
+    }
+
+
+    [HttpGet(ApiPath.GetSinMeiInMonthList)]
+    public ActionResult<Response<GetMedicalDetailsResponse>> GetSinMeiInMonthList([FromQuery] GetSinMeiInMonthListRequest request)
+    {
+        var input = new GetSinMeiInMonthListInputData(HpId, request.PtId, request.SinYm, request.HokenId, request.SeikyuYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinMeiInMonthListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
     }
 
     #region Private function
