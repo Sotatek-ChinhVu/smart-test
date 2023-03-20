@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
+using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
@@ -43,7 +44,7 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
-            var query = from main in OtcMains
+            var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
                         join makercode in OtcMakerCodes on main.CompanyCd equals makercode.MakerCd into makerLeft
@@ -66,12 +67,12 @@ namespace Infrastructure.Repositories
                             main.TradeCd ?? string.Empty,
                             main.DrugFormCd ?? string.Empty,
                             main.YohoCd ?? string.Empty,
-                            form.Form ?? string.Empty,
-                            maker.MakerName ?? string.Empty,
-                            maker.MakerKana ?? string.Empty,
-                            usage.Yoho ?? string.Empty,
-                            clas.ClassName ?? string.Empty,
-                            clas.MajorDivCd ?? string.Empty
+                            form?.Form ?? string.Empty,
+                            maker?.MakerName ?? string.Empty,
+                            maker?.MakerKana ?? string.Empty,
+                            usage?.Yoho ?? string.Empty,
+                            clas?.ClassName ?? string.Empty,
+                            clas?.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -1546,6 +1547,24 @@ namespace Infrastructure.Repositories
             }
 
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate)
+        {
+            var holidayMsts = NoTrackingDataContext.HolidayMsts
+                .Where(item =>
+                    item.HpId == hpId &&
+                    item.IsDeleted == 0 &&
+                    item.SinDate >= fromDate &&
+                    item.SinDate <= toDate &&
+                    item.HolidayKbn > 0 &&
+                    item.KyusinKbn > 0).AsEnumerable();
+
+                return holidayMsts.Select(item => new HolidayModel(item.SinDate,
+                                                item.HolidayKbn,
+                                                item.HolidayName ?? string.Empty))
+                .OrderBy(item => item.SinDate)
+                .ToList();
         }
     }
 }
