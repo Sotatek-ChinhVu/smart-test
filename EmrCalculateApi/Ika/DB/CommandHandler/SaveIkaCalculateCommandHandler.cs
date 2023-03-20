@@ -152,7 +152,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     var hpId = calcLogs.Select(c => c.HpId).FirstOrDefault();
                     var ptId = calcLogs.Select(c => c.PtId).FirstOrDefault();
                     List<CalcLog> calcLogFilters = new();
-                    var checkCalcLogs = _tenantDataContext.CalcLogs.Where(c => c.HpId == hpId && c.PtId == ptId);
+                    var checkCalcLogs = _tenantDataContext.CalcLogs.Where(c => c.HpId == hpId && c.PtId == ptId).ToList();
                     foreach (var calcLog in calcLogs)
                     {
                         var checkCalcLog = checkCalcLogs.FirstOrDefault(c => c.RaiinNo == calcLog.RaiinNo && c.SeqNo == c.SeqNo);
