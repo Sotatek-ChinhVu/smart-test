@@ -10,13 +10,14 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         public Response<GetTrialAccountingMeiHoGaiResponse> Result { get; private set; } = new();
         public void Complete(GetTrialAccountingMeiHoGaiOutputData outputData)
         {
-            Result.Data = new GetTrialAccountingMeiHoGaiResponse(outputData.Status);
+            Result.Data = new GetTrialAccountingMeiHoGaiResponse(outputData.SinMeis, outputData.SinHos, outputData.SinGais);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
         private string GetMessage(object status) => status switch
         {
             GetTrialAccountingMeiHoGaiStatus.Successed => ResponseMessage.Success,
+            GetTrialAccountingMeiHoGaiStatus.NoData => ResponseMessage.NoData,
             _ => string.Empty
         };
     }

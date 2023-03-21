@@ -3,5 +3,6 @@
     public enum GetTrialAccountingMeiHoGaiStatus
     {
         Successed = 1,
+        NoData,
     }
 }
