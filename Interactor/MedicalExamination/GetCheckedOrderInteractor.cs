@@ -95,7 +95,7 @@ namespace Interactor.MedicalExamination
                         o.SortNo,
                         o.IsDeleted,
                         0,
-                        o.OdrInfDetailItems.Select(od => new OrdInfDetailModel(
+                        o.DetailInfoList.Select(od => new OrdInfDetailModel(
                                 od.HpId,
                                 od.RaiinNo,
                                 od.RpNo,

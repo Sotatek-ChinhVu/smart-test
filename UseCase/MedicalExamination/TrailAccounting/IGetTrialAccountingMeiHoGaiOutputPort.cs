@@ -1,6 +1,8 @@
-﻿namespace UseCase.MedicalExamination.TrailAccounting
+﻿using UseCase.Core.Sync.Core;
+
+namespace UseCase.MedicalExamination.TrailAccounting
 {
-    public interface IGetTrialAccountingMeiHoGaiOutputPort
+    public interface IGetTrialAccountingMeiHoGaiOutputPort : IOutputPort<GetTrialAccountingMeiHoGaiOutputData>
     {
     }
 }

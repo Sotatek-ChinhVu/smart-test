@@ -19,5 +19,6 @@ namespace UseCase.MedicalExamination.TrailAccounting
         public int SinDate { get; private set; }
         public long RaiinNo { get; private set; }
         public List<OdrInfItem> OdrInfItems { get; private set; }
+
     }
 }

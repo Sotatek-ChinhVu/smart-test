@@ -245,6 +245,7 @@ using UseCase.MedicalExamination.GetValidJihiYobo;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -297,6 +298,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListReceInf;
@@ -306,9 +308,11 @@ using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceCmtHistory;
+using UseCase.Receipt.ReceiptEdit;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
@@ -335,6 +339,7 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.ReceSeikyu.GetList;
 using UseCase.ReceSeikyu.Save;
+using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Santei.GetListSanteiInf;
 using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
@@ -387,11 +392,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.SyobyoKeikaHistory;
-using UseCase.Receipt.GetRecePreviewList;
-using UseCase.Receipt.DoReceCmt;
-using UseCase.ReceSeikyu.SearchReceInf;
-using UseCase.Receipt.ReceiptEdit;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -641,6 +641,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
             busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
             busBuilder.RegisterUseCase<CalculateInputData, CalculateInteractor>();
+            busBuilder.RegisterUseCase<GetTrialAccountingMeiHoGaiInputData, GetTrialAccountingMeiHoGaiInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

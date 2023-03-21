@@ -17,6 +17,7 @@ using UseCase.MedicalExamination.GetDefaultSelectedTime;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 using CalculateResponseOfMedical = EmrCloudApi.Responses.MedicalExamination.CalculateResponse;
@@ -368,6 +369,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new CalculatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetMeiHoGai)]
+        public ActionResult<Response<GetTrialAccountingMeiHoGaiResponse>> GetMeiHoGai([FromBody] GetTrialAccountingMeiHoGaiRequest request)
+        {
+            var input = new GetTrialAccountingMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrInfItems);
+            var output = _bus.Handle(input);
+            var presenter = new GetTrialAccountingMeiHoGaiPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTrialAccountingMeiHoGaiResponse>>(presenter.Result);
         }
     }
 }
