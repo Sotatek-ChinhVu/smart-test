@@ -47,7 +47,7 @@ namespace Interactor.MedicalExamination
 
                 var sinMeis = GetSinMei(trialCalculateResponse.SinMeiList);
                 var sinHos = GetSinHo(sinMeis);
-                var sinGais = GetSinGai(inputData.HpId, inputData.PtId, raiinNos, sinMeis);
+                var sinGais = GetSinGai(inputData.HpId, inputData.PtId, raiinNos, sinMeis, trialCalculateResponse.KaikeiInfList);
 
                 return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, GetTrialAccountingMeiHoGaiStatus.Successed);
             }
@@ -168,7 +168,7 @@ namespace Interactor.MedicalExamination
             return sinHo;
         }
 
-        private List<SinGaiModel> GetSinGai(int hpId, long ptId, List<long> raiinNos, List<SinMeiModel> sinMeiModels)
+        private List<SinGaiModel> GetSinGai(int hpId, long ptId, List<long> raiinNos, List<SinMeiModel> sinMeiModels, List<KaikeiInfModel>)
         {
             var sinGai = new List<SinGaiModel>();
             var jihis = GetListJihiSbtMst(hpId);
