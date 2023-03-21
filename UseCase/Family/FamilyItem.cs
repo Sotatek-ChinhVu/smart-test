@@ -24,6 +24,7 @@ public class FamilyItem
 
     public FamilyItem(FamilyModel model)
     {
+        PtId = model.PtId;
         FamilyId = model.FamilyId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtNum = model.FamilyPtNum;
