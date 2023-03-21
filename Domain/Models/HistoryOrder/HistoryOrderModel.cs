@@ -57,6 +57,8 @@ namespace Domain.Models.HistoryOrder
 
         public List<FileInfModel> ListKarteFile { get; private set; }
 
+        public int Status { get; private set; }
+
         public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
@@ -76,6 +78,7 @@ namespace Domain.Models.HistoryOrder
             OrderInfList = orderList;
             KarteInfModels = karteInfModels;
             ListKarteFile = listKarteFile;
+            Status = receptionModel.Status;
         }
     }
 }

@@ -60,7 +60,8 @@ namespace Interactor.Accounting
                             history.HokenType,
                             new List<HokenGroupHistoryItem>(),
                             new(),
-                            new()
+                            new(),
+                            history.Status
                         );
 
                     //Excute order

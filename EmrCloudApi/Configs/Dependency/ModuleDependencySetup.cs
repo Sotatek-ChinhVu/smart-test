@@ -392,6 +392,7 @@ using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Receipt.ReceiptEdit;
 using Interactor.MedicalExamination.HistoryCommon;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -642,6 +643,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
             busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
             busBuilder.RegisterUseCase<CalculateInputData, CalculateInteractor>();
+            busBuilder.RegisterUseCase<GetDataPrintKarte2InputData, GetDataPrintKarte2Interactor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

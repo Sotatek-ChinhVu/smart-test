@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryIndex;
 using UseCase.MedicalExamination.SearchHistory;
@@ -28,6 +29,19 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
+            presenter.Complete(output);
+
+            var result = Ok(presenter.Result);
+            return result;
+        }
+
+        [HttpGet("GetDataPrintKarte2")]
+        public ActionResult<Response<GetDataPrintKarte2Response>> GetDataPrintKarte2([FromQuery] GetDataPrintKarte2Request request)
+        {
+            var input = new GetDataPrintKarte2InputData(request.PtId, HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDataPrintKarte2Presenter();
             presenter.Complete(output);
 
             var result = Ok(presenter.Result);

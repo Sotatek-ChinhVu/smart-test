@@ -30,7 +30,7 @@ public class GetDataPrintKarte2Interactor : IGetDataPrintKarte2InputPort
             var result = _historyCommon.GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
             FilterData(ref historyKarteOdrRaiinList, inputData);
-            return result;
+            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0);
         }
         finally
         {

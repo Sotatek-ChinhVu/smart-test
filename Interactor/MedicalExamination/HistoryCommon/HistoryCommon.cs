@@ -77,10 +77,10 @@ public class HistoryCommon : IHistoryCommon
                     history.HokenType,
                     new List<HokenGroupHistoryItem>(),
                     karteHistoryList,
-                    history.ListKarteFile.Select(item =>
-                                                        new FileInfOutputItem(item, host.ToString()))
-                                            .OrderBy(item => item.SeqNo)
-                                            .ToList()
+                    history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
+                                         .OrderBy(item => item.SeqNo)
+                                         .ToList(),
+                    history.Status
                 );
 
             //Excute order

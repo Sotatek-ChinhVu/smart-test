@@ -5,11 +5,10 @@ namespace UseCase.MedicalExamination.GetDataPrintKarte2;
 
 public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHistoryOutputData>
 {
-    public GetDataPrintKarte2InputData(long ptId, int hpId, int userId, int sinDate, int startDate, int endDate, bool isCheckedHoken, bool isCheckedJihi, bool isCheckedHokenJihi, bool isCheckedJihiRece, bool isCheckedHokenRousai, bool isCheckedHokenJibai, bool isCheckedDoctor, bool isCheckedStartTime, bool isCheckedVisitingTime, bool isCheckedEndTime, bool isUketsukeNameChecked, bool isCheckedSyosai, bool isIncludeTempSave, bool isCheckedApproved, bool isCheckedInputDate, bool isCheckedSetName, int deletedOdrVisibilitySetting, bool isIppanNameChecked, bool isCheckedHideOrder)
+    public GetDataPrintKarte2InputData(long ptId, int hpId, int sinDate, int startDate, int endDate, bool isCheckedHoken, bool isCheckedJihi, bool isCheckedHokenJihi, bool isCheckedJihiRece, bool isCheckedHokenRousai, bool isCheckedHokenJibai, bool isCheckedDoctor, bool isCheckedStartTime, bool isCheckedVisitingTime, bool isCheckedEndTime, bool isUketsukeNameChecked, bool isCheckedSyosai, bool isIncludeTempSave, bool isCheckedApproved, bool isCheckedInputDate, bool isCheckedSetName, int deletedOdrVisibilitySetting, bool isIppanNameChecked, bool isCheckedHideOrder)
     {
         PtId = ptId;
         HpId = hpId;
-        UserId = userId;
         SinDate = sinDate;
         StartDate = startDate;
         EndDate = endDate;
@@ -36,7 +35,6 @@ public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHisto
 
     public long PtId { get; private set; }
     public int HpId { get; private set; }
-    public int UserId { get; private set; }
     public int SinDate { get; private set; }
 
     //KanInfo
