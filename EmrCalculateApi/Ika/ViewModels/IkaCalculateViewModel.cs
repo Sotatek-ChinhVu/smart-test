@@ -777,6 +777,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 //データを削除する
                 ClearData();
+                Console.WriteLine("Finish ClearData");
 
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
@@ -841,6 +842,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                     //_common.ClearKeisanData();
                 }
 
+                Console.WriteLine("Finish foreach 1");
+
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
                     hokenKbn = 0;
@@ -859,6 +862,8 @@ namespace EmrCalculateApi.Ika.ViewModels
                         hokenKbn++;
                     }
                 }
+
+                Console.WriteLine("Finish foreach 2");
 
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
@@ -880,12 +885,25 @@ namespace EmrCalculateApi.Ika.ViewModels
                     }
                 }
 
+                Console.WriteLine("Finish foreach 3");
+
+
                 // データベースに反映
                 UpdateDatabase();
+
+                Console.WriteLine("Finish updateDatabase");
+
                 _common.ClearKeisanData();
 
+                Console.WriteLine("Finish ClearKeisanData");
+
                 _clearIkaCalculateCommandHandler.ClearSinData(_hpId, _ptId, _sinDate);
+
+                Console.WriteLine("Finish ClearSinData");
+
                 TenantDataContext.SaveChanges();
+
+                Console.WriteLine("Finish TenantDataContext.SaveChanges");
 
             }
             catch (Exception e)
