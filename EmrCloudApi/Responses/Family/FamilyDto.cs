@@ -7,6 +7,7 @@ public class FamilyDto
     public FamilyDto(FamilyItem model)
     {
         FamilyId = model.FamilyId;
+        PtId = model.PtId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtId = model.FamilyPtId;
         FamilyPtNum = model.FamilyPtNum;
@@ -24,6 +25,8 @@ public class FamilyDto
     }
 
     public long FamilyId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 
