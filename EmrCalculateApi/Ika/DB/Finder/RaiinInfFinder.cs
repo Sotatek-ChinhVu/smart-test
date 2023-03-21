@@ -64,23 +64,18 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     raiinInf.PtId == ptId &&
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteTypes.None
-                //orderby
-                //    raiinInf.HpId, raiinInf.PtId, 
-                //    //raiinInf.SinDate, ("000000" + raiinInf.SinStartTime ?? "").Substring((raiinInf.SinStartTime ?? "").Length, 6),
-                //    raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                orderby
+      raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("000000" + raiinInf.SinStartTime ?? "").Substring((raiinInf.SinStartTime ?? "").Length, 6), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
-                    SinStartTimeOrder = raiinInf.SinStartTime == null ? "000000": raiinInf.SinStartTime.Substring(2, 6),
                     raiinInf,
                     kaMst = ka
                 }
             );
 
-            var finalJoinQuery = joinQuery.OrderBy(j => j.SinStartTimeOrder).Select(j => new Tuple<RaiinInf, KaMst>(j.raiinInf, j.kaMst));
-
-            var entities = finalJoinQuery.AsEnumerable().Select(
+            var entities = joinQuery.AsEnumerable().Select(
                 data =>
-                    new RaiinInfModel(data.Item1, data.Item2)
+                    new RaiinInfModel(data.raiinInf, data.kaMst)
                 )
                 .ToList();
 
