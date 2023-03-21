@@ -59,6 +59,14 @@ namespace Domain.Models.HistoryOrder
 
         public int Status { get; private set; }
 
+        public string UketukeTime { get; private set; }
+
+        public int UketukeId { get; private set; }
+
+        public string SinStartTime { get; private set; }
+
+        public string SinEndTime { get; private set; }
+
         public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, List<KarteInfModel> karteInfModels, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
@@ -79,6 +87,10 @@ namespace Domain.Models.HistoryOrder
             KarteInfModels = karteInfModels;
             ListKarteFile = listKarteFile;
             Status = receptionModel.Status;
+            UketukeTime = receptionModel.UketukeTime;
+            UketukeId = receptionModel.UketukeId;
+            SinStartTime = receptionModel.SinStartTime;
+            SinEndTime = receptionModel.SinEndTime;
         }
     }
 }

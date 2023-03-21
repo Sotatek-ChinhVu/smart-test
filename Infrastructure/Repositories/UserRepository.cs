@@ -103,6 +103,12 @@ namespace Infrastructure.Repositories
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
+        public IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds)
+        {
+            var result = NoTrackingDataContext.UserMsts.Where(d => userIds.Contains(d.UserId)).AsEnumerable();
+            return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
+        }
+
         public UserMstModel? GetByUserId(int userId)
         {
             var entity = NoTrackingDataContext.UserMsts

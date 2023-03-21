@@ -12,7 +12,7 @@ public class GetDataPrintKarte2Presenter : IGetDataPrintKarte2OutputPort
 
     public void Complete(GetMedicalExaminationHistoryOutputData outputData)
     {
-        Result.Data = new GetDataPrintKarte2Response(outputData.RaiinfList);
+        Result.Data = new GetDataPrintKarte2Response(outputData.RaiinfList, outputData.Karte2Input);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

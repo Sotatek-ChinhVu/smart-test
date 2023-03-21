@@ -61,7 +61,11 @@ namespace Interactor.Accounting
                             new List<HokenGroupHistoryItem>(),
                             new(),
                             new(),
-                            history.Status
+                            history.Status,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
                         );
 
                     //Excute order

@@ -3,6 +3,8 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
+using Domain.Models.User;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -18,22 +20,26 @@ public class HistoryCommon : IHistoryCommon
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IHistoryOrderRepository _historyOrderRepository;
     private readonly IPatientInforRepository _patientInforRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly AmazonS3Options _options;
 
-    public HistoryCommon(IOptions<AmazonS3Options> optionsAccessor, IInsuranceRepository insuranceRepository, IHistoryOrderRepository historyOrderRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository)
+    public HistoryCommon(IOptions<AmazonS3Options> optionsAccessor, IInsuranceRepository insuranceRepository, IHistoryOrderRepository historyOrderRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, IUserRepository userRepository)
     {
         _insuranceRepository = insuranceRepository;
         _historyOrderRepository = historyOrderRepository;
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _patientInforRepository = patientInforRepository;
+        _userRepository = userRepository;
     }
 
     public GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int, List<HistoryOrderModel>) historyList)
     {
         var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
+        var listUserIds = historyList.Item2?.Select(d => d.UketukeId).ToList();
+        var listUsers = listUserIds == null ? new List<UserMstModel>() : _userRepository.GetListAnyUser(listUserIds)?.ToList();
         var insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
         List<string> listFolders = new();
         listFolders.Add(CommonConstants.Store);
@@ -47,6 +53,7 @@ public class HistoryCommon : IHistoryCommon
         foreach (HistoryOrderModel history in historyList.Item2)
         {
             var karteInfs = history.KarteInfModels;
+            var uketuke = listUsers?.FirstOrDefault(uke => uke.UserId == history.UketukeId);
             var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
             List<GrpKarteHistoryItem> karteHistoryList = new List<GrpKarteHistoryItem> {
                         new GrpKarteHistoryItem(
@@ -80,7 +87,11 @@ public class HistoryCommon : IHistoryCommon
                     history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
                                          .OrderBy(item => item.SeqNo)
                                          .ToList(),
-                    history.Status
+                    history.Status,
+                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.UketukeTime, 1, 4))),
+                    uketuke != null ? uketuke.Sname : string.Empty,
+                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.SinStartTime, 1, 4))),
+                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.SinEndTime, 1, 4)))
                 );
 
             //Excute order
