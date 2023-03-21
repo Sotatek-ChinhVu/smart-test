@@ -173,11 +173,16 @@ namespace EmrCalculateApi.Ika.ViewModels
         public void UpdateDatabase()
         {
             const string conFncName = nameof(UpdateDatabase);
-            _emrLogger.WriteLogStart(this, conFncName, "");
+            try
+            {
+                _emrLogger.WriteLogStart(this, conFncName, "");
 
-            _saveIkaCalculateCommandHandler.UpdateData(_common);
-
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+                _saveIkaCalculateCommandHandler.UpdateData(_common);
+            }
+            finally
+            {
+                _emrLogger.WriteLogEnd(this, conFncName, "");
+            }
         }
 
         /// <summary>
