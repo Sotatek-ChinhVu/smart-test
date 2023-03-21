@@ -96,6 +96,28 @@ namespace Infrastructure.Repositories
             return raiinInfEnumerable;
         }
 
+        private IEnumerable<RaiinInf> GenerateRaiinListQuery(int hpId, long ptId, int startDate, int endDate, int isDeleted)
+        {
+            List<int> hokenPidListByCondition = NoTrackingDataContext.PtHokenPatterns
+                                                .Where(p => p.HpId == hpId &&
+                                                            p.PtId == ptId &&
+                                                            (p.IsDeleted == 0 || isDeleted > 0))
+                                                .Select(p => p.HokenPid)
+                                                .ToList();
+
+            //Filter RaiinInf by condition.
+            IQueryable<RaiinInf> raiinInfListQueryable = NoTrackingDataContext.RaiinInfs
+                .Where(r => r.HpId == hpId &&
+                            r.PtId == ptId &&
+                            r.Status >= 3 &&
+                            (r.IsDeleted == DeleteTypes.None || isDeleted == 1 || (r.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)) &&
+                            hokenPidListByCondition.Contains(r.HokenPid) &&
+                            startDate <= r.SinDate &&
+                            r.SinDate <= endDate);
+
+            return raiinInfListQueryable.Select(r => r);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -191,12 +213,22 @@ namespace Infrastructure.Repositories
 
         public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted)
         {
-
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted);
-
             int totalCount = raiinInfEnumerable.Count();
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
+        }
 
+        public (int, List<HistoryOrderModel>) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted)
+        {
+            IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
+            int totalCount = raiinInfEnumerable.Count();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).ToList();
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
+        }
+
+        private (int, List<HistoryOrderModel>) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted)
+        {
             if (!raiinInfList.Any())
             {
                 return (0, new List<HistoryOrderModel>());
@@ -206,15 +238,10 @@ namespace Infrastructure.Repositories
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
             Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
-            //if (!allOrderInfList.Any())
-            //{
-            //    return (0, new List<HistoryOrderModel>());
-            //}
 
             List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
             List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
-            //List<ApproveInfModel> approveInfModelList = _ordInfRepository.GetApproveInf(hpId, ptId, true, raiinNoList).ToList();
 
             List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
             foreach (long raiinNo in raiinNoList)
@@ -232,7 +259,6 @@ namespace Infrastructure.Repositories
                 InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
                 RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
-                //ApproveInfModel approveInfModel = approveInfModelList.FirstOrDefault(a => a.RaiinNo == raiinNo) ?? new ApproveInfModel();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
 
@@ -294,21 +320,6 @@ namespace Infrastructure.Repositories
             }
 
             return historyOrderModelList;
-        }
-
-        private List<OrdInfDetailDto> ConvertOrdInfDetailToDto(List<OrdInfDetailModel> ordInfDetailModels)
-        {
-            List<OrdInfDetailDto> ordInfDetailDtos = new List<OrdInfDetailDto>();
-            foreach (var item in ordInfDetailModels)
-            {
-                ordInfDetailDtos.Add(
-                    new OrdInfDetailDto(
-                    item.RaiinNo, item.RpNo, item.RpEdaNo, item.RowNo, item.SinDate, item.SinKouiKbn, item.ItemCd, item.ItemName,
-                    item.Suryo, item.UnitName, item.UnitSbt, item.TermVal, item.KohatuKbn, item.SyohoKbn, item.SyohoLimitKbn, item.DrugKbn, item.YohoKbn,
-                    item.Kokuji1, item.Kokuji2, item.IsNodspRece, item.IpnCd, item.IpnName, item.ReqCd, item.InOutKbn, item.Yakka, item.IsGetPriceInYakka,
-                    item.RefillSetting, item.Ten, item.AlternationIndex, item.KensaGaichu, item.OdrTermVal, item.CnvTermVal, item.YjCd));
-            }
-            return ordInfDetailDtos;
         }
 
         public bool CheckExistedFilter(int hpId, int userId, int filterId)
@@ -492,7 +503,6 @@ namespace Infrastructure.Repositories
 
             return result;
         }
-
 
         private List<int> GetHokenPidListByCondition(int hpId, long ptId, int isDeleted, KarteFilterMstModel karteFilter)
         {
