@@ -387,11 +387,11 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Receipt.ReceiptEdit;
+using Interactor.MedicalExamination.HistoryCommon;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -515,6 +515,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
+            services.AddTransient<IHistoryCommon, HistoryCommon>();
         }
 
         private void SetupUseCase(IServiceCollection services)
