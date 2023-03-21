@@ -399,7 +399,7 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
                                                                            && p.GrpCd == groupCd
                                                                            && p.UserId == userId).ToList();
         List<(int groupItemCd, int value)> values = new();
-        for (int i = toGroupItemCd; i <= fromGroupItemCd; i++)
+        for (int i = fromGroupItemCd; i <= toGroupItemCd; i++)
         {
             var userConf = userConfs.FirstOrDefault(u => u.GrpItemCd == i);
             if (userConf != null)

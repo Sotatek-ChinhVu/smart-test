@@ -101,7 +101,7 @@ namespace Interactor.MedicalExamination
                     if (grpOdr.HasChild && !grpOdr.Childrens.Any(p => p.NodeText == OdrUtil.GetChildOdrGrpKouiName(odrKouiKbn)))
                     {
                         grpOdr = grpOdr.ChangeIsExpanded(true);
-                        var childGrp = new OrderSheetItem(2, odrKouiKbn, OdrUtil.GetChildOdrGrpKouiName(odrKouiKbn));
+                        var childGrp = new OrderSheetItem(2, 0, odrKouiKbn, OdrUtil.GetChildOdrGrpKouiName(odrKouiKbn));
                         grpOdr.Childrens.Add(childGrp);
                         if (selectDefOnLoad && IsDefSelectOdrKouiKbnBySetting(hpId, userId, childGrp))
                         {
@@ -111,7 +111,7 @@ namespace Interactor.MedicalExamination
                     }
                     continue;
                 }
-                var parrentGrp = new OrderSheetItem(1, CIUtil.GetGroupKoui(odrKouiKbn), parrentGrpName);
+                var parrentGrp = new OrderSheetItem(1, CIUtil.GetGroupKoui(odrKouiKbn), 0, parrentGrpName);
                 if (selectDefOnLoad && (odrSheetKouiKbnSelect == 0 || IsDefSelectOdrKouiKbnBySetting(hpId, userId, parrentGrp)))
                 {
                     selectDefOnLoad = false;
@@ -121,7 +121,7 @@ namespace Interactor.MedicalExamination
                 if (!string.IsNullOrEmpty(childGrpName))
                 {
                     parrentGrp = parrentGrp.ChangeIsExpanded(true);
-                    var childGrp = new OrderSheetItem(2, odrKouiKbn, childGrpName);
+                    var childGrp = new OrderSheetItem(2, 0, odrKouiKbn, childGrpName);
                     parrentGrp.Childrens.Add(childGrp);
                     if (selectDefOnLoad && IsDefSelectOdrKouiKbnBySetting(hpId, userId, childGrp))
                     {
@@ -155,7 +155,7 @@ namespace Interactor.MedicalExamination
                                                        .Select(p => p.SinDate).Distinct();
                         foreach (var sinDate in sinDates)
                         {
-                            childGrp.Childrens.Add(new OrderSheetItem(3, sinDate, childGrp.OdrKouiKbn, CIUtil.SDateToShowSDate(sinDate)));
+                            childGrp.Childrens.Add(new OrderSheetItem(3, sinDate, childGrp.OdrKouiKbn, 0, CIUtil.SDateToShowSDate(sinDate)));
                         }
                     }
                 }
@@ -180,7 +180,7 @@ namespace Interactor.MedicalExamination
                     }
                     foreach (var sinDate in odrInfList.OrderByDescending(p => p.SinDate).Select(p => p.SinDate).Distinct())
                     {
-                        parrentGrp.Childrens.Add(new OrderSheetItem(2, sinDate, parrentGrp.GroupKouiKbn, CIUtil.SDateToShowSDate(sinDate)));
+                        parrentGrp.Childrens.Add(new OrderSheetItem(2, sinDate, 0, parrentGrp.GroupKouiKbn, CIUtil.SDateToShowSDate(sinDate)));
                     }
                 }
             }
@@ -189,7 +189,7 @@ namespace Interactor.MedicalExamination
 
         private List<int> OdrSheetKouiKbnInVisible(int hpId, int userId)
         {
-            var values = _userConfRepository.GetSettingValues(hpId, userId, 23, 0, 22);
+            var values = _userConfRepository.GetSettingValues(hpId, userId, 206, 1, 22);
             var result = values.FindAll(v => v.value == 0).Select(v => v.groupItemCd).ToList();
             return result;
         }

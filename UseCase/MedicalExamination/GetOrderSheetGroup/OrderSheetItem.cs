@@ -14,18 +14,20 @@
             Childrens = childrens;
         }
 
-        public OrderSheetItem(int level, int odrKouiKbn, string nodeText)
+        public OrderSheetItem(int level, int groupKouiKbn, int odrKouiKbn, string nodeText)
         {
             NodeText = nodeText;
-            OdrKouiKbn = odrKouiKbn;
+            GroupKouiKbn = groupKouiKbn;
+            OdrKouiKbn= odrKouiKbn;
             Level = level;
             Childrens = new();
         }
 
-        public OrderSheetItem(int level, int sinDate, int odrKouiKbn, string nodeText)
+        public OrderSheetItem(int level, int sinDate, int odrKouiKbn, int groupKouiKbn, string nodeText)
         {
             NodeText = nodeText;
             OdrKouiKbn = odrKouiKbn;
+            GroupKouiKbn = groupKouiKbn;
             Level = level;
             SinDate = sinDate;
             Childrens = new();
