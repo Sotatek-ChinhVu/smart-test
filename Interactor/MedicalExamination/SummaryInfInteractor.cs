@@ -1223,6 +1223,7 @@ namespace Interactor.MedicalExamination
             }
             ptFamilyModel = new FamilyModel(
                     ptFamilyModel.FamilyId,
+                    ptFamilyModel.PtId,
                     ptFamilyModel.SeqNo,
                     ptFamilyModel.ZokugaraCd,
                     ptFamilyModel.FamilyPtId,
