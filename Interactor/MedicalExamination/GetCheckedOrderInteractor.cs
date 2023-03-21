@@ -252,7 +252,9 @@ namespace Interactor.MedicalExamination
 
                     var runTrialCalculate = _calculateRepository.RunTrialCalculate(runTraialCalculateRequest);
 
-                    checkedOrderModelList = checkedOrderModelList.Where(c => runTrialCalculate.Contains(c.ItemCd)).ToList();
+                    var itemCds = runTrialCalculate.SinMeiList.Select(x => x.ItemCd).Distinct().ToList();
+
+                    checkedOrderModelList = checkedOrderModelList.Where(c => itemCds.Contains(c.ItemCd)).ToList();
 
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.Zanyaku(inputData.HpId, inputData.SinDate, allOdrInfDetail, ordInfs));
                 }

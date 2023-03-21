@@ -1,12 +1,11 @@
 ﻿using Domain.Models.CalculateModel;
-using Domain.Models.Futan;
 
 namespace UseCase.MedicalExamination.GetCheckedOrder
 {
     public class RunTraialCalculateResponse
     {
 
-        public RunTraialCalculateResponse(List<SinMeiDataModel> sinMeiList, List<KaikeiInfModel> kaikeiInfList)
+        public RunTraialCalculateResponse(List<SinMeiDataModel> sinMeiList, List<KaikeiInfDataModel> kaikeiInfList)
         {
             SinMeiList = sinMeiList;
             KaikeiInfList = kaikeiInfList;
@@ -14,6 +13,6 @@ namespace UseCase.MedicalExamination.GetCheckedOrder
 
         public List<SinMeiDataModel> SinMeiList { get; private set; }
 
-        public List<KaikeiInfModel> KaikeiInfList { get; private set; }
+        public List<KaikeiInfDataModel> KaikeiInfList { get; private set; }
     }
 }
