@@ -185,7 +185,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         public void AddErrorCalcLog(List<CalcLogModel> calcLogModels)
         {
             const string conFncName = nameof(AddCalcLog);
-            using (var newDbService = _tenantProvider.GetTrackingTenantDataContext())
+            using (var newDbService = _tenantProvider.CreateNewTrackingDataContext())
             {
                 using (var transaction = _tenantDataContext.Database.BeginTransaction())
                 {
