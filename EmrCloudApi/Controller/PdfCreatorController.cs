@@ -29,6 +29,52 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
+        [HttpPost("ExportKarte2")]
+        public async Task<IActionResult> GenerateKarte2Report([FromForm] double marginTop,
+                                                              [FromForm] double marginBottom,
+                                                              [FromForm] double marginLeft,
+                                                              [FromForm] double marginRight,
+                                                              [FromForm] IFormFile files,
+                                                              [FromForm] double paperWidth,
+                                                              [FromForm] double paperHeight,
+                                                              [FromForm] string waitForExpression)
+        {
+            var streamImage = new MemoryStream();
+            files.CopyTo(streamImage);
+
+            byte[] bytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                files.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent(marginTop.ToString()), "marginTop");
+            form.Add(new StringContent(marginBottom.ToString()), "marginBottom");
+            form.Add(new StringContent(marginLeft.ToString()), "marginLeft");
+            form.Add(new StringContent(marginRight.ToString()), "marginRight");
+            form.Add(new StringContent(paperWidth.ToString()), "paperWidth");
+            form.Add(new StringContent(paperHeight.ToString()), "paperHeight");
+            form.Add(new StringContent(waitForExpression), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", files.FileName);
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    var byteData = streamingData.ToArray();
+
+                    return File(byteData, "application/pdf");
+                }
+            }
+        }
+
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
             StringContent jsonContent = new StringContent(
