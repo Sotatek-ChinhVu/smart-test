@@ -1894,7 +1894,6 @@ namespace Infrastructure.Repositories
         public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
             List<OrdInfModel> ordInfModels = new();
-            List<OrdInfDetailModel> odrInfDetails = new List<OrdInfDetailModel>();
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
             int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
             int rowNo = 0;
@@ -1941,6 +1940,8 @@ namespace Infrastructure.Repositories
 
             foreach (var historyOdrInfModel in historyOdrInfModels)
             {
+                List<OrdInfDetailModel> odrInfDetails = new ();
+
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
                     string ipnCd = "";
