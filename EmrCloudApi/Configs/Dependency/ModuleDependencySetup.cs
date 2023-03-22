@@ -392,6 +392,8 @@ using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Receipt.ReceiptEdit;
+using UseCase.WeightedSetConfirmation.CheckOpen;
+using Interactor.WeightedSetConfirmation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -900,6 +902,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
+
+            //WeightedSetConfirmation
+            busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
