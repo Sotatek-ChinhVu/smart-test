@@ -4,7 +4,6 @@ using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
@@ -61,11 +60,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveListFileResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetListInsuranceScan)]
         public ActionResult<Response<GetListInsuranceScanResponse>> GetListInsuranceScan([FromQuery] long ptId)
         {
-            var input = new GetListInsuranceScanInputData(1, ptId);
+            var input = new GetListInsuranceScanInputData(HpId, ptId);
             var output = _bus.Handle(input);
             var presenter = new GetListInsuranceScanPresenter();
             presenter.Complete(output);
