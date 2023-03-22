@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
         {
         }
 
-        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
+        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
         {
             var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
