@@ -899,6 +899,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
             busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
             busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
 
