@@ -387,14 +387,17 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.WeightedSetConfirmation.CheckOpen;
 using Interactor.WeightedSetConfirmation;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -598,6 +601,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
             busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
             busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -898,7 +902,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
             busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinMeiInMonthListInputData, GetSinMeiInMonthListInteractor>();
             busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
+            busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

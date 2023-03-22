@@ -7,6 +7,7 @@ using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
@@ -200,6 +201,25 @@ namespace EmrCloudApi.Services
             {
                 Console.WriteLine("Function RunCalculateMonth " + ex);
                 return false;
+            }
+        }
+
+        public SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return new();
+                }
+                var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                return result ?? new();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
+                return new();
             }
         }
 
