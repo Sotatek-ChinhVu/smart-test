@@ -6,7 +6,7 @@
     }
     public class SinMeiDataModel
     {
-        public int PtId { get; set; }
+        public long PtId { get; set; }
         public string RecId { get; set; } = string.Empty;
         public int SinId { get; set; }
         public int SinIdOrg { get; set; }
@@ -16,20 +16,20 @@
         public string OdrItemCd { get; set; } = string.Empty;
         public string ItemName { get; set; } = string.Empty;
         public string CommentData { get; set; } = string.Empty;
-        public int Suryo { get; set; }
+        public double Suryo { get; set; }
         public string SuryoDsp { get; set; } = string.Empty;
-        public int TotalTen { get; set; }
-        public int TotalKingaku { get; set; }
-        public int Ten { get; set; }
-        public int Kingaku { get; set; }
+        public double TotalTen { get; set; }
+        public double TotalKingaku { get; set; }
+        public double Ten { get; set; }
+        public double Kingaku { get; set; }
         public int Count { get; set; }
         public string TenKai { get; set; } = string.Empty;
         public bool DspZeroTenKai { get; set; }
         public int UnitCd { get; set; }
         public string UnitName { get; set; } = string.Empty;
-        public int Price { get; set; }
+        public double Price { get; set; }
         public string TokuzaiName { get; set; } = string.Empty;
-        public object ProductName { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
         public string Comment1 { get; set; } = string.Empty;
         public string CommentCd1 { get; set; } = string.Empty;
         public string CommentData1 { get; set; } = string.Empty;

@@ -1,8 +1,6 @@
-﻿using EmrCalculateApi.Constants;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 
 namespace EmrCalculateApi.ReceFutan.Models
 {
@@ -2131,7 +2129,7 @@ namespace EmrCalculateApi.ReceFutan.Models
         ///  7:一般公費  
         ///  8:自費
         /// </summary>
-        public int Kohi1HokenSbtKbn;
+        public int Kohi1HokenSbtKbn { get; set; }
 
         /// <summary>
         /// 保険種別区分
@@ -2145,7 +2143,7 @@ namespace EmrCalculateApi.ReceFutan.Models
         ///  7:一般公費  
         ///  8:自費
         /// </summary>
-        public int Kohi2HokenSbtKbn;
+        public int Kohi2HokenSbtKbn { get; set; }
 
         /// <summary>
         /// 保険種別区分
@@ -2159,7 +2157,7 @@ namespace EmrCalculateApi.ReceFutan.Models
         ///  7:一般公費  
         ///  8:自費
         /// </summary>
-        public int Kohi3HokenSbtKbn;
+        public int Kohi3HokenSbtKbn { get; set; }
 
         /// <summary>
         /// 保険種別区分
@@ -2173,13 +2171,13 @@ namespace EmrCalculateApi.ReceFutan.Models
         ///  7:一般公費  
         ///  8:自費
         /// </summary>
-        public int Kohi4HokenSbtKbn;
+        public int Kohi4HokenSbtKbn { get; set; }
 
         /// <summary>
         /// 妊婦フラグ
         /// 1:妊婦
         /// </summary>
-        public int IsNinpu;
+        public int IsNinpu { get; set; }
 
 
         /// <summary>

@@ -138,7 +138,6 @@ using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -300,21 +299,24 @@ using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceCmtHistory;
-using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
+using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
@@ -332,6 +334,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.Save;
 using UseCase.Santei.GetListSanteiInf;
 using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
@@ -388,6 +391,10 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
+using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.WeightedSetConfirmation.CheckOpen;
+using Interactor.WeightedSetConfirmation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -430,6 +437,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -552,6 +560,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
             busBuilder.RegisterUseCase<InitDoctorComboInputData, InitDoctorComboInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfFamily, GetListRaiinInfInteractorOfFamily>();
+            busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
+            busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -841,7 +851,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConfirmReplaceDocParamInputData, ConfirmReplaceDocParamInteractor>();
 
             //InsuranceScan
-            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
             busBuilder.RegisterUseCase<GetListInsuranceScanInputData, GetListInsuranceScanInteractor>();
 
             //Hoki PriorityList
@@ -888,10 +897,16 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
+            busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
+            busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
+
+            //WeightedSetConfirmation
+            busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

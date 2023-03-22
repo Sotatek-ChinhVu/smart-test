@@ -8,6 +8,14 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static string FormatIntToString(int input)
+        {
+            if (input == 0)
+                return "0";
+
+            return input.ToString("#,###");
+        }
+
         public struct WarekiYmd
         {
             public string Ymd;

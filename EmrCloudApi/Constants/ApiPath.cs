@@ -210,11 +210,15 @@
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
+        public const string GetInsuranceInf = "GetInsuranceInf";
         public const string ReceCmtHistory = "ReceCmtHistory";
         public const string SyoukiInfHistory = "SyoukiInfHistory";
         public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
+        public const string GetMedicalDetails = "GetMedicalDetails";
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
+        public const string GetReceiptEdit = "GetReceiptEdit";
+        public const string SaveReceiptEdit = "SaveReceiptEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -244,5 +248,9 @@
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
+        public const string SaveReceSeikyu = "SaveReceSeikyu";
+
+        //WeightedSetConfirmation
+        public const string IsOpenWeightChecking = "IsOpenWeightChecking";
     }
 }

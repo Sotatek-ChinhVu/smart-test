@@ -14,6 +14,7 @@ namespace EmrCloudApi.Responses.Schema
             FileName = model.FileName;
             FileNameDisplay = model.FileNameDisplay;
             IsDeleted = model.IsDeleted;
+            UpdateTime = model.UpdateTime;
         }
 
         public int HpId { get; private set; }
@@ -31,5 +32,7 @@ namespace EmrCloudApi.Responses.Schema
         public string FileNameDisplay { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public string UpdateTime { get; private set; }
     }
 }
