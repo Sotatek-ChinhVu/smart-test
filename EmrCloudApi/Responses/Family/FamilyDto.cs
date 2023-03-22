@@ -7,6 +7,7 @@ public class FamilyDto
     public FamilyDto(FamilyItem model)
     {
         FamilyId = model.FamilyId;
+        PtId = model.PtId;
         ZokugaraCd = model.ZokugaraCd;
         FamilyPtId = model.FamilyPtId;
         FamilyPtNum = model.FamilyPtNum;
@@ -19,10 +20,13 @@ public class FamilyDto
         IsSeparated = model.IsSeparated;
         Biko = model.Biko;
         SortNo = model.SortNo;
+        IsDeleted = model.IsDeleted;
         PtFamilyRekiList = model.PtFamilyRekiList.Select(item => new PtFamilyRekiDto(item)).ToList();
     }
 
     public long FamilyId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public string ZokugaraCd { get; private set; }
 
@@ -47,6 +51,8 @@ public class FamilyDto
     public string Biko { get; private set; }
 
     public int SortNo { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 
     public List<PtFamilyRekiDto> PtFamilyRekiList { get; private set; }
 }

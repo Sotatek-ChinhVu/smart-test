@@ -14,7 +14,9 @@
 
         public int HokenId { get; set; }
 
-        /*3 Kaikei, 21 AccountingCard*/
+        public int SeikyuYm { get; set; }
+
+        /*Mode = 3 Kaikei, 21 AccountingCard, 2 ReceCheck*/
         public int SinMeiMode { get; set; }
     }
 }

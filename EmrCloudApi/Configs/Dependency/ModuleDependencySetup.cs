@@ -601,6 +601,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
             busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
             busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -901,11 +902,18 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
             busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinMeiInMonthListInputData, GetSinMeiInMonthListInteractor>();
+            busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
+            busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
             busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
+
+            //WeightedSetConfirmation
+            busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

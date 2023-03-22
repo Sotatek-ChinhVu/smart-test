@@ -53,8 +53,7 @@ namespace Interactor.PatientInfor
                             if (item.File.Length > 0) //File is existings
                             {
                                 path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
-                                string fileName = $"{ptId.ToString().PadLeft(10, '0')}{item.HokenId}.png";
-                                fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
+                                string fileName =  ptNum + "_" + item.HokenGrp.AsString() + "_" + item.HokenId + "_" + CIUtil.GetJapanDateTimeNow().ToString("yyyyMMddHHmmsshhhhhh") + ".png";
                                 string pathScan = _amazonS3Service.UploadObjectAsync(path, fileName, item.File, true).Result;
                                 //Create or update
 
@@ -65,7 +64,8 @@ namespace Interactor.PatientInfor
                                                                     item.HokenId,
                                                                     pathScan,
                                                                     Stream.Null,
-                                                                    0));
+                                                                    0,
+                                                                    string.Empty));
 
                                 if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
                                 {

@@ -25,9 +25,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum, int hpId)
+        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum).FirstOrDefault();
+            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
             {
                 return (new PatientInforModel(), false);
@@ -1228,7 +1228,7 @@ namespace Infrastructure.Repositories
 
             #region insurancesCan
             var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
-            if(insuranceScanDatas != null && insuranceScanDatas.Any())
+            if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
                 TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
                 {
@@ -1744,12 +1744,12 @@ namespace Infrastructure.Repositories
             var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum, patientInfo.PtId);
             if (insuranceScanDatas != null && insuranceScanDatas.Any())
             {
-                foreach(var scan in insuranceScanDatas)
+                foreach (var scan in insuranceScanDatas)
                 {
-                    if(scan.IsDeleted == DeleteTypes.Deleted)
+                    if (scan.IsDeleted == DeleteTypes.Deleted)
                     {
                         var deleteItem = insuranceScanDatabases.FirstOrDefault(x => x.SeqNo == scan.SeqNo);
-                        if(deleteItem is not null)
+                        if (deleteItem is not null)
                         {
                             deleteItem.IsDeleted = DeleteTypes.Deleted;
                             deleteItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -1758,7 +1758,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        if(scan.SeqNo == 0) //Create
+                        if (scan.SeqNo == 0) //Create
                         {
                             TrackingDataContext.PtHokenScans.Add(Mapper.Map(scan, new PtHokenScan(), (src, dest) =>
                             {
