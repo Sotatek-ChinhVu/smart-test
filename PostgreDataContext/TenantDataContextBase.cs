@@ -14,6 +14,19 @@ namespace PostgreDataContext
             _connectionString = string.Empty;
         }
 
+        public override void Dispose()
+        {
+            try
+            {
+                base.Dispose();
+            }
+            finally
+            {
+                string info = $"Dispose TenantDataContext from: {Environment.NewLine} {Environment.StackTrace}";
+                Console.WriteLine(info);
+            }
+        }
+
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    if (!string.IsNullOrEmpty(_connectionString))

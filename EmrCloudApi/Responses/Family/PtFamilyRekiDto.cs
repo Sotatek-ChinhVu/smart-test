@@ -11,6 +11,7 @@ public class PtFamilyRekiDto
         Byomei = model.Byomei;
         Cmt = model.Cmt;
         SortNo = model.SortNo;
+        IsDeleted = model.IsDeleted;
     }
 
     public long Id { get; private set; }
@@ -20,6 +21,8 @@ public class PtFamilyRekiDto
     public string Byomei { get; private set; }
 
     public string Cmt { get; private set; }
+
+    public bool IsDeleted { get; private set; }
 
     public int SortNo { get; private set; }
 }

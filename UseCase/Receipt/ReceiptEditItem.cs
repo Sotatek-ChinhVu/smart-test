@@ -31,6 +31,11 @@ public class ReceiptEditItem
         Kohi3ReceFutan = -1;
         Kohi4ReceTensu = -1;
         Kohi4ReceFutan = -1;
+        Tokki1Id = CIUtil.Copy(Tokki1, 1, 2);
+        Tokki2Id = CIUtil.Copy(Tokki2, 1, 2);
+        Tokki3Id = CIUtil.Copy(Tokki3, 1, 2);
+        Tokki4Id = CIUtil.Copy(Tokki4, 1, 2);
+        Tokki5Id = CIUtil.Copy(Tokki5, 1, 2);
     }
 
     public ReceiptEditItem(ReceiptEditModel model)
@@ -60,6 +65,11 @@ public class ReceiptEditItem
         Kohi3ReceFutan = model.Kohi3ReceFutan;
         Kohi4ReceTensu = model.Kohi4ReceTensu;
         Kohi4ReceFutan = model.Kohi4ReceFutan;
+        Tokki1Id = CIUtil.Copy(Tokki1, 1, 2);
+        Tokki2Id = CIUtil.Copy(Tokki2, 1, 2);
+        Tokki3Id = CIUtil.Copy(Tokki3, 1, 2);
+        Tokki4Id = CIUtil.Copy(Tokki4, 1, 2);
+        Tokki5Id = CIUtil.Copy(Tokki5, 1, 2);
     }
 
     public ReceiptEditItem(ReceInfModel receInf)
@@ -89,9 +99,50 @@ public class ReceiptEditItem
         Kohi3ReceFutan = receInf.Kohi3ReceFutan;
         Kohi4ReceTensu = receInf.Kohi4ReceTensu;
         Kohi4ReceFutan = receInf.Kohi4ReceFutan;
+        Tokki1Id = CIUtil.Copy(Tokki1, 1, 2);
+        Tokki2Id = CIUtil.Copy(Tokki2, 1, 2);
+        Tokki3Id = CIUtil.Copy(Tokki3, 1, 2);
+        Tokki4Id = CIUtil.Copy(Tokki4, 1, 2);
+        Tokki5Id = CIUtil.Copy(Tokki5, 1, 2);
     }
 
-    public long SeqNo { get; private set; }
+    // contructor for save
+    public ReceiptEditItem(int seqNo, int hokenNissu, int kohi1Nissu, int kohi2Nissu, int kohi3Nissu, int kohi4Nissu, int kohi1ReceKyufu, int kohi2ReceKyufu, int kohi3ReceKyufu, int kohi4ReceKyufu, int hokenReceTensu, int hokenReceFutan, int kohi1ReceTensu, int kohi1ReceFutan, int kohi2ReceTensu, int kohi2ReceFutan, int kohi3ReceTensu, int kohi3ReceFutan, int kohi4ReceTensu, int kohi4ReceFutan, bool isDeleted, string tokki1Id, string tokki2Id, string tokki3Id, string tokki4Id, string tokki5Id)
+    {
+        SeqNo = seqNo;
+        HokenNissu = hokenNissu;
+        Kohi1Nissu = kohi1Nissu;
+        Kohi2Nissu = kohi2Nissu;
+        Kohi3Nissu = kohi3Nissu;
+        Kohi4Nissu = kohi4Nissu;
+        Kohi1ReceKyufu = kohi1ReceKyufu;
+        Kohi2ReceKyufu = kohi2ReceKyufu;
+        Kohi3ReceKyufu = kohi3ReceKyufu;
+        Kohi4ReceKyufu = kohi4ReceKyufu;
+        HokenReceTensu = hokenReceTensu;
+        HokenReceFutan = hokenReceFutan;
+        Kohi1ReceTensu = kohi1ReceTensu;
+        Kohi1ReceFutan = kohi1ReceFutan;
+        Kohi2ReceTensu = kohi2ReceTensu;
+        Kohi2ReceFutan = kohi2ReceFutan;
+        Kohi3ReceTensu = kohi3ReceTensu;
+        Kohi3ReceFutan = kohi3ReceFutan;
+        Kohi4ReceTensu = kohi4ReceTensu;
+        Kohi4ReceFutan = kohi4ReceFutan;
+        IsDeleted = isDeleted;
+        Tokki1Id = tokki1Id;
+        Tokki2Id = tokki2Id;
+        Tokki3Id = tokki3Id;
+        Tokki4Id = tokki4Id;
+        Tokki5Id = tokki5Id;
+        Tokki1 = string.Empty;
+        Tokki2 = string.Empty;
+        Tokki3 = string.Empty;
+        Tokki4 = string.Empty;
+        Tokki5 = string.Empty;
+    }
+
+    public int SeqNo { get; private set; }
 
     public string Tokki1 { get; private set; }
 
@@ -141,28 +192,15 @@ public class ReceiptEditItem
 
     public int Kohi4ReceFutan { get; private set; }
 
-    public string Tokki1Id
-    {
-        get => CIUtil.Copy(Tokki1, 1, 2);
-    }
+    public bool IsDeleted { get; private set; }
 
-    public string Tokki2Id
-    {
-        get => CIUtil.Copy(Tokki2, 1, 2);
-    }
+    public string Tokki1Id { get; private set; }
 
-    public string Tokki3Id
-    {
-        get => CIUtil.Copy(Tokki3, 1, 2);
-    }
+    public string Tokki2Id { get; private set; }
 
-    public string Tokki4Id
-    {
-        get => CIUtil.Copy(Tokki4, 1, 2);
-    }
+    public string Tokki3Id { get; private set; }
 
-    public string Tokki5Id
-    {
-        get => CIUtil.Copy(Tokki5, 1, 2);
-    }
+    public string Tokki4Id { get; private set; }
+
+    public string Tokki5Id { get; private set; }
 }
