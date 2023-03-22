@@ -49,6 +49,7 @@ namespace Domain.Models.Diseases
             HosokuCmt = hosokuCmt;
             TogetuByomei = togetuByomei;
             DelDate = delDate;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
@@ -79,6 +80,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = 0;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
@@ -122,6 +124,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = icd1022013;
             HokenPid = hokenPid;
             HosokuCmt = hosokuCmt;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel()
@@ -152,6 +155,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = 0;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -182,6 +186,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, string byomeiCd)
@@ -212,6 +217,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn)
@@ -242,6 +248,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013)
@@ -272,6 +279,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(int sikkanKbn, int hokenPid, int tenkiKbn, int tenkiDate, int syubyoKbn, string icd1012013, int nanbyoCd)
@@ -302,6 +310,7 @@ namespace Domain.Models.Diseases
             Icd1022013 = string.Empty;
             HokenPid = hokenPid;
             HosokuCmt = string.Empty;
+            ItemCd = string.Empty;
         }
 
         public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, List<PrefixSuffixModel> prefixList)
@@ -319,6 +328,28 @@ namespace Domain.Models.Diseases
             TogetuByomei = togetuByomei;
             PrefixSuffixList = new List<PrefixSuffixModel>();
             PrefixSuffixList.AddRange(prefixList);
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            ItemCd = string.Empty;
+        }
+
+        public PtDiseaseModel(string itemCd, string byomeiCd, string byomei, int sikkanCd, bool isAdopted, int nanbyoCd)
+        {
+            ItemCd = itemCd;
+            ByomeiCd = byomeiCd;
+            Byomei = byomei;
+            SikkanKbn = sikkanCd;
+            SikkanCd = sikkanCd;
+            IsAdopted = isAdopted;
+            NanbyoCd = nanbyoCd;
+            PrefixSuffixList = new();
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HosokuCmt = string.Empty;
         }
 
         public ValidationStatus Validation()
@@ -503,6 +534,10 @@ namespace Domain.Models.Diseases
         public int SikkanCd { get; private set; }
 
         public int DelDate { get; private set; }
+
+        public string ItemCd { get; private set; }
+
+        public bool IsAdopted { get; private set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
 
