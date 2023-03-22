@@ -28,9 +28,6 @@ namespace Interactor.MedicalExamination
         {
             try
             {
-                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
-                if (!raiinNos.Any()) { return new GetTrialAccountingMeiHoGaiOutputData(new(), new(), new(), GetTrialAccountingMeiHoGaiStatus.NoData); }
-
                 var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                 var requestRaiinInf = new ReceptionItem(raiinInf);
                 var runTraialCalculateRequest = new RunTraialCalculateRequest(
@@ -47,7 +44,8 @@ namespace Interactor.MedicalExamination
 
                 var sinMeis = GetSinMei(trialCalculateResponse.SinMeiList);
                 var sinHos = GetSinHo(sinMeis);
-                var sinGais = GetSinGai(inputData.HpId, inputData.PtId, raiinNos, sinMeis, trialCalculateResponse.KaikeiInfList);
+                var kaikeis = ConvertToKaikeiInfModel(trialCalculateResponse.KaikeiInfList);
+                var sinGais = GetSinGai(inputData.HpId, inputData.PtId, sinMeis, kaikeis);
 
                 return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, GetTrialAccountingMeiHoGaiStatus.Successed);
             }
@@ -168,7 +166,59 @@ namespace Interactor.MedicalExamination
             return sinHo;
         }
 
-        private List<SinGaiModel> GetSinGai(int hpId, long ptId, List<long> raiinNos, List<SinMeiModel> sinMeiModels, List<KaikeiInfModel>)
+        private List<KaikeiInfModel> ConvertToKaikeiInfModel(List<KaikeiInfDataModel> kaikeiInfDatas)
+        {
+            return kaikeiInfDatas.Select(item => new KaikeiInfModel(
+                                                                   item.HpId,
+                                                                   item.PtId,
+                                                                   item.SinDate,
+                                                                   item.RaiinNo,
+                                                                   item.HokenId,
+                                                                   item.Kohi1Id,
+                                                                   item.Kohi2Id,
+                                                                   item.Kohi3Id,
+                                                                   item.Kohi4Id,
+                                                                   item.HokenKbn,
+                                                                   item.HokenSbtCd,
+                                                                   item.ReceSbt,
+                                                                   item.Houbetu,
+                                                                   item.Kohi1Houbetu,
+                                                                   item.Kohi2Houbetu,
+                                                                   item.Kohi3Houbetu,
+                                                                   item.Kohi4Houbetu,
+                                                                   item.HokenKbn,
+                                                                   item.HokenRate,
+                                                                   item.PtRate,
+                                                                   item.DispRate,
+                                                                   item.Tensu,
+                                                                   item.TotalIryohi,
+                                                                   item.PtFutan,
+                                                                   item.JihiFutan,
+                                                                   item.JihiTax,
+                                                                   item.JihiOuttax,
+                                                                   item.JihiFutanTaxfree,
+                                                                   item.JihiFutanTaxNr,
+                                                                   item.JihiFutanTaxGen,
+                                                                   item.JihiFutanOuttaxNr,
+                                                                   item.JihiFutanOuttaxGen,
+                                                                   item.JihiTaxNr,
+                                                                   item.JihiTaxGen,
+                                                                   item.JihiOuttaxNr,
+                                                                   item.JihiOuttaxGen,
+                                                                   item.AdjustFutan,
+                                                                   item.AdjustRound,
+                                                                   item.TotalPtFutan,
+                                                                   item.AdjustFutanVal,
+                                                                   item.AdjustFutanRange,
+                                                                   item.AdjustRateVal,
+                                                                   item.AdjustRateRange,
+                                                                   item.Kohi1Priority,
+                                                                   item.Kohi2Priority,
+                                                                   item.Kohi3Priority,
+                                                                   item.Kohi4Priority
+                                            )).ToList();
+        }
+        private List<SinGaiModel> GetSinGai(int hpId, long ptId, List<SinMeiModel> sinMeis, List<KaikeiInfModel> kaikeiInfs)
         {
             var sinGai = new List<SinGaiModel>();
             var jihis = GetListJihiSbtMst(hpId);
@@ -178,25 +228,19 @@ namespace Interactor.MedicalExamination
                 foreach (var jihi in jihis)
                 {
                     sinGai.Add(new SinGaiModel(jihi.Name,
-                                               sinMeiModels.Where(item => item.JihiSbt == jihi.JihiSbt)
+                                               sinMeis.Where(item => item.JihiSbt == jihi.JihiSbt)
                                                .Sum(item => item.TotalKingaku).AsInteger(),
                                                false));
                 }
             }
 
-            sinGai.Add(new SinGaiModel("自費",
-                                        sinMeiModels.Where(item => item.JihiSbt == 0 && item.SanteiKbn == 2).Sum(item => item.TotalKingaku).AsInteger(),
-                                        false));
-
             sinGai.Add(new SinGaiModel("合計金額",
-                                        sinMeiModels.Where(item => item.JihiSbt > 0 || (item.JihiSbt == 0 && item.SanteiKbn == 2)).Sum(item => item.TotalKingaku)
+                                        sinMeis.Where(item => item.JihiSbt > 0 || (item.JihiSbt == 0 && item.SanteiKbn == 2)).Sum(item => item.TotalKingaku)
                                             .AsInteger(),
             true));
 
-            int point = _accountingRepository.GetJihiOuttaxPoint(hpId, ptId, raiinNos);
-
             sinGai.Add(new SinGaiModel(SinHoConstant.CodeHoDic[nameof(CodeHoEnum.SZ)],
-                                       point,
+                                       point: kaikeiInfs.Sum(item => item.JihiOuttax),
                                        true));
 
             return sinGai;
