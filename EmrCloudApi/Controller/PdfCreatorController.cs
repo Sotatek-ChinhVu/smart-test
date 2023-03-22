@@ -39,14 +39,16 @@ namespace EmrCloudApi.Controller
                                                               [FromForm] double paperHeight,
                                                               [FromForm] string waitForExpression)
         {
-            var streamImage = new MemoryStream();
-            files.CopyTo(streamImage);
-
             byte[] bytes;
             using (var memoryStream = new MemoryStream())
             {
                 files.CopyTo(memoryStream);
-                bytes = memoryStream.ToArray();
+                string decoded = Encoding.UTF8.GetString(memoryStream.ToArray());
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+                //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
+                //bytes = Encoding.ASCII.GetBytes(decoded);
+                //bytes = memoryStream.ToArray();
             }
 
             MultipartFormDataContent form = new MultipartFormDataContent();
