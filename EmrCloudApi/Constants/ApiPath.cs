@@ -249,5 +249,8 @@
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
         public const string SaveReceSeikyu = "SaveReceSeikyu";
+
+        //WeightedSetConfirmation
+        public const string IsOpenWeightChecking = "IsOpenWeightChecking";
     }
 }
