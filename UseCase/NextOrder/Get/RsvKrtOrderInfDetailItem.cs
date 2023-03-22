@@ -52,6 +52,9 @@ namespace UseCase.NextOrder.Get
             YohoSets = rsvKrtOrderInfDetailModel.YohoSets;
             Kasan1 = rsvKrtOrderInfDetailModel.Kasan1;
             Kasan2 = rsvKrtOrderInfDetailModel.Kasan2;
+            CenterItemCd1 = rsvKrtOrderInfDetailModel.CenterItemCd1;
+            CenterItemCd2 = rsvKrtOrderInfDetailModel.CenterItemCd2;
+            HandanGrpKbn = rsvKrtOrderInfDetailModel.HandanGrpKbn;
         }
 
         public int HpId { get; private set; }

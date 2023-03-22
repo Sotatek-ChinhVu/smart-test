@@ -47,7 +47,7 @@ namespace EmrCloudApi.Controller
                                                                     x.HokenGrp, 
                                                                     x.HokenId,
                                                                     x.FileName,
-                                                                    x.File.OpenReadStream(), 
+                                                                    x.File?.OpenReadStream() ?? new MemoryStream(), 
                                                                     x.IsDeleted)));
             var output = _bus.Handle(input);
             var presenter = new SaveInsuranceScanPresenter();

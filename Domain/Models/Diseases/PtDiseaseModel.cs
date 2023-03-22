@@ -319,6 +319,11 @@ namespace Domain.Models.Diseases
             TogetuByomei = togetuByomei;
             PrefixSuffixList = new List<PrefixSuffixModel>();
             PrefixSuffixList.AddRange(prefixList);
+            Icd10 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            Icd102013 = string.Empty;
+
         }
 
         public ValidationStatus Validation()
@@ -539,7 +544,7 @@ namespace Domain.Models.Diseases
 
         public bool IsMain => SyubyoKbn == 1;
 
-        public string ByomeiHankToZen => HenkanJ.HankToZen(Byomei);
+        public string ByomeiHankToZen => HenkanJ.Instance.ToFullsize(Byomei);
 
         public PtDiseaseModel ChangeSikkanCd(int sikkanCd)
         {

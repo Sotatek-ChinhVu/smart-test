@@ -453,7 +453,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receInfs = receInfs.Where(item => receStatuses.FirstOrDefault(rcs => rcs.PtId == item.PtId
                                                                             && rcs.HokenId == item.HokenId
                                                                             && rcs.SeikyuYm == item.SeikyuYm
-                                                                            && rcs.SinYm == item.SinYm).Output != 1);
+                                                                            && rcs.SinYm == item.SinYm)!.Output != 1);
             }
 
             // グループ
@@ -509,7 +509,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && !string.IsNullOrEmpty(item.SanteiItemCd)
                                                                                 && originItemSanteiList.Contains(item.ItemCd));
                 var santeiItemList = tenMstSanteis.GroupBy(item => item.SanteiItemCd).Select(item => item.Key).ToList();
-                var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, item.SanteiItemCd })
+                var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, SanteiItemCd = item.SanteiItemCd ?? string.Empty })
                                                             .Select(item => new { item.Key.ItemCd, item.Key.SanteiItemCd }).ToList();
 
                 IEnumerable<ItemSumModel> enumOdrDetailItemSum = Enumerable.Empty<ItemSumModel>();

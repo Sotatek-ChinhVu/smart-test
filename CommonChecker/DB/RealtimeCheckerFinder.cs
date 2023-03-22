@@ -5,7 +5,6 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
 using PostgreDataContext;
-using System.Diagnostics;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
@@ -124,7 +123,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     var yjCdList = tenMstList.Select(t => t.YjCd).ToList();
                     var m56ExEdIngredientList = NoTrackingDataContext.M56ExEdIngredients.Where(i => (i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1") && yjCdList.Contains(i.YjCd)).ToList();
 
-                    return new (tenMstList, m56ExEdIngredientList);
+                    return new(tenMstList, m56ExEdIngredientList);
                 }
 
                 var dataByPatientInf = getData(listDrugAllergyAsPatientCode);
@@ -840,7 +839,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<string> listAlrgyKbn = allergyFoodAsPatient.Where(a => a.AlrgyKbn != null).Select(a => a.AlrgyKbn).ToList();
             List<string> itemCodeList = itemCodeModelList.Select(x => x.ItemCd).ToList();
-            var m12FoodAlrgyList = NoTrackingDataContext.M12FoodAlrgy.Where(c => itemCodeList.Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn)).ToList();
+            var m12FoodAlrgyList = NoTrackingDataContext.M12FoodAlrgy.Where(c => itemCodeList.Contains(c.KikinCd ?? string.Empty) && listAlrgyKbn.Contains(c.FoodKbn)).ToList();
 
             var checkedResult = (from m12FoodAlrgy in m12FoodAlrgyList
                                  join listItemCodes in itemCodeModelList
@@ -951,7 +950,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  join ageCheck in NoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
-                     listSettingLevel.Contains(m.TenpuLevel) &&
+                     listSettingLevel.Contains(m.TenpuLevel ?? string.Empty) &&
                      (
                          (m.AgeKbn == "1" && m.AgeMin <= age && age < m.AgeMax && (string.IsNullOrEmpty(m.SexKbn) || m.SexKbn == sex)) ||
                          (m.WeightKbn == "1" && m.WeightMin <= weight && weight < m.WeightMax && (string.IsNullOrEmpty(m.SexKbn) || m.SexKbn == sex))
@@ -1173,11 +1172,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                  listCurrentOrderCodes.Id,
                                                  tenMst.YjCd,
                                                  tenMst.ItemCd,
-                                                 YjCd4 = CIUtil.Substring(tenMst.YjCd, 0, 4),
-                                                 YjCd7 = CIUtil.Substring(tenMst.YjCd, 0, 7),
-                                                 YjCd8 = CIUtil.Substring(tenMst.YjCd, 0, 8),
-                                                 YjCd9 = CIUtil.Substring(tenMst.YjCd, 0, 9),
-                                                 YjCd12 = CIUtil.Substring(tenMst.YjCd, 0, 12)
+                                                 YjCd4 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 4),
+                                                 YjCd7 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 7),
+                                                 YjCd8 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 8),
+                                                 YjCd9 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 9),
+                                                 YjCd12 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 12)
                                              }
                                              ).ToList();
 
@@ -1189,11 +1188,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                listAddedOrderCodes.Id,
                                                tenMst.YjCd,
                                                tenMst.ItemCd,
-                                               YjCd4 = CIUtil.Substring(tenMst.YjCd, 0, 4),
-                                               YjCd7 = CIUtil.Substring(tenMst.YjCd, 0, 7),
-                                               YjCd8 = CIUtil.Substring(tenMst.YjCd, 0, 8),
-                                               YjCd9 = CIUtil.Substring(tenMst.YjCd, 0, 9),
-                                               YjCd12 = CIUtil.Substring(tenMst.YjCd, 0, 12)
+                                               YjCd4 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 4),
+                                               YjCd7 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 7),
+                                               YjCd8 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 8),
+                                               YjCd9 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 9),
+                                               YjCd12 = CIUtil.Substring(tenMst.YjCd ?? string.Empty, 0, 12)
                                            }
                                            ).ToList();
 
@@ -1412,11 +1411,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = CIUtil.Substring(m.YjCd, 0, 4),
-                    YjCd7 = CIUtil.Substring(m.YjCd, 0, 7),
-                    YjCd8 = CIUtil.Substring(m.YjCd, 0, 8),
-                    YjCd9 = CIUtil.Substring(m.YjCd, 0, 9),
-                    YjCd12 = CIUtil.Substring(m.YjCd, 0, 12)
+                    YjCd4 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 4),
+                    YjCd7 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 7),
+                    YjCd8 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 8),
+                    YjCd9 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 9),
+                    YjCd12 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 12)
                 })
                 .ToList();
 
@@ -1426,11 +1425,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = CIUtil.Substring(m.YjCd, 0, 4),
-                    YjCd7 = CIUtil.Substring(m.YjCd, 0, 7),
-                    YjCd8 = CIUtil.Substring(m.YjCd, 0, 8),
-                    YjCd9 = CIUtil.Substring(m.YjCd, 0, 9),
-                    YjCd12 = CIUtil.Substring(m.YjCd, 0, 12)
+                    YjCd4 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 4),
+                    YjCd7 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 7),
+                    YjCd8 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 8),
+                    YjCd9 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 9),
+                    YjCd12 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 12)
                 })
                 .ToList();
 
@@ -1554,11 +1553,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = CIUtil.Substring(m.YjCd, 0, 4),
-                    YjCd7 = CIUtil.Substring(m.YjCd, 0, 7),
-                    YjCd8 = CIUtil.Substring(m.YjCd, 0, 8),
-                    YjCd9 = CIUtil.Substring(m.YjCd, 0, 9),
-                    YjCd12 = CIUtil.Substring(m.YjCd, 0, 12)
+                    YjCd4 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 4),
+                    YjCd7 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 7),
+                    YjCd8 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 8),
+                    YjCd9 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 9),
+                    YjCd12 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 12)
                 })
                 .ToList();
 
@@ -1680,11 +1679,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = CIUtil.Substring(m.YjCd, 0, 4),
-                    YjCd7 = CIUtil.Substring(m.YjCd, 0, 7),
-                    YjCd8 = CIUtil.Substring(m.YjCd, 0, 8),
-                    YjCd9 = CIUtil.Substring(m.YjCd, 0, 9),
-                    YjCd12 = CIUtil.Substring(m.YjCd, 0, 12)
+                    YjCd4 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 4),
+                    YjCd7 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 7),
+                    YjCd8 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 8),
+                    YjCd9 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 9),
+                    YjCd12 = CIUtil.Substring(m.YjCd ?? string.Empty, 0, 12)
                 })
                 .ToList();
 
@@ -2079,7 +2078,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                                                                    && doeiCdList.Contains(d.DoeiCd)
                                                                                                 ).ToList();
 
-            
+
 
             var listDosageInfo =
                 (from tenMst in tenMstList
