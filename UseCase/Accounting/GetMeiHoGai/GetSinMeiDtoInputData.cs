@@ -37,7 +37,7 @@
         public int SinDate { get; private set; }
         public int HpId { get; private set; }
         public int SinYm { get; private set; }
-        public int SeikyuYm { get; set; }
+        public int SeikyuYm { get; private set; }
         public int HokenId { get; private set; }
         public int SinMeiMode { get; private set; }
     }
