@@ -4,13 +4,16 @@ namespace UseCase.Receipt.ReceiptEdit;
 
 public class GetReceiptEditOutputData : IOutputData
 {
-    public GetReceiptEditOutputData(ReceiptEditItem receiptEditOrigin, ReceiptEditItem receiptEditCurrent, Dictionary<string, string> tokkiMstDictionary, GetReceiptEditStatus status)
+    public GetReceiptEditOutputData(int seqNo, ReceiptEditItem receiptEditOrigin, ReceiptEditItem receiptEditCurrent, Dictionary<string, string> tokkiMstDictionary, GetReceiptEditStatus status)
     {
+        SeqNo = seqNo;
         ReceiptEditOrigin = receiptEditOrigin;
         ReceiptEditCurrent = receiptEditCurrent;
         TokkiMstDictionary = tokkiMstDictionary;
         Status = status;
     }
+
+    public int SeqNo { get; private set; }
 
     public ReceiptEditItem ReceiptEditOrigin { get; private set; }
 

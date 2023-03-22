@@ -3,6 +3,7 @@ using Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Extension;
 using System.Text.RegularExpressions;
+using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchSimple;
 
 namespace Interactor.PatientInfor
