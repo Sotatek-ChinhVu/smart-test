@@ -9,6 +9,7 @@ namespace Domain.Models.Reception
     public class ReceptionDto
     {
 
+
         public ReceptionDto(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
         {
             HpId = hpId;
@@ -237,6 +238,19 @@ namespace Domain.Models.Reception
             DepartmentSName = string.Empty;
             KaikeiInfModels = new();
             HokenPatternModel = new();
+        }
+
+        public ReceptionDto(HokenPatternModel hokenPatternModel)
+        {
+            HokenPatternModel = hokenPatternModel;
+            YoyakuTime = string.Empty;
+            UketukeTime = string.Empty;
+            SinStartTime = string.Empty;
+            SinEndTime = string.Empty;
+            KaikeiTime = string.Empty;
+            Comment = string.Empty;
+            DepartmentSName = string.Empty;
+            KaikeiInfModels = new();
         }
     }
 }

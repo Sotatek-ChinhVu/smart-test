@@ -1,5 +1,4 @@
-﻿using Domain.Models.HokenMst;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
 using Helper.Constants;
 using System.Text.Json.Serialization;
 
@@ -97,7 +96,7 @@ namespace Domain.Models.Insurance
             HokensyaMst = new HokensyaMstModel();
         }
 
-        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMasterModel hokenMasterModels, List<ConfirmDateModel> confirmDateModels)
+        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
         {
             HpId = hpId;
             PtId = ptId;
@@ -107,11 +106,11 @@ namespace Domain.Models.Insurance
             StartDate = startDate;
             EndDate = endDate;
             SinDate = sinDate;
-            HokenMasterModels = hokenMasterModels;
+            HokenMstModel = hokenMstModel;
             ConfirmDateList = confirmDateModels;
         }
 
-        public HokenMasterModel HokenMasterModels { get; private set; }
+        public HokenMstModel HokenMstModel { get; private set; }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 

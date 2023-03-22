@@ -45,15 +45,23 @@ namespace Interactor.MedicalExamination
                 var sinMeis = GetSinMei(trialCalculateResponse.SinMeiList);
                 var sinHos = GetSinHo(sinMeis);
                 var kaikeis = ConvertToKaikeiInfModel(trialCalculateResponse.KaikeiInfList);
-                var sinGais = GetSinGai(inputData.HpId, inputData.PtId, sinMeis, kaikeis);
-
-                return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, GetTrialAccountingMeiHoGaiStatus.Successed);
+                var sinGais = GetSinGai(inputData.HpId, sinMeis, kaikeis);
+                var accountingInf = GetTrialAccountingInf(kaikeis);
+                var hokenPatternRate = GetPatternName(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, accountingInf, hokenPatternRate, GetTrialAccountingMeiHoGaiStatus.Successed);
             }
             finally
             {
                 _receptionRepository.ReleaseResource();
+                _accountingRepository.ReleaseResource();
             }
 
+        }
+
+        private string GetPatternName(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var raiins = _accountingRepository.GetRaiinInfModel(hpId, ptId, sinDate, raiinNo);
+            return raiins.PatternName;
         }
 
         private List<SinMeiModel> GetSinMei(List<SinMeiDataModel> sinMeis)
@@ -218,7 +226,8 @@ namespace Interactor.MedicalExamination
                                                                    item.Kohi4Priority
                                             )).ToList();
         }
-        private List<SinGaiModel> GetSinGai(int hpId, long ptId, List<SinMeiModel> sinMeis, List<KaikeiInfModel> kaikeiInfs)
+
+        private List<SinGaiModel> GetSinGai(int hpId, List<SinMeiModel> sinMeis, List<KaikeiInfModel> kaikeiInfs)
         {
             var sinGai = new List<SinGaiModel>();
             var jihis = GetListJihiSbtMst(hpId);
@@ -249,6 +258,18 @@ namespace Interactor.MedicalExamination
         private List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {
             return _accountingRepository.GetListJihiSbtMst(hpId);
+        }
+
+        private TrialAccountingInfDto GetTrialAccountingInf(List<KaikeiInfModel> kaikeiInfs)
+        {
+            var totalPoint = kaikeiInfs.Sum(item => item.Tensu);
+            var kanFutan = kaikeiInfs.Sum(item => item.PtFutan);
+            var totalSelfExpense = kaikeiInfs.Sum(item => item.JihiFutan + item.JihiOuttax);
+            var tax = kaikeiInfs.Sum(item => item.JihiTax + item.JihiOuttax);
+            var adjustFutan = kaikeiInfs.Sum(item => item.AdjustFutan);
+            var sumAdjust = kaikeiInfs.Sum(item => item.TotalPtFutan);
+
+            return new TrialAccountingInfDto(totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, sumAdjust);
         }
     }
 }
