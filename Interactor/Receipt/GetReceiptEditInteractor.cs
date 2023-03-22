@@ -24,7 +24,6 @@ public class GetReceiptEditInteractor : IGetReceiptEditInputPort
             var receInfEdit = _receiptRepository.GetReceInfEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
             var receInfPreEdit = _receiptRepository.GetReceInfPreEdit(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
             var receInf = _receiptRepository.GetReceInf(inputData.HpId, inputData.SeikyuYm, inputData.PtId, inputData.SinYm, inputData.HokenId);
-            int seqNo = 0;
 
             if (receInf.PtId > 0)
             {
@@ -43,11 +42,10 @@ public class GetReceiptEditInteractor : IGetReceiptEditInputPort
                 }
                 else
                 {
-                    seqNo = receInfEdit.SeqNo;
                     receiptEditCurrent = new ReceiptEditItem(receInfEdit);
                 }
             }
-            return new GetReceiptEditOutputData(seqNo, receiptEditOrigin, receiptEditCurrent, tokkiMstDictionary, GetReceiptEditStatus.Successed);
+            return new GetReceiptEditOutputData(receInfEdit.SeqNo , receiptEditOrigin, receiptEditCurrent, tokkiMstDictionary, GetReceiptEditStatus.Successed);
         }
         finally
         {
