@@ -158,6 +158,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
     public bool CheckExistFamilyRekiList(int hpId, List<long> familyRekiIdList)
     {
+        familyRekiIdList = familyRekiIdList.Distinct().ToList();
         var countFromDB = NoTrackingDataContext.PtFamilyRekis.Count(x => x.HpId == hpId && familyRekiIdList.Contains(x.Id) && x.IsDeleted != 1);
         return familyRekiIdList.Count == countFromDB;
     }

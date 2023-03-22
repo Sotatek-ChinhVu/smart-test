@@ -42,7 +42,7 @@ namespace Domain.Models.PatientInfor
 
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId);
 
-        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long , long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId);
+        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId);
 
         (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId);
 
@@ -58,6 +58,8 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> SearchPatient(int hpId, long ptId, int pageIndex, int pageSize);
 
         List<PatientInforModel> SearchPatient(int hpId, int startDate, string startTime, int endDate, string endTime);
+
+        List<PatientInforModel> SearchPatient(int hpId, List<long> ptIdList);
 
         public bool IsRyosyoFuyou(int hpId, long ptId);
     }
