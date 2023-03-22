@@ -43,8 +43,6 @@ namespace Interactor.Receipt
 
             if (!sinMeiViewModelDto.sinMeiList.Any()) return new();
 
-            var prefixSuffix = new List<PrefixSuffixModel>();
-
             var sinMei = sinMeiViewModelDto.sinMeiList.Select(item => new SinMeiModel(
             item.SinId,
             string.Empty,

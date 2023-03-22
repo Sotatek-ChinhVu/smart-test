@@ -219,6 +219,7 @@
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
         public const string GetReceiptEdit = "GetReceiptEdit";
+        public const string GetSinMeiInMonthList = "GetSinMeiInMonthList";
         public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
         public const string GetReceByomeiChecking = "GetReceByomeiChecking";
         public const string SaveReceiptEdit = "SaveReceiptEdit";
