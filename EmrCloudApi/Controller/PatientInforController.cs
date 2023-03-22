@@ -91,6 +91,7 @@ using UseCase.PtGroupMst.GetGroupNameMst;
 using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using Newtonsoft.Json;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 
 namespace EmrCloudApi.Controller
 {
@@ -883,6 +884,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetPatientInfoBetweenTimesListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetPatientInfoBetweenTimesListResponse>>(presenter.Result);
+        }
+   
+        [HttpGet(ApiPath.SearchPatientInfoByPtNum)]
+        public ActionResult<Response<SearchPatientInfoByPtNumResponse>> SearchPatientInfoByPtNum([FromQuery] SearchPatientInfoByPtNumRequest request)
+        {
+            var input = new SearchPatientInfoByPtNumInputData(HpId, request.PtNum);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoByPtNumPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoByPtNumResponse>>(presenter.Result);
         }
     }
 }

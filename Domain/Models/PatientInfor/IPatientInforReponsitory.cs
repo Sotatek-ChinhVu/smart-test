@@ -14,7 +14,7 @@ namespace Domain.Models.PatientInfor
     {
         PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
 
-        (PatientInforModel, bool) SearchExactlyPtNum(int ptNum, int hpId);
+        (PatientInforModel, bool) SearchExactlyPtNum(long ptNum, int hpId);
 
         List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize);
 
