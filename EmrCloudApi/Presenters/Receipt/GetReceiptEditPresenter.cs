@@ -11,7 +11,7 @@ public class GetReceiptEditPresenter : IGetReceiptEditOutputPort
 
     public void Complete(GetReceiptEditOutputData outputData)
     {
-        Result.Data = new GetReceiptEditResponse(outputData.ReceiptEditOrigin, outputData.ReceiptEditCurrent, outputData.TokkiMstDictionary);
+        Result.Data = new GetReceiptEditResponse(outputData.SeqNo, outputData.ReceiptEditOrigin, outputData.ReceiptEditCurrent, outputData.TokkiMstDictionary);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

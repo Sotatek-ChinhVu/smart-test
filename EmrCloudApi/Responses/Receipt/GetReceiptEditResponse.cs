@@ -5,12 +5,15 @@ namespace EmrCloudApi.Responses.Receipt;
 
 public class GetReceiptEditResponse
 {
-    public GetReceiptEditResponse(ReceiptEditItem receiptEditOrigin, ReceiptEditItem receiptEditCurrent, Dictionary<string, string> tokkiMstDictionary)
+    public GetReceiptEditResponse(int seqNo, ReceiptEditItem receiptEditOrigin, ReceiptEditItem receiptEditCurrent, Dictionary<string, string> tokkiMstDictionary)
     {
+        SeqNo = seqNo;
         ReceiptEditOrigin = new ReceiptEditDto(receiptEditOrigin);
         ReceiptEditCurrent = new ReceiptEditDto(receiptEditCurrent);
         TokkiMstDictionary = tokkiMstDictionary;
     }
+
+    public int SeqNo { get; private set; }
 
     public ReceiptEditDto ReceiptEditOrigin { get; private set; }
 

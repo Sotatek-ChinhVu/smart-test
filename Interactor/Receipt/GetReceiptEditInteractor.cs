@@ -45,7 +45,7 @@ public class GetReceiptEditInteractor : IGetReceiptEditInputPort
                     receiptEditCurrent = new ReceiptEditItem(receInfEdit);
                 }
             }
-            return new GetReceiptEditOutputData(receiptEditOrigin, receiptEditCurrent, tokkiMstDictionary, GetReceiptEditStatus.Successed);
+            return new GetReceiptEditOutputData(receInfEdit.SeqNo , receiptEditOrigin, receiptEditCurrent, tokkiMstDictionary, GetReceiptEditStatus.Successed);
         }
         finally
         {
