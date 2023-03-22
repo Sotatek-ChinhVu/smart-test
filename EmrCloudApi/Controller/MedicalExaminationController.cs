@@ -14,6 +14,7 @@ using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SummaryInf;
@@ -368,6 +369,19 @@ namespace EmrCloudApi.Controllers
             var presenter = new CalculatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
+        }
+
+
+        [HttpGet(ApiPath.GetHistoryFollowSinDate)]
+        public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
+        {
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHistoryFollowSindatePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHistoryFollowSindateResponse>>(presenter.Result);
         }
     }
 }

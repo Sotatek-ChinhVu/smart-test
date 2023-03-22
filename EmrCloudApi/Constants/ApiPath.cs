@@ -170,6 +170,7 @@
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
         public const string Calculate = "Calculate";
+        public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -229,7 +230,6 @@
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
-        public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
