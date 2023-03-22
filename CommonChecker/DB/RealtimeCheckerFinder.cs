@@ -965,9 +965,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                      Id = listItemCodes.Id,
                      ItemCd = itemInfo.ItemCd,
                      YjCd = itemInfo.YjCd ?? string.Empty,
-                     TenpuLevel = ageCheck.TenpuLevel,
+                     TenpuLevel = ageCheck.TenpuLevel ?? string.Empty,
                      AttentionCmtCd = ageCheck.AttentionCmtCd,
-                     WorkingMechanism = ageCheck.WorkingMechanism
+                     WorkingMechanism = ageCheck.WorkingMechanism ?? string.Empty
                  }).ToList();
             }
             else
@@ -977,7 +977,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  join ageCheck in NoTrackingDataContext.M14AgeCheck.Where
                  (
                      m =>
-                     listSettingLevel.Contains(m.TenpuLevel) &&
+                     listSettingLevel.Contains(m.TenpuLevel ?? string.Empty) &&
                      (
                          (string.IsNullOrEmpty(m.AgeKbn) || (m.AgeKbn == "1" && m.AgeMin <= age && age < m.AgeMax && (string.IsNullOrEmpty(m.SexKbn) || m.SexKbn == sex))) &&
                          (string.IsNullOrEmpty(m.WeightKbn) || (m.WeightKbn == "1" && weight >= 0.0 && m.WeightMin <= weight && weight < m.WeightMax && (string.IsNullOrEmpty(m.SexKbn) || m.SexKbn == sex))) &&
@@ -1310,7 +1310,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 SubBYjCd = m.BCd,
                                 CommentCode = m.CmtCd,
                                 SayokijyoCode = m.SayokijyoCd,
-                                Kyodo = m.Kyodo,
+                                Kyodo = m.Kyodo ?? string.Empty,
                                 IsNeedToReplace =
                                 (
                                     m.ACd == currentOrderSubYjCode.YjCd7 ||
@@ -1497,7 +1497,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 SubBYjCd = m.BCd,
                                 CommentCode = m.CmtCd,
                                 SayokijyoCode = m.SayokijyoCd,
-                                Kyodo = m.Kyodo,
+                                Kyodo = m.Kyodo ?? string.Empty,
                                 IsNeedToReplace =
                                 (
                                     m.ACd == currentOrderSubYjCode.YjCd7 ||
@@ -1616,7 +1616,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 SubBYjCd = m.BCd,
                                 CommentCode = m.CmtCd,
                                 SayokijyoCode = m.SayokijyoCd,
-                                Kyodo = m.Kyodo,
+                                Kyodo = m.Kyodo ?? string.Empty,
                                 IsNeedToReplace = subOTCCode.Contains(m.ACd)
                             }
                         )
@@ -1663,12 +1663,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             List<SeibunInfo> listSeibunInfo =
                     (
-                        from indexdef in NoTrackingDataContext.M41SuppleIndexdefs.Where(s => listIndexWord.Contains(s.IndexWord))
+                        from indexdef in NoTrackingDataContext.M41SuppleIndexdefs.Where(s => listIndexWord.Contains(s.IndexWord ?? string.Empty))
                         join indexCode in NoTrackingDataContext.M41SuppleIndexcodes
                         on indexdef.SeibunCd equals indexCode.IndexCd
                         select new SeibunInfo
                         {
-                            IndexWord = indexdef.IndexWord,
+                            IndexWord = indexdef.IndexWord ?? string.Empty,
                             SeibunCd = indexCode.SeibunCd,
                             IndexCd = indexCode.IndexCd
                         }
@@ -1729,7 +1729,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                                 SubBYjCd = m.BCd,
                                 CommentCode = m.CmtCd,
                                 SayokijyoCode = m.SayokijyoCd,
-                                Kyodo = m.Kyodo,
+                                Kyodo = m.Kyodo ?? string.Empty,
                                 IsNeedToReplace = true,
                                 IndexWord = seibunInfo.IndexWord,
                                 SeibunCd = seibunInfo.SeibunCd,

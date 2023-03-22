@@ -1604,7 +1604,7 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
                         ret += val;
                         i = i + 2;
@@ -2726,7 +2726,7 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
                         ret += val;
                         i = i + 2;
@@ -2790,7 +2790,7 @@ namespace Helper.Common
             }
             else if (val > 0)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;
@@ -2829,7 +2829,7 @@ namespace Helper.Common
 
             if (val != null)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;

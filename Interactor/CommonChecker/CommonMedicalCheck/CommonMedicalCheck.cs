@@ -578,7 +578,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             List<LevelInfoModel> _listLevelInfo = new List<LevelInfoModel>();
             foreach (var item in tempData)
             {
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == item.Level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == item.Level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -695,7 +695,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in tempData)
             {
                 int level = item.TenpuLevel.AsInteger();
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -749,7 +749,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 int level = item.TenpuLevel.AsInteger();
                 string attention = _realtimeOrderErrorFinder.FindAgeComment(item.AttentionCmtCd);
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -822,7 +822,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in listFilteredData)
             {
                 int level = item.TenpuLevel;
-                LevelInfoModel LevelInfoModel = _listLevelInfoModel.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? LevelInfoModel = _listLevelInfoModel.Where(c => c.Level == level).FirstOrDefault();
                 if (LevelInfoModel == null)
                 {
                     LevelInfoModel = new LevelInfoModel()
