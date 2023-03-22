@@ -1705,6 +1705,29 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         return result;
     }
 
+    public List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        var hokenPidList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                               && item.PtId == ptId
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .Select(item => item.HokenPid)
+                                                                .Distinct()
+                                                                .ToList();
+
+        var sinDateList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                        && item.PtId == ptId
+                                                                        && item.SinDate / 100 == sinYm
+                                                                        && item.Status >= RaiinState.Calculate
+                                                                        && hokenPidList.Contains(item.HokenPid)
+                                                                        && item.IsDeleted == DeleteTypes.None)
+                                                         .Select(item => item.SinDate)
+                                                         .Distinct()
+                                                         .OrderBy(item => item)
+                                                         .ToList();
+        return sinDateList;
+    }
+
     public bool SaveReceiptEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId, ReceiptEditModel model)
     {
         var receiptEditDB = TrackingDataContext.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
