@@ -592,7 +592,8 @@ namespace EmrCloudApi.Controller
                                                                     x.HokenId,
                                                                     x.FileName,
                                                                     x.File == null ? Stream.Null : x.File.OpenReadStream(),
-                                                                    x.IsDeleted)).ToList(); 
+                                                                    x.IsDeleted,
+                                                                    string.Empty)).ToList(); 
 
             var input = new SavePatientInfoInputData(patient,
                  patientInfo.PtKyuseis,

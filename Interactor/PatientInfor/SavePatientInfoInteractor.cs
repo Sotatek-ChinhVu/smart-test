@@ -64,7 +64,8 @@ namespace Interactor.PatientInfor
                                                                     item.HokenId,
                                                                     pathScan,
                                                                     Stream.Null,
-                                                                    0));
+                                                                    0,
+                                                                    string.Empty));
 
                                 if (item.SeqNo > 0 && !string.IsNullOrEmpty(item.FileName)) //case udpate && file exists on s3 do not need to use
                                 {
