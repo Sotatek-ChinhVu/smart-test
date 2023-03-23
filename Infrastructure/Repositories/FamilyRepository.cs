@@ -64,6 +64,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         );
         return query.AsEnumerable().Select(data => new FamilyModel(
                 data.PtFamily.FamilyId,
+                data.PtFamily.PtId,
                 data.PtFamily.SeqNo,
                 data.PtFamily.ZokugaraCd ?? string.Empty,
                 data.PtFamily.FamilyId,
@@ -157,6 +158,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
     public bool CheckExistFamilyRekiList(int hpId, List<long> familyRekiIdList)
     {
+        familyRekiIdList = familyRekiIdList.Distinct().ToList();
         var countFromDB = NoTrackingDataContext.PtFamilyRekis.Count(x => x.HpId == hpId && familyRekiIdList.Contains(x.Id) && x.IsDeleted != 1);
         return familyRekiIdList.Count == countFromDB;
     }
@@ -210,6 +212,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         int isDead = ptInf != null ? ptInf.IsDead : ptFamily.IsDead;
         return new FamilyModel(
                                     ptFamily.FamilyId,
+                                    ptFamily.PtId,
                                     ptFamily.SeqNo,
                                     ptFamily.ZokugaraCd ?? string.Empty,
                                     ptFamily.FamilyPtId,
