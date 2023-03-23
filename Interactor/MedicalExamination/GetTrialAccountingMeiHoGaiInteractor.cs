@@ -47,7 +47,7 @@ namespace Interactor.MedicalExamination
                 var kaikeis = ConvertToKaikeiInfModel(trialCalculateResponse.KaikeiInfList);
                 var sinGais = GetSinGai(inputData.HpId, sinMeis, kaikeis);
                 var accountingInf = GetTrialAccountingInf(kaikeis);
-                var hokenPatternRate = GetPatternName(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                var hokenPatternRate = GetPatternName(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, kaikeis);
                 return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, accountingInf, hokenPatternRate, GetTrialAccountingMeiHoGaiStatus.Successed);
             }
             finally
@@ -58,9 +58,10 @@ namespace Interactor.MedicalExamination
 
         }
 
-        private string GetPatternName(int hpId, long ptId, int sinDate, long raiinNo)
+        private string GetPatternName(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis)
         {
-            var raiins = _accountingRepository.GetRaiinInfModel(hpId, ptId, sinDate, raiinNo);
+            var raiins = _accountingRepository.GetRaiinInfModel(hpId, ptId, sinDate, raiinNo, kaikeis);
+           
             return raiins.PatternName;
         }
 

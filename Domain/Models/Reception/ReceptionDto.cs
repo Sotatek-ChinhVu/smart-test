@@ -239,18 +239,5 @@ namespace Domain.Models.Reception
             KaikeiInfModels = new();
             HokenPatternModel = new();
         }
-
-        public ReceptionDto(HokenPatternModel hokenPatternModel)
-        {
-            HokenPatternModel = hokenPatternModel;
-            YoyakuTime = string.Empty;
-            UketukeTime = string.Empty;
-            SinStartTime = string.Empty;
-            SinEndTime = string.Empty;
-            KaikeiTime = string.Empty;
-            Comment = string.Empty;
-            DepartmentSName = string.Empty;
-            KaikeiInfModels = new();
-        }
     }
 }

@@ -26,6 +26,6 @@ namespace Domain.Models.Accounting
         int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
         byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo);
         bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
-        ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo);
+        ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis);
     }
 }

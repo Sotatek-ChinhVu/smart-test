@@ -1420,7 +1420,7 @@ namespace Infrastructure.Repositories
                                                             x.NyukinKbn <= 0);
         }
 
-        public ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo)
+        public ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis)
         {
             var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item =>
                                                                           item.SinDate == sinDate &&
@@ -1430,16 +1430,24 @@ namespace Infrastructure.Repositories
                                                                           item.IsDeleted == DeleteTypes.None);
             if (raiinInf == null)
                 return new();
+            var kaMst = NoTrackingDataContext.KaMsts.FirstOrDefault(item =>
+                item.HpId == hpId && item.KaId == raiinInf.KaId && item.IsDeleted == 0);
 
             var ptHokenPattern =
                 FindPtHokenPatternById(hpId, ptId, sinDate, raiinInf.HokenPid, raiinNo);
-            return new ReceptionDto(ptHokenPattern);
+            return new ReceptionDto(raiinNo,
+                                    raiinInf.UketukeNo,
+                                    kaMst?.KaSname ?? string.Empty,
+                                    0,
+                                    ptHokenPattern,
+                                    kaikeis
+                                    );
 
         }
 
         public HokenPatternModel FindPtHokenPatternById(int hpId, long ptId, int sinDay, int patternId = 0, long raiinNo = 0, bool isGetDeleted = false)
         {
-            HokenPatternModel hokenPattern = new();
+            var hokenPattern = new HokenPatternModel();
 
             var hospitalInfo = NoTrackingDataContext.HpInfs
                 .Where(p => p.HpId == hpId)
@@ -1456,6 +1464,8 @@ namespace Infrastructure.Repositories
             // PtInf
             var ptInf = NoTrackingDataContext.PtInfs
                 .FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete == 0);
+
+            if(ptInf == null)  return hokenPattern; 
 
             if (patternId == 0 && raiinNo != 0)
             {
@@ -1550,7 +1560,7 @@ namespace Infrastructure.Repositories
                                                                           .ToList();
 
             hokenPattern = new HokenPatternModel(
-                 hokenPattern.PtId, hokenPattern.HokenPid, hokenPattern.HokenId, hokenPattern.StartDate, hokenPattern.EndDate, hokenPattern.HokenSbtCd, hokenPattern.HokenKbn, hokenPattern.Kohi1Id, hokenPattern.Kohi2Id, hokenPattern.Kohi3Id, hokenPattern.Kohi4Id,
+                 ptHokenPattern.PtId, ptHokenPattern.HokenPid, ptHokenPattern.HokenId, ptHokenPattern.StartDate, ptHokenPattern.EndDate, ptHokenPattern.HokenSbtCd, ptHokenPattern.HokenKbn, ptHokenPattern.Kohi1Id, ptHokenPattern.Kohi2Id, ptHokenPattern.Kohi3Id, ptHokenPattern.Kohi4Id,
                 ptHokenInf == null
                     ? new()
                     : CreatePtHokenInfModel(ptHokenInf,
@@ -1613,7 +1623,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         public HokenInfModel CreatePtHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ptHokenCheckModelList, int sinDay)
