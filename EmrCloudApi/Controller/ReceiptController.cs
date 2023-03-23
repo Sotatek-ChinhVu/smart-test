@@ -30,6 +30,9 @@ using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.SaveReceiptEdit;
 
 namespace EmrCloudApi.Controller;
@@ -316,6 +319,43 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSinDateRaiinInfList)]
+    public ActionResult<Response<GetSinDateRaiinInfListResponse>> GetSinDateRaiinInfList([FromQuery] GetSinDateRaiinInfListRequest request)
+    {
+        var input = new GetSinDateRaiinInfListInputData(HpId, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinDateRaiinInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSinDateRaiinInfListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceByomeiChecking)]
+    public ActionResult<Response<GetReceByomeiCheckingResponse>> GetReceByomeiChecking([FromQuery] GetReceByomeiCheckingRequest request)
+    {
+        var input = new GetReceByomeiCheckingInputData(HpId, request.PtId, request.SinDate, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceByomeiCheckingPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceByomeiCheckingResponse>>(presenter.Result);
+    }
+
+
+    [HttpGet(ApiPath.GetSinMeiInMonthList)]
+    public ActionResult<Response<GetMedicalDetailsResponse>> GetSinMeiInMonthList([FromQuery] GetSinMeiInMonthListRequest request)
+    {
+        var input = new GetSinMeiInMonthListInputData(HpId, request.PtId, request.SinYm, request.HokenId, request.SeikyuYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinMeiInMonthListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveReceiptEdit)]

@@ -83,6 +83,7 @@
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
+        public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -218,6 +219,9 @@
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
         public const string GetReceiptEdit = "GetReceiptEdit";
+        public const string GetSinMeiInMonthList = "GetSinMeiInMonthList";
+        public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
+        public const string GetReceByomeiChecking = "GetReceByomeiChecking";
         public const string SaveReceiptEdit = "SaveReceiptEdit";
 
         //Accounting
