@@ -1329,7 +1329,7 @@ namespace Infrastructure.Repositories
                                                     item.HpId,
                                                     item.JihiSbt,
                                                     item.SortNo,
-                                                    item.Name,
+                                                    item.Name ?? string.Empty,
                                                     item.IsDeleted))
                 .ToList();
         }
@@ -1465,7 +1465,7 @@ namespace Infrastructure.Repositories
             var ptInf = NoTrackingDataContext.PtInfs
                 .FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete == 0);
 
-            if(ptInf == null)  return hokenPattern; 
+            if (ptInf == null) return hokenPattern;
 
             if (patternId == 0 && raiinNo != 0)
             {
@@ -1513,7 +1513,7 @@ namespace Infrastructure.Repositories
 
             if (ptHokenInf == null && listPtKohi.Count <= 0) return hokenPattern;
 
-            var predicateHokenMst = CreateHokenMstExpression(new List<PtHokenInf>() { ptHokenInf }, listPtKohi);
+            var predicateHokenMst = CreateHokenMstExpression(new List<PtHokenInf>() { ptHokenInf ?? new() }, listPtKohi);
 
             if (predicateHokenMst == null) return hokenPattern;
 
@@ -1546,7 +1546,7 @@ namespace Infrastructure.Repositories
                                 .ToList();
 
             var hokenConfirmList = hokenChecks.Where(hokenConfirm => hokenConfirm.HokenGrp == 1 &&
-                                                                     hokenConfirm.HokenId == ptHokenInf.HokenId &&
+                                                                     hokenConfirm.HokenId == ptHokenInf?.HokenId &&
                                                                      hokenConfirm.IsDeleted == 0)
                                                                           .OrderByDescending(hokenConfirm => hokenConfirm.CheckDate)
                                                                           .Select(item => new ConfirmDateModel(
@@ -1604,7 +1604,7 @@ namespace Infrastructure.Repositories
         private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<int> listKohiId)
         {
             var param = Expression.Parameter(typeof(PtKohi));
-            Expression expression = null;
+            Expression? expression = null;
 
             if (listKohiId != null && listKohiId.Count > 0)
             {
@@ -1623,12 +1623,12 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
+                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
 
         public HokenInfModel CreatePtHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ptHokenCheckModelList, int sinDay)
         {
-            HokenInfModel hokenInfModel = null;
+            var hokenInfModel = new HokenInfModel();
             if (ePtHokenInf != null)
             {
                 HokenMst hokenMst;
@@ -1646,7 +1646,7 @@ namespace Infrastructure.Repositories
                     {
                         // does not exist any hoken master with startDate <= sinday, pick lastest hoken mst (with min start date)
                         // pick last cause by all hoken master is order by start date descending
-                        hokenMst = hokMstMapped.LastOrDefault();
+                        hokenMst = hokMstMapped?.LastOrDefault() ?? new();
                     }
                     else
                     {
@@ -1656,9 +1656,10 @@ namespace Infrastructure.Repositories
                 else
                 {
                     // have just one hoken mst with HokenNo and HokenEdaNo
-                    hokenMst = hokMstMapped.FirstOrDefault();
+                    hokenMst = hokMstMapped?.FirstOrDefault() ?? new();
                 }
-                HokenMstModel hokenMstModel = null;
+
+                var hokenMstModel = new HokenMstModel();
 
                 if (hokenMst != null)
                 {
@@ -1725,7 +1726,7 @@ namespace Infrastructure.Repositories
                                         ePtHokenInf.StartDate,
                                         ePtHokenInf.EndDate,
                                         sinDay,
-                                        hokenMstModel ?? new(),
+                                        hokenMstModel,
                                         ptHokenCheckModelList);
             }
 
