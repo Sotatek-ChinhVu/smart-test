@@ -569,7 +569,7 @@ namespace EmrCloudApi.Controller
         public async Task<ActionResult<Response<SaveMedicalResponse>>> SaveMedical([FromBody] SaveMedicalRequest request)
         {
             var familyList = ConvertToFamilyInputItem(request.FamilyList);
-            var input = new SaveMedicalInputData(HpId, request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
+            var input = new SaveMedicalInputData(HpId, request.PtId, request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,

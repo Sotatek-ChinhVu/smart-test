@@ -349,6 +349,7 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
 
     private string GetMessageFamily(ValidateFamilyListStatus status) => status switch
     {
+        ValidateFamilyListStatus.ValidateSuccess => ResponseMessage.Valid,
         ValidateFamilyListStatus.Successed => ResponseMessage.Success,
         ValidateFamilyListStatus.Failed => ResponseMessage.Failed,
         ValidateFamilyListStatus.InvalidHpId => ResponseMessage.InvalidHpId,

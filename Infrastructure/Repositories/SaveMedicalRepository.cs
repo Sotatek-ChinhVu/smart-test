@@ -30,8 +30,16 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                 using var transaction = TrackingDataContext.Database.BeginTransaction();
                 try
                 {
-                    _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId);
-                    _familyRepository.SaveFamilyList(hpId, userId, familyList);
+                    if (!_todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, odrInfs, karteInfModel, userId))
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                    if (!_familyRepository.SaveFamilyList(hpId, userId, familyList))
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
                     transaction.Commit();
                     return true;
                 }

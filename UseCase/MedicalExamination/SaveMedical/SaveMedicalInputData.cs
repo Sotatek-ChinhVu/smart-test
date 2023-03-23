@@ -6,9 +6,10 @@ namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily)
+    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily)
     {
         HpId = hpId;
+        PtId = ptId;
         SyosaiKbn = syosaiKbn;
         JikanKbn = jikanKbn;
         HokenPid = hokenPid;
@@ -26,6 +27,8 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
     }
 
     public int HpId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public int SyosaiKbn { get; private set; }
 

@@ -84,17 +84,20 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 raiinNos.Add(inputDatas.KarteInf.RaiinNo);
                 sinDates.Add(inputDatas.KarteInf.SinDate);
             }
-            raiinNos = raiinNos.Distinct().ToList();
+            var hpId = inputDatas.HpId;
+            var ptId = inputDatas.PtId;
+
+            ptIds.Add(ptId);
+            hpIds.Add(hpId);
             ptIds = ptIds.Distinct().ToList();
             hpIds = hpIds.Distinct().ToList();
+            raiinNos = raiinNos.Distinct().ToList();
             sinDates = sinDates.Distinct().ToList();
 
-            var hpId = hpIds[0];
-            var ptId = ptIds[0];
-            var raiinNo = raiinNos[0];
-            var sinDate = sinDates[0];
+            var raiinNo = raiinNos.Any() ? raiinNos[0] : 0;
+            var sinDate = sinDates.Any() ? sinDates[0] : 0;
 
-            var raiinInfStatus = CheckCommon(hpIds, ptIds, raiinNos, sinDates, hpId, ptId, raiinNo);
+            var raiinInfStatus = CheckCommon(inputDataList.Count > 0, hpIds, ptIds, raiinNos, sinDates, hpId, ptId, raiinNo);
 
             if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
             {
@@ -395,7 +398,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return allOdrInfs;
     }
 
-    private RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckCommon(List<int> hpIds, List<long> ptIds, List<long> raiinNos, List<int> sinDates, int hpId, long ptId, long raiinNo)
+    private RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckCommon(bool isCheckOrder, List<int> hpIds, List<long> ptIds, List<long> raiinNos, List<int> sinDates, int hpId, long ptId, long raiinNo)
     {
         RaiinInfConst.RaiinInfTodayOdrValidationStatus raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid;
 
@@ -407,11 +410,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId;
         }
-        else if (raiinNos.Count > 1 || raiinNos.FirstOrDefault() <= 0)
+        else if (isCheckOrder && (raiinNos.Count > 1 || raiinNos.FirstOrDefault() <= 0))
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo;
         }
-        else if (sinDates.Count > 1 || sinDates.FirstOrDefault() <= 0)
+        else if (isCheckOrder && (sinDates.Count > 1 || sinDates.FirstOrDefault() <= 0))
         {
             raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate;
         }
@@ -429,7 +432,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist;
             }
-            else if (!checkRaiinNo)
+            else if (!checkRaiinNo && isCheckOrder)
             {
                 raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist;
             }
