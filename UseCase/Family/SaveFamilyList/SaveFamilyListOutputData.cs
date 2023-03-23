@@ -4,10 +4,10 @@ namespace UseCase.Family.SaveFamilyList;
 
 public class SaveFamilyListOutputData : IOutputData
 {
-    public SaveFamilyListOutputData(SaveFamilyListStatus status)
+    public SaveFamilyListOutputData(ValidateFamilyListStatus status)
     {
         Status = status;
     }
 
-    public SaveFamilyListStatus Status { get; private set; }
+    public ValidateFamilyListStatus Status { get; private set; }
 }

@@ -235,6 +235,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistIdList(List<long> ptIds)
         {
+            ptIds = ptIds.Distinct().ToList();
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
         }
@@ -1030,7 +1031,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool resultSave, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1290,7 +1291,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
+        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -2076,7 +2077,25 @@ namespace Infrastructure.Repositories
                                                                             item.PtNum,
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
-                                                                            item.Sex))
+                                                                            item.Sex,
+                                                                            item.Birthday))
+                                                     .ToList();
+            return result;
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, List<long> ptIdList)
+        {
+            ptIdList = ptIdList.Distinct().ToList();
+            var result = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete != 1
+                                                                    && ptIdList.Contains(item.PtId))
+                                                     .Select(item => new PatientInforModel(
+                                                                            item.PtId,
+                                                                            item.PtNum,
+                                                                            item.Name ?? string.Empty,
+                                                                            item.KanaName ?? string.Empty,
+                                                                            item.Sex,
+                                                                            item.Birthday))
                                                      .ToList();
             return result;
         }

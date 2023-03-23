@@ -928,6 +928,8 @@
         public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
         public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
         public static readonly string DuplicateFamily = "Duplicate Family";
+        public static readonly string InvalidNameMaxLength = "Family Name max length is 100 characters!";
+        public static readonly string InvalidKanaNameMaxLength = "Family KanaName max length is 100 characters!";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
