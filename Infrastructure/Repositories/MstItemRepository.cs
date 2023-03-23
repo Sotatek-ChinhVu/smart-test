@@ -821,6 +821,8 @@ namespace Infrastructure.Repositories
                                     ||
                                     (item.Icd1022013 != null &&
                                     item.Icd1022013.StartsWith(keyword))
+                                    ||
+                                    item.ByomeiCd.StartsWith(keyword)
                                  );
 
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
