@@ -252,5 +252,6 @@
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
+        public const string SaveWeightedSetConfirmation = "SaveWeightedSetConfirmation";
     }
 }

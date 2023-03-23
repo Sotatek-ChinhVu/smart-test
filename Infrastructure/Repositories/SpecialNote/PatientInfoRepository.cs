@@ -1,6 +1,10 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
@@ -203,6 +207,44 @@ namespace Infrastructure.Repositories.SpecialNote
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public bool SaveKensaInfWeightedConfirmation(int hpId, long ptId, long raiinNo, double weight, int sinDate , int userId)
+        {
+            EntityEntry<KensaInf> entryKensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RaiinNo = raiinNo,
+                IraiDate = sinDate,
+                Status = 2,
+                InoutKbn = 0,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId
+            });
+            bool successKensa = TrackingDataContext.SaveChanges() > 0;
+            if (!successKensa)
+                return false;
+            else
+            {
+                TrackingDataContext.KensaInfDetails.Add(new KensaInfDetail()
+                {
+                    HpId = Session.HospitalID,
+                    PtId = ptId,
+                    IraiDate = sinDate,
+                    RaiinNo = raiinNo,
+                    IraiCd = entryKensaInf.Entity.IraiCd,
+                    KensaItemCd = IraiCodeConstant.WEIGHT_CODE,
+                    ResultVal = weight.ToString(),
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId
+                });
+                return TrackingDataContext.SaveChanges() > 0;
+            }
         }
     }
 }

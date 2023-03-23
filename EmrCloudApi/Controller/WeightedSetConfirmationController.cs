@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.WeightedSetConfirmation.CheckOpen;
+using UseCase.WeightedSetConfirmation.Save;
 
 namespace EmrCloudApi.Controller
 {
@@ -28,6 +29,17 @@ namespace EmrCloudApi.Controller
             var presenter = new IsOpenWeightCheckingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<IsOpenWeightCheckingResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.SaveWeightedSetConfirmation)]
+        public ActionResult<Response<SaveWeightedSetConfirmationResponse>> SaveWeightedSetConfirmation([FromBody] SaveWeightedSetConfirmationRequest request)
+        {
+            var input = new SaveWeightedSetConfirmationInputData(HpId, request.PtId, request.RaiinNo, request.RaiinNo, request.SinDate, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new SaveWeightedSetConfirmationPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveWeightedSetConfirmationResponse>>(presenter.Result);
         }
     }
 }

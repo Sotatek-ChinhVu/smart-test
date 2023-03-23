@@ -395,6 +395,7 @@ using UseCase.Receipt.ReceiptEdit;
 using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.WeightedSetConfirmation.CheckOpen;
 using Interactor.WeightedSetConfirmation;
+using UseCase.WeightedSetConfirmation.Save;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -907,6 +908,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //WeightedSetConfirmation
             busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
+            busBuilder.RegisterUseCase<SaveWeightedSetConfirmationInputData, SaveWeightedSetConfirmationInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
