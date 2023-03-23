@@ -6,11 +6,11 @@ public class ReceiptEditDto
 {
     public ReceiptEditDto(ReceiptEditItem item)
     {
-        Tokki1Id = item.Tokki1;
-        Tokki2Id = item.Tokki2;
-        Tokki3Id = item.Tokki3;
-        Tokki4Id = item.Tokki4;
-        Tokki5Id = item.Tokki5;
+        Tokki1Id = item.Tokki1Id;
+        Tokki2Id = item.Tokki2Id;
+        Tokki3Id = item.Tokki3Id;
+        Tokki4Id = item.Tokki4Id;
+        Tokki5Id = item.Tokki5Id;
         HokenNissu = item.HokenNissu;
         Kohi1Nissu = item.Kohi1Nissu;
         Kohi2Nissu = item.Kohi2Nissu;
