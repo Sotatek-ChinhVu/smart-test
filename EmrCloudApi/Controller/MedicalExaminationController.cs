@@ -371,14 +371,14 @@ namespace EmrCloudApi.Controllers
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.GetMeiHoGai)]
-        public ActionResult<Response<GetTrialAccountingMeiHoGaiResponse>> GetMeiHoGai([FromBody] GetTrialAccountingMeiHoGaiRequest request)
+        [HttpPost(ApiPath.TrialAccounting)]
+        public ActionResult<Response<GetTrialAccountingResponse>> TrialAccounting([FromBody] GetTrialAccountingRequest request)
         {
-            var input = new GetTrialAccountingMeiHoGaiInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrInfItems);
+            var input = new GetTrialAccountingInputData(HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrInfItems);
             var output = _bus.Handle(input);
-            var presenter = new GetTrialAccountingMeiHoGaiPresenter();
+            var presenter = new GetTrialAccountingPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<GetTrialAccountingMeiHoGaiResponse>>(presenter.Result);
+            return new ActionResult<Response<GetTrialAccountingResponse>>(presenter.Result);
         }
     }
 }

@@ -1,20 +1,19 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Ika.DB.Finder;
-using EmrCalculateApi.Ika.DB.CommandHandler;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Futan.ViewModels;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.DB.CommandHandler;
+using EmrCalculateApi.Ika.DB.Finder;
+using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Receipt.Models;
+using EmrCalculateApi.Receipt.ViewModels;
+using EmrCalculateApi.Requests;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using EmrCalculateApi.Receipt.ViewModels;
-using EmrCalculateApi.Constants;
 using PostgreDataContext;
-using Domain.Constant;
-using System.Security.AccessControl;
-using EmrCalculateApi.Requests;
-using Helper.Common;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -130,7 +129,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             const string conFncName = nameof(StartCalculate);
 
-            _emrLogger.WriteLogStart( this, conFncName,
+            _emrLogger.WriteLogStart(this, conFncName,
                 String.Format("hpId={0} ptId={1} sinDate={2} seikyuUp={3}", hpId, ptId, sinDate, seikyuUp));
 
             //指定の診療日の来院情報を取得
@@ -177,7 +176,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
             _saveIkaCalculateCommandHandler.UpdateData(_common);
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
@@ -199,7 +198,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 _emrLogger.WriteLogError(this, conFncName, e);
                 //throw;
             }
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         public int AllCalcCount { get; set; }
@@ -253,11 +252,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             while (!IsStopCalc && GetCalcStatus(hpId, ptId, sinDate, ref calcStatus, preFix))
             {
                 if (CancellationToken.IsCancellationRequested) return;
-                _emrLogger.WriteLogMsg( this, conFncName, "req start");
+                _emrLogger.WriteLogMsg(this, conFncName, "req start");
 
                 if (calcStatus.SinDate <= 20180331)
                 {
-                    _emrLogger.WriteLogError( this, conFncName, new Exception($"2018/03以前 {calcStatus.SinDate}"));
+                    _emrLogger.WriteLogError(this, conFncName, new Exception($"2018/03以前 {calcStatus.SinDate}"));
 
                     List<CalcStatusModel> calcStatusies = new List<CalcStatusModel>();
 
@@ -288,7 +287,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                         if (_saveIkaCalculateCommandHandler.UpdateCalcStatus(updCalcStatusies) == false)
                         {
-                            _emrLogger.WriteLogError( this, conFncName, new Exception("update calcstatus error (8)"));
+                            _emrLogger.WriteLogError(this, conFncName, new Exception("update calcstatus error (8)"));
                         }
                     }
                 }
@@ -319,7 +318,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                         while (CheckCalcStatusSelf(calcStatus) && i < 30)
                         {
                             i++;
-                            _emrLogger.WriteLogMsg( this, conFncName,
+                            _emrLogger.WriteLogMsg(this, conFncName,
                                 string.Format("Calculating Self ptId={0}, sinDate={1}, retry={2}", calcStatus.PtId, calcStatus.SinDate, i));
 
                             System.Threading.Thread.Sleep(1000);
@@ -362,7 +361,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     if (GetCalcStatus(calcStatus.CalcId) != 0)
                     {
                         // 直前に最終チェック
-                        _emrLogger.WriteLogMsg( this, conFncName, $"Calculating by Other Process CalcId={calcStatus.CalcId}");
+                        _emrLogger.WriteLogMsg(this, conFncName, $"Calculating by Other Process CalcId={calcStatus.CalcId}");
                         continue;
                     }
 
@@ -380,7 +379,7 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                         if (_saveIkaCalculateCommandHandler.UpdateCalcStatus(updCalcStatusies) == false)
                         {
-                            _emrLogger.WriteLogError( this, conFncName, new Exception("update calcstatus error (0)"));
+                            _emrLogger.WriteLogError(this, conFncName, new Exception("update calcstatus error (0)"));
                         }
                     }
                     else
@@ -496,7 +495,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         public void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix)
         {
             const string conFncName = nameof(RunCalculateMonth);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             preFix = preFix + "MON_";
 
@@ -769,7 +768,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         public bool MainCalculate()
         {
             const string conFncName = nameof(MainCalculate);
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
             bool ret = true;
 
             int hokenKbn = 0;
@@ -905,7 +904,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 //throw;
             }
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
 
             return ret;
         }
@@ -1017,7 +1016,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         ///     診療明細情報
         ///     会計情報
         /// </returns>
-        public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
+        public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>, List<CalcLogModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
         {
             const string conFncName = nameof(RunTraialCalculate);
 
@@ -1114,7 +1113,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
             }
 
-            return (retSinMeis, retKaikeiInfModels);
+            return (retSinMeis, retKaikeiInfModels, retCalcLogModels);
         }
 
         /// <summary>
@@ -1292,7 +1291,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             const string conFncName = nameof(ClearData);
 
-            _emrLogger.WriteLogStart( this, conFncName, "");
+            _emrLogger.WriteLogStart(this, conFncName, "");
 
             // ワーク情報クリア
             _clearIkaCalculateCommandHandler.ClearWrkData(_common.hpId, _common.ptId, _common.sinDate);
@@ -1304,7 +1303,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     _common.hpId, _common.ptId, _common.sinDate
                 );
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>
@@ -1314,7 +1313,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         {
             const string conFncName = nameof(OdrToWrk);
 
-            _emrLogger.WriteLogStart( this, conFncName, string.Format("RaiinNo:{0} HokenKbn:{1}", _common.raiinInf.RaiinNo, _common.hokenKbn));
+            _emrLogger.WriteLogStart(this, conFncName, string.Format("RaiinNo:{0} HokenKbn:{1}", _common.raiinInf.RaiinNo, _common.hokenKbn));
 
             try
             {
@@ -1361,11 +1360,11 @@ namespace EmrCalculateApi.Ika.ViewModels
             }
             catch (Exception e)
             {
-                _emrLogger.WriteLogError( this, conFncName, e);
+                _emrLogger.WriteLogError(this, conFncName, e);
                 throw;
             }
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
         }
 
         /// <summary>

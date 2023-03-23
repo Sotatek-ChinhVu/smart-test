@@ -136,18 +136,17 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus == ResponseStatus.Successed)
                 {
                     var result = JsonConvert.DeserializeObject<RunTraialCalculateResponse>(task.Result.ResponseMessage);
-                    // return result == null ? new() : result.SinMeiList.Select(s => s.ItemCd).ToList();
-                    return new RunTraialCalculateResponse(result.SinMeiList, result.KaikeiInfList);
+                    return new RunTraialCalculateResponse(result?.SinMeiList ?? new(), result?.KaikeiInfList ?? new(), result?.CalcLogList ?? new());
                 }
                 else
                 {
-                    return new RunTraialCalculateResponse(new(), new());
+                    return new RunTraialCalculateResponse(new(), new(), new());
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunTrialCalculate " + ex);
-                return new RunTraialCalculateResponse(new(), new());
+                return new RunTraialCalculateResponse(new(), new(), new());
             }
         }
 

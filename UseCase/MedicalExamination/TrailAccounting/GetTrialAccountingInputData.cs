@@ -3,9 +3,9 @@ using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace UseCase.MedicalExamination.TrailAccounting
 {
-    public class GetTrialAccountingMeiHoGaiInputData : IInputData<GetTrialAccountingMeiHoGaiOutputData>
+    public class GetTrialAccountingInputData : IInputData<GetTrialAccountingOutputData>
     {
-        public GetTrialAccountingMeiHoGaiInputData(int hpId, long ptId, int sinDate, long raiinNo, List<OdrInfItem> odrInfItems)
+        public GetTrialAccountingInputData(int hpId, long ptId, int sinDate, long raiinNo, List<OdrInfItem> odrInfItems)
         {
             HpId = hpId;
             PtId = ptId;

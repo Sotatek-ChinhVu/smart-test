@@ -47,7 +47,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
-            var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList());
+            var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList(), data.Item3);
             return Ok(result);
         }
 
@@ -55,9 +55,9 @@ namespace EmrCalculateApi.Controllers
         public ActionResult RunCalculateMonth([FromBody] RunCalculateMonthRequest monthRequest)
         {
             _ikaCalculate.RunCalculateMonth(
-                monthRequest.HpId, 
-                monthRequest.SeikyuYm, 
-                monthRequest.PtIds, 
+                monthRequest.HpId,
+                monthRequest.SeikyuYm,
+                monthRequest.PtIds,
                 monthRequest.PreFix);
 
             return Ok();

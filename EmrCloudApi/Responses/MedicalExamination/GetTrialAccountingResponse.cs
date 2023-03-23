@@ -3,16 +3,19 @@ using UseCase.MedicalExamination.TrailAccounting;
 
 namespace EmrCloudApi.Responses.MedicalExamination
 {
-    public class GetTrialAccountingMeiHoGaiResponse
+    public class GetTrialAccountingResponse
     {
-        public GetTrialAccountingMeiHoGaiResponse(List<SinMeiModel> sinMeis, List<SinHoModel> sinHos, List<SinGaiModel> sinGais, TrialAccountingInfDto accountingInf, string hokenPatternRate)
+        public GetTrialAccountingResponse(string hokenPatternRate, List<SinMeiModel> sinMeis, List<SinHoModel> sinHos, List<SinGaiModel> sinGais, TrialAccountingInfDto accountingInf, List<WarningMemoDto> warningMemos)
         {
+            HokenPatternRate = hokenPatternRate;
             SinMeis = sinMeis;
             SinHos = sinHos;
             SinGais = sinGais;
             AccountingInf = accountingInf;
-            HokenPatternRate = hokenPatternRate;
+            WarningMemos = warningMemos;
         }
+
+        public string HokenPatternRate { get; private set; }
 
         public List<SinMeiModel> SinMeis { get; private set; }
 
@@ -22,6 +25,7 @@ namespace EmrCloudApi.Responses.MedicalExamination
 
         public TrialAccountingInfDto AccountingInf { get; private set; }
 
-        public string HokenPatternRate { get; private set; }
+        public List<WarningMemoDto> WarningMemos { get; private set; }
+
     }
 }

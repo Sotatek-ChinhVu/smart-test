@@ -11,20 +11,20 @@ using UseCase.MedicalExamination.TrailAccounting;
 
 namespace Interactor.MedicalExamination
 {
-    public class GetTrialAccountingMeiHoGaiInteractor : IGetTrialAccountingMeiHoGaiInputPort
+    public class GetTrialAccountingInteractor : IGetTrialAccountingInputPort
     {
         private readonly ICalculateService _calculateRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IAccountingRepository _accountingRepository;
 
-        public GetTrialAccountingMeiHoGaiInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository)
+        public GetTrialAccountingInteractor(ICalculateService calculateRepository, IReceptionRepository receptionRepository, IAccountingRepository accountingRepository)
         {
             _calculateRepository = calculateRepository;
             _receptionRepository = receptionRepository;
             _accountingRepository = accountingRepository;
         }
 
-        public GetTrialAccountingMeiHoGaiOutputData Handle(GetTrialAccountingMeiHoGaiInputData inputData)
+        public GetTrialAccountingOutputData Handle(GetTrialAccountingInputData inputData)
         {
             try
             {
@@ -48,7 +48,9 @@ namespace Interactor.MedicalExamination
                 var sinGais = GetSinGai(inputData.HpId, sinMeis, kaikeis);
                 var accountingInf = GetTrialAccountingInf(kaikeis);
                 var hokenPatternRate = GetPatternName(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, kaikeis);
-                return new GetTrialAccountingMeiHoGaiOutputData(sinMeis, sinHos, sinGais, accountingInf, hokenPatternRate, GetTrialAccountingMeiHoGaiStatus.Successed);
+                var warningMemos = GetCalcLog(trialCalculateResponse.CalcLogList);
+
+                return new GetTrialAccountingOutputData(hokenPatternRate, sinMeis, sinHos, sinGais, accountingInf, warningMemos, GetTrialAccountingStatus.Successed);
             }
             finally
             {
@@ -61,7 +63,7 @@ namespace Interactor.MedicalExamination
         private string GetPatternName(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis)
         {
             var raiins = _accountingRepository.GetRaiinInfModel(hpId, ptId, sinDate, raiinNo, kaikeis);
-           
+
             return raiins.PatternName;
         }
 
@@ -272,5 +274,19 @@ namespace Interactor.MedicalExamination
 
             return new TrialAccountingInfDto(totalPoint, kanFutan, totalSelfExpense, tax, adjustFutan, sumAdjust);
         }
+
+        private List<WarningMemoDto> GetCalcLog(List<CalcLogDataModel> calcLogs)
+        {
+            var warning = new List<WarningMemoDto>();
+            if (!calcLogs.Any()) return new();
+
+            foreach (var model in calcLogs)
+            {
+                warning.Add(new WarningMemoDto(model.Text, model.LogSbt));
+            }
+
+            return warning;
+        }
+
     }
 }

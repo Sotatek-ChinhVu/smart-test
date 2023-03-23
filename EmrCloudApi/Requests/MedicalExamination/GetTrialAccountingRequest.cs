@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.MedicalExamination
 {
-    public class GetTrialAccountingMeiHoGaiRequest
+    public class GetTrialAccountingRequest
     {
         public int HpId { get; set; }
         public long PtId { get; set; }

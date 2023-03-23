@@ -12,6 +12,6 @@ namespace EmrCalculateApi.Interface
 
         void RunCalculateMonth(int hpId, int seikyuYm, List<long> ptIds, string preFix);
 
-        (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true);
+        (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>, List<CalcLogModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true);
     }
 }
