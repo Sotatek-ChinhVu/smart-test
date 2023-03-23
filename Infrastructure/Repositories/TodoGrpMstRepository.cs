@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedTodoGrpNo(List<int> todoGrpNos)
         {
-            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Count(x => todoGrpNos.Contains(x.TodoGrpNo));
+            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Distinct().Count(x => todoGrpNos.Contains(x.TodoGrpNo));
             return todoGrpNos.Count == countTodoGrpNos;
         }
 
@@ -50,14 +50,14 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        TrackingDataContext.TodoGrpMsts.AddRange(ConvertTo_TodoGrpMst(input, userId, hpId));
+                        TrackingDataContext.TodoGrpMsts.AddRange(ConvertTodoGrpMst(input, userId, hpId));
                     }
                 }
             }
             TrackingDataContext.SaveChanges();
         }
 
-        private TodoGrpMst ConvertTo_TodoGrpMst(TodoGrpMstModel u, int userId, int hpId)
+        private TodoGrpMst ConvertTodoGrpMst(TodoGrpMstModel u, int userId, int hpId)
         {
             return new TodoGrpMst
             {

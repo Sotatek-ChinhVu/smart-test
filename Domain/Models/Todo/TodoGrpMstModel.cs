@@ -1,5 +1,4 @@
 ﻿namespace Domain.Models.Todo;
-using static Helper.Constants.TodoGrpMstConstant;
 
 public class TodoGrpMstModel
 {
@@ -11,9 +10,7 @@ public class TodoGrpMstModel
         SortNo = sortNo;
         IsDeleted = isDeleted;
     }
-
-    public int HpId { get; private set; }
-
+    
     public int TodoGrpNo { get; private set; }
 
     public string TodoGrpName { get; private set; }
@@ -23,34 +20,4 @@ public class TodoGrpMstModel
     public int SortNo { get; private set; }
 
     public int IsDeleted { get; private set; }
-
-    public ValidationStatus Validation()
-    {
-        if (TodoGrpNo <= 0)
-        {
-            return ValidationStatus.InvalidTodoGrpNo;
-        }
-
-        if (TodoGrpName.Length > 20)
-        {
-            return ValidationStatus.InvalidTodoGrpName;
-        }
-
-        if (GrpColor.Length > 8)
-        {
-            return ValidationStatus.InvalidGrpColor;
-        }
-
-        if (SortNo < 0)
-        {
-            return ValidationStatus.InvalidSortNo;
-        }
-
-        if (IsDeleted < 0)
-        {
-            return ValidationStatus.InvalidIsDeleted;
-        }
-
-        return ValidationStatus.Valid;
-    }
 }

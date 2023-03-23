@@ -1,6 +1,6 @@
 ﻿namespace UseCase.Todo.TodoGrpMst;
 
-public enum TodoGrpMstConstant
+public enum UpsertTodoGrpMstStatus : byte
 {
     Success = 1,
     Failed,

@@ -1,10 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Todo;
-using EmrCloudApi.Tenant.Responses.ApprovalInfo;
-using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.Todo.TodoGrpMst;
-using UseCase.Todo.UpsertTodoGrpMst;
 
 namespace EmrCloudApi.Presenters.TodoGroupMst
 {
@@ -15,23 +12,23 @@ namespace EmrCloudApi.Presenters.TodoGroupMst
         {
             Result = new Response<UpsertTodoGrpMstResponse>()
             {
-                Data = new UpsertTodoGrpMstResponse(outputData.Status == TodoGrpMstConstant.Success),
+                Data = new UpsertTodoGrpMstResponse(outputData.Status == UpsertTodoGrpMstStatus.Success),
                 Message = GetMessage(outputData.Status),
                 Status = (int)outputData.Status
             };
         }
-        private static string GetMessage(TodoGrpMstConstant status) => status switch
+        private static string GetMessage(UpsertTodoGrpMstStatus status) => status switch
         {
-            TodoGrpMstConstant.Success => ResponseMessage.Success,
-            TodoGrpMstConstant.Failed => ResponseMessage.Failed,
-            TodoGrpMstConstant.InvalidGrpColor => ResponseMessage.InvalidGrpColor,
-            TodoGrpMstConstant.InvalidTodoGrpName => ResponseMessage.InvalidTodoGrpName,
-            TodoGrpMstConstant.InvalidTodoGrpNo => ResponseMessage.InvalidTodoGrpNo,
-            TodoGrpMstConstant.InvalidTodoGrpMst => ResponseMessage.InvalidTodoGrpMst,
-            TodoGrpMstConstant.InputNoData => ResponseMessage.InputNoData,
-            TodoGrpMstConstant.InvalidExistedTodoGrpNo => ResponseMessage.InvalidExistedTodoGrpNo,
-            TodoGrpMstConstant.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
-            TodoGrpMstConstant.InvalidSortNo => ResponseMessage.InvalidSortNo,
+            UpsertTodoGrpMstStatus.Success => ResponseMessage.Success,
+            UpsertTodoGrpMstStatus.Failed => ResponseMessage.Failed,
+            UpsertTodoGrpMstStatus.InvalidGrpColor => ResponseMessage.InvalidGrpColor,
+            UpsertTodoGrpMstStatus.InvalidTodoGrpName => ResponseMessage.InvalidTodoGrpName,
+            UpsertTodoGrpMstStatus.InvalidTodoGrpNo => ResponseMessage.InvalidTodoGrpNo,
+            UpsertTodoGrpMstStatus.InvalidTodoGrpMst => ResponseMessage.InvalidTodoGrpMst,
+            UpsertTodoGrpMstStatus.InputNoData => ResponseMessage.InputNoData,
+            UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNo => ResponseMessage.InvalidExistedTodoGrpNo,
+            UpsertTodoGrpMstStatus.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
+            UpsertTodoGrpMstStatus.InvalidSortNo => ResponseMessage.InvalidSortNo,
             _ => string.Empty
         };
     }

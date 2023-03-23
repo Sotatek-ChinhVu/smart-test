@@ -1,9 +1,7 @@
 ﻿using Domain.Models.Todo;
+using UseCase.Todo;
 using UseCase.Todo.TodoGrpMst;
-using static Helper.Constants.TodoGrpMstConstant;
 using UseCase.Todo.UpsertTodoGrpMst;
-using UseCase.UketukeSbtMst.Upsert;
-using UseCase.ApprovalInfo.UpdateApprovalInfList;
 
 namespace Interactor.Todo;
 
@@ -20,58 +18,81 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
     {
         try
         {
+            var validateResult = ValidateDataInput(input.TodoGrpMsts);
+            if(validateResult != UpsertTodoGrpMstStatus.Success)
+            {
+                return new UpsertTodoGrpMstOutputData(validateResult);
+            }
+
             if (input.ToList() == null || input.ToList().Count == 0)
             {
-                return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InputNoData);
+                return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InputNoData);
+            }
+
+            if (_todoGrpMstRepository.CheckExistedTodoGrpNo(input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
+            {
+                return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNo);
             }
 
             var checkInputTodoGrpNo = input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo);
             if (checkInputTodoGrpNo.Count() != checkInputTodoGrpNo.Distinct().Count())
             {
-                return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InvalidTodoGrpMst);
+                return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InvalidTodoGrpMst);
             }
 
-            foreach (var data in input.ToList())
-            {
-                var status = data.Validation();
-                if (status != ValidationStatus.Valid)
-                {
-                    return new UpsertTodoGrpMstOutputData(ConvertStatus(status));
-                }
-            }
+            var todoGrpMstList = ConvertToInsertTodoGrpMstDto(input.TodoGrpMsts);
 
-            if (!_todoGrpMstRepository.CheckExistedTodoGrpNo(input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
-            {
-                return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.InvalidExistedTodoGrpNo);
-            }
+            _todoGrpMstRepository.Upsert(todoGrpMstList, input.UserId, input.HpId);
 
-            _todoGrpMstRepository.Upsert(input.ToList(), input.UserId, input.HpId);
-
-            return new UpsertTodoGrpMstOutputData(TodoGrpMstConstant.Success);
+            return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.Success);
         }
-        finally 
+        finally
         {
             _todoGrpMstRepository.ReleaseResource();
         }
     }
 
-    private static TodoGrpMstConstant ConvertStatus(ValidationStatus status)
+    private List<TodoGrpMstModel> ConvertToInsertTodoGrpMstDto(List<InsertTodoGrpMstDto> insertTodoGrpMstDtos)
     {
-        if (status == ValidationStatus.InvalidTodoGrpNo)
-            return TodoGrpMstConstant.InvalidTodoGrpNo;
-        if (status == ValidationStatus.InvalidTodoGrpName)
-            return TodoGrpMstConstant.InvalidTodoGrpName;
-        if (status == ValidationStatus.InvalidGrpColor)
-            return TodoGrpMstConstant.InvalidGrpColor;
-        if (status == ValidationStatus.InvalidSortNo)
-            return TodoGrpMstConstant.InvalidSortNo;
-        if (status == ValidationStatus.InvalidIsDeleted)
-            return TodoGrpMstConstant.InvalidIsDeleted;
-        if (status == ValidationStatus.InvalidTodoGrpMst)
-            return TodoGrpMstConstant.InvalidTodoGrpMst;
-        if (status == ValidationStatus.InvalidExistedTodoGrpNo)
-            return TodoGrpMstConstant.InvalidExistedTodoGrpNo;
+        List<TodoGrpMstModel> result = new();
+        foreach (var todoGrpMst in insertTodoGrpMstDtos)
+        {
+            result.Add(new TodoGrpMstModel(
+                todoGrpMst.TodoGrpNo,
+                todoGrpMst.TodoGrpName,
+                todoGrpMst.GrpColor,
+                todoGrpMst.SortNo,
+                todoGrpMst.IsDeleted));
+        }
 
-        return TodoGrpMstConstant.Success;
+        return result;
+    }
+
+    private UpsertTodoGrpMstStatus ValidateDataInput(List<InsertTodoGrpMstDto> insertTodoGrpMstDtos)
+    {
+        foreach (var insertTodoGrpMst in insertTodoGrpMstDtos)
+        {
+            if(insertTodoGrpMst.TodoGrpNo < 0)
+            {
+                return UpsertTodoGrpMstStatus.InvalidTodoGrpNo;
+            } 
+            else if (insertTodoGrpMst.TodoGrpName.Length > 20)
+            {
+                return UpsertTodoGrpMstStatus.InvalidTodoGrpName;
+            }
+            else if (insertTodoGrpMst.GrpColor.Length > 8)
+            {
+                return UpsertTodoGrpMstStatus.InvalidGrpColor;
+            }
+            else if (insertTodoGrpMst.SortNo < 0) 
+            {
+                return UpsertTodoGrpMstStatus.InvalidSortNo;
+            }
+            else if (insertTodoGrpMst.IsDeleted < 0)
+            {
+                return UpsertTodoGrpMstStatus.InvalidIsDeleted;
+            }
+        }
+        return UpsertTodoGrpMstStatus.Success;
     }
 }

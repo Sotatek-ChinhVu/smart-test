@@ -1,10 +1,13 @@
-﻿namespace EmrCloudApi.Requests.Todo;
+﻿namespace EmrCloudApi.Requests.Todo
 
-public class UpsertTodoGrpMstRequest
 {
-    public List<TodoGrpMstModel> UpsertTodoGrpMst { get; set; } = new List<TodoGrpMstModel>();
+    public class UpsertTodoGrpMstRequest
+    {
+        public List<UpsertTodoGrpMstListRequest> TodoGrpMstList { get; set; } = new List<UpsertTodoGrpMstListRequest>();
+    }
 
-    public class TodoGrpMstModel
+
+    public class UpsertTodoGrpMstListRequest
     {
         public int TodoGrpNo { get; set; }
 
