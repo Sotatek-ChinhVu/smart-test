@@ -1940,7 +1940,7 @@ namespace Infrastructure.Repositories
 
             foreach (var historyOdrInfModel in historyOdrInfModels)
             {
-                List<OrdInfDetailModel> odrInfDetails = new ();
+                List<OrdInfDetailModel> odrInfDetails = new();
 
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
@@ -2378,7 +2378,7 @@ namespace Infrastructure.Repositories
         public List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
         {
             var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id  == -1).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
             List<(int type, string message, int positionOdr, int odrInfDetailPosition, TenItemModel temItemMst, double suryo)> result = new();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             foreach (var checkingOdr in addingOdrList)
@@ -2416,7 +2416,7 @@ namespace Infrastructure.Repositories
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
                                             countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
                                         }
@@ -2429,13 +2429,42 @@ namespace Infrastructure.Repositories
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
                                             countInCurrentOdr++;
                                         }
                                     }
                                 }
                             }
+
+                            var checkingOrders = addingOdrList.Where(a => a != checkingOdr).ToList();
+                            if (santeiCntCheck.CntType == 2)
+                            {
+                                foreach (var item in checkingOrders)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in checkingOrders)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr++;
+                                        }
+                                    }
+                                }
+                            }
+
 
                             double totalSanteiCount = santeiCntInMonth + countInCurrentOdr;
 
@@ -2519,7 +2548,7 @@ namespace Infrastructure.Repositories
 
             foreach (var checkingOdr in addingOdrList)
             {
-                var index = odrInfs.FindIndex(o => o.Equals(checkingOdr));
+                var index = odrInfs.FindIndex(o => o.Equals(checkingOdr)) - 1;
                 var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
                                                      && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
                                                      && odrInf.InoutKbn == checkingOdr?.InoutKbn
@@ -2626,10 +2655,10 @@ namespace Infrastructure.Repositories
                                 if (checkGroupOrder != null)
                                 {
                                     result.Add(new(index, new(DeleteTypes.Deleted)));
+                                    detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
+                                    result.Add(new(index, checkingOdr));
                                 }
                             }
-                            detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                            result.Add(new(index, checkingOdr));
                         }
                         else
                         {
@@ -2799,6 +2828,7 @@ namespace Infrastructure.Repositories
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
+                        result.Add(new(index, new(DeleteTypes.Deleted)));
                         result.Add(new(index, checkingOdr));
                     }
                     odrInfDetailIndex++;
