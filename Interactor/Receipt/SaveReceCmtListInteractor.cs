@@ -73,7 +73,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
     {
         var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).ToList();
+        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;

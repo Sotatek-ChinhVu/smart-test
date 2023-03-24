@@ -821,6 +821,8 @@ namespace Infrastructure.Repositories
                                     ||
                                     (item.Icd1022013 != null &&
                                     item.Icd1022013.StartsWith(keyword))
+                                    ||
+                                    item.ByomeiCd.StartsWith(keyword)
                                  );
 
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
@@ -942,6 +944,7 @@ namespace Infrastructure.Repositories
 
         public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
         {
+            itemCds = itemCds.Distinct().ToList();
             var entities = NoTrackingDataContext.TenMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= minSinDate &&

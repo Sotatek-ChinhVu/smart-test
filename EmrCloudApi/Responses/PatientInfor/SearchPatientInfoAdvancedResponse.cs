@@ -1,4 +1,4 @@
-﻿using UseCase.PatientInfor.SearchSimple;
+﻿using UseCase.PatientInfor;
 
 namespace EmrCloudApi.Responses.PatientInfor;
 
