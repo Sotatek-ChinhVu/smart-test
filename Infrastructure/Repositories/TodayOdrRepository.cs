@@ -2548,7 +2548,7 @@ namespace Infrastructure.Repositories
 
             foreach (var checkingOdr in addingOdrList)
             {
-                var index = odrInfs.FindIndex(o => o.Equals(checkingOdr)) - 1;
+                var index = odrInfs.FindIndex(o => o.Equals(checkingOdr));
                 var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
                                                      && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
                                                      && odrInf.InoutKbn == checkingOdr?.InoutKbn
