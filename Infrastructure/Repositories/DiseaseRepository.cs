@@ -560,7 +560,8 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
                     ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
-                    mst.IsAdopted == 1
+                    mst.IsAdopted == 1,
+                    mst.NanbyoCd
                 );
         }
 
