@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Domain.Constant;
-using Domain.Models.KarteInf;
+﻿using Domain.Constant;
 using Domain.Models.Receipt;
 using Domain.Models.ReceiptCreation;
+using EventProcessor.Interfaces;
 using EventProcessor.Model;
 using Helper.Common;
 using Helper.Constants;
@@ -18,11 +16,13 @@ namespace Interactor.ReceiptCreation
     {
         private readonly IReceiptRepository _receiptRepository;
         private readonly ICalcultateCustomerService _calcultateCustomerService;
+        private readonly IEventProcessorService _eventProcessorService;
 
-        public CreateUKEFileInteractor(IReceiptRepository receiptRepository, ICalcultateCustomerService calcultateCustomerService)
+        public CreateUKEFileInteractor(IReceiptRepository receiptRepository, ICalcultateCustomerService calcultateCustomerService, IEventProcessorService eventProcessorService)
         {
             _receiptRepository = receiptRepository;
             _calcultateCustomerService = calcultateCustomerService;
+            _eventProcessorService = eventProcessorService;
         }
 
         public CreateUKEFileOutputData Handle(CreateUKEFileInputData inputData)
@@ -147,17 +147,19 @@ namespace Interactor.ReceiptCreation
                         {
                             ukeFiles.Add(new UKEFileOutputData(st, fileName));
                         }
-
                         // Event
-                        ArgumentModel argument = new ArgumentModel
-                        {
-                            EventCd = EventCode.ReportReceden,
-                            SinDate = SeikyuYm,
-                            Hosoku = $"mode:{Mode} file:{Path.Combine(SelectedPath, fileInfo.FileName)}"
-                        };
-
-                        arguments.Add(argument);
+                        arguments.Add(new ArgumentModel(inputData.HpId, inputData.UserId, EventCode.ReportReceden, 0, inputData.SeikyuYm, 0, $"mode:{inputData.ModeType} file:{fileInfo.FileName}"));
                     }
+
+                    if (arguments.Count > 0)
+                    {
+                        _eventProcessorService.DoEvent(arguments);
+                    }
+
+                    if(ukeFiles.Any())
+                        return new CreateUKEFileOutputData(CreateUKEFileStatus.Successulf, "ファイルを保存しました。", TypeMessage.TypeMessageSuccess, ukeFiles);
+                    else
+                        return new CreateUKEFileOutputData(CreateUKEFileStatus.Failed, string.Empty, TypeMessage.TypeMessageError, ukeFiles);
                 }
             }
             finally
