@@ -44,6 +44,7 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
+            var checkSerialNum = int.TryParse(searchValue, out int serialNum);
             var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
@@ -56,7 +57,9 @@ namespace Infrastructure.Repositories
                         where ((main.TradeKana ?? string.Empty).Contains(searchValue)
                                 || (main.TradeName ?? string.Empty).Contains(searchValue)
                                 || (maker.MakerKana ?? string.Empty).Contains(searchValue)
-                                || (maker.MakerName ?? string.Empty).Contains(searchValue))
+                                || (maker.MakerName ?? string.Empty).Contains(searchValue)
+                                || (checkSerialNum && main.SerialNum == serialNum)
+                                )
                         select new OtcItemModel(
                             main.SerialNum,
                             main.OtcCd ?? string.Empty,
@@ -105,7 +108,7 @@ namespace Infrastructure.Repositories
                              from supplement in supplementList.DefaultIfEmpty()
                              join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
                              from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where (indexDef.IndexWord ?? string.Empty).Contains(searchValue)
+                             where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
                              select new SearchSupplementModel(
                                  ingreItem.SeibunCd,
                                  ingreItem.Seibun ?? string.Empty,
@@ -821,6 +824,8 @@ namespace Infrastructure.Repositories
                                     ||
                                     (item.Icd1022013 != null &&
                                     item.Icd1022013.StartsWith(keyword))
+                                    ||
+                                    item.ByomeiCd.StartsWith(keyword)
                                  );
 
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
@@ -942,6 +947,7 @@ namespace Infrastructure.Repositories
 
         public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
         {
+            itemCds = itemCds.Distinct().ToList();
             var entities = NoTrackingDataContext.TenMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= minSinDate &&

@@ -41,7 +41,6 @@ namespace Infrastructure.Repositories
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId)
         {
-
             var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
             return executionStrategy.Execute(
@@ -57,7 +56,9 @@ namespace Infrastructure.Repositories
 
                         SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId);
                         if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
+                        {
                             UpsertKarteInfs(karteInfModel, userId);
+                        }
 
                         SaveRaiinListInf(odrInfs, userId);
 
@@ -1894,7 +1895,6 @@ namespace Infrastructure.Repositories
         public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
             List<OrdInfModel> ordInfModels = new();
-            List<OrdInfDetailModel> odrInfDetails = new List<OrdInfDetailModel>();
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
             int autoSetSenpatu = (int)_systemConf.GetSettingValue(2021, 2, hpId);
             int rowNo = 0;
@@ -1941,6 +1941,8 @@ namespace Infrastructure.Repositories
 
             foreach (var historyOdrInfModel in historyOdrInfModels)
             {
+                List<OrdInfDetailModel> odrInfDetails = new();
+
                 foreach (var detail in historyOdrInfModel.OrdInfDetails)
                 {
                     string ipnCd = "";
@@ -2377,7 +2379,7 @@ namespace Infrastructure.Repositories
         public List<(int type, string message, int odrInfPosition, int odrInfDetailPosition, TenItemModel tenItemMst, double suryo)> AutoCheckOrder(int hpId, int sinDate, long ptId, List<OrdInfModel> odrInfs)
         {
             var currentListOrder = odrInfs.Where(o => o.Id >= 0).ToList();
-            var addingOdrList = odrInfs.Where(o => o.Id  == -1).ToList();
+            var addingOdrList = odrInfs.Where(o => o.Id == -1).ToList();
             List<(int type, string message, int positionOdr, int odrInfDetailPosition, TenItemModel temItemMst, double suryo)> result = new();
             int odrInfIndex = 0, odrInfDetailIndex = 0;
             foreach (var checkingOdr in addingOdrList)

@@ -137,6 +137,8 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             const string conFncName = nameof(AddCalcLog);
             try
             {
+                _emrLogger.WriteLogStart(this, conFncName, "");
+
                 if (calcLogModels.Any())
                 {
                     string MachinName = Hardcode.ComputerName;
@@ -166,6 +168,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             {
                 _emrLogger.WriteLogError(this, conFncName, E);
             }
+            finally
+            {
+                _emrLogger.WriteLogEnd(this, conFncName, "");
+            }
         }
 
         public void AddCalcLog(List<CalcLogModel> calcLogModels)
@@ -184,7 +190,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         public void AddErrorCalcLog(List<CalcLogModel> calcLogModels)
         {
             const string conFncName = nameof(AddCalcLog);
-            using (var newDbService = _tenantProvider.GetTrackingTenantDataContext())
+            using (var newDbService = _tenantProvider.CreateNewTrackingDataContext())
             {
                 using (var transaction = _tenantDataContext.Database.BeginTransaction())
                 {
@@ -209,122 +215,123 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
          List<SinKouiDetailModel> sinKouiDetailModels,
          List<SinKouiCountModel> sinKouiCountModels)
         {
-            string MachineName = Hardcode.ComputerName;
-
+            string machineName = Hardcode.ComputerName;
+            string conFncName = nameof(AddSin);
             List<SinRpInfModel> addSinRpInfs = new List<SinRpInfModel>();
-
-            foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
-            {
-                addSinRpInfs.Add(
-                    new SinRpInfModel(
-                        new SinRpInf
-                        {
-                            HpId = sinRpInf.HpId,
-                            PtId = sinRpInf.PtId,
-                            SinYm = sinRpInf.SinYm,
-
-                            FirstDay = sinRpInf.FirstDay,
-                            HokenKbn = sinRpInf.HokenKbn,
-                            SinKouiKbn = sinRpInf.SinKouiKbn,
-                            SinId = sinRpInf.SinId,
-                            CdNo = sinRpInf.CdNo,
-                            SanteiKbn = sinRpInf.SanteiKbn,
-                            KouiData = sinRpInf.KouiData,
-                            IsDeleted = sinRpInf.IsDeleted,
-                            CreateDate = CIUtil.GetJapanDateTimeNow(),
-                            CreateId = Hardcode.UserID,
-                            CreateMachine = MachineName,
-                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                            UpdateId = Hardcode.UserID,
-                            UpdateMachine = MachineName,
-                        }
-                        )
-                    {
-                        UpdateState = sinRpInf.UpdateState,
-                        KeyNo = sinRpInf.KeyNo
-                    });
-                //sinRpInf.CreateDate = CIUtil.GetJapanDateTimeNow();
-                //sinRpInf.CreateId = Hardcode.UserID;
-                //sinRpInf.CreateMachine = MachineName;
-                //sinRpInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                //sinRpInf.UpdateId = Hardcode.UserID;
-                //sinRpInf.UpdateMachine = MachineName;
-            }
-            //List<SinRpInf> sinRpInfs = sinRpInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
-            List<SinRpInf> sinRpInfs = addSinRpInfs.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
-
-            newDbContext.SinRpInfs.AddRange(sinRpInfs);
-            newDbContext.SaveChanges();
-
-            //foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
-            foreach (SinRpInfModel sinRpInf in addSinRpInfs.FindAll(q => q.UpdateState == UpdateStateConst.Add))
-            {
-                foreach (SinRpInfModel sinRpInfModel in sinRpInfModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
-                {
-                    sinRpInfModel.RpNo = sinRpInf.SinRpInf.RpNo;
-                }
-
-                foreach (SinKouiModel sinKoui in sinKouiModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
-                {
-                    sinKoui.RpNo = sinRpInf.SinRpInf.RpNo;
-                    sinKoui.CreateDate = CIUtil.GetJapanDateTimeNow();
-                    sinKoui.CreateId = Hardcode.UserID;
-                    sinKoui.CreateMachine = MachineName;
-                    sinKoui.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    sinKoui.UpdateId = Hardcode.UserID;
-                    sinKoui.UpdateMachine = MachineName;
-                }
-
-                foreach (SinKouiDetailModel sinDtl in sinKouiDetailModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
-                {
-                    sinDtl.RpNo = sinRpInf.SinRpInf.RpNo;
-                }
-
-                foreach (SinKouiCountModel sinCount in sinKouiCountModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
-                {
-                    sinCount.RpNo = sinRpInf.SinRpInf.RpNo;
-                    // 作成日/更新日等の情報は、SinRpのKeyNoに紐づかない追加データもあるので後で更新する
-                }
-
-                //foreach (SinRpNoInfModel sinRpNo in sinRpNoInfModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
-                //{
-                //    sinRpNo.RpNo = sinRpInf.SinRpInf.RpNo;
-                //    // 作成日/更新日等の情報は、SinRpのKeyNoに紐づかない追加データもあるので後で更新する
-                //}
-            };
-
-            List<SinKoui> sinKouis = sinKouiModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKoui).ToList();
-            newDbContext.SinKouis.AddRange(sinKouis);
-
-            List<SinKouiDetail> sinDtls = sinKouiDetailModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiDetail).ToList();
-            newDbContext.SinKouiDetails.AddRange(sinDtls);
-
-            List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
-            foreach (SinKouiCount sinKouiCount in sinKouiCounts)
-            {
-                sinKouiCount.CreateDate = CIUtil.GetJapanDateTimeNow();
-                sinKouiCount.CreateId = Hardcode.UserID;
-                sinKouiCount.CreateMachine = MachineName;
-                sinKouiCount.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                sinKouiCount.UpdateId = Hardcode.UserID;
-                sinKouiCount.UpdateMachine = MachineName;
-            }
-            newDbContext.SinKouiCounts.AddRange(sinKouiCounts);
-
-            //List<SinRpNoInf> sinRpNoInfs = sinRpNoInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpNoInf).ToList();
-            //foreach(SinRpNoInf sinRpNoInf in sinRpNoInfs)
-            //{
-            //    sinRpNoInf.CreateDate = CIUtil.GetJapanDateTimeNow();
-            //    sinRpNoInf.CreateId = Session.UserID;
-            //    sinRpNoInf.CreateMachine = MachineName;
-            //    sinRpNoInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-            //    sinRpNoInf.UpdateId = Session.UserID;
-            //    sinRpNoInf.UpdateMachine = MachineName;
-            //}
-            //newDbContext.SinRpNoInfs.AddRange(sinRpNoInfs);
-
             try
             {
+                _emrLogger.WriteLogStart(this, conFncName, "");
+
+                foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
+                {
+                    addSinRpInfs.Add(
+                        new SinRpInfModel(
+                            new SinRpInf
+                            {
+                                HpId = sinRpInf.HpId,
+                                PtId = sinRpInf.PtId,
+                                SinYm = sinRpInf.SinYm,
+
+                                FirstDay = sinRpInf.FirstDay,
+                                HokenKbn = sinRpInf.HokenKbn,
+                                SinKouiKbn = sinRpInf.SinKouiKbn,
+                                SinId = sinRpInf.SinId,
+                                CdNo = sinRpInf.CdNo,
+                                SanteiKbn = sinRpInf.SanteiKbn,
+                                KouiData = sinRpInf.KouiData,
+                                IsDeleted = sinRpInf.IsDeleted,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                CreateId = Hardcode.UserID,
+                                CreateMachine = machineName,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = Hardcode.UserID,
+                                UpdateMachine = machineName,
+                            }
+                            )
+                        {
+                            UpdateState = sinRpInf.UpdateState,
+                            KeyNo = sinRpInf.KeyNo
+                        });
+                    //sinRpInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    //sinRpInf.CreateId = Hardcode.UserID;
+                    //sinRpInf.CreateMachine = MachineName;
+                    //sinRpInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    //sinRpInf.UpdateId = Hardcode.UserID;
+                    //sinRpInf.UpdateMachine = MachineName;
+                }
+                //List<SinRpInf> sinRpInfs = sinRpInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
+                List<SinRpInf> sinRpInfs = addSinRpInfs.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpInf).ToList();
+
+                newDbContext.SinRpInfs.AddRange(sinRpInfs);
+                newDbContext.SaveChanges();
+
+                //foreach (SinRpInfModel sinRpInf in sinRpInfModels.FindAll(q => q.UpdateState == UpdateStateConst.Add))
+                foreach (SinRpInfModel sinRpInf in addSinRpInfs.FindAll(q => q.UpdateState == UpdateStateConst.Add))
+                {
+                    foreach (SinRpInfModel sinRpInfModel in sinRpInfModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                    {
+                        sinRpInfModel.RpNo = sinRpInf.SinRpInf.RpNo;
+                    }
+
+                    foreach (SinKouiModel sinKoui in sinKouiModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                    {
+                        sinKoui.RpNo = sinRpInf.SinRpInf.RpNo;
+                        sinKoui.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        sinKoui.CreateId = Hardcode.UserID;
+                        sinKoui.CreateMachine = machineName;
+                        sinKoui.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        sinKoui.UpdateId = Hardcode.UserID;
+                        sinKoui.UpdateMachine = machineName;
+                    }
+
+                    foreach (SinKouiDetailModel sinDtl in sinKouiDetailModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                    {
+                        sinDtl.RpNo = sinRpInf.SinRpInf.RpNo;
+                    }
+
+                    foreach (SinKouiCountModel sinCount in sinKouiCountModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                    {
+                        sinCount.RpNo = sinRpInf.SinRpInf.RpNo;
+                        // 作成日/更新日等の情報は、SinRpのKeyNoに紐づかない追加データもあるので後で更新する
+                    }
+
+                    //foreach (SinRpNoInfModel sinRpNo in sinRpNoInfModels.FindAll(q => q.KeyNo == sinRpInf.KeyNo))
+                    //{
+                    //    sinRpNo.RpNo = sinRpInf.SinRpInf.RpNo;
+                    //    // 作成日/更新日等の情報は、SinRpのKeyNoに紐づかない追加データもあるので後で更新する
+                    //}
+                };
+
+                List<SinKoui> sinKouis = sinKouiModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKoui).ToList();
+                newDbContext.SinKouis.AddRange(sinKouis);
+
+                List<SinKouiDetail> sinDtls = sinKouiDetailModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiDetail).ToList();
+                newDbContext.SinKouiDetails.AddRange(sinDtls);
+
+                List<SinKouiCount> sinKouiCounts = sinKouiCountModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinKouiCount).ToList();
+                foreach (SinKouiCount sinKouiCount in sinKouiCounts)
+                {
+                    sinKouiCount.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    sinKouiCount.CreateId = Hardcode.UserID;
+                    sinKouiCount.CreateMachine = machineName;
+                    sinKouiCount.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    sinKouiCount.UpdateId = Hardcode.UserID;
+                    sinKouiCount.UpdateMachine = machineName;
+                }
+                newDbContext.SinKouiCounts.AddRange(sinKouiCounts);
+
+                //List<SinRpNoInf> sinRpNoInfs = sinRpNoInfModels.Where(p => p.UpdateState == UpdateStateConst.Add).Select(p => p.SinRpNoInf).ToList();
+                //foreach(SinRpNoInf sinRpNoInf in sinRpNoInfs)
+                //{
+                //    sinRpNoInf.CreateDate = CIUtil.GetJapanDateTimeNow();
+                //    sinRpNoInf.CreateId = Session.UserID;
+                //    sinRpNoInf.CreateMachine = MachineName;
+                //    sinRpNoInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                //    sinRpNoInf.UpdateId = Session.UserID;
+                //    sinRpNoInf.UpdateMachine = MachineName;
+                //}
+                //newDbContext.SinRpNoInfs.AddRange(sinRpNoInfs);
+
                 newDbContext.SaveChanges();
             }
             //catch (System.Data.Entity.Validation.DbEntityValidationException ex)
@@ -339,6 +346,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //    }
                 //}
                 throw;
+            }
+            finally
+            {
+                _emrLogger.WriteLogEnd(this, conFncName, "");
             }
         }
 
@@ -373,51 +384,57 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
         {
             string conFncName = nameof(UpdateData);
 
-            _emrLogger.WriteLogStart(this, conFncName, "");
-
-            // 先に更新/削除分を反映
-            _tenantDataContext.SaveChanges();
-
-            using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
+            try
             {
-                var executionStrategy = new_tenantDataContext.Database.CreateExecutionStrategy();
-                executionStrategy.Execute(
-                    () =>
-                    {
-                        using (var transaction = new_tenantDataContext.Database.BeginTransaction())
+                _emrLogger.WriteLogStart(this, conFncName, "");
+
+                // 先に更新/削除分を反映
+                _tenantDataContext.SaveChanges();
+
+                using (var new_tenantDataContext = _tenantProvider.CreateNewTrackingDataContext())
+                {
+                    var executionStrategy = new_tenantDataContext.Database.CreateExecutionStrategy();
+                    executionStrategy.Execute(
+                        () =>
                         {
-                            try
+                            using (var transaction = new_tenantDataContext.Database.BeginTransaction())
                             {
-                                //_emrLogger.WriteLogMsg( this, conFncName, "AddWrkTalbes");
-                                //if (ICDebugConf.SaveWrk)
-                                //{
-                                //    AddWrkTalbes
-                                //        (newDbService, _common.Wrk.wrkSinRpInfs, _common.Wrk.wrkSinKouis, _common.Wrk.wrkSinKouiDetails, _common.Wrk.wrkSinKouiDetailDels);
-                                //}
-                                //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");  
-                                AddCalcLog(new_tenantDataContext, _common.calcLogs);
-                                //new_tenantDataContext.SaveChanged();
-                                //_emrLogger.WriteLogMsg( this, conFncName, "AddSin");
-                                AddSin(
-                                    new_tenantDataContext, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts);
+                                try
+                                {
+                                    //_emrLogger.WriteLogMsg( this, conFncName, "AddWrkTalbes");
+                                    //if (ICDebugConf.SaveWrk)
+                                    //{
+                                    //    AddWrkTalbes
+                                    //        (newDbService, _common.Wrk.wrkSinRpInfs, _common.Wrk.wrkSinKouis, _common.Wrk.wrkSinKouiDetails, _common.Wrk.wrkSinKouiDetailDels);
+                                    //}
+                                    //_emrLogger.WriteLogMsg( this, conFncName, "AddCalcLog");  
+                                    AddCalcLog(new_tenantDataContext, _common.calcLogs);
+                                    //new_tenantDataContext.SaveChanged();
+                                    //_emrLogger.WriteLogMsg( this, conFncName, "AddSin");
+                                    AddSin(
+                                        new_tenantDataContext, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts);
 
-                                //DelSin(
-                                //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
+                                    //DelSin(
+                                    //    newDbService, _common.Sin.SinRpInfs, _common.Sin.SinKouis, _common.Sin.SinKouiDetails, _common.Sin.SinKouiCounts, _common.Sin.SinRpNoInfs);
 
-                                new_tenantDataContext.SaveChanges();
+                                    new_tenantDataContext.SaveChanges();
 
-                                transaction.Commit();
+                                    transaction.Commit();
+                                }
+                                catch (Exception e)
+                                {
+                                    transaction.Rollback();
+                                    _emrLogger.WriteLogError(this, nameof(UpdateData), e);
+                                    throw;
+                                }
                             }
-                            catch (Exception e)
-                            {
-                                transaction.Rollback();
-                                _emrLogger.WriteLogError(this, nameof(UpdateData), e);
-                                throw;
-                            }
-                        }
-                    });
+                        });
+                }
             }
-            _emrLogger.WriteLogEnd(this, conFncName, "");
+            finally
+            {
+                _emrLogger.WriteLogEnd(this, conFncName, "");
+            }
         }
 
         public void UpdateCalcStatus(CalcStatusModel calcStatus)

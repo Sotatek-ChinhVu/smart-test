@@ -789,7 +789,6 @@
         //DeletePatient
         public static readonly string NotAllowDeletePatient = "This patient is not allowed to delete";
 
-
         //SwapHoken
         public static readonly string SwapHokenSourceInsuranceHasNotSelected = "Please select the source insurance.";
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
@@ -853,7 +852,6 @@
         public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
 
-
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
         public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
@@ -876,7 +874,6 @@
         public static readonly string InvalidCheckAge = "Invalid Check Age";
         public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";
         public static readonly string InvalidIBirthDay = "Invalid IBirthDay";
-
 
         //Exception
         public static readonly string ExceptionError = "Exception error";
@@ -924,6 +921,8 @@
         public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
         public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
         public static readonly string DuplicateFamily = "Duplicate Family";
+        public static readonly string InvalidNameMaxLength = "Family Name max length is 100 characters!";
+        public static readonly string InvalidKanaNameMaxLength = "Family KanaName max length is 100 characters!";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
@@ -938,6 +937,9 @@
         public static readonly string InvalidStatusColor = "Invalid StatusColor!";
         public static readonly string InvalidErrCd = "Invalid ErrCd!";
         public static readonly string InvalidCheckOpt = "Invalid CheckOpt!";
+        public static readonly string InvalidSeikyuYm = "Invalid SeikyuYm!";
+        public static readonly string InvalidNissuItem = "Invalid NissuItem!";
+        public static readonly string InvalidTokkiItem = "Invalid TokkiItem!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";

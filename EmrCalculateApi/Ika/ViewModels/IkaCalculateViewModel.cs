@@ -173,11 +173,16 @@ namespace EmrCalculateApi.Ika.ViewModels
         public void UpdateDatabase()
         {
             const string conFncName = nameof(UpdateDatabase);
-            _emrLogger.WriteLogStart(this, conFncName, "");
+            try
+            {
+                _emrLogger.WriteLogStart(this, conFncName, "");
 
-            _saveIkaCalculateCommandHandler.UpdateData(_common);
-
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+                _saveIkaCalculateCommandHandler.UpdateData(_common);
+            }
+            finally
+            {
+                _emrLogger.WriteLogEnd(this, conFncName, "");
+            }
         }
 
         /// <summary>
@@ -777,7 +782,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             {
                 //データを削除する
                 ClearData();
-
+                
                 foreach (RaiinInfModel raiinInfModel in _raiinInfModels)
                 {
                     //_common.Sin.GetSinInf();
@@ -882,11 +887,12 @@ namespace EmrCalculateApi.Ika.ViewModels
 
                 // データベースに反映
                 UpdateDatabase();
+
                 _common.ClearKeisanData();
 
                 _clearIkaCalculateCommandHandler.ClearSinData(_hpId, _ptId, _sinDate);
-                TenantDataContext.SaveChanges();
 
+                TenantDataContext.SaveChanges();
             }
             catch (Exception e)
             {

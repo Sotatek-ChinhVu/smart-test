@@ -1,5 +1,6 @@
 ﻿using Domain.Models.GroupInf;
 using Domain.Models.PatientInfor;
+using UseCase.PatientInfor;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 

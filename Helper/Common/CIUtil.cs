@@ -1621,7 +1621,7 @@ namespace Helper.Common
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
+                        ret += HenkanJ.Instance.ToFullsize(s.Substring(i, 1));
                     }
                     else
                     {
@@ -2872,7 +2872,7 @@ namespace Helper.Common
         /// <returns></returns>
         public static string ToNarrow(string s)
         {
-            return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
+            return HenkanJ.Instance.ToHalfsize(s);
         }
 
         /// <summary>

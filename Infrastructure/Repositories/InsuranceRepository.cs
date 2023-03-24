@@ -1521,7 +1521,8 @@ namespace Infrastructure.Repositories
                                     x.HokenId,
                                     x.FileName ?? string.Empty,
                                     nullMemory,
-                                    x.IsDeleted)).ToList();
+                                    x.IsDeleted,
+                                    x.UpdateDate.ToString("yyyy/MM/dd HH:mm") + " 更新")).ToList();
             }
             else
             {

@@ -39,7 +39,6 @@ namespace Infrastructure.Repositories
             .ThenBy(p => p.SyubyoKbn)
             .ToList();
 
-
             var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
 
@@ -505,6 +504,41 @@ namespace Infrastructure.Repositories
                         ptByomei.TogetuByomei,
                         byomeiMst?.DelDate ?? 0
                         );
+                result.Add(ptDiseaseModel);
+            }
+
+            return result;
+        }
+
+        public List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds)
+        {
+            itemCds = itemCds.Distinct().ToList();
+            var tekiouByomeiMstList = NoTrackingDataContext.TekiouByomeiMsts.Where(item => item.HpId == hpId
+                                                                                        && itemCds.Contains(item.ItemCd)
+                                                                                        && item.IsInvalid == 0)
+                                                                            .ToList();
+
+            var byomeiCdList = tekiouByomeiMstList.Select(item => item.ByomeiCd).Distinct().ToList();
+
+            var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(item => item.HpId == hpId && byomeiCdList.Contains(item.ByomeiCd)).ToList();
+
+
+            List<PtDiseaseModel> result = new();
+            foreach (var tekiouByomei in tekiouByomeiMstList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == tekiouByomei.ByomeiCd);
+
+                if (byomeiMst == null || string.IsNullOrEmpty(tekiouByomei.ItemCd))
+                {
+                    continue;
+                }
+                var ptDiseaseModel = new PtDiseaseModel(
+                                         tekiouByomei.ItemCd,
+                                         byomeiMst.ByomeiCd ?? string.Empty,
+                                         byomeiMst.Sbyomei ?? string.Empty,
+                                         byomeiMst.SikkanCd,
+                                         byomeiMst.IsAdopted == 1,
+                                         byomeiMst.NanbyoCd);
                 result.Add(ptDiseaseModel);
             }
 

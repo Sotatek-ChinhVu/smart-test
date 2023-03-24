@@ -1,6 +1,6 @@
-﻿namespace UseCase.Family.SaveFamilyList;
+﻿namespace UseCase.Family;
 
-public enum SaveFamilyListStatus : byte
+public enum ValidateFamilyListStatus : byte
 {
     ValidateSuccess = 0,
     Successed = 1,
@@ -23,4 +23,6 @@ public enum SaveFamilyListStatus : byte
     InvalidByomei = 18,
     InvalidCmt = 19,
     DuplicateFamily = 20,
+    InvalidNameMaxLength = 21,
+    InvalidKanaNameMaxLength = 22,
 }
