@@ -1307,18 +1307,22 @@ namespace Infrastructure.Repositories
             return raiinInf != null;
         }
 
-        public List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo)
+        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo)
         {
-            var raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
-                                                                x.OyaRaiinNo == oyaRaiinNo &&
+                                                                x.RaiinNo == raiinNo &&
                                                                 x.Status > RaiinState.TempSave &&
+                                                                x.IsDeleted == DeleteTypes.None);
+            if (oyaRaiinNo == null) return new();
+
+            return NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                 x.IsDeleted == DeleteTypes.None
                                                                 ).Select(x => x.RaiinNo).ToList();
-            if (raiinNos.Any()) return raiinNos;
-
-            return new();
         }
         public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {
