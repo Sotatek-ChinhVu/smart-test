@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Enum;
 using Domain.Models.Diseases;
+using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -274,10 +275,7 @@ namespace Infrastructure.Repositories
                                                                 x.byomeiSet.SetName ?? string.Empty,
                                                                 x.byomeiSet.IsTitle,
                                                                 x.byomeiSet.SelectType,
-                                                                x.byomeiMst.DelDate,
-                                                                x.byomeiMst.Sbyomei ?? string.Empty,
-                                                                x.byomeiMst.NanbyoCd,
-                                                                x.byomeiMst.SikkanCd)).ToList();
+                                                                ConvertToByomeiMstModel(x.byomeiMst))).ToList();
         }
 
         public void ReleaseResource()
@@ -547,6 +545,116 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
+        {
+            return new ByomeiMstModel(
+                    mst.ByomeiCd,
+                    mst.Byomei ?? string.Empty,
+                    ConvertByomeiCdDisplay(mst.ByomeiCd),
+                    mst.Sbyomei ?? string.Empty,
+                    mst.KanaName1 ?? string.Empty,
+                    mst.SikkanCd,
+                    ConvertSikkanDisplay(mst.SikkanCd),
+                    mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
+                    ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
+                    ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
+                    mst.IsAdopted == 1
+                );
+        }
+
+        /// Get the ByomeiCdDisplay depend on ByomeiCd
+        private static string ConvertByomeiCdDisplay(string byomeiCd)
+        {
+            string result = "";
+
+            if (string.IsNullOrEmpty(byomeiCd)) return result;
+
+            if (byomeiCd.Length != 4)
+            {
+                result = "病名";
+            }
+            else
+            {
+                if (byomeiCd.StartsWith("8"))
+                {
+                    result = "接尾語";
+                }
+                else if (byomeiCd.StartsWith("9"))
+                {
+                    result = "その他";
+                }
+                else
+                {
+                    result = "接頭語";
+                }
+            }
+            return result;
+        }
+
+        /// Get the SikkanCd for display
+        private static string ConvertSikkanDisplay(int SikkanCd)
+        {
+            string sikkanDisplay = "";
+            switch (SikkanCd)
+            {
+                case 0:
+                    sikkanDisplay = "";
+                    break;
+                case 5:
+                    sikkanDisplay = "特疾";
+                    break;
+                case 3:
+                    sikkanDisplay = "皮１";
+                    break;
+                case 4:
+                    sikkanDisplay = "皮２";
+                    break;
+                case 7:
+                    sikkanDisplay = "てんかん";
+                    break;
+                case 8:
+                    sikkanDisplay = "特疾又はてんかん";
+                    break;
+            }
+            return sikkanDisplay;
+        }
+
+        /// Get the Icd10Display depend on Icd101 and Icd102
+        private static string ConvertIcd10Display(string icd101, string icd102)
+        {
+            string result = icd101;
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                if (!string.IsNullOrWhiteSpace(icd102))
+                {
+                    result = result + "/" + icd102;
+                }
+            }
+            else
+            {
+                result = icd102;
+            }
+            return result;
+        }
+
+        /// Get the Icd10Display depend on Icd1012013 and Icd1022013
+        private static string ConvertIcd102013Display(string icd1012013, string icd1022013)
+        {
+            string rs = icd1012013;
+            if (!string.IsNullOrWhiteSpace(rs))
+            {
+                if (!string.IsNullOrWhiteSpace(icd1022013))
+                {
+                    rs = rs + "/" + icd1022013;
+                }
+            }
+            else
+            {
+                rs = icd1022013;
+            }
+            return rs;
         }
     }
 }

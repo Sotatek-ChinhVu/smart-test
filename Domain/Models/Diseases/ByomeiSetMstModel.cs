@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.Diseases
+﻿using Domain.Models.MstItem;
+
+namespace Domain.Models.Diseases
 {
     public class ByomeiSetMstModel
     {
-        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType, int delDate, string sbyomei, int nanbyoCd , int sikkanCd)
+        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType, ByomeiMstModel byomeiMst)
         {
             GenerationId = generationId;
             SeqNo = seqNo;
@@ -20,10 +22,7 @@
             SetName = setName;
             IsTitle = isTitle;
             SelectType = selectType;
-            DelDate = delDate;
-            Sbyomei = sbyomei;
-            NanbyoCd = nanbyoCd;
-            SikkanCd = sikkanCd;
+            ByomeiMst = byomeiMst;
         }
 
         public int GenerationId { get; private set; }
@@ -57,14 +56,6 @@
         public int IsTitle { get; private set; }
 
         public int SelectType { get; private set; }
-
-        public int DelDate  { get; private set; }
-
-        public string Sbyomei  { get; private set; }
-
-        public int NanbyoCd { get; private set; }
-
-        public int SikkanCd { get; private set; }
 
         public ByomeiType ByomeiKbn
         {
@@ -101,6 +92,8 @@
                 return 5;
             }
         }
+
+        public ByomeiMstModel ByomeiMst { get; private set; }
 
         public List<ByomeiSetMstModel> Childrens { get; set; } = new List<ByomeiSetMstModel>();
     }
