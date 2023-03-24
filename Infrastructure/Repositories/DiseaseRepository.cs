@@ -275,7 +275,9 @@ namespace Infrastructure.Repositories
                                                                 x.byomeiSet.IsTitle,
                                                                 x.byomeiSet.SelectType,
                                                                 x.byomeiMst.DelDate,
-                                                                x.byomeiMst.Sbyomei ?? string.Empty)).ToList();
+                                                                x.byomeiMst.Sbyomei ?? string.Empty,
+                                                                x.byomeiMst.NanbyoCd,
+                                                                x.byomeiMst.SikkanCd)).ToList();
         }
 
         public void ReleaseResource()
