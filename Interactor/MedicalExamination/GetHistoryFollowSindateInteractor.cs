@@ -2,24 +2,24 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
-using UseCase.Accounting.GetHistoryOrder;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.OrdInfs.GetListTrees;
 
-namespace Interactor.Accounting
+namespace Interactor.MedicalExamination
 {
-    public class GetAccountingHistoryOrderInteractor : IGetAccountingHistoryOrderInputPort
+    public class GetHistoryFollowSindateInteractor : IGetHistoryFollowSindateInputPort
     {
         private readonly IHistoryOrderRepository _historyOrderRepository;
         private readonly IInsuranceRepository _insuranceRepository;
 
-        public GetAccountingHistoryOrderInteractor(IHistoryOrderRepository historyOrderRepository, IInsuranceRepository insuranceRepository)
+        public GetHistoryFollowSindateInteractor(IHistoryOrderRepository historyOrderRepository, IInsuranceRepository insuranceRepository)
         {
             _historyOrderRepository = historyOrderRepository;
             _insuranceRepository = insuranceRepository;
         }
 
-        public GetAccountingHistoryOrderOutputData Handle(GetAccountingHistoryOrderInputData inputData)
+        public GetHistoryFollowSindateOutputData Handle(GetHistoryFollowSindateInputData inputData)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Interactor.Accounting
                 {
                     var karteInfs = history.KarteInfModels;
                     var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
-                    
+
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
                         (
                             history.RaiinNo,
@@ -66,7 +66,7 @@ namespace Interactor.Accounting
                     //Excute order
                     ExcuteOrder(insuranceModelList, history.OrderInfList, historyKarteOdrRaiin, historyKarteOdrRaiins);
                 }
-                return new GetAccountingHistoryOrderOutputData(historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetAccountingHistoryOrderStatus.Successed);
+                return new GetHistoryFollowSindateOutputData(historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetHistoryFollowSindateStatus.Successed);
             }
             finally
             {

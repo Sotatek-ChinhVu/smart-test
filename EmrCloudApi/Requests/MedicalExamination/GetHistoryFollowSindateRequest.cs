@@ -1,6 +1,6 @@
-﻿namespace EmrCloudApi.Requests.Accounting
+﻿namespace EmrCloudApi.Requests.MedicalExamination
 {
-    public class GetAccountingHistoryOrderRequest
+    public class GetHistoryFollowSindateRequest
     {
         public long PtId { get; set; }
 
