@@ -209,7 +209,6 @@ namespace Interactor.MedicalExamination
                         o.odrInfModel.CreateDate,
                         o.odrInfModel.CreateId,
                         o.odrInfModel.CreateName,
-                        o.odrInfModel.CreateName,
                         o.odrInfModel.IsDeleted
                     ))).ToList()
                     );
