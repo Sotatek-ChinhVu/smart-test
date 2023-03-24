@@ -2654,7 +2654,7 @@ namespace Infrastructure.Repositories
                                 checkingOdr.ChangeOdrKouiKbn(detail.SinKouiKbn);
                                 if (checkGroupOrder != null)
                                 {
-                                    result.Add(new(index, new(DeleteTypes.Deleted)));
+                                    result.Add(new(index, new OrdInfModel(DeleteTypes.Deleted)));
                                     detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
                                     result.Add(new(index, checkingOdr));
                                 }
@@ -2822,13 +2822,13 @@ namespace Infrastructure.Repositories
                                 );
 
                             result.Add(new(-1, odrInf));
-                            result.Add(new(index, new(DeleteTypes.Deleted)));
+                            result.Add(new(index, new OrdInfModel(DeleteTypes.Deleted)));
                         }
                     }
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
-                        result.Add(new(index, new(DeleteTypes.Deleted)));
+                        result.Add(new(index, new OrdInfModel(DeleteTypes.Deleted)));
                         result.Add(new(index, checkingOdr));
                     }
                     odrInfDetailIndex++;
