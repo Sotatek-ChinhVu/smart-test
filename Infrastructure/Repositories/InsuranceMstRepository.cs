@@ -515,7 +515,7 @@ namespace Infrastructure.Repositories
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
                     CreateId = userId,
-                    IsKigoNa = 0
+                    IsKigoNa = model.IsKigoNa
                 };
                 TrackingDataContext.HokensyaMsts.Add(create);
             }

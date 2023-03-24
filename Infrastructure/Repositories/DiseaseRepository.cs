@@ -256,7 +256,7 @@ namespace Infrastructure.Repositories
                         join byomeiMst in byomeiMsts
                         on byomeiSet.ByomeiCd equals byomeiMst.ByomeiCd into ps
                         from p in ps.DefaultIfEmpty()
-                        select new { byomeiSet = byomeiSet, byomeiMst = p };
+                        select new { byomeiSet = byomeiSet, byomeiMst = p ?? new ByomeiMst() };
 
             return query.Select(x => new ByomeiSetMstModel(x.byomeiSet.GenerationId,
                                                                 x.byomeiSet.SeqNo,
@@ -273,7 +273,9 @@ namespace Infrastructure.Repositories
                                                                 x.byomeiMst.Icd1022013 ?? string.Empty,
                                                                 x.byomeiSet.SetName ?? string.Empty,
                                                                 x.byomeiSet.IsTitle,
-                                                                x.byomeiSet.SelectType)).ToList();
+                                                                x.byomeiSet.SelectType,
+                                                                x.byomeiMst.DelDate,
+                                                                x.byomeiMst.Sbyomei ?? string.Empty)).ToList();
         }
 
         public void ReleaseResource()

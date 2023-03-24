@@ -2,7 +2,7 @@
 {
     public class ByomeiSetMstModel
     {
-        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType)
+        public ByomeiSetMstModel(int generationId, int seqNo, int level1, int level2, int level3, int level4, int level5, string byomeiCd, string byomeiName, string icd101, string icd102, string icd1012013, string icd1022013, string setName, int isTitle, int selectType, int delDate, string sbyomei)
         {
             GenerationId = generationId;
             SeqNo = seqNo;
@@ -20,6 +20,8 @@
             SetName = setName;
             IsTitle = isTitle;
             SelectType = selectType;
+            DelDate = delDate;
+            Sbyomei = sbyomei;
         }
 
         public int GenerationId { get; private set; }
@@ -53,6 +55,10 @@
         public int IsTitle { get; private set; }
 
         public int SelectType { get; private set; }
+
+        public int DelDate  { get; private set; }
+
+        public string Sbyomei  { get; private set; }
 
         public ByomeiType ByomeiKbn
         {
