@@ -2512,6 +2512,7 @@ namespace Infrastructure.Repositories
 
                                 string msg = stringBuilder.ToString();
                                 var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
+                                detail.ChangeSuryo(suryo);
                                 result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
                             }
                         }
