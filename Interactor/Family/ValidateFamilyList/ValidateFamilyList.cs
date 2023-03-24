@@ -127,12 +127,18 @@ public class ValidateFamilyList : IValidateFamilyList
             // validate ZokugaraCd, only validate with case family member is main ptId, consider input value then compare with data in database to validate
             if (familyItem.PtId == ptId)
             {
-                if (!dicZokugaraCd.Keys.Contains(familyItem.ZokugaraCd))
+                if (!dicZokugaraCd.ContainsKey(familyItem.ZokugaraCd))
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
-                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => (item.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
-                                                                            && item.ZokugaraCd.Equals(familyItem.ZokugaraCd)) + 1;
+                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => item.FamilyId != familyItem.FamilyId
+                                                                            && familyItem.FamilyId != 0
+                                                                            && item.ZokugaraCd.Equals(familyItem.ZokugaraCd))
+                                              + listFamily.Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
+                                                                         && familyItem.FamilyId == 0
+                                                                         && familyItem.FamilyPtId != item.FamilyPtId)
+                                              + 1;
+
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd])
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
