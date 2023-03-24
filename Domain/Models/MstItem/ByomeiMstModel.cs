@@ -2,7 +2,7 @@
 
 public class ByomeiMstModel
 {
-    public ByomeiMstModel(string byomeiCd, string byomei, string byomeiType, string sbyomei, string kanaName1, int sikanCd, string sikkan, string nanByo, string icd10, string icd102013, bool isAdopted)
+    public ByomeiMstModel(string byomeiCd, string byomei, string byomeiType, string sbyomei, string kanaName1, int sikanCd, string sikkan, string nanByo, string icd10, string icd102013, bool isAdopted, int nanbyoCd)
     {
         ByomeiCd = byomeiCd;
         Byomei = byomei;
@@ -21,6 +21,7 @@ public class ByomeiMstModel
         KanaName5 = string.Empty;
         KanaName6 = string.Empty;
         KanaName7 = string.Empty;
+        NanbyoCd = nanbyoCd;
     }
 
     public ByomeiMstModel(string byomeiCd, string byomeiType, string sbyomei, string kanaName1, string sikkan, string nanByo, string icd10, string icd102013, bool isAdopted, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7)
@@ -77,4 +78,6 @@ public class ByomeiMstModel
     public string Icd102013 { get; private set; }
 
     public bool IsAdopted { get; private set; }
+
+    public int NanbyoCd { get; private set; }
 }
