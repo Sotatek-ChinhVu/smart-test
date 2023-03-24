@@ -18,7 +18,7 @@ namespace Reporting.DrugInfo.DB
         public PathConf GetPathConf(int grpCode)
         {
             var pathConfs = _tenantNoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);
-            return pathConfs;
+            return pathConfs ?? new();
         }
 
         public DrugInfoModel GetBasicInfo(long ptId, int orderDate = 0)
@@ -39,7 +39,7 @@ namespace Reporting.DrugInfo.DB
             if (ptInfo != null)
             {
                 info.PtNo = ptInfo.PtNum;
-                info.PtName = ptInfo.Name;
+                info.PtName = ptInfo.Name ?? string.Empty;
                 info.Sex = ptInfo.Sex == 1 ? "M" : "F";
                 info.IntAge = (int)(info.OrderDate - ptInfo.Birthday) / 10000;
             }
