@@ -1,8 +1,6 @@
 ﻿using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.TodayOdr;
-using Entity.Tenant;
-using System.Linq;
 using UseCase.MedicalExamination.ConvertFromHistoryTodayOrder;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -45,7 +43,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InputNoData, new());
                 }
-                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select( item =>
+                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select(item =>
                         new OrdInfModel(
                         item.HpId,
                         item.RaiinNo,
@@ -65,7 +63,7 @@ namespace Interactor.MedicalExamination
                         item.SortNo,
                         0,
                         item.Id,
-                        item.OdrDetails.Select( itemDetail =>
+                        item.OdrDetails.Select(itemDetail =>
                                 new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
@@ -210,7 +208,8 @@ namespace Interactor.MedicalExamination
                         .ToList(),
                          o.CreateDate,
                          o.CreateId,
-                         o.CreateName
+                         o.CreateName,
+                         o.IsDeleted
                         )).ToList());
             }
             finally

@@ -2417,7 +2417,7 @@ namespace Infrastructure.Repositories
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
                                             countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
                                         }
@@ -2430,13 +2430,42 @@ namespace Infrastructure.Repositories
                                 {
                                     foreach (var itemDetail in item.OrdInfDetails)
                                     {
-                                        if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
+                                        if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
                                             countInCurrentOdr++;
                                         }
                                     }
                                 }
                             }
+
+                            var checkingOrders = addingOdrList.Where(a => a != checkingOdr).ToList();
+                            if (santeiCntCheck.CntType == 2)
+                            {
+                                foreach (var item in checkingOrders)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in checkingOrders)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (itemDetail.ItemCd == detail.ItemCd)
+                                        {
+                                            countInCurrentOdr++;
+                                        }
+                                    }
+                                }
+                            }
+
 
                             double totalSanteiCount = santeiCntInMonth + countInCurrentOdr;
 
@@ -2484,6 +2513,7 @@ namespace Infrastructure.Repositories
 
                                 string msg = stringBuilder.ToString();
                                 var suryo = santeiCntCheck.MaxCnt - totalSanteiCount;
+                                detail.ChangeSuryo(suryo);
                                 result.Add(new(2, msg, odrInfIndex, odrInfDetailIndex, new(), suryo));
                             }
                         }
@@ -2627,10 +2657,10 @@ namespace Infrastructure.Repositories
                                 if (checkGroupOrder != null)
                                 {
                                     result.Add(new(index, new(DeleteTypes.Deleted)));
+                                    detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
+                                    result.Add(new(index, checkingOdr));
                                 }
                             }
-                            detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                            result.Add(new(index, checkingOdr));
                         }
                         else
                         {
@@ -2800,6 +2830,7 @@ namespace Infrastructure.Repositories
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
+                        result.Add(new(index, new(DeleteTypes.Deleted)));
                         result.Add(new(index, checkingOdr));
                     }
                     odrInfDetailIndex++;
