@@ -191,7 +191,12 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                             detail.CmtName,
                             detail.CmtOpt,
                             detail.FontColor,
-                            detail.CommentNewline
+                            detail.CommentNewline,
+                            string.Empty,
+                            string.Empty,
+                            0,
+                            0,
+                            new()
                         )
                 ).ToList();
             var model = new SetOrderInfModel(

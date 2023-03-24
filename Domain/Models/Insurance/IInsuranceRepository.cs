@@ -23,8 +23,6 @@ namespace Domain.Models.Insurance
 
         List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate, bool isDeleted = false);
 
-        bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId);
-
         bool DeleteInsuranceScan(int hpId, long seqNo, int userId);
 
         bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid);
@@ -32,5 +30,7 @@ namespace Domain.Models.Insurance
         List<KohiPriorityModel> GetKohiPriorityList();
 
         List<InsuranceScanModel> GetListInsuranceScanByPtId(int hpId, long ptId);
+
+        int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId);
     }
 }

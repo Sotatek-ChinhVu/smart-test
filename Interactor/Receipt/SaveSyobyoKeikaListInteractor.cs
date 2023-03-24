@@ -64,6 +64,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
 
     private SaveSyobyoKeikaListStatus ValidateInput(SaveSyobyoKeikaListInputData inputData)
     {
+        var listHokenKbn = new List<int> { 11, 12, 13 };
         if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
             return SaveSyobyoKeikaListStatus.InvalidPtId;
@@ -72,7 +73,8 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.InvalidSinYm;
         }
-        else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
+        var hokenKbn = _insuranceRepository.GetHokenKbnByHokenId(inputData.HpId, inputData.HokenId, inputData.PtId);
+        if (inputData.HokenId < 0 || !listHokenKbn.Contains(hokenKbn))
         {
             return SaveSyobyoKeikaListStatus.InvalidHokenId;
         }
@@ -80,11 +82,15 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.Failed;
         }
-        else if (inputData.SyobyoKeikaList.Any(item => item.SinDay > 31 || item.SinDay < 1))
+        else if (hokenKbn == 13 && inputData.SyobyoKeikaList.Any(item => item.SinDay > 31 || item.SinDay < 1))
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
-        else if (inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
+        else if ((hokenKbn == 11 || hokenKbn == 12) && inputData.SyobyoKeikaList.Count > 1 && inputData.SyobyoKeikaList.Any(item => item.SinDay != 0))
+        {
+            return SaveSyobyoKeikaListStatus.InvalidSinDay;
+        }
+        else if ((hokenKbn == 13) && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.Keika == string.Empty))
         {
             return SaveSyobyoKeikaListStatus.InvalidKeika;
         }
@@ -97,7 +103,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
             return SaveSyobyoKeikaListStatus.InvalidSeqNo;
         }
         var sindayDBList = syobyoKeikaDBList.Select(item => item.SinDay);
-        if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && sindayDBList.Contains(item.SinDay)))
+        if (sindayDBList.Any() && inputData.SyobyoKeikaList.Any(item => !item.IsDeleted && item.SeqNo == 0 && sindayDBList.Contains(item.SinDay)))
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }

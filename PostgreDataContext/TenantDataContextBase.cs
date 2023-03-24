@@ -7,7 +7,6 @@ namespace PostgreDataContext
     public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
-
         public TenantDataContext(DbContextOptions options)
         : base(options)
         {
@@ -276,7 +275,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<SessionInf>().HasKey(e => new { e.HpId, e.Machine });
             modelBuilder.Entity<SetOdrInfCmt>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo, e.EdaNo });
             modelBuilder.Entity<SinKoui>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.RpNo, e.SeqNo });
-            modelBuilder.Entity<SinKouiCount>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo, e.SeqNo });
             modelBuilder.Entity<SinrekiFilterMst>().HasKey(e => new { e.HpId, e.GrpCd });
             modelBuilder.Entity<SinrekiFilterMstDetail>().HasKey(e => new { e.HpId, e.GrpCd, e.Id });
             modelBuilder.Entity<SinRpNoInf>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo });

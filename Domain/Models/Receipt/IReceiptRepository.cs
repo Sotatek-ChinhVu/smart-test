@@ -1,8 +1,9 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.ReceSeikyu;
+using Helper.Enum;
 
 namespace Domain.Models.Receipt;
 
@@ -11,6 +12,8 @@ public interface IReceiptRepository : IRepositoryBase
     List<ReceiptListModel> GetReceiptList(int hpId, int seikyuYm, ReceiptListAdvancedSearchInput searchModel);
 
     List<ReceCmtModel> GetReceCmtList(int hpId, int sinYm, long ptId, int hokenId);
+
+    List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId);
 
     bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList);
 
@@ -42,14 +45,30 @@ public interface IReceiptRepository : IRepositoryBase
 
     InsuranceReceInfModel GetInsuranceReceInfList(int hpId, int seikyuYm, int hokenId, int sinYm, long ptId);
 
+    bool SaveReceCheckOpt(int hpId, int userId, List<ReceCheckOptModel> receCheckOptList);
+
+    List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId);
+
+    ReceInfModel GetReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfPreEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0);
+
+    List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId);
+
+    bool SaveReceiptEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId, ReceiptEditModel model);
+
+    bool CheckExistReceiptEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId, int seqNo);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
-    List<SinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
+    List<ReceSinKouiCountModel> GetSinKouiCountList(int hpId, int sinYm, long ptId, int hokenId);
 
-    List<ReceCheckOptModel> GetReceCheckOptList(int hpId);
-
-    bool ClearReceCmtErr(int hpId, long ptId, int hokenId, int sinYm);
+    List<ReceCheckOptModel> GetReceCheckOptList(int hpId, List<string> errCdList);
 
     List<BuiOdrItemMstModel> GetBuiOdrItemMstList(int hpId);
 
@@ -72,5 +91,19 @@ public interface IReceiptRepository : IRepositoryBase
     List<CalcLogModel> GetAddtionItems(int hpId, long ptId, int sinYm, int hokenId);
 
     bool SaveNewReceCheckErrList(int hpId, int userId, List<ReceCheckErrModel> receCheckErrList);
+
+    List<SinKouiDetailModel> GetKouiDetailToCheckSantei(int hpId, List<long> ptIdList, int seikyuYm, List<string> zaiganIsoItemCds, bool isCheckPartOfNextMonth);
+
+    Dictionary<long, int> GetSanteiStartDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    Dictionary<long, int> GetSanteiEndDateList(int hpId, List<long> ptIdList, int seikyuYm);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByStartDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
+
+    List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
     #endregion
+
+    int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
+
+    void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos);
 }

@@ -73,7 +73,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
     {
         var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).ToList();
+        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;
@@ -113,22 +113,10 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
                 if (cmtInput.ItemCd != string.Empty)
                 {
                     return SaveReceCmtListStatus.InvalidItemCd;
-                }else if (cmtInput.CmtData != string.Empty)
+                }
+                else if (cmtInput.CmtData != string.Empty)
                 {
                     return SaveReceCmtListStatus.InvalidCmtData;
-                }
-                var cmtDB = listReceCmtDB.FirstOrDefault(item => item.CmtKbn == cmtInput.CmtKbn && item.CmtSbt == cmtInput.CmtSbt);
-                if (cmtDB == null)
-                {
-                    if (cmtInput.Id != 0)
-                    {
-                        return SaveReceCmtListStatus.InvalidReceCmtId;
-                    }
-                    continue;
-                }
-                if (cmtDB.Id != cmtInput.Id)
-                {
-                    return SaveReceCmtListStatus.InvalidReceCmtId;
                 }
                 continue;
             }

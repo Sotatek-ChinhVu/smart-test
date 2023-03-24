@@ -6,7 +6,7 @@ namespace Domain.Models.ReceSeikyu
 {
     public class ReceSeikyuModel
     {
-        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, string seikyuYmBinding, int seikyuKbn, int preHokenId, string cmt, bool isChecked, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
+        public ReceSeikyuModel(int sinDate, int hpId, long ptId, string ptName, int sinYm, int receListSinYm, int hokenId, string hokensyaNo, int seqNo, int seikyuYm, int seikyuKbn, int preHokenId, string cmt, long ptNum, int hokenKbn, string houbetu, int hokenStartDate, int hokenEndDate, bool isModified, int originSeikyuYm, int originSinYm, bool isAddNew , int isDeleted , bool isChecked, List<RecedenHenJiyuuModel> listRecedenHenJiyuuModel)
         {
             SinDay = sinDate;
             HpId = hpId;
@@ -18,11 +18,9 @@ namespace Domain.Models.ReceSeikyu
             HokensyaNo = hokensyaNo;
             SeqNo = seqNo;
             SeikyuYm = seikyuYm;
-            SeikyuYmBinding = seikyuYmBinding;
             SeikyuKbn = seikyuKbn;
             PreHokenId = preHokenId;
             Cmt = cmt;
-            IsChecked = isChecked;
             PtNum = ptNum;
             HokenKbn = hokenKbn;
             Houbetu = houbetu;
@@ -31,7 +29,24 @@ namespace Domain.Models.ReceSeikyu
             IsModified = isModified;
             OriginSeikyuYm = originSeikyuYm;
             OriginSinYm = originSinYm;
+            IsAddNew = isAddNew;
+            IsDeleted = isDeleted;
+            IsChecked = isChecked;
             ListRecedenHenJiyuuModel = listRecedenHenJiyuuModel;
+        }
+
+        public ReceSeikyuModel(long ptId, int sinYm, int hokenId, long ptNum, int seikyuKbn)
+        {
+            PtId = ptId;
+            PtName = string.Empty;
+            SinYm = sinYm;
+            HokenId = hokenId;
+            HokensyaNo = string.Empty;
+            SeikyuKbn = seikyuKbn;
+            Cmt = string.Empty;
+            PtNum = ptNum;
+            Houbetu = string.Empty;
+            ListRecedenHenJiyuuModel = new();
         }
 
         public int SinDay { get; private set; }
@@ -74,33 +89,6 @@ namespace Domain.Models.ReceSeikyu
         /// </summary>
         public int SeikyuYm { get; private set; }
 
-        public string SeikyuYmBinding
-        {
-            get
-            {
-                if (SeikyuYm == 999999 || SeikyuYm == 0)
-                {
-                    return string.Empty;
-                }
-                return CIUtil.SMonthToShowSMonth(SeikyuYm);
-            }
-            set
-            {
-                if (SeikyuYmBinding != value)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        SeikyuYm = 999999;
-                    }
-                    else
-                    {
-                        SeikyuYm = CIUtil.ShowSMonthToSMonth(value);
-                    }
-                    IsChecked = SeikyuYm != 0 && SeikyuYm != 999999;
-                }
-            }
-        }
-
         /// <summary>
         /// 請求区分
         /// 1:月遅れ 2:返戻 3:オンライン返戻
@@ -121,10 +109,31 @@ namespace Domain.Models.ReceSeikyu
 
         public bool CheckDefaultValue()
         {
-            return HpId == 0 && SinYm == 0 ;
+            return HpId == 0 && SinYm == 0;
         }
 
-        public bool IsChecked { get; private set; }
+        private bool _IsChecked;
+
+        public bool IsChecked
+        {
+            private set
+            {
+                _IsChecked = value;
+                if (!value)
+                {
+                    SeikyuYm = 999999;
+                }
+                else if (IsCompletedSeikyu)
+                {
+                    SeikyuYm = OriginSeikyuYm;
+                }
+                else if (SeikyuYm == 0 || SeikyuYm == 999999)
+                {
+                    SeikyuYm = ReceListSinYm;
+                }
+            }
+            get => _IsChecked;
+        }
 
         public bool IsEnableCheckBox
         {
@@ -165,7 +174,7 @@ namespace Domain.Models.ReceSeikyu
                     if (ListRecedenHenJiyuuModel != null && ListRecedenHenJiyuuModel.Any())
                     {
                         var model = ListRecedenHenJiyuuModel.FirstOrDefault();
-                        if(model is null) return string.Empty;
+                        if (model is null) return string.Empty;
                         else return model.HokenSentaku;
                     }
                     return string.Empty;
@@ -316,9 +325,29 @@ namespace Domain.Models.ReceSeikyu
 
         public int OriginSinYm { get; private set; }
 
+        public bool IsAddNew { get; private set; }
+
+        public int IsDeleted { get; private set; }
+
         public List<RecedenHenJiyuuModel> ListRecedenHenJiyuuModel { get; private set; }
 
         public bool IsDefaultValue => CheckDefaultValue();
 
+        public string SeikyuKbnDisplay
+        {
+            get => SeikyuKbns.ContainsKey(SeikyuKbn) ? SeikyuKbns[SeikyuKbn] : string.Empty;
+        }
+
+        private Dictionary<int, string> SeikyuKbns => new Dictionary<int, string>()
+        {
+            { 1,"月遅れ" },
+            { 2,"返戻" },
+            { 3,"電算返戻" }
+        };
+
+        public void SetSeikyuYm(int value)
+        {
+            this.SeikyuYm = value;
+        }
     }
 }

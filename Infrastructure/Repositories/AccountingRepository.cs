@@ -12,7 +12,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
@@ -1321,8 +1320,28 @@ namespace Infrastructure.Repositories
 
             return new();
         }
+        public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
+        {
+            return NoTrackingDataContext.JihiSbtMsts
+                .Where(item => item.HpId == hpId && item.IsDeleted == DeleteTypes.None)
+                .OrderBy(item => item.SortNo)
+                .Select(item => new JihiSbtMstModel(
+                                                    item.HpId,
+                                                    item.JihiSbt,
+                                                    item.SortNo,
+                                                    item.Name,
+                                                    item.IsDeleted))
+                .ToList();
+        }
 
-        public void CheckOrdInfInOutDrug(int hpId,long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
+        public int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos)
+        {
+            var kaikeis = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId && item.PtId == ptId && raiinNos.Contains(item.RaiinNo));
+
+            return kaikeis?.Sum(item => item.JihiOuttax) ?? 0;
+        }
+
+        public void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist)
         {
 
             inDrugExist = false;
@@ -1343,6 +1362,62 @@ namespace Infrastructure.Repositories
             {
                 outDrugExist = true;
             }
+        }
+
+        public byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var checkStatusRaiinNo = NoTrackingDataContext.RaiinInfs.Any(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && x.Status >= RaiinState.TempSave);
+
+            if (!checkStatusRaiinNo) return CIUtil.NoPaymentInfo;
+
+            int numberCheck = 0;
+
+            var isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
+
+            while (numberCheck < 50 && (isCompletedCalculation == CIUtil.NoPaymentInfo))
+            {
+                Thread.Sleep(100);
+                numberCheck++;
+                isCompletedCalculation = CheckCompletedCalculation(hpId, ptId, sinDate);
+            }
+
+            return isCompletedCalculation;
+        }
+
+        public byte CheckCompletedCalculation(int hpId, long ptId, int sinDate, int calcMode = 0)
+        {
+            List<CalcStatus> calcStatuses = NoTrackingDataContext.CalcStatus.Where(item =>
+                    item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate &&
+                    item.CalcMode == calcMode).ToList();
+
+            if (!calcStatuses.Any()) return CIUtil.Successed;
+
+            DateTime maxTime = calcStatuses.Select(c => c.CreateDate).DefaultIfEmpty(DateTime.MinValue).Max();
+
+            if (maxTime == DateTime.MinValue)
+                return CIUtil.TryAgainLater;
+
+            var listStatus = calcStatuses.Where(item => item.CreateDate == maxTime).ToList();
+
+            if (!listStatus.Any())
+                return CIUtil.NoPaymentInfo;
+
+            foreach (var item in listStatus)
+            {
+                if (item.Status != 8 && item.Status != 9)
+                    return CIUtil.NoPaymentInfo;
+            }
+
+            return CIUtil.Successed;
+        }
+
+        public bool CheckSyunoStatus(int hpId, long raiinNo, long ptId)
+        {
+            return NoTrackingDataContext.SyunoSeikyus.Any(x =>
+                                                            x.HpId == hpId &&
+                                                            x.PtId == ptId &&
+                                                            x.RaiinNo == raiinNo &&
+                                                            x.NyukinKbn <= 0);
         }
     }
 }

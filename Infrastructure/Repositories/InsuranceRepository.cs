@@ -163,8 +163,9 @@ namespace Infrastructure.Repositories
 
                 HokenMst? hokenMst = hokenMstList.FirstOrDefault(h => h.HokenNo == item.HokenNo
                                                                 && h.HokenEdaNo == item.HokenEdaNo
-                                                                && h.StartDate <= sinDate
-                                                                && sinDate <= h.EndDate);
+                                                                && (sinDate == 0
+                                                                    || (h.StartDate <= sinDate
+                                                                        && sinDate <= h.EndDate)));
                 if (hokenMst is null)
                 {
                     hokenMst = hokenMstList.Where(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo)
@@ -984,7 +985,7 @@ namespace Infrastructure.Repositories
 
                 return false;
             }
-            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate);
+            var hokenPatternModels = GetInsuranceList(hpId, ptId, sinDate).Where(i => i.StartDate <= sinDate && i.EndDate >= sinDate).ToList();
             var historyHokenPattern = hokenPatternModels.FirstOrDefault(p => p.HokenPid == historyPid);
             if (historyHokenPattern == null)
             {
@@ -999,7 +1000,7 @@ namespace Infrastructure.Repositories
             }
             else if (syosaisinHokenPattern?.HokenSbtCd >= 500)
             {
-                if (!(historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate))
+                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;
@@ -1031,7 +1032,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                if (!(historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate))
+                if (historyHokenPattern.StartDate <= sinDate && historyHokenPattern.EndDate >= sinDate)
                 {
                     // ① 履歴のPIDが有効な保険パターンの場合は、履歴と同じPID
                     return historyHokenPattern.HokenPid;
@@ -1473,36 +1474,6 @@ namespace Infrastructure.Repositories
             return new HokenMstModel();
         }
 
-        public bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId)
-        {
-            var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == insuranceScan.HpId
-                                                                       && x.PtId == insuranceScan.PtId
-                                                                       && x.HokenGrp == insuranceScan.HokenGrp
-                                                                       && x.HokenId == insuranceScan.HokenId
-                                                                       && x.IsDeleted == DeleteStatus.None);
-            if (model is null)
-            {
-                TrackingDataContext.Add(new PtHokenScan()
-                {
-                    PtId = insuranceScan.PtId,
-                    HpId = insuranceScan.HpId,
-                    HokenGrp = insuranceScan.HokenGrp,
-                    HokenId = insuranceScan.HokenId,
-                    FileName = insuranceScan.FileName,
-                    IsDeleted = DeleteStatus.None,
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    CreateId = userId
-                });
-            }
-            else
-            {
-                model.FileName = insuranceScan.FileName;
-                model.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                model.UpdateId = userId;
-            }
-            return TrackingDataContext.SaveChanges() > 0;
-        }
-
         public bool DeleteInsuranceScan(int hpId, long seqNo, int userId)
         {
             var model = TrackingDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == hpId && x.SeqNo == seqNo && x.IsDeleted == DeleteStatus.None);
@@ -1540,22 +1511,29 @@ namespace Infrastructure.Repositories
         {
             Stream nullMemory = Stream.Null;
             var datas = NoTrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
-            if(datas.Any())
+            if (datas.Any())
             {
                 return datas.Select(x => new InsuranceScanModel(
-                                    x.HpId, 
-                                    x.PtId, 
+                                    x.HpId,
+                                    x.PtId,
                                     x.SeqNo,
                                     x.HokenGrp,
                                     x.HokenId,
-                                    x.FileName ?? string.Empty, 
-                                    nullMemory, 
-                                    x.IsDeleted)).ToList();
-            }   
+                                    x.FileName ?? string.Empty,
+                                    nullMemory,
+                                    x.IsDeleted,
+                                    x.UpdateDate.ToString("yyyy/MM/dd HH:mm") + " 更新")).ToList();
+            }
             else
             {
                 return new List<InsuranceScanModel>();
             }
+        }
+
+        public int GetHokenKbnByHokenId(int hpId, int hokenId, long ptId)
+        {
+            var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+            return ptHokenInf?.HokenKbn ?? 0;
         }
     }
 }

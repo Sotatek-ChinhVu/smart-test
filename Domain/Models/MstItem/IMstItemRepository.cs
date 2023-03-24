@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.FlowSheet;
 
 namespace Domain.Models.MstItem
 {
@@ -12,7 +13,7 @@ namespace Domain.Models.MstItem
 
         (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize);
 
-        (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem);
+        (List<TenItemModel> tenItemModels, int totalCount) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem, byte searchFollowUsage, List<int> KouiKbns);
 
         TenItemModel GetTenMst(int hpId, int sinDate, string itemCd);
 
@@ -53,5 +54,14 @@ namespace Domain.Models.MstItem
         List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
 
         List<string> GetListSanteiByomeis(int hpId, long ptId, int sinDate, int hokenPid);
+
+        //Key of Dictionary is itemCd
+        Dictionary<string, (int sinkouiKbn, string itemName, List<TenItemModel>)> GetConversionItem(List<(string itemCd, int sinKouiKbn, string itemName)> expiredItems, int sinDate, int hpId);
+
+        bool ExceConversionItem(int hpId, int userId, Dictionary<string, List<TenItemModel>> values);
+
+        List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
+
+        List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate);
     }
 }

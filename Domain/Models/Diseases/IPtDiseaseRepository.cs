@@ -14,5 +14,7 @@ namespace Domain.Models.Diseases
         List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId);
 
         List<ByomeiSetMstModel> GetDataTreeSetByomei(int hpId, int sinDate);
+
+        List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds);
     }
 }

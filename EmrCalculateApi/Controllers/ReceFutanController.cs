@@ -1,6 +1,6 @@
 ﻿using EmrCalculateApi.Interface;
 using EmrCalculateApi.Requests;
-using Microsoft.AspNetCore.Http;
+using EmrCalculateApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCalculateApi.Controllers
@@ -16,8 +16,8 @@ namespace EmrCalculateApi.Controllers
             _receFutanCalculate = receFutanCalculate;
         }
 
-        [HttpPost("RunReceFutanCalculate")]
-        public ActionResult RunCalculateReceFutan([FromBody] ReceCalculateRequest calculateRequest)
+        [HttpPost("ReceFutanCalculateMain")]
+        public ActionResult ReceFutanCalculateMain([FromBody] ReceCalculateRequest calculateRequest)
         {
             _receFutanCalculate.ReceFutanCalculateMain
             (
@@ -25,6 +25,14 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.SeikyuYm
             );
             return Ok();
+        }
+
+        [HttpPost("GetListReceInf")]
+        public ActionResult<GetListReceInfResponse> GetListReceInf([FromBody] GetListReceInfRequest request)
+        {
+            var response = _receFutanCalculate.KaikeiTotalCalculate(request.PtId, request.SinYm);
+
+            return new ActionResult<GetListReceInfResponse>(new GetListReceInfResponse(response));
         }
     }
 }
