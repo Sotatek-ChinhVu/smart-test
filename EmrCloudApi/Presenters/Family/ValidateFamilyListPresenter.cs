@@ -2,17 +2,17 @@
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Family;
 using UseCase.Family;
-using UseCase.Family.SaveFamilyList;
+using UseCase.Family.ValidateFamilyList;
 
 namespace EmrCloudApi.Presenters.Family;
 
-public class SaveFamilyListPresenter : ISaveFamilyListOutputPort
+public class ValidateFamilyListPresenter : IValidateFamilyListOutputPort
 {
-    public Response<SaveFamilyListResponse> Result { get; private set; } = new();
+    public Response<ValidateFamilyListResponse> Result { get; private set; } = new();
 
-    public void Complete(SaveFamilyListOutputData output)
+    public void Complete(ValidateFamilyListOutputData output)
     {
-        Result.Data = new SaveFamilyListResponse(output.Status == ValidateFamilyListStatus.Successed);
+        Result.Data = new ValidateFamilyListResponse(output.Status == ValidateFamilyListStatus.Successed);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
@@ -39,6 +39,8 @@ public class SaveFamilyListPresenter : ISaveFamilyListOutputPort
         ValidateFamilyListStatus.InvalidByomei => ResponseMessage.InvalidByomei,
         ValidateFamilyListStatus.InvalidCmt => ResponseMessage.InvalidFamilyCmt,
         ValidateFamilyListStatus.DuplicateFamily => ResponseMessage.DuplicateFamily,
+        ValidateFamilyListStatus.InvalidNameMaxLength => ResponseMessage.InvalidNameMaxLength,
+        ValidateFamilyListStatus.InvalidKanaNameMaxLength => ResponseMessage.InvalidKanaNameMaxLength,
         _ => string.Empty
     };
 }

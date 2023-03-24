@@ -19,6 +19,21 @@ public class ReceCmtItem
         IsDeleted = false;
     }
 
+    public ReceCmtItem(ReceCmtModel model, bool isDeleted)
+    {
+        Id = model.Id;
+        PtId = model.PtId;
+        SeqNo = model.SeqNo;
+        SinYm = model.SinYm;
+        HokenId = model.HokenId;
+        CmtKbn = model.CmtKbn;
+        CmtSbt = model.CmtSbt;
+        Cmt = model.Cmt;
+        CmtData = model.CmtData;
+        ItemCd = model.ItemCd;
+        IsDeleted = isDeleted;
+    }
+
     public ReceCmtItem(long id, int seqNo, int cmtKbn, int cmtSbt, string cmt, string cmtData, string itemCd, bool isDeleted)
     {
         Id = id;

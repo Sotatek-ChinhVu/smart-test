@@ -242,6 +242,7 @@
         public const string GetGroupNameMst = "GetGroupNameMst";
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+        public const string ValidateFamilyList = "ValidateFamilyList";
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";

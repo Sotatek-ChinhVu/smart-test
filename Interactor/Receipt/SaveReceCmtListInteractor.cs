@@ -2,6 +2,7 @@
 using Domain.Models.MstItem;
 using Domain.Models.PatientInfor;
 using Domain.Models.Receipt;
+using Helper.Constants;
 using UseCase.Receipt;
 using UseCase.Receipt.SaveListReceCmt;
 
@@ -26,11 +27,31 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
     {
         try
         {
-            var responseValidate = ValidateInput(inputData);
+            var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
+            var responseValidate = ValidateInput(inputData, listReceCmtDB);
             if (responseValidate != SaveReceCmtListStatus.ValidateSuccess)
             {
                 return new SaveReceCmtListOutputData(responseValidate);
             }
+
+            var isHaveHeaderFreeCmt = inputData.ReceCmtList.Any(item => item.CmtKbn == ReceCmtKbn.Header && item.CmtSbt == ReceCmtSbt.FreeCmt);
+            var isHaveFooterFreeCmt = inputData.ReceCmtList.Any(item => item.CmtKbn == ReceCmtKbn.Footer && item.CmtSbt == ReceCmtSbt.FreeCmt);
+            if (isHaveHeaderFreeCmt)
+            {
+                var receCmtDeletedList = listReceCmtDB.Where(item => item.CmtKbn == ReceCmtKbn.Header && item.CmtSbt == ReceCmtSbt.FreeCmt)
+                                                      .Select(item => new ReceCmtItem(item, true))
+                                                      .ToList();
+                inputData.ReceCmtList.AddRange(receCmtDeletedList);
+            }
+
+            if (isHaveFooterFreeCmt)
+            {
+                var receCmtDeletedList = listReceCmtDB.Where(item => item.CmtKbn == ReceCmtKbn.Footer && item.CmtSbt == ReceCmtSbt.FreeCmt)
+                                                      .Select(item => new ReceCmtItem(item, true))
+                                                      .ToList();
+                inputData.ReceCmtList.AddRange(receCmtDeletedList);
+            }
+            
             var listReceCmtModel = inputData.ReceCmtList.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                         .ToList();
 
@@ -49,7 +70,7 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         }
     }
 
-    private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData)
+    private SaveReceCmtListStatus ValidateInput(SaveReceCmtListInputData inputData, List<ReceCmtModel> listReceCmtDB)
     {
         if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistIdList(new List<long>() { inputData.PtId }))
         {
@@ -67,13 +88,12 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         {
             return SaveReceCmtListStatus.Failed;
         }
-        return ValidateReceCmtItem(inputData);
+        return ValidateReceCmtItem(inputData, listReceCmtDB);
     }
 
-    private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData)
+    private SaveReceCmtListStatus ValidateReceCmtItem(SaveReceCmtListInputData inputData, List<ReceCmtModel> listReceCmtDB)
     {
-        var listReceCmtDB = _receiptRepository.GetReceCmtList(inputData.HpId, inputData.SinYm, inputData.PtId, inputData.HokenId);
-        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).ToList();
+        var listItemCds = inputData.ReceCmtList.Where(item => item.ItemCd != string.Empty).Select(item => item.ItemCd.Trim()).Distinct().ToList();
         if (listItemCds.Any() && _mstItemRepository.GetCheckItemCds(listItemCds).Count != listItemCds.Count)
         {
             return SaveReceCmtListStatus.InvalidItemCd;
