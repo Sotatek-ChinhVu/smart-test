@@ -116,7 +116,10 @@ public class ValidateFamilyList : IValidateFamilyList
             if (onlyFamlilyList.Any(item => (familyItem.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
                                             && item.PtId == familyItem.PtId
                                             && item.FamilyPtId != 0
-                                            && item.FamilyPtId == familyItem.FamilyPtId))
+                                            && item.FamilyPtId == familyItem.FamilyPtId)
+                || listFamily.Count(item => item.PtId == familyItem.PtId
+                                            && item.FamilyPtId != 0
+                                            && item.FamilyPtId == familyItem.FamilyPtId) > 1)
             {
                 return ValidateFamilyListStatus.DuplicateFamily;
             }
