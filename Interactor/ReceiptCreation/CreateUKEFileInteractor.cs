@@ -157,7 +157,7 @@ namespace Interactor.ReceiptCreation
                     }
 
                     if(ukeFiles.Any())
-                        return new CreateUKEFileOutputData(CreateUKEFileStatus.Successulf, "ファイルを保存しました。", TypeMessage.TypeMessageSuccess, ukeFiles);
+                        return new CreateUKEFileOutputData(CreateUKEFileStatus.Successful, "ファイルを保存しました。", TypeMessage.TypeMessageSuccess, ukeFiles);
                     else
                         return new CreateUKEFileOutputData(CreateUKEFileStatus.Failed, string.Empty, TypeMessage.TypeMessageError, ukeFiles);
                 }

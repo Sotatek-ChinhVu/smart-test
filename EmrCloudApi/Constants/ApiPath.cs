@@ -256,5 +256,8 @@
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
+
+        //ReceiptCreation
+        public const string CreateUKEFile = "CreateUKEFile";
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum CreateUKEFileStatus
     {
-        Successulf,
+        Successful,
         Failed,
         NoData,
         InvalidHpId,
