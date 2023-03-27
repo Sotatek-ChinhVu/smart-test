@@ -413,6 +413,8 @@ using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.MedicalExamination.SaveMedical;
 using Domain.Models.Medical;
+using UseCase.MedicalExamination.GetOrderSheetGroup;
+using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -667,6 +669,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
             busBuilder.RegisterUseCase<CalculateInputData, CalculateInteractor>();
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
+            busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
+            busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

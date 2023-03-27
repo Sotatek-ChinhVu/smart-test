@@ -17,5 +17,7 @@ namespace Domain.Models.HistoryOrder
         long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted);
 
         List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiinNo);
+
+        (int totalCount, List<HistoryOrderModel> historyOrderModels) GetOrdersForOneOrderSheetGroup(int hpId, long ptId, int odrKouiKbn, int grpKouiKbn, int sinDate, int offset, int limit);
     }
 }

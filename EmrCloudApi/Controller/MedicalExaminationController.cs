@@ -20,6 +20,8 @@ using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
+using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
+using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
@@ -507,6 +509,26 @@ namespace EmrCloudApi.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetHistoryFollowSindateResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetOrderSheetGroup)]
+        public ActionResult<Response<GetOrderSheetGroupResponse>> GetOrderSheetGroup([FromQuery] GetOrderSheetGroupRequest request)
+        {
+            var input = new GetOrderSheetGroupInputData(HpId, UserId, request.PtId, request.SelectDefOnLoad);
+            var output = _bus.Handle(input);
+            var presenter = new GetOrderSheetGroupPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetOrderSheetGroupResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetOrdersForOneOrderSheetGroup)]
+        public ActionResult<Response<GetOrdersForOneOrderSheetGroupResponse>> GetOrdersForOneOrderSheetGroup([FromQuery] GetOrdersForOneOrderSheetGroupRequest request)
+        {
+            var input = new GetOrdersForOneOrderSheetGroupInputData(request.PtId, HpId, request.SinDate, request.OdrKouiKbn, request.GrpKouiKbn, request.Offset, request.Limit);
+            var output = _bus.Handle(input);
+            var presenter = new GetOrdersForOneOrderSheetGroupPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetOrdersForOneOrderSheetGroupResponse>>(presenter.Result);
         }
     }
 }

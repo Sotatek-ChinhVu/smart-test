@@ -171,6 +171,8 @@
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
         public const string Calculate = "Calculate";
         public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
+        public const string GetOrderSheetGroup = "GetOrderSheetGroup";
+        public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
