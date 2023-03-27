@@ -85,9 +85,9 @@ namespace EmrCloudApi.Services
                     return new();
 
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
-                return result;
+                return result ?? new();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Function GetSinMeiList " + ex);
                 return new();
@@ -121,7 +121,7 @@ namespace EmrCloudApi.Services
                     return new();
 
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
-                return result;
+                return result ?? new();
             }
             catch (Exception)
             {
