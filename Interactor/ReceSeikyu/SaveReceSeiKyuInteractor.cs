@@ -982,7 +982,7 @@ namespace Interactor.ReceSeikyu
                     {
                         if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 0)
                         {
-                            if (PtDiseaseModels.Any(p => buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                            if (PtDiseaseModels.Any(p => buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                             {
                                 hasError = false;
                                 break;
@@ -991,7 +991,7 @@ namespace Interactor.ReceSeikyu
                         else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 1)
                         {
                             if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right) ||
-                                p.ByomeiHankToZen.ToString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                                p.ByomeiHankToZen.ToString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                             {
                                 hasError = false;
                                 break;
@@ -1000,14 +1000,14 @@ namespace Interactor.ReceSeikyu
                         else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 0)
                         {
                             if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right))
-                                && !p.ByomeiHankToZen.ToString().Contains(_leftRight) && !p.ByomeiHankToZen.ToString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                                && !p.ByomeiHankToZen.ToString().Contains(_leftRight) && !p.ByomeiHankToZen.ToString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                             {
                                 hasError = false;
                                 break;
                             }
                         }
                         else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1 && PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_both) || p.ByomeiHankToZen.ToString().Contains(_leftRight) || p.ByomeiHankToZen.ToString().Contains(_rightLeft))
-                                && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                                && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -1084,7 +1084,7 @@ namespace Interactor.ReceSeikyu
                     List<BuiOdrMstModel> buiOdrMstCheckList = new();
                     List<BuiOdrMstModel> filteredBuiOdrMsts = new();
                     string compareName = IsSpecialComment(detail) ? detail.ItemName.Replace(detail.CmtName, "") : detail.ItemName;
-                    compareName = HenkanJ.HankToZen(compareName);
+                    compareName = HenkanJ.Instance.ToFullsize(compareName);
                     List<BuiOdrMstModel> buiOdrMstContainItemNames = new();
                     foreach (var buiOdrMst in buiOdrMstList)
                     {
@@ -1115,7 +1115,7 @@ namespace Interactor.ReceSeikyu
                         {
                             odrBuiPatterns.Add(buiOdrMst.OdrBui);
                         }
-                        var ptByomeiAdd = odrBuiPatterns.FirstOrDefault(pattern => compareName.Contains(HenkanJ.HankToZen(pattern)));
+                        var ptByomeiAdd = odrBuiPatterns.FirstOrDefault(pattern => compareName.Contains(HenkanJ.Instance.ToFullsize(pattern)));
                         if (ptByomeiAdd != null)
                         {
                             buiOdrMstContainItemNames.Add(buiOdrMst);
@@ -1163,7 +1163,7 @@ namespace Interactor.ReceSeikyu
                         List<PtDiseaseModel> ptByomeisContainByomeiBui = new();
                         foreach (var ptByomei in ptByomeiList)
                         {
-                            var ptByomeiAdd = filteredBuiOdrByomeiMsts.FirstOrDefault(mst => HenkanJ.HankToZen(ptByomei.Byomei).Contains(HenkanJ.HankToZen(mst.ByomeiBui)));
+                            var ptByomeiAdd = filteredBuiOdrByomeiMsts.FirstOrDefault(mst => HenkanJ.Instance.ToFullsize(ptByomei.Byomei).Contains(HenkanJ.Instance.ToFullsize(mst.ByomeiBui)));
                             if (ptByomeiAdd != null)
                             {
                                 ptByomeisContainByomeiBui.Add(ptByomei);
@@ -1171,7 +1171,7 @@ namespace Interactor.ReceSeikyu
                         }
                         foreach (var ptByomei in ptByomeisContainByomeiBui)
                         {
-                            isValid = ValidateByomeiReflectOdrSite(compareName, HenkanJ.HankToZen(ptByomei.Byomei), buiOdrMst.LrKbn, buiOdrMst.BothKbn);
+                            isValid = ValidateByomeiReflectOdrSite(compareName, HenkanJ.Instance.ToFullsize(ptByomei.Byomei), buiOdrMst.LrKbn, buiOdrMst.BothKbn);
                             if (isValid) break;
                         }
                         if (!isValid)
