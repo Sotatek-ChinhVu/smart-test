@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Accounting.GetHistoryOrder
+namespace UseCase.MedicalExamination.GetHistoryFollowSindate
 {
-    public class GetAccountingHistoryOrderInputData : IInputData<GetAccountingHistoryOrderOutputData>
+    public class GetHistoryFollowSindateInputData : IInputData<GetHistoryFollowSindateOutputData>
     {
-        public GetAccountingHistoryOrderInputData(long ptId, int hpId, int userId, int sinDate, int deleteConditon, long raiinNo)
+        public GetHistoryFollowSindateInputData(long ptId, int hpId, int userId, int sinDate, int deleteConditon, long raiinNo)
         {
             PtId = ptId;
             HpId = hpId;

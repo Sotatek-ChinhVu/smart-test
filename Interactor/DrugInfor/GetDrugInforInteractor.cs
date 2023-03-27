@@ -135,7 +135,7 @@ namespace Interactor.DrugInfor
                 defaultImgPic = _configuration["DefaultImageDrugEmpty"];
             }
 
-            return defaultImgPic;
+            return defaultImgPic ?? string.Empty;
         }
     }
 }

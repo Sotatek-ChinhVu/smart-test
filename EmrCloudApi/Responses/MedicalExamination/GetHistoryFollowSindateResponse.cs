@@ -1,10 +1,10 @@
 ﻿using UseCase.MedicalExamination.GetHistory;
 
-namespace EmrCloudApi.Responses.Accounting
+namespace EmrCloudApi.Responses.MedicalExamination
 {
-    public class GetAccountingHistoryOrderResponse
+    public class GetHistoryFollowSindateResponse
     {
-        public GetAccountingHistoryOrderResponse(List<HistoryKarteOdrRaiinItem> raiinfList)
+        public GetHistoryFollowSindateResponse(List<HistoryKarteOdrRaiinItem> raiinfList)
         {
             RaiinfList = raiinfList;
         }
