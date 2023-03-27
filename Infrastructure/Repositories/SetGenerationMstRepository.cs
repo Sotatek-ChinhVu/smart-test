@@ -32,7 +32,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetGenerationMstModel> setGenerationMstList))
+            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetGenerationMstModel>? setGenerationMstList))
             {
                 setGenerationMstList = ReloadCache();
             }

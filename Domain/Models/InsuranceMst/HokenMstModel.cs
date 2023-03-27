@@ -74,6 +74,11 @@ namespace Domain.Models.InsuranceMst
         {
             IsLimitList = isLimitList;
             MonthLimitCount = monthLimitCount;
+            HokenSName = string.Empty;
+            Houbetu = string.Empty;
+            HokenName = string.Empty;
+            HokenNameCd = string.Empty;
+            PrefactureName = string.Empty;
         }
 
         public int FutanKbn { get; private set; }

@@ -268,7 +268,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         var santeiInfs = NoTrackingDataContext.SanteiInfs.Where(u => u.HpId == hpId &&
                                                                                      (u.PtId == ptId || u.PtId == 0) &&
                                                                                      u.AlertDays > 0 &&
-                                                                                     listAletTermIsValid.Contains(u.AlertTerm)).GroupBy(u => u.ItemCd).Select(x => x.OrderBy(t => t.PtId).FirstOrDefault()).ToList();
+                                                                                     listAletTermIsValid.Contains(u.AlertTerm)).GroupBy(u => u.ItemCd).Select(x => x.OrderBy(t => t.PtId).FirstOrDefault() ?? new()).ToList();
         var itemCdOfSanteiInfs = santeiInfs.Select(s => s.ItemCd).Distinct().ToList();
         var santeiInfDetails = NoTrackingDataContext.SanteiInfDetails.Where(u => u.HpId == hpId &&
                                                                                                  u.PtId == ptId &&
