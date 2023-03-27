@@ -28,8 +28,8 @@ namespace EmrCloudApi.Services
                 if (result.IsSuccessStatusCode)
                 {
                     string resultContentStr = await result.Content.ReadAsStringAsync();
-                    T resultContent = JsonConvert.DeserializeObject<T>(resultContentStr);
-                    return new CalcultateCustomerResponse<T>(resultContent, result.StatusCode);
+                    var resultContent = JsonConvert.DeserializeObject<T>(resultContentStr);
+                    return new CalcultateCustomerResponse<T>(resultContent ?? Activator.CreateInstance<T>(), result.StatusCode);
                 }
                 else return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), result.StatusCode);
             }
