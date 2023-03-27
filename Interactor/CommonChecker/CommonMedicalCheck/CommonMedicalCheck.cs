@@ -471,28 +471,28 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             switch (errorInfo.CheckerType)
             {
                 case RealtimeCheckerType.DrugAllergy:
-                    List<DrugAllergyResultModel> drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel> ?? new();
+                    List<DrugAllergyResultModel>? drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel>;
                     if (drugAllergyInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(drugAllergyInfo));
                     }
                     break;
                 case RealtimeCheckerType.FoodAllergy:
-                    List<FoodAllergyResultModel> foodAllergyInfo = errorInfo.ErrorInfo as List<FoodAllergyResultModel> ?? new();
+                    List<FoodAllergyResultModel>? foodAllergyInfo = errorInfo.ErrorInfo as List<FoodAllergyResultModel>;
                     if (foodAllergyInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForFoodAllergy(foodAllergyInfo));
                     }
                     break;
                 case RealtimeCheckerType.Age:
-                    List<AgeResultModel> ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel> ?? new();
+                    List<AgeResultModel>? ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel>;
                     if (ageErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForAge(ageErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Disease:
-                    List<DiseaseResultModel> diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel> ?? new();
+                    List<DiseaseResultModel>? diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel>;
                     if (diseaseErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDisease(diseaseErrorInfo));
@@ -502,35 +502,35 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 case RealtimeCheckerType.KinkiTain:
                 case RealtimeCheckerType.KinkiOTC:
                 case RealtimeCheckerType.KinkiSupplement:
-                    List<KinkiResultModel> kinkiErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel> ?? new();
+                    List<KinkiResultModel>? kinkiErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
                     if (kinkiErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForKinki(errorInfo.CheckerType, kinkiErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.KinkiUser:
-                    List<KinkiResultModel> kinkiUserErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel> ?? new();
+                    List<KinkiResultModel>? kinkiUserErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
                     if (kinkiUserErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForKinkiUser(kinkiUserErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Days:
-                    List<DayLimitResultModel> dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel> ?? new();
+                    List<DayLimitResultModel>? dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel>;
                     if (dayLimitErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDayLimit(dayLimitErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Dosage:
-                    List<DosageResultModel> dosageErrorInfo = errorInfo.ErrorInfo as List<DosageResultModel> ?? new();
+                    List<DosageResultModel>? dosageErrorInfo = errorInfo.ErrorInfo as List<DosageResultModel>;
                     if (dosageErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDosage(dosageErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Duplication:
-                    List<DuplicationResultModel> duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel> ?? new();
+                    List<DuplicationResultModel>? duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel>;
                     if (duplicationErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDuplication(duplicationErrorInfo));
