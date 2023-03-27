@@ -415,6 +415,7 @@ using UseCase.MedicalExamination.SaveMedical;
 using Domain.Models.Medical;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
+using UseCase.PatientInfor.GetTokiMstList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -621,6 +622,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
             busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
+            busBuilder.RegisterUseCase<GetTokkiMstListInputData, GetTokkiMstListInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
