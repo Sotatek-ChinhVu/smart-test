@@ -131,7 +131,7 @@ namespace Infrastructure.Repositories
 
             if (raiinInf != null)
             {
-                raiinInf.Status = status != 0 ? 7 : 0; // temperaror with status 7
+                raiinInf.Status = status != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;

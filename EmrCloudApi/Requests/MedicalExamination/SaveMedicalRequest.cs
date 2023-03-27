@@ -25,6 +25,8 @@ public class SaveMedicalRequest
 
     public string SinEndTime { get; set; } = string.Empty;
 
+    public byte Status { get; set; }
+
     public List<OdrInfItem> OdrInfs { get; set; } = new();
 
     public KarteItem KarteItem { get; set; } = new();
