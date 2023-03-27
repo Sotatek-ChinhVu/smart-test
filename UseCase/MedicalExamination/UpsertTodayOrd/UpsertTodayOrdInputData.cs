@@ -31,6 +31,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public string SinStartTime { get; private set; }
         public string SinEndTime { get; private set; }
         public int UserId { get; private set; }
+        public byte Status { get; private set; }
         public List<OdrInfItemInputData> OdrItems { get; private set; }
         public KarteItemInputData KarteInf { get; private set; }
         public FileItemInputItem FileItem { get; private set; }
