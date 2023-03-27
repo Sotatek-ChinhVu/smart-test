@@ -84,6 +84,7 @@
         public const string GetListPatient = "GetListPatient";
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
+        public const string GetTokkiMstList = "GetTokkiMstList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
