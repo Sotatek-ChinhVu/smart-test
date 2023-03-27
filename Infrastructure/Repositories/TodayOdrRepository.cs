@@ -986,7 +986,6 @@ namespace Infrastructure.Repositories
 
         public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double>> currentOdrList)
         {
-            List<OrdInfModel> autoAddOdr = new();
             var itemCds = new List<string>();
             var autoItems = new List<(int, int, List<Tuple<string, string, long>>)>();
             var itemCdAutos = new List<string>();
@@ -1074,7 +1073,7 @@ namespace Infrastructure.Repositories
                             continue;
                         }
 
-                        double countInAutoAdd = autoAddOdr.Count();
+                        double countInAutoAdd = autoItems.Count();
                         if (totalSanteiCount + countInAutoAdd >= santeiAutoOrder.MaxCnt)
                         {
                             continue;
