@@ -134,11 +134,11 @@ using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.UserConf;
 using Interactor.VisitingList;
+using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Reporting;
 using Reporting.Interface;
-using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -146,7 +146,6 @@ using UseCase.Accounting.CheckOpenAccounting;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
-using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
@@ -239,6 +238,7 @@ using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
@@ -285,6 +285,7 @@ using UseCase.PatientInfor.Save;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PtGroupMst.CheckAllowDelete;
@@ -298,23 +299,33 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
+using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.Recalculation;
 using UseCase.Receipt.ReceCmtHistory;
-using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Receipt.ReceiptEdit;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
+using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
@@ -332,6 +343,8 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.ReceSeikyu.GetList;
+using UseCase.ReceSeikyu.Save;
+using UseCase.ReceSeikyu.SearchReceInf;
 using UseCase.Santei.GetListSanteiInf;
 using UseCase.Santei.SaveListSanteiInf;
 using UseCase.Schema.GetListImageTemplates;
@@ -376,6 +389,7 @@ using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.WeightedSetConfirmation.CheckOpen;
 using UseCase.YohoSetMst.GetByItemCd;
 using GetDefaultSelectedTimeInputDataOfMedical = UseCase.MedicalExamination.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
 using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultSelectedTime.GetDefaultSelectedTimeInputData;
@@ -384,10 +398,21 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.ReceSeikyu.SearchReceInf;
+using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
+using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.WeightedSetConfirmation.CheckOpen;
+using Interactor.WeightedSetConfirmation;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
+using Interactor.Family.ValidateFamilyList;
+using UseCase.Family.ValidateFamilyList;
+using UseCase.MedicalExamination.SaveMedical;
+using Domain.Models.Medical;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 
@@ -432,6 +457,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
+            services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -512,6 +538,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
+            services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
+            services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -554,6 +582,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
             busBuilder.RegisterUseCase<InitDoctorComboInputData, InitDoctorComboInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfFamily, GetListRaiinInfInteractorOfFamily>();
+            busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
+            busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -590,6 +620,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOrderCheckerInputData, CommonCheckerInteractor>();
             busBuilder.RegisterUseCase<GetListPatientInfoInputData, GetListPatientInfoInteractor>();
             busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -633,9 +664,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMaxAuditTrailLogDateForPrintInputData, GetMaxAuditTrailLogDateForPrintInteractor>();
             busBuilder.RegisterUseCase<CheckedExpiredInputData, CheckedExpiredInteractor>();
             busBuilder.RegisterUseCase<ConvertFromHistoryTodayOrderInputData, ConvertFromHistoryToTodayOdrInteractor>();
+            busBuilder.RegisterUseCase<SaveMedicalInputData, SaveMedicalInteractor>();
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
             busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
             busBuilder.RegisterUseCase<CalculateInputData, CalculateInteractor>();
+            busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
 
@@ -791,7 +824,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetWarningMemoInputData, GetWarningMemoInteractor>();
             busBuilder.RegisterUseCase<GetPtByoMeiInputData, GetPtByoMeiInteractor>();
             busBuilder.RegisterUseCase<SaveAccountingInputData, SaveAccountingInteractor>();
-            busBuilder.RegisterUseCase<GetAccountingHistoryOrderInputData, GetAccountingHistoryOrderInteractor>();
             busBuilder.RegisterUseCase<GetAccountingHeaderInputData, GetAccountingHeaderInteractor>();
             busBuilder.RegisterUseCase<CheckAccountingStatusInputData, CheckAccountingStatusInteractor>();
             busBuilder.RegisterUseCase<GetAccountingConfigInputData, GetAccountingConfigInteractor>();
@@ -845,7 +877,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ConfirmReplaceDocParamInputData, ConfirmReplaceDocParamInteractor>();
 
             //InsuranceScan
-            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
             busBuilder.RegisterUseCase<GetListInsuranceScanInputData, GetListInsuranceScanInteractor>();
 
             //Hoki PriorityList
@@ -865,6 +896,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveFamilyListInputData, SaveFamilyListInteractor>();
             busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractorOfReception>();
+            busBuilder.RegisterUseCase<ValidateFamilyListInputData, ValidateFamilyListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
@@ -892,10 +924,19 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SyobyoKeikaHistoryInputData, SyobyoKeikaHistoryInteractor>();
             busBuilder.RegisterUseCase<GetRecePreviewListInputData, GetRecePreviewListInteractor>();
             busBuilder.RegisterUseCase<DoReceCmtInputData, DoReceCmtInteractor>();
+            busBuilder.RegisterUseCase<GetReceiptEditInputData, GetReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinMeiInMonthListInputData, GetSinMeiInMonthListInteractor>();
+            busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
+            busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
+            busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
             busBuilder.RegisterUseCase<SearchReceInfInputData, SearchReceInfInteractor>();
+            busBuilder.RegisterUseCase<SaveReceSeiKyuInputData, SaveReceSeiKyuInteractor>();
+
+            //WeightedSetConfirmation
+            busBuilder.RegisterUseCase<IsOpenWeightCheckingInputData, IsOpenWeightCheckingInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

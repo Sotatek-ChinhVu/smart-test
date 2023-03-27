@@ -2,6 +2,7 @@
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.ReceSeikyu;
 using Helper.Enum;
 
 namespace Domain.Models.Receipt;
@@ -48,6 +49,20 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<ReceInfModel> GetReceInf(int hpId, ReceiptPreviewModeEnum receiptPreviewType, long ptId);
 
+    ReceInfModel GetReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    ReceiptEditModel GetReceInfPreEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId);
+
+    Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0);
+
+    List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId);
+
+    bool SaveReceiptEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId, ReceiptEditModel model);
+
+    bool CheckExistReceiptEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId, int seqNo);
+
     #region ReceRecalculation
     List<ReceRecalculationModel> GetReceRecalculationList(int hpId, int sinYm, List<long> ptIdList);
 
@@ -87,4 +102,8 @@ public interface IReceiptRepository : IRepositoryBase
 
     List<HasErrorWithSanteiModel> GetHasErrorWithSanteiByEndDateList(int hpId, int seikyuYm, List<HasErrorWithSanteiModel> hasErrorList);
     #endregion
+
+    int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
+
+    void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos);
 }

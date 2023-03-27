@@ -1,12 +1,10 @@
-﻿using Domain.Models.Insurance;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.Schema;
 using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.GetListInsuranceScan;
@@ -33,26 +31,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListImageTemplatesResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.SaveInsuranceScanImage)]
-        public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromForm] IList<SaveInsuranceScanRequest> request)
-        {
-            var input = new SaveInsuranceScanInputData(HpId,
-                                                     UserId, 
-                                                     request.Select(x=> new InsuranceScanModel(
-                                                                    HpId, 
-                                                                    x.PtId , 
-                                                                    x.SeqNo,
-                                                                    x.HokenGrp, 
-                                                                    x.HokenId,
-                                                                    x.FileName,
-                                                                    x.File.OpenReadStream(), 
-                                                                    x.IsDeleted)));
-            var output = _bus.Handle(input);
-            var presenter = new SaveInsuranceScanPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.UploadListFileKarte)]

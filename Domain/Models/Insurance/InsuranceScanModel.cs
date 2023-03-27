@@ -2,7 +2,7 @@
 {
     public class InsuranceScanModel
     {
-        public InsuranceScanModel(int hpId, long ptId, long seqNo, int hokenGrp, int hokenId, string fileName, Stream file, int isDeleted)
+        public InsuranceScanModel(int hpId, long ptId, long seqNo, int hokenGrp, int hokenId, string fileName, Stream file, int isDeleted, string updateTime)
         {
             HpId = hpId;
             PtId = ptId;
@@ -13,6 +13,7 @@
             FileNameDisplay = string.Empty;
             File = file;
             IsDeleted = isDeleted;
+            UpdateTime = updateTime;
         }
 
         public int HpId { get; private set; }
@@ -34,5 +35,7 @@
         public int IsDeleted { get; private set; }
 
         public void SetDisplayImage(string prefix) => FileNameDisplay = prefix + FileName;
+
+        public string UpdateTime { get; private set; }
     }
 }

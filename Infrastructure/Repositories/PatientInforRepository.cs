@@ -1,4 +1,5 @@
-﻿using Domain.Models.CalculationInf;
+﻿using Domain.Constant;
+using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -24,9 +25,9 @@ namespace Infrastructure.Repositories
         {
         }
 
-        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum, int hpId)
+        (PatientInforModel ptInfModel, bool isFound) IPatientInforRepository.SearchExactlyPtNum(long ptNum, int hpId)
         {
-            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum).FirstOrDefault();
+            var ptInf = NoTrackingDataContext.PtInfs.Where(x => x.PtNum == ptNum && x.IsDelete == 0).FirstOrDefault();
             if (ptInf == null)
             {
                 return (new PatientInforModel(), false);
@@ -234,6 +235,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistIdList(List<long> ptIds)
         {
+            ptIds = ptIds.Distinct().ToList();
             var countPtInfs = NoTrackingDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
             return ptIds.Count == countPtInfs;
         }
@@ -1029,7 +1031,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
+        public (bool resultSave, long ptId) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1225,6 +1227,21 @@ namespace Infrastructure.Repositories
             }
             #endregion Maxmoney
 
+            #region insurancesCan
+            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInsert.PtNum, patientInsert.PtId);
+            if (insuranceScanDatas != null && insuranceScanDatas.Any())
+            {
+                TrackingDataContext.PtHokenScans.AddRange(Mapper.Map<InsuranceScanModel, PtHokenScan>(insuranceScanDatas, (src, dest) =>
+                {
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.CreateId = userId;
+                    dest.UpdateId = userId;
+                    return dest;
+                }));
+            }
+            #endregion
+
             int changeDatas = TrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
             if (changeDatas == 0 && resultCreatePatient)
                 return (true, patientInsert.PtId);
@@ -1274,7 +1291,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, int userId)
+        public (bool resultSave, long ptId) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, List<LimitListModel> maxMoneys, Func<int, long, long, IEnumerable<InsuranceScanModel>> handlerInsuranceScans, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1721,7 +1738,51 @@ namespace Infrastructure.Repositories
                 dest.CreateId = userId;
                 return dest;
             }));
-            #endregion 
+            #endregion
+
+            #region insuranceScan
+            var insuranceScanDatabases = TrackingDataContext.PtHokenScans.Where(x => x.HpId == hpId && x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
+            var insuranceScanDatas = handlerInsuranceScans(hpId, patientInfo.PtNum, patientInfo.PtId);
+            if (insuranceScanDatas != null && insuranceScanDatas.Any())
+            {
+                foreach (var scan in insuranceScanDatas)
+                {
+                    if (scan.IsDeleted == DeleteTypes.Deleted)
+                    {
+                        var deleteItem = insuranceScanDatabases.FirstOrDefault(x => x.SeqNo == scan.SeqNo);
+                        if (deleteItem is not null)
+                        {
+                            deleteItem.IsDeleted = DeleteTypes.Deleted;
+                            deleteItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            deleteItem.UpdateId = userId;
+                        }
+                    }
+                    else
+                    {
+                        if (scan.SeqNo == 0) //Create
+                        {
+                            TrackingDataContext.PtHokenScans.Add(Mapper.Map(scan, new PtHokenScan(), (src, dest) =>
+                            {
+                                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                dest.CreateId = userId;
+                                return dest;
+                            }));
+                        }
+                        else
+                        {
+                            var updateItem = insuranceScanDatabases.FirstOrDefault(x => x.SeqNo == scan.SeqNo);
+                            if (updateItem is not null)
+                            {
+                                updateItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                updateItem.UpdateId = userId;
+                                updateItem.FileName = scan.FileName;
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
 
             return (TrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
@@ -2016,7 +2077,25 @@ namespace Infrastructure.Repositories
                                                                             item.PtNum,
                                                                             item.Name ?? string.Empty,
                                                                             item.KanaName ?? string.Empty,
-                                                                            item.Sex))
+                                                                            item.Sex,
+                                                                            item.Birthday))
+                                                     .ToList();
+            return result;
+        }
+
+        public List<PatientInforModel> SearchPatient(int hpId, List<long> ptIdList)
+        {
+            ptIdList = ptIdList.Distinct().ToList();
+            var result = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                    && item.IsDelete != 1
+                                                                    && ptIdList.Contains(item.PtId))
+                                                     .Select(item => new PatientInforModel(
+                                                                            item.PtId,
+                                                                            item.PtNum,
+                                                                            item.Name ?? string.Empty,
+                                                                            item.KanaName ?? string.Empty,
+                                                                            item.Sex,
+                                                                            item.Birthday))
                                                      .ToList();
             return result;
         }

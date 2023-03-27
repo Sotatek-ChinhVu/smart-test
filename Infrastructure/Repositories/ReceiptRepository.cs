@@ -5,6 +5,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
+using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -12,6 +13,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -184,7 +186,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                 || (searchModel.HokenSbts.Contains(0) && item.HokenKbn == 0)
                                                 || (searchModel.HokenSbts.Contains(11) && (item.HokenKbn == 11 || item.HokenKbn == 12 || item.HokenKbn == 13))
                                                 || (searchModel.HokenSbts.Contains(14) && (item.HokenKbn == 14))));
-                if (searchModel.ReceSbtCenter != -1)
+                if (searchModel.ReceSbtCenter >= 0)
                 {
                     receInfs = receInfs.Where(item => ((searchModel.HokenSbts.Contains(1)
                                                      || searchModel.HokenSbts.Contains(2)
@@ -197,7 +199,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                 || (searchModel.HokenSbts.Contains(11) && (item.HokenKbn == 11 || item.HokenKbn == 12 || item.HokenKbn == 13))
                                                 || (searchModel.HokenSbts.Contains(14) && (item.HokenKbn == 14)));
                 }
-                if (searchModel.ReceSbtRight != -1)
+                if (searchModel.ReceSbtRight >= 0)
                 {
                     receInfs = receInfs.Where(item => ((searchModel.HokenSbts.Contains(1)
                                                      || searchModel.HokenSbts.Contains(2)
@@ -213,11 +215,11 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             }
             else
             {
-                if (searchModel.ReceSbtCenter != -1)
+                if (searchModel.ReceSbtCenter >= 0)
                 {
                     receInfs = receInfs.Where(item => item.ReceSbt != null && item.ReceSbt.Substring(2, 1) == searchModel.ReceSbtCenter.ToString());
                 }
-                if (searchModel.ReceSbtRight != -1)
+                if (searchModel.ReceSbtRight >= 0)
                 {
                     receInfs = receInfs.Where(item => item.ReceSbt != null && item.ReceSbt.Substring(3, 1) == searchModel.ReceSbtRight.ToString());
                 }
@@ -1608,6 +1610,53 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                           .ToList();
     }
 
+    public ReceInfModel GetReceInf(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(item => item.HpId == hpId
+                                                                            && item.SeikyuYm == seikyuYm
+                                                                            && item.PtId == ptId
+                                                                            && item.SinYm == sinYm
+                                                                            && item.HokenId == hokenId);
+
+        if (receInf == null)
+        {
+            return new();
+        }
+        return ConvertToReceInfModel(receInf);
+    }
+
+    public ReceiptEditModel GetReceInfEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var receInfEdit = NoTrackingDataContext.ReceInfEdits.Where(item => item.HpId == hpId
+                                                                           && item.SeikyuYm == seikyuYm
+                                                                           && item.PtId == ptId
+                                                                           && item.SinYm == sinYm
+                                                                           && item.HokenId == hokenId
+                                                                           && item.IsDeleted == 0)
+                                                             .ToList()
+                                                             ?.MaxBy(item => item.SeqNo);
+
+        if (receInfEdit == null)
+        {
+            return new();
+        }
+        return ConvertToReceiptEditModel(receInfEdit);
+    }
+
+    public ReceiptEditModel GetReceInfPreEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId)
+    {
+        var receInfPreEdit = NoTrackingDataContext.ReceInfPreEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                                  && item.SeikyuYm == seikyuYm
+                                                                                  && item.PtId == ptId
+                                                                                  && item.SinYm == sinYm
+                                                                                  && item.HokenId == hokenId);
+        if (receInfPreEdit == null)
+        {
+            return new();
+        }
+        return ConvertToReceiptEditModel(receInfPreEdit);
+    }
+
     public List<ReceCmtModel> GetLastMonthReceCmt(int hpId, int sinDate, long ptId)
     {
         var result = new List<ReceCmtModel>();
@@ -1639,6 +1688,112 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             result.Add(ConvertToReceCmtModel(receCmt));
         }
         return result;
+    }
+
+    public Dictionary<string, string> GetTokkiMstDictionary(int hpId, int sinDate = 0)
+    {
+        Dictionary<string, string> result = new();
+        var tokkiMstList = NoTrackingDataContext.TokkiMsts.Where(item => item.HpId == hpId
+                                                                   && ((item.StartDate == 0 && item.EndDate == 0) ||
+                                                                       (item.StartDate <= sinDate && sinDate <= item.EndDate)))
+                                                    .OrderBy(x => x.TokkiCd)
+                                                    .ToList();
+        foreach (var item in tokkiMstList)
+        {
+            result.Add(item.TokkiCd, item.TokkiName ?? string.Empty);
+        }
+        return result;
+    }
+
+    public List<int> GetSinDateRaiinInfList(int hpId, long ptId, int sinYm, int hokenId)
+    {
+        var hokenPidList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
+                                                                               && item.PtId == ptId
+                                                                               && item.HokenId == hokenId
+                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                .Select(item => item.HokenPid)
+                                                                .Distinct()
+                                                                .ToList();
+
+        var sinDateList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                        && item.PtId == ptId
+                                                                        && item.SinDate / 100 == sinYm
+                                                                        && item.Status >= RaiinState.Calculate
+                                                                        && hokenPidList.Contains(item.HokenPid)
+                                                                        && item.IsDeleted == DeleteTypes.None)
+                                                         .Select(item => item.SinDate)
+                                                         .Distinct()
+                                                         .OrderBy(item => item)
+                                                         .ToList();
+        return sinDateList;
+    }
+
+    public bool SaveReceiptEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId, ReceiptEditModel model)
+    {
+        var receiptEditDB = TrackingDataContext.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                                    && item.SeikyuYm == seikyuYm
+                                                                                    && item.PtId == ptId
+                                                                                    && item.SinYm == sinYm
+                                                                                    && item.HokenId == hokenId
+                                                                                    && item.IsDeleted == 0
+                                                                                    && item.SeqNo == model.SeqNo);
+        if (receiptEditDB == null)
+        {
+            TrackingDataContext.ReceInfEdits.Add(ConvertToNewReceInfEdit(hpId, userId, seikyuYm, ptId, sinYm, hokenId, model));
+        }
+        else
+        {
+            if (model.IsDeleted)
+            {
+                receiptEditDB.IsDeleted = 1;
+            }
+            else
+            {
+                receiptEditDB.ReceSbt = string.IsNullOrEmpty(model.ReceSbt) ? null : model.ReceSbt;
+                receiptEditDB.Houbetu = string.IsNullOrEmpty(model.Houbetu) ? null : model.Houbetu;
+                receiptEditDB.HokenReceTensu = model.HokenReceTensu >= 0 ? model.HokenReceTensu : null;
+                receiptEditDB.HokenReceFutan = model.HokenReceFutan >= 0 ? model.HokenReceFutan : null;
+                receiptEditDB.Kohi1ReceTensu = model.Kohi1ReceTensu >= 0 ? model.Kohi1ReceTensu : null;
+                receiptEditDB.Kohi1ReceFutan = model.Kohi1ReceFutan >= 0 ? model.Kohi1ReceFutan : null;
+                receiptEditDB.Kohi2ReceTensu = model.Kohi2ReceTensu >= 0 ? model.Kohi2ReceTensu : null;
+                receiptEditDB.Kohi2ReceFutan = model.Kohi2ReceFutan >= 0 ? model.Kohi2ReceFutan : null;
+                receiptEditDB.Kohi3ReceTensu = model.Kohi3ReceTensu >= 0 ? model.Kohi3ReceTensu : null;
+                receiptEditDB.Kohi3ReceFutan = model.Kohi3ReceFutan >= 0 ? model.Kohi3ReceFutan : null;
+                receiptEditDB.Kohi4ReceTensu = model.Kohi4ReceTensu >= 0 ? model.Kohi4ReceTensu : null;
+                receiptEditDB.Kohi4ReceFutan = model.Kohi4ReceFutan >= 0 ? model.Kohi4ReceFutan : null;
+                receiptEditDB.Kohi1ReceKyufu = model.Kohi1ReceKyufu >= 0 ? model.Kohi1ReceKyufu : null;
+                receiptEditDB.Kohi2ReceKyufu = model.Kohi2ReceKyufu >= 0 ? model.Kohi2ReceKyufu : null;
+                receiptEditDB.Kohi3ReceKyufu = model.Kohi3ReceKyufu >= 0 ? model.Kohi3ReceKyufu : null;
+                receiptEditDB.Kohi4ReceKyufu = model.Kohi4ReceKyufu >= 0 ? model.Kohi4ReceKyufu : null;
+                receiptEditDB.HokenNissu = model.HokenNissu >= 0 ? model.HokenNissu : null;
+                receiptEditDB.Kohi1Nissu = model.Kohi1Nissu >= 0 ? model.Kohi1Nissu : null;
+                receiptEditDB.Kohi2Nissu = model.Kohi2Nissu >= 0 ? model.Kohi2Nissu : null;
+                receiptEditDB.Kohi3Nissu = model.Kohi3Nissu >= 0 ? model.Kohi3Nissu : null;
+                receiptEditDB.Kohi4Nissu = model.Kohi4Nissu >= 0 ? model.Kohi4Nissu : null;
+                receiptEditDB.Tokki = string.IsNullOrEmpty(model.Tokki) ? null : model.Tokki;
+                receiptEditDB.Tokki1 = string.IsNullOrEmpty(model.Tokki1) ? null : model.Tokki1;
+                receiptEditDB.Tokki2 = string.IsNullOrEmpty(model.Tokki2) ? null : model.Tokki2;
+                receiptEditDB.Tokki3 = string.IsNullOrEmpty(model.Tokki3) ? null : model.Tokki3;
+                receiptEditDB.Tokki4 = string.IsNullOrEmpty(model.Tokki4) ? null : model.Tokki4;
+                receiptEditDB.Tokki5 = string.IsNullOrEmpty(model.Tokki5) ? null : model.Tokki5;
+                receiptEditDB.IsDeleted = 0;
+            }
+            receiptEditDB.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            receiptEditDB.UpdateId = userId;
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool CheckExistReceiptEdit(int hpId, int seikyuYm, long ptId, int sinYm, int hokenId, int seqNo)
+    {
+        var receInf = NoTrackingDataContext.ReceInfEdits.FirstOrDefault(item => item.HpId == hpId
+                                                                                && item.SeikyuYm == seikyuYm
+                                                                                && item.PtId == ptId
+                                                                                && item.SinYm == sinYm
+                                                                                && item.HokenId == hokenId
+                                                                                && item.IsDeleted == 0);
+        int seqNoCheck = receInf?.SeqNo ?? 0;
+        return seqNoCheck == seqNo;
     }
     #endregion
 
@@ -2442,6 +2597,69 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return result;
     }
+
+    public int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm)
+    {
+        return NoTrackingDataContext.ReceInfs.Count(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count == 0 || ptIds.Contains(p.PtId)));
+    }
+
+    public void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos)
+    {
+        if (receInfos == null || receInfos.Count == 0) return;
+
+        List<ReceStatus> newReceStatus = new List<ReceStatus>();
+        foreach (var receInfo in receInfos)
+        {
+            var receStatus = TrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId &&
+                                                                         p.PtId == receInfo.PtId &&
+                                                                         p.SeikyuYm == receInfo.SeikyuYm &&
+                                                                         p.SinYm == receInfo.SinYm &&
+                                                                         p.HokenId == receInfo.HokenId &&
+                                                                         p.IsDeleted == DeleteTypes.None)
+                                .OrderByDescending(u => u.CreateDate).ThenByDescending(u => u.UpdateDate).FirstOrDefault();
+
+            bool hasError = TrackingDataContext.ReceCheckErrs.Any(p => p.SinYm == receInfo.SinYm && p.PtId == receInfo.PtId && p.HokenId == receInfo.HokenId);
+
+            if (receStatus == null)
+            {
+                if (hasError)
+                {
+                    newReceStatus.Add(new ReceStatus()
+                    {
+                        HpId = Session.HospitalID,
+                        PtId = receInfo.PtId,
+                        SeikyuYm = receInfo.SeikyuYm,
+                        SinYm = receInfo.SinYm,
+                        HokenId = receInfo.HokenId,
+                        StatusKbn = (int)ReceCheckStatusEnum.SystemPending,
+                        CreateId = userId,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow()
+                    });
+                }
+                continue;
+            }
+
+            if (hasError)
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.UnConfirmed || receStatus.StatusKbn == (int)ReceCheckStatusEnum.TempComfirmed)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.SystemPending;
+                }
+            }
+            else
+            {
+                if (receStatus.StatusKbn == (int)ReceCheckStatusEnum.SystemPending)
+                {
+                    receStatus.StatusKbn = (int)ReceCheckStatusEnum.UnConfirmed;
+                }
+            }
+        }
+        TrackingDataContext.ReceStatuses.AddRange(newReceStatus);
+        TrackingDataContext.SaveChanges();
+    }
+
     #endregion
 
     #region Private function
@@ -2791,8 +3009,139 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                    receInf.Kohi2Houbetu ?? string.Empty,
                    receInf.Kohi3Houbetu ?? string.Empty,
                    receInf.Kohi4Houbetu ?? string.Empty,
-                   receInf.HokenKbn
+                   receInf.HonkeKbn,
+                   receInf.Tokki1 ?? string.Empty,
+                   receInf.Tokki2 ?? string.Empty,
+                   receInf.Tokki3 ?? string.Empty,
+                   receInf.Tokki4 ?? string.Empty,
+                   receInf.Tokki5 ?? string.Empty,
+                   receInf?.HokenNissu ?? -1,
+                   receInf?.Kohi1Nissu ?? -1,
+                   receInf?.Kohi2Nissu ?? -1,
+                   receInf?.Kohi3Nissu ?? -1,
+                   receInf?.Kohi4Nissu ?? -1,
+                   receInf?.Kohi1ReceKyufu ?? -1,
+                   receInf?.Kohi2ReceKyufu ?? -1,
+                   receInf?.Kohi3ReceKyufu ?? -1,
+                   receInf?.Kohi4ReceKyufu ?? -1,
+                   receInf?.HokenReceTensu ?? -1,
+                   receInf?.HokenReceFutan ?? -1,
+                   receInf?.Kohi1ReceTensu ?? -1,
+                   receInf?.Kohi1ReceFutan ?? -1,
+                   receInf?.Kohi2ReceTensu ?? -1,
+                   receInf?.Kohi2ReceFutan ?? -1,
+                   receInf?.Kohi3ReceTensu ?? -1,
+                   receInf?.Kohi3ReceFutan ?? -1,
+                   receInf?.Kohi4ReceTensu ?? -1,
+                   receInf?.Kohi4ReceFutan ?? -1
             );
+    }
+
+    private ReceiptEditModel ConvertToReceiptEditModel(ReceInfEdit receInfEdit)
+    {
+        return new ReceiptEditModel(
+                   receInfEdit.SeqNo,
+                   receInfEdit.Tokki1 ?? string.Empty,
+                   receInfEdit.Tokki2 ?? string.Empty,
+                   receInfEdit.Tokki3 ?? string.Empty,
+                   receInfEdit.Tokki4 ?? string.Empty,
+                   receInfEdit.Tokki5 ?? string.Empty,
+                   receInfEdit?.HokenNissu ?? -1,
+                   receInfEdit?.Kohi1Nissu ?? -1,
+                   receInfEdit?.Kohi2Nissu ?? -1,
+                   receInfEdit?.Kohi3Nissu ?? -1,
+                   receInfEdit?.Kohi4Nissu ?? -1,
+                   receInfEdit?.Kohi1ReceKyufu ?? -1,
+                   receInfEdit?.Kohi2ReceKyufu ?? -1,
+                   receInfEdit?.Kohi3ReceKyufu ?? -1,
+                   receInfEdit?.Kohi4ReceKyufu ?? -1,
+                   receInfEdit?.HokenReceTensu ?? -1,
+                   receInfEdit?.HokenReceFutan ?? -1,
+                   receInfEdit?.Kohi1ReceTensu ?? -1,
+                   receInfEdit?.Kohi1ReceFutan ?? -1,
+                   receInfEdit?.Kohi2ReceTensu ?? -1,
+                   receInfEdit?.Kohi2ReceFutan ?? -1,
+                   receInfEdit?.Kohi3ReceTensu ?? -1,
+                   receInfEdit?.Kohi3ReceFutan ?? -1,
+                   receInfEdit?.Kohi4ReceTensu ?? -1,
+                   receInfEdit?.Kohi4ReceFutan ?? -1
+            );
+    }
+
+    private ReceiptEditModel ConvertToReceiptEditModel(ReceInfPreEdit recePreInfEdit)
+    {
+        return new ReceiptEditModel(
+                   int.MaxValue,
+                   recePreInfEdit.Tokki1 ?? string.Empty,
+                   recePreInfEdit.Tokki2 ?? string.Empty,
+                   recePreInfEdit.Tokki3 ?? string.Empty,
+                   recePreInfEdit.Tokki4 ?? string.Empty,
+                   recePreInfEdit.Tokki5 ?? string.Empty,
+                   recePreInfEdit?.HokenNissu ?? -1,
+                   recePreInfEdit?.Kohi1Nissu ?? -1,
+                   recePreInfEdit?.Kohi2Nissu ?? -1,
+                   recePreInfEdit?.Kohi3Nissu ?? -1,
+                   recePreInfEdit?.Kohi4Nissu ?? -1,
+                   recePreInfEdit?.Kohi1ReceKyufu ?? -1,
+                   recePreInfEdit?.Kohi2ReceKyufu ?? -1,
+                   recePreInfEdit?.Kohi3ReceKyufu ?? -1,
+                   recePreInfEdit?.Kohi4ReceKyufu ?? -1,
+                   recePreInfEdit?.HokenReceTensu ?? -1,
+                   recePreInfEdit?.HokenReceFutan ?? -1,
+                   recePreInfEdit?.Kohi1ReceTensu ?? -1,
+                   recePreInfEdit?.Kohi1ReceFutan ?? -1,
+                   recePreInfEdit?.Kohi2ReceTensu ?? -1,
+                   recePreInfEdit?.Kohi2ReceFutan ?? -1,
+                   recePreInfEdit?.Kohi3ReceTensu ?? -1,
+                   recePreInfEdit?.Kohi3ReceFutan ?? -1,
+                   recePreInfEdit?.Kohi4ReceTensu ?? -1,
+                   recePreInfEdit?.Kohi4ReceFutan ?? -1
+            );
+    }
+
+    private ReceInfEdit ConvertToNewReceInfEdit(int hpId, int userId, int seikyuYm, long ptId, int sinYm, int hokenId, ReceiptEditModel model)
+    {
+        return new ReceInfEdit()
+        {
+            HpId = hpId,
+            SeikyuYm = seikyuYm,
+            PtId = ptId,
+            SinYm = sinYm,
+            HokenId = hokenId,
+            SeqNo = 0,
+            ReceSbt = string.IsNullOrEmpty(model.ReceSbt) ? null : model.ReceSbt,
+            Houbetu = string.IsNullOrEmpty(model.Houbetu) ? null : model.Houbetu,
+            HokenReceTensu = model.HokenReceTensu >= 0 ? model.HokenReceTensu : null,
+            HokenReceFutan = model.HokenReceFutan >= 0 ? model.HokenReceFutan : null,
+            Kohi1ReceTensu = model.Kohi1ReceTensu >= 0 ? model.Kohi1ReceTensu : null,
+            Kohi1ReceFutan = model.Kohi1ReceFutan >= 0 ? model.Kohi1ReceFutan : null,
+            Kohi2ReceTensu = model.Kohi2ReceTensu >= 0 ? model.Kohi2ReceTensu : null,
+            Kohi2ReceFutan = model.Kohi2ReceFutan >= 0 ? model.Kohi2ReceFutan : null,
+            Kohi3ReceTensu = model.Kohi3ReceTensu >= 0 ? model.Kohi3ReceTensu : null,
+            Kohi3ReceFutan = model.Kohi3ReceFutan >= 0 ? model.Kohi3ReceFutan : null,
+            Kohi4ReceTensu = model.Kohi4ReceTensu >= 0 ? model.Kohi4ReceTensu : null,
+            Kohi4ReceFutan = model.Kohi4ReceFutan >= 0 ? model.Kohi4ReceFutan : null,
+            Kohi1ReceKyufu = model.Kohi1ReceKyufu >= 0 ? model.Kohi1ReceKyufu : null,
+            Kohi2ReceKyufu = model.Kohi2ReceKyufu >= 0 ? model.Kohi2ReceKyufu : null,
+            Kohi3ReceKyufu = model.Kohi3ReceKyufu >= 0 ? model.Kohi3ReceKyufu : null,
+            Kohi4ReceKyufu = model.Kohi4ReceKyufu >= 0 ? model.Kohi4ReceKyufu : null,
+            HokenNissu = model.HokenNissu >= 0 ? model.HokenNissu : null,
+            Kohi1Nissu = model.Kohi1Nissu >= 0 ? model.Kohi1Nissu : null,
+            Kohi2Nissu = model.Kohi2Nissu >= 0 ? model.Kohi2Nissu : null,
+            Kohi3Nissu = model.Kohi3Nissu >= 0 ? model.Kohi3Nissu : null,
+            Kohi4Nissu = model.Kohi4Nissu >= 0 ? model.Kohi4Nissu : null,
+            Tokki = string.IsNullOrEmpty(model.Tokki) ? null : model.Tokki,
+            Tokki1 = string.IsNullOrEmpty(model.Tokki1) ? null : model.Tokki1,
+            Tokki2 = string.IsNullOrEmpty(model.Tokki2) ? null : model.Tokki2,
+            Tokki3 = string.IsNullOrEmpty(model.Tokki3) ? null : model.Tokki3,
+            Tokki4 = string.IsNullOrEmpty(model.Tokki4) ? null : model.Tokki4,
+            Tokki5 = string.IsNullOrEmpty(model.Tokki5) ? null : model.Tokki5,
+            IsDeleted = 0,
+            CreateDate = CIUtil.GetJapanDateTimeNow(),
+            CreateId = userId,
+            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+            UpdateId = userId,
+        };
     }
     #endregion
 

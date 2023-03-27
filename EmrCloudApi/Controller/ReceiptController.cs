@@ -10,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.Receipt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
+using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
 using UseCase.Receipt.GetReceCheckOptionList;
@@ -25,8 +26,14 @@ using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.GetRecePreviewList;
 using UseCase.Receipt.DoReceCmt;
+using UseCase.Receipt.ReceiptEdit;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
+using UseCase.Receipt.SaveReceiptEdit;
 
 namespace EmrCloudApi.Controller;
 
@@ -230,6 +237,18 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<ReceCmtHistoryResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetInsuranceInf)]
+    public ActionResult<Response<GetInsuranceInfResponse>> GetDiseaseReceList([FromQuery] GetInsuranceInfRequest request)
+    {
+        var input = new GetInsuranceInfInputData(HpId, request.PtId, request.SinYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetInsuranceInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetInsuranceInfResponse>>(presenter.Result);
+    }
+
     [HttpGet(ApiPath.SyoukiInfHistory)]
     public ActionResult<Response<SyoukiInfHistoryResponse>> SyoukiInfHistory([FromQuery] SyoukiInfHistoryRequest request)
     {
@@ -254,6 +273,18 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<SyobyoKeikaHistoryResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetMedicalDetails)]
+    public ActionResult<Response<GetMedicalDetailsResponse>> GetMedicalDetails([FromQuery] GetMedicalDetailsRequest request)
+    {
+        var input = new GetMedicalDetailsInputData(HpId, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetMedicalDetailsPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
+    }
+    
     [HttpGet(ApiPath.DoReceCmt)]
     public ActionResult<Response<GetReceCmtListResponse>> DoReceCmt([FromQuery] DoReceCmtRequest request)
     {
@@ -276,6 +307,67 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetRecePreviewListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceiptEdit)]
+    public ActionResult<Response<GetReceiptEditResponse>> GetReceiptEdit([FromQuery] GetReceiptEditRequest request)
+    {
+        var input = new GetReceiptEditInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceiptEditPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSinDateRaiinInfList)]
+    public ActionResult<Response<GetSinDateRaiinInfListResponse>> GetSinDateRaiinInfList([FromQuery] GetSinDateRaiinInfListRequest request)
+    {
+        var input = new GetSinDateRaiinInfListInputData(HpId, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinDateRaiinInfListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSinDateRaiinInfListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceByomeiChecking)]
+    public ActionResult<Response<GetReceByomeiCheckingResponse>> GetReceByomeiChecking([FromQuery] GetReceByomeiCheckingRequest request)
+    {
+        var input = new GetReceByomeiCheckingInputData(HpId, request.PtId, request.SinDate, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceByomeiCheckingPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceByomeiCheckingResponse>>(presenter.Result);
+    }
+
+
+    [HttpGet(ApiPath.GetSinMeiInMonthList)]
+    public ActionResult<Response<GetMedicalDetailsResponse>> GetSinMeiInMonthList([FromQuery] GetSinMeiInMonthListRequest request)
+    {
+        var input = new GetSinMeiInMonthListInputData(HpId, request.PtId, request.SinYm, request.HokenId, request.SeikyuYm);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSinMeiInMonthListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceiptEdit)]
+    public ActionResult<Response<SaveReceiptEditResponse>> SaveReceiptEdit([FromBody] SaveReceiptEditRequest request)
+    {
+        var input = new SaveReceiptEditInputData(HpId, UserId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId, ConvertToReceiptEditItem(request));
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceiptEditPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceiptEditResponse>>(presenter.Result);
     }
 
     #region Private function
@@ -394,6 +486,38 @@ public class ReceiptController : AuthorizeControllerBase
                     item.IsChecked ? 1 : 0,
                     item.SortNo,
                     item.IsDeleted);
+    }
+
+    private ReceiptEditItem ConvertToReceiptEditItem(SaveReceiptEditRequest request)
+    {
+        return new ReceiptEditItem(
+                   request.SeqNo,
+                   request.HokenNissu,
+                   request.Kohi1Nissu,
+                   request.Kohi2Nissu,
+                   request.Kohi3Nissu,
+                   request.Kohi4Nissu,
+                   request.Kohi1ReceKyufu,
+                   request.Kohi2ReceKyufu,
+                   request.Kohi3ReceKyufu,
+                   request.Kohi4ReceKyufu,
+                   request.HokenReceTensu,
+                   request.HokenReceFutan,
+                   request.Kohi1ReceTensu,
+                   request.Kohi1ReceFutan,
+                   request.Kohi2ReceTensu,
+                   request.Kohi2ReceFutan,
+                   request.Kohi3ReceTensu,
+                   request.Kohi3ReceFutan,
+                   request.Kohi4ReceTensu,
+                   request.Kohi4ReceFutan,
+                   request.IsDeleted,
+                   request.Tokki1Id.ToString(),
+                   request.Tokki2Id.ToString(),
+                   request.Tokki3Id.ToString(),
+                   request.Tokki4Id.ToString(),
+                   request.Tokki5Id.ToString()
+            );
     }
     #endregion
 }

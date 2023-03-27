@@ -83,6 +83,7 @@
         public const string SavePatientInfo = "SavePatientInfo";
         public const string GetListPatient = "GetListPatient";
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
+        public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -169,6 +170,7 @@
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
         public const string Calculate = "Calculate";
+        public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
 
@@ -212,18 +214,24 @@
         public const string Recalculation = "Recalculation";
         public const string GetReceCheckOptionList = "GetReceCheckOptionList";
         public const string SaveReceCheckOpt = "SaveReceCheckOpt";
+        public const string GetInsuranceInf = "GetInsuranceInf";
         public const string ReceCmtHistory = "ReceCmtHistory";
         public const string SyoukiInfHistory = "SyoukiInfHistory";
         public const string SyobyoKeikaHistory = "SyobyoKeikaHistory";
+        public const string GetMedicalDetails = "GetMedicalDetails";
         public const string GetRecePreviewList = "GetRecePreviewList";
         public const string DoReceCmt = "DoReceCmt";
+        public const string GetReceiptEdit = "GetReceiptEdit";
+        public const string GetSinMeiInMonthList = "GetSinMeiInMonthList";
+        public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
+        public const string GetReceByomeiChecking = "GetReceByomeiChecking";
+        public const string SaveReceiptEdit = "SaveReceiptEdit";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
-        public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
@@ -236,6 +244,7 @@
         public const string GetGroupNameMst = "GetGroupNameMst";
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+        public const string ValidateFamilyList = "ValidateFamilyList";
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
@@ -246,5 +255,9 @@
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
         public const string SearchReceInf = "SearchReceInf";
+        public const string SaveReceSeikyu = "SaveReceSeikyu";
+
+        //WeightedSetConfirmation
+        public const string IsOpenWeightChecking = "IsOpenWeightChecking";
     }
 }

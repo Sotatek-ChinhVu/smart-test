@@ -49,7 +49,7 @@ public class VisitingController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
-        var input = new GetReceptionListInputData(HpId, request.SinDate, request.RaiinNo, request.PtId);
+        var input = new GetReceptionListInputData(HpId, request.SinDate, request.RaiinNo, request.PtId, request.IsGetFamily);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
         presenter.Complete(output);

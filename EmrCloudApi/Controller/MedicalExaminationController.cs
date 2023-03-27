@@ -1,7 +1,10 @@
 ﻿using Domain.Models.Diseases;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Realtime;
+using EmrCloudApi.Requests.Family;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
@@ -9,15 +12,18 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CommonChecker;
 using UseCase.Core.Sync;
+using UseCase.Family;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
+using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
 using UseCase.MedicalExamination.InitKbnSetting;
+using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SummaryInf;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -29,11 +35,13 @@ namespace EmrCloudApi.Controllers
     [ApiController]
     public class MedicalExaminationController : AuthorizeControllerBase
     {
+        private readonly IWebSocketService _webSocketService;
         private readonly UseCaseBus _bus;
 
-        public MedicalExaminationController(UseCaseBus bus, IUserService userService) : base(userService)
+        public MedicalExaminationController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpPost(ApiPath.GetCheckDiseases)]
@@ -370,6 +378,137 @@ namespace EmrCloudApi.Controllers
             var presenter = new CalculatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CalculateResponseOfMedical>>(presenter.Result);
+        }
+
+        [HttpPost("SaveMedical")]
+        public async Task<ActionResult<Response<SaveMedicalResponse>>> SaveMedical([FromBody] SaveMedicalRequest request)
+        {
+            var familyList = ConvertToFamilyInputItem(request.FamilyList);
+            var input = new SaveMedicalInputData(HpId, request.PtId, request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
+                    o => new OdrInfItemInputData(
+                            HpId,
+                            o.RaiinNo,
+                            o.RpNo,
+                            o.RpEdaNo,
+                            o.PtId,
+                            o.SinDate,
+                            o.HokenPid,
+                            o.OdrKouiKbn,
+                            o.RpName,
+                            o.InoutKbn,
+                            o.SikyuKbn,
+                            o.SyohoSbt,
+                            o.SanteiKbn,
+                            o.TosekiKbn,
+                            o.DaysCnt,
+                            o.SortNo,
+                            o.Id,
+                            o.OdrDetails.Select(
+                                    od => new OdrInfDetailItemInputData(
+                                            HpId,
+                                            od.RaiinNo,
+                                            od.RpNo,
+                                            od.RpEdaNo,
+                                            od.RowNo,
+                                            od.PtId,
+                                            od.SinDate,
+                                            od.SinKouiKbn,
+                                            od.ItemCd,
+                                            od.ItemName,
+                                            od.Suryo,
+                                            od.UnitName,
+                                            od.UnitSbt,
+                                            od.TermVal,
+                                            od.KohatuKbn,
+                                            od.SyohoKbn,
+                                            od.SyohoLimitKbn,
+                                            od.DrugKbn,
+                                            od.YohoKbn,
+                                            od.Kokuji1,
+                                            od.Kokuji2,
+                                            od.IsNodspRece,
+                                            od.IpnCd,
+                                            od.IpnName,
+                                            od.JissiKbn,
+                                            od.JissiDate,
+                                            od.JissiId,
+                                            od.JissiMachine,
+                                            od.ReqCd,
+                                            od.Bunkatu,
+                                            od.CmtName,
+                                            od.CmtOpt,
+                                            od.FontColor,
+                                            od.CommentNewline
+                                        )
+                                ).ToList(),
+                            o.IsDeleted
+                        )
+                ).ToList(),
+                new KarteItemInputData(
+                    HpId,
+                    request.KarteItem.RaiinNo,
+                    request.KarteItem.PtId,
+                    request.KarteItem.SinDate,
+                    request.KarteItem.Text,
+                    request.KarteItem.IsDeleted,
+                    request.KarteItem.RichText),
+                UserId,
+                new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
+                familyList
+            );
+            var output = _bus.Handle(input);
+
+            if (output.Status == SaveMedicalStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.MedicalChanged,
+                    new CommonMessage { PtId = output.PtId, SinDate = output.SinDate, RaiinNo = output.RaiinNo });
+            }
+
+            var presenter = new SaveMedicalPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveMedicalResponse>>(presenter.Result);
+        }
+
+        private List<FamilyItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
+        {
+            var result = listFamilyRequest.Select(family => new FamilyItem(
+                                                                family.FamilyId,
+                                                                family.PtId,
+                                                                family.ZokugaraCd,
+                                                                family.FamilyPtId,
+                                                                family.Name,
+                                                                family.KanaName,
+                                                                family.Sex,
+                                                                family.Birthday,
+                                                                family.IsDead,
+                                                                family.IsSeparated,
+                                                                family.Biko,
+                                                                family.SortNo,
+                                                                family.IsDeleted,
+                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
+                                                                                                           reki.Id,
+                                                                                                           reki.ByomeiCd,
+                                                                                                           reki.Byomei,
+                                                                                                           reki.Cmt,
+                                                                                                           reki.SortNo,
+                                                                                                           reki.IsDeleted))
+                                                                                       .ToList()))
+                                          .ToList();
+            return result;
+        }
+
+
+        [HttpGet(ApiPath.GetHistoryFollowSinDate)]
+        public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
+        {
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHistoryFollowSindatePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHistoryFollowSindateResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetOrderSheetGroup)]

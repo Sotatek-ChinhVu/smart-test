@@ -2,11 +2,12 @@
 {
     public enum CalculateApiPath
     {
-        GetSinMeiList = 1,
-        RunCalculate = 2,
-        RunTrialCalculate = 3,
-        RunCalculateOne = 4,
-        ReceFutanCalculateMain = 5,
-        RunCalculateMonth = 6,
+        GetSinMeiList,
+        RunCalculate,
+        GetListReceInf,
+        RunTrialCalculate,
+        RunCalculateOne,
+        ReceFutanCalculateMain,
+        RunCalculateMonth,
     }
 }

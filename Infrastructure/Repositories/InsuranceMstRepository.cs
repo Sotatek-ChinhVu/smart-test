@@ -490,13 +490,16 @@ namespace Infrastructure.Repositories
             var hoken = TrackingDataContext.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && (x.HokensyaNo != null && x.HokensyaNo.Equals(model.HokensyaNo)));
             if (hoken is null)
             {
+                string houbetuNo = string.Empty;
+                string hokensyaNoSearch = string.Empty;
+                CIUtil.GetHokensyaHoubetu(model.HokensyaNo, ref hokensyaNoSearch, ref houbetuNo);
                 HokensyaMst create = new HokensyaMst()
                 {
                     HpId = model.HpId,
                     Name = model.Name,
                     KanaName = model.KanaName,
                     HoubetuKbn = model.HoubetuKbn,
-                    Houbetu = model.Houbetu,
+                    Houbetu = houbetuNo,
                     HokenKbn = model.HokenKbn,
                     PrefNo = model.PrefNo,
                     HokensyaNo = model.HokensyaNo,
@@ -511,7 +514,8 @@ namespace Infrastructure.Repositories
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateDate = CIUtil.GetJapanDateTimeNow(),
                     UpdateId = userId,
-                    CreateId = userId
+                    CreateId = userId,
+                    IsKigoNa = model.IsKigoNa
                 };
                 TrackingDataContext.HokensyaMsts.Add(create);
             }
@@ -763,6 +767,7 @@ namespace Infrastructure.Repositories
                 model.HokenKohiKbn = insurance.HokenKohiKbn;
                 model.Houbetu = insurance.Houbetu;
                 model.HokenName = insurance.HokenName;
+                model.HokenSname = insurance.HokenSName;
                 model.HokenNameCd = insurance.HokenNameCd;
                 model.CheckDigit = insurance.CheckDigit;
                 model.JyukyuCheckDigit = insurance.JyuKyuCheckDigit;

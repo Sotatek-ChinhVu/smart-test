@@ -6,6 +6,8 @@ using UseCase.Accounting.GetMeiHoGai;
 using UseCase.Accounting.Recaculate;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.Receipt.GetListReceInf;
+using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.Recalculation;
 
 namespace EmrCloudApi.Services
@@ -33,6 +35,9 @@ namespace EmrCloudApi.Services
                     break;
                 case CalculateApiPath.RunCalculate:
                     functionName = "Calculate/RunCalculate";
+                    break;
+                case CalculateApiPath.GetListReceInf:
+                    functionName = "ReceFutan/GetListReceInf";
                     break;
                 case CalculateApiPath.RunTrialCalculate:
                     functionName = "Calculate/RunTrialCalculate";
@@ -63,8 +68,9 @@ namespace EmrCloudApi.Services
                 return new CalculateResponse(response.StatusCode.ToString(), ResponseStatus.Successed);
 
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
+                Console.WriteLine("Function CallCalculate " + ex);
                 return new CalculateResponse("Failed: Could not connect to Calculate API", ResponseStatus.ConnectFailed);
             }
         }
@@ -83,6 +89,7 @@ namespace EmrCloudApi.Services
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Function GetSinMeiList " + ex);
                 return new();
             }
         }
@@ -97,9 +104,28 @@ namespace EmrCloudApi.Services
 
                 return true;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculate " + ex);
+                return false;
+            }
+        }
+
+        public ReceInfModelDto GetListReceInf(GetInsuranceInfInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetListReceInf, inputData);
+
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                    return new();
+
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
+                return result;
+            }
             catch (Exception)
             {
-                return false;
+                return new();
             }
         }
 
@@ -118,8 +144,9 @@ namespace EmrCloudApi.Services
                     return new();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunTrialCalculate " + ex);
                 return new();
             }
         }
@@ -134,8 +161,9 @@ namespace EmrCloudApi.Services
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunCalculateOne " + ex);
                 return false;
             }
         }
@@ -151,8 +179,9 @@ namespace EmrCloudApi.Services
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function ReceFutanCalculateMain " + ex);
                 return false;
             }
         }
@@ -168,10 +197,31 @@ namespace EmrCloudApi.Services
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
                 return false;
             }
         }
+
+        public SinMeiDataModelDto GetSinMeiInMonthList(GetSinMeiDtoInputData inputData)
+        {
+            try
+            {
+                var task = CallCalculate(CalculateApiPath.GetSinMeiList, inputData);
+                if (task.Result.ResponseStatus != ResponseStatus.Successed)
+                {
+                    return new();
+                }
+                var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
+                return result ?? new();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Function RunCalculateMonth " + ex);
+                return new();
+            }
+        }
+
     }
 }
