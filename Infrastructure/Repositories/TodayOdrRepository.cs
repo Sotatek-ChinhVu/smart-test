@@ -986,7 +986,6 @@ namespace Infrastructure.Repositories
 
         public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double>> currentOdrList)
         {
-            List<OrdInfModel> autoAddOdr = new();
             var itemCds = new List<string>();
             var autoItems = new List<(int, int, List<Tuple<string, string, long>>)>();
             var itemCdAutos = new List<string>();
@@ -1074,7 +1073,7 @@ namespace Infrastructure.Repositories
                             continue;
                         }
 
-                        double countInAutoAdd = autoAddOdr.Count();
+                        double countInAutoAdd = autoItems.Count();
                         if (totalSanteiCount + countInAutoAdd >= santeiAutoOrder.MaxCnt)
                         {
                             continue;
@@ -1134,7 +1133,6 @@ namespace Infrastructure.Repositories
                 OdrInfDetail odrDetail = new OdrInfDetail();
                 odrDetail.SinKouiKbn = targetItem?.SinKouiKbn ?? 0;
                 odrDetail.SinDate = sinDate;
-                odrDetail.Suryo = santeiAutoOdrDetail?.Suryo ?? 0;
                 odrDetail.ItemCd = autoAddItem?.Item3 ?? string.Empty;
                 odrDetail.ItemName = targetItem?.Name ?? string.Empty;
 
@@ -1160,6 +1158,7 @@ namespace Infrastructure.Repositories
                 odrDetail.KohatuKbn = targetItem?.KohatuKbn ?? 0;
                 odrDetail.YohoKbn = targetItem?.YohoKbn ?? 0;
                 odrDetail.DrugKbn = targetItem?.DrugKbn ?? 0;
+                odrDetail.Suryo = string.IsNullOrEmpty(odrDetail.UnitName) ? 0 : santeiAutoOdrDetail?.Suryo ?? 0;
 
                 var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrDetail.ItemCd);
                 var ten = tenMst?.Ten ?? 0;
