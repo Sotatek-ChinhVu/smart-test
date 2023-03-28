@@ -912,11 +912,7 @@
         public static readonly string InvalidPtIdOrFamilyPtId = "違法患者番号／患者の家族番号";
         public static readonly string InvalidFamilyId = "違法家族番号";
         public static readonly string InvalidZokugaraCd = "違法続柄Cd";
-        public static readonly string InvalidFamilyName = "違法氏名";
-        public static readonly string InvalidFamilyKanaName = "違法カナ氏名";
-        public static readonly string InvalidFamilySex = "違法性";
         public static readonly string InvalidFamilyBirthday = "違法生年月日";
-        public static readonly string InvalidFamilyIsDead = "違法死亡";
         public static readonly string InvalidFamilyIsSeparated = "違法別居";
         public static readonly string InvalidFamilyBiko = "違法備考";
         public static readonly string InvalidFamilyRekiId = "違法家族歴番号";
