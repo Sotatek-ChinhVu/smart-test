@@ -39,10 +39,7 @@ namespace EmrCloudApi.Controller
 
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
-            StringContent jsonContent = new StringContent(
-                JsonSerializer.Serialize(data),
-                Encoding.UTF8,
-                "application/json");
+            StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data),Encoding.UTF8,"application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
