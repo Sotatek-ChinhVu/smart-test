@@ -102,7 +102,7 @@ namespace Interactor.SpecialNote
 
         private PatientInfoModel GetPatientInfoTab(long ptId, int hpId)
         {
-            var taskPregnancyItem = Task<PtPregnancyModel>.Factory.StartNew(() => _patientInfoPregnancyRepository.GetPregnancyList(ptId, hpId).FirstOrDefault() ?? new());
+            var taskPregnancyItem = Task<List<PtPregnancyModel>>.Factory.StartNew(() => _patientInfoPregnancyRepository.GetPregnancyList(ptId, hpId) ?? new());
             var taskCmtInfItem = Task<PtCmtInfModel>.Factory.StartNew(() => _ptCmtInfRepository.GetList(ptId, hpId).FirstOrDefault() ?? new());
             var taskSeikaturekiInfItem = Task<SeikaturekiInfModel>.Factory.StartNew(() => _patientInfoSeikaturekiRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault() ?? new());
             var taskPhysicalItems = Task<List<PhysicalInfoModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetPhysicalList(hpId, ptId));
