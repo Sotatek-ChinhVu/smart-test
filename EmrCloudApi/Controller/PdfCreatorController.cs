@@ -34,7 +34,6 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-
             return await RenderPdf(drugInfo.Item2, drugInfo.Item1);
         }
 

@@ -31,7 +31,7 @@ namespace Reporting.ReportServices
 
         public (ReportType, List<DrugInfoModel>) SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            basicInfo = _coDrugInfFinder.GetBasicInfo(ptId, sinDate);
+            basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
             //   LoadPathConf();
 
             ConfigType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic

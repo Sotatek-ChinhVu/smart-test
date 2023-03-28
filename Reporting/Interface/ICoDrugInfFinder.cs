@@ -6,7 +6,7 @@ namespace Reporting.Interface
     public interface ICoDrugInfFinder
     {
         PathConf GetPathConf(int grpCode);
-        DrugInfoModel GetBasicInfo(long ptId, int orderDate = 0);
+        DrugInfoModel GetBasicInfo(int hpId, long ptId, int orderDate = 0);
         List<OrderInfoModel> GetOrderByRaiinNo(long raiinNo);
         string GetYJCode(string ItemCd);
         List<SingleDosageMstModel> GetSingleDosageMstCollection(int hpId, string unitName);

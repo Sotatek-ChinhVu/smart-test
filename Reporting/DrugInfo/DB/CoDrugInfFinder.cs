@@ -11,8 +11,6 @@ namespace Reporting.DrugInfo.DB
 {
     public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     {
-        private readonly int hpId = 1;
-
         private readonly ISystemConfRepository _systemConfRepository;
         public CoDrugInfFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository) : base(tenantProvider)
         {
@@ -24,7 +22,7 @@ namespace Reporting.DrugInfo.DB
             return pathConfs ?? new();
         }
 
-        public DrugInfoModel GetBasicInfo(long ptId, int orderDate = 0)
+        public DrugInfoModel GetBasicInfo(int hpId, long ptId, int orderDate = 0)
         {
             DrugInfoModel info = new DrugInfoModel();
             info.OrderDate = orderDate == 0 ? CIUtil.DateTimeToInt(DateTime.Now) : orderDate;
