@@ -10,7 +10,6 @@ using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.User;
 using Helper.Constants;
-using Infrastructure.Repositories;
 using UseCase.OrdInfs.ValidationTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
@@ -179,7 +178,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        item.IsAutoAddItem
                     );
 
                 var objDetail = new object();

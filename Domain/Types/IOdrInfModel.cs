@@ -31,6 +31,8 @@ namespace Domain.Types
 
         int SortNo { get; }
 
+        bool IsAutoAddItem { get; }
+
         GroupKoui GroupKoui { get; }
 
         int IsDeleted { get; }

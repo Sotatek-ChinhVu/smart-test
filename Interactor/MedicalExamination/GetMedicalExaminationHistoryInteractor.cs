@@ -298,7 +298,8 @@ namespace Interactor.MedicalExamination
                                                             rpOdrInf.CreateId,
                                                             rpOdrInf.CreateName,
                                                             rpOdrInf.UpdateDate,
-                                                            rpOdrInf.IsDeleted
+                                                            rpOdrInf.IsDeleted,
+                                                            rpOdrInf.IsAutoAddItem
                                                          );
 
                         group.OdrInfs.Add(odrModel);

@@ -2,7 +2,7 @@
 {
     public class OdrInfItem
     {
-        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails, DateTime createDate, int createId, string createName, int isDeleted)
+        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails, DateTime createDate, int createId, string createName, int isDeleted, bool isAddAutoItem)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -27,6 +27,7 @@
             CreateId = createId;
             CreateName = createName;
             IsDeleted = isDeleted;
+            IsAddAutoItem = isAddAutoItem;
         }
 
         public int HpId { get; private set; }
@@ -52,5 +53,6 @@
         public int CreateId { get; private set; }
         public string CreateName { get; private set; }
         public int IsDeleted { get; private set; }
+        public bool IsAddAutoItem { get; private set; }
     }
 }

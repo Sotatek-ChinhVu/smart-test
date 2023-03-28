@@ -62,7 +62,8 @@ namespace EmrCloudApi.Controller
                                     od.Bunkatu,
                                     od.CmtName,
                                     od.CmtOpt
-                                )).ToList()
+                                )).ToList(),
+                                o.IsAutoAddItem
                             )
                     ).ToList());
             var output = _bus.Handle(input);

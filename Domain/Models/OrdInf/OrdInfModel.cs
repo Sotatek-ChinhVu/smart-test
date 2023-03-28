@@ -42,7 +42,9 @@ namespace Domain.Models.OrdInfs
 
         public string UpdateName { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate, int updateId, string updateName)
+        public bool IsAutoAddItem { get; private set; }
+
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate, int updateId, string updateName, bool isAutoAddItem)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -70,6 +72,7 @@ namespace Domain.Models.OrdInfs
             UpdateDate = updateDate;
             UpdateId = updateId;
             UpdateName = updateName;
+            IsAutoAddItem = isAutoAddItem;
         }
 
         public OrdInfModel()
@@ -239,6 +242,12 @@ namespace Domain.Models.OrdInfs
         public OrdInfModel Delete()
         {
             IsDeleted = DeleteTypes.Deleted;
+            return this;
+        }
+
+        public OrdInfModel ChangeAutoAddItem(bool isAutoAddItem)
+        {
+            IsAutoAddItem = isAutoAddItem;
             return this;
         }
     }

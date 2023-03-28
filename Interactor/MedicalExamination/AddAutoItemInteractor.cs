@@ -114,7 +114,8 @@ namespace Interactor.MedicalExamination
                            r.CreateDate,
                            r.CreateId,
                            r.CreateName,
-                           r.IsDeleted
+                           r.IsDeleted,
+                           r.IsAutoAddItem
                         )).ToList());
             }
             catch

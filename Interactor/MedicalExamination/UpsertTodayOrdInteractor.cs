@@ -288,7 +288,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        item.IsAutoAddItem
                     );
 
                 var objDetail = new object();

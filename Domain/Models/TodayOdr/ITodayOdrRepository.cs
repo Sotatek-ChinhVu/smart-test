@@ -47,5 +47,6 @@ namespace Domain.Models.TodayOdr
 
         List<(int position, OrdInfModel odrInfModel)> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems);
 
+        List<string> CheckAutoAddItem(int hpId, int sinDate, List<string> itemCds);
     }
 }

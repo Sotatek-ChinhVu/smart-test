@@ -11,12 +11,11 @@ namespace Infrastructure.Converter
 
         }
 
-        public static OrdInfModel CreateBy(OdrInf odrInf, List<OdrInfDetail> odrInfDetailList, List<TenMst> tenMstList, List<KensaMst> kensaMstList, List<IpnNameMst> ipnNameMstList, string createName, string updateName)
+        public static OrdInfModel CreateBy(OdrInf odrInf, List<OdrInfDetail> odrInfDetailList, List<TenMst> tenMstList, List<KensaMst> kensaMstList, List<IpnNameMst> ipnNameMstList, string createName, string updateName, bool isAutoAddItem)
         {
             int inOutKbn = odrInf.InoutKbn;
 
             List<OrdInfDetailModel> odrInfDetailModelList = new List<OrdInfDetailModel>();
-
             foreach (OdrInfDetail detail in odrInfDetailList)
             {
                 if (detail.ItemCd == null)
@@ -136,7 +135,8 @@ namespace Infrastructure.Converter
                 createName,
                 odrInf.UpdateDate,
                 odrInf.UpdateId,
-                updateName
+                updateName,
+                isAutoAddItem
                 );
 
             return ordInfModel;

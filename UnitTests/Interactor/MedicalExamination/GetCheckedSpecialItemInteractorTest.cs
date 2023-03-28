@@ -3221,8 +3221,8 @@ public class GetCheckedSpecialItemInteractorTest
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
-        var checkedSpecialItemInputData1 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
-        var checkedSpecialItemInputData2 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new(), true, false);
+        var checkedSpecialItemInputData1 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0, false) }, new(), new(), true, false);
+        var checkedSpecialItemInputData2 = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0, false) }, new(), new(), true, false);
         // Act
         var output1 = interactor1.Handle(checkedSpecialItemInputData1);
         var output2 = interactor2.Handle(checkedSpecialItemInputData2);
@@ -3418,7 +3418,7 @@ public class GetCheckedSpecialItemInteractorTest
 
         var hokenIds = new List<(long rpno, long edano, int hokenId)> { new(1, 1, 10), new(2, 1, 20) };
 
-        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0) }, new(), new KarteItemInputData(1, 901072057, 1, 20221111, "comment abc", 0, "abc"), false, true);
+        var checkedSpecialItemInputData = new CheckedSpecialItemInputData(1, 1, 1, 20220101, 19930903, 1, 1, new List<OdrInfItemInputData>() { new OdrInfItemInputData(1, 11111000, 1, 1, 1, 20220101, 1, 1, "abc", 1, 1, 1, 1, 1, 1, 1, 1, odrDetails, 0, false) }, new(), new KarteItemInputData(1, 901072057, 1, 20221111, "comment abc", 0, "abc"), false, true);
 
         // Act
         var output = interactor.Handle(checkedSpecialItemInputData);

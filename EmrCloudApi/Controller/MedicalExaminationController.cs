@@ -132,7 +132,8 @@ namespace EmrCloudApi.Controllers
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            o.IsAutoAddItem
                         )
                 ).ToList());
             var output = _bus.Handle(input);
@@ -203,7 +204,8 @@ namespace EmrCloudApi.Controllers
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            false
                         )
                 ).ToList(),
                 request.CheckedOrderItems.Select(
@@ -296,7 +298,8 @@ namespace EmrCloudApi.Controllers
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            false
                         )
                 ).ToList()
                 );
@@ -441,7 +444,8 @@ namespace EmrCloudApi.Controllers
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            o.IsAutoAddItem
                         )
                 ).ToList(),
                 new KarteItemInputData(

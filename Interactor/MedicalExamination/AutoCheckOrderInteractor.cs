@@ -116,7 +116,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        false
                     )).ToList());
 
                 return new AutoCheckOrderOutputData(AutoCheckOrderStatus.Successed, autoCheck.Select(a => new AutoCheckOrderItem(

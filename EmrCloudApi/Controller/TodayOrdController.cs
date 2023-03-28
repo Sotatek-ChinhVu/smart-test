@@ -4,7 +4,6 @@ using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.Requests.Family;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
@@ -14,7 +13,6 @@ using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Family;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
@@ -28,7 +26,6 @@ using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
-using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -105,7 +102,8 @@ namespace EmrCloudApi.Controller
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            o.IsAutoAddItem
                         )
                 ).ToList(),
                 new KarteItemInputData(
@@ -201,7 +199,8 @@ namespace EmrCloudApi.Controller
                             od.CmtOpt,
                             od.FontColor,
                             od.CommentNewline
-                        )).ToList()
+                        )).ToList(),
+                        o.IsAutoAddItem
                     )
                ).ToList(),
                 new ValidationKarteItem(
@@ -345,7 +344,8 @@ namespace EmrCloudApi.Controller
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            false
                         )
                 ).ToList()
                 );
@@ -417,7 +417,8 @@ namespace EmrCloudApi.Controller
                                             od.CommentNewline
                                         )
                                 ).ToList(),
-                            o.IsDeleted
+                            o.IsDeleted,
+                            false
                         )
                 ).ToList()
                 );

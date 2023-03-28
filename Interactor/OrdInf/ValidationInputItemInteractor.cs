@@ -114,7 +114,8 @@ namespace Interactor.OrdInfs
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        item.IsAutoAddItem
                     );
                 if (item != null)
                 {

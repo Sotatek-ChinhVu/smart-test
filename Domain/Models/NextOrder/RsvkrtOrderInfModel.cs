@@ -118,6 +118,8 @@ namespace Domain.Models.NextOrder
 
         public string CreateName { get; private set; }
 
+        public bool IsAutoAddItem { get; private set; }
+
         public List<RsvKrtOrderInfDetailModel> OrdInfDetails { get; private set; }
 
         // 処方 - Drug

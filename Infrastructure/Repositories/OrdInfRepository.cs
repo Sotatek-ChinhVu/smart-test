@@ -2,6 +2,7 @@
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -11,8 +12,10 @@ namespace Infrastructure.Repositories
 {
     public class OrdInfRepository : RepositoryBase, IOrdInfRepository
     {
-        public OrdInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly ITodayOdrRepository _todayOdrRepository;
+        public OrdInfRepository(ITenantProvider tenantProvider, ITodayOdrRepository todayOdrRepository) : base(tenantProvider)
         {
+            _todayOdrRepository = todayOdrRepository;
         }
 
         public void Create(OrdInfModel ord)
@@ -358,6 +361,8 @@ namespace Infrastructure.Repositories
                           from odrUser in odrUsers.DefaultIfEmpty()
                           select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
             var obj = new object();
+            var checkAutoAddItems = _todayOdrRepository.CheckAutoAddItem(hpId, sinDateMin, itemCds?.ToList() ?? new());
+
             Parallel.ForEach(odrInfs, rpOdrInf =>
             {
 
@@ -369,7 +374,8 @@ namespace Infrastructure.Repositories
                 if (odrInfDetails?.Count > 0)
                 {
                     var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
-
+                    var isAutoAddItem = odrInfDetails.Any(od => checkAutoAddItems.Contains(od.ItemCd ?? string.Empty));
+                    rpOdrInf.ChangeAutoAddItem(isAutoAddItem);
                     var objDetail = new object();
                     Parallel.For(0, odrInfDetails.Count, index =>
                     {
@@ -441,7 +447,8 @@ namespace Infrastructure.Repositories
                         createName,
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
-                        updateName
+                        updateName,
+                        false
                    );
         }
 

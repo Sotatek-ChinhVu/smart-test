@@ -125,7 +125,7 @@ namespace Domain.Common
                 var count = 0;
                 foreach (var ordInfDetail in odrInf.OrdInfDetails)
                 {
-                    var status = ValidationDetail(ordInfDetail, flag, sinDate, refillSetting);
+                    var status = ValidationDetail(ordInfDetail, flag, sinDate, refillSetting, odrInf.IsAutoAddItem);
                     if (status != OrdInfValidationStatus.Valid)
                     {
                         if (status == OrdInfValidationStatus.InvalidSuryoOfReffill)
@@ -150,7 +150,7 @@ namespace Domain.Common
             return new(odrValidateCode, OrdInfValidationStatus.Valid);
         }
 
-        private static OrdInfValidationStatus ValidationDetail(TOdrInfDetailModel odrInfDetail, int flag, int sinDate, int refillSetting)
+        private static OrdInfValidationStatus ValidationDetail(TOdrInfDetailModel odrInfDetail, int flag, int sinDate, int refillSetting, bool isAutoAddItem)
         {
             #region Validate common
             var validateCommonDetail = ValidateCommonDetail(odrInfDetail);
@@ -171,7 +171,7 @@ namespace Domain.Common
 
             #region Validate business
 
-            if ((string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
+            if (!isAutoAddItem && (string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
@@ -468,7 +468,7 @@ namespace Domain.Common
                         var count = 0;
                         foreach (var detail in drugAfterDrugUsage)
                         {
-                            var validateResult = ValidationDetail(detail, flag, sinDate, refillSetting);
+                            var validateResult = ValidationDetail(detail, flag, sinDate, refillSetting, odrInf.IsAutoAddItem);
                             if (validateResult != OrdInfValidationStatus.Valid) return new(count.ToString(), validateResult);
                             count++;
                         }
@@ -497,7 +497,7 @@ namespace Domain.Common
                         var count = 0;
                         foreach (var detail in injectionBeforeInjectionUsage)
                         {
-                            var validateResult = ValidationDetail(detail, flag, sinDate, refillSetting);
+                            var validateResult = ValidationDetail(detail, flag, sinDate, refillSetting, odrInf.IsAutoAddItem);
                             if (OrdInfValidationStatus.Valid != validateResult) return new(count.ToString(), validateResult);
                             count++;
                         }

@@ -103,7 +103,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        false
                     )).ToList());
 
                 return new CheckedItemNameOutputData(CheckedItemNameStatus.Successed, checkedName);

@@ -2,7 +2,7 @@
 {
     public class OdrInfItemInputData
     {
-        public OdrInfItemInputData(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, List<OdrInfDetailItemInputData> odrDetails, int isDeleted)
+        public OdrInfItemInputData(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, List<OdrInfDetailItemInputData> odrDetails, int isDeleted, bool isAutoAddItem)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -23,6 +23,7 @@
             Id = id;
             OdrDetails = odrDetails;
             IsDeleted = isDeleted;
+            IsAutoAddItem = isAutoAddItem;
         }
 
         public int HpId { get; private set; }
@@ -43,6 +44,7 @@
         public int SortNo { get; private set; }
         public long Id { get; private set; }
         public int IsDeleted { get; private set; }
+        public bool IsAutoAddItem { get; private set; }
         public List<OdrInfDetailItemInputData> OdrDetails { get; private set; }
     }
 }

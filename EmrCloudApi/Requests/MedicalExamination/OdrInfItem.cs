@@ -20,6 +20,7 @@
         public int SortNo { get; set; }
         public long Id { get; set; }
         public int IsDeleted { get; set; }
+        public bool IsAutoAddItem { get; set; }
         public List<OdrInfDetailItem> OdrDetails { get; set; } = new();
     }
 }

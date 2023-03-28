@@ -126,7 +126,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        item.IsAddAutoItem
                     )
                     ).ToList());
 
@@ -209,7 +210,8 @@ namespace Interactor.MedicalExamination
                          o.CreateDate,
                          o.CreateId,
                          o.CreateName,
-                         o.IsDeleted
+                         o.IsDeleted,
+                         o.IsAutoAddItem
                         )).ToList());
             }
             finally

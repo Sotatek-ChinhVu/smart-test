@@ -1173,7 +1173,7 @@ namespace Infrastructure.Repositories
 
                 int kensaGaichu = GetKensaGaichu(odrDetail, tenMst, addingOdr.Item4, addingOdr.Item5, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
 
-                var newOdr = ConvertToModel(odrInf, odrDetail, tenMst ?? new TenMst(), isGetPriceInYakka, alternationIndex, kensaGaichu, addingOdr.Item4, GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()));
+                var newOdr = ConvertToModel(odrInf, odrDetail, tenMst ?? new TenMst(), isGetPriceInYakka, alternationIndex, kensaGaichu, addingOdr.Item4, GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), true);
                 autoAddOdr.Add(newOdr);
             }
 
@@ -1377,7 +1377,7 @@ namespace Infrastructure.Repositories
             return autoItemList;
         }
 
-        private static OrdInfModel ConvertToModel(OdrInf ordInf, OdrInfDetail odrInfDetail, TenMst tenMst, bool isGetPriceInYakka, int alternationIndex, int kensaGaichu, int inOutKbn, List<YohoSetMstModel> yohoSets)
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, OdrInfDetail odrInfDetail, TenMst tenMst, bool isGetPriceInYakka, int alternationIndex, int kensaGaichu, int inOutKbn, List<YohoSetMstModel> yohoSets, bool isAutoAddItem)
         {
             var ordDetail = new OrdInfDetailModel(
                                 odrInfDetail.HpId,
@@ -1460,7 +1460,8 @@ namespace Infrastructure.Repositories
                         "",
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
-                        ""
+                        "",
+                        isAutoAddItem
                    );
 
             ;
@@ -2176,7 +2177,8 @@ namespace Infrastructure.Repositories
                    string.Empty,
                    DateTime.MinValue,
                    userId,
-                   string.Empty
+                   string.Empty,
+                   false
                );
                 ordInfModels.Add(newTodayOdrInfModel);
             }
@@ -2253,7 +2255,7 @@ namespace Infrastructure.Repositories
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
-                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty);
+                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty, false);
                 ordInfs.Add(odrInf);
             }
             return ordInfs;
@@ -2820,7 +2822,8 @@ namespace Infrastructure.Repositories
                                     string.Empty,
                                     DateTime.MinValue,
                                     userId,
-                                    string.Empty
+                                    string.Empty,
+                                    false
                                 );
 
                             result.Add(new(-1, odrInf));
@@ -3009,6 +3012,52 @@ namespace Infrastructure.Repositories
                 }
             }
             return odrInfItems;
+        }
+
+
+        public List<string> CheckAutoAddItem(int hpId, int sinDate, List<string> itemCds)
+        {
+            var autoItems = new List<string>();
+
+            var allSanteiGrpDetail = NoTrackingDataContext.SanteiGrpDetails
+                                    .Where(s => itemCds.Contains(s.ItemCd)).ToList();
+            foreach (var itemCd in itemCds)
+            {
+                if (string.IsNullOrEmpty(itemCd))
+                {
+                    continue;
+                }
+
+                var santeiGrpDetails = allSanteiGrpDetail.Where(s => s.ItemCd == itemCd).ToList();
+                var santeiGrpCds = santeiGrpDetails.Select(s => s.SanteiGrpCd);
+
+                if (santeiGrpDetails.Count == 0)
+                {
+                    continue;
+                }
+
+                var santeiAutoOrders = NoTrackingDataContext.SanteiAutoOrders.Where(e =>
+                                         e.HpId == hpId &&
+                                         santeiGrpCds.Contains(e.SanteiGrpCd) &&
+                                         e.StartDate <= sinDate &&
+                                         e.EndDate >= sinDate).ToList();
+                var santeiAutoOrderDetails = NoTrackingDataContext.SanteiAutoOrderDetails.Where(s => santeiGrpCds.Contains(s.SanteiGrpCd)).ToList();
+
+                foreach (var santeiGrpDetail in santeiGrpDetails)
+                {
+                    var santeiAutoOrder = santeiAutoOrders.FirstOrDefault(s => s.SanteiGrpCd == santeiGrpDetail.SanteiGrpCd && s.HpId == santeiGrpDetail.HpId);
+                    if (santeiAutoOrder == null)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        autoItems.Add(santeiGrpDetail.ItemCd);
+                    }
+                }
+            }
+
+            return autoItems.Distinct().ToList();
         }
 
         private OrdInfDetailModel ConvertConversionItemToDetailModel(int hpId, OrdInfDetailModel sourceDetail, TenMst tenMst, List<IpnNameMst> ipnNameMsts, int autoSetKohatu, int autoSetSenpatu, int autoSetSyohoKbnKohatuDrug, int autoSetSyohoLimitKohatuDrug, int autoSetSyohoKbnSenpatuDrug, int autoSetSyohoLimitSenpatuDrug, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> ipnMinYakkaMsts, int sinDate, long raiinNo, long ptId, int odrKouiKbn, int kensaIraiCondition, int kensaIrai)

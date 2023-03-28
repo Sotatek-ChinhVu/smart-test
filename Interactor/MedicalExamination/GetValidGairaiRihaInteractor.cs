@@ -126,7 +126,8 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        false
                     )).ToList());
 
                 return new GetValidGairaiRihaOutputData(check.type, check.itemName, check.lastDaySanteiRiha, check.rihaItemName, GetValidGairaiRihaStatus.Successed);

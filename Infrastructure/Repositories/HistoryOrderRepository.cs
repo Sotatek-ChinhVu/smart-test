@@ -9,6 +9,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -24,14 +25,16 @@ namespace Infrastructure.Repositories
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IRaiinListTagRepository _raiinListTagRepository;
         private readonly IKarteInfRepository _karteInfRepository;
+        private readonly ITodayOdrRepository _todayOdrRepository;
 
-        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IKarteInfRepository karteInfRepository) : base(tenantProvider)
+        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IKarteInfRepository karteInfRepository, ITodayOdrRepository todayOdrRepository) : base(tenantProvider)
         {
             _userInfoService = userInfoService;
             _insuranceRepository = insuranceRepository;
             _raiinListTagRepository = raiinListTagRepository;
             _kaService = kaService;
             _karteInfRepository = karteInfRepository;
+            _todayOdrRepository = todayOdrRepository;
         }
 
         public KarteFilterMstModel GetFilter(int hpId, int userId, int filterId)
@@ -272,7 +275,7 @@ namespace Infrastructure.Repositories
             List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
 
             List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
-            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList, sinDate);
             //if (!allOrderInfList.Any())
             //{
             //    return (0, new List<HistoryOrderModel>());
@@ -536,7 +539,7 @@ namespace Infrastructure.Repositories
             return karteInfs.ToList();
         }
 
-        private Dictionary<long, List<OrdInfModel>> GetOrderInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList)
+        private Dictionary<long, List<OrdInfModel>> GetOrderInfList(int hpId, long ptId, int isDeleted, List<long> raiinNoList, int sinDate = 0)
         {
             List<OdrInf> allOdrInfList = NoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId &&
@@ -578,6 +581,7 @@ namespace Infrastructure.Repositories
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
+            var checkAutoAddItems = _todayOdrRepository.CheckAutoAddItem(hpId, sinDate, allOdrDetailInfList.Select(od => od.ItemCd ?? string.Empty).Distinct().ToList() ?? new());
 
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
@@ -591,8 +595,8 @@ namespace Infrastructure.Repositories
 
                     List<OdrInfDetail> odrDetailInfList = allOdrDetailInfList.Where(o => o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && o.RpEdaNo == odrInf.RpEdaNo).ToList();
 
-
-                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName);
+                    var isAutoAddItem = odrDetailInfList.Any(od => checkAutoAddItems.Contains(od.ItemCd ?? string.Empty));
+                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, isAutoAddItem);
                     odrInfModelList.Add(ordInfModel);
                 }
 
