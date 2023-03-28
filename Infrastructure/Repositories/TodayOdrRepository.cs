@@ -1133,7 +1133,6 @@ namespace Infrastructure.Repositories
                 OdrInfDetail odrDetail = new OdrInfDetail();
                 odrDetail.SinKouiKbn = targetItem?.SinKouiKbn ?? 0;
                 odrDetail.SinDate = sinDate;
-                odrDetail.Suryo = santeiAutoOdrDetail?.Suryo ?? 0;
                 odrDetail.ItemCd = autoAddItem?.Item3 ?? string.Empty;
                 odrDetail.ItemName = targetItem?.Name ?? string.Empty;
 
@@ -1159,6 +1158,7 @@ namespace Infrastructure.Repositories
                 odrDetail.KohatuKbn = targetItem?.KohatuKbn ?? 0;
                 odrDetail.YohoKbn = targetItem?.YohoKbn ?? 0;
                 odrDetail.DrugKbn = targetItem?.DrugKbn ?? 0;
+                odrDetail.Suryo = string.IsNullOrEmpty(odrDetail.UnitName) ? 0 : santeiAutoOdrDetail?.Suryo ?? 0;
 
                 var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrDetail.ItemCd);
                 var ten = tenMst?.Ten ?? 0;
