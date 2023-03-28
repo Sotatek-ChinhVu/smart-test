@@ -12,10 +12,12 @@ namespace Reporting.DrugInfo.DB
     public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     {
         private readonly ISystemConfRepository _systemConfRepository;
+
         public CoDrugInfFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository) : base(tenantProvider)
         {
             _systemConfRepository = systemConfRepository;
         }
+
         public PathConf GetPathConf(int grpCode)
         {
             var pathConfs = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);

@@ -45,33 +45,19 @@ namespace EmrCloudApi.Controller
                 "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
-            string functionName = string.Empty;
-            switch (reportType)
+
+            string functionName = reportType switch
             {
-                case ReportType.Karte1:
-                    functionName = "reporting-fm-karte1";
-                    break;
-                case ReportType.DrgInfType2_1:
-                    functionName = "frmDrgInfType2_1";
-                    break;
-                case ReportType.DrgInfType2_2:
-                    functionName = "frmDrgInfType2_2";
-                    break;
-                case ReportType.DrgInfType2_3:
-                    functionName = "frmDrgInfType2_3";
-                    break;
-                case ReportType.DrgInf1:
-                    functionName = "frmDrgInf1";
-                    break;
-                case ReportType.DrgInf2:
-                    functionName = "frmDrgInf2";
-                    break;
-                case ReportType.DrgInf3:
-                    functionName = "frmDrgInf3";
-                    break;
-                default:
-                    throw new NotImplementedException("The reportType is incorrect: " + reportType.ToString());
-            }
+                ReportType.Karte1 => "reporting-fm-karte1",
+                ReportType.DrgInfType2_1 => "frmDrgInfType2_1",
+                ReportType.DrgInfType2_2 => "frmDrgInfType2_2",
+                ReportType.DrgInfType2_3 => "frmDrgInfType2_3",
+                ReportType.DrgInf1 => "frmDrgInf1",
+                ReportType.DrgInf2 => "frmDrgInf2",
+                ReportType.DrgInf3 => "frmDrgInf3",
+
+                _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
+            } ?? string.Empty;
 
             using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}{functionName}", jsonContent))
             {
