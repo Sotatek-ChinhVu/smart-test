@@ -1,27 +1,26 @@
 ﻿using Domain.Models.SystemConf;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
-using PostgreDataContext;
+using Infrastructure.Base;
+using Infrastructure.Interfaces;
 using Reporting.DrugInfo.Model;
+using Reporting.Interface;
 
 namespace Reporting.DrugInfo.DB
 {
-    public class CoDrugInfFinder
+    public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
     {
-        private readonly int hpId = Session.HospitalID;
+        private readonly int hpId = 1;
 
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly ISystemConfRepository _systemConfRepository;
-        public CoDrugInfFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext, ISystemConfRepository systemConfRepository)
+        public CoDrugInfFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository) : base(tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
             _systemConfRepository = systemConfRepository;
         }
         public PathConf GetPathConf(int grpCode)
         {
-            var pathConfs = _tenantNoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);
+            var pathConfs = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == grpCode);
             return pathConfs ?? new();
         }
 
@@ -30,7 +29,7 @@ namespace Reporting.DrugInfo.DB
             DrugInfoModel info = new DrugInfoModel();
             info.OrderDate = orderDate == 0 ? CIUtil.DateTimeToInt(DateTime.Now) : orderDate;
 
-            var hpInfo = _tenantNoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.OrderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.OrderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInfo != null)
             {
                 info.HpName = hpInfo.HpName ?? string.Empty;
@@ -39,7 +38,7 @@ namespace Reporting.DrugInfo.DB
                 info.Phone = hpInfo.Tel ?? string.Empty;
             }
 
-            var ptInfo = _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
+            var ptInfo = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
             if (ptInfo != null)
             {
                 info.PtNo = ptInfo.PtNum;
@@ -54,9 +53,9 @@ namespace Reporting.DrugInfo.DB
         public List<OrderInfoModel> GetOrderByRaiinNo(long raiinNo)
         {
             var listOrderInfo = new List<OrderInfoModel>();
-            var odrInfs = _tenantNoTrackingDataContext.OdrInfs.Where(o => o.RaiinNo == raiinNo && o.IsDeleted == 0 && new[] { 21, 22, 23, 28 }.Contains(o.OdrKouiKbn) && o.InoutKbn == 0).ToList();
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(o => o.RaiinNo == raiinNo && o.IsDeleted == 0 && new[] { 21, 22, 23, 28 }.Contains(o.OdrKouiKbn) && o.InoutKbn == 0).ToList();
 
-            var infDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(d => d.RaiinNo == raiinNo && !(d.ItemCd.StartsWith("8") && d.ItemCd.Length == 9)).ToList();
+            var infDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.RaiinNo == raiinNo && !(d.ItemCd.StartsWith("8") && d.ItemCd.Length == 9)).ToList();
             if (odrInfs != null && odrInfs.Count > 0)
             {
                 foreach (var odrInf in odrInfs)
@@ -97,7 +96,7 @@ namespace Reporting.DrugInfo.DB
         {
             TenMstModel tenMstModel = new TenMstModel();
             int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
-            var tenMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
             if (tenMst != null)
             {
                 return tenMst.YjCd ?? string.Empty;
@@ -107,7 +106,7 @@ namespace Reporting.DrugInfo.DB
 
         public List<SingleDosageMstModel> GetSingleDosageMstCollection(int hpId, string unitName)
         {
-            var singleDosageMsts = _tenantNoTrackingDataContext.SingleDoseMsts.Where(s => s.HpId == hpId && s.UnitName == unitName)
+            var singleDosageMsts = NoTrackingDataContext.SingleDoseMsts.Where(s => s.HpId == hpId && s.UnitName == unitName)
                 .AsEnumerable().Select(s => new SingleDosageMstModel() { HpId = s.HpId, Id = s.Id, UnitName = s.UnitName ?? string.Empty }).ToList();
             return singleDosageMsts;
 
@@ -117,7 +116,7 @@ namespace Reporting.DrugInfo.DB
         {
             var tenMstModel = new TenMstModel();
             int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
-            var tenMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
             if (tenMst != null)
             {
                 tenMstModel.ItemCD = tenMst.ItemCd;
@@ -132,7 +131,7 @@ namespace Reporting.DrugInfo.DB
 
         public List<PiImage> GetProductImages(int hpId, string itemCd)
         {
-            var images = _tenantNoTrackingDataContext.PiImages.Where(p => p.HpId == hpId && p.ItemCd == itemCd).ToList();
+            var images = NoTrackingDataContext.PiImages.Where(p => p.HpId == hpId && p.ItemCd == itemCd).ToList();
             return images;
         }
 
@@ -141,12 +140,12 @@ namespace Reporting.DrugInfo.DB
             var result = new List<DrugInf>();
             string strSex = gender.AsString();
             //
-            var drugInf = _tenantNoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 1).ToList();
+            var drugInf = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 1).ToList();
             if (!drugInf.Any())
             {
                 drugInf = new List<DrugInf>();
-                var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
-                var drugInfoMains = _tenantNoTrackingDataContext.M34DrugInfoMains;
+                var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
+                var drugInfoMains = NoTrackingDataContext.M34DrugInfoMains;
                 var joinQuery = (from t in tenMsts
                                  join dm in drugInfoMains
                                  on t.YjCd equals dm.YjCd
@@ -154,7 +153,7 @@ namespace Reporting.DrugInfo.DB
 
                 var konoCodes = joinQuery.GroupBy(g => g).Select(g => g.Key).ToList();
 
-                var indicationCodes = _tenantNoTrackingDataContext.M34IndicationCodes;
+                var indicationCodes = NoTrackingDataContext.M34IndicationCodes;
                 var joinWithCodes = (from konoCd in konoCodes
                                      join indicationCode in indicationCodes
                                      on konoCd equals indicationCode.KonoCd
@@ -174,13 +173,13 @@ namespace Reporting.DrugInfo.DB
             result.AddRange(drugInf);
 
             //
-            var drugInf1 = _tenantNoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 2).AsEnumerable().ToList();
+            var drugInf1 = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 2).AsEnumerable().ToList();
             if (drugInf1 == null || drugInf1.Count == 0)
             {
                 drugInf1 = new List<DrugInf>();
 
-                var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
-                var precaution = _tenantNoTrackingDataContext.M34Precautions;
+                var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.ItemCd == itemCd);
+                var precaution = NoTrackingDataContext.M34Precautions;
                 var joinQuery = (from t in tenMsts
                                  join pr in precaution
                                  on t.YjCd equals pr.YjCd
@@ -188,7 +187,7 @@ namespace Reporting.DrugInfo.DB
 
                 var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault().SeqNo }).ToList();
 
-                var precautionCodes = _tenantNoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
+                var precautionCodes = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                                                             || (pr.AgeMax >= age && pr.AgeMin <= age)
                                                                                                             || (pr.AgeMax <= 0 && pr.AgeMin <= age))
                                                                                                         && (pr.SexCd == null || pr.SexCd == string.Empty || pr.SexCd == strSex));
