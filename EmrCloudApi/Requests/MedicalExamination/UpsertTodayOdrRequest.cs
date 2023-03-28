@@ -11,6 +11,7 @@
         public string UketukeTime { get; set; } = string.Empty;
         public string SinStartTime { get; set; } = string.Empty;
         public string SinEndTime { get; set; } = string.Empty;
+        public byte Status { get; set; }
         public List<OdrInfItem> OdrInfs { get; set; } = new();
         public KarteItem KarteItem { get; set; } = new();
         public FileItemRequestItem FileItem { get; set; } = new();
