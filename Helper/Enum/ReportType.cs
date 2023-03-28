@@ -10,6 +10,12 @@ namespace Helper.Enum
     {
         Karte1,
         Karte2,
-        Karte3
+        Karte3,
+        DrgInfType2_1,
+        DrgInfType2_2, 
+        DrgInfType2_3,
+        DrgInf1,
+        DrgInf2,
+        DrgInf3,
     }
 }
