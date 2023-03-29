@@ -6,6 +6,7 @@ using EventProcessor.Model;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Common;
 using Interactor.CalculateService;
 using System.Text;
 using UseCase.ReceiptCreation.CreateUKEFile;
@@ -48,6 +49,7 @@ namespace Interactor.ReceiptCreation
                 if (inputData.ModeType == ModeTypeCreateUKE.Aftercare)
                 {
                     string errorInfs = ValidateAftercare(inputData.HpId, inputData.SeikyuYm);
+                    if (!string.IsNullOrEmpty(errorInfs))
                     {
                         return new CreateUKEFileOutputData(CreateUKEFileStatus.ErrorValidateAftercare, errorInfs, TypeMessage.TypeMessageError, new List<UKEFileOutputData>());
                     }
@@ -134,6 +136,8 @@ namespace Interactor.ReceiptCreation
                         File.Create(filePath);
 
                     List<ArgumentModel> arguments = new List<ArgumentModel>();
+
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                     for (int i = 0; i < receData.Count; i++)
                     {
                         RecedenFileInfoModel fileInfo = GetFileInfo(i + 1, inputData.ModeType , raisoRadio);
@@ -145,7 +149,7 @@ namespace Interactor.ReceiptCreation
 
                         using (FileStream st = File.OpenRead(filePath))
                         {
-                            ukeFiles.Add(new UKEFileOutputData(st, fileName));
+                            ukeFiles.Add(new UKEFileOutputData(st.ToMemoryStream(), fileName));
                         }
                         // Event
                         arguments.Add(new ArgumentModel(inputData.HpId, inputData.UserId, EventCode.ReportReceden, 0, inputData.SeikyuYm, 0, $"mode:{inputData.ModeType} file:{fileInfo.FileName}"));

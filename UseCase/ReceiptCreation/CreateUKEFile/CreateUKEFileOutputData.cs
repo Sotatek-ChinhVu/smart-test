@@ -23,13 +23,13 @@ namespace UseCase.ReceiptCreation.CreateUKEFile
 
     public class UKEFileOutputData
     {
-        public UKEFileOutputData(Stream outputStream, string fileName)
+        public UKEFileOutputData(MemoryStream outputStream, string fileName)
         {
             OutputStream = outputStream;
             FileName = fileName;
         }
 
-        public Stream OutputStream { get; private set; }
+        public MemoryStream OutputStream { get; private set; }
 
         public string FileName { get; private set; }
     }

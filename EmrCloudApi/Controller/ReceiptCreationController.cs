@@ -1,11 +1,10 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Requests.Document;
+using EmrCloudApi.Presenters.ReceiptCreation;
 using EmrCloudApi.Requests.ReceiptCreation;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using UseCase.Core.Sync;
-using UseCase.Document.DownloadDocumentTemplate;
 using UseCase.ReceiptCreation.CreateUKEFile;
 
 namespace EmrCloudApi.Controller
@@ -40,6 +39,8 @@ namespace EmrCloudApi.Controller
                                                     request.ConfirmCreateUKEFile,
                                                     UserId);
             var output = _bus.Handle(input);
+            var presenter = new CreateUKEFilePresenter();
+            presenter.Complete(output);
             if (output.Status == CreateUKEFileStatus.Successful)
             {
                 using (MemoryStream ms = new MemoryStream())
@@ -51,15 +52,15 @@ namespace EmrCloudApi.Controller
                             var entry = archive.CreateEntry(file.FileName, CompressionLevel.Fastest);
                             using (var zipStream = entry.Open())
                             {
-                                zipStream.Write(file.OutputStream, 0, file.OutputStream.Length);
+                                var buffer = file.OutputStream.ToArray();
+                                zipStream.Write(buffer, 0, buffer.Length);
                             }
                         }
                     }
-                    return File(ms.ToArray(), "application/zip", "Archive.zip");
+                    return File(ms.ToArray(), "application/zip", "ReceiptCreations.zip");
                 }
-            }  
-            else
-                return Ok(output);
+            }
+            return Ok(presenter.Result);
         }
     }
 }
