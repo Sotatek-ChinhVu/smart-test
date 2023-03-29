@@ -1008,7 +1008,7 @@ namespace Infrastructure.Repositories
                 // HokenNashi - 保険なし
                 else if (_isSameKohiHoubetu(historyHokenPattern, syosaisinHokenPattern))
                 {
-                    // ① 初再診と履歴が同じ組合せの法別番号の公費を持つ場合は初再診のPID
+                    // ② 初再診と履歴が同じ組合せの法別番号の公費を持つ場合は初再診のPID
                     return syosaisinHokenPattern.HokenPid;
                 }
                 else
@@ -1020,13 +1020,17 @@ namespace Infrastructure.Repositories
                         .FirstOrDefault();
                     if (sameKohiPattern != null)
                     {
-                        // ② 主保険なしで有効な保険パターンの中で、履歴と同じ組合せの法別番号の公費を持つPID
+                        // ③ 主保険なしで有効な保険パターンの中で、履歴と同じ組合せの法別番号の公費を持つPID
                         return sameKohiPattern.HokenPid;
+                    }
+                    else if (!syosaisinHokenPattern.IsExpirated)
+                    {
+                        // ④ ③までに該当する保険パターンが存在しない場合、初再診が有効な保険組合せの場合は初再診のPID	
+                        return syosaisinHokenPattern.HokenPid;
                     }
                     else
                     {
-                        // ③ ②までに該当する保険パターンが存在しない場合、初再診のPID
-                        return syosaisinHokenPattern.HokenPid;
+                        return historyPid;
                     }
                 }
             }
@@ -1043,6 +1047,7 @@ namespace Infrastructure.Repositories
                     var sameHokenPatternBuntenKohi = hokenPatternModels
                                                 .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                        && !p.IsEmptyHoken
+                                                       && !p.IsExpirated
                                                        && p.HokenPid == syosaisinHokenPattern?.HokenPid
                                                        && p.BuntenKohis.Count > 0)
                                                 .OrderBy(p => p.IsExpirated)
@@ -1050,7 +1055,7 @@ namespace Infrastructure.Repositories
                                                 .FirstOrDefault();
                     if (sameHokenPatternBuntenKohi == null)
                     {
-                        // ⓪ 初再診と同じ主保険を持つ保険パターンの中で、分点公費（HOKEN_MST.HOKEN_SBT_KBN=6）を持つ保険パターンがない場合は、初再診の保険PID
+                        // ② 初再診と同じ主保険を持つ有効な保険パターンの中で、分点公費（HOKEN_MST.HOKEN_SBT_KBN=6）を持つ保険パターンがない場合は、初再診の保険PID
                         return syosaisinHokenPattern?.HokenPid ?? 0;
                     }
                     else
@@ -1058,6 +1063,7 @@ namespace Infrastructure.Repositories
                         var sameHokenPattern = hokenPatternModels
                                                 .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                        && !p.IsEmptyHoken
+                                                       && !p.IsExpirated
                                                        && p.HokenPid == syosaisinHokenPattern?.HokenPid
                                                        && _isSameKohiHoubetu(historyHokenPattern, p))
                                                 .OrderBy(p => p.IsExpirated)
@@ -1074,6 +1080,7 @@ namespace Infrastructure.Repositories
                             var sameHokenPatternDiffHoubetu = hokenPatternModels
                                                     .Where(p => p.HokenSbtCd < 500 && p.HokenSbtCd > 0
                                                            && !p.IsEmptyHoken
+                                                           && !p.IsExpirated
                                                            && p.HokenPid == syosaisinHokenPattern?.HokenPid)
                                                     .OrderBy(p => p.IsExpirated)
                                                     .ThenBy(p => p.HokenPid)
@@ -1121,18 +1128,19 @@ namespace Infrastructure.Repositories
                                 {
                                     return foundPattern.HokenPid;
                                 }
-                                else
-                                {
-                                    return syosaisinHokenPattern?.HokenPid ?? 0;
-                                }
+                                //else
+                                //{
+                                //    return syosaisinHokenPattern?.HokenPid ?? 0;
+                                //}
                             }
-                            else
-                            {
-                                return syosaisinHokenPattern?.HokenPid ?? 0;
-                            }
+                            //else
+                            //{
+                            //    return syosaisinHokenPattern?.HokenPid ?? 0;
+                            //}
                         }
                     }
                 }
+                return historyPid;
             }
         }
 

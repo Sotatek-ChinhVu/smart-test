@@ -223,7 +223,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public ActionResult<Response<GetDefaultSelectPatternResponse>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        public ActionResult<Response<GetDefaultSelectPatternResponse>> GetDefaultSelectPattern([FromQuery] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                 HpId,
