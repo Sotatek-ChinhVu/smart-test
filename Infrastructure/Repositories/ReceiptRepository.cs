@@ -2289,8 +2289,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                  item.HokenId,
                                                                  item.ItemCd ?? string.Empty,
                                                                  item.DelItemCd ?? string.Empty,
-                                                                 item.DelSbt ?? 0,
-                                                                 item.IsWarning ?? 0,
+                                                                 item.DelSbt,
+                                                                 item.IsWarning,
                                                                  item.TermCnt,
                                                                  item.TermSbt))
                                              .ToList();
