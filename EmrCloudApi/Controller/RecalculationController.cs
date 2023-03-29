@@ -21,7 +21,7 @@ public class RecalculationController : AuthorizeControllerBase
     }
 
     [HttpPost]
-    public void HistoryReceCmt([FromBody] RecalculationRequest request, CancellationToken cancellationToken)
+    public void Recalculation([FromBody] RecalculationRequest request, CancellationToken cancellationToken)
     {
         _cancellationToken = cancellationToken;
         try

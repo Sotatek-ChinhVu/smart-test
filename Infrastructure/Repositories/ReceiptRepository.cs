@@ -2521,7 +2521,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int minSindate = hasErrorList.Select(item => item.Sindate)?.Min() ?? 0;
+        int minSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Min() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
