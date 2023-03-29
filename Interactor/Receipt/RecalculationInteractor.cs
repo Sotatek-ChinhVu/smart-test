@@ -76,7 +76,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             int allCheckCount = receRecalculationList.Count;
 
             // run Recalculation
-            if (success && !isStopCalc && inputData.IsRecalculationCheckBox)
+            if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
                 success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
             }
@@ -84,7 +84,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(inputData.HpId, receRecalculationList, allCheckCount);
+                success = ReceFutanCalculateMain(receRecalculationList, allCheckCount);
             }
 
             // check error in month
@@ -117,7 +117,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         foreach (var item in receRecalculationList)
         {
             var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = (bool)statusCallBack.Result.Result;
+            isStopCalc = statusCallBack.Result.Result;
             if (isStopCalc)
             {
                 break;
@@ -139,14 +139,14 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
-    private bool ReceFutanCalculateMain(int hpId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    private bool ReceFutanCalculateMain(List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
     {
         SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
         int successCount = 1;
         foreach (var item in receRecalculationList)
         {
             var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = (bool)statusCallBack.Result.Result;
+            isStopCalc = statusCallBack.Result.Result;
             if (isStopCalc)
             {
                 break;
