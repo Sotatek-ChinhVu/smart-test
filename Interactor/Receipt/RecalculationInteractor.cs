@@ -93,6 +93,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                 success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
             }
 
+            if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
+            {
+                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty));
+            }
             return new RecalculationOutputData(success);
         }
         finally
