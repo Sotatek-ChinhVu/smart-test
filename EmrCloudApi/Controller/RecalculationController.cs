@@ -37,6 +37,12 @@ public class RecalculationController : AuthorizeControllerBase
             var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox);
             _bus.Handle(input);
         }
+        catch
+        {
+            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
+        }
         finally
         {
             Messenger.Instance.Deregister<RecalculationStatus>(this, UpdateRecalculationStatus);
