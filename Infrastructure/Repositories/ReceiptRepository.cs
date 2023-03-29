@@ -1299,11 +1299,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
     {
+        var hokenKbnList = new List<int> { 11, 12, 13 };
+        var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+        var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
+        if (!hokenKbnList.Contains(hokenKbn))
+        {
+            return new();
+        }
+
         var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
                                                                                && (sinYm == 0 || item.SinYm == sinYm)
                                                                                && item.PtId == ptId
                                                                                && (hokenId == 0 || item.HokenId == hokenId)
-                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                               && item.IsDeleted == DeleteTypes.None
+                                                                               && ((hokenKbn == 13 && item.SinDay > 0)
+                                                                                   || (hokenKbn != 13 && item.SinDay == 0)))
                                                                 .OrderBy(item => item.SinDay)
                                                                 .ThenByDescending(item => item.SeqNo)
                                                                 .ToList();

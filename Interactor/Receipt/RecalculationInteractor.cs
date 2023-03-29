@@ -93,6 +93,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                 success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
             }
 
+            if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
+            {
+                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty));
+            }
             return new RecalculationOutputData(success);
         }
         finally
@@ -204,7 +208,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
             newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
-            
+
             if (allCheckCount == successCount)
             {
                 break;
@@ -2091,7 +2095,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                          item?.PtId ?? 0,
                                                                                          item?.ItemCd ?? string.Empty,
-                                                                                         santeiEndDateList[item?.PtId ?? 0]))
+                                                                                         santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                      .ToList();
 
                         var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2132,7 +2136,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                           item?.PtId ?? 0,
                                                                                           item?.ItemCd ?? string.Empty,
-                                                                                          santeiEndDateList[item?.PtId ?? 0]))
+                                                                                          santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                       .ToList();
 
                         var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2141,7 +2145,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         {
                             if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
                             {
-                                int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
+                                int santeiEndDate = santeiEndDateList.ContainsKey(key?.PtId ?? 0) ? santeiEndDateList[key?.PtId ?? 0] : 0;
                                 if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
                                 {
                                     var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);
