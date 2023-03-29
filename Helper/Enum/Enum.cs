@@ -94,4 +94,13 @@
         InDrug,
         OutDrug
     }
+
+    public enum ModeSaveData
+    {
+        TempSave,
+        KeisanSave,
+        KaikeiSave,
+        TrialCalc,
+        Print
+    }
 }
