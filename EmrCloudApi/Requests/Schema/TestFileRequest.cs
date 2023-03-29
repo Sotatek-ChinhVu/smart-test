@@ -10,6 +10,6 @@
 
         public string UrlOldImage { get; set; } = string.Empty;
 
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
 }

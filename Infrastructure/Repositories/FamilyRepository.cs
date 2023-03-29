@@ -20,8 +20,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                                         && item.IsDeleted != 1)
                                                         .ToList();
 
-        var familyPtIdLists = ptFamilys.Select(item => item.FamilyPtId).ToList();
-        var familyIdLists = ptFamilys.Select(item => item.FamilyId).ToList();
+        var familyPtIdLists = ptFamilys.Select(item => item.FamilyPtId).Distinct().ToList();
+        var familyIdLists = ptFamilys.Select(item => item.FamilyId).Distinct().ToList();
 
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
                                                                 && familyPtIdLists.Contains(item.PtId)
@@ -158,6 +158,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
     public bool CheckExistFamilyRekiList(int hpId, List<long> familyRekiIdList)
     {
+        familyRekiIdList = familyRekiIdList.Distinct().ToList();
         var countFromDB = NoTrackingDataContext.PtFamilyRekis.Count(x => x.HpId == hpId && familyRekiIdList.Contains(x.Id) && x.IsDeleted != 1);
         return familyRekiIdList.Count == countFromDB;
     }

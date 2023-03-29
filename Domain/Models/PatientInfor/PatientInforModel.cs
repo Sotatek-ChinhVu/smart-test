@@ -189,13 +189,14 @@ namespace Domain.Models.PatientInfor
             Comment = string.Empty;
         }
 
-        public PatientInforModel(long ptId, long ptNum, string name, string kanaName, int sex)
+        public PatientInforModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthDay)
         {
             PtId = ptId;
             PtNum = ptNum;
             KanaName = kanaName;
             Name = name;
             Sex = sex;
+            Birthday = birthDay;
             HomePost = string.Empty;
             HomeAddress1 = string.Empty;
             HomeAddress2 = string.Empty;

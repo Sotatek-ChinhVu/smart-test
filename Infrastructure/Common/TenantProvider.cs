@@ -21,7 +21,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            return _configuration["TenantDbSample"];
+            return _configuration["TenantDbSample"] ?? string.Empty;
         }
 
         public string GetClinicID()

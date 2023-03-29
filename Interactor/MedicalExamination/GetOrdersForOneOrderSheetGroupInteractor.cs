@@ -2,45 +2,64 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
-using UseCase.Accounting.GetHistoryOrder;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.OrdInfs.GetListTrees;
 
-namespace Interactor.Accounting
+namespace Interactor.MedicalExamination
 {
-    public class GetAccountingHistoryOrderInteractor : IGetAccountingHistoryOrderInputPort
+    public class GetOrdersForOneOrderSheetGroupInteractor : IGetOrdersForOneOrderSheetGroupInputPort
     {
-        private readonly IHistoryOrderRepository _historyOrderRepository;
+        private readonly IHistoryOrderRepository _historyRepository;
         private readonly IInsuranceRepository _insuranceRepository;
 
-        public GetAccountingHistoryOrderInteractor(IHistoryOrderRepository historyOrderRepository, IInsuranceRepository insuranceRepository)
+        public GetOrdersForOneOrderSheetGroupInteractor(IHistoryOrderRepository historyRepository, IInsuranceRepository insuranceRepository)
         {
-            _historyOrderRepository = historyOrderRepository;
+            _historyRepository = historyRepository;
             _insuranceRepository = insuranceRepository;
         }
 
-        public GetAccountingHistoryOrderOutputData Handle(GetAccountingHistoryOrderInputData inputData)
+        public GetOrdersForOneOrderSheetGroupOutputData Handle(GetOrdersForOneOrderSheetGroupInputData inputData)
         {
             try
             {
-                var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
-
-                var historyList = _historyOrderRepository.GetListByRaiin(
-                    inputData.HpId,
-                    inputData.UserId,
-                    inputData.PtId,
-                    inputData.SinDate,
-                    0,
-                    inputData.DeleteConditon,
-                    inputData.RaiinNo
-                    );
+                if (inputData.HpId <= 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidHpId);
+                }
+                if (inputData.PtId <= 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidPtId);
+                }
+                if (inputData.SinDate < 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidSinDate);
+                }
+                if (inputData.OdrKouiKbn < 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidOdrKouiKbn);
+                }
+                if (inputData.GrpKouiKbn < 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidGrpKouiKbn);
+                }
+                if (inputData.Offset < 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidOffset);
+                }
+                if (inputData.Limit <= 0)
+                {
+                    return new GetOrdersForOneOrderSheetGroupOutputData(0, new(), GetOrdersForOneOrderSheetGroupStatus.InvalidLimit);
+                }
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
-                foreach (HistoryOrderModel history in historyList)
+
+                var result = _historyRepository.GetOrdersForOneOrderSheetGroup(inputData.HpId, inputData.PtId, inputData.OdrKouiKbn, inputData.GrpKouiKbn, inputData.SinDate, inputData.Offset, inputData.Limit);
+                var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
+
+                foreach (HistoryOrderModel history in result.historyOrderModels)
                 {
-                    var karteInfs = history.KarteInfModels;
-                    var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
-                    
+
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
                         (
                             history.RaiinNo,
@@ -58,7 +77,7 @@ namespace Interactor.Accounting
                             history.TagNo,
                             history.SinryoTitle,
                             history.HokenType,
-                            new List<HokenGroupHistoryItem>(),
+                            new(),
                             new(),
                             new()
                         );
@@ -66,14 +85,22 @@ namespace Interactor.Accounting
                     //Excute order
                     ExcuteOrder(insuranceModelList, history.OrderInfList, historyKarteOdrRaiin, historyKarteOdrRaiins);
                 }
-                return new GetAccountingHistoryOrderOutputData(historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetAccountingHistoryOrderStatus.Successed);
+
+                return new GetOrdersForOneOrderSheetGroupOutputData(result.totalCount, historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetOrdersForOneOrderSheetGroupStatus.Successed);
             }
             finally
             {
-                _historyOrderRepository.ReleaseResource();
+                _historyRepository.ReleaseResource();
             }
         }
 
+        /// <summary>
+        /// Excute Order
+        /// </summary>
+        /// <param name="insuranceData"></param>
+        /// <param name="allOdrInfs"></param>
+        /// <param name="historyKarteOdrRaiin"></param>
+        /// <param name="historyKarteOdrRaiins"></param>
         private static void ExcuteOrder(List<InsuranceModel> insuranceData, List<OrdInfModel> orderInfList, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
         {
             var odrInfListByRaiinNo = orderInfList.OrderBy(odr => odr.OdrKouiKbn)

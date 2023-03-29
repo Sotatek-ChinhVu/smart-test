@@ -4,10 +4,10 @@ namespace Reporting.Karte1.Model
 {
     public class CoKarte1Model
     {
-        CoPtInfModel PtInfModel { get; } = null;
-        public List<CoPtByomeiModel> PtByomeiModels { get; } = null;
+        CoPtInfModel PtInfModel { get; } = new();
+        public List<CoPtByomeiModel> PtByomeiModels { get; } = new();
 
-        CoPtHokenInfModel PtHokenInfModel { get; } = null;
+        CoPtHokenInfModel PtHokenInfModel { get; } = new();
 
         public CoKarte1Model(CoPtInfModel ptInfModel, List<CoPtByomeiModel> ptByomeiModels, CoPtHokenInfModel ptHokenInfModel)
         {

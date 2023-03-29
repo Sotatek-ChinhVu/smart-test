@@ -53,6 +53,12 @@ namespace Reporting.Mappers
                 .Select(c => new Item(c))
                 .ToList();
         }
+        public Karte1Mapper()
+        {
+            information = new();
+            table = new();
+
+        }
     }
 
     public class Information

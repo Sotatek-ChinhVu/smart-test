@@ -50,16 +50,16 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         try
         {
             var validateResult = ValidateData(inputData);
-            if (validateResult != SaveFamilyListStatus.ValidateSuccess)
+            if (validateResult != ValidateFamilyListStatus.ValidateSuccess)
             {
                 return new SaveFamilyListOutputData(validateResult);
             }
             var familyList = ConvertToFamilyList(inputData.ListFamily);
             if (!_familyRepository.SaveFamilyList(inputData.HpId, inputData.UserId, familyList))
             {
-                return new SaveFamilyListOutputData(SaveFamilyListStatus.Failed);
+                return new SaveFamilyListOutputData(ValidateFamilyListStatus.Failed);
             }
-            return new SaveFamilyListOutputData(SaveFamilyListStatus.Successed);
+            return new SaveFamilyListOutputData(ValidateFamilyListStatus.Successed);
         }
         finally
         {
@@ -104,16 +104,16 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         return result;
     }
 
-    private SaveFamilyListStatus ValidateData(SaveFamilyListInputData input)
+    private ValidateFamilyListStatus ValidateData(SaveFamilyListInputData input)
     {
         // validate simple param
         if (input.HpId <= 0 || !_hpInfRepository.CheckHpId(input.HpId))
         {
-            return SaveFamilyListStatus.InvalidHpId;
+            return ValidateFamilyListStatus.InvalidHpId;
         }
         else if (input.UserId <= 0 || !_userRepository.CheckExistedUserId(input.UserId))
         {
-            return SaveFamilyListStatus.InvalidUserId;
+            return ValidateFamilyListStatus.InvalidUserId;
         }
 
         // validate data
@@ -124,12 +124,12 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         familyPtIdList = familyPtIdList.Distinct().ToList();
         if (ptIdList.Any(id => id <= 0) || input.PtId <= 0 || !_patientInforRepository.CheckExistIdList(familyPtIdList))
         {
-            return SaveFamilyListStatus.InvalidPtIdOrFamilyPtId;
+            return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
         }
         return ValidateFamilyListInputItem(input.HpId, input.PtId, input.ListFamily);
     }
 
-    private SaveFamilyListStatus ValidateFamilyListInputItem(int hpId, long ptId, List<FamilyItem> listFamily)
+    private ValidateFamilyListStatus ValidateFamilyListInputItem(int hpId, long ptId, List<FamilyItem> listFamily)
     {
         List<FamilyRekiItem> familyRekiList = new();
         // validate familyId
@@ -137,7 +137,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         var onlyFamlilyList = _familyRepository.GetListByPtId(hpId, ptId);
         if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
         {
-            return SaveFamilyListStatus.InvalidFamilyId;
+            return ValidateFamilyListStatus.InvalidFamilyId;
         }
 
         foreach (var familyItem in listFamily)
@@ -148,7 +148,7 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                                             && item.FamilyPtId != 0
                                             && item.FamilyPtId == familyItem.FamilyPtId))
             {
-                return SaveFamilyListStatus.DuplicateFamily;
+                return ValidateFamilyListStatus.DuplicateFamily;
             }
 
             // validate ZokugaraCd, only validate with case family member is main ptId, consider input value then compare with data in database to validate
@@ -156,13 +156,13 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             {
                 if (!dicZokugaraCd.Keys.Contains(familyItem.ZokugaraCd))
                 {
-                    return SaveFamilyListStatus.InvalidZokugaraCd;
+                    return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
                 var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => (item.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
                                                                             && item.ZokugaraCd.Equals(familyItem.ZokugaraCd)) + 1;
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd])
                 {
-                    return SaveFamilyListStatus.InvalidZokugaraCd;
+                    return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
             }
 
@@ -170,41 +170,24 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
             var familyItemUpdate = onlyFamlilyList.FirstOrDefault(item => item.FamilyId == familyItem.FamilyId);
             if (familyItemUpdate != null && familyItemUpdate.PtId != familyItem.PtId)
             {
-                return SaveFamilyListStatus.InvalidPtIdOrFamilyPtId;
+                return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
             }
 
-            // validate other field
-            else if (familyItem.Name.Length > 100)
-            {
-                return SaveFamilyListStatus.InvalidName;
-            }
-            else if (familyItem.KanaName.Length > 100)
-            {
-                return SaveFamilyListStatus.InvalidKanaName;
-            }
-            else if (familyItem.Sex > 2 || familyItem.Sex < 0)
-            {
-                return SaveFamilyListStatus.InvalidSex;
-            }
             else if (familyItem.Birthday != 0 && CIUtil.SDateToShowSDate(familyItem.Birthday) == string.Empty)
             {
-                return SaveFamilyListStatus.InvalidBirthday;
-            }
-            else if (familyItem.IsDead > 2 || familyItem.IsDead < 0)
-            {
-                return SaveFamilyListStatus.InvalidIsDead;
+                return ValidateFamilyListStatus.InvalidBirthday;
             }
             else if (familyItem.IsSeparated > 2 || familyItem.IsSeparated < 0)
             {
-                return SaveFamilyListStatus.InvalidIsSeparated;
+                return ValidateFamilyListStatus.InvalidIsSeparated;
             }
             else if (familyItem.Biko.Length > 120)
             {
-                return SaveFamilyListStatus.InvalidBiko;
+                return ValidateFamilyListStatus.InvalidBiko;
             }
             else if (familyItem.SortNo < 0)
             {
-                return SaveFamilyListStatus.InvalidSortNo;
+                return ValidateFamilyListStatus.InvalidSortNo;
             }
             familyRekiList.AddRange(familyItem.PtFamilyRekiList);
         }
@@ -212,13 +195,13 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
         return ValidateFamilyRekiListInputItem(hpId, familyRekiList);
     }
 
-    private SaveFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
+    private ValidateFamilyListStatus ValidateFamilyRekiListInputItem(int hpId, List<FamilyRekiItem> familyRekiList)
     {
         // validate familyRekiId
         var listFamilyRekiId = familyRekiList.Where(item => item.Id > 0).Select(item => item.Id).ToList();
         if (!_familyRepository.CheckExistFamilyRekiList(hpId, listFamilyRekiId))
         {
-            return SaveFamilyListStatus.InvalidFamilyRekiId;
+            return ValidateFamilyListStatus.InvalidFamilyRekiId;
         }
 
         // validate byomei
@@ -232,22 +215,22 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                 var byomeiItem = byomeiList.FirstOrDefault(item => item.ByomeiCd.Equals(input.ByomeiCd));
                 if (byomeiItem == null)
                 {
-                    return SaveFamilyListStatus.InvalidByomeiCd;
+                    return ValidateFamilyListStatus.InvalidByomeiCd;
                 }
                 else if (byomeiItem.Byomei != input.Byomei)
                 {
-                    return SaveFamilyListStatus.InvalidByomei;
+                    return ValidateFamilyListStatus.InvalidByomei;
                 }
             }
             if (input.Cmt.Length > 100)
             {
-                return SaveFamilyListStatus.InvalidCmt;
+                return ValidateFamilyListStatus.InvalidCmt;
             }
             else if (input.SortNo < 0)
             {
-                return SaveFamilyListStatus.InvalidSortNo;
+                return ValidateFamilyListStatus.InvalidSortNo;
             }
         }
-        return SaveFamilyListStatus.ValidateSuccess;
+        return ValidateFamilyListStatus.ValidateSuccess;
     }
 }

@@ -50,7 +50,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch)
     {
-        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel> setMstModelList))
+        if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
         {
             setMstModelList = ReloadCache(hpId);
         }

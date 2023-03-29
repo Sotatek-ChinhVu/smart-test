@@ -574,7 +574,7 @@ namespace Domain.Models.Diseases
 
         public bool IsMain => SyubyoKbn == 1;
 
-        public string ByomeiHankToZen => HenkanJ.HankToZen(Byomei);
+        public string ByomeiHankToZen => HenkanJ.Instance.ToFullsize(Byomei);
 
         public PtDiseaseModel ChangeSikkanCd(int sikkanCd)
         {

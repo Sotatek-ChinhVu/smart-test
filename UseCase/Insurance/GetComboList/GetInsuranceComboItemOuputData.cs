@@ -2,7 +2,7 @@
 {
     public class GetInsuranceComboItemOuputData
     {
-        public GetInsuranceComboItemOuputData(int hokenPid, string hokenName, bool isExpired, string displayRateOnly, bool isShaho, bool isKokuho)
+        public GetInsuranceComboItemOuputData(int hokenPid, string hokenName, bool isExpired, string displayRateOnly, bool isShaho, bool isKokuho, int hokenId, int hokenKbn)
         {
             HokenPid = hokenPid;
             HokenName = hokenName;
@@ -10,9 +10,15 @@
             DisplayRateOnly = displayRateOnly;
             IsShaho = isShaho;
             IsKokuho = isKokuho;
+            HokenId = hokenId;
+            HokenKbn = hokenKbn;
         }
 
         public int HokenPid { get; private set; }
+
+        public int HokenId { get; private set; }
+
+        public int HokenKbn { get; private set; }
 
         public string HokenName { get; private set; }
 

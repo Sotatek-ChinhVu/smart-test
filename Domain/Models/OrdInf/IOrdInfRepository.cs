@@ -23,6 +23,8 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos);
 
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId);
+
         List<OrdInfDetailModel> GetOdrInfsBySinDate(int hpId, long ptId, int sinDate, int hokenPId);
 
         List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenPId);

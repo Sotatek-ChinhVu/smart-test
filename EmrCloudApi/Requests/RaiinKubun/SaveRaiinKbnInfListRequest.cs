@@ -9,6 +9,6 @@ namespace EmrCloudApi.Requests.RaiinKubun
         public int SinDate { get; set; }
         public long RaiinNo { get; set; }
         public int UserId { get; set; }
-        public List<RaiinKbnInfDto> KbnInfDtos { get; set; }
+        public List<RaiinKbnInfDto> KbnInfDtos { get; set; } = new();
     }
 }
