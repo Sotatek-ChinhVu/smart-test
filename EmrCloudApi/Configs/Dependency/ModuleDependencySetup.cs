@@ -320,6 +320,7 @@ using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.GetSinDateRaiinInfList;
 using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.MedicalDetail;
@@ -926,6 +927,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
             busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
+            busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

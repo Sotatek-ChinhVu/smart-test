@@ -1,4 +1,6 @@
-﻿namespace UseCase.Receipt;
+﻿using Domain.Models.Receipt;
+
+namespace UseCase.Receipt;
 
 public class ReceStatusItem
 {
@@ -13,6 +15,19 @@ public class ReceStatusItem
         IsOutput = isOutput;
         StatusKbn = statusKbn;
         IsPrechecked = isPrechecked;
+    }
+
+    public ReceStatusItem(ReceStatusModel model)
+    {
+        PtId = model.PtId;
+        SeikyuYm = model.SeikyuYm;
+        HokenId = model.HokenId;
+        SinYm = model.SinYm;
+        FusenKbn = model.FusenKbn;
+        IsPaperRece = model.IsPaperRece;
+        IsOutput = model.IsOutput;
+        StatusKbn = model.StatusKbn;
+        IsPrechecked = model.IsPrechecked;
     }
 
     public long PtId { get; private set; }

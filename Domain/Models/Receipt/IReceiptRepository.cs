@@ -108,4 +108,6 @@ public interface IReceiptRepository : IRepositoryBase
     void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos);
 
     bool SaveReceStatus(int hpId, int userId, ReceStatusModel receStatus);
+
+    ReceStatusModel GetReceStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 }

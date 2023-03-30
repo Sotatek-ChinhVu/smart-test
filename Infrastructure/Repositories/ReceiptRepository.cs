@@ -1838,6 +1838,16 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         }
         return TrackingDataContext.SaveChanges() > 0;
     }
+
+    public ReceStatusModel GetReceStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+    {
+        var receStatus = NoTrackingDataContext.ReceStatuses.FirstOrDefault(item => item.HpId == hpId
+                                                                                   && item.PtId == ptId
+                                                                                   && item.SeikyuYm == seikyuYm
+                                                                                   && item.SinYm == sinYm
+                                                                                   && item.HokenId == hokenId);
+        return receStatus != null ? ConvertToReceStatusModel(receStatus) : new ReceStatusModel();
+    }
     #endregion
 
     #region Recalculation Check
@@ -3185,6 +3195,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             UpdateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateId = userId,
         };
+    }
+
+    private ReceStatusModel ConvertToReceStatusModel(ReceStatus receStatus)
+    {
+        return new ReceStatusModel(
+                   receStatus.PtId,
+                   receStatus.SeikyuYm,
+                   receStatus.HokenId,
+                   receStatus.SinYm,
+                   receStatus.FusenKbn,
+                   receStatus.IsPaperRece == 1,
+                   receStatus.Output == 1,
+                   receStatus.StatusKbn,
+                   receStatus.IsPrechecked == 1
+               );
     }
     #endregion
 

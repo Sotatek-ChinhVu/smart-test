@@ -35,6 +35,7 @@ using UseCase.Receipt.GetSinDateRaiinInfList;
 using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.Receipt.SaveReceStatus;
+using UseCase.Receipt.GetReceStatus;
 
 namespace EmrCloudApi.Controller;
 
@@ -346,7 +347,6 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetReceByomeiCheckingResponse>>(presenter.Result);
     }
 
-
     [HttpGet(ApiPath.GetSinMeiInMonthList)]
     public ActionResult<Response<GetMedicalDetailsResponse>> GetSinMeiInMonthList([FromQuery] GetSinMeiInMonthListRequest request)
     {
@@ -357,6 +357,18 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetReceStatus)]
+    public ActionResult<Response<GetReceStatusResponse>> GetReceStatus([FromQuery] GetReceStatusRequest request)
+    {
+        var input = new GetReceStatusInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceStatusPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceStatusResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveReceiptEdit)]

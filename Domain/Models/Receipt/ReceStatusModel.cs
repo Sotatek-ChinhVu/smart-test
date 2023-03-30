@@ -15,6 +15,13 @@ public class ReceStatusModel
         IsPrechecked = isPrechecked;
     }
 
+    public ReceStatusModel()
+    {
+        IsPaperRece = false;
+        IsOutput = false;
+        IsPrechecked = false;
+    }
+
     public long PtId { get; private set; }
 
     public int SeikyuYm { get; private set; }
