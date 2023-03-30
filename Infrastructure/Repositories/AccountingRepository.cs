@@ -460,7 +460,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public HokenInfModel CreateHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
+        private HokenInfModel CreateHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
         {
             HokenInfModel hokenInfModel = new();
             if (ePtHokenInf != null)
@@ -504,7 +504,7 @@ namespace Infrastructure.Repositories
             return hokenInfModel;
         }
 
-        public KohiInfModel CreatePtKohiModel(PtKohi eKohiInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
+        private KohiInfModel CreatePtKohiModel(PtKohi eKohiInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ConfirmDateModelList, int sinDay)
         {
             KohiInfModel kohiInfModel = new();
             if (eKohiInf != null)
@@ -1202,7 +1202,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public void ParseEarmarkedValueUpdate(int thisSeikyuGaku, ref int nyukinGaku, out int outNyukinGaku,
+        private void ParseEarmarkedValueUpdate(int thisSeikyuGaku, ref int nyukinGaku, out int outNyukinGaku,
             out int outNyukinKbn, bool isSettled = false)
         {
             if (isSettled)
