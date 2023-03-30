@@ -12,6 +12,7 @@ using UseCase.InsuranceMst.GetInfoCloneInsuranceMst;
 using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenMaster;
+using UseCase.InsuranceMst.SaveOrdInsuranceMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -119,6 +120,23 @@ namespace EmrCloudApi.Controller
                                                           request.Insurance.DayLimitCount));
             var output = _bus.Handle(input);
             var presenter = new SaveHokenMasterPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        /// <summary>
+        /// Only pass IsModifed = true
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost(ApiPath.Save + "OrderInsuranceMstList")]
+        public ActionResult<Response<SaveOrdInsuranceMstResponse>> GetInfoCloneInsuranceMst([FromBody] SaveOrdInsuranceMstRequest request)
+        {
+            var input = new SaveOrdInsuranceMstInputData(request.Insurances.Select(x => new HokenMstModel(x.HokenNo,x.HokenEdaNo,x.StartDate,x.PrefNo,x.Sort)).ToList(), 
+                                                            HpId, 
+                                                            UserId);
+            var output = _bus.Handle(input);
+            var presenter = new SaveOrdInsuranceMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
