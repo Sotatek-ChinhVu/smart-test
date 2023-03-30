@@ -292,12 +292,12 @@ namespace Infrastructure.Repositories
                         var memberHokenId = Expression.Property(param, nameof(PtHokenInf.HokenId));
                         Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
 
-                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
+                        expression = expression == Expression.Constant(false) ? expressionHokenId : Expression.Or(expression, expressionHokenId);
                     }
                 }
             }
 
-            return expression != Expression.Empty()
+            return expression != Expression.Constant(false)
                 ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
                 : Expression.Lambda<Func<PtHokenInf, bool>>(Expression.Constant(false), param);
         }
@@ -341,7 +341,7 @@ namespace Infrastructure.Repositories
                         var memberHokenId = Expression.Property(param, nameof(PtKohi.HokenId));
                         Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
 
-                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
+                        expression = expression == Expression.Constant(false) ? expressionHokenId : Expression.Or(expression, expressionHokenId);
                     }
                 }
             }
@@ -372,7 +372,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return expression != null
+            return expression != Expression.Constant(false)
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
                 : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
@@ -394,7 +394,7 @@ namespace Infrastructure.Repositories
                         var expressionHokenCheck = Expression.And(Expression.Equal(valHokenId, memberHokenId),
                             Expression.Equal(valHokenGrp, memberHokenGrp));
 
-                        expression = expression == Expression.Empty() ? expressionHokenCheck : Expression.Or(expression, expressionHokenCheck);
+                        expression = expression == Expression.Constant(false) ? expressionHokenCheck : Expression.Or(expression, expressionHokenCheck);
                     }
                 }
             }
@@ -409,7 +409,7 @@ namespace Infrastructure.Repositories
             CreateHokenMstExpression(listPtHokenInf, ref expression, ref param);
             CreateHokenMstExpression(listPtKohi, ref expression, ref param);
 
-            return expression != null
+            return expression != Expression.Constant(false)
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
                 : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
@@ -431,7 +431,7 @@ namespace Infrastructure.Repositories
                         var expressionHoken = Expression.And(Expression.Equal(valHokenNo, memberHokenNo),
                             Expression.Equal(valHokenEdaNo, memberHokenEdaNo));
 
-                        expression = expression == null ? expressionHoken : Expression.Or(expression, expressionHoken);
+                        expression = expression == Expression.Constant(false) ? expressionHoken : Expression.Or(expression, expressionHoken);
                     }
                 }
             }
@@ -454,7 +454,7 @@ namespace Infrastructure.Repositories
                         var expressionKohi = Expression.And(Expression.Equal(valHokenNo, memberHokenNo),
                             Expression.Equal(valHokenEdaNo, memberHokenEdaNo));
 
-                        expression = expression == null ? expressionKohi : Expression.Or(expression, expressionKohi);
+                        expression = expression == Expression.Constant(false) ? expressionKohi : Expression.Or(expression, expressionKohi);
                     }
                 }
             }
@@ -1003,13 +1003,13 @@ namespace Infrastructure.Repositories
         private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(PtHokenCheck));
-            Expression expression = Expression.Empty();
+            Expression expression = Expression.Constant(false);
 
             var listKohiId = listPtKohi.Select(item => item.HokenId).ToList();
 
             CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
 
-            return expression != null
+            return expression != Expression.Constant(false)
                     ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
                     : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
         }
@@ -1017,11 +1017,11 @@ namespace Infrastructure.Repositories
         private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(HokenMst));
-            Expression expression = Expression.Empty();
+            Expression expression = Expression.Constant(false);
 
             CreateHokenMstExpression(listPtKohi, ref expression, ref param);
 
-            return expression != null
+            return expression != Expression.Constant(false)
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
                 : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
         }
