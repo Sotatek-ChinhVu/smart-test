@@ -155,7 +155,7 @@ namespace Interactor.Receipt
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             for (int i = 0; i < receData.Count; i++)
             {
-                RecedenFileInfoModel fileInfo = GetFileInfo(i + 1, modeType, raisoRadio);
+                RecedenFileInfo fileInfo = GetFileInfo(i + 1, modeType, raisoRadio);
 
                 // Write temp file
                 string fileName = $"{fileInfo.Prefix}{fileInfo.CreateDate}_{fileInfo.CreateTime}_{fileInfo.FileName}";
@@ -178,7 +178,7 @@ namespace Interactor.Receipt
             return ukeFiles;
         }
 
-        private RecedenFileInfoModel GetFileInfo(int index, ModeTypeCreateUKE mode, int raisoRadio)
+        private RecedenFileInfo GetFileInfo(int index, ModeTypeCreateUKE mode, int raisoRadio)
         {
             string prefix = string.Empty;
             int createDate = CIUtil.DateTimeToInt(DateTime.Now);
@@ -212,7 +212,7 @@ namespace Interactor.Receipt
                 default:
                     break;
             }
-            return new RecedenFileInfoModel(fileName, createDate, createTime, prefix);
+            return new RecedenFileInfo(fileName, createDate, createTime, prefix);
         }
 
         public string GetFileName(ModeTypeCreateUKE mode)
@@ -305,7 +305,7 @@ namespace Interactor.Receipt
 
     }
 
-    internal class RecedenFileInfoModel
+    internal class RecedenFileInfo
     {
         public string Prefix { get; private set; }
 
@@ -315,7 +315,7 @@ namespace Interactor.Receipt
 
         public int CreateTime { get; private set; }
 
-        internal RecedenFileInfoModel(string filename, int createDate, int createTime, string prefix = "")
+        internal RecedenFileInfo(string filename, int createDate, int createTime, string prefix = "")
         {
             FileName = filename;
             CreateDate = createDate;
