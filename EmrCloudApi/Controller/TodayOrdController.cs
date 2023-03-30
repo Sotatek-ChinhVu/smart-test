@@ -48,7 +48,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
-            var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
+            var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.Status, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,
@@ -223,7 +223,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public ActionResult<Response<GetDefaultSelectPatternResponse>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        public ActionResult<Response<GetDefaultSelectPatternResponse>> GetDefaultSelectPattern([FromQuery] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                 HpId,

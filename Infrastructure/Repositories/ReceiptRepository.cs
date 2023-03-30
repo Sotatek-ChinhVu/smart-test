@@ -526,8 +526,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemOrderList != null && originItemOrderList.Any())
                 {
                     #region Count and sum item from order
-                    int maxSinYm = (sinYmGroup.Max() * 100) + 31;
-                    int minSinYm = (sinYmGroup.Min() * 100) + 1;
+                    int maxSinYm = (sinYmGroup.DefaultIfEmpty(0).Max() * 100) + 31;
+                    int minSinYm = (sinYmGroup.DefaultIfEmpty(0).Min() * 100) + 1;
 
                     var hokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -616,8 +616,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemSanteiList != null && originItemSanteiList.Any())
                 {
                     #region Count and sum item from santei
-                    int maxSinYm = sinYmGroup.Max();
-                    int minSinYm = sinYmGroup.Min();
+                    int maxSinYm = sinYmGroup.DefaultIfEmpty(0).Max();
+                    int minSinYm = sinYmGroup.DefaultIfEmpty(0).Min();
 
                     var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -1304,11 +1304,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
     {
+        var hokenKbnList = new List<int> { 11, 12, 13 };
+        var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+        var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
+        if (!hokenKbnList.Contains(hokenKbn))
+        {
+            return new();
+        }
+
         var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
                                                                                && (sinYm == 0 || item.SinYm == sinYm)
                                                                                && item.PtId == ptId
                                                                                && (hokenId == 0 || item.HokenId == hokenId)
-                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                               && item.IsDeleted == DeleteTypes.None
+                                                                               && ((hokenKbn == 13 && item.SinDay > 0)
+                                                                                   || (hokenKbn != 13 && item.SinDay == 0)))
                                                                 .OrderBy(item => item.SinDay)
                                                                 .ThenByDescending(item => item.SeqNo)
                                                                 .ToList();
@@ -2526,7 +2536,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int minSindate = hasErrorList.Select(item => item.Sindate)?.Min() ?? 0;
+        int minSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Min() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
@@ -2567,7 +2577,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int maxSindate = hasErrorList.Select(item => item.Sindate)?.Max() ?? 0;
+        int maxSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Max() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
