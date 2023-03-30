@@ -1,9 +1,12 @@
 ﻿using Domain.Constant;
 using Domain.Models.Accounting;
+using Domain.Models.HpInf;
+using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.Receipt.ReceiptCreation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
@@ -15,6 +18,8 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -455,7 +460,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 receInfs = receInfs.Where(item => receStatuses.FirstOrDefault(rcs => rcs.PtId == item.PtId
                                                                             && rcs.HokenId == item.HokenId
                                                                             && rcs.SeikyuYm == item.SeikyuYm
-                                                                            && rcs.SinYm == item.SinYm).Output != 1);
+                                                                            && rcs.SinYm == item.SinYm)!.Output != 1);
             }
 
             // グループ
@@ -511,7 +516,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                 && !string.IsNullOrEmpty(item.SanteiItemCd)
                                                                                 && originItemSanteiList.Contains(item.ItemCd));
                 var santeiItemList = tenMstSanteis.GroupBy(item => item.SanteiItemCd).Select(item => item.Key).ToList();
-                var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, item.SanteiItemCd })
+                var santeiItemListWithItemCd = tenMstSanteis.GroupBy(item => new { item.ItemCd, SanteiItemCd = item.SanteiItemCd ?? string.Empty })
                                                             .Select(item => new { item.Key.ItemCd, item.Key.SanteiItemCd }).ToList();
 
                 IEnumerable<ItemSumModel> enumOdrDetailItemSum = Enumerable.Empty<ItemSumModel>();
@@ -521,8 +526,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemOrderList != null && originItemOrderList.Any())
                 {
                     #region Count and sum item from order
-                    int maxSinYm = (sinYmGroup.Max() * 100) + 31;
-                    int minSinYm = (sinYmGroup.Min() * 100) + 1;
+                    int maxSinYm = (sinYmGroup.DefaultIfEmpty(0).Max() * 100) + 31;
+                    int minSinYm = (sinYmGroup.DefaultIfEmpty(0).Min() * 100) + 1;
 
                     var hokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -611,8 +616,8 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                 if (originItemSanteiList != null && originItemSanteiList.Any())
                 {
                     #region Count and sum item from santei
-                    int maxSinYm = sinYmGroup.Max();
-                    int minSinYm = sinYmGroup.Min();
+                    int maxSinYm = sinYmGroup.DefaultIfEmpty(0).Max();
+                    int minSinYm = sinYmGroup.DefaultIfEmpty(0).Min();
 
                     var sinkouiDetails = NoTrackingDataContext.SinKouiDetails.Where(item => item.HpId == hpId
                                                                                             && item.IsDeleted == 0
@@ -1299,11 +1304,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public List<SyobyoKeikaModel> GetSyobyoKeikaList(int hpId, int sinYm, long ptId, int hokenId)
     {
+        var hokenKbnList = new List<int> { 11, 12, 13 };
+        var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
+        var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
+        if (!hokenKbnList.Contains(hokenKbn))
+        {
+            return new();
+        }
+
         var syobyoKeikaList = NoTrackingDataContext.SyobyoKeikas.Where(item => item.HpId == hpId
                                                                                && (sinYm == 0 || item.SinYm == sinYm)
                                                                                && item.PtId == ptId
                                                                                && (hokenId == 0 || item.HokenId == hokenId)
-                                                                               && item.IsDeleted == DeleteTypes.None)
+                                                                               && item.IsDeleted == DeleteTypes.None
+                                                                               && ((hokenKbn == 13 && item.SinDay > 0)
+                                                                                   || (hokenKbn != 13 && item.SinDay == 0)))
                                                                 .OrderBy(item => item.SinDay)
                                                                 .ThenByDescending(item => item.SeqNo)
                                                                 .ToList();
@@ -2521,7 +2536,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int minSindate = hasErrorList.Select(item => item.Sindate)?.Min() ?? 0;
+        int minSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Min() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
@@ -2562,7 +2577,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         List<HasErrorWithSanteiModel> result = new();
         var ptIdList = hasErrorList.Select(item => item.PtId).Distinct().ToList();
         var itemCdList = hasErrorList.Select(item => item.ItemCd).Distinct().ToList();
-        int maxSindate = hasErrorList.Select(item => item.Sindate)?.Max() ?? 0;
+        int maxSindate = hasErrorList.Select(item => item.Sindate)?.DefaultIfEmpty(0).Max() ?? 0;
         var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(item => item.HpId == hpId
                                                                               && ptIdList.Contains(item.PtId)
                                                                               && item.SinYm == seikyuYm
@@ -3144,6 +3159,64 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         };
     }
     #endregion
+
+    public List<ReceInfValidateModel> GetReceValidateReceiptCreation(int hpId, List<long> ptIds, int sinYm)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var receInfJoinPtInfQuery = from receInf in receInfs
+                                    join ptInf in ptInfs
+                                    on receInf.PtId equals ptInf.PtId
+                                    join receState in receStates
+                                    on new { receInf.PtId, receInf.HokenId } equals new { receState.PtId, receState.HokenId } into tempReceStates
+                                    from tempRcStt in tempReceStates.DefaultIfEmpty()
+                                    select new
+                                    {
+                                        PtInf = ptInf,
+                                        ReceInf = receInf,
+                                        RcStatus = tempRcStt ?? null
+                                    };
+
+        var query = from receInfJoinPtInf in receInfJoinPtInfQuery
+                    join ptHokenInf in ptHokenInfs
+                    on new { receInfJoinPtInf.ReceInf.PtId, receInfJoinPtInf.ReceInf.HokenId } equals new { ptHokenInf.PtId, ptHokenInf.HokenId } into tempPtHokenInfs
+                    from tempPtHokenInf in tempPtHokenInfs.DefaultIfEmpty()
+                    where receInfJoinPtInf.ReceInf.HokenId != 0
+                    select new
+                    {
+                        PtInf = receInfJoinPtInf.PtInf,
+                        ReceInf = receInfJoinPtInf.ReceInf,
+                        PtHokenInf = tempPtHokenInf,
+                        RcStatus = receInfJoinPtInf.RcStatus
+                    };
+
+
+        return query.Select(x => new ReceInfValidateModel(x.PtInf.PtId,
+                                                         x.PtInf.PtNum,
+                                                         x.ReceInf.SinYm,
+                                                         x.ReceInf.IsTester,
+                                                         x.ReceInf.HokenKbn,
+                                                         x.RcStatus == null ? 0 : x.RcStatus.IsPaperRece,
+                                                         x.PtHokenInf.RousaiSaigaiKbn,
+                                                         x.ReceInf.HokenId,
+                                                         x.PtHokenInf.RousaiSyobyoDate)).ToList();
+    }
+
+    public bool ExistSyobyoKeikaData(int hpId ,long ptId, int sinYm, int hokenId)
+    {
+        var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(p => p.HpId == hpId &&
+                                                                                 p.IsDeleted == DeleteTypes.None &&
+                                                                                 p.PtId == ptId &&
+                                                                                 p.SinYm == sinYm &&
+                                                                                 p.HokenId == hokenId);
+        return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
+    }
 
     public void ReleaseResource()
     {

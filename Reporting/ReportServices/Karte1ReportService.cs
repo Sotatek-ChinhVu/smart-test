@@ -24,7 +24,7 @@ namespace Reporting.ReportServices
             {
                 var finder = new CoKarte1Finder(noTrackingDataContext);
                 // 白紙印刷の場合、データ取得しない
-                if (ptId == 0) return null;
+                if (ptId == 0) return new();
 
                 // 患者情報
                 CoPtInfModel ptInf = finder.FindPtInf(ptId, sinDate);

@@ -5,7 +5,7 @@ namespace Infrastructure.Services
 {
     public class UserInfoService : IUserInfoService
     {
-        private List<UserMst> _userInfoList;
+        private List<UserMst> _userInfoList = new();
         //private readonly string _cacheKey;
         private readonly ITenantProvider _tenantProvider;
         //private readonly IMemoryCache _memoryCache;

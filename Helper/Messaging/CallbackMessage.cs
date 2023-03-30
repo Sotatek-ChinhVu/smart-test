@@ -13,10 +13,10 @@
         }
 
         /// <summary>Gets or sets the callback which is called when the processing of the message was successful. </summary>
-        public Action<T> SuccessCallback { get; set; }
+        public Action<T>? SuccessCallback { get; set; }
 
         /// <summary>Gets or sets the callback which is called when the processing of the message failed. </summary>
-        public Action<T> FailCallback { get; set; }
+        public Action<T>? FailCallback { get; set; }
 
         /// <summary>Calls the success callback. </summary>
         public void CallSuccessCallback(T result)

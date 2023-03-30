@@ -19,7 +19,7 @@ namespace Reporting.NameLabel.DB
                 p.IsDelete == 0
             );
 
-            CoPtInfModel result = null;
+            CoPtInfModel result = new();
 
             if (ptInfs != null && ptInfs.Any())
             {

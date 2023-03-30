@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SpecialNote;
-using UseCase.SpecialNote.Get;
+using Domain.Models.SpecialNote.PatientInfo;
 using UseCase.SpecialNote.Save;
 
 namespace Interactor.SpecialNote
@@ -25,7 +25,7 @@ namespace Interactor.SpecialNote
                 {
                     return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidPtId);
                 }
-                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, inputData.PatientInfoTab, inputData.UserId);
+                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems, inputData.PatientInfoTab.PtCmtInfItems, inputData.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputData.PatientInfoTab.KensaInfDetailModels) }), inputData.UserId);
 
                 if (!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
 

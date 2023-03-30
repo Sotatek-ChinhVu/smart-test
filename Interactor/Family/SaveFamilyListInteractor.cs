@@ -173,26 +173,9 @@ public class SaveFamilyListInteractor : ISaveFamilyListInputPort
                 return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
             }
 
-            // validate other field
-            else if (familyItem.Name.Length > 100)
-            {
-                return ValidateFamilyListStatus.InvalidName;
-            }
-            else if (familyItem.KanaName.Length > 100)
-            {
-                return ValidateFamilyListStatus.InvalidKanaName;
-            }
-            else if (familyItem.Sex > 2 || familyItem.Sex < 0)
-            {
-                return ValidateFamilyListStatus.InvalidSex;
-            }
             else if (familyItem.Birthday != 0 && CIUtil.SDateToShowSDate(familyItem.Birthday) == string.Empty)
             {
                 return ValidateFamilyListStatus.InvalidBirthday;
-            }
-            else if (familyItem.IsDead > 2 || familyItem.IsDead < 0)
-            {
-                return ValidateFamilyListStatus.InvalidIsDead;
             }
             else if (familyItem.IsSeparated > 2 || familyItem.IsSeparated < 0)
             {

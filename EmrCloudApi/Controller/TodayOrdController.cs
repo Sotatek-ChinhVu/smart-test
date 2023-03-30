@@ -4,6 +4,7 @@ using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Realtime;
+using EmrCloudApi.Requests.Family;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
@@ -13,6 +14,7 @@ using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Family;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
@@ -26,6 +28,7 @@ using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
+using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -45,7 +48,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
-            var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
+            var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.Status, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             HpId,
                             o.RaiinNo,
@@ -220,7 +223,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public ActionResult<Response<GetDefaultSelectPatternResponse>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        public ActionResult<Response<GetDefaultSelectPatternResponse>> GetDefaultSelectPattern([FromQuery] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                 HpId,

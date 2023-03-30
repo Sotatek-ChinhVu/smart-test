@@ -20,8 +20,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                                         && item.IsDeleted != 1)
                                                         .ToList();
 
-        var familyPtIdLists = ptFamilys.Select(item => item.FamilyPtId).ToList();
-        var familyIdLists = ptFamilys.Select(item => item.FamilyId).ToList();
+        var familyPtIdLists = ptFamilys.Select(item => item.FamilyPtId).Distinct().ToList();
+        var familyIdLists = ptFamilys.Select(item => item.FamilyId).Distinct().ToList();
 
         var ptInfs = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
                                                                 && familyPtIdLists.Contains(item.PtId)

@@ -5,7 +5,7 @@ namespace Infrastructure.Services
 {
     public class KaService : IKaService
     {
-        private List<KaMst> _kaInfoList;
+        private List<KaMst> _kaInfoList = new();
         //private readonly string _cacheKey;
         private readonly ITenantProvider _tenantProvider;
         //private readonly IMemoryCache _memoryCache;
