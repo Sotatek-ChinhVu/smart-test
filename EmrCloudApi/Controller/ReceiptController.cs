@@ -373,7 +373,7 @@ public class ReceiptController : AuthorizeControllerBase
     }
 
     [HttpPost(ApiPath.CreateUKEFile)]
-    public ActionResult<Response<SaveReceiptEditResponse>> CreateUKEFile([FromBody] CreateUKEFileRequest request)
+    public ActionResult<Response<CreateUKEFileResponse>> CreateUKEFile([FromBody] CreateUKEFileRequest request)
     {
         var input = new CreateUKEFileInputData(HpId,
                                                 request.ModeType,
