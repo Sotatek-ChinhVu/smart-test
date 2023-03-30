@@ -324,7 +324,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return expression != null
+            return expression != Expression.Constant(false)
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
                 : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
