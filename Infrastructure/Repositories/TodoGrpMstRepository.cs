@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedTodoGrpNo(List<int> todoGrpNos)
         {
-            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Count(x => todoGrpNos.Contains(x.TodoGrpNo));
+            var countTodoGrpNos = NoTrackingDataContext.TodoGrpMsts.Count(x => todoGrpNos.Distinct().Contains(x.TodoGrpNo));
             return todoGrpNos.Count == countTodoGrpNos;
         }
 
