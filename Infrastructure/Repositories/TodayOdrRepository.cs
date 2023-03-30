@@ -534,6 +534,8 @@ namespace Infrastructure.Repositories
                     if (ordInfo != null)
                     {
                         ordInfo.IsDeleted = DeleteTypes.Deleted;
+                        ordInfo.UpdateId = userId;
+                        ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                 }
                 else
@@ -614,6 +616,8 @@ namespace Infrastructure.Repositories
                     else
                     {
                         ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
