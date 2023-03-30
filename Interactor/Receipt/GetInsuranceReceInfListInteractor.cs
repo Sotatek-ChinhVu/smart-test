@@ -93,7 +93,7 @@ public class GetInsuranceReceInfListInteractor : IGetInsuranceReceInfListInputPo
         }
         else
         {
-            return HenkanJ.HankToZen(kohicount.ToString()) + "併";
+            return HenkanJ.Instance.ToFullsize(kohicount.ToString()) + "併";
         }
     }
 }

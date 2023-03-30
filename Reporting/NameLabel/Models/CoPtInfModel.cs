@@ -4,11 +4,15 @@ namespace Reporting.NameLabel.Models
 {
     public class CoPtInfModel
     {
-        public PtInf PtInf { get; } = null;
+        public PtInf PtInf { get; } = new();
 
         public CoPtInfModel(PtInf ptInf)
         {
             PtInf = ptInf;
+        }
+
+        public CoPtInfModel()
+        {
         }
 
         /// <summary>
@@ -26,7 +30,7 @@ namespace Reporting.NameLabel.Models
 
         public string KanaName
         {
-            get { return PtInf.KanaName; }
+            get { return PtInf.KanaName ?? string.Empty; }
         }
 
         /// <summary>
@@ -35,7 +39,7 @@ namespace Reporting.NameLabel.Models
 
         public string Name
         {
-            get { return PtInf.Name; }
+            get { return PtInf.Name ?? string.Empty; }
         }
 
         /// <summary>

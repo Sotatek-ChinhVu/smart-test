@@ -1556,7 +1556,7 @@ namespace Helper.Common
             string ret = "";
             string dummy1 = "";
             string dummy2 = "";
-            string val = "";
+            string? val = "";
 
             Dictionary<string, string> replaceChar;
 
@@ -1612,15 +1612,15 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val;
+                        ret += val ?? string.Empty;
                         i = i + 2;
                         continue;
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
+                        ret += HenkanJ.Instance.ToFullsize(s.Substring(i, 1));
                     }
                     else
                     {
@@ -2561,8 +2561,7 @@ namespace Helper.Common
             sIn = sIn.Replace("\t", "");
             sIn = sIn.Replace(Environment.NewLine, "");
 
-            TextElementEnumerator textEnum = null;
-            textEnum = StringInfo.GetTextElementEnumerator(sIn);
+            TextElementEnumerator textEnum = StringInfo.GetTextElementEnumerator(sIn);
 
             while (textEnum.MoveNext())
             {
@@ -2716,7 +2715,7 @@ namespace Helper.Common
         public static string ReplaceHiraDakuten(string s)
         {
             string ret = "";
-            string val = "";
+            string? val = "";
 
             Dictionary<string, string> replaceChar
                    = new Dictionary<string, string>()
@@ -2734,9 +2733,9 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val;
+                        ret += val ?? string.Empty;
                         i = i + 2;
                         continue;
                     }
@@ -2798,7 +2797,7 @@ namespace Helper.Common
             }
             else if (val > 0)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;
@@ -2837,7 +2836,7 @@ namespace Helper.Common
 
             if (val != null)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;
@@ -2871,7 +2870,7 @@ namespace Helper.Common
         /// <returns></returns>
         public static string ToNarrow(string s)
         {
-            return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
+            return HenkanJ.Instance.ToHalfsize(s);
         }
 
         /// <summary>

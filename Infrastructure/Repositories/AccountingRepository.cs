@@ -545,8 +545,8 @@ namespace Infrastructure.Repositories
                         hokenMst.EndDate,
                         hokenMst.HokenNo,
                         hokenMst.HokenEdaNo,
-                        hokenMst.HokenSname,
-                        hokenMst.Houbetu,
+                        hokenMst.HokenSname ?? string.Empty,
+                        hokenMst.Houbetu ?? string.Empty,
                         hokenMst.HokenSbtKbn,
                         hokenMst.CheckDigit,
                         hokenMst.AgeStart,
@@ -555,8 +555,8 @@ namespace Infrastructure.Repositories
                         hokenMst.IsJyukyusyaNoCheck,
                         hokenMst.JyukyuCheckDigit,
                         hokenMst.IsTokusyuNoCheck,
-                        hokenMst.HokenName,
-                        hokenMst.HokenNameCd,
+                        hokenMst.HokenName ?? string.Empty,
+                        hokenMst.HokenNameCd ?? string.Empty,
                         hokenMst.HokenKohiKbn,
                         hokenMst.IsOtherPrefValid,
                         hokenMst.ReceKisai,
@@ -1307,18 +1307,22 @@ namespace Infrastructure.Repositories
             return raiinInf != null;
         }
 
-        public List<long> GetRaiinNos(int hpId, long ptId, long oyaRaiinNo)
+        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo)
         {
-            var raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
-                                                                x.OyaRaiinNo == oyaRaiinNo &&
+                                                                x.RaiinNo == raiinNo &&
                                                                 x.Status > RaiinState.TempSave &&
+                                                                x.IsDeleted == DeleteTypes.None);
+            if (oyaRaiinNo == null) return new();
+
+            return NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                 x.IsDeleted == DeleteTypes.None
                                                                 ).Select(x => x.RaiinNo).ToList();
-            if (raiinNos.Any()) return raiinNos;
-
-            return new();
         }
         public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {
@@ -1329,7 +1333,7 @@ namespace Infrastructure.Repositories
                                                     item.HpId,
                                                     item.JihiSbt,
                                                     item.SortNo,
-                                                    item.Name,
+                                                    item.Name ?? string.Empty,
                                                     item.IsDeleted))
                 .ToList();
         }

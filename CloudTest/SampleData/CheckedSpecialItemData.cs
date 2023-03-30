@@ -1389,7 +1389,7 @@ namespace CloudUnitTest.SampleData
             var workbookPart = spreadsheetDocument.WorkbookPart;
             StringValue relationshipId = workbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name != null && s.Name.Equals(sheetName))?.Id ?? string.Empty;
 
-            var worksheet = workbookPart != null ? ((WorksheetPart)workbookPart.GetPartById(relationshipId)).Worksheet : new();
+            var worksheet = workbookPart != null ? ((WorksheetPart)workbookPart.GetPartById(relationshipId.Value ?? string.Empty)).Worksheet : new();
 
             return worksheet;
         }

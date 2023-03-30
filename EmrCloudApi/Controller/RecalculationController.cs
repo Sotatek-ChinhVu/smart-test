@@ -21,7 +21,7 @@ public class RecalculationController : AuthorizeControllerBase
     }
 
     [HttpPost]
-    public void HistoryReceCmt([FromBody] RecalculationRequest request, CancellationToken cancellationToken)
+    public void Recalculation([FromBody] RecalculationRequest request, CancellationToken cancellationToken)
     {
         _cancellationToken = cancellationToken;
         try
@@ -36,6 +36,12 @@ public class RecalculationController : AuthorizeControllerBase
 
             var input = new RecalculationInputData(HpId, UserId, request.SinYm, request.PtIdList, request.IsRecalculationCheckBox, request.IsReceiptAggregationCheckBox, request.IsCheckErrorCheckBox);
             _bus.Handle(input);
+        }
+        catch
+        {
+            var resultForFrontEnd = Encoding.UTF8.GetBytes("Error");
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
         finally
         {

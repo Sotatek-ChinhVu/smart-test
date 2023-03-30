@@ -232,7 +232,8 @@ namespace Interactor.MedicalExamination
                             ).ToList(),
                            r.CreateDate,
                            r.CreateId,
-                           r.CreateName
+                           r.CreateName,
+                           r.IsDeleted
                         )).ToList();
 
                 if (!saveHistory)

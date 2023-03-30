@@ -18,11 +18,6 @@ namespace Interactor.Accounting
         {
             try
             {
-                var syunoStatus = _accountingRepository.CheckSyunoStatus(inputData.HpId, inputData.RaiinNo, inputData.PtId);
-
-                if (!syunoStatus)
-                    return new RecaculationOutputData(RecaculationStatus.Failed);
-
                 var callCalculateInputData = new RecaculationInputDto(inputData.HpId, inputData.PtId, inputData.SinDate, 0, "SAI_");
 
                 var responseStatus = _calculateService.RunCalculate(callCalculateInputData);

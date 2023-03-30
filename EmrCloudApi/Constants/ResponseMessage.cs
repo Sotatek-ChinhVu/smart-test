@@ -48,6 +48,8 @@
         public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
         public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
+        public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
+        public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -804,7 +806,7 @@
 
         //Account Due
         public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
-        public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";
+        public static readonly string InvalidSortNo = "違法ソート番号.";
         public static readonly string InvalidAdjustFutan = "Invalid AdjustFutan, must more than or equal 0.";
         public static readonly string InvalidNyukinGaku = "Invalid NyukinGaku, must more than or equal 0.";
         public static readonly string InvalidPaymentMethodCd = "Invalid PaymentMethodCd, must more than or equal 0.";
@@ -903,7 +905,7 @@
         public static readonly string InvalidAlertTerm = "Invalid AlertTerm!";
         public static readonly string InvalidKisanSbt = "Invalid KisanSbt!";
         public static readonly string InvalidKisanDate = "Invalid KisanDate!";
-        public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
+        public static readonly string InvalidByomei = "違法病名";
         public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
@@ -914,22 +916,18 @@
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
 
         // Family
-        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
-        public static readonly string InvalidFamilyId = "Invalid FamilyId";
-        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
-        public static readonly string InvalidFamilyName = "Invalid Family Name";
-        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
-        public static readonly string InvalidFamilySex = "Invalid Family Sex";
-        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
-        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
-        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
-        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
-        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
-        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
-        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
-        public static readonly string DuplicateFamily = "Duplicate Family";
-        public static readonly string InvalidNameMaxLength = "Family Name max length is 100 characters!";
-        public static readonly string InvalidKanaNameMaxLength = "Family KanaName max length is 100 characters!";
+        public static readonly string InvalidPtIdOrFamilyPtId = "違法患者番号／患者の家族番号";
+        public static readonly string InvalidFamilyId = "違法家族番号";
+        public static readonly string InvalidZokugaraCd = "違法続柄Cd";
+        public static readonly string InvalidFamilyBirthday = "違法生年月日";
+        public static readonly string InvalidFamilyIsSeparated = "違法別居";
+        public static readonly string InvalidFamilyBiko = "違法備考";
+        public static readonly string InvalidFamilyRekiId = "違法家族歴番号";
+        public static readonly string InvalidByomeiCd = "違法病名Cd";
+        public static readonly string InvalidFamilyCmt = "違法コメント";
+        public static readonly string DuplicateFamily = "重複家族";
+        public static readonly string InvalidNameMaxLength = "違法氏名最大長";
+        public static readonly string InvalidKanaNameMaxLength = "違法カナ氏名最大長";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
