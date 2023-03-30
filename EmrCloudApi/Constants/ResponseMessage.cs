@@ -130,6 +130,13 @@
         public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
         public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
 
+        //TodoGrpMst
+        public static readonly string InvalidGrpColor = "Invalid GrpColor";
+        public static readonly string InvalidTodoGrpName = "Invalid TodoGrpName";
+        public static readonly string InvalidTodoGrpNo = "Invalid TodoGrpNo";
+        public static readonly string InvalidTodoGrpMst = "Invalid TodoGrpMst";
+        public static readonly string InvalidExistedTodoGrpNo = "Invalid Existed TodoGrpNo";
+
         //Insurance
         // Validate Main Insurance
         public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
