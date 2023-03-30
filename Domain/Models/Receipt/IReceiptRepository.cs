@@ -1,8 +1,8 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.Receipt.ReceiptCreation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
-using Domain.Models.ReceiptCreation;
 using Domain.Models.ReceSeikyu;
 using Helper.Enum;
 

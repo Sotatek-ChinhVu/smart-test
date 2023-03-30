@@ -1,6 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Receipt;
-using Domain.Models.ReceiptCreation;
+using Domain.Models.Receipt.ReceiptCreation;
 using EventProcessor.Interfaces;
 using EventProcessor.Model;
 using Helper.Common;
@@ -108,59 +108,9 @@ namespace Interactor.ReceiptCreation
                 }
                 else
                 {
-                    List<UKEFileOutputData> ukeFiles = new List<UKEFileOutputData>();
-                    List<string> receData = responseAPI.Data;
-                    int raisoRadio = 0;
-                    switch (inputData.ModeType)
-                    {
-                        case ModeTypeCreateUKE.Shaho:
-                            raisoRadio = 3;
-                            break;
-                        case ModeTypeCreateUKE.Kokuho:
-                            raisoRadio = 3;
-                            break;
-                        case ModeTypeCreateUKE.Rosai:
-                            raisoRadio = 1;
-                            break;
-                        case ModeTypeCreateUKE.Aftercare:
-                            raisoRadio = 1;
-                            break;
-                        default:
-                            break;
-                    }
+                    var ukeFiles = HandlerFileUKE(responseAPI.Data, inputData.ModeType, inputData.HpId, inputData.UserId, inputData.SeikyuYm);
 
-                    string filePath = System.IO.Path.GetFullPath("TempFiles\\Receiptc\\RECEIPTC.UKE");
-
-                    FileInfo fileTemp = new FileInfo(filePath);
-                    if (!fileTemp.Exists)
-                        File.Create(filePath);
-
-                    List<ArgumentModel> arguments = new List<ArgumentModel>();
-
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    for (int i = 0; i < receData.Count; i++)
-                    {
-                        RecedenFileInfoModel fileInfo = GetFileInfo(i + 1, inputData.ModeType , raisoRadio);
-
-                        // Write temp file
-                        string fileName = $"{fileInfo.Prefix}{fileInfo.CreateDate}_{fileInfo.CreateTime}_{fileInfo.FileName}";
-
-                        File.WriteAllText(filePath, receData.ElementAt(i), Encoding.GetEncoding("shift_jis"));
-
-                        using (FileStream st = File.OpenRead(filePath))
-                        {
-                            ukeFiles.Add(new UKEFileOutputData(st.ToMemoryStream(), fileName));
-                        }
-                        // Event
-                        arguments.Add(new ArgumentModel(inputData.HpId, inputData.UserId, EventCode.ReportReceden, 0, inputData.SeikyuYm, 0, $"mode:{inputData.ModeType} file:{fileInfo.FileName}"));
-                    }
-
-                    if (arguments.Count > 0)
-                    {
-                        _eventProcessorService.DoEvent(arguments);
-                    }
-
-                    if(ukeFiles.Any())
+                    if (ukeFiles.Any())
                         return new CreateUKEFileOutputData(CreateUKEFileStatus.Successful, "ファイルを保存しました。", TypeMessage.TypeMessageSuccess, ukeFiles);
                     else
                         return new CreateUKEFileOutputData(CreateUKEFileStatus.Failed, string.Empty, TypeMessage.TypeMessageError, ukeFiles);
@@ -170,6 +120,62 @@ namespace Interactor.ReceiptCreation
             {
                 _receiptRepository.ReleaseResource();
             }
+        }
+
+        private List<UKEFileOutputData> HandlerFileUKE(List<string> receData , ModeTypeCreateUKE modeType, int hpId , int UserId, int seikyuYm)
+        {
+            List<UKEFileOutputData> ukeFiles = new List<UKEFileOutputData>();
+            int raisoRadio = 0;
+            switch (modeType)
+            {
+                case ModeTypeCreateUKE.Shaho:
+                    raisoRadio = 3;
+                    break;
+                case ModeTypeCreateUKE.Kokuho:
+                    raisoRadio = 3;
+                    break;
+                case ModeTypeCreateUKE.Rosai:
+                    raisoRadio = 1;
+                    break;
+                case ModeTypeCreateUKE.Aftercare:
+                    raisoRadio = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            string filePath = System.IO.Path.GetFullPath("TempFiles\\Receiptc\\RECEIPTC.UKE");
+
+            FileInfo fileTemp = new FileInfo(filePath);
+            if (!fileTemp.Exists)
+                File.Create(filePath);
+
+            List<ArgumentModel> arguments = new List<ArgumentModel>();
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            for (int i = 0; i < receData.Count; i++)
+            {
+                RecedenFileInfoModel fileInfo = GetFileInfo(i + 1, modeType, raisoRadio);
+
+                // Write temp file
+                string fileName = $"{fileInfo.Prefix}{fileInfo.CreateDate}_{fileInfo.CreateTime}_{fileInfo.FileName}";
+
+                File.WriteAllText(filePath, receData.ElementAt(i), Encoding.GetEncoding("shift_jis"));
+
+                using (FileStream st = File.OpenRead(filePath))
+                {
+                    ukeFiles.Add(new UKEFileOutputData(st.ToMemoryStream(), fileName));
+                }
+                // Event
+                arguments.Add(new ArgumentModel(hpId, UserId, EventCode.ReportReceden, 0, seikyuYm, 0, $"mode:{modeType} file:{fileInfo.FileName}"));
+            }
+
+            if (arguments.Count > 0)
+            {
+                _eventProcessorService.DoEvent(arguments);
+            }
+
+            return ukeFiles;
         }
 
         private RecedenFileInfoModel GetFileInfo(int index, ModeTypeCreateUKE mode, int raisoRadio)
@@ -295,6 +301,25 @@ namespace Interactor.ReceiptCreation
                 errorSyobyoKeika += Environment.NewLine;
             }
             return errorSyobyoKeika;
+        }
+    }
+
+    public class RecedenFileInfoModel
+    {
+        public string Prefix { get; private set; }
+
+        public string FileName { get; private set; }
+
+        public int CreateDate { get; private set; }
+
+        public int CreateTime { get; private set; }
+
+        public RecedenFileInfoModel(string filename, int createDate, int createTime, string prefix = "")
+        {
+            FileName = filename;
+            CreateDate = createDate;
+            CreateTime = createTime;
+            Prefix = prefix;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.ReceiptCreation
+﻿namespace Domain.Models.Receipt.ReceiptCreation
 {
     public class ReceInfValidateModel
     {
