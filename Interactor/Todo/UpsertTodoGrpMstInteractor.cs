@@ -24,17 +24,17 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
                 return new UpsertTodoGrpMstOutputData(validateResult);
             }
 
-            if (input.ToList() == null || input.ToList().Count == 0)
+            if (input.TodoGrpMsts == null || input.TodoGrpMsts.Count == 0)
             {
                 return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InputNoData);
             }
 
-            if (_todoGrpMstRepository.CheckExistedTodoGrpNo(input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
+            if (_todoGrpMstRepository.CheckExistedTodoGrpNo(input.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo).ToList()))
             {
                 return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InvalidExistedTodoGrpNo);
             }
 
-            var checkInputTodoGrpNo = input.ToList().Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo);
+            var checkInputTodoGrpNo = input.TodoGrpMsts.Where(x => x.TodoGrpNo > 0).Select(x => x.TodoGrpNo);
             if (checkInputTodoGrpNo.Count() != checkInputTodoGrpNo.Distinct().Count())
             {
                 return new UpsertTodoGrpMstOutputData(UpsertTodoGrpMstStatus.InvalidTodoGrpMst);
