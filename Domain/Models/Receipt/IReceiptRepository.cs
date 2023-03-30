@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.Receipt.ReceiptCreation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Domain.Models.ReceSeikyu;
 using Helper.Enum;
@@ -106,4 +107,8 @@ public interface IReceiptRepository : IRepositoryBase
     int GetCountReceInfs(int hpId, List<long> ptIds, int sinYm);
 
     void ResetStatusAfterPendingShukei(int hpId, int userId, List<ReceInfo> receInfos);
+
+    List<ReceInfValidateModel> GetReceValidateReceiptCreation(int hpId, List<long> ptIds, int sinYm);
+
+    bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId);
 }
