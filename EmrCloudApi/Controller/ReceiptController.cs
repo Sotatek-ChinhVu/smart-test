@@ -34,6 +34,7 @@ using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.GetSinDateRaiinInfList;
 using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SaveReceStatus;
 
 namespace EmrCloudApi.Controller;
 
@@ -284,7 +285,7 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
     }
-    
+
     [HttpGet(ApiPath.DoReceCmt)]
     public ActionResult<Response<GetReceCmtListResponse>> DoReceCmt([FromQuery] DoReceCmtRequest request)
     {
@@ -368,6 +369,28 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceStatus)]
+    public ActionResult<Response<SaveReceStatusResponse>> SaveReceStatus([FromBody] SaveReceStatusRequest request)
+    {
+        var input = new SaveReceStatusInputData(HpId, UserId, new ReceStatusItem(
+                                                                  request.PtId,
+                                                                  request.SeikyuYm,
+                                                                  request.HokenId,
+                                                                  request.SinYm,
+                                                                  request.FusenKbn,
+                                                                  request.IsPaperRece,
+                                                                  false,
+                                                                  request.StatusKbn,
+                                                                  request.IsPrechecked));
+
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceStatusPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceStatusResponse>>(presenter.Result);
     }
 
     #region Private function
