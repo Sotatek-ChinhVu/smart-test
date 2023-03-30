@@ -308,6 +308,7 @@ using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.RaiinKubunMst.SaveRaiinKbnInfList;
+using UseCase.Receipt.CreateUKEFile;
 using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
@@ -935,6 +936,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
+
+            //CreateUKEFile
+            busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
