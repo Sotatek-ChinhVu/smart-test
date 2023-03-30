@@ -1,6 +1,6 @@
-﻿using UseCase.ReceiptCreation.CreateUKEFile;
+﻿using UseCase.Receipt.CreateUKEFile;
 
-namespace EmrCloudApi.Requests.ReceiptCreation
+namespace EmrCloudApi.Requests.Receipt
 {
     public class CreateUKEFileRequest
     {

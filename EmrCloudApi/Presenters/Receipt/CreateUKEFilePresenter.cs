@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.ReceiptCreation;
-using UseCase.ReceiptCreation.CreateUKEFile;
+using EmrCloudApi.Responses.Receipt;
+using UseCase.Receipt.CreateUKEFile;
 
-namespace EmrCloudApi.Presenters.ReceiptCreation
+namespace EmrCloudApi.Presenters.Receipt
 {
     public class CreateUKEFilePresenter : ICreateUKEFileOutpuport
     {

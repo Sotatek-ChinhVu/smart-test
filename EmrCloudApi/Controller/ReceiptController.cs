@@ -6,34 +6,36 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Receipt;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 using UseCase.Core.Sync;
 using UseCase.Receipt;
+using UseCase.Receipt.CreateUKEFile;
+using UseCase.Receipt.DoReceCmt;
 using UseCase.Receipt.GetDiseaseReceList;
 using UseCase.Receipt.GetInsuranceReceInfList;
 using UseCase.Receipt.GetListReceInf;
 using UseCase.Receipt.GetListSyobyoKeika;
 using UseCase.Receipt.GetListSyoukiInf;
+using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.GetReceCheckOptionList;
 using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
+using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.MedicalDetail;
 using UseCase.Receipt.ReceCmtHistory;
-using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Receipt.ReceiptEdit;
 using UseCase.Receipt.ReceiptListAdvancedSearch;
 using UseCase.Receipt.SaveListReceCmt;
 using UseCase.Receipt.SaveListSyobyoKeika;
 using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
-using UseCase.Receipt.SyobyoKeikaHistory;
-using UseCase.Receipt.MedicalDetail;
-using UseCase.Receipt.GetRecePreviewList;
-using UseCase.Receipt.DoReceCmt;
-using UseCase.Receipt.ReceiptEdit;
-using UseCase.Receipt.GetSinMeiInMonthList;
-using UseCase.Receipt.GetSinDateRaiinInfList;
-using UseCase.Receipt.GetReceByomeiChecking;
 using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SyobyoKeikaHistory;
+using UseCase.Receipt.SyoukiInfHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -284,7 +286,7 @@ public class ReceiptController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
     }
-    
+
     [HttpGet(ApiPath.DoReceCmt)]
     public ActionResult<Response<GetReceCmtListResponse>> DoReceCmt([FromQuery] DoReceCmtRequest request)
     {
@@ -368,6 +370,51 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.CreateUKEFile)]
+    public ActionResult<Response<SaveReceiptEditResponse>> CreateUKEFile([FromBody] CreateUKEFileRequest request)
+    {
+        var input = new CreateUKEFileInputData(HpId,
+                                                request.ModeType,
+                                                request.SeikyuYm,
+                                                request.SeikyuYmOutput,
+                                                request.ChkHenreisai,
+                                                request.ChkTogetsu,
+                                                request.IncludeOutDrug,
+                                                request.IncludeTester,
+                                                request.KaId,
+                                                request.DoctorId,
+                                                request.Sort,
+                                                request.SkipWarningIncludeOutDrug,
+                                                request.SkipWarningIncludeTester,
+                                                request.SkipWarningKaId,
+                                                request.SkipWarningDoctorId,
+                                                request.ConfirmCreateUKEFile,
+                                                UserId);
+        var output = _bus.Handle(input);
+        var presenter = new CreateUKEFilePresenter();
+        presenter.Complete(output);
+        if (output.Status == CreateUKEFileStatus.Successful)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+                {
+                    foreach (var file in output.UKEFiles)
+                    {
+                        var entry = archive.CreateEntry(file.FileName, CompressionLevel.Fastest);
+                        using (var zipStream = entry.Open())
+                        {
+                            var buffer = file.OutputStream.ToArray();
+                            zipStream.Write(buffer, 0, buffer.Length);
+                        }
+                    }
+                }
+                return File(ms.ToArray(), "application/zip", "ReceiptCreations.zip");
+            }
+        }
+        return Ok(presenter.Result);
     }
 
     #region Private function

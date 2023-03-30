@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using UseCase.ReceiptCreation.CreateUKEFile;
+﻿using UseCase.Receipt.CreateUKEFile;
 
-namespace EmrCloudApi.Responses.ReceiptCreation
+namespace EmrCloudApi.Responses.Receipt
 {
     public class CreateUKEFileResponse
     {

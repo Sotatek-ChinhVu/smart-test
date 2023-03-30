@@ -1,4 +1,4 @@
-﻿namespace UseCase.ReceiptCreation.CreateUKEFile
+﻿namespace UseCase.Receipt.CreateUKEFile
 {
     public enum CreateUKEFileStatus
     {

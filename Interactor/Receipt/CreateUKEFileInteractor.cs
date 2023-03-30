@@ -9,9 +9,9 @@ using Helper.Extension;
 using Infrastructure.Common;
 using Interactor.CalculateService;
 using System.Text;
-using UseCase.ReceiptCreation.CreateUKEFile;
+using UseCase.Receipt.CreateUKEFile;
 
-namespace Interactor.ReceiptCreation
+namespace Interactor.Receipt
 {
     public class CreateUKEFileInteractor : ICreateUKEFileInputPort
     {
@@ -31,9 +31,9 @@ namespace Interactor.ReceiptCreation
             try
             {
                 if (inputData.HpId <= 0)
-                    return new CreateUKEFileOutputData(CreateUKEFileStatus.InvalidHpId, string.Empty , TypeMessage.TypeMessageError, new List<UKEFileOutputData>());
+                    return new CreateUKEFileOutputData(CreateUKEFileStatus.InvalidHpId, string.Empty, TypeMessage.TypeMessageError, new List<UKEFileOutputData>());
 
-                if(inputData.SeikyuYm <= 0)
+                if (inputData.SeikyuYm <= 0)
                     return new CreateUKEFileOutputData(CreateUKEFileStatus.InvaliSeikyuYm, string.Empty, TypeMessage.TypeMessageError, new List<UKEFileOutputData>());
 
                 if (inputData.ModeType == ModeTypeCreateUKE.Rosai)
@@ -85,24 +85,24 @@ namespace Interactor.ReceiptCreation
                 if (inputData.ChkHenreisai && inputData.ChkTogetsu)
                     seikyuKbnMode = 2;
 
-                if(!inputData.ConfirmCreateUKEFile)
+                if (!inputData.ConfirmCreateUKEFile)
                     return new CreateUKEFileOutputData(CreateUKEFileStatus.ConfirmCreateUKEFile, "磁気レセプトの作成には時間がかかる場合があります。実行しますか？", TypeMessage.TypeMessageConfirmation, new List<UKEFileOutputData>());
 
                 var responseAPI = _calcultateCustomerService.RunCaculationPostAsync<List<string>>(TypeCalculate.GetRecedenData, new
                 {
                     Mode = (int)inputData.ModeType,
-                    Sort = inputData.Sort,
-                    HpId = inputData.HpId,
+                    inputData.Sort,
+                    inputData.HpId,
                     SeikyuYM = inputData.SeikyuYm,
                     OutputYM = inputData.SeikyuYmOutput,
                     SeikyuKbnMode = seikyuKbnMode,
-                    KaId = inputData.KaId,
+                    inputData.KaId,
                     TantoId = inputData.DoctorId,
-                    IncludeTester = inputData.IncludeTester,
-                    IncludeOutDrug = inputData.IncludeOutDrug
+                    inputData.IncludeTester,
+                    inputData.IncludeOutDrug
                 }).Result;
 
-                if(!responseAPI.IsSuccess || responseAPI.Data.Count == 0)
+                if (!responseAPI.IsSuccess || responseAPI.Data.Count == 0)
                 {
                     return new CreateUKEFileOutputData(CreateUKEFileStatus.NoData, "出力対象が見つかりません。" + Environment.NewLine + "・出力条件を確認し、再実行してください。", TypeMessage.TypeMessageError, new List<UKEFileOutputData>());
                 }
@@ -122,7 +122,7 @@ namespace Interactor.ReceiptCreation
             }
         }
 
-        private List<UKEFileOutputData> HandlerFileUKE(List<string> receData , ModeTypeCreateUKE modeType, int hpId , int UserId, int seikyuYm)
+        private List<UKEFileOutputData> HandlerFileUKE(List<string> receData, ModeTypeCreateUKE modeType, int hpId, int UserId, int seikyuYm)
         {
             List<UKEFileOutputData> ukeFiles = new List<UKEFileOutputData>();
             int raisoRadio = 0;
@@ -144,7 +144,7 @@ namespace Interactor.ReceiptCreation
                     break;
             }
 
-            string filePath = System.IO.Path.GetFullPath("TempFiles\\Receiptc\\RECEIPTC.UKE");
+            string filePath = Path.GetFullPath("TempFiles\\Receiptc\\RECEIPTC.UKE");
 
             FileInfo fileTemp = new FileInfo(filePath);
             if (!fileTemp.Exists)
@@ -225,13 +225,13 @@ namespace Interactor.ReceiptCreation
             return fileName;
         }
 
-        private string ValidateData(int hpId , int seikyuYm)
+        private string ValidateData(int hpId, int seikyuYm)
         {
             string errorSyobyo = string.Empty;
             string errorSyobyoKeika = string.Empty;
             string errorRousaiSaigai = string.Empty;
 
-            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId ,new List<long>(), seikyuYm);
+            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId, new List<long>(), seikyuYm);
             foreach (var receInfItem in receInfModels)
             {
                 if (receInfItem.IsTester == 1) continue;
@@ -251,7 +251,7 @@ namespace Interactor.ReceiptCreation
                         errorSyobyo += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
                     }
                     // check error SyobyoKeika
-                    if (!_receiptRepository.ExistSyobyoKeikaData(hpId ,receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
+                    if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
                         errorSyobyoKeika += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
                     }
@@ -281,7 +281,7 @@ namespace Interactor.ReceiptCreation
         private string ValidateAftercare(int hpId, int seikyuYm)
         {
             string errorSyobyoKeika = string.Empty;
-            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId ,new List<long>(), seikyuYm).Where(item => item.HokenKbn == 13).ToList();
+            List<ReceInfValidateModel> receInfModels = _receiptRepository.GetReceValidateReceiptCreation(hpId, new List<long>(), seikyuYm).Where(item => item.HokenKbn == 13).ToList();
             foreach (var receInfItem in receInfModels)
             {
                 if (receInfItem.IsTester == 1) continue;
@@ -289,7 +289,7 @@ namespace Interactor.ReceiptCreation
                 if (receInfItem.HokenKbn == 13 && receInfItem.IsPaperRece == 0)
                 {
                     // Check error SyobyoKeika 
-                    if (!_receiptRepository.ExistSyobyoKeikaData(hpId ,receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
+                    if (!_receiptRepository.ExistSyobyoKeikaData(hpId, receInfItem.PtId, receInfItem.SinYm, receInfItem.HokenId))
                     {
                         errorSyobyoKeika += Environment.NewLine + string.Format("    {0} ID:{1} [保険:{2}]", CIUtil.SMonthToShowSMonth(seikyuYm), receInfItem.PtNum, receInfItem.HokenId);
                     }
@@ -302,9 +302,10 @@ namespace Interactor.ReceiptCreation
             }
             return errorSyobyoKeika;
         }
+
     }
 
-    public class RecedenFileInfoModel
+    internal class RecedenFileInfoModel
     {
         public string Prefix { get; private set; }
 
@@ -314,7 +315,7 @@ namespace Interactor.ReceiptCreation
 
         public int CreateTime { get; private set; }
 
-        public RecedenFileInfoModel(string filename, int createDate, int createTime, string prefix = "")
+        internal RecedenFileInfoModel(string filename, int createDate, int createTime, string prefix = "")
         {
             FileName = filename;
             CreateDate = createDate;
