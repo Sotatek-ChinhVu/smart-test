@@ -743,6 +743,7 @@ namespace Infrastructure.Repositories
                 dest.HpId = hpId;
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.HokenSname = src.HokenSName;
                 dest.UpdateId = userId;
                 dest.CreateId = userId;
                 return dest;
@@ -1056,6 +1057,25 @@ namespace Infrastructure.Repositories
                 result.Add(new IsKantokuCdValidModel(kantokuCd.PtId, kantokuCd.HokenId, kantoku != null));
             }
             return result;
+        }
+
+        public bool SaveOrdInsuranceMst(List<HokenMstModel> insuranceChangeOdrs, int hpId, int userId)
+        {
+            foreach (var item in insuranceChangeOdrs)
+            {
+                var updateItems = TrackingDataContext.HokenMsts.Where(x =>
+                                                        x.HpId == hpId &&
+                                                        x.PrefNo == item.PrefNo &&
+                                                        x.HokenNo == item.HokenNo &&
+                                                        x.HokenEdaNo == item.HokenEdaNo).ToList();
+                updateItems.ForEach(x =>
+                {
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    x.UpdateId = userId;
+                    x.SortNo = item.SortNo;
+                });
+            }
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using Domain.Constant;
 using Domain.Models.Accounting;
+using Domain.Models.HpInf;
+using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.Receipt.ReceiptCreation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Domain.Models.ReceSeikyu;
 using Entity.Tenant;
@@ -15,6 +18,8 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -3212,6 +3217,64 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                );
     }
     #endregion
+
+    public List<ReceInfValidateModel> GetReceValidateReceiptCreation(int hpId, List<long> ptIds, int sinYm)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
+
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var receStates = NoTrackingDataContext.ReceStatuses.Where(p => p.HpId == hpId && p.SeikyuYm == sinYm && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var receInfJoinPtInfQuery = from receInf in receInfs
+                                    join ptInf in ptInfs
+                                    on receInf.PtId equals ptInf.PtId
+                                    join receState in receStates
+                                    on new { receInf.PtId, receInf.HokenId } equals new { receState.PtId, receState.HokenId } into tempReceStates
+                                    from tempRcStt in tempReceStates.DefaultIfEmpty()
+                                    select new
+                                    {
+                                        PtInf = ptInf,
+                                        ReceInf = receInf,
+                                        RcStatus = tempRcStt ?? null
+                                    };
+
+        var query = from receInfJoinPtInf in receInfJoinPtInfQuery
+                    join ptHokenInf in ptHokenInfs
+                    on new { receInfJoinPtInf.ReceInf.PtId, receInfJoinPtInf.ReceInf.HokenId } equals new { ptHokenInf.PtId, ptHokenInf.HokenId } into tempPtHokenInfs
+                    from tempPtHokenInf in tempPtHokenInfs.DefaultIfEmpty()
+                    where receInfJoinPtInf.ReceInf.HokenId != 0
+                    select new
+                    {
+                        PtInf = receInfJoinPtInf.PtInf,
+                        ReceInf = receInfJoinPtInf.ReceInf,
+                        PtHokenInf = tempPtHokenInf,
+                        RcStatus = receInfJoinPtInf.RcStatus
+                    };
+
+
+        return query.Select(x => new ReceInfValidateModel(x.PtInf.PtId,
+                                                         x.PtInf.PtNum,
+                                                         x.ReceInf.SinYm,
+                                                         x.ReceInf.IsTester,
+                                                         x.ReceInf.HokenKbn,
+                                                         x.RcStatus == null ? 0 : x.RcStatus.IsPaperRece,
+                                                         x.PtHokenInf.RousaiSaigaiKbn,
+                                                         x.ReceInf.HokenId,
+                                                         x.PtHokenInf.RousaiSyobyoDate)).ToList();
+    }
+
+    public bool ExistSyobyoKeikaData(int hpId ,long ptId, int sinYm, int hokenId)
+    {
+        var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(p => p.HpId == hpId &&
+                                                                                 p.IsDeleted == DeleteTypes.None &&
+                                                                                 p.PtId == ptId &&
+                                                                                 p.SinYm == sinYm &&
+                                                                                 p.HokenId == hokenId);
+        return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
+    }
 
     public void ReleaseResource()
     {

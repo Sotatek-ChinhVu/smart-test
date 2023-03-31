@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.Accounting;
 using Domain.Models.Receipt.Recalculation;
+using Domain.Models.Receipt.ReceiptCreation;
 using Domain.Models.Receipt.ReceiptListAdvancedSearch;
 using Domain.Models.ReceSeikyu;
 using Helper.Enum;
@@ -110,4 +111,8 @@ public interface IReceiptRepository : IRepositoryBase
     bool SaveReceStatus(int hpId, int userId, ReceStatusModel receStatus);
 
     ReceStatusModel GetReceStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+
+    List<ReceInfValidateModel> GetReceValidateReceiptCreation(int hpId, List<long> ptIds, int sinYm);
+
+    bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId);
 }

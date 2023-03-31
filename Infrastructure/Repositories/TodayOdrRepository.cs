@@ -534,6 +534,8 @@ namespace Infrastructure.Repositories
                     if (ordInfo != null)
                     {
                         ordInfo.IsDeleted = DeleteTypes.Deleted;
+                        ordInfo.UpdateId = userId;
+                        ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                 }
                 else
@@ -614,6 +616,8 @@ namespace Infrastructure.Repositories
                     else
                     {
                         ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
@@ -984,7 +988,7 @@ namespace Infrastructure.Repositories
             return ptByomeiModels;
         }
 
-        public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double>> currentOdrList)
+        public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double, int>> currentOdrList)
         {
             var itemCds = new List<string>();
             var autoItems = new List<(int, int, List<Tuple<string, string, long>>)>();
@@ -1051,7 +1055,14 @@ namespace Infrastructure.Repositories
                             {
                                 if (autoOdrDetailItemCdList.Contains(item.Item3))
                                 {
-                                    countInCurrentOdr += (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    if (item.Item5 == DeleteTypes.None)
+                                    {
+                                        countInCurrentOdr += (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    }
+                                    else
+                                    {
+                                        countInCurrentOdr -= (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    }
                                 }
                             }
                         }
@@ -1061,7 +1072,14 @@ namespace Infrastructure.Repositories
                             {
                                 if (autoOdrDetailItemCdList.Contains(item.Item3))
                                 {
-                                    countInCurrentOdr++;
+                                    if (item.Item5 == DeleteTypes.None)
+                                    {
+                                        countInCurrentOdr++;
+                                    }
+                                    else
+                                    {
+                                        countInCurrentOdr--;
+                                    }
                                 }
                             }
                         }
@@ -2418,7 +2436,14 @@ namespace Infrastructure.Repositories
                                     {
                                         if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
-                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            if (item.IsDeleted == DeleteTypes.None)
+                                            {
+                                                countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            }
+                                            else
+                                            {
+                                                countInCurrentOdr -= (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            }
                                         }
                                     }
                                 }
@@ -2431,7 +2456,14 @@ namespace Infrastructure.Repositories
                                     {
                                         if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
-                                            countInCurrentOdr++;
+                                            if (item.IsDeleted == DeleteTypes.None)
+                                            {
+                                                countInCurrentOdr++;
+                                            }
+                                            else
+                                            {
+                                                countInCurrentOdr--;
+                                            }
                                         }
                                     }
                                 }

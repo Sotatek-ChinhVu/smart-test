@@ -22,17 +22,19 @@ namespace UseCase.MedicalExamination.GetAddedAutoItem
 
     public class CurrentOrderInf
     {
-        public CurrentOrderInf(int orderPosition, int orderDetailPosition, string itemCd, double suryo)
+        public CurrentOrderInf(int orderPosition, int orderDetailPosition, string itemCd, double suryo, int isDeleted)
         {
             OrderPosition = orderPosition;
             OrderDetailPosition = orderDetailPosition;
             ItemCd = itemCd;
             Suryo = suryo;
+            IsDeleted = isDeleted;
         }
 
         public int OrderPosition { get; private set; }
         public int OrderDetailPosition { get; private set; }
         public string ItemCd { get; private set; }
         public double Suryo { get; private set; }
+        public int IsDeleted { get; private set; }
     }
 }
