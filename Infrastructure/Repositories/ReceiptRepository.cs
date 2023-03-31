@@ -1810,6 +1810,49 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         int seqNoCheck = receInf?.SeqNo ?? 0;
         return seqNoCheck == seqNo;
     }
+
+    public bool SaveReceStatus(int hpId, int userId, ReceStatusModel receStatus)
+    {
+        bool isAddNew = false;
+        var entity = TrackingDataContext.ReceStatuses.FirstOrDefault(item => item.HpId == hpId
+                                                                               && item.PtId == receStatus.PtId
+                                                                               && item.SeikyuYm == receStatus.SeikyuYm
+                                                                               && item.SinYm == receStatus.SinYm
+                                                                               && item.HokenId == receStatus.HokenId);
+        if (entity == null)
+        {
+            isAddNew = true;
+            entity = new ReceStatus();
+            entity.CreateDate = CIUtil.GetJapanDateTimeNow();
+            entity.CreateId = userId;
+            entity.HpId = hpId;
+            entity.PtId = receStatus.PtId;
+            entity.SeikyuYm = receStatus.SeikyuYm;
+            entity.SinYm = receStatus.SinYm;
+            entity.HokenId = receStatus.HokenId;
+        }
+        entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+        entity.UpdateId = userId;
+        entity.FusenKbn = receStatus.FusenKbn;
+        entity.IsPaperRece = receStatus.IsPaperRece ? 1 : 0;
+        entity.StatusKbn = receStatus.StatusKbn;
+        entity.IsPrechecked = receStatus.IsPrechecked ? 1 : 0;
+        if (isAddNew)
+        {
+            TrackingDataContext.ReceStatuses.Add(entity);
+        }
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public ReceStatusModel GetReceStatus(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+    {
+        var receStatus = NoTrackingDataContext.ReceStatuses.FirstOrDefault(item => item.HpId == hpId
+                                                                                   && item.PtId == ptId
+                                                                                   && item.SeikyuYm == seikyuYm
+                                                                                   && item.SinYm == sinYm
+                                                                                   && item.HokenId == hokenId);
+        return receStatus != null ? ConvertToReceStatusModel(receStatus) : new ReceStatusModel();
+    }
     #endregion
 
     #region Recalculation Check
@@ -3157,6 +3200,21 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
             UpdateDate = CIUtil.GetJapanDateTimeNow(),
             UpdateId = userId,
         };
+    }
+
+    private ReceStatusModel ConvertToReceStatusModel(ReceStatus receStatus)
+    {
+        return new ReceStatusModel(
+                   receStatus.PtId,
+                   receStatus.SeikyuYm,
+                   receStatus.HokenId,
+                   receStatus.SinYm,
+                   receStatus.FusenKbn,
+                   receStatus.IsPaperRece == 1,
+                   receStatus.Output == 1,
+                   receStatus.StatusKbn,
+                   receStatus.IsPrechecked == 1
+               );
     }
     #endregion
 

@@ -227,6 +227,8 @@
         public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
         public const string GetReceByomeiChecking = "GetReceByomeiChecking";
         public const string SaveReceiptEdit = "SaveReceiptEdit";
+        public const string SaveReceStatus = "SaveReceStatus";
+        public const string GetReceStatus = "GetReceStatus";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
