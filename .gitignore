@@ -126,3 +126,4 @@ src/.vs/config/applicationhost.config
 .idea/
 /EmrCloudApi/env.Development.json
 /EmrCloudApi/TempFiles
+/EmrCloudApi/TempFiles/Receiptc/RECEIPTC.UKE
