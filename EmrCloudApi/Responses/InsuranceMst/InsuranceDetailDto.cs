@@ -2,7 +2,7 @@
 {
     public class InsuranceDetailDto
     {
-        public InsuranceDetailDto(int indicator, int sort, string acronymName, int prefNo, int hokenEdaNo, int startDate, int hokenNo , bool isModified)
+        public InsuranceDetailDto(int indicator, int sort, string acronymName, int prefNo, int hokenEdaNo, int startDate, int hokenNo, bool isModified)
         {
             Indicator = indicator;
             Sort = sort;
