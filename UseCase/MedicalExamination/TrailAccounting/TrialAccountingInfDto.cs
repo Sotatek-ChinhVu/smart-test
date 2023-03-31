@@ -12,11 +12,11 @@
             SumAdjust = sumAdjust;
         }
 
-        public int TotalPoint { get; set; }
-        public int KanFutan { get; set; }
-        public int TotalSelfExpense { get; set; }
-        public int Tax { get; set; }
-        public int AdjustFutan { get; set; }
-        public int SumAdjust { get; set; }
+        public int TotalPoint { get; private set; }
+        public int KanFutan { get; private set; }
+        public int TotalSelfExpense { get; private set; }
+        public int Tax { get; private set; }
+        public int AdjustFutan { get; private set; }
+        public int SumAdjust { get; private set; }
     }
 }
