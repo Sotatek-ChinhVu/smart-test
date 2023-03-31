@@ -322,6 +322,7 @@ using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.GetSinDateRaiinInfList;
 using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.MedicalDetail;
@@ -335,6 +336,7 @@ using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using UseCase.Reception.Get;
@@ -927,6 +929,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
             busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
+            busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
+            busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();
