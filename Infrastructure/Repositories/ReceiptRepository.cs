@@ -1247,6 +1247,10 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
 
     public bool SaveReceCmtList(int hpId, int userId, List<ReceCmtModel> receCmtList)
     {
+        if (!receCmtList.Any())
+        {
+            return true;
+        }
         var receCmtUpdateList = receCmtList.Where(item => item.Id > 0).ToList();
         var receCmtUpdateDBList = TrackingDataContext.ReceCmts.Where(item => item.HpId == hpId
                                                                              && item.IsDeleted == DeleteTypes.None
@@ -1307,7 +1311,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var hokenKbnList = new List<int> { 11, 12, 13 };
         var ptHokenInf = NoTrackingDataContext.PtHokenInfs.FirstOrDefault(item => item.HpId == hpId && item.HokenId == hokenId && item.PtId == ptId);
         var hokenKbn = ptHokenInf?.HokenKbn ?? 0;
-        if (!hokenKbnList.Contains(hokenKbn))
+        if (!hokenKbnList.Contains(hokenKbn) && hokenId != 0)
         {
             return new();
         }
@@ -3266,7 +3270,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                          x.PtHokenInf.RousaiSyobyoDate)).ToList();
     }
 
-    public bool ExistSyobyoKeikaData(int hpId ,long ptId, int sinYm, int hokenId)
+    public bool ExistSyobyoKeikaData(int hpId, long ptId, int sinYm, int hokenId)
     {
         var syobyoKeika = NoTrackingDataContext.SyobyoKeikas.FirstOrDefault(p => p.HpId == hpId &&
                                                                                  p.IsDeleted == DeleteTypes.None &&
