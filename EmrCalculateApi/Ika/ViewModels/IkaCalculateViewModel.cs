@@ -1039,7 +1039,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         ///     診療明細情報
         ///     会計情報
         /// </returns>
-        public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>, List<CalcLogModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
+        public (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
         {
             const string conFncName = nameof(RunTraialCalculate);
 

@@ -47,7 +47,7 @@ namespace EmrCalculateApi.Controllers
                 calculateRequest.OrderInfoList,
                 calculateRequest.Reception,
                 calculateRequest.CalcFutan);
-            var result = new RunTraialCalculateResponse(data.Item1, data.Item2.Select(k => new KaikeiInfItemResponse(k)).ToList(), data.Item3);
+            var result = new RunTraialCalculateResponse(data.sinMeis, data.kaikeis.Select(k => new KaikeiInfItemResponse(k)).ToList(), data.calcLogs);
             return Ok(result);
         }
 
