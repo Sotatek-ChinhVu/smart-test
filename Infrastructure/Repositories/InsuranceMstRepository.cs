@@ -743,6 +743,7 @@ namespace Infrastructure.Repositories
                 dest.HpId = hpId;
                 dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                dest.HokenSname = src.HokenSName;
                 dest.UpdateId = userId;
                 dest.CreateId = userId;
                 return dest;
