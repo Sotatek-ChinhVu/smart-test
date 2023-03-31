@@ -44,4 +44,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TempFiles\Receiptc\" />
+  </ItemGroup>
+
 </Project>
