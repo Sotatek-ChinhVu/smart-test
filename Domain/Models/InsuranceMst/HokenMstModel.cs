@@ -1,4 +1,5 @@
-﻿using Helper.Extension;
+﻿using Helper.Constants;
+using Helper.Extension;
 
 namespace Domain.Models.InsuranceMst
 {
@@ -74,6 +75,20 @@ namespace Domain.Models.InsuranceMst
         {
             IsLimitList = isLimitList;
             MonthLimitCount = monthLimitCount;
+            HokenSName = string.Empty;
+            Houbetu = string.Empty;
+            HokenName = string.Empty;
+            HokenNameCd = string.Empty;
+            PrefactureName = string.Empty;
+        }
+
+        public HokenMstModel(int hokenNo, int hokenEdaNo, int startDate, int prefNo , int sort)
+        {
+            HokenEdaNo = hokenEdaNo;
+            HokenNo = hokenNo;
+            StartDate = startDate;
+            PrefNo = prefNo;
+            SortNo = sort;
             HokenSName = string.Empty;
             Houbetu = string.Empty;
             HokenName = string.Empty;
