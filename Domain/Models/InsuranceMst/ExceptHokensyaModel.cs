@@ -13,18 +13,18 @@
             HokensyaNo = hokensyaNo;
         }
 
-        public long Id { get; set; }
+        public long Id { get; private set; }
 
-        public int HpId { get; set; }
+        public int HpId { get; private set; }
 
-        public int PrefNo { get; set; }
+        public int PrefNo { get; private set; }
 
-        public int HokenNo { get; set; }
+        public int HokenNo { get; private set; }
 
-        public int HokenEdaNo { get; set; }
+        public int HokenEdaNo { get; private set; }
 
-        public int StartDate { get; set; }
+        public int StartDate { get; private set; }
 
-        public string HokensyaNo { get; set; }
+        public string HokensyaNo { get; private set; }
     }
 }
