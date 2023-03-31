@@ -2582,13 +2582,13 @@ namespace Infrastructure.Repositories
             foreach (var checkingOdr in addingOdrList)
             {
                 var index = odrInfs.FindIndex(o => o.Equals(checkingOdr));
-                var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
-                                                     && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
-                                                     && odrInf.InoutKbn == checkingOdr?.InoutKbn
-                                                     && odrInf.SyohoSbt == checkingOdr?.SyohoSbt
-                                                     && odrInf.SikyuKbn == checkingOdr.SikyuKbn
-                                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
-                                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
+                //var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
+                //                                     && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
+                //                                     && odrInf.InoutKbn == checkingOdr?.InoutKbn
+                //                                     && odrInf.SyohoSbt == checkingOdr?.SyohoSbt
+                //                                     && odrInf.SikyuKbn == checkingOdr.SikyuKbn
+                //                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
+                //                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
                 foreach (var detail in odrInfDetails)
                 {
@@ -2685,12 +2685,12 @@ namespace Infrastructure.Repositories
                             if (itemShugiList.Count == 1)
                             {
                                 checkingOdr.ChangeOdrKouiKbn(detail.SinKouiKbn);
-                                if (checkGroupOrder != null)
-                                {
-                                    result.Add(new(index, new(DeleteTypes.Deleted)));
-                                    detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                                    result.Add(new(index, checkingOdr));
-                                }
+                                //if (checkGroupOrder != null)
+                                //{
+                                result.Add(new(index, new(DeleteTypes.Deleted)));
+                                detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
+                                result.Add(new(index, checkingOdr));
+                                //}
                             }
                         }
                         else
