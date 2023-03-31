@@ -118,7 +118,7 @@ namespace EmrCloudApi.Controller
                                                           request.Insurance.KogakuTotalAll,
                                                           request.Insurance.IsAdded,
                                                           request.Insurance.DayLimitCount,
-                                                          request.ExcepHokenSyas));
+                                                          request.Insurance.ExcepHokenSyas));
             var output = _bus.Handle(input);
             var presenter = new SaveHokenMasterPresenter();
             presenter.Complete(output);

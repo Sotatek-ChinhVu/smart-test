@@ -753,9 +753,9 @@ namespace Infrastructure.Repositories
                 return dest;
             });
             TrackingDataContext.HokenMsts.Add(create);
-            if (insurance.ExceptHokensyas != null && insurance.ExceptHokensyas.Any())
+            if (insurance.ExcepHokenSyas != null && insurance.ExcepHokenSyas.Any())
             {
-                TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExceptHokensyas.Select(x => new ExceptHokensya()
+                TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Select(x => new ExceptHokensya()
                 {
                     CreateDate = CIUtil.GetJapanDateTimeNow(),
                     CreateId = userId,
@@ -840,13 +840,13 @@ namespace Infrastructure.Repositories
                                            u.PrefNo == insurance.PrefNo &&
                                            u.StartDate == insurance.StartDate).ToList();
 
-                if (insurance.ExceptHokensyas == null || !insurance.ExceptHokensyas.Any())
+                if (insurance.ExcepHokenSyas == null || !insurance.ExcepHokenSyas.Any())
                 {
                     TrackingDataContext.ExceptHokensyas.RemoveRange(databaseAccepts);
                 }
                 else
                 {
-                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExceptHokensyas.Where(x => x.Id == 0).Select(x => new ExceptHokensya()
+                    TrackingDataContext.ExceptHokensyas.AddRange(insurance.ExcepHokenSyas.Where(x => x.Id == 0).Select(x => new ExceptHokensya()
                     {
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
@@ -860,7 +860,7 @@ namespace Infrastructure.Repositories
                         StartDate = x.StartDate
                     }));
 
-                    foreach(var item in insurance.ExceptHokensyas.Where(x => x.Id != 0))
+                    foreach(var item in insurance.ExcepHokenSyas.Where(x => x.Id != 0))
                     {
                         var update = databaseAccepts.FirstOrDefault(x => x.Id == item.Id);
                         if(update != null)
@@ -871,7 +871,7 @@ namespace Infrastructure.Repositories
                         }
                     }
 
-                    var deleteItems = databaseAccepts.Where(p => !insurance.ExceptHokensyas.Any(p2 => p2.Id == p.Id));
+                    var deleteItems = databaseAccepts.Where(p => !insurance.ExcepHokenSyas.Any(p2 => p2.Id == p.Id));
                     TrackingDataContext.ExceptHokensyas.RemoveRange(deleteItems);
                 }
             }
