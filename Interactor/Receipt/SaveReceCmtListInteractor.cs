@@ -71,10 +71,6 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         {
             return SaveReceCmtListStatus.InvalidHokenId;
         }
-        else if (!inputData.ReceCmtList.Any())
-        {
-            return SaveReceCmtListStatus.Failed;
-        }
         return ValidateReceCmtItem(inputData, listReceCmtDB);
     }
 
