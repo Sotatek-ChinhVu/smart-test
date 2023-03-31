@@ -70,9 +70,9 @@ namespace EmrCloudApi.Controller
                 Messenger.Instance.Register<RecalculateInSeikyuPendingStop>(this, StopCalculation);
 
                 HttpContext.Response.ContentType = "application/json";
-                //HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
+                HttpContext.Response.Headers.Add("Transfer-Encoding", "chunked");
                 HttpResponse response = HttpContext.Response;
-                //response.StatusCode = 202;
+                response.StatusCode = 202;
 
                 var input = new SaveReceSeiKyuInputData(request.Data.Select(x => new ReceSeikyuModel(0,
                                                                                                 HpId,
