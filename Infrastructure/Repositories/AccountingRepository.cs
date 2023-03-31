@@ -591,7 +591,8 @@ namespace Infrastructure.Repositories
                         hokenMst.ReceFutanKbn,
                         hokenMst.KogakuTotalAll,
                         true,
-                        hokenMst.DayLimitCount);
+                        hokenMst.DayLimitCount,
+                        new List<ExceptHokensyaModel>());
                 }
                 kohiInfModel = new KohiInfModel(eKohiInf.HokenId, eKohiInf.PrefNo, eKohiInf.HokenNo, eKohiInf.HokenEdaNo, eKohiInf.FutansyaNo ?? string.Empty, eKohiInf.StartDate, eKohiInf.EndDate, sinDay, hokenMstModel, ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
             }
