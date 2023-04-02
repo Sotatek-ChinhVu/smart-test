@@ -34,6 +34,7 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(drugInfo.Item2);
             return await RenderPdf(drugInfo.Item2, drugInfo.Item1);
         }
 
@@ -50,7 +51,7 @@ namespace EmrCloudApi.Controller
                 ReportType.DrgInfType2_2 => "frmDrgInfType2_2",
                 ReportType.DrgInfType2_3 => "frmDrgInfType2_3",
                 ReportType.DrgInf1 => "frmDrgInf1",
-                ReportType.DrgInf2 => "frmDrgInf2",
+                ReportType.DrgInf2 => "reporting-fm-drugInfo",
                 ReportType.DrgInf3 => "frmDrgInf3",
 
                 _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
