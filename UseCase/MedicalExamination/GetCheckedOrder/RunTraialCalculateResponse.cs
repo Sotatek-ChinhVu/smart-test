@@ -1,4 +1,5 @@
 ﻿using Domain.Models.CalculateModel;
+using UseCase.MedicalExamination.TrailAccounting;
 
 namespace UseCase.MedicalExamination.GetCheckedOrder
 {
