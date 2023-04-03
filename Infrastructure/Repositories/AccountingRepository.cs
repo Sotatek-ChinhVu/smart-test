@@ -12,7 +12,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
@@ -24,17 +23,27 @@ namespace Infrastructure.Repositories
 
         }
 
-        public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false)
+        public List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true)
         {
-            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
-
-            if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+            var listRaiinInf = new List<RaiinInf>();
+            if (getAll)
             {
-                return new List<ReceptionDto>();
+                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(item => item.RaiinNo == raiinNo && item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted == 0);
+
+                if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+                {
+                    return new List<ReceptionDto>();
+                }
+
+                listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
+                  item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0).ToList();
+            }
+            else
+            {
+                listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
+                  item => item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.RaiinNo == raiinNo && item.IsDeleted == 0).ToList();
             }
 
-            var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(
-               item => item.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && item.HpId == hpId && item.PtId == ptId && item.SinDate == sinDate && item.IsDeleted == 0 && item.Status > 3).ToList();
 
             var listKaId = listRaiinInf.Select(item => item.KaId).Distinct().ToList();
 
@@ -280,7 +289,7 @@ namespace Infrastructure.Repositories
         private Expression<Func<PtHokenInf, bool>> CreatePtHokenInfExpression(List<int> listHokenId)
         {
             var param = Expression.Parameter(typeof(PtHokenInf));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             if (listHokenId != null && listHokenId.Count > 0)
             {
@@ -292,20 +301,20 @@ namespace Infrastructure.Repositories
                         var memberHokenId = Expression.Property(param, nameof(PtHokenInf.HokenId));
                         Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
 
-                        expression = expression == Expression.Constant(false) ? expressionHokenId : Expression.Or(expression, expressionHokenId);
+                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
                     }
                 }
             }
 
-            return expression != Expression.Constant(false)
+            return expression != null
                 ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<PtHokenInf, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<PtHokenPattern> listPtHokenPattern)
         {
             var param = Expression.Parameter(typeof(PtKohi));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             if (listPtHokenPattern != null && listPtHokenPattern.Count > 0)
             {
@@ -326,7 +335,7 @@ namespace Infrastructure.Repositories
 
             return expression != null
                 ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
@@ -341,7 +350,7 @@ namespace Infrastructure.Repositories
                         var memberHokenId = Expression.Property(param, nameof(PtKohi.HokenId));
                         Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
 
-                        expression = expression == Expression.Constant(false) ? expressionHokenId : Expression.Or(expression, expressionHokenId);
+                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
                     }
                 }
             }
@@ -350,7 +359,7 @@ namespace Infrastructure.Repositories
         private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtHokenPattern> listPtHokenPattern)
         {
             var param = Expression.Parameter(typeof(PtHokenCheck));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             if (listPtHokenPattern != null && listPtHokenPattern.Count > 0)
             {
@@ -372,9 +381,9 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return expression != Expression.Constant(false)
+            return expression != null
                 ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         private void CreatePtHokenCheckExpression(List<int> listHokenId, int hokenGrp, ref Expression expression, ref ParameterExpression param)
@@ -394,7 +403,7 @@ namespace Infrastructure.Repositories
                         var expressionHokenCheck = Expression.And(Expression.Equal(valHokenId, memberHokenId),
                             Expression.Equal(valHokenGrp, memberHokenGrp));
 
-                        expression = expression == Expression.Constant(false) ? expressionHokenCheck : Expression.Or(expression, expressionHokenCheck);
+                        expression = expression == null ? expressionHokenCheck : Expression.Or(expression, expressionHokenCheck);
                     }
                 }
             }
@@ -404,14 +413,14 @@ namespace Infrastructure.Repositories
             List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(HokenMst));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             CreateHokenMstExpression(listPtHokenInf, ref expression, ref param);
             CreateHokenMstExpression(listPtKohi, ref expression, ref param);
 
-            return expression != Expression.Constant(false)
+            return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         private void CreateHokenMstExpression(List<PtHokenInf> listPtHokenInf, ref Expression expression, ref ParameterExpression param)
@@ -431,7 +440,7 @@ namespace Infrastructure.Repositories
                         var expressionHoken = Expression.And(Expression.Equal(valHokenNo, memberHokenNo),
                             Expression.Equal(valHokenEdaNo, memberHokenEdaNo));
 
-                        expression = expression == Expression.Constant(false) ? expressionHoken : Expression.Or(expression, expressionHoken);
+                        expression = expression == null ? expressionHoken : Expression.Or(expression, expressionHoken);
                     }
                 }
             }
@@ -454,7 +463,7 @@ namespace Infrastructure.Repositories
                         var expressionKohi = Expression.And(Expression.Equal(valHokenNo, memberHokenNo),
                             Expression.Equal(valHokenEdaNo, memberHokenEdaNo));
 
-                        expression = expression == Expression.Constant(false) ? expressionKohi : Expression.Or(expression, expressionKohi);
+                        expression = expression == null ? expressionKohi : Expression.Or(expression, expressionKohi);
                     }
                 }
             }
@@ -498,7 +507,7 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu ?? string.Empty, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.ConfirmDate, p.CheckId, p.CheckMachine, p.CheckComment, p.IsDeleted)).ToList());
+                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu ?? string.Empty, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.SeqNo, p.CheckId, p.CheckMachine, p.CheckComment, p.ConfirmDate)).ToList());
             }
 
             return hokenInfModel;
@@ -1004,27 +1013,27 @@ namespace Infrastructure.Repositories
         private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(PtHokenCheck));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             var listKohiId = listPtKohi.Select(item => item.HokenId).ToList();
 
             CreatePtHokenCheckExpression(listKohiId, 2, ref expression, ref param);
 
-            return expression != Expression.Constant(false)
+            return expression != null
                     ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                    : Expression.Lambda<Func<PtHokenCheck, bool>>(Expression.Constant(false), param);
+                    : null;
         }
 
         private Expression<Func<HokenMst, bool>> CreateHokenMstExpression(List<PtKohi> listPtKohi)
         {
             var param = Expression.Parameter(typeof(HokenMst));
-            Expression expression = Expression.Constant(false);
+            Expression expression = null;
 
             CreateHokenMstExpression(listPtKohi, ref expression, ref param);
 
-            return expression != Expression.Constant(false)
+            return expression != null
                 ? Expression.Lambda<Func<HokenMst, bool>>(body: expression, parameters: param)
-                : Expression.Lambda<Func<HokenMst, bool>>(Expression.Constant(false), param);
+                : null;
         }
 
         public bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
@@ -1309,22 +1318,32 @@ namespace Infrastructure.Repositories
             return raiinInf != null;
         }
 
-        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo)
+        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true)
         {
-            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
+            var raiinNos = new List<long>();
+            if (getAll)
+            {
+                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.RaiinNo == raiinNo &&
                                                                 x.Status > RaiinState.TempSave &&
                                                                 x.IsDeleted == DeleteTypes.None);
-            if (oyaRaiinNo == null) return new();
-
-            return NoTrackingDataContext.RaiinInfs.Where(x =>
+                if (oyaRaiinNo == null) return new();
+                raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                 x.IsDeleted == DeleteTypes.None
                                                                 ).Select(x => x.RaiinNo).ToList();
+            }
+            raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.IsDeleted == DeleteTypes.None
+                                                                ).Select(x => x.RaiinNo).ToList();
+
+            return raiinNos;
         }
         public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {

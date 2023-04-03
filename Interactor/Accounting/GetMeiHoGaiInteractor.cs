@@ -25,7 +25,7 @@ namespace Interactor.Accounting
         {
             try
             {
-                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo);
+                var raiinNos = _accountingRepository.GetRaiinNos(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
                 if (!raiinNos.Any()) { return new GetMeiHoGaiOutputData(new(), new(), new(), GetMeiHoGaiStatus.NoData); }
 
                 var sinMeiInputData = new GetSinMeiDtoInputData(raiinNos, inputData.PtId, inputData.SinDate, inputData.HpId, SinMeiModeConst.Kaikei);
