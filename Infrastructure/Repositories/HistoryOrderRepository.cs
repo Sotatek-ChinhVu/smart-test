@@ -578,6 +578,10 @@ namespace Infrastructure.Repositories
             var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = NoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
+            var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var kensaIrai = checkKensaIrai?.Val ?? 0;
+            var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
@@ -592,7 +596,7 @@ namespace Infrastructure.Repositories
                     List<OdrInfDetail> odrDetailInfList = allOdrDetailInfList.Where(o => o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && o.RpEdaNo == odrInf.RpEdaNo).ToList();
 
 
-                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName);
+                    OrdInfModel ordInfModel = Order.CreateBy(odrInf, odrDetailInfList, tenMsts, kensaMsts, ipnNameMsts, createName, updateName, odrInf.OdrKouiKbn, (int)kensaIrai, (int)kensaIraiCondition);
                     odrInfModelList.Add(ordInfModel);
                 }
 

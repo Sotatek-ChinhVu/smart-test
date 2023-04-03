@@ -5,7 +5,7 @@ namespace Domain.Models.InsuranceMst
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName, int prefNo, int sortNo, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, bool isAdded, int dayLimitCount)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int isFutansyaNoCheck, int isJyukyusyaNoCheck, int jyuKyuCheckDigit, int isTokusyuNoCheck, string hokenName, string hokenNameCd, int hokenKohiKbn, int isOtherPrefValid, int receKisai, int isLimitList, int isLimitListSum, int enTen, int kaiLimitFutan, int dayLimitFutan, int monthLimitFutan, int monthLimitCount, int limitKbn, int countKbn, int futanYusen, int calcSpKbn, int monthSpLimit, int kogakuTekiyo, int kogakuTotalKbn, int kogakuHairyoKbn, int receSeikyuKbn, int receKisaiKokho, int receKisai2, int receTenKisai, int receFutanRound, int receZeroKisai, int receSpKbn, string prefactureName, int prefNo, int sortNo, int seikyuYm, int receFutanHide, int receFutanKbn, int kogakuTotalAll, bool isAdded, int dayLimitCount, List<ExceptHokensyaModel> excepHokenSyas)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -59,6 +59,7 @@ namespace Domain.Models.InsuranceMst
             KogakuTotalAll = kogakuTotalAll;
             IsAdded = isAdded;
             DayLimitCount = dayLimitCount;
+            ExcepHokenSyas = excepHokenSyas;
         }
 
         public HokenMstModel()
@@ -69,6 +70,7 @@ namespace Domain.Models.InsuranceMst
             HokenNameCd = string.Empty;
             PrefactureName = string.Empty;
             EndDate = 99999999;
+            ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
         public HokenMstModel(int isLimitList, int monthLimitCount)
@@ -80,6 +82,7 @@ namespace Domain.Models.InsuranceMst
             HokenName = string.Empty;
             HokenNameCd = string.Empty;
             PrefactureName = string.Empty;
+            ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
         public HokenMstModel(int hokenNo, int hokenEdaNo, int startDate, int prefNo , int sort)
@@ -94,6 +97,7 @@ namespace Domain.Models.InsuranceMst
             HokenName = string.Empty;
             HokenNameCd = string.Empty;
             PrefactureName = string.Empty;
+            ExcepHokenSyas = new List<ExceptHokensyaModel>();
         }
 
         public int FutanKbn { get; private set; }
@@ -203,6 +207,8 @@ namespace Domain.Models.InsuranceMst
         public bool IsAdded { get; private set; }
 
         public int DayLimitCount { get; private set; }
+
+        public List<ExceptHokensyaModel> ExcepHokenSyas { get; private set; }
 
         public string SelectedValueMaster
         {

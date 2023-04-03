@@ -11,7 +11,7 @@ namespace Domain.Models.Accounting
     public interface IAccountingRepository : IRepositoryBase
     {
         List<SyunoSeikyuModel> GetListSyunoSeikyu(int hpId, long ptId, int sinDate, List<long> raiinNo, bool getAll = false);
-        List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false);
+        List<ReceptionDto> GetListRaiinInf(int hpId, long ptId, int sinDate, long raiinNo, bool isGetHeader = false, bool getAll = true);
         List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, List<int> listPatternId);
         List<CalcLogModel> GetCalcLog(int hpId, long ptId, int sinDate, List<long> raiinNoList);
         List<PtDiseaseModel> GetPtByoMeiList(int hpId, long ptId, int sinDate = 0);
@@ -20,7 +20,7 @@ namespace Domain.Models.Accounting
         bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
                                    int payType, string comment, bool isDisCharged);
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
-        List<long> GetRaiinNos(int hpId, long ptId, long raiinNo);
+        List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true);
         void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
         List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
         int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
