@@ -507,7 +507,7 @@ namespace Infrastructure.Repositories
                 {
                     hokenMstModel = new HokenMstModel();
                 }
-                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu ?? string.Empty, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId,p.SeqNo, p.CheckId, p.CheckMachine, p.CheckComment, p.ConfirmDate)).ToList());
+                hokenInfModel = new HokenInfModel(ePtHokenInf.HpId, ePtHokenInf.PtId, ePtHokenInf.HokenId, ePtHokenInf.HokenKbn, ePtHokenInf.Houbetu ?? string.Empty, ePtHokenInf.StartDate, ePtHokenInf.EndDate, sinDay, new(), ConfirmDateModelList.Select(p => new ConfirmDateModel(p.HokenGrp, p.HokenId, p.SeqNo, p.CheckId, p.CheckMachine, p.CheckComment, p.ConfirmDate)).ToList());
             }
 
             return hokenInfModel;
@@ -1318,22 +1318,32 @@ namespace Infrastructure.Repositories
             return raiinInf != null;
         }
 
-        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo)
+        public List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true)
         {
-            var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
+            var raiinNos = new List<long>();
+            if (getAll)
+            {
+                var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.RaiinNo == raiinNo &&
                                                                 x.Status > RaiinState.TempSave &&
                                                                 x.IsDeleted == DeleteTypes.None);
-            if (oyaRaiinNo == null) return new();
-
-            return NoTrackingDataContext.RaiinInfs.Where(x =>
+                if (oyaRaiinNo == null) return new();
+                raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
                                                                 x.IsDeleted == DeleteTypes.None
                                                                 ).Select(x => x.RaiinNo).ToList();
+            }
+            raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                x.HpId == hpId &&
+                                                                x.PtId == ptId &&
+                                                                x.IsDeleted == DeleteTypes.None
+                                                                ).Select(x => x.RaiinNo).ToList();
+
+            return raiinNos;
         }
         public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {

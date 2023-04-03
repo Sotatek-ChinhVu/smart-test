@@ -20,7 +20,7 @@ namespace Domain.Models.Accounting
         bool SaveAccounting(List<SyunoSeikyuModel> listAllSyunoSeikyu, List<SyunoSeikyuModel> syunoSeikyuModels, int hpId, long ptId, int userId, int accDue, int sumAdjust, int thisWari, int thisCredit,
                                    int payType, string comment, bool isDisCharged);
         bool CheckRaiinInfExist(int hpId, long ptId, long raiinNo);
-        List<long> GetRaiinNos(int hpId, long ptId, long raiinNo);
+        List<long> GetRaiinNos(int hpId, long ptId, long raiinNo, bool getAll = true);
         void CheckOrdInfInOutDrug(int hpId, long ptId, List<long> raiinNos, out bool inDrugExist, out bool outDrugExist);
         List<JihiSbtMstModel> GetListJihiSbtMst(int hpId);
         int GetJihiOuttaxPoint(int hpId, long ptId, List<long> raiinNos);
