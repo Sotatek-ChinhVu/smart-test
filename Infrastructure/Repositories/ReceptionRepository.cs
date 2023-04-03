@@ -527,6 +527,13 @@ namespace Infrastructure.Repositories
             return check;
         }
 
+        public bool CheckExistOfRaiinNos(List<long> raininNos)
+        {
+            raininNos = raininNos.Distinct().ToList();
+            var raiinInfCount = NoTrackingDataContext.RaiinInfs.Count(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            return raininNos.Count == raiinInfCount;
+        }
+
         private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily)
         {
             // 1. Prepare all the necessary collections for the join operation
@@ -977,6 +984,20 @@ namespace Infrastructure.Repositories
         public bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo)
         {
             return NoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
+        }
+
+        public bool Delete(int hpId, int userId, List<long> raiinNos)
+        {
+            raiinNos = raiinNos.Distinct().ToList();
+            var raiinInfs = TrackingDataContext.RaiinInfs.Where(r => raiinNos.Contains(r.RaiinNo)).ToList();
+            foreach (var raiinInf in raiinInfs)
+            {
+                raiinInf.IsDeleted = DeleteTypes.Deleted;
+                raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                raiinInf.UpdateId = userId;
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public void ReleaseResource()
