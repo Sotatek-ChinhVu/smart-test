@@ -42,7 +42,10 @@ public class ReceptionRowModel
         PtComment = ptComment;
         HokenPatternName = GetHokenName(hokenPid, hokenStartDate, hokenEndDate, hokenSbtCd, hokenKbn,
             kohi1HokenSbtKbn, kohi1Houbetu, kohi2HokenSbtKbn, kohi2Houbetu,
-            kohi3HokenSbtKbn, kohi3Houbetu, kohi4HokenSbtKbn, kohi4Houbetu);
+            kohi3HokenSbtKbn, kohi3Houbetu, kohi4HokenSbtKbn, kohi4Houbetu, false);
+        HokenPatternNameForAccountDueList = GetHokenName(hokenPid, hokenStartDate, hokenEndDate, hokenSbtCd, hokenKbn,
+            kohi1HokenSbtKbn, kohi1Houbetu, kohi2HokenSbtKbn, kohi2Houbetu,
+            kohi3HokenSbtKbn, kohi3Houbetu, kohi4HokenSbtKbn, kohi4Houbetu, true);
         TantoId = tantoId;
         KaId = kaId;
         LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
@@ -60,11 +63,11 @@ public class ReceptionRowModel
     public long PtId { get; private set; }
 
     public int SinDate { get; private set; }
-    
+
     public int IsDeleted { get; private set; }
-    
+
     public long RaiinNo { get; private set; }
-    
+
     // 順番
     public int UketukeNo { get; private set; }
     // 同一来院
@@ -109,6 +112,7 @@ public class ReceptionRowModel
     public string PtComment { get; private set; }
     // 保険
     public string HokenPatternName { get; private set; }
+    public string HokenPatternNameForAccountDueList { get; private set; }
     // 担当医
     public int TantoId { get; private set; }
     // 診療科
@@ -168,7 +172,7 @@ public class ReceptionRowModel
 
     private string GetHokenName(int hokenPid, int hokenStartDate, int hokenEndDate, int hokenSbtCd, int hokenKbn,
         int kohi1HokenSbtKbn, string kohi1Houbetu, int kohi2HokenSbtKbn, string kohi2Houbetu,
-        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu)
+        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu, bool forAccountDueList)
     {
         if (hokenPid == CommonConstants.InvalidId)
         {
@@ -340,13 +344,14 @@ public class ReceptionRowModel
             sBuff += string.Format("{0, -11}", " ");
         }
 
-        return hokenName + " " + sBuff;
+        return forAccountDueList ? hokenName : hokenName + " " + sBuff;
 
         bool IsExpirated()
         {
             return !(hokenStartDate <= SinDate && hokenEndDate >= SinDate);
         }
     }
+
     public int HokenPid { get; private set; }
 
 }

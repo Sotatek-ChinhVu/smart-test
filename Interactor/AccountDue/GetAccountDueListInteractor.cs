@@ -45,7 +45,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             {
                 if (!hokenPatternDict.ContainsKey(model.HokenPid))
                 {
-                    hokenPatternDict.Add(model.HokenPid, model.HokenPatternName);
+                    hokenPatternDict.Add(model.HokenPid, model.HokenPatternNameForAccountDueList);
                 }
             }
 
