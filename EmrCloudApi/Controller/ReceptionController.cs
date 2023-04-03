@@ -27,6 +27,7 @@ using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.RaiinKbn.GetPatientRaiinKubunList;
+using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
@@ -252,6 +253,16 @@ namespace EmrCloudApi.Controller
             var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinInfPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Delete)]
+        public ActionResult<Response<DeleteReceptionResponse>> Delete([FromBody] DeleteReceptionRequest req)
+        {
+            var input = new DeleteReceptionInputData(HpId, UserId, req.RaiinNos);
+            var output = _bus.Handle(input);
+            var presenter = new DeleteReceptionPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
