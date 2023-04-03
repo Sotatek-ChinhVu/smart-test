@@ -47,9 +47,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public int UpdateId { get; set; }
 
         public string UpdateMachine { get; set; } = String.Empty;
-        public PtPregnancyModel Map()
+        public PtPregnancyItem Map()
         {
-            return new PtPregnancyModel(Id,
+            return new PtPregnancyItem(Id,
             HpId,
             PtId,
             SeqNo,
@@ -60,9 +60,6 @@ namespace EmrCloudApi.Requests.SpecialNote
             OvulationDate,
             OvulationDueDate,
             IsDeleted,
-            UpdateDate,
-            UpdateId,
-            UpdateMachine,
             0);
         }
 

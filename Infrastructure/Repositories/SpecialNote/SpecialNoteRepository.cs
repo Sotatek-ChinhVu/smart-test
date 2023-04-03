@@ -4,6 +4,7 @@ using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -381,6 +382,9 @@ namespace Infrastructure.Repositories.SpecialNote
         #region SavePatientInfo
         private void SavePatientInfo(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
+            var ids = patientInfoModel.PregnancyItems.Where(p => p.IsDeleted != DeleteTypes.None).Select(p => p.Id).Distinct();
+            var pregnancyItemIsDeleteds = TrackingDataContext.PtPregnancies.Where(p => ids.Contains(p.Id));
+            TrackingDataContext.PtPregnancies.RemoveRange(pregnancyItemIsDeleteds);
             foreach (var pregnancyItem in patientInfoModel.PregnancyItems)
             {
                 if (patientInfoModel?.PregnancyItems != null && pregnancyItem.HpId == hpId && pregnancyItem.PtId == ptId)
