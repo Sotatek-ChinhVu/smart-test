@@ -166,12 +166,12 @@ namespace Infrastructure.Repositories
                                                    && hoken.PtId == ptId
                                                    && hoken.IsDeleted == 0);
 
-            var predicateHokenInf = CreatePtHokenInfExpression(listPtHokenPattern.Select(item => item.HokenId).ToList());
+            var hokenIds = listPtHokenPattern.Select(item => item.HokenId).Distinct().ToList();
 
             List<PtHokenInf> listPtHokenInf = new List<PtHokenInf>();
-            if (predicateHokenInf != null)
+            if (hokenIds != null)
             {
-                listPtHokenInf = ptHokenInfRepos.Where(predicateHokenInf).ToList();
+                listPtHokenInf = ptHokenInfRepos.Where(p => hokenIds.Contains(p.HokenId)).ToList();
             }
 
             var ptKohiRepos = NoTrackingDataContext.PtKohis
@@ -179,12 +179,12 @@ namespace Infrastructure.Repositories
                                                   && kohi.PtId == ptId
                                                   && kohi.IsDeleted == 0);
 
-            var predicateKohi = CreatePtKohiExpression(listPtHokenPattern);
+            var kohis = CreatePtKohi(listPtHokenPattern);
 
             List<PtKohi> listPtKohi = new List<PtKohi>();
-            if (predicateKohi != null)
+            if (kohis != null)
             {
-                listPtKohi = ptKohiRepos.Where(predicateKohi).ToList();
+                listPtKohi = ptKohiRepos.Where(p => kohis.Contains(p.HokenId)).ToList();
             }
 
             var predicateHokenMst = CreateHokenMstExpression(listPtHokenInf, listPtKohi);
@@ -206,14 +206,14 @@ namespace Infrastructure.Repositories
 
             var hokenMstList = hokenMstListRepo.Where(predicateHokenMst).ToList();
 
-            var predicatePtHokenCheck = CreatePtHokenCheckExpression(listPtHokenPattern);
-
-            if (predicatePtHokenCheck == null) return ptHokenPatternList;
-
             var ptHokenCheckRepos = NoTrackingDataContext.PtHokenChecks.Where(item =>
                 item.HpId == hpId && item.PtID == ptId && item.IsDeleted == 0);
 
-            var ptHokenCheckList = ptHokenCheckRepos.Where(predicatePtHokenCheck).ToList();
+            if (kohis == null || hokenIds == null) return ptHokenPatternList;
+
+            var ptHokenCheckList = ptHokenCheckRepos.Where(p =>
+                                                    kohis.Contains(p.HokenId) && p.HokenGrp == 2
+                                                    || hokenIds.Contains(p.HokenId) && p.HokenGrp == 1).ToList();
 
             foreach (var ptHokenPattern in listPtHokenPattern)
             {
@@ -234,6 +234,7 @@ namespace Infrastructure.Repositories
                             ptHokenCheckList.Where(item =>
                                 item.HokenGrp == 1 &&
                                 item.HokenId == ptHokenInf.HokenId)
+                                //new ConfirmDateModel(p.HokenGrp, p.HokenId, p.SeqNo, p.CheckId, p.CheckMachine, p.CheckComment, p.ConfirmDate)).ToList()
                                 .Select(item => new ConfirmDateModel(
                                      item.HokenGrp, item.HokenId, item.CheckDate, item.CheckId, item.CheckMachine ?? string.Empty, item.CheckCmt ?? string.Empty, item.IsDeleted)).ToList(), sinDay),
                     ptKohi1 == null
@@ -286,104 +287,27 @@ namespace Infrastructure.Repositories
             return ptHokenPatternList;
         }
 
-        private Expression<Func<PtHokenInf, bool>> CreatePtHokenInfExpression(List<int> listHokenId)
+        private List<int> CreatePtKohi(List<PtHokenPattern> listPtHokenPattern)
         {
-            var param = Expression.Parameter(typeof(PtHokenInf));
-            Expression expression = null;
-
-            if (listHokenId != null && listHokenId.Count > 0)
-            {
-                foreach (var hokenId in listHokenId)
-                {
-                    if (hokenId > 0)
-                    {
-                        var valHokenId = Expression.Constant(hokenId);
-                        var memberHokenId = Expression.Property(param, nameof(PtHokenInf.HokenId));
-                        Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
-
-                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
-                    }
-                }
-            }
-
-            return expression != null
-                ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
-                : null;
-        }
-
-        private Expression<Func<PtKohi, bool>> CreatePtKohiExpression(List<PtHokenPattern> listPtHokenPattern)
-        {
-            var param = Expression.Parameter(typeof(PtKohi));
-            Expression expression = null;
-
+            var kohis = new List<int>();
             if (listPtHokenPattern != null && listPtHokenPattern.Count > 0)
             {
                 foreach (var pattern in listPtHokenPattern)
                 {
                     if (pattern.PtId > 0)
                     {
-                        CreatePtKohiExpression(new List<int>()
+                        kohis.AddRange(new[]
                         {
                             pattern.Kohi1Id,
                             pattern.Kohi2Id,
                             pattern.Kohi3Id,
                             pattern.Kohi4Id
-                        }, ref expression, ref param);
+                        });
                     }
                 }
             }
 
-            return expression != null
-                ? Expression.Lambda<Func<PtKohi, bool>>(body: expression, parameters: param)
-                : null;
-        }
-
-        private void CreatePtKohiExpression(List<int> listKohiId, ref Expression expression, ref ParameterExpression param)
-        {
-            if (listKohiId != null && listKohiId.Count > 0)
-            {
-                foreach (var kohiId in listKohiId)
-                {
-                    if (kohiId > 0)
-                    {
-                        var valHokenId = Expression.Constant(kohiId);
-                        var memberHokenId = Expression.Property(param, nameof(PtKohi.HokenId));
-                        Expression expressionHokenId = Expression.Equal(valHokenId, memberHokenId);
-
-                        expression = expression == null ? expressionHokenId : Expression.Or(expression, expressionHokenId);
-                    }
-                }
-            }
-        }
-
-        private Expression<Func<PtHokenCheck, bool>> CreatePtHokenCheckExpression(List<PtHokenPattern> listPtHokenPattern)
-        {
-            var param = Expression.Parameter(typeof(PtHokenCheck));
-            Expression expression = null;
-
-            if (listPtHokenPattern != null && listPtHokenPattern.Count > 0)
-            {
-                CreatePtHokenCheckExpression(listPtHokenPattern.Select(item => item.HokenId).ToList(), 1, ref expression,
-                    ref param);
-
-                foreach (var pattern in listPtHokenPattern)
-                {
-                    if (pattern.PtId > 0)
-                    {
-                        CreatePtHokenCheckExpression(new List<int>()
-                        {
-                            pattern.Kohi1Id,
-                            pattern.Kohi2Id,
-                            pattern.Kohi3Id,
-                            pattern.Kohi4Id
-                        }, 2, ref expression, ref param);
-                    }
-                }
-            }
-
-            return expression != null
-                ? Expression.Lambda<Func<PtHokenCheck, bool>>(body: expression, parameters: param)
-                : null;
+            return kohis.Where(x => x > 0).Distinct().ToList();
         }
 
         private void CreatePtHokenCheckExpression(List<int> listHokenId, int hokenGrp, ref Expression expression, ref ParameterExpression param)
