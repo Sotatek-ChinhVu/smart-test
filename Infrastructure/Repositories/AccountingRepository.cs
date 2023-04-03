@@ -807,9 +807,7 @@ namespace Infrastructure.Repositories
 
             ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
                                                                    p.PtId == ptId &&
-                                                                   p.IsDeleted != 1 &&
-                                                                   (p.TenkiKbn == TenkiKbnConst.Continued ||
-                                                                   (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).ToList();
+                                                                   p.IsDeleted != 1).ToList();
 
             var PtDiseaseModels = ptByomeis.Select(p => new PtDiseaseModel(
                                                         p.PtId,
@@ -823,17 +821,18 @@ namespace Infrastructure.Repositories
                                                         p.TenkiDate,
                                                         p.HosokuCmt ?? string.Empty,
                                                         p.TogetuByomei,
+                                                        p.IsNodspRece,
+                                                        p.TenkiKbn,
                                                         SyusyokuCdToList(p)
                                                         ))
                                             .ToList();
 
-            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == 1)
+            var byomeiMstQuery = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.SikkanCd, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
-            var byomeiQueryNoTrack = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == 1 &&
+            var byomeiQueryNoTrack = NoTrackingDataContext.PtByomeis.Where(p => p.HpId == hpId &&
                                                                               p.PtId == ptId &&
-                                                                              p.IsDeleted != 1 &&
-                                                                              (p.TenkiKbn == TenkiKbnConst.Continued ||
-                                                                              (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
+                                                                              p.IsDeleted != 1
+                                                                              );
 
             var byomeiMstList = (from ptByomei in byomeiQueryNoTrack
                                  join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
@@ -872,6 +871,7 @@ namespace Infrastructure.Repositories
                     PtDiseaseModel.Icd1012013 = string.Empty;
                     PtDiseaseModel.Icd1022013 = string.Empty;
                 }
+
             }
 
             return PtDiseaseModels;
