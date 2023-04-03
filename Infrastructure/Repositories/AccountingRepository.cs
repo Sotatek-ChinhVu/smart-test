@@ -1626,7 +1626,7 @@ namespace Infrastructure.Repositories
                 : Expression.Lambda<Func<PtKohi, bool>>(Expression.Constant(false), param);
         }
 
-        public HokenInfModel CreatePtHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ptHokenCheckModelList, int sinDay)
+        private HokenInfModel CreatePtHokenInfModel(PtHokenInf ePtHokenInf, List<HokenMst> hokenMstLists, List<ConfirmDateModel> ptHokenCheckModelList, int sinDay)
         {
             var hokenInfModel = new HokenInfModel();
             if (ePtHokenInf != null)
