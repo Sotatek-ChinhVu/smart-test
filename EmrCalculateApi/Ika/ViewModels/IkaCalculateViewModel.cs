@@ -14,6 +14,7 @@ using PostgreDataContext;
 using Domain.Constant;
 using System.Security.AccessControl;
 using EmrCalculateApi.Requests;
+using Helper.Common;
 
 namespace EmrCalculateApi.Ika.ViewModels
 {
@@ -1016,7 +1017,7 @@ namespace EmrCalculateApi.Ika.ViewModels
         ///     診療明細情報
         ///     会計情報
         /// </returns>
-        public (List<SinMeiDataModel>, List<Futan.Models.KaikeiInfModel>) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
+        public (List<SinMeiDataModel> sinMeis, List<Futan.Models.KaikeiInfModel> kaikeis, List<CalcLogModel> calcLogs) RunTraialCalculate(List<OrderInfo> todayOdrInfs, ReceptionModel reception, bool calcFutan = true)
         {
             const string conFncName = nameof(RunTraialCalculate);
 
@@ -1040,7 +1041,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                     addCalcLog.RaiinNo = todayOdrInfs.First().RaiinNo;
                     addCalcLog.LogSbt = 2;
                     addCalcLog.Text = "2018年3月以前の計算には対応していません。";
-                    addCalcLog.CreateDate = DateTime.UtcNow;
+                    addCalcLog.CreateDate = CIUtil.GetJapanDateTimeNow();
                     addCalcLog.CreateId = 0;
                     retCalcLogModels.Add(addCalcLog);
 
@@ -1113,7 +1114,7 @@ namespace EmrCalculateApi.Ika.ViewModels
                 }
             }
 
-            return (retSinMeis, retKaikeiInfModels);
+            return (retSinMeis, retKaikeiInfModels, retCalcLogModels);
         }
 
         /// <summary>
