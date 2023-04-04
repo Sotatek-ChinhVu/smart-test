@@ -4,7 +4,7 @@ namespace Reporting.Karte1.Model
 {
     class CoKarte1PrintDataModel
     {
-        public string Byomei { get; set; }
+        public string Byomei { get; set; } = string.Empty;
         public int StartDate { get; set; }
         public int TenkiKbn { get; set; }
         public int TenkiDate { get; set; }

@@ -61,6 +61,13 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
 
+        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId)
+        {
+            var allOdrInf = NoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10)?.AsEnumerable();
+
+            return allOdrInf?.Select(o => ConvertToModel(o)) ?? Enumerable.Empty<OrdInfModel>();
+        }
+
         public List<OrdInfModel> GetList(int hpId, long ptId, int sinYm, int hokenPId)
         {
             List<int> hokenPIdList = NoTrackingDataContext.SinKouis.Where(item => item.HpId == hpId

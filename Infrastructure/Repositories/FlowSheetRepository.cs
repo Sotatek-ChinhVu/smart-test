@@ -8,6 +8,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 
@@ -197,7 +198,7 @@ namespace Infrastructure.Repositories
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
         {
-            if (!_memoryCache.TryGetValue(RaiinListMstCacheKey, out List<RaiinListMstModel> setKbnMstList))
+            if (!_memoryCache.TryGetValue(RaiinListMstCacheKey, out List<RaiinListMstModel>? setKbnMstList))
             {
                 setKbnMstList = ReloadRaiinListMstCache(hpId);
             }
@@ -225,11 +226,10 @@ namespace Infrastructure.Repositories
         public List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo)
         {
 
-            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayModel> setKbnMstList))
+            if (!_memoryCache.TryGetValue(HolidayMstCacheKey, out IEnumerable<HolidayModel>? setKbnMstList))
             {
                 setKbnMstList = ReloadHolidayCache(hpId);
             }
-
             return setKbnMstList!.Where(h => holidayFrom <= h.SinDate && h.SinDate <= holidayTo).ToList();
         }
 

@@ -69,6 +69,7 @@ namespace Domain.Models.Insurance
             IsAddNew = isAddNew;
             IsAddHokenCheck = isAddHokenCheck;
             HokensyaMst = hokensyaMst;
+            HokenMasterModels = new();
         }
 
         public HokenInfModel(int hokenId, int startDate, int endDate)
@@ -76,8 +77,9 @@ namespace Domain.Models.Insurance
             HokenId = hokenId;
             StartDate = startDate;
             EndDate = endDate;
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
+            HokenMasterModels = new();
         }
 
         public HokenInfModel(int hokenId, long ptId, int hpId, int startDate, int endDate)
@@ -87,13 +89,15 @@ namespace Domain.Models.Insurance
             PtId = ptId;
             StartDate = startDate;
             EndDate = endDate;
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
+            HokenMasterModels = new();
         }
         public HokenInfModel()
         {
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
+            HokenMasterModels = new();
         }
 
         public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
@@ -108,6 +112,9 @@ namespace Domain.Models.Insurance
             SinDate = sinDate;
             HokenMstModel = hokenMstModel;
             ConfirmDateList = confirmDateModels;
+            HokenMasterModels = new();
+            HokenMst = new();
+            HokensyaMst = new();
         }
 
         public HokenMstModel HokenMstModel { get; private set; }

@@ -471,28 +471,28 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             switch (errorInfo.CheckerType)
             {
                 case RealtimeCheckerType.DrugAllergy:
-                    List<DrugAllergyResultModel> drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel>;
+                    List<DrugAllergyResultModel>? drugAllergyInfo = errorInfo.ErrorInfo as List<DrugAllergyResultModel>;
                     if (drugAllergyInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDrugAllergy(drugAllergyInfo));
                     }
                     break;
                 case RealtimeCheckerType.FoodAllergy:
-                    List<FoodAllergyResultModel> foodAllergyInfo = errorInfo.ErrorInfo as List<FoodAllergyResultModel>;
+                    List<FoodAllergyResultModel>? foodAllergyInfo = errorInfo.ErrorInfo as List<FoodAllergyResultModel>;
                     if (foodAllergyInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForFoodAllergy(foodAllergyInfo));
                     }
                     break;
                 case RealtimeCheckerType.Age:
-                    List<AgeResultModel> ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel>;
+                    List<AgeResultModel>? ageErrorInfo = errorInfo.ErrorInfo as List<AgeResultModel>;
                     if (ageErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForAge(ageErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Disease:
-                    List<DiseaseResultModel> diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel>;
+                    List<DiseaseResultModel>? diseaseErrorInfo = errorInfo.ErrorInfo as List<DiseaseResultModel>;
                     if (diseaseErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDisease(diseaseErrorInfo));
@@ -502,35 +502,35 @@ public class CommonMedicalCheck : ICommonMedicalCheck
                 case RealtimeCheckerType.KinkiTain:
                 case RealtimeCheckerType.KinkiOTC:
                 case RealtimeCheckerType.KinkiSupplement:
-                    List<KinkiResultModel> kinkiErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
+                    List<KinkiResultModel>? kinkiErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
                     if (kinkiErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForKinki(errorInfo.CheckerType, kinkiErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.KinkiUser:
-                    List<KinkiResultModel> kinkiUserErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
+                    List<KinkiResultModel>? kinkiUserErrorInfo = errorInfo.ErrorInfo as List<KinkiResultModel>;
                     if (kinkiUserErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForKinkiUser(kinkiUserErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Days:
-                    List<DayLimitResultModel> dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel>;
+                    List<DayLimitResultModel>? dayLimitErrorInfo = errorInfo.ErrorInfo as List<DayLimitResultModel>;
                     if (dayLimitErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDayLimit(dayLimitErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Dosage:
-                    List<DosageResultModel> dosageErrorInfo = errorInfo.ErrorInfo as List<DosageResultModel>;
+                    List<DosageResultModel>? dosageErrorInfo = errorInfo.ErrorInfo as List<DosageResultModel>;
                     if (dosageErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDosage(dosageErrorInfo));
                     }
                     break;
                 case RealtimeCheckerType.Duplication:
-                    List<DuplicationResultModel> duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel>;
+                    List<DuplicationResultModel>? duplicationErrorInfo = errorInfo.ErrorInfo as List<DuplicationResultModel>;
                     if (duplicationErrorInfo != null)
                     {
                         listErrorInfoModel.AddRange(ProcessDataForDuplication(duplicationErrorInfo));
@@ -578,7 +578,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             List<LevelInfoModel> _listLevelInfo = new List<LevelInfoModel>();
             foreach (var item in tempData)
             {
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == item.Level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == item.Level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -695,7 +695,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in tempData)
             {
                 int level = item.TenpuLevel.AsInteger();
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -749,7 +749,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             {
                 int level = item.TenpuLevel.AsInteger();
                 string attention = _realtimeOrderErrorFinder.FindAgeComment(item.AttentionCmtCd);
-                LevelInfoModel levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? levelInfo = _listLevelInfo.Where(c => c.Level == level).FirstOrDefault();
                 if (levelInfo == null)
                 {
                     levelInfo = new LevelInfoModel()
@@ -822,7 +822,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             foreach (var item in listFilteredData)
             {
                 int level = item.TenpuLevel;
-                LevelInfoModel LevelInfoModel = _listLevelInfoModel.Where(c => c.Level == level).FirstOrDefault();
+                LevelInfoModel? LevelInfoModel = _listLevelInfoModel.Where(c => c.Level == level).FirstOrDefault();
                 if (LevelInfoModel == null)
                 {
                     LevelInfoModel = new LevelInfoModel()

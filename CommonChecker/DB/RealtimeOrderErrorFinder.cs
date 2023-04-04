@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CommonChecker.DB
 {
@@ -17,7 +18,7 @@ namespace CommonChecker.DB
             var ageCommentInfo = NoTrackingDataContext.M14CmtCode.FirstOrDefault(i => i.AttentionCmtCd == commentCode);
             if (ageCommentInfo != null)
             {
-                ageComment = ageCommentInfo.AttentionCmt;
+                ageComment = ageCommentInfo.AttentionCmt ?? string.Empty;
             }
             return ageComment;
         }
@@ -28,7 +29,7 @@ namespace CommonChecker.DB
             var analogueInfo = NoTrackingDataContext.M56AnalogueCd.FirstOrDefault(i => i.AnalogueCd == analogueCode);
             if (analogueInfo != null)
             {
-                analogueName = analogueInfo.AnalogueName;
+                analogueName = analogueInfo.AnalogueName ?? string.Empty;
             }
             return analogueName;
         }
@@ -39,7 +40,7 @@ namespace CommonChecker.DB
             var classInfo = NoTrackingDataContext.M56DrugClass.FirstOrDefault(i => i.ClassCd == classCd);
             if (classInfo != null)
             {
-                className = classInfo.ClassName;
+                className = classInfo.ClassName ?? string.Empty;
             }
             return className;
         }
@@ -50,7 +51,7 @@ namespace CommonChecker.DB
             var componentInfo = NoTrackingDataContext.M56ExIngCode.FirstOrDefault(i => i.SeibunCd == conponentCode && i.SeibunIndexCd == "000");
             if (componentInfo != null)
             {
-                componentName = componentInfo.SeibunName;
+                componentName = componentInfo.SeibunName ?? string.Empty;
             }
             return componentName;
         }
@@ -61,7 +62,7 @@ namespace CommonChecker.DB
             var diseaseCommentInfo = NoTrackingDataContext.M42ContraCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (diseaseCommentInfo != null)
             {
-                diseaseComment = diseaseCommentInfo.Cmt;
+                diseaseComment = diseaseCommentInfo.Cmt ?? string.Empty;
             }
             return diseaseComment;
         }
@@ -72,7 +73,7 @@ namespace CommonChecker.DB
             var diseaseInfo = NoTrackingDataContext.M42ContraindiDisCon.FirstOrDefault(i => i.ByotaiCd == byotaiCd);
             if (diseaseInfo != null)
             {
-                diseaseName = diseaseInfo.Byomei;
+                diseaseName = diseaseInfo.Byomei ?? string.Empty;
             }
             return diseaseName;
         }
@@ -83,7 +84,7 @@ namespace CommonChecker.DB
             var drvalrgyInfo = NoTrackingDataContext.M56DrvalrgyCode.FirstOrDefault(i => i.DrvalrgyCd == drvalrgyCode);
             if (drvalrgyInfo != null)
             {
-                drvalrgyName = drvalrgyInfo.DrvalrgyName;
+                drvalrgyName = drvalrgyInfo.DrvalrgyName ?? string.Empty;
             }
             return drvalrgyName;
         }
@@ -94,7 +95,7 @@ namespace CommonChecker.DB
             var foodInfo = NoTrackingDataContext.M12FoodAlrgyKbn.FirstOrDefault(i => i.FoodKbn == foodCode);
             if (foodInfo != null)
             {
-                foodName = foodInfo.FoodName;
+                foodName = foodInfo.FoodName ?? string.Empty;
             }
             return foodName;
         }
@@ -102,19 +103,19 @@ namespace CommonChecker.DB
         public string FindIppanNameByIppanCode(string ippanCode)
         {
             var ippanInfo = NoTrackingDataContext.IpnNameMsts.FirstOrDefault(i => i.IpnNameCd == ippanCode);
-            return ippanInfo == null ? string.Empty : ippanInfo.IpnName;
+            return ippanInfo == null ? string.Empty : ippanInfo.IpnName ?? string.Empty;
         }
 
         public string FindItemName(string yjCd, int sinday)
         {
             var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(d => d.StartDate <= sinday && sinday <= d.EndDate && d.YjCd == yjCd);
-            return itemInfo != null ? itemInfo.Name : string.Empty;
+            return itemInfo != null ? itemInfo.Name ?? string.Empty : string.Empty;
         }
 
         public string FindItemNameByItemCode(string itemCd, int sinday)
         {
             var itemInfo = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinday && sinday <= t.EndDate);
-            return itemInfo != null ? itemInfo.Name : string.Empty;
+            return itemInfo != null ? itemInfo.Name ?? string.Empty : string.Empty;
         }
 
         public string FindKijyoComment(string commentCode)
@@ -123,7 +124,7 @@ namespace CommonChecker.DB
             var kijyoCommentInfo = NoTrackingDataContext.M01KijyoCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (kijyoCommentInfo != null)
             {
-                kijyoComment = kijyoCommentInfo.Cmt;
+                kijyoComment = kijyoCommentInfo.Cmt ?? string.Empty;
             }
             return kijyoComment;
         }
@@ -134,7 +135,7 @@ namespace CommonChecker.DB
             var kinkiCommentInfo = NoTrackingDataContext.M01KinkiCmt.FirstOrDefault(i => i.CmtCd == commentCode);
             if (kinkiCommentInfo != null)
             {
-                kinkiComment = kinkiCommentInfo.Cmt;
+                kinkiComment = kinkiCommentInfo.Cmt ?? string.Empty;
             }
             return kinkiComment;
         }
@@ -145,7 +146,7 @@ namespace CommonChecker.DB
             var oTCITemNameInfo = NoTrackingDataContext.M38OtcMain.FirstOrDefault(i => i.SerialNum == serialNum);
             if (oTCITemNameInfo != null)
             {
-                oTCITemName = oTCITemNameInfo.TradeName;
+                oTCITemName = oTCITemNameInfo.TradeName ?? string.Empty;
             }
             return oTCITemName;
         }
@@ -156,7 +157,7 @@ namespace CommonChecker.DB
             var suppleItemNameInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
             if (suppleItemNameInfo != null)
             {
-                suppleItemName = suppleItemNameInfo.Seibun;
+                suppleItemName = suppleItemNameInfo.Seibun ?? string.Empty;
             }
             return suppleItemName;
         }
@@ -164,13 +165,13 @@ namespace CommonChecker.DB
         public string GetOTCComponentInfo(string seibunCd)
         {
             var otcComponentInfo = NoTrackingDataContext.M38IngCode.FirstOrDefault(i => i.SeibunCd == seibunCd);
-            return otcComponentInfo != null ? otcComponentInfo.Seibun : string.Empty;
+            return otcComponentInfo != null ? otcComponentInfo.Seibun ?? string.Empty : string.Empty;
         }
 
         public string GetSupplementComponentInfo(string seibunCd)
         {
             var supplementComponentInfo = NoTrackingDataContext.M41SuppleIngres.FirstOrDefault(i => i.SeibunCd == seibunCd);
-            return supplementComponentInfo != null ? supplementComponentInfo.Seibun : string.Empty;
+            return supplementComponentInfo != null ? supplementComponentInfo.Seibun ?? string.Empty : string.Empty;
         }
 
         public string GetUsageDosage(string yjCd)
@@ -181,7 +182,7 @@ namespace CommonChecker.DB
                    on dosageDrug.DoeiCd equals dosageDosage.DoeiCd
                    select new
                    {
-                       UsageDosage = dosageDosage.UsageDosage.Replace("；", Environment.NewLine)
+                       UsageDosage = dosageDosage.UsageDosage == null ? string.Empty : dosageDosage.UsageDosage.Replace("；", Environment.NewLine)
                    }
                   ).ToList().FirstOrDefault();
             return dosageInfo != null ? dosageInfo.UsageDosage : string.Empty;

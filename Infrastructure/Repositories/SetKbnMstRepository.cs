@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo)
         {
-            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel> setKbnMstList))
+            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
             {
                 setKbnMstList = ReloadCache();
             }

@@ -5,7 +5,7 @@ namespace Infrastructure.Services
 {
     public class SystemConfigService : ISystemConfigService
     {
-        private List<SystemConf> _systemConfigList;
+        private List<SystemConf> _systemConfigList = new();
         //private readonly string _cacheKey;
         private readonly ITenantProvider _tenantProvider;
         //private readonly IMemoryCache _memoryCache;

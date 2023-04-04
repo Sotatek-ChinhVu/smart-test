@@ -53,7 +53,7 @@ public class ValidateFamilyList : IValidateFamilyList
         familyPtIdList.Add(ptId);
         familyPtIdList = familyPtIdList.Distinct().ToList();
         var ptInfList = _patientInforRepository.SearchPatient(hpId, familyPtIdList);
-        if (familyPtIdList.Any(id => id <= 0) || ptId <= 0 || ptInfList.Count != familyPtIdList.Count)
+        if (ptId <= 0 || ptInfList.Count != familyPtIdList.Count)
         {
             return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
         }
@@ -70,31 +70,6 @@ public class ValidateFamilyList : IValidateFamilyList
         foreach (var familyItem in listFamily)
         {
             // check family ptInf information
-            if (familyItem.FamilyPtId > 0)
-            {
-                var familyPtInf = ptInfList.FirstOrDefault(item => item.PtId == familyItem.FamilyPtId);
-                if (familyPtInf == null)
-                {
-                    return ValidateFamilyListStatus.InvalidPtIdOrFamilyPtId;
-                }
-                else if (familyItem.KanaName != familyPtInf.KanaName)
-                {
-                    return ValidateFamilyListStatus.InvalidKanaName;
-                }
-                else if (familyItem.Name != familyPtInf.Name)
-                {
-                    return ValidateFamilyListStatus.InvalidName;
-                }
-                else if (familyItem.Birthday != familyPtInf.Birthday)
-                {
-                    return ValidateFamilyListStatus.InvalidBirthday;
-                }
-                else if (familyItem.Sex != familyPtInf.Sex)
-                {
-                    return ValidateFamilyListStatus.InvalidSex;
-                }
-            }
-
             if (familyItem.Name.Length > 100)
             {
                 return ValidateFamilyListStatus.InvalidNameMaxLength;
@@ -102,10 +77,6 @@ public class ValidateFamilyList : IValidateFamilyList
             else if (familyItem.KanaName.Length > 100)
             {
                 return ValidateFamilyListStatus.InvalidKanaNameMaxLength;
-            }
-            else if (familyItem.Sex < 1 || familyItem.Sex > 2)
-            {
-                return ValidateFamilyListStatus.InvalidSex;
             }
             else if (familyItem.Birthday != 0 && CIUtil.SDateToShowSDate(familyItem.Birthday) == string.Empty)
             {
@@ -116,7 +87,10 @@ public class ValidateFamilyList : IValidateFamilyList
             if (onlyFamlilyList.Any(item => (familyItem.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
                                             && item.PtId == familyItem.PtId
                                             && item.FamilyPtId != 0
-                                            && item.FamilyPtId == familyItem.FamilyPtId))
+                                            && item.FamilyPtId == familyItem.FamilyPtId)
+                || listFamily.Count(item => item.PtId == familyItem.PtId
+                                            && item.FamilyPtId != 0
+                                            && item.FamilyPtId == familyItem.FamilyPtId) > 1)
             {
                 return ValidateFamilyListStatus.DuplicateFamily;
             }
@@ -124,12 +98,18 @@ public class ValidateFamilyList : IValidateFamilyList
             // validate ZokugaraCd, only validate with case family member is main ptId, consider input value then compare with data in database to validate
             if (familyItem.PtId == ptId)
             {
-                if (!dicZokugaraCd.Keys.Contains(familyItem.ZokugaraCd))
+                if (!dicZokugaraCd.ContainsKey(familyItem.ZokugaraCd))
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
-                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => (item.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
-                                                                            && item.ZokugaraCd.Equals(familyItem.ZokugaraCd)) + 1;
+                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => item.FamilyId != familyItem.FamilyId
+                                                                            && familyItem.FamilyId != 0
+                                                                            && item.ZokugaraCd.Equals(familyItem.ZokugaraCd))
+                                              + listFamily.Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
+                                                                         && familyItem.FamilyId == 0
+                                                                         && familyItem.FamilyPtId != item.FamilyPtId)
+                                              + 1;
+
                 if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd])
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
@@ -144,10 +124,6 @@ public class ValidateFamilyList : IValidateFamilyList
             }
 
             // validate other field
-            else if (familyItem.IsDead > 2 || familyItem.IsDead < 0)
-            {
-                return ValidateFamilyListStatus.InvalidIsDead;
-            }
             else if (familyItem.IsSeparated > 2 || familyItem.IsSeparated < 0)
             {
                 return ValidateFamilyListStatus.InvalidIsSeparated;
