@@ -42,11 +42,6 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public int IsDeleted { get; set; }
 
-        public DateTime UpdateDate { get; set; }
-
-        public int UpdateId { get; set; }
-
-        public string UpdateMachine { get; set; } = String.Empty;
         public PtPregnancyItem Map()
         {
             return new PtPregnancyItem(Id,
