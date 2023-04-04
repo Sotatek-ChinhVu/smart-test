@@ -9,4 +9,5 @@ public enum SaveListFileTodayOrderStatus : byte
     InvalidTypeUpload = 5,
     InvalidSetCd = 6,
     ValidateSuccess = 7,
+    InvalidSizeFile = 8,
 }
