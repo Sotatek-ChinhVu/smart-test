@@ -27,6 +27,9 @@ namespace EmrCloudApi.Presenters.SpecialNote
                 case SaveSpecialNoteStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
+                case SaveSpecialNoteStatus.InvalidSinDate:
+                    Result.Message = ResponseMessage.InvalidSinDate;
+                    break;
                 case SaveSpecialNoteStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;
