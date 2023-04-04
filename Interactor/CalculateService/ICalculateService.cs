@@ -17,7 +17,7 @@ namespace Interactor.CalculateService
 
         ReceInfModelDto GetListReceInf(GetInsuranceInfInputData inputData);
 
-        List<string> RunTrialCalculate(RunTraialCalculateRequest inputData);
+        RunTraialCalculateResponse RunTrialCalculate(RunTraialCalculateRequest inputData);
 
         bool RunCalculateOne(CalculateOneRequest inputData);
 

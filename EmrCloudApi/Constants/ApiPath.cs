@@ -174,6 +174,7 @@
         public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
+        public const string TrialAccounting = "TrialAccounting";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
