@@ -28,10 +28,10 @@ namespace Interactor.Accounting
 
                 var listSyunoSeikyu = _accountingRepository.GetListSyunoSeikyu(inputData.HpId, inputData.PtId, inputData.SinDate, listRaiinNo);
 
-                 var syunoSeikyu = listSyunoSeikyu.FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
+                var syunoSeikyu = listSyunoSeikyu.FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
 
                 if (syunoSeikyu == null)
-                { 
+                {
                     return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new(), new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)
