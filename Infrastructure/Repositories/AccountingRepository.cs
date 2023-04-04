@@ -1664,7 +1664,8 @@ namespace Infrastructure.Repositories
                         hokenMst.ReceFutanKbn,
                         hokenMst.KogakuTotalAll,
                         true,
-                        hokenMst.DayLimitCount);
+                        hokenMst.DayLimitCount,
+                        new());
                 }
 
                 hokenInfModel = new HokenInfModel(ePtHokenInf.HpId,
