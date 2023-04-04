@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories.SpecialNote
                         {
                             if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
                             {
-                                SaveSummaryInf(hpId, ptId, summaryInfModel, userId);
+                                SaveSummaryInf(summaryInfModel, userId);
                                 TrackingDataContext.SaveChanges();
                             }
                             if (importantNoteModel != null)
@@ -69,9 +69,9 @@ namespace Infrastructure.Repositories.SpecialNote
             return true;
         }
         #region SaveSummaryInf
-        private void SaveSummaryInf(int hpId, long ptId, SummaryInfModel summaryInfModel, int userId)
+        private void SaveSummaryInf(SummaryInfModel summaryInfModel, int userId)
         {
-            var summaryInf = TrackingDataContext.SummaryInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId);
+            var summaryInf = TrackingDataContext.SummaryInfs.FirstOrDefault(x => x.Id == summaryInfModel.Id);
             if (summaryInf != null)
             {
                 summaryInf.HpId = summaryInfModel.HpId;
@@ -390,26 +390,26 @@ namespace Infrastructure.Repositories.SpecialNote
             {
                 if (patientInfoModel?.PregnancyItems != null && pregnancyItem.HpId == hpId && pregnancyItem.PtId == ptId)
                 {
-                    SavePregnancyItems(hpId, ptId, pregnancyItem, userId);
+                    SavePregnancyItems(pregnancyItem, userId);
                 }
             }
 
             if (patientInfoModel?.PtCmtInfItems != null && patientInfoModel.PtCmtInfItems.HpId == hpId && patientInfoModel.PtCmtInfItems.PtId == ptId)
             {
-                SavePtCmtInfItems(hpId, ptId, patientInfoModel, userId);
+                SavePtCmtInfItems(patientInfoModel, userId);
             }
             if (patientInfoModel?.SeikatureInfItems != null && patientInfoModel.SeikatureInfItems.HpId == hpId && patientInfoModel.SeikatureInfItems.PtId == ptId)
             {
-                SaveSeikatureInfItems(hpId, ptId, patientInfoModel, userId);
+                SaveSeikatureInfItems(patientInfoModel, userId);
             }
             if (patientInfoModel?.PhysicalInfItems != null && patientInfoModel.PhysicalInfItems.Any())
             {
                 SavePhysicalInfItems(hpId, ptId, sinDate, userId, patientInfoModel);
             }
         }
-        private void SavePregnancyItems(int hpId, long ptId, PtPregnancyModel ptPregnancy, int userId)
+        private void SavePregnancyItems(PtPregnancyModel ptPregnancy, int userId)
         {
-            var pregnancyItem = TrackingDataContext.PtPregnancies.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
+            var pregnancyItem = TrackingDataContext.PtPregnancies.FirstOrDefault(x => x.Id == ptPregnancy.Id && x.IsDeleted == 0);
             if (pregnancyItem != null)
             {
                 pregnancyItem.StartDate = ptPregnancy.StartDate;
@@ -444,9 +444,9 @@ namespace Infrastructure.Repositories.SpecialNote
                 TrackingDataContext.PtPregnancies.Add(pregnancyObj);
             }
         }
-        private void SavePtCmtInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
+        private void SavePtCmtInfItems(PatientInfoModel patientInfoModel, int userId)
         {
-            var ptCmtInfItem = TrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
+            var ptCmtInfItem = TrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.Id == patientInfoModel.PtCmtInfItems.Id && x.IsDeleted == 0);
             if (ptCmtInfItem != null)
             {
                 ptCmtInfItem.Text = patientInfoModel.PtCmtInfItems.Text;
@@ -471,9 +471,9 @@ namespace Infrastructure.Repositories.SpecialNote
                 TrackingDataContext.PtCmtInfs.Add(PtCmtInfObj);
             }
         }
-        private void SaveSeikatureInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
+        private void SaveSeikatureInfItems(PatientInfoModel patientInfoModel, int userId)
         {
-            var seikatureInfItem = TrackingDataContext.SeikaturekiInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
+            var seikatureInfItem = TrackingDataContext.SeikaturekiInfs.FirstOrDefault(x => x.Id == patientInfoModel.SeikatureInfItems.Id);
             if (seikatureInfItem != null)
             {
                 seikatureInfItem.HpId = patientInfoModel.SeikatureInfItems.HpId;
