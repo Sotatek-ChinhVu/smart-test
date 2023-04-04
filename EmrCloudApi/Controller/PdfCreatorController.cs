@@ -26,7 +26,6 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
         {
             var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
@@ -34,7 +33,8 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-            return await RenderPdf(drugInfo.Item2, drugInfo.Item1);
+            var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(drugInfo);
+            return await RenderPdf(drugInfo, ReportType.DrugInfo);
         }
 
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
@@ -46,12 +46,7 @@ namespace EmrCloudApi.Controller
             string functionName = reportType switch
             {
                 ReportType.Karte1 => "reporting-fm-karte1",
-                ReportType.DrgInfType2_1 => "frmDrgInfType2_1",
-                ReportType.DrgInfType2_2 => "frmDrgInfType2_2",
-                ReportType.DrgInfType2_3 => "frmDrgInfType2_3",
-                ReportType.DrgInf1 => "frmDrgInf1",
-                ReportType.DrgInf2 => "frmDrgInf2",
-                ReportType.DrgInf3 => "frmDrgInf3",
+                ReportType.DrugInfo => "reporting-fm-drugInfo",
 
                 _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
             } ?? string.Empty;

@@ -27,24 +27,24 @@ namespace Reporting.DrugInfo.DB
         public DrugInfoModel GetBasicInfo(int hpId, long ptId, int orderDate = 0)
         {
             DrugInfoModel info = new DrugInfoModel();
-            info.OrderDate = orderDate == 0 ? CIUtil.DateTimeToInt(DateTime.Now) : orderDate;
+            info.orderDate = orderDate == 0 ? CIUtil.DateTimeToInt(DateTime.Now) : orderDate;
 
-            var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.OrderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
+            var hpInfo = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId && p.StartDate <= info.orderDate).OrderByDescending(p => p.StartDate).FirstOrDefault();
             if (hpInfo != null)
             {
-                info.HpName = hpInfo.HpName ?? string.Empty;
-                info.Address1 = hpInfo.Address1 ?? string.Empty;
-                info.Address2 = hpInfo.Address2 ?? string.Empty;
-                info.Phone = hpInfo.Tel ?? string.Empty;
+                info.hpName = hpInfo.HpName ?? string.Empty;
+                info.address1 = hpInfo.Address1 ?? string.Empty;
+                info.address2 = hpInfo.Address2 ?? string.Empty;
+                info.phone = hpInfo.Tel ?? string.Empty;
             }
 
             var ptInfo = NoTrackingDataContext.PtInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == ptId);
             if (ptInfo != null)
             {
-                info.PtNo = ptInfo.PtNum;
-                info.PtName = ptInfo.Name ?? string.Empty;
-                info.Sex = ptInfo.Sex == 1 ? "M" : "F";
-                info.IntAge = (int)(info.OrderDate - ptInfo.Birthday) / 10000;
+                info.ptNo = ptInfo.PtNum;
+                info.ptName = ptInfo.Name ?? string.Empty;
+                info.sex = ptInfo.Sex == 1 ? "M" : "F";
+                info.intAge = (int)(info.orderDate - ptInfo.Birthday) / 10000;
             }
 
             return info;

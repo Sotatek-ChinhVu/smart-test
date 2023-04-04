@@ -4,44 +4,44 @@ namespace Reporting.DrugInfo.Model
 {
     public class DrugInfoModel
     {
-        public bool IsDrugGeneration { get; set; }
-        public int HpId { get; set; }
-        public string HpName { get; set; } = string.Empty;
-        public string Address1 { get; set; } = string.Empty;
-        public string Address2 { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public int OrderDate { get; set; }
-        public long PtNo { get; set; }
-        public string PtName { get; set; } = string.Empty;
-        public int IntAge { get; set; }
-        public string Age { get; set; } = string.Empty;
-        public string Sex { get; set; } = string.Empty;
-        public string OdrYmd { get; set; } = string.Empty;
-        public int FSinYmd { get; set; }
-        public string Usage { get; set; } = string.Empty;
-        public string UsageSpan { get; set; } = string.Empty;
-        public string DrgName { get; set; } = string.Empty;
-        public string DrgComment { get; set; } = string.Empty;
-        public string UsageComment { get; set; } = string.Empty;
-        public int DrgKbn { get; set; }
-        public int DrgType { get; set; }
-        public int ZaiHouType { get; set; }
-        public string Amount { get; set; } = string.Empty;
-        public string UnitName { get; set; } = string.Empty;
-        public string Usage2 { get; set; } = string.Empty;
-        public string PicHou { get; set; } = string.Empty;
-        public string PicZai { get; set; } = string.Empty;
-        public string UsageSign1 { get; set; } = string.Empty;
-        public string UsageSign2 { get; set; } = string.Empty;
-        public string UsageSign3 { get; set; } = string.Empty;
-        public string UsageSign4 { get; set; } = string.Empty;
-        public string UsageSign5 { get; set; } = string.Empty;
-        public List<DocumentLine> Tyui { get; set; } = new();
+        public bool isDrugGeneration { get; set; }
+        public int hpId { get; set; }
+        public string hpName { get; set; } = string.Empty;
+        public string address1 { get; set; } = string.Empty;
+        public string address2 { get; set; } = string.Empty;
+        public string phone { get; set; } = string.Empty;
+        public int orderDate { get; set; }
+        public long ptNo { get; set; }
+        public string ptName { get; set; } = string.Empty;
+        public int intAge { get; set; }
+        public string age { get; set; } = string.Empty;
+        public string sex { get; set; } = string.Empty;
+        public string odrYmd { get; set; } = string.Empty;
+        public int fSinYmd { get; set; }
+        public string usage { get; set; } = string.Empty;
+        public string usageSpan { get; set; } = string.Empty;
+        public string drgName { get; set; } = string.Empty;
+        public string drgComment { get; set; } = string.Empty;
+        public string usageComment { get; set; } = string.Empty;
+        public int drgKbn { get; set; }
+        public int drgType { get; set; }
+        public int zaiHouType { get; set; }
+        public string amount { get; set; } = string.Empty;
+        public string unitName { get; set; } = string.Empty;
+        public string usage2 { get; set; } = string.Empty;
+        public string picHou { get; set; } = string.Empty;
+        public string picZai { get; set; } = string.Empty;
+        public string usageSign1 { get; set; } = string.Empty;
+        public string usageSign2 { get; set; } = string.Empty;
+        public string usageSign3 { get; set; } = string.Empty;
+        public string usageSign4 { get; set; } = string.Empty;
+        public string usageSign5 { get; set; } = string.Empty;
+        public List<DocumentLine> tyui { get; set; } = new();
 
     }
     public class DocumentLine
     {
-        public string Text { get; set; } = string.Empty;
-        public Color Color { get; set; }
+        public string text { get; set; } = string.Empty;
+        public Color color { get; set; }
     }
 }
