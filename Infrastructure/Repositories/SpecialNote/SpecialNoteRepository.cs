@@ -85,18 +85,21 @@ namespace Infrastructure.Repositories.SpecialNote
             }
             else
             {
-                TrackingDataContext.SummaryInfs.Add(new SummaryInf()
+                if (summaryInfModel.HpId != 0 && summaryInfModel.PtId != 0)
                 {
-                    HpId = summaryInfModel.HpId,
-                    PtId = summaryInfModel.PtId,
-                    SeqNo = summaryInfModel.SeqNo,
-                    Text = summaryInfModel.Text,
-                    Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext),
-                    CreateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    CreateId = userId
-                });
+                    TrackingDataContext.SummaryInfs.Add(new SummaryInf()
+                    {
+                        HpId = summaryInfModel.HpId,
+                        PtId = summaryInfModel.PtId,
+                        SeqNo = summaryInfModel.SeqNo,
+                        Text = summaryInfModel.Text,
+                        Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext),
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        CreateId = userId
+                    });
+                }
             }
         }
         #endregion
@@ -383,9 +386,6 @@ namespace Infrastructure.Repositories.SpecialNote
         #region SavePatientInfo
         private void SavePatientInfo(int hpId, long ptId, int sinDate, PatientInfoModel patientInfoModel, int userId)
         {
-            var ids = patientInfoModel.PregnancyItems.Where(p => p.IsDeleted != DeleteTypes.None).Select(p => p.Id).Distinct();
-            var pregnancyItemIsDeleteds = TrackingDataContext.PtPregnancies.Where(p => ids.Contains(p.Id));
-            TrackingDataContext.PtPregnancies.RemoveRange(pregnancyItemIsDeleteds);
             foreach (var pregnancyItem in patientInfoModel.PregnancyItems)
             {
                 if (patientInfoModel?.PregnancyItems != null && pregnancyItem.HpId == hpId && pregnancyItem.PtId == ptId)
@@ -508,14 +508,22 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SavePhysicalInfItems(int hpId, long ptId, int sinDate, int userId, PatientInfoModel patientInfoModel)
         {
-
-
             var kensaInfDetailModels = new List<KensaInfDetailModel>();
             foreach (var physicalInfo in patientInfoModel.PhysicalInfItems)
             {
                 if (physicalInfo?.KensaInfDetailModels != null && physicalInfo.KensaInfDetailModels.Any())
                 {
                     kensaInfDetailModels.AddRange(physicalInfo.KensaInfDetailModels);
+                }
+            }
+
+            var kensaInfDetailModelIsDeleteds = kensaInfDetailModels.Where(p => p.IsDeleted != DeleteTypes.None).ToList();
+            foreach (var kensaInfDetailModelIsDeleted in kensaInfDetailModelIsDeleteds)
+            {
+                var kensaInfDetail = TrackingDataContext.KensaInfDetails.FirstOrDefault(k => k.HpId == kensaInfDetailModelIsDeleted.HpId && k.PtId == kensaInfDetailModelIsDeleted.PtId && kensaInfDetailModelIsDeleted.IraiCd == k.IraiCd && kensaInfDetailModelIsDeleted.SeqNo == k.SeqNo);
+                if (kensaInfDetail != null)
+                {
+                    TrackingDataContext.KensaInfDetails.Remove(kensaInfDetail);
                 }
             }
 
