@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     {
                         try
                         {
-                            if (summaryInfModel != null && summaryInfModel.Id == hpId && summaryInfModel.PtId == ptId)
+                            if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
                             {
                                 SaveSummaryInf(hpId, ptId, summaryInfModel, userId);
                                 TrackingDataContext.SaveChanges();
