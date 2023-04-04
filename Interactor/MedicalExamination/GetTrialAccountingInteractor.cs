@@ -177,7 +177,7 @@ namespace Interactor.MedicalExamination
             return sinHo;
         }
 
-        private List<KaikeiInfModel> ConvertToKaikeiInfModel(List<KaikeiInfDataModel> kaikeiInfDatas)
+        private List<KaikeiInfModel> ConvertToKaikeiInfModel(List<KaikeiInfDto> kaikeiInfDatas)
         {
             return kaikeiInfDatas.Select(item => new KaikeiInfModel(
                                                                    item.HpId,

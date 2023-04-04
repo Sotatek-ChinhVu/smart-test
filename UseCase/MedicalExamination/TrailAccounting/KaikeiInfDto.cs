@@ -1,8 +1,8 @@
 ﻿namespace UseCase.MedicalExamination.TrailAccounting
 {
-    public class KaikeiInfDataModel
+    public class KaikeiInfDto
     {
-        public KaikeiInfDataModel(int hpId, int ptId, int sinDate, int raiinNo, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, int hokenSbtCd, string receSbt, string houbetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, int hokenRate, int ptRate, int dispRate, int tensu, int totalIryohi, int ptFutan, int jihiFutan, int jihiTax, int jihiOuttax, int jihiFutanTaxfree, int jihiFutanTaxNr, int jihiFutanTaxGen, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiTaxNr, int jihiTaxGen, int jihiOuttaxNr, int jihiOuttaxGen, int adjustFutan, int adjustRound, int totalPtFutan, int adjustFutanVal, int adjustFutanRange, int adjustRateVal, int adjustRateRange, DateTime createDate, int createId, string createMachine, string kohi1Priority, string kohi2Priority, string kohi3Priority, string kohi4Priority)
+        public KaikeiInfDto(int hpId, int ptId, int sinDate, int raiinNo, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, int hokenSbtCd, string receSbt, string houbetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, int hokenRate, int ptRate, int dispRate, int tensu, int totalIryohi, int ptFutan, int jihiFutan, int jihiTax, int jihiOuttax, int jihiFutanTaxfree, int jihiFutanTaxNr, int jihiFutanTaxGen, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiTaxNr, int jihiTaxGen, int jihiOuttaxNr, int jihiOuttaxGen, int adjustFutan, int adjustRound, int totalPtFutan, int adjustFutanVal, int adjustFutanRange, int adjustRateVal, int adjustRateRange, DateTime createDate, int createId, string createMachine, string kohi1Priority, string kohi2Priority, string kohi3Priority, string kohi4Priority)
         {
             HpId = hpId;
             PtId = ptId;
