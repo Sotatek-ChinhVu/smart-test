@@ -101,7 +101,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp);
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.Val);
         var systemGenerationConfs = NoTrackingDataContext.SystemGenerationConfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate);
-        var query = from menu in systemConfMenus
+        var query = from menu in systemConfMenus.AsEnumerable()
                     join item in systemConfItems on menu.MenuId equals item.MenuId into items
                     join generation in systemGenerationConfs on
                     new { menu.GrpCd, menu.GrpEdaNo } equals

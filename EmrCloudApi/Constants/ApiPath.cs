@@ -254,6 +254,7 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+        public const string GetSystemSetting = "GetSystemSetting";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
