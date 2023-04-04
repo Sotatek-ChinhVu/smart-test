@@ -380,6 +380,7 @@ using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
 using UseCase.Todo.TodoGrpMst;
+using UseCase.Todo.TodoInf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -534,6 +535,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
+            services.AddTransient<ITodoInfRepository, TodoInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -935,6 +937,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
+            busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
