@@ -508,7 +508,7 @@ namespace Infrastructure.Repositories.SpecialNote
         private void SavePhysicalInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
         {
             var kensaInfDetailModels = new List<KensaInfDetailModel>();
-            foreach (var physicalInfo in patientInfoModel.PhysicalInfItems.Where(x => x.HpId == hpId).ToList())
+            foreach (var physicalInfo in patientInfoModel.PhysicalInfItems)
             {
                 if (physicalInfo?.KensaInfDetailModels != null && physicalInfo.KensaInfDetailModels.Any())
                 {
