@@ -408,7 +408,7 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SavePregnancyItems(int hpId, long ptId, PtPregnancyModel ptPregnancy, int userId)
         {
-            var pregnancyItem = NoTrackingDataContext.PtPregnancies.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
+            var pregnancyItem = TrackingDataContext.PtPregnancies.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (pregnancyItem != null)
             {
                 pregnancyItem.Id = ptPregnancy.Id;
@@ -449,7 +449,7 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SavePtCmtInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            var ptCmtInfItem = NoTrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
+            var ptCmtInfItem = TrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (ptCmtInfItem != null)
             {
                 ptCmtInfItem.HpId = patientInfoModel.PtCmtInfItems.HpId;
@@ -479,7 +479,7 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SaveSeikatureInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            var seikatureInfItem = NoTrackingDataContext.SeikaturekiInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
+            var seikatureInfItem = TrackingDataContext.SeikaturekiInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
             if (seikatureInfItem != null)
             {
                 seikatureInfItem.HpId = patientInfoModel.SeikatureInfItems.HpId;
