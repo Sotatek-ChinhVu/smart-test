@@ -97,8 +97,6 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     public List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, int menuGrp)
     {
-        string funcName = nameof(GetListSystemConfMenuWithGeneration);
-
         var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp);
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.Val);
         var systemGenerationConfs = NoTrackingDataContext.SystemGenerationConfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate);
@@ -119,9 +117,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             data.Generations
             )).ToList();
 
-        return result;
+        return result ?? new();
 
-        return new List<SystemConfMenuModel>();
     }
 
 }
