@@ -144,9 +144,7 @@
         public static readonly string InvalidTanto = "Invalid Tanto";
         public static readonly string InvalidTerm = "Invalid Term";
         public static readonly string InvalidIsDone = "Invalid IsDone";
-        public static readonly string InvalidExistedTodoNo = "Invalid Existed TodoNo";
-        public static readonly string InvalidExistedTodoEdaNo = "Invalid Existed TodoEdaNo";
-        public static readonly string InvalidExistedPtId = "Invalid Existed PtId";
+        public static readonly string InvalidExistedInput = "Invalid Existed Input";
 
         //Insurance
         // Validate Main Insurance

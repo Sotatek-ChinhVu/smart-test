@@ -7,10 +7,6 @@ namespace Domain.Models.Todo
     {
         void Upsert(List<TodoInfModel> upsertTodoList, int userId, int hpId);
 
-        bool CheckExistedTodoNo(List<int> todoNos);
-
-        bool CheckExistedTodoEdaNo(List<int> todoEdaNos);
-
-        bool CheckExistedPtId(List<long> ptIds);
+        bool Check(List<Tuple<int, int, long>> inputs);
     }
 }

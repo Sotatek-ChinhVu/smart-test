@@ -16,7 +16,5 @@ public enum UpsertTodoInfStatus
     InvalidIsDone,
     InvalidIsDeleted,
     InvalidTodoInf,
-    InvalidExistedTodoNo,
-    InvalidExistedTodoEdaNo,
-    InvalidExistedPtId,
+    InvalidExistedInput
 }
