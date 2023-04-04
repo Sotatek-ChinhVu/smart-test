@@ -8,6 +8,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Text;
 
 
@@ -19,7 +20,7 @@ namespace Infrastructure.Repositories.SpecialNote
         {
         }
 
-        public bool SaveSpecialNote(int hpId, long ptId, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
+        public bool SaveSpecialNote(int hpId, long ptId, int sinDate, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
         {
             if (!IsInvalidInputId(hpId, ptId)) return false;
 
@@ -45,7 +46,7 @@ namespace Infrastructure.Repositories.SpecialNote
                             }
                             if (patientInfoModel != null)
                             {
-                                SavePatientInfo(hpId, ptId, patientInfoModel, userId);
+                                SavePatientInfo(hpId, ptId, sinDate, patientInfoModel, userId);
                                 TrackingDataContext.SaveChanges();
                             }
                             TrackingDataContext.SaveChanges();
@@ -380,7 +381,7 @@ namespace Infrastructure.Repositories.SpecialNote
         #endregion
 
         #region SavePatientInfo
-        private void SavePatientInfo(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
+        private void SavePatientInfo(int hpId, long ptId, int sinDate, PatientInfoModel patientInfoModel, int userId)
         {
             var ids = patientInfoModel.PregnancyItems.Where(p => p.IsDeleted != DeleteTypes.None).Select(p => p.Id).Distinct();
             var pregnancyItemIsDeleteds = TrackingDataContext.PtPregnancies.Where(p => ids.Contains(p.Id));
@@ -403,7 +404,7 @@ namespace Infrastructure.Repositories.SpecialNote
             }
             if (patientInfoModel?.PhysicalInfItems != null && patientInfoModel.PhysicalInfItems.Any())
             {
-                SavePhysicalInfItems(hpId, ptId, patientInfoModel);
+                SavePhysicalInfItems(hpId, ptId, sinDate, userId, patientInfoModel);
             }
         }
         private void SavePregnancyItems(int hpId, long ptId, PtPregnancyModel ptPregnancy, int userId)
@@ -505,8 +506,10 @@ namespace Infrastructure.Repositories.SpecialNote
                 TrackingDataContext.SeikaturekiInfs.Add(seikatureInfObj);
             }
         }
-        private void SavePhysicalInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
+        private void SavePhysicalInfItems(int hpId, long ptId, int sinDate, int userId, PatientInfoModel patientInfoModel)
         {
+
+
             var kensaInfDetailModels = new List<KensaInfDetailModel>();
             foreach (var physicalInfo in patientInfoModel.PhysicalInfItems)
             {
@@ -515,6 +518,21 @@ namespace Infrastructure.Repositories.SpecialNote
                     kensaInfDetailModels.AddRange(physicalInfo.KensaInfDetailModels);
                 }
             }
+
+            var raiinNo = kensaInfDetailModels.Select(k => k.RaiinNo).Distinct().FirstOrDefault();
+            EntityEntry<KensaInf> entryKensaInf = TrackingDataContext.KensaInfs.Add(new KensaInf()
+            {
+                HpId = hpId,
+                PtId = ptId,
+                RaiinNo = raiinNo,
+                IraiDate = sinDate,
+                Status = 2,
+                InoutKbn = 0,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                CreateId = userId,
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId
+            });
             var kensaInfDetails = NoTrackingDataContext.KensaInfDetails
                 .Where(x => x.HpId == hpId && x.PtId == ptId)
                 .Select(x => new { x.HpId, x.PtId, x.IraiCd, x.SeqNo })

@@ -26,7 +26,7 @@ namespace Interactor.SpecialNote
                 {
                     return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidPtId);
                 }
-                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, new SummaryInfModel(inputData.SummaryTab.Id, inputData.SummaryTab.HpId, inputData.SummaryTab.PtId, inputData.SummaryTab.SeqNo, inputData.SummaryTab.Text, inputData.SummaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow), inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
+                var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SinDate, new SummaryInfModel(inputData.SummaryTab.Id, inputData.SummaryTab.HpId, inputData.SummaryTab.PtId, inputData.SummaryTab.SeqNo, inputData.SummaryTab.Text, inputData.SummaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow), inputData.ImportantNoteTab, new PatientInfoModel(inputData.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
                         p.Id,
                         p.HpId,
                         p.PtId,
