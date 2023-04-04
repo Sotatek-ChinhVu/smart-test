@@ -218,6 +218,7 @@ namespace Infrastructure.Repositories.SpecialNote
                                         EndDate = x.EndDate,
                                         Cmt = x.Cmt,
                                         IsDeleted = x.IsDeleted,
+                                        DrugName = x.DrugName
                                     }).ToList();
             var updateAlrgyDrugList = alrgyDrugList.Where(x => alrgyDrugItems.Contains(new { x.HpId, x.PtId, x.SeqNo })).ToList();
             var addAlrgyDrugList = alrgyDrugList.Where(x => !alrgyDrugItems.Contains(new { x.HpId, x.PtId, x.SeqNo })).ToList();
