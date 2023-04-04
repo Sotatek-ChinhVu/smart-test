@@ -434,6 +434,108 @@ namespace Helper.Common
 
             return HenkanJ.Instance.ToFullsize(halfSizeValue.PadLeft(6, '0'));
         }
+
+        //Get kouiKbnName by setting for orderSheet
+        public static string GetKouiKbnNmBySetting(int val)
+        {
+            switch (val)
+            {
+                case 1:
+                    return "医学管理";
+                case 2:
+                    return "在宅";
+                case 3:
+                    return "処方";
+                case 4:
+                    return "内服";//処方
+                case 5:
+                    return "頓服";//処方
+                case 6:
+                    return "外用";//処方
+                case 7:
+                    return "その他";//処方
+                case 8:
+                    return "注射";
+                case 9:
+                    return "皮下筋注";//注射
+                case 10:
+                    return "静注";//注射
+                case 11:
+                    return "点滴";//注射
+                case 12:
+                    return "他注";//注射
+                case 13:
+                    return "処置";
+                case 14:
+                    return "手術";
+                case 15:
+                    return "検査";
+                case 16:
+                    return "検体";//検査
+                case 17:
+                    return "生体";//検査
+                case 18:
+                    return "その他";//検査
+                case 19:
+                    return "画像";
+                case 20:
+                    return "その他";
+                case 21:
+                    return "自費";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public static string GetChildOdrGrpKouiName(int kouiCode)
+        {
+            //item comment 処方箋コメント、処方箋備考コメント
+            if (kouiCode == 100 || kouiCode == 101)
+            {
+                return "その他";
+            }
+            int grpKouiKbn = kouiCode / 10;
+            switch (grpKouiKbn)
+            {
+                case 2:
+                    switch (kouiCode)
+                    {
+                        case 21:
+                            return "内服";
+                        case 22:
+                            return "頓服";
+                        case 23:
+                            return "外用";
+                        default:
+                            return "その他";
+                    }
+                case 3:
+                    switch (kouiCode)
+                    {
+                        case 31:
+                            return "皮下筋注";
+                        case 32:
+                            return "静注";
+                        case 33:
+                            return "点滴";
+                        default:
+                            //kouiKbn = 30 || kouiKbn = 34
+                            return "他注";
+                    }
+                case 6:
+                    switch (kouiCode)
+                    {
+                        case 61:
+                            return "検体";
+                        case 62:
+                            return "生体";
+                        default:
+                            return "その他";
+                    }
+                default:
+                    return string.Empty;
+            }
+        }
     }
 
     public static class RinjiKubun

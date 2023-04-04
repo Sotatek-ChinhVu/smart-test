@@ -114,7 +114,8 @@ namespace Interactor.OrdInfs
                         .ToList(),
                          o.CreateDate,
                          o.CreateId,
-                         o.CreateName
+                         o.CreateName,
+                         o.IsDeleted
                         ))
                     .OrderBy(odr => odr.OdrKouiKbn)
                     .ThenBy(odr => odr.RpNo)

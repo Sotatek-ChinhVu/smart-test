@@ -17,18 +17,18 @@ namespace Interactor.Accounting
         {
             try
             {
-                var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, true).ToList();
+                var raiinInfs = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, true).ToList();
 
-                if (raiinInf.Any())
+                if (raiinInfs.Any())
                 {
-                    var personNumber = raiinInf.FirstOrDefault(x => x.PersonNumber != null).PersonNumber;
+                    var personNumber = raiinInfs.FirstOrDefault()?.PersonNumber ?? 0;
 
                     if (personNumber < 0)
                     {
                         return new GetAccountingHeaderOutputData(0, new(), GetAccountingHeaderStatus.Failed);
                     }
 
-                    return new GetAccountingHeaderOutputData(personNumber, ConvertToDto(raiinInf), GetAccountingHeaderStatus.Successed);
+                    return new GetAccountingHeaderOutputData(personNumber, ConvertToDto(raiinInfs), GetAccountingHeaderStatus.Successed);
                 }
 
                 return new GetAccountingHeaderOutputData(0, new(), GetAccountingHeaderStatus.NoData);

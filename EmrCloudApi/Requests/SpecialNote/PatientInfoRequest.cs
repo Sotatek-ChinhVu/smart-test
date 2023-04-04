@@ -1,20 +1,21 @@
 ﻿using Domain.Models.PtCmtInf;
 using Domain.Models.SpecialNote.PatientInfo;
+using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Requests.SpecialNote
 {
     public class PatientInfoRequest
     {
-        public PtPregnancyRequest PregnancyItems { get; set; } = new PtPregnancyRequest();
+        public List<PtPregnancyRequest> PregnancyItems { get; set; } = new List<PtPregnancyRequest>();
 
         public PtCmtInfRequest PtCmtInfItems { get; set; } = new PtCmtInfRequest();
 
         public SeikaturekiInfRequest SeikatureInfItems { get; set; } = new SeikaturekiInfRequest();
 
-        public List<PhysicalInfoRequest> PhysicalInfItems { get; set; } = new List<PhysicalInfoRequest>();
-        public PatientInfoModel Map()
+        public List<KensaInfDetailRequest> KensaInfDetailModels { get; set; } = new List<KensaInfDetailRequest>();
+        public PatientInfoItem Map()
         {
-            return new PatientInfoModel(PregnancyItems.Map(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), PhysicalInfItems.Select(x => x.Map()).ToList());
+            return new PatientInfoItem(PregnancyItems.Select(p => p.Map()).ToList(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), KensaInfDetailModels.Select(k => k.Map()).ToList());
         }
     }
     public class PtPregnancyRequest

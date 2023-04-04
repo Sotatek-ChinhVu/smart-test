@@ -26,6 +26,7 @@ namespace Domain.Models.Accounting
             SanteiKbn = santeiKbn;
             InOutKbn = inOutKbn;
             IsRowColorGray = isRowColorGray;
+            Days = new();
         }
 
         public SinMeiModel(int sinId, string sinIdBinding, string itemName, double suryo, string unitName, string tenKai, double totalTen, double totalKingaku, double kingaku, int futanS, int futanK1, int futanK2, int futanK3, int futanK4, string cdKbn, int jihiSbt, int enTenKbn, int santeiKbn, int inOutKbn, bool isRowColorGray, List<int> days)
@@ -76,12 +77,12 @@ namespace Domain.Models.Accounting
         public double SinHoTotalTen { get => EnTenKbn == 1 ? Kingaku / 10 : TotalTen; }
         public double Total { get => TotalKingaku != 0 ? TotalKingaku : TotalTen; }
         public string TotalBinding { get => Total != 0 ? Total.AsString() : ""; }
-        public string FutanSBinding { get => FutanS == 1 ? "＊" : ""; }
-        public string FutanK1Binding { get => FutanK1 >= 1 ? "＊" : ""; }
-        public string FutanK2Binding { get => FutanK2 >= 1 ? "＊" : ""; }
-        public string FutanK3Binding { get => FutanK3 >= 1 ? "＊" : ""; }
-        public string FutanK4Binding { get => FutanK4 >= 1 ? "＊" : ""; }
-        public string Asterisk { get => SinId > 0 ? "＊" : ""; }
+        public string FutanSBinding { get => FutanS == 1 ? "●" : ""; }
+        public string FutanK1Binding { get => FutanK1 >= 1 ? "●" : ""; }
+        public string FutanK2Binding { get => FutanK2 >= 1 ? "●" : ""; }
+        public string FutanK3Binding { get => FutanK3 >= 1 ? "●" : ""; }
+        public string FutanK4Binding { get => FutanK4 >= 1 ? "●" : ""; }
+        public string Asterisk { get => SinId > 0 ? "●" : ""; }
         public bool IsRowColorGray { get; private set; } = false;
         public bool IsForegroundRed { get => EnTenKbn == 1; }
         public List<int> Days { get; private set; }

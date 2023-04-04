@@ -3,13 +3,13 @@
     public class LevelInfoModel
     {
 
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
-        public string FirstItemName { get; set; }
+        public string FirstItemName { get; set; } = string.Empty;
 
-        public string SecondItemName { get; set; }
+        public string SecondItemName { get; set; } = string.Empty; 
 
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
 
         public int Level { get; set; }
 

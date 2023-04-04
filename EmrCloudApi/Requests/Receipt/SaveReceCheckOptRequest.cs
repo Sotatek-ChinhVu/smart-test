@@ -4,5 +4,5 @@ namespace EmrCloudApi.Requests.Receipt;
 
 public class SaveReceCheckOptRequest
 {
-    public List<SaveReceCheckOptRequestItem> ReceCheckOptList { get; set; }
+    public List<SaveReceCheckOptRequestItem> ReceCheckOptList { get; set; } = new();
 }

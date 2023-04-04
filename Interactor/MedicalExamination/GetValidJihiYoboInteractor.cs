@@ -26,7 +26,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetValidJihiYoboOutputData(0, false, GetValidJihiYoboStatus.InvalidSinDate);
                 }
-                if (inputData.SyosaiKbn <= 0)
+                if (inputData.SyosaiKbn < 0)
                 {
                     return new GetValidJihiYoboOutputData(0, false, GetValidJihiYoboStatus.InvalidSyosaiKbn);
                 }

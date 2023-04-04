@@ -85,7 +85,7 @@ namespace EmrCloudApi.Services
                     return new();
 
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
-                return result;
+                return result ?? new();
             }
             catch (Exception ex)
             {
@@ -121,7 +121,7 @@ namespace EmrCloudApi.Services
                     return new();
 
                 var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
-                return result;
+                return result ?? new();
             }
             catch (Exception)
             {

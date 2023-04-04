@@ -4,9 +4,9 @@ namespace Reporting.Karte1.Model
 {
     public class CoPtKohiModel
     {
-        public PtKohi PtKohi { get; } = null;
-        public HokenMst HokenMst { get; } = null;
-        public KohiPriority KohiPriority { get; } = null;
+        public PtKohi PtKohi { get; } = new();
+        public HokenMst HokenMst { get; } = new();
+        public KohiPriority KohiPriority { get; } = new();
 
         public CoPtKohiModel(PtKohi ptKohi, HokenMst hokenMst)
         {

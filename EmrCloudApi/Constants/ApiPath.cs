@@ -84,6 +84,7 @@
         public const string GetListPatient = "GetListPatient";
         public const string GetPatientInfoBetweenTimesList = "GetPatientInfoBetweenTimesList";
         public const string SearchPatientInfoByPtNum = "SearchPatientInfoByPtNum";
+        public const string GetTokkiMstList = "GetTokkiMstList";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -170,6 +171,9 @@
         public const string GetMaxAuditTrailLogDateForPrint = "GetMaxAuditTrailLogDateForPrint";
         public const string ConvertFromHistoryToTodayOrder = "ConvertFromHistoryToTodayOrder";
         public const string Calculate = "Calculate";
+        public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
+        public const string GetOrderSheetGroup = "GetOrderSheetGroup";
+        public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -223,13 +227,14 @@
         public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
         public const string GetReceByomeiChecking = "GetReceByomeiChecking";
         public const string SaveReceiptEdit = "SaveReceiptEdit";
+        public const string SaveReceStatus = "SaveReceStatus";
+        public const string GetReceStatus = "GetReceStatus";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
         public const string WarningMemo = "WarningMemo";
         public const string PtByoMei = "PtByoMei";
         public const string SaveAccounting = "SaveAccounting";
-        public const string HistoryOrder = "HistoryOrder";
         public const string CheckAccounting = "CheckAccounting";
         public const string GetSystemConfig = "GetSystemConfig";
         public const string GetMeiHoGai = "GetMeiHoGai";
@@ -242,6 +247,7 @@
         public const string GetGroupNameMst = "GetGroupNameMst";
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
+        public const string ValidateFamilyList = "ValidateFamilyList";
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
@@ -256,6 +262,9 @@
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
+
+        //ReceiptCreation
+        public const string CreateUKEFile = "CreateUKEFile";
         public const string SaveWeightedSetConfirmation = "SaveWeightedSetConfirmation";
     }
 }

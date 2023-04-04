@@ -383,10 +383,14 @@ namespace Infrastructure.Repositories.SpecialNote
         #region SavePatientInfo
         private void SavePatientInfo(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            if (patientInfoModel?.PregnancyItems != null && patientInfoModel.PregnancyItems.HpId == hpId && patientInfoModel.PregnancyItems.PtId == ptId)
+            foreach (var pregnancyItem in patientInfoModel.PregnancyItems)
             {
-                SavePregnancyItems(hpId, ptId, patientInfoModel, userId);
+                if (patientInfoModel?.PregnancyItems != null && pregnancyItem.HpId == hpId && pregnancyItem.PtId == ptId)
+                {
+                    SavePregnancyItems(hpId, ptId, pregnancyItem, userId);
+                }
             }
+
             if (patientInfoModel?.PtCmtInfItems != null && patientInfoModel.PtCmtInfItems.HpId == hpId && patientInfoModel.PtCmtInfItems.PtId == ptId)
             {
                 SavePtCmtInfItems(hpId, ptId, patientInfoModel, userId);
@@ -400,24 +404,24 @@ namespace Infrastructure.Repositories.SpecialNote
                 SavePhysicalInfItems(hpId, ptId, patientInfoModel);
             }
         }
-        private void SavePregnancyItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
+        private void SavePregnancyItems(int hpId, long ptId, PtPregnancyModel ptPregnancy, int userId)
         {
             var pregnancyItems = NoTrackingDataContext.PtPregnancies.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
             if (pregnancyItems != null)
             {
                 var pregnancyObj = new PtPregnancy()
                 {
-                    Id = patientInfoModel.PregnancyItems.Id,
-                    HpId = patientInfoModel.PregnancyItems.HpId,
-                    PtId = patientInfoModel.PregnancyItems.PtId,
-                    SeqNo = patientInfoModel.PregnancyItems.SeqNo,
-                    StartDate = patientInfoModel.PregnancyItems.StartDate,
-                    EndDate = patientInfoModel.PregnancyItems.EndDate,
-                    PeriodDate = patientInfoModel.PregnancyItems.PeriodDate,
-                    PeriodDueDate = patientInfoModel.PregnancyItems.PeriodDueDate,
-                    OvulationDate = patientInfoModel.PregnancyItems.OvulationDate,
-                    OvulationDueDate = patientInfoModel.PregnancyItems.OvulationDueDate,
-                    IsDeleted = patientInfoModel.PregnancyItems.IsDeleted,
+                    Id = ptPregnancy.Id,
+                    HpId = ptPregnancy.HpId,
+                    PtId = ptPregnancy.PtId,
+                    SeqNo = ptPregnancy.SeqNo,
+                    StartDate = ptPregnancy.StartDate,
+                    EndDate = ptPregnancy.EndDate,
+                    PeriodDate = ptPregnancy.PeriodDate,
+                    PeriodDueDate = ptPregnancy.PeriodDueDate,
+                    OvulationDate = ptPregnancy.OvulationDate,
+                    OvulationDueDate = ptPregnancy.OvulationDueDate,
+                    IsDeleted = ptPregnancy.IsDeleted,
                     CreateDate = pregnancyItems.CreateDate,
                     CreateId = pregnancyItems.CreateId,
                     CreateMachine = pregnancyItems.CreateMachine,
@@ -430,16 +434,16 @@ namespace Infrastructure.Repositories.SpecialNote
             {
                 var pregnancyObj = new PtPregnancy()
                 {
-                    HpId = patientInfoModel.PregnancyItems.HpId,
-                    PtId = patientInfoModel.PregnancyItems.PtId,
-                    SeqNo = patientInfoModel.PregnancyItems.SeqNo,
-                    StartDate = patientInfoModel.PregnancyItems.StartDate,
-                    EndDate = patientInfoModel.PregnancyItems.EndDate,
-                    PeriodDate = patientInfoModel.PregnancyItems.PeriodDate,
-                    PeriodDueDate = patientInfoModel.PregnancyItems.PeriodDueDate,
-                    OvulationDate = patientInfoModel.PregnancyItems.OvulationDate,
-                    OvulationDueDate = patientInfoModel.PregnancyItems.OvulationDueDate,
-                    IsDeleted = patientInfoModel.PregnancyItems.IsDeleted,
+                    HpId = ptPregnancy.HpId,
+                    PtId = ptPregnancy.PtId,
+                    SeqNo = ptPregnancy.SeqNo,
+                    StartDate = ptPregnancy.StartDate,
+                    EndDate = ptPregnancy.EndDate,
+                    PeriodDate = ptPregnancy.PeriodDate,
+                    PeriodDueDate = ptPregnancy.PeriodDueDate,
+                    OvulationDate = ptPregnancy.OvulationDate,
+                    OvulationDueDate = ptPregnancy.OvulationDueDate,
+                    IsDeleted = ptPregnancy.IsDeleted,
                     CreateDate = DateTime.UtcNow,
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId,
