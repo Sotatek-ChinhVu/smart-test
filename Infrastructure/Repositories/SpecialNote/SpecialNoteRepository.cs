@@ -74,7 +74,6 @@ namespace Infrastructure.Repositories.SpecialNote
             var summaryInf = TrackingDataContext.SummaryInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId);
             if (summaryInf != null)
             {
-                summaryInf.Id = summaryInfModel.Id;
                 summaryInf.HpId = summaryInfModel.HpId;
                 summaryInf.PtId = summaryInfModel.PtId;
                 summaryInf.SeqNo = summaryInfModel.SeqNo;
@@ -413,10 +412,6 @@ namespace Infrastructure.Repositories.SpecialNote
             var pregnancyItem = TrackingDataContext.PtPregnancies.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (pregnancyItem != null)
             {
-                pregnancyItem.Id = ptPregnancy.Id;
-                pregnancyItem.HpId = ptPregnancy.HpId;
-                pregnancyItem.PtId = ptPregnancy.PtId;
-                pregnancyItem.SeqNo = ptPregnancy.SeqNo;
                 pregnancyItem.StartDate = ptPregnancy.StartDate;
                 pregnancyItem.EndDate = ptPregnancy.EndDate;
                 pregnancyItem.PeriodDate = ptPregnancy.PeriodDate;
@@ -454,9 +449,6 @@ namespace Infrastructure.Repositories.SpecialNote
             var ptCmtInfItem = TrackingDataContext.PtCmtInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (ptCmtInfItem != null)
             {
-                ptCmtInfItem.HpId = patientInfoModel.PtCmtInfItems.HpId;
-                ptCmtInfItem.PtId = patientInfoModel.PtCmtInfItems.PtId;
-                ptCmtInfItem.SeqNo = patientInfoModel.PtCmtInfItems.SeqNo;
                 ptCmtInfItem.Text = patientInfoModel.PtCmtInfItems.Text;
                 ptCmtInfItem.IsDeleted = patientInfoModel.PtCmtInfItems.IsDeleted;
                 ptCmtInfItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
