@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories.SpecialNote
                 summaryInf.PtId = summaryInfModel.PtId;
                 summaryInf.SeqNo = summaryInfModel.SeqNo;
                 summaryInf.Text = summaryInfModel.Text;
-                summaryInf.Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext);
+                summaryInf.Rtext = Encoding.UTF8.GetBytes(summaryInfModel.Rtext);
                 summaryInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 summaryInf.UpdateId = userId;
             }
@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories.SpecialNote
                         PtId = summaryInfModel.PtId,
                         SeqNo = summaryInfModel.SeqNo,
                         Text = summaryInfModel.Text,
-                        Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext),
+                        Rtext = Encoding.UTF8.GetBytes(summaryInfModel.Rtext),
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateDate = CIUtil.GetJapanDateTimeNow(),
                         UpdateId = userId,
