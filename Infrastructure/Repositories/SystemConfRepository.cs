@@ -95,4 +95,33 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         DisposeDataContext();
     }
 
+    public List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, int menuGrp)
+    {
+        string funcName = nameof(GetListSystemConfMenuWithGeneration);
+
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp);
+        var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.Val);
+        var systemGenerationConfs = NoTrackingDataContext.SystemGenerationConfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate);
+        var query = from menu in systemConfMenus
+                    join item in systemConfItems on menu.MenuId equals item.MenuId into items
+                    join generation in systemGenerationConfs on
+                    new { menu.GrpCd, menu.GrpEdaNo } equals
+                    new { generation.GrpCd, generation.GrpEdaNo } into generations
+                    select new
+                    {
+                        Menu = menu,
+                        Items = items,
+                        Generations = generations
+                    };
+        var result = query.AsEnumerable().Select(data => new SystemConfMenuModel(
+            data.Menu,
+            data.Items,
+            data.Generations
+            )).ToList();
+
+        return result;
+
+        return new List<SystemConfMenuModel>();
+    }
+
 }
