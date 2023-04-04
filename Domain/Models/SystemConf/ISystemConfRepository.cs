@@ -16,4 +16,6 @@ public interface ISystemConfRepository : IRepositoryBase
     string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");
 
     Hashtable GetConfigForPrintFunction(int hpId);
+
+    List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, int menuGrp);
 }

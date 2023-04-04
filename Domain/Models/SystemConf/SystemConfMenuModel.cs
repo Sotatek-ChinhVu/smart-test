@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.SystemConf
+﻿using Domain.Models.SystemGenerationConf;
+
+namespace Domain.Models.SystemConf
 {
     public class SystemConfMenuModel
     {
-        public SystemConfMenuModel(int hpId, int menuId, int menuGrp, int sortNo, string menuName, int grpCd, int grpEdaNo, int pathGrpCd, int isParam, int paramMask, int paramType, string paramHint, double valMin, double valMax, double paramMin, double paramMax, string itemCd, int prefNo, int isVisible, int managerKbn, int isValue, int paramMaxLength, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine)
+        public SystemConfMenuModel(int hpId, int menuId, int menuGrp, int sortNo, string menuName, int grpCd, int grpEdaNo, int pathGrpCd, int isParam, int paramMask, int paramType, string paramHint, double valMin, double valMax, double paramMin, double paramMax, string itemCd, int prefNo, int isVisible, int managerKbn, int isValue, int paramMaxLength, List<SystemConfItemModel> systemConfItems, List<SystemGenerationConfModel> systemGenerationConfs)
         {
             HpId = hpId;
             MenuId = menuId;
@@ -26,12 +28,8 @@
             ManagerKbn = managerKbn;
             IsValue = isValue;
             ParamMaxLength = paramMaxLength;
-            CreateDate = createDate;
-            CreateId = createId;
-            CreateMachine = createMachine;
-            UpdateDate = updateDate;
-            UpdateId = updateId;
-            UpdateMachine = updateMachine;
+            SystemConfItems = systemConfItems;
+            SystemGenerationConfs = systemGenerationConfs;
         }
 
         public int HpId { get; private set; }
@@ -78,16 +76,8 @@
 
         public int ParamMaxLength { get; private set; }
 
-        public DateTime CreateDate { get; private set; }
+        public List<SystemConfItemModel> SystemConfItems { get; private set; }
 
-        public int CreateId { get; private set; }
-
-        public string CreateMachine { get; private set; }
-
-        public DateTime UpdateDate { get; private set; }
-
-        public int UpdateId { get; private set; }
-
-        public string UpdateMachine { get; private set; }
+        public List<SystemGenerationConfModel> SystemGenerationConfs { get; private set; }
     }
 }

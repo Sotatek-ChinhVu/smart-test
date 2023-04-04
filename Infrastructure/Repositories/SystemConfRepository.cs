@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SystemConf;
+using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -105,20 +106,66 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                     join generation in systemGenerationConfs on
                     new { menu.GrpCd, menu.GrpEdaNo } equals
                     new { generation.GrpCd, generation.GrpEdaNo } into generations
-                    select new
-                    {
-                        Menu = menu,
-                        Items = items,
-                        Generations = generations
-                    };
-        var result = query.AsEnumerable().Select(data => new SystemConfMenuModel(
-            data.Menu,
-            data.Items,
-            data.Generations
-            )).ToList();
+                    select ConvertToSystemConfModel(menu, items.ToList(), generations.ToList());
 
-        return result ?? new();
+        return query.ToList();
 
+    }
+
+    private SystemConfMenuModel ConvertToSystemConfModel(SystemConfMenu systemConfMenu, List<SystemConfItem> systemConfItem, List<SystemGenerationConf> systemGeneration)
+    {
+        return new SystemConfMenuModel
+            (
+                 systemConfMenu.HpId,
+                 systemConfMenu.MenuId,
+                 systemConfMenu.GrpCd,
+                 systemConfMenu.SortNo,
+                 systemConfMenu.MenuName ?? string.Empty,
+                 systemConfMenu.GrpCd,
+                 systemConfMenu.GrpEdaNo,
+                 systemConfMenu.PathGrpCd,
+                 systemConfMenu.IsParam,
+                 systemConfMenu.ParamMask,
+                 systemConfMenu.ParamType,
+                 systemConfMenu.ParamHint ?? string.Empty,
+                 systemConfMenu.ValMin,
+                 systemConfMenu.ValMax,
+                 systemConfMenu.ParamMin,
+                 systemConfMenu.ParamMax,
+                 systemConfMenu.ItemCd ?? string.Empty,
+                 systemConfMenu.PrefNo,
+                 systemConfMenu.IsVisible,
+                 systemConfMenu.ManagerKbn,
+                 systemConfMenu.IsValue,
+                 systemConfMenu.ParamMaxLength,
+
+                 systemConfItem == null ? new List<SystemConfItemModel>() :
+                 systemConfItem.Select(x =>
+                                        new SystemConfItemModel(
+                                            x.HpId,
+                                            x.MenuId,
+                                            x.SeqNo,
+                                            x.SortNo,
+                                            x.ItemName ?? string.Empty,
+                                            x.Val,
+                                            x.ParamMin,
+                                            x.ParamMax
+                                            )).ToList(),
+
+                 systemGeneration == null ? new List<SystemGenerationConfModel>() :
+                 systemGeneration.Select(y =>
+                                          new SystemGenerationConfModel(
+                                              y.Id,
+                                              y.HpId,
+                                              y.GrpCd,
+                                              y.GrpEdaNo,
+                                              y.StartDate,
+                                              y.EndDate,
+                                              y.Val,
+                                              y.Param ?? string.Empty,
+                                              y.Biko ?? string.Empty
+                                            )).ToList()
+            );
     }
 
 }
