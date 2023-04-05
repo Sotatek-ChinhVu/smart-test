@@ -211,7 +211,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp && u.IsVisible == 1);
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
         var systemSettings = NoTrackingDataContext.SystemConfs.Where(u => u.HpId == hpId);
-        var systemConfs = (from menu in systemConfMenus
+        var systemConfs = (from menu in systemConfMenus.AsEnumerable()
                            join item in systemConfItems on menu.MenuId equals item.MenuId into items
                            join setting in systemSettings on new { menu.GrpCd, menu.GrpEdaNo } equals new { setting.GrpCd, setting.GrpEdaNo }
                            into settingList
