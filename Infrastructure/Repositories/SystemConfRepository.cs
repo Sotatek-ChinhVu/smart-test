@@ -20,6 +20,15 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             .AsEnumerable().Select(s => ToModel(s)).ToList();
     }
 
+    public List<SystemConfModel> GetList(int hpId, List<int> grpCodeList)
+    {
+        grpCodeList = grpCodeList.Distinct().ToList();
+        var systemConfigList = NoTrackingDataContext.SystemConfs.Where(item => item.HpId == hpId
+                                                                               && grpCodeList.Contains(item.GrpCd))
+                                                                .ToList();
+        return systemConfigList.Select(item => ToModel(item)).ToList();
+    }
+
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
         var data = NoTrackingDataContext.SystemConfs

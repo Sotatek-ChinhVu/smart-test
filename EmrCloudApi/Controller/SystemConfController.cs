@@ -6,6 +6,7 @@ using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
@@ -55,6 +56,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSystemConfForPrintResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.DrugCheckSetting)]
+        public ActionResult<Response<GetDrugCheckSettingResponse>> DrugCheckSetting()
+        {
+            var input = new GetDrugCheckSettingInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDrugCheckSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDrugCheckSettingResponse>>(presenter.Result);
         }
     }
 }

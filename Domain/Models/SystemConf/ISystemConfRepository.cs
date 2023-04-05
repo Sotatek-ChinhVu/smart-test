@@ -7,6 +7,8 @@ public interface ISystemConfRepository : IRepositoryBase
 {
     List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
 
+    List<SystemConfModel> GetList(int hpId, List<int> grpCodeList);
+
     SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo);
 
     List<SystemConfModel> GetAllSystemConfig(int hpId);

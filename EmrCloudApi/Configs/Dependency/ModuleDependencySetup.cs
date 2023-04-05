@@ -381,6 +381,7 @@ using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
 using UseCase.SwapHoken.Validate;
+using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
@@ -807,6 +808,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfListInputData, GetSystemConfListInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfForPrintInputData, GetSystemConfForPrintInteractor>();
+            busBuilder.RegisterUseCase<GetDrugCheckSettingInputData, GetDrugCheckSettingInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
