@@ -1385,7 +1385,7 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var countSyoukiKbn = NoTrackingDataContext.SyoukiKbnMsts.AsEnumerable().Count(entity => entity.StartYm <= sinYm
                                                                                                 && entity.EndYm >= sinYm
                                                                                                 && syoukiKbnList.Any(input => input.SyoukiKbn == entity.SyoukiKbn && input.StartYm == entity.StartYm));
-        return countSyoukiKbn == syoukiKbnList.Count;
+        return countSyoukiKbn == syoukiKbnList.GroupBy(item => new { item.SyoukiKbn, item.StartYm }).Count();
     }
 
     public bool SaveSyobyoKeikaList(int hpId, int userId, List<SyobyoKeikaModel> syoukiInfList)

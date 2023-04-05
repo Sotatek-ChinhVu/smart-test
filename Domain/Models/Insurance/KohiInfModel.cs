@@ -32,7 +32,6 @@ namespace Domain.Models.Insurance
             IsDeleted = isDeleted;
             IsAddNew = isAddNew;
             SeqNo = seqNo;
-            ConfirmDateModels = new();
         }
 
         public KohiInfModel(int hokenId)
@@ -45,7 +44,6 @@ namespace Domain.Models.Insurance
             HokenMstModel = new HokenMstModel();
             ConfirmDateList = new List<ConfirmDateModel>();
             IsHaveKohiMst = false;
-            ConfirmDateModels = new();
         }
 
         public KohiInfModel()
@@ -57,7 +55,6 @@ namespace Domain.Models.Insurance
             HokenMstModel = new HokenMstModel();
             ConfirmDateList = new List<ConfirmDateModel>();
             IsHaveKohiMst = false;
-            ConfirmDateModels = new();
         }
 
         [JsonConstructor]
@@ -86,10 +83,9 @@ namespace Domain.Models.Insurance
             IsDeleted = isDeleted;
             SeqNo = seqNo;
             IsAddNew = isAddNew;
-            ConfirmDateModels = new();
         }
 
-        public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateModels)
+        public KohiInfModel(int hokenId, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, int startDate, int endDate, int sinDate, HokenMstModel hokenMstModel, List<ConfirmDateModel> confirmDateList)
         {
             HokenId = hokenId;
             PrefNo = prefNo;
@@ -100,8 +96,7 @@ namespace Domain.Models.Insurance
             EndDate = endDate;
             SinDate = sinDate;
             HokenMstModel = hokenMstModel;
-            ConfirmDateModels = confirmDateModels;
-            ConfirmDateList = new();
+            ConfirmDateList = confirmDateList;
             JyukyusyaNo = string.Empty;
             TokusyuNo = string.Empty;
             Houbetu = string.Empty;
@@ -151,8 +146,6 @@ namespace Domain.Models.Insurance
 
         public long SeqNo { get; private set; }
 
-        public List<ConfirmDateModel> ConfirmDateModels { get; private set; }
-
         public bool IsEmptyModel => HokenId == 0;
 
         public bool IsExpirated
@@ -175,12 +168,12 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (ConfirmDateModels == null) return false;
-                if (ConfirmDateModels.Count == 0)
+                if (ConfirmDateList == null) return false;
+                if (ConfirmDateList.Count == 0)
                 {
                     return false;
                 }
-                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateModels
+                List<ConfirmDateModel> isValidHokenChecks = ConfirmDateList
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
@@ -201,9 +194,9 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                if (!ConfirmDateModels.Any()) return 0;
+                if (!ConfirmDateList.Any()) return 0;
 
-                return CIUtil.Copy(ConfirmDateModels.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate.AsString(), 1, 6).AsInteger();
+                return CIUtil.Copy(ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate.AsString(), 1, 8).AsInteger();
             }
         }
     }

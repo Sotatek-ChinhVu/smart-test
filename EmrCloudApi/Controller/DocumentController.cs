@@ -92,6 +92,14 @@ public class DocumentController : AuthorizeControllerBase
     [HttpPost(ApiPath.UploadTemplateToCategory)]
     public ActionResult<Response<UploadTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] UploadTemplateToCategoryRequest request)
     {
+        if (Request.ContentLength > 30000000)
+        {
+            return Ok(new Response<UploadTemplateToCategoryResponse>()
+            {
+                Message = "Invalid file size!",
+                Status = (int)UploadTemplateToCategoryStatus.InvalidSizeFile
+            });
+        }
         var input = new UploadTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, request.OverWrite, Request.Body);
         var output = _bus.Handle(input);
 
@@ -116,6 +124,14 @@ public class DocumentController : AuthorizeControllerBase
     [HttpPost(ApiPath.SaveDocInf)]
     public ActionResult<Response<SaveDocInfResponse>> SaveDocInf([FromQuery] SaveDocInfRequest request)
     {
+        if (Request.ContentLength > 30000000)
+        {
+            return Ok(new Response<SaveDocInfResponse>()
+            {
+                Message = "Invalid file size!",
+                Status = (int)SaveDocInfStatus.InvalidSizeFile
+            });
+        }
         var input = new SaveDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo, request.CategoryCd, request.FileName, request.DisplayFileName, Request.Body);
         var output = _bus.Handle(input);
 

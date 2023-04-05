@@ -255,6 +255,7 @@ using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -339,6 +340,7 @@ using UseCase.Receipt.SaveReceiptEdit;
 using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
@@ -582,6 +584,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfFamily, GetListRaiinInfInteractorOfFamily>();
             busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
+            busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -670,6 +673,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
+            busBuilder.RegisterUseCase<GetTrialAccountingInputData, GetTrialAccountingInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

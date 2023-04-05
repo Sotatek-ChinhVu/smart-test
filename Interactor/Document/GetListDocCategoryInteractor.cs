@@ -42,11 +42,10 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
             var listDocumentTemplate = GetListDocumentTemplate(listDocCategory.Select(item => item.CategoryCd).ToList());
             var listDocInf = GetListDocInf(inputData.HpId, inputData.PtId, ptInf != null ? ptInf.PtNum : 0);
             return new GetListDocCategoryOutputData(
-                                                        listCategory,
-                                                        listDocumentTemplate,
-                                                        listDocInf,
-                                                        GetListDocCategoryStatus.Successed
-                                                    );
+                       listCategory,
+                       listDocumentTemplate,
+                       listDocInf,
+                       GetListDocCategoryStatus.Successed);
         }
         finally
         {

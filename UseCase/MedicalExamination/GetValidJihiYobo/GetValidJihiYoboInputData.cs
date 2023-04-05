@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.GetValidJihiYobo
 {
     public class GetValidJihiYoboInputData : IInputData<GetValidJihiYoboOutputData>
     {
-        public GetValidJihiYoboInputData(int hpId, int syosaiKbn, int sinDate, List<string> itemCds)
+        public GetValidJihiYoboInputData(int hpId, int sinDate, int syosaiKbn, List<string> itemCds)
         {
             HpId = hpId;
             SyosaiKbn = syosaiKbn;

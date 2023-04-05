@@ -10,6 +10,7 @@ using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -125,26 +126,109 @@ namespace Infrastructure.Repositories
 
 
 
-        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId, byte status)
+        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId, byte modeSaveData)
         {
             var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
 
             if (raiinInf != null)
             {
-                raiinInf.Status = status != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
+                var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
+                raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
+                    //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;
                 raiinInf.SanteiKbn = santeiKbn;
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
-                raiinInf.UketukeTime = uketukeTime;
-                raiinInf.SinEndTime = sinEndTime;
-                raiinInf.SinStartTime = sinStartTime;
+                raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
+                raiinInf.SinEndTime = string.IsNullOrEmpty(preProcess.sinEndTime) ? raiinInf.SinEndTime : preProcess.sinEndTime;
+                raiinInf.SinStartTime = string.IsNullOrEmpty(preProcess.sinStartTime) ? raiinInf.SinStartTime : preProcess.sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
+        }
+
+        private (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
+        {
+            string sinStartTimeReCalculate = "", sinEndTimeReCalculate = "", uketukeTimeReCalculate = "";
+            int statusRecalculate = 0;
+
+            if (modeSaveData == (byte)ModeSaveData.KeisanSave)
+            {
+                if (status != RaiinState.Waiting && status != RaiinState.Settled)
+                {
+                    // Update mode
+                    if (status >= RaiinState.TempSave)
+                    {
+                        //診察終了時間がなければ
+                        if (string.IsNullOrEmpty(sinEndTime) || sinEndTime == "0")
+                        {
+                            sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        }
+                    }
+                    // Add new mode
+                    else
+                    {
+                        sinStartTimeReCalculate = sinStartTime;
+                        sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        // 来院時間がないときは更新する
+                        if (string.IsNullOrEmpty(uketukeTime) || uketukeTime == "0")
+                        {
+                            uketukeTimeReCalculate = sinStartTime;
+                        }
+                    }
+
+                    //if (status != RaiinState.Calculate)
+                    //{
+                    //    eventCode = EventCode.UpdateToCalculate;
+                    //}
+                    statusRecalculate = RaiinState.Calculate;
+                }
+            }
+            // 保存
+            else if (modeSaveData == (byte)ModeSaveData.KaikeiSave)
+            {
+                // Update mode
+                if (status >= RaiinState.TempSave)
+                {
+                    if (status <= RaiinState.Waiting)
+                    {
+                        //if (RaiinInfModel.Status != RaiinState.Waiting)
+                        //{
+                        //    eventCode = EventCode.UpdateToWaiting;
+                        //}
+                        statusRecalculate = RaiinState.Waiting;
+                    }
+                    if (status == RaiinState.Calculate || status == RaiinState.Waiting)
+                    {
+                        //診察終了時間がなければ
+                        if (string.IsNullOrEmpty(sinEndTime) || sinEndTime == "0")
+                        {
+                            sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        }
+                    }
+                }
+                // Add new mode
+                else
+                {
+                    sinStartTimeReCalculate = sinStartTime;
+                    sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow()); ;
+                    // 来院時間がないときは更新する
+                    if (string.IsNullOrEmpty(uketukeTime) || uketukeTime == "0")
+                    {
+                        uketukeTimeReCalculate = sinStartTime;
+                    }
+                    //if (status != RaiinState.Waiting)
+                    //{
+                    //    eventCode = EventCode.UpdateToWaiting;
+                    //}
+                    statusRecalculate = RaiinState.Waiting;
+                }
+            }
+
+            return new(statusRecalculate, sinEndTimeReCalculate, sinStartTimeReCalculate, uketukeTimeReCalculate);
         }
 
         private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)

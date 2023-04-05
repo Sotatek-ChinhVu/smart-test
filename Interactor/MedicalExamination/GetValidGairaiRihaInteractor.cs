@@ -32,7 +32,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidSinDate);
                 }
-                if (inputData.SyosaiKbn <= 0)
+                if (inputData.SyosaiKbn < 0)
                 {
                     return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidSyosaiKbn);
                 }
