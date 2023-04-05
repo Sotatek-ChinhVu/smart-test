@@ -82,12 +82,8 @@ public class ValidateFamilyList : IValidateFamilyList
             {
                 return ValidateFamilyListStatus.InvalidBirthday;
             }
-
             // check duplicate family member
-            if (onlyFamlilyList.Any(item => (familyItem.FamilyId == 0 || item.FamilyId != familyItem.FamilyId)
-                                            && item.PtId == familyItem.PtId
-                                            && item.FamilyPtId != 0
-                                            && item.FamilyPtId == familyItem.FamilyPtId)
+            if (onlyFamlilyList.Select(item => item.FamilyPtId).Distinct().Count(item => item == familyItem.PtId) > 1
                 || listFamily.Count(item => item.PtId == familyItem.PtId
                                             && item.FamilyPtId != 0
                                             && item.FamilyPtId == familyItem.FamilyPtId) > 1)
