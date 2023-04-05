@@ -20,7 +20,7 @@ namespace Interactor.Accounting
             try
             {
                 //Get Raiin Inf
-                var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo).ToList();
+                var raiinInf = _accountingRepository.GetListRaiinInf(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, false, true).ToList();
 
                 if (!raiinInf.Any())
                     return new GetWarningMemoOutputData(new(), GetWarningMemoStatus.NoData);

@@ -1,15 +1,15 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Models.SpecialNote.SummaryInf;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.SpecialNote.Save
 {
     public class SaveSpecialNoteInputData : IInputData<SaveSpecialNoteOutputData>
     {
-        public SaveSpecialNoteInputData(int hpId, int ptId, SummaryInfModel summaryTab, ImportantNoteModel importantNoteTab, PatientInfoItem patientInfoTab, int userId)
+        public SaveSpecialNoteInputData(int hpId, long ptId, int sinDate, SummaryInfItem summaryTab, ImportantNoteModel importantNoteTab, PatientInfoItem patientInfoTab, int userId)
         {
             HpId = hpId;
             PtId = ptId;
+            SinDate = sinDate;
             SummaryTab = summaryTab;
             ImportantNoteTab = importantNoteTab;
             PatientInfoTab = patientInfoTab;
@@ -17,8 +17,9 @@ namespace UseCase.SpecialNote.Save
         }
 
         public int HpId { get; private set; }
-        public int PtId { get; private set; }
-        public SummaryInfModel SummaryTab { get; private set; }
+        public long PtId { get; private set; }
+        public int SinDate { get; private set; }
+        public SummaryInfItem SummaryTab { get; private set; }
 
         public ImportantNoteModel ImportantNoteTab { get; private set; }
 

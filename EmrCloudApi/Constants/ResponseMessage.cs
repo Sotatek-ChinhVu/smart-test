@@ -945,6 +945,8 @@
         public static readonly string InvalidSeikyuYm = "Invalid SeikyuYm!";
         public static readonly string InvalidNissuItem = "Invalid NissuItem!";
         public static readonly string InvalidTokkiItem = "Invalid TokkiItem!";
+        public static readonly string InvalidFusenKbn = "Invalid FusenKbn!";
+        public static readonly string InvalidStatusKbn = "Invalid StatusKbn!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";

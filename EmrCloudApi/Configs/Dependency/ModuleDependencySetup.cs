@@ -216,6 +216,7 @@ using UseCase.InsuranceMst.GetMasterDetails;
 using UseCase.InsuranceMst.GetSelectMaintenance;
 using UseCase.InsuranceMst.SaveHokenMaster;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
+using UseCase.InsuranceMst.SaveOrdInsuranceMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
 using UseCase.Ka.GetKaCodeList;
@@ -255,6 +256,7 @@ using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -322,6 +324,7 @@ using UseCase.Receipt.GetReceCmt;
 using UseCase.Receipt.GetReceHenReason;
 using UseCase.Receipt.GetReceiCheckList;
 using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.GetSinDateRaiinInfList;
 using UseCase.Receipt.GetSinMeiInMonthList;
 using UseCase.Receipt.MedicalDetail;
@@ -335,8 +338,10 @@ using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
+using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
@@ -582,6 +587,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListRaiinInfInputDataOfFamily, GetListRaiinInfInteractorOfFamily>();
             busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
+            busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -670,6 +676,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
+            busBuilder.RegisterUseCase<GetTrialAccountingInputData, GetTrialAccountingInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -684,6 +691,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteHokenMasterInputData, DeleteHokenMasterInteractor>();
             busBuilder.RegisterUseCase<GetInfoCloneInsuranceMstInputData, GetInfoCloneInsuranceMstInteractor>();
             busBuilder.RegisterUseCase<SaveHokenMasterInputData, SaveHokenMasterInteractor>();
+            busBuilder.RegisterUseCase<SaveOrdInsuranceMstInputData, SaveOrdInsuranceMstInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
@@ -928,6 +936,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveReceiptEditInputData, SaveReceiptEditInteractor>();
             busBuilder.RegisterUseCase<GetSinDateRaiinInfListInputData, GetSinDateRaiinInfListInteractor>();
             busBuilder.RegisterUseCase<GetReceByomeiCheckingInputData, GetReceByomeiCheckingInteractor>();
+            busBuilder.RegisterUseCase<SaveReceStatusInputData, SaveReceStatusInteractor>();
+            busBuilder.RegisterUseCase<GetReceStatusInputData, GetReceStatusInteractor>();
 
             //ReceSeikyu
             busBuilder.RegisterUseCase<GetListReceSeikyuInputData, GetListReceSeikyuInteractor>();

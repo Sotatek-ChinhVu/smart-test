@@ -34,6 +34,8 @@ using UseCase.Receipt.SaveListSyoukiInf;
 using UseCase.Receipt.SaveReceCheckCmtList;
 using UseCase.Receipt.SaveReceCheckOpt;
 using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.Receipt.SaveReceStatus;
+using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 
@@ -347,7 +349,6 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetReceByomeiCheckingResponse>>(presenter.Result);
     }
 
-
     [HttpGet(ApiPath.GetSinMeiInMonthList)]
     public ActionResult<Response<GetMedicalDetailsResponse>> GetSinMeiInMonthList([FromQuery] GetSinMeiInMonthListRequest request)
     {
@@ -360,6 +361,18 @@ public class ReceiptController : AuthorizeControllerBase
         return new ActionResult<Response<GetMedicalDetailsResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetReceStatus)]
+    public ActionResult<Response<GetReceStatusResponse>> GetReceStatus([FromQuery] GetReceStatusRequest request)
+    {
+        var input = new GetReceStatusInputData(HpId, request.SeikyuYm, request.PtId, request.SinYm, request.HokenId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetReceStatusPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetReceStatusResponse>>(presenter.Result);
+    }
+
     [HttpPost(ApiPath.SaveReceiptEdit)]
     public ActionResult<Response<SaveReceiptEditResponse>> SaveReceiptEdit([FromBody] SaveReceiptEditRequest request)
     {
@@ -370,6 +383,28 @@ public class ReceiptController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveReceiptEditResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveReceStatus)]
+    public ActionResult<Response<SaveReceStatusResponse>> SaveReceStatus([FromBody] SaveReceStatusRequest request)
+    {
+        var input = new SaveReceStatusInputData(HpId, UserId, new ReceStatusItem(
+                                                                  request.PtId,
+                                                                  request.SeikyuYm,
+                                                                  request.HokenId,
+                                                                  request.SinYm,
+                                                                  request.FusenKbn,
+                                                                  request.IsPaperRece,
+                                                                  false,
+                                                                  request.StatusKbn,
+                                                                  request.IsPrechecked));
+
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveReceStatusPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveReceStatusResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.CreateUKEFile)]

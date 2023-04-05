@@ -13,6 +13,14 @@ namespace Interactor.CalculateService
         /// <param name="input">object json</param>
         /// <returns></returns>
         Task<CalcultateCustomerResponse<T>> RunCaculationPostAsync<T>(TypeCalculate type, object input);
+
+        /// <summary>
+        /// Run not need get response
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task RunCaculationPostAsync(TypeCalculate type, object input);
     }
 
     public class CalcultateCustomerResponse<T>

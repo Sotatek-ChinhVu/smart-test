@@ -34,24 +34,11 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
                 return new SaveReceCmtListOutputData(responseValidate);
             }
 
-            var isHaveHeaderFreeCmt = inputData.ReceCmtList.Any(item => item.CmtKbn == ReceCmtKbn.Header && item.CmtSbt == ReceCmtSbt.FreeCmt);
-            var isHaveFooterFreeCmt = inputData.ReceCmtList.Any(item => item.CmtKbn == ReceCmtKbn.Footer && item.CmtSbt == ReceCmtSbt.FreeCmt);
-            if (isHaveHeaderFreeCmt)
-            {
-                var receCmtDeletedList = listReceCmtDB.Where(item => item.CmtKbn == ReceCmtKbn.Header && item.CmtSbt == ReceCmtSbt.FreeCmt)
-                                                      .Select(item => new ReceCmtItem(item, true))
-                                                      .ToList();
-                inputData.ReceCmtList.AddRange(receCmtDeletedList);
-            }
+            var receCmtDeletedList = listReceCmtDB.Where(item => (item.CmtKbn == ReceCmtKbn.Header || item.CmtKbn == ReceCmtKbn.Footer) && item.CmtSbt == ReceCmtSbt.FreeCmt)
+                                                  .Select(item => new ReceCmtItem(item, true))
+                                                  .ToList();
+            inputData.ReceCmtList.AddRange(receCmtDeletedList);
 
-            if (isHaveFooterFreeCmt)
-            {
-                var receCmtDeletedList = listReceCmtDB.Where(item => item.CmtKbn == ReceCmtKbn.Footer && item.CmtSbt == ReceCmtSbt.FreeCmt)
-                                                      .Select(item => new ReceCmtItem(item, true))
-                                                      .ToList();
-                inputData.ReceCmtList.AddRange(receCmtDeletedList);
-            }
-            
             var listReceCmtModel = inputData.ReceCmtList.Select(item => ConvertToReceCmtModel(inputData.PtId, inputData.SinYm, inputData.HokenId, item))
                                                         .ToList();
 
@@ -83,10 +70,6 @@ public class SaveReceCmtListInteractor : ISaveReceCmtListInputPort
         else if (inputData.HokenId < 0 || !_insuranceRepository.CheckExistHokenId(inputData.HokenId))
         {
             return SaveReceCmtListStatus.InvalidHokenId;
-        }
-        else if (!inputData.ReceCmtList.Any())
-        {
-            return SaveReceCmtListStatus.Failed;
         }
         return ValidateReceCmtItem(inputData, listReceCmtDB);
     }

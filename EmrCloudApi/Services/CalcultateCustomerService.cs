@@ -36,5 +36,13 @@ namespace EmrCloudApi.Services
                 return new CalcultateCustomerResponse<T>(Activator.CreateInstance<T>(), HttpStatusCode.BadRequest, false);
             }
         }
+
+
+        public async Task RunCaculationPostAsync(TypeCalculate type, object input)
+        {
+            StringContent content = new StringContent(JsonConvert.SerializeObject(input), Encoding.UTF8, "application/json");
+            HttpResponseMessage result = await _httpClient.PostAsync(type.GetDescription(), content);
+            result.EnsureSuccessStatusCode();
+        }
     }
 }
