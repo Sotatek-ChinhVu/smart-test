@@ -1573,5 +1573,23 @@ namespace Infrastructure.Repositories
                 .OrderBy(item => item.SinDate)
                 .ToList();
         }
+
+        public List<KensaCenterMstModel> GetListKensaCenterMst(int hpId)
+        {
+            var kensaCenterMstModels = NoTrackingDataContext.KensaCenterMsts.Where(u => u.HpId == hpId);
+            if (!kensaCenterMstModels.Any())
+            {
+                return new();
+            }
+
+            return kensaCenterMstModels.Select(x => new KensaCenterMstModel(
+                                                        x.Id,
+                                                        x.HpId,
+                                                        x.CenterCd ?? string.Empty,
+                                                        x.CenterName ?? string.Empty,
+                                                        x.PrimaryKbn,
+                                                        x.SortNo
+                                        )).ToList();
+        }
     }
 }

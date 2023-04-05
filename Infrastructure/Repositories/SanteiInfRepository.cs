@@ -350,6 +350,18 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         }
         return 0;
     }
+
+    public List<SanteiInfDetailModel> GetListAutoSanteiMst(int hpId)
+    {
+        var autoSanteiMsts = NoTrackingDataContext.AutoSanteiMsts.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate).ToList();
+        return autoSanteiMsts.Select(x => new SanteiInfDetailModel(
+                                                x.Id,
+                                                x.ItemCd,
+                                                x.StartDate,
+                                                x.EndDate
+                              )).ToList();
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

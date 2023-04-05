@@ -30,11 +30,24 @@ public class SanteiInfDetailModel
         IsDeleted = isDeleted;
     }
 
+    public SanteiInfDetailModel(long id,  string itemCd, int startDate, int endDate)
+    {
+        Id = id;
+        ItemCd = itemCd;
+        StartDate = startDate;
+        EndDate = endDate;
+        Byomei = string.Empty;
+        HosokuComment = string.Empty;
+        Comment = string.Empty;
+    }
+
     public long Id { get; private set; }
 
     public long PtId { get; private set; }
 
     public string ItemCd { get; private set; }
+
+    public int StartDate { get; private set; }
 
     public int EndDate { get; private set; }
 

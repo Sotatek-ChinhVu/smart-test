@@ -23,4 +23,10 @@ public interface ISystemConfRepository : IRepositoryBase
     Dictionary<string, string> GetRoudouMst();
 
     List<HpInfModel> GetListHpInf(int hpId);
+
+    List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, int menuGrp);
+
+    List<SystemConfMenuModel> GetListSystemConfMenuOnly(int hpId, int menuGrp);
+
+    List<string> GetListCenterCd(int hpId);
 }

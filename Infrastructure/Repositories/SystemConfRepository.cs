@@ -140,7 +140,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                  systemConfMenu.IsValue,
                  systemConfMenu.ParamMaxLength,
 
-                 systemConfItem == null ? new List<SystemConfItemModel>() :
+                 !systemConfItem.Any() ? new() :
                  systemConfItem.Select(x =>
                                         new SystemConfItemModel(
                                             x.HpId,
@@ -153,7 +153,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                                             x.ParamMax
                                             )).ToList(),
 
-                 systemGeneration == null ? new List<SystemGenerationConfModel>() :
+                 !systemGeneration.Any() ? new() :
                  systemGeneration.Select(y =>
                                           new SystemGenerationConfModel(
                                               y.Id,
@@ -205,4 +205,120 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                                                  h.OtherContacts ?? string.Empty))
                       .ToList();
     }
+
+    public List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, int menuGrp)
+    {
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp && u.IsVisible == 1);
+        var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
+        var systemSettings = NoTrackingDataContext.SystemConfs.Where(u => u.HpId == hpId);
+        var systemConfs = (from menu in systemConfMenus
+                           join item in systemConfItems on menu.MenuId equals item.MenuId into items
+                           join setting in systemSettings on new { menu.GrpCd, menu.GrpEdaNo } equals new { setting.GrpCd, setting.GrpEdaNo }
+                           into settingList
+                           select ConvertToSystemConfModel(menu, items.ToList(), settingList.FirstOrDefault() ?? new())
+                          ).ToList();
+
+        var hpInfs = NoTrackingDataContext.HpInfs.Where(p => p.HpId == hpId).OrderByDescending(p => p.StartDate).FirstOrDefault();
+        var prefCD = 0;
+        if (hpInfs != null) prefCD = hpInfs.PrefNo;
+
+        systemConfs.RemoveAll(x => x.PrefNo != 0 && prefCD != x.PrefNo);
+
+        return systemConfs;
+    }
+
+    private SystemConfMenuModel ConvertToSystemConfModel(SystemConfMenu systemConfMenu, List<SystemConfItem> systemConfItem, SystemConf systemConf)
+    {
+        return new SystemConfMenuModel
+            (
+                 systemConfMenu.HpId,
+                 systemConfMenu.MenuId,
+                 systemConfMenu.GrpCd,
+                 systemConfMenu.SortNo,
+                 systemConfMenu.MenuName ?? string.Empty,
+                 systemConfMenu.GrpCd,
+                 systemConfMenu.GrpEdaNo,
+                 systemConfMenu.PathGrpCd,
+                 systemConfMenu.IsParam,
+                 systemConfMenu.ParamMask,
+                 systemConfMenu.ParamType,
+                 systemConfMenu.ParamHint ?? string.Empty,
+                 systemConfMenu.ValMin,
+                 systemConfMenu.ValMax,
+                 systemConfMenu.ParamMin,
+                 systemConfMenu.ParamMax,
+                 systemConfMenu.ItemCd ?? string.Empty,
+                 systemConfMenu.PrefNo,
+                 systemConfMenu.IsVisible,
+                 systemConfMenu.ManagerKbn,
+                 systemConfMenu.IsValue,
+                 systemConfMenu.ParamMaxLength,
+
+                 !systemConfItem.Any() ? new() :
+                 systemConfItem.Select(x =>
+                                        new SystemConfItemModel(
+                                            x.HpId,
+                                            x.MenuId,
+                                            x.SeqNo,
+                                            x.SortNo,
+                                            x.ItemName ?? string.Empty,
+                                            x.Val,
+                                            x.ParamMin,
+                                            x.ParamMax
+                                            )).ToList(),
+
+                 new SystemConfModel(systemConf.GrpCd,
+                                     systemConf.GrpEdaNo,
+                                     systemConf.Val,
+                                     systemConf.Param ?? string.Empty,
+                                     systemConf.Biko ?? string.Empty)
+
+            );
+    }
+
+    public List<SystemConfMenuModel> GetListSystemConfMenuOnly(int hpId, int menuGrp)
+    {
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu
+            .Where(u => u.HpId == hpId && u.MenuGrp == menuGrp)
+            .OrderBy(u => u.SortNo)
+            .ToList();
+        return systemConfMenus.Select(x => new SystemConfMenuModel(
+                                             x.HpId,
+                                             x.MenuId,
+                                             x.GrpCd,
+                                             x.SortNo,
+                                             x.MenuName ?? string.Empty,
+                                             x.GrpCd,
+                                             x.GrpEdaNo,
+                                             x.PathGrpCd,
+                                             x.IsParam,
+                                             x.ParamMask,
+                                             x.ParamType,
+                                             x.ParamHint ?? string.Empty,
+                                             x.ValMin,
+                                             x.ValMax,
+                                             x.ParamMin,
+                                             x.ParamMax,
+                                             x.ItemCd ?? string.Empty,
+                                             x.PrefNo,
+                                             x.IsVisible,
+                                             x.ManagerKbn,
+                                             x.IsValue,
+                                             x.ParamMaxLength
+                               )).ToList();
+    }
+
+    public List<string> GetListCenterCd(int hpId)
+    {
+        var centerCds = NoTrackingDataContext.KensaInfs.Where(u => u.HpId == hpId)
+                                                             .Select(item => item.CenterCd ?? string.Empty)
+                                                             .Distinct()
+                                                             .ToList();
+        if (centerCds.Any())
+        {
+            return new();
+        }
+        return centerCds;
+    }
+
 }
