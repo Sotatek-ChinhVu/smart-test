@@ -177,11 +177,11 @@ namespace Domain.Models.Insurance
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
-                int SinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
+                int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
                 foreach (ConfirmDateModel ptHokenCheck in isValidHokenChecks)
                 {
                     int currentConfirmYM = ptHokenCheck.ConfirmDate;
-                    if (currentConfirmYM == SinYM)
+                    if (currentConfirmYM == sinYM)
                     {
                         return true;
                     }
