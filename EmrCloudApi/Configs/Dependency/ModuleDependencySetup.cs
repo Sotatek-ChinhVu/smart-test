@@ -255,6 +255,7 @@ using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -672,6 +673,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
+            busBuilder.RegisterUseCase<GetTrialAccountingInputData, GetTrialAccountingInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

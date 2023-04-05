@@ -1672,7 +1672,7 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// 外来リハ初再診チェック
         /// </summary>
-        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<OrdInfModel> allOdrInf)
+        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
         {
             var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                   p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 0)?.Val ?? 0;
@@ -1728,15 +1728,12 @@ namespace Infrastructure.Repositories
             {
                 //外来リハビリテーション診療料がオーダーされているか？
                 string rihaItemName = string.Empty;
-                foreach (var odrInf in allOdrInf)
+                foreach (var allOdrInfItem in allOdrInfItems)
                 {
-                    foreach (var detail in odrInf.OrdInfDetails)
+                    if (allOdrInfItem.Item1 == ItemCdConst.IgakuGairaiRiha1 || allOdrInfItem.Item1 == ItemCdConst.IgakuGairaiRiha2)
                     {
-                        if (detail.ItemCd == ItemCdConst.IgakuGairaiRiha1 || detail.ItemCd == ItemCdConst.IgakuGairaiRiha2)
-                        {
-                            rihaItemName = detail.ItemName;
-                            break;
-                        }
+                        rihaItemName = allOdrInfItem.Item2;
+                        break;
                     }
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
@@ -1753,7 +1750,7 @@ namespace Infrastructure.Repositories
         /// 予防注射再診チェック
         /// </summary>
         /// <returns></returns>
-        public (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<OrdInfModel> allOrder)
+        public (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<string> itemCds)
         {
             var systemSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                   p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 2)?.Val ?? 0;
@@ -1762,54 +1759,49 @@ namespace Infrastructure.Repositories
 
             if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
             {
-                var itemCds = new List<string>();
-                foreach (var item in allOrder)
-                {
-                    itemCds.AddRange(item.OrdInfDetails.Select(o => o.ItemCd));
-                }
+                itemCds = itemCds.Distinct().ToList();
+
                 var tenMstItems = NoTrackingDataContext.TenMsts.Where(p =>
                p.HpId == hpId &&
                p.StartDate <= sinDate &&
                p.EndDate >= sinDate &&
                itemCds.Contains(p.ItemCd));
-                foreach (var odrInf in allOrder)
+                foreach (var itemCd in itemCds)
                 {
                     isExistYoboItemOnly = true;
                     bool hasItemDetail = false;
 
-                    foreach (var detail in odrInf.OrdInfDetails)
+                    if (!string.IsNullOrEmpty(itemCd) && !IsCommentMaster(itemCd))
                     {
-                        if (!string.IsNullOrEmpty(detail.ItemCd) && !detail.IsCommentMaster)
+                        hasItemDetail = true;
+                        var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == itemCd) ?? new();
+                        if (tenMstItem != null)
                         {
-                            hasItemDetail = true;
-                            var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == detail.ItemCd) ?? new();
-                            if (tenMstItem != null)
+                            if (tenMstItem.JihiSbt == 0)
                             {
-                                if (tenMstItem.JihiSbt == 0)
-                                {
-                                    isExistYoboItemOnly = false;
-                                    break;
-                                }
-                                var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
-                                                .FirstOrDefault(i => i.HpId == hpId
-                                                && i.IsDeleted == DeleteTypes.None
-                                                && i.JihiSbt == tenMstItem.JihiSbt);
-                                if (jihiSbtItem != null)
-                                {
-                                    if (jihiSbtItem.IsYobo != 1)
-                                    {
-                                        isExistYoboItemOnly = false;
-                                        break;
-                                    }
-                                }
-                                else
+                                isExistYoboItemOnly = false;
+                                break;
+                            }
+                            var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
+                                            .FirstOrDefault(i => i.HpId == hpId
+                                            && i.IsDeleted == DeleteTypes.None
+                                            && i.JihiSbt == tenMstItem.JihiSbt);
+                            if (jihiSbtItem != null)
+                            {
+                                if (jihiSbtItem.IsYobo != 1)
                                 {
                                     isExistYoboItemOnly = false;
                                     break;
                                 }
                             }
+                            else
+                            {
+                                isExistYoboItemOnly = false;
+                                break;
+                            }
                         }
                     }
+
                     if (!hasItemDetail) // Contain comment only
                     {
                         isExistYoboItemOnly = false;
@@ -1822,6 +1814,21 @@ namespace Infrastructure.Repositories
             }
 
             return (systemSetting, isExistYoboItemOnly);
+        }
+
+        private bool IsCommentMaster(string itemCd)
+        {
+            return !string.IsNullOrEmpty(itemCd) && (itemCd.StartsWith(ItemCdConst.Comment820Pattern) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment830Pattern) || itemCd.StartsWith(ItemCdConst.Comment831Pattern)
+
+                || itemCd.StartsWith(ItemCdConst.Comment850Pattern) || itemCd.StartsWith(ItemCdConst.Comment851Pattern) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment852Pattern) || itemCd.StartsWith(ItemCdConst.Comment853Pattern) ||
+
+                (itemCd.StartsWith(ItemCdConst.Comment840Pattern) && itemCd != ItemCdConst.GazoDensibaitaiHozon) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment842Pattern) || itemCd.StartsWith(ItemCdConst.Comment880Pattern));
         }
 
         private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)

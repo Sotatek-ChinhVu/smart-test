@@ -4,7 +4,6 @@ using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.InsuranceList;
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.Requests.Family;
 using EmrCloudApi.Requests.Insurance;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
@@ -14,7 +13,6 @@ using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Family;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
@@ -28,7 +26,6 @@ using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetValidGairaiRiha;
 using UseCase.MedicalExamination.GetValidJihiYobo;
-using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -288,67 +285,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.GetValidGairaiRiha)]
         public ActionResult<Response<GetValidGairaiRihaResponse>> GetValidGairaiRiha([FromBody] GetValidGairaiRihaRequest request)
         {
-            var input = new GetValidGairaiRihaInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInf.Select(
-                o => new OdrInfItemInputData(
-                            HpId,
-                            o.RaiinNo,
-                            o.RpNo,
-                            o.RpEdaNo,
-                            o.PtId,
-                            o.SinDate,
-                            o.HokenPid,
-                            o.OdrKouiKbn,
-                            o.RpName,
-                            o.InoutKbn,
-                            o.SikyuKbn,
-                            o.SyohoSbt,
-                            o.SanteiKbn,
-                            o.TosekiKbn,
-                            o.DaysCnt,
-                            o.SortNo,
-                            o.Id,
-                            o.OrdInfDetails.Select(
-                                    od => new OdrInfDetailItemInputData(
-                                            HpId,
-                                            od.RaiinNo,
-                                            od.RpNo,
-                                            od.RpEdaNo,
-                                            od.RowNo,
-                                            od.PtId,
-                                            od.SinDate,
-                                            od.SinKouiKbn,
-                                            od.ItemCd,
-                                            od.ItemName,
-                                            od.Suryo,
-                                            od.UnitName,
-                                            od.UnitSbt,
-                                            od.TermVal,
-                                            od.KohatuKbn,
-                                            od.SyohoKbn,
-                                            od.SyohoLimitKbn,
-                                            od.DrugKbn,
-                                            od.YohoKbn,
-                                            od.Kokuji1,
-                                            od.Kokuji2,
-                                            od.IsNodspRece,
-                                            od.IpnCd,
-                                            od.IpnName,
-                                            od.JissiKbn,
-                                            od.JissiDate,
-                                            od.JissiId,
-                                            od.JissiMachine,
-                                            od.ReqCd,
-                                            od.Bunkatu,
-                                            od.CmtName,
-                                            od.CmtOpt,
-                                            od.FontColor,
-                                            od.CommentNewline
-                                        )
-                                ).ToList(),
-                            o.IsDeleted
-                        )
-                ).ToList()
-                );
+            var input = new GetValidGairaiRihaInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInfItems.Select(a => new Tuple<string, string>(a.ItemCd, a.ItemName)).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new GetValidGairaiRihaPresenter();
@@ -358,69 +295,9 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.GetValidJihiYobo)]
-        public ActionResult<Response<GetValidJihiYoboResponse>> GetValidJihiYobo([FromBody] GetValidGairaiRihaRequest request)
+        public ActionResult<Response<GetValidJihiYoboResponse>> GetValidJihiYobo([FromBody] GetValidJihiYoboRequest request)
         {
-            var input = new GetValidJihiYoboInputData(HpId, request.SinDate, request.SyosaiKbn, request.AllOdrInf.Select(
-                o => new OdrInfItemInputData(
-                            HpId,
-                            o.RaiinNo,
-                            o.RpNo,
-                            o.RpEdaNo,
-                            o.PtId,
-                            o.SinDate,
-                            o.HokenPid,
-                            o.OdrKouiKbn,
-                            o.RpName,
-                            o.InoutKbn,
-                            o.SikyuKbn,
-                            o.SyohoSbt,
-                            o.SanteiKbn,
-                            o.TosekiKbn,
-                            o.DaysCnt,
-                            o.SortNo,
-                            o.Id,
-                            o.OrdInfDetails.Select(
-                                    od => new OdrInfDetailItemInputData(
-                                            HpId,
-                                            od.RaiinNo,
-                                            od.RpNo,
-                                            od.RpEdaNo,
-                                            od.RowNo,
-                                            od.PtId,
-                                            od.SinDate,
-                                            od.SinKouiKbn,
-                                            od.ItemCd,
-                                            od.ItemName,
-                                            od.Suryo,
-                                            od.UnitName,
-                                            od.UnitSbt,
-                                            od.TermVal,
-                                            od.KohatuKbn,
-                                            od.SyohoKbn,
-                                            od.SyohoLimitKbn,
-                                            od.DrugKbn,
-                                            od.YohoKbn,
-                                            od.Kokuji1,
-                                            od.Kokuji2,
-                                            od.IsNodspRece,
-                                            od.IpnCd,
-                                            od.IpnName,
-                                            od.JissiKbn,
-                                            od.JissiDate,
-                                            od.JissiId,
-                                            od.JissiMachine,
-                                            od.ReqCd,
-                                            od.Bunkatu,
-                                            od.CmtName,
-                                            od.CmtOpt,
-                                            od.FontColor,
-                                            od.CommentNewline
-                                        )
-                                ).ToList(),
-                            o.IsDeleted
-                        )
-                ).ToList()
-                );
+            var input = new GetValidJihiYoboInputData(HpId, request.SinDate, request.SyosaiKbn, request.ItemCds);
             var output = _bus.Handle(input);
 
             var presenter = new GetValidJihiYoboPresenter();
