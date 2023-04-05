@@ -23,7 +23,7 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
                 return new UpsertTodoInfOutputData(validateResult);
             }
 
-            if (input.TodoInfs == null && input?.TodoInfs.Count == 0)
+            if (input.TodoInfs.Count == 0)
             {
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InputNoData);
             }
@@ -34,19 +34,13 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidTodoInf);
             }
 
-            var checkInputTodoEdaNo = input.TodoInfs.Where(x => x.TodoEdaNo > 0).Select(x => x.TodoNo);
-            if (checkInputTodoEdaNo.Count() != checkInputTodoEdaNo.Distinct().Count())
-            {
-                return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidTodoInf);
-            }
-
             var checkInputTodoPtID = input.TodoInfs.Where(x => x.PtId > 0).Select(x => x.PtId);
             if (checkInputTodoPtID.Count() != checkInputTodoPtID.Distinct().Count())
             {
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidTodoInf);
             }
 
-            if (_todoInfRepository.Check(input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => new Tuple<int, int, long>(x.TodoNo, x.TodoEdaNo, x.PtId)).ToList()))
+            if (_todoInfRepository.CheckExist(input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => new Tuple<int, int, long>(x.TodoNo, x.TodoEdaNo, x.PtId)).ToList()))
             {
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidExistedInput);
             }

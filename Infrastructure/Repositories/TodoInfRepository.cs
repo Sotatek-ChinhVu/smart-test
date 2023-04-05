@@ -86,7 +86,7 @@ namespace Infrastructure.Repositories
         /// </summary>
         /// <param name="inputs"></param>
         /// <returns></returns>
-        public bool Check(List<Tuple<int, int, long>> inputs)
+        public bool CheckExist(List<Tuple<int, int, long>> inputs)
         {
             inputs = inputs.Distinct().ToList();
             var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 ==  t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
