@@ -11,7 +11,7 @@ namespace EmrCloudApi.Presenters.SytemConf
 
         public void Complete(GetSystemSettingOutputData outputData)
         {
-            Result.Data = new GetSystemSettingResponse(outputData.SystemConfMenus);
+            Result.Data = new GetSystemSettingResponse(outputData.RoudouMst, outputData.HpInfs, outputData.SystemConfMenus);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

@@ -16,9 +16,11 @@ namespace Interactor.SystemConf
         {
             try
             {
+                var roudouMst = _systemConfRepository.GetRoudouMst();
+                var hpInfs = _systemConfRepository.GetListHpInf(inputData.HpId);
                 var systemSetting = _systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, 2000);
 
-                return new GetSystemSettingOutputData(systemSetting, GetSystemSettingStatus.Successed);
+                return new GetSystemSettingOutputData(roudouMst, hpInfs, systemSetting, GetSystemSettingStatus.Successed);
             }
             finally
             {

@@ -1,4 +1,5 @@
-﻿using Domain.Models.SystemConf;
+﻿using Domain.Models.HpInf;
+using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
 using Infrastructure.Base;
@@ -168,4 +169,40 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             );
     }
 
+    public Dictionary<string, string> GetRoudouMst()
+    {
+        var result = new Dictionary<string, string>();
+        List<RoudouMst> RoudouMsts = NoTrackingDataContext.RoudouMsts.ToList();
+        foreach (var item in RoudouMsts)
+        {
+            result.Add(item.RoudouCd, item.RoudouName ?? string.Empty);
+        }
+
+        return result;
+    }
+
+    public List<HpInfModel> GetListHpInf(int hpId)
+    {
+        var hpInfs = NoTrackingDataContext.HpInfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate).ToList();
+        if (hpInfs == null)
+        {
+            return new();
+        }
+
+        return hpInfs.Select(h => new HpInfModel(h.HpId,
+                                                 h.StartDate,
+                                                 h.HpCd ?? string.Empty,
+                                                 h.RousaiHpCd ?? string.Empty,
+                                                 h.HpName ?? string.Empty,
+                                                 h.ReceHpName ?? string.Empty,
+                                                 h.KaisetuName ?? string.Empty,
+                                                 h.PostCd ?? string.Empty,
+                                                 h.PrefNo,
+                                                 h.Address1 ?? string.Empty,
+                                                 h.Address2 ?? string.Empty,
+                                                 h.Tel ?? string.Empty,
+                                                 h.FaxNo ?? string.Empty,
+                                                 h.OtherContacts ?? string.Empty))
+                      .ToList();
+    }
 }
