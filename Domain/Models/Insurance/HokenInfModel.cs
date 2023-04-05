@@ -368,11 +368,11 @@ namespace Domain.Models.Insurance
                     .Where(x => x.IsDeleted == 0)
                     .OrderByDescending(x => x.ConfirmDate)
                     .ToList();
-                int SinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
+                int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
                 foreach (var ptHokenCheck in isValidHokenChecks)
                 {
                     int currentConfirmYM = CIUtil.Copy(ptHokenCheck.ConfirmDate.AsString(), 1, 6).AsInteger();
-                    if (currentConfirmYM == SinYM)
+                    if (currentConfirmYM == sinYM)
                     {
                         return true;
                     }
