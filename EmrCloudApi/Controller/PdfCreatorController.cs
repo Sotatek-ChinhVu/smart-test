@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Reporting.Interface;
 using System.Text;
-using System.Text.Json;
 
 namespace EmrCloudApi.Controller
 {
@@ -33,13 +33,12 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-            var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(drugInfo);
             return await RenderPdf(drugInfo, ReportType.DrugInfo);
         }
 
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
-            StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data),Encoding.UTF8,"application/json");
+            StringContent jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 

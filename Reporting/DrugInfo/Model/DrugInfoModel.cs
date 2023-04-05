@@ -17,7 +17,7 @@ namespace Reporting.DrugInfo.Model
         public string age { get; set; } = string.Empty;
         public string sex { get; set; } = string.Empty;
         public string odrYmd { get; set; } = string.Empty;
-        public int fSinYmd { get; set; }
+        public int fsinYmd { get; set; }
         public string usage { get; set; } = string.Empty;
         public string usageSpan { get; set; } = string.Empty;
         public string drgName { get; set; } = string.Empty;
