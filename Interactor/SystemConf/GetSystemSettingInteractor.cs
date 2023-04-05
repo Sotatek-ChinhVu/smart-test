@@ -79,6 +79,8 @@ namespace Interactor.SystemConf
 
                 //KanrishaSettei chua lam
 
+                var result = new List<SystemConfModel>();
+
                 return new GetSystemSettingOutputData(roudouMst, hpInfs, systemSetting, GetSystemSettingStatus.Successed);
             }
             finally
