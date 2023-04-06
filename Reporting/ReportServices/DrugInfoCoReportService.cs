@@ -453,35 +453,17 @@ namespace Reporting.ReportServices
             }
 
             drugInfoModel.tyui = tText;
-
         }
 
         private void SetupDrugComment(OrderInfoModel orderInfoModel, OrderInfDetailModel drug, DrugInfoModel drugInfoModel)
         {
             var details = orderInfoModel.OrderInfDetailCollection;
             int rowNo = drug.RowNo;
-            string drgComment = "";
-            int i = 0;
-
-            while (rowNo < details.Count)
-            {
-                rowNo++;
-                var comment = details.Where(d => (string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99) && d.RowNo == rowNo).FirstOrDefault();
-                if (comment == null)
-                {
-                    break;
-                }
-                if (i == 0)
-                {
-                    drgComment = comment.ItemName;
-                }
-                else
-                {
-                    drgComment = drgComment + Environment.NewLine + "※" + comment.ItemName;
-                }
-                i++;
-            }
-            if (i > 1)
+            string drgComment = string.Join(Environment.NewLine, details
+                .Skip(rowNo)
+                .TakeWhile(d => (string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99))
+                .Select((d, i) => i == 0 ? d.ItemName : "※" + d.ItemName));
+            if (drgComment.Count(c => c == '※') > 1)
             {
                 drgComment = "※" + drgComment;
             }
@@ -492,26 +474,9 @@ namespace Reporting.ReportServices
         {
             var details = orderInfoModel.OrderInfDetailCollection;
             int rowNo = usage.RowNo;
-            string usageComment = "";
-            int i = 0;
-            while (rowNo < details.Count)
-            {
-                rowNo++;
-                var comment = details.Where(d => (string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99) && d.RowNo == rowNo).FirstOrDefault();
-                if (comment == null)
-                {
-                    continue;
-                }
-                if (i == 0)
-                {
-                    usageComment = comment.ItemName;
-                }
-                else
-                {
-                    usageComment = usageComment + Environment.NewLine + comment.ItemName;
-                }
-                i++;
-            }
+            string usageComment = string.Join(Environment.NewLine, details
+                .Where(d => (string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99) && d.RowNo > rowNo)
+                .Select(d => d.ItemName));
             drugInfoModel.usageComment = usageComment;
         }
     }
