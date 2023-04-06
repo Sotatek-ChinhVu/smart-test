@@ -18,13 +18,13 @@ public interface ISystemConfRepository : IRepositoryBase
 
     Hashtable GetConfigForPrintFunction(int hpId);
 
-    List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, int menuGrp);
+    List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, List<int> menuGrp);
 
     Dictionary<string, string> GetRoudouMst();
 
     List<HpInfModel> GetListHpInf(int hpId);
 
-    List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, int menuGrp);
+    List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, List<int> menuGrp);
 
     List<SystemConfMenuModel> GetListSystemConfMenuOnly(int hpId, int menuGrp);
 

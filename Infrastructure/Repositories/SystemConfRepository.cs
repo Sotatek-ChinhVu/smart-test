@@ -97,9 +97,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         DisposeDataContext();
     }
 
-    public List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, int menuGrp)
+    public List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, List<int> menuGrp)
     {
-        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp);
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && menuGrp.Contains(u.MenuGrp));
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.Val);
         var systemGenerationConfs = NoTrackingDataContext.SystemGenerationConfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate);
         var query = from menu in systemConfMenus.AsEnumerable()
@@ -206,9 +206,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                       .ToList();
     }
 
-    public List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, int menuGrp)
+    public List<SystemConfMenuModel> GetListSystemConfMenu(int hpId, List<int> menuGrp)
     {
-        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && u.MenuGrp == menuGrp && u.IsVisible == 1);
+        var systemConfMenus = NoTrackingDataContext.SystemConfMenu.Where(u => u.HpId == hpId && menuGrp.Contains(u.MenuGrp) && u.IsVisible == 1);
         var systemConfItems = NoTrackingDataContext.SystemConfItem.Where(u => u.HpId == hpId).OrderBy(u => u.SortNo);
         var systemSettings = NoTrackingDataContext.SystemConfs.Where(u => u.HpId == hpId);
         var systemConfs = (from menu in systemConfMenus.AsEnumerable()
