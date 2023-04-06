@@ -119,7 +119,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             (
                  systemConfMenu.HpId,
                  systemConfMenu.MenuId,
-                 systemConfMenu.GrpCd,
+                 systemConfMenu.MenuGrp,
                  systemConfMenu.SortNo,
                  systemConfMenu.MenuName ?? string.Empty,
                  systemConfMenu.GrpCd,
@@ -233,7 +233,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             (
                  systemConfMenu.HpId,
                  systemConfMenu.MenuId,
-                 systemConfMenu.GrpCd,
+                 systemConfMenu.MenuGrp,
                  systemConfMenu.SortNo,
                  systemConfMenu.MenuName ?? string.Empty,
                  systemConfMenu.GrpCd,
@@ -285,7 +285,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return systemConfMenus.Select(x => new SystemConfMenuModel(
                                              x.HpId,
                                              x.MenuId,
-                                             x.GrpCd,
+                                             x.MenuGrp,
                                              x.SortNo,
                                              x.MenuName ?? string.Empty,
                                              x.GrpCd,
