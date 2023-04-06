@@ -21,13 +21,12 @@ namespace Reporting.Byomei.DB
         /// </summary>
         /// <param name="ptId">患者ID</param>
         /// <returns>患者情報</returns>
-        public PtInf? FindPtInf(long ptId)
+        public PtInf FindPtInf(long ptId)
         {
-            return _tenantNoTrackingDataContext.PtInfs.Where(p =>
+            return _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(p =>
                      p.HpId == HpId &&
                      p.PtId == ptId &&
-                     p.IsDelete == DeleteStatus.None
-                ).FirstOrDefault();
+                     p.IsDelete == DeleteStatus.None) ?? new();
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace Reporting.Byomei.DB
                     x.Key.PrefNo,
                     x.Key.HokenNo,
                     x.Key.HokenEdaNo,
-                    StartDate = x.Max(d => d.StartDate)
+                    StartDate = x.Count() > 0 ? x.Max(d => d.StartDate) : 0
                 }
             );
             var ptHokenInfs = _tenantNoTrackingDataContext.PtHokenInfs.Where(p =>

@@ -10,6 +10,9 @@ using Reporting.NameLabel.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Linq.Dynamic.Core.Tokenizer;
 using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
+using ByomeiCoPtByomeiModel = Reporting.Byomei.Model.CoPtByomeiModel;
+using ByomeiCoPtHokenInfModel = Reporting.Byomei.Model.CoPtHokenInfModel;
+using LabelCoPtInfModel = Reporting.NameLabel.Models.CoPtInfModel;
 using Reporting.Mappers.Common;
 
 namespace Reporting
@@ -33,20 +36,20 @@ namespace Reporting
                 var ptInf = finder.FindPtInf(ptId);
 
                 List<int> tempHokenIds = new List<int>();
-                if (ptByomeis != null && ptByomeis.Any())
+                if (ptByomeis.Any())
                 {
                     tempHokenIds = ptByomeis.GroupBy(p => p.HokenPid).Select(p => p.Key).ToList();
                 }
 
                 var ptHokenInfs = finder.GetPtHokenInf(ptId, tempHokenIds, toDay);
 
-                List<Reporting.Byomei.Model.CoPtByomeiModel> results = new List<Reporting.Byomei.Model.CoPtByomeiModel>();
+                List<ByomeiCoPtByomeiModel> results = new List<ByomeiCoPtByomeiModel>();
 
                 if (ptHokenInfs == null || ptHokenInfs.Any() == false)
                 {
                     if (ptByomeis.Any())
                     {
-                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, null, ptByomeis));
+                        results.Add(new ByomeiCoPtByomeiModel(fromDay, toDay, ptInf, new(), ptByomeis));
                     }
                 }
                 else if (ptHokenInfs.Count() == 1)
@@ -54,25 +57,25 @@ namespace Reporting
                     // 使用されている保険が1つの場合、共通(0)とその保険分をまとめて出力
                     if (ptByomeis.Any())
                     {
-                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInfs.First(), ptByomeis));
+                        results.Add(new ByomeiCoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInfs.First(), ptByomeis));
                     }
                 }
                 else
                 {
-                    IEnumerable<PtByomei> emByomeis;
+                    List<PtByomei> emByomeis;
 
                     if (ptByomeis.Any(p => p.HokenPid == 0))
                     {
                         emByomeis = ptByomeis.FindAll(p => p.HokenPid == 0);
-                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, null, emByomeis));
+                        results.Add(new ByomeiCoPtByomeiModel(fromDay, toDay, ptInf, new(), emByomeis));
                     }
 
-                    foreach (Reporting.Byomei.Model.CoPtHokenInfModel ptHokenInf in ptHokenInfs)
+                    foreach (ByomeiCoPtHokenInfModel ptHokenInf in ptHokenInfs)
                     {
                         if (ptByomeis.Any(p => p.HokenPid == ptHokenInf.HokenId))
                         {
                             emByomeis = ptByomeis.FindAll(p => p.HokenPid == ptHokenInf.HokenId);
-                            results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInf, emByomeis));
+                            results.Add(new ByomeiCoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInf, emByomeis));
                         }
                     }
                 }
@@ -123,7 +126,7 @@ namespace Reporting
                 var finder = new CoNameLabelFinder(noTrackingDataContext);
 
                 // 患者情報
-                NameLabel.Models.CoPtInfModel ptInf = finder.FindPtInf(ptId);
+                LabelCoPtInfModel ptInf = finder.FindPtInf(ptId);
 
                 return new CoNameLabelModel(ptInf, kanjiName, sinDate);
             }

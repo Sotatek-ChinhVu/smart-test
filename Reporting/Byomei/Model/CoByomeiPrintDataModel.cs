@@ -2,9 +2,9 @@
 {
     public class CoByomeiPrintDataModel
     {
-        public string Byomei { get; set; }
-        public string StartDate { get; set; }
-        public string Tenki { get; set; }
-        public string TenkiDate { get; set; }
+        public string Byomei { get; set; } = string.Empty;
+        public string StartDate { get; set; } = string.Empty;
+        public string Tenki { get; set; } = string.Empty;
+        public string TenkiDate { get; set; } = string.Empty;
     }
 }

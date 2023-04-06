@@ -17,7 +17,7 @@ namespace Reporting.Byomei.Model
         {
             get
             {
-                string ret = PtByomei.Byomei;
+                string ret = PtByomei.Byomei ?? string.Empty;
 
                 //ToDo: DuongLe update entity to uncomment below code
                 //if (PtByomei.SyobyoKbn == 1)

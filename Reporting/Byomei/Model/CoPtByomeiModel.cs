@@ -8,9 +8,9 @@ namespace Reporting.Byomei.Model
         public PtInf PtInf { get; private set; }
         public CoPtHokenInfModel PtHokenInfModel { get; private set; }
 
-        public CoPtByomeiModel(int fromDate, int toDate, PtInf PtInf, CoPtHokenInfModel ptHokenInfModel, IEnumerable<PtByomei> ptByomeis)
+        public CoPtByomeiModel(int fromDate, int toDate, PtInf ptInf, CoPtHokenInfModel ptHokenInfModel, IEnumerable<PtByomei> ptByomeis)
         {
-            this.PtInf = PtInf;
+            PtInf = ptInf;
             PtHokenInfModel = ptHokenInfModel;
             ListByomei = ptByomeis.Select(b => new CoByomeiModel(b)).ToList();
             FromDay = fromDate;
@@ -23,9 +23,9 @@ namespace Reporting.Byomei.Model
 
         public long PtNum => PtInf.PtNum;
 
-        public string KanjiName => PtInf.Name;
+        public string KanjiName => PtInf.Name ?? string.Empty;
 
-        public string KanaName => PtInf.KanaName;
+        public string KanaName => PtInf.KanaName ?? string.Empty;
 
         public string Sex
         {

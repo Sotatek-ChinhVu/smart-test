@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Wordprocessing;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace EmrCloudApi.Controller
             _configuration = configuration;
         }
 
-        [HttpGet("ExportKarte1")]
+        [HttpGet(ApiPath.ExportKarte1)]
         public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
         {
             var karte1Data = _reportService.GetKarte1ReportingData(1, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
@@ -29,7 +30,7 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
-        [HttpPost("ExportByomei")]
+        [HttpPost(ApiPath.ExportByomei)]
         public async Task<IActionResult> GenerateByomeiReport([FromBody] ByomeiExportRequest request)
         {
             var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
