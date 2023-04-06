@@ -141,8 +141,9 @@ using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Reporting;
+using Reporting.DrugInfo.DB;
 using Reporting.Interface;
+using Reporting.ReportServices;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -453,7 +454,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
-            services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IReportService, Karte1ReportService>();
+            services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
+            services.AddTransient<IDrugInfoCoReportService, DrugInfoCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
