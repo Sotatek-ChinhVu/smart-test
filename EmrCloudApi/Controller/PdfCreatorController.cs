@@ -2,9 +2,10 @@
 using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using Reporting.Interface;
 using System.Text;
+using System.Text.Json;
 
 namespace EmrCloudApi.Controller
 {
@@ -37,9 +38,19 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(drugInfo, ReportType.DrugInfo);
         }
 
+        [HttpPost(ApiPath.ExportByomei)]
+        public async Task<IActionResult> GenerateByomeiReport([FromBody] ByomeiExportRequest request)
+        {
+            var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
+
+            return await RenderPdf(byomeiData, ReportType.Common);
+        }
+
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
-            StringContent jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+            StringContent jsonContent = reportType ==
+              ReportType.Karte1 ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
+              new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
@@ -47,7 +58,7 @@ namespace EmrCloudApi.Controller
             {
                 ReportType.Karte1 => "reporting-fm-karte1",
                 ReportType.DrugInfo => "reporting-fm-drugInfo",
-
+                ReportType.Common => "common-reporting",
                 _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
             } ?? string.Empty;
 

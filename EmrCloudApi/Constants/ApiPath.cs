@@ -76,6 +76,7 @@
         // ExportReport
         public const string ExportKarte1 = "ExportKarte1";
         public const string ExportDrugInfo = "ExportDrugInfo";
+        public const string ExportByomei = "ExportByomei";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
