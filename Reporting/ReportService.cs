@@ -1,11 +1,16 @@
-﻿using Infrastructure.Interfaces;
+﻿using Entity.Tenant;
+using Infrastructure.Interfaces;
+using Reporting.Byomei.DB;
 using Reporting.Interface;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Model;
 using Reporting.Mappers;
 using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Linq.Dynamic.Core.Tokenizer;
 using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
+using Reporting.Mappers.Common;
 
 namespace Reporting
 {
@@ -16,6 +21,64 @@ namespace Reporting
         public ReportService(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
+        }
+
+        public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
+        {
+            using (var noTrackingDataContext = _tenantProvider.GetNoTrackingDataContext())
+            {
+                var finder = new CoPtByomeiFinder(noTrackingDataContext);
+
+                var ptByomeis = finder.GetPtByomei(ptId, fromDay, toDay, tenkiIn, hokenIds);
+                var ptInf = finder.FindPtInf(ptId);
+
+                List<int> tempHokenIds = new List<int>();
+                if (ptByomeis != null && ptByomeis.Any())
+                {
+                    tempHokenIds = ptByomeis.GroupBy(p => p.HokenPid).Select(p => p.Key).ToList();
+                }
+
+                var ptHokenInfs = finder.GetPtHokenInf(ptId, tempHokenIds, toDay);
+
+                List<Reporting.Byomei.Model.CoPtByomeiModel> results = new List<Reporting.Byomei.Model.CoPtByomeiModel>();
+
+                if (ptHokenInfs == null || ptHokenInfs.Any() == false)
+                {
+                    if (ptByomeis.Any())
+                    {
+                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, null, ptByomeis));
+                    }
+                }
+                else if (ptHokenInfs.Count() == 1)
+                {
+                    // 使用されている保険が1つの場合、共通(0)とその保険分をまとめて出力
+                    if (ptByomeis.Any())
+                    {
+                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInfs.First(), ptByomeis));
+                    }
+                }
+                else
+                {
+                    IEnumerable<PtByomei> emByomeis;
+
+                    if (ptByomeis.Any(p => p.HokenPid == 0))
+                    {
+                        emByomeis = ptByomeis.FindAll(p => p.HokenPid == 0);
+                        results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, null, emByomeis));
+                    }
+
+                    foreach (Reporting.Byomei.Model.CoPtHokenInfModel ptHokenInf in ptHokenInfs)
+                    {
+                        if (ptByomeis.Any(p => p.HokenPid == ptHokenInf.HokenId))
+                        {
+                            emByomeis = ptByomeis.FindAll(p => p.HokenPid == ptHokenInf.HokenId);
+                            results.Add(new Reporting.Byomei.Model.CoPtByomeiModel(fromDay, toDay, ptInf, ptHokenInf, emByomeis));
+                        }
+                    }
+                }
+
+                return new ByomeiMapper(results).GetData();
+            }
         }
 
         public Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei)
@@ -31,6 +94,8 @@ namespace Reporting
 
                 // 病名情報
                 List<CoPtByomeiModel> ptByomeis = finder.FindPtByomei(ptId, hokenPid, tenkiByomei);
+
+                //ToDo: DuongLe need to update entity to uncomment below code
                 //if (syuByomei)
                 //{
                 //    foreach (var item in ptByomeis)

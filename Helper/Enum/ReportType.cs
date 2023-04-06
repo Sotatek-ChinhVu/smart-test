@@ -8,6 +8,7 @@ namespace Helper.Enum
 {
     public enum ReportType
     {
+        Common,
         Karte1,
         Karte2,
         Karte3

@@ -29,6 +29,14 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
+        [HttpPost("ExportByomei")]
+        public async Task<IActionResult> GenerateByomeiReport([FromBody] ByomeiExportRequest request)
+        {
+            var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
+
+            return await RenderPdf(byomeiData, ReportType.Common);
+        }
+
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
             StringContent jsonContent = new StringContent(
@@ -42,6 +50,9 @@ namespace EmrCloudApi.Controller
             {
                 case ReportType.Karte1:
                     functionName = "reporting-fm-karte1";
+                    break;
+                case ReportType.Common:
+                    functionName = "common-reporting";
                     break;
                 default:
                     throw new NotImplementedException("The reportType is incorrect: " + reportType.ToString());
