@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Requests.ExportPDF;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -22,14 +23,14 @@ namespace EmrCloudApi.Controller
             _drugInfoCoReportService = drugInfoCoReportService;
         }
 
-        [HttpGet("ExportKarte1")]
+        [HttpGet(ApiPath.ExportKarte1)]
         public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
         {
             var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
-        [HttpGet("ExportDrugInfo")]
+        [HttpGet(ApiPath.ExportDrugInfo)]
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
