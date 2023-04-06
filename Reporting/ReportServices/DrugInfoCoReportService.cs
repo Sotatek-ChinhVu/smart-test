@@ -474,9 +474,11 @@ namespace Reporting.ReportServices
         {
             var details = orderInfoModel.OrderInfDetailCollection;
             int rowNo = usage.RowNo;
-            string usageComment = string.Join(Environment.NewLine, details
-                .Where(d => (string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99) && d.RowNo > rowNo)
-                .Select(d => d.ItemName));
+            var usageComments = details
+                .SkipWhile(d => d.RowNo < rowNo)
+                .Where(d => string.IsNullOrEmpty(d.ItemCd) || d.SinKouiKbn == 99)
+                .Select(d => d.ItemName);
+            string usageComment = string.Join(Environment.NewLine, usageComments);
             drugInfoModel.usageComment = usageComment;
         }
     }
