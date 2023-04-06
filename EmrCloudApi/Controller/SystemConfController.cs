@@ -58,7 +58,7 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetSystemConfForPrintResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.DrugCheckSetting)]
+        [HttpGet(ApiPath.GetDrugCheckSetting)]
         public ActionResult<Response<GetDrugCheckSettingResponse>> DrugCheckSetting()
         {
             var input = new GetDrugCheckSettingInputData(HpId);
