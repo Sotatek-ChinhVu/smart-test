@@ -39,6 +39,14 @@ namespace EmrCloudApi.Controller
             List<FileItem> listFiles = new();
             foreach (var file in files)
             {
+                if (file.Length > 30000000)
+                {
+                    return Ok(new Response<SaveListFileResponse>()
+                    {
+                        Message = "Invalid file size!",
+                        Status = (int)SaveListFileTodayOrderStatus.InvalidSizeFile
+                    });
+                }
                 if (file.Length > 0)
                 {
                     string fileName = file.FileName;

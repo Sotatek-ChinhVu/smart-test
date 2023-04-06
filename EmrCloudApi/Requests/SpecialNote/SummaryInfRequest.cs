@@ -1,4 +1,4 @@
-﻿using Domain.Models.SpecialNote.SummaryInf;
+﻿using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Requests.SpecialNote
 {
@@ -17,9 +17,9 @@ namespace EmrCloudApi.Requests.SpecialNote
         public string Rtext { get; set; } = string.Empty;
 
         public DateTime CreateDate { get; set; }
-        public SummaryInfModel Map()
+        public SummaryInfItem Map()
         {
-            return new SummaryInfModel(Id, HpId, PtId, SeqNo, Text, Rtext, CreateDate, DateTime.MinValue);
+            return new SummaryInfItem(Id, HpId, PtId, SeqNo, Text, Rtext);
         }
     }
 }

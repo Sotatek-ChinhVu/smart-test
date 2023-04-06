@@ -36,13 +36,14 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
     public List<DocInfModel> GetAllDocInf(int hpId, long ptId)
     {
         var listDocCategory = GetAllDocCategory(hpId);
-        var listDocDB = NoTrackingDataContext.DocInfs
-                                                                .Where(item => item.HpId == hpId
-                                                                            && item.IsDeleted == 0
-                                                                            && item.PtId == ptId)
-                                                                .OrderByDescending(x => x.SinDate)
-                                                                .ThenBy(x => x.UpdateDate)
-                                                                .ToList();
+        var docCategoryCdList = listDocCategory.Select(item => item.CategoryCd).Distinct().ToList();
+        var listDocDB = NoTrackingDataContext.DocInfs.Where(item => item.HpId == hpId
+                                                                 && item.IsDeleted == 0
+                                                                 && item.PtId == ptId
+                                                                 && docCategoryCdList.Contains(item.CategoryCd))
+                                                     .OrderByDescending(x => x.SinDate)
+                                                     .ThenBy(x => x.UpdateDate)
+                                                     .ToList();
         return listDocDB.Select(item => ConvertToDocInfModel(item, listDocCategory)).ToList();
     }
 

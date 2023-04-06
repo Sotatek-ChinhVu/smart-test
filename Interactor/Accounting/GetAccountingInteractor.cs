@@ -31,7 +31,7 @@ namespace Interactor.Accounting
                 var syunoSeikyu = listSyunoSeikyu.FirstOrDefault(x => x.RaiinNo == inputData.RaiinNo);
 
                 if (syunoSeikyu == null)
-                { 
+                {
                     return new GetAccountingOutputData(new(), GetAccountingStatus.NoData, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, new(), new());
                 }
                 else if (syunoSeikyu.NyukinKbn == 0)

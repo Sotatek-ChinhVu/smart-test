@@ -6,7 +6,7 @@
         {
         }
 
-        public AccountingConfigDto(bool isVisiblePrintDrgLabel, bool isCheckedPrintDrgLabel, bool isVisiblePrintOutDrg, bool isCheckedPrintOutDrg, bool isCheckedPrintReceipt, bool isCheckedPrintDetail, bool isVisiblePrintDrgLabelSize, bool isVisiblePrintDrgInf, bool isCheckedPrintDrgInf, bool isVisiblePrintDrgNote, bool isCheckedPrintDrgNote)
+        public AccountingConfigDto(bool isVisiblePrintDrgLabel, bool isCheckedPrintDrgLabel, bool isVisiblePrintOutDrg, bool isCheckedPrintOutDrg, bool isCheckedPrintReceipt, bool isCheckedPrintDetail, bool isVisiblePrintDrgLabelSize, bool isVisiblePrintDrgInf, bool isCheckedPrintDrgInf, bool isVisiblePrintDrgNote, bool isCheckedPrintDrgNote, bool isRyosyoDetail)
         {
             IsVisiblePrintDrgLabel = isVisiblePrintDrgLabel;
             IsCheckedPrintDrgLabel = isCheckedPrintDrgLabel;
@@ -19,6 +19,7 @@
             IsCheckedPrintDrgInf = isCheckedPrintDrgInf;
             IsVisiblePrintDrgNote = isVisiblePrintDrgNote;
             IsCheckedPrintDrgNote = isCheckedPrintDrgNote;
+            IsRyosyoDetail = isRyosyoDetail;
         }
 
         public bool IsVisiblePrintDrgLabel { get; private set; }
@@ -32,5 +33,6 @@
         public bool IsCheckedPrintDrgInf { get; private set; }
         public bool IsVisiblePrintDrgNote { get; private set; }
         public bool IsCheckedPrintDrgNote { get; private set; }
+        public bool IsRyosyoDetail { get; private set; }
     }
 }

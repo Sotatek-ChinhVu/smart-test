@@ -257,6 +257,7 @@ using UseCase.MedicalExamination.InitKbnSetting;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.SummaryInf;
+using UseCase.MedicalExamination.TrailAccounting;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -388,6 +389,7 @@ using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
 using UseCase.TenMstMaintenance.GetListTenMstOrigin;
 using UseCase.Todo.TodoGrpMst;
+using UseCase.Todo.TodoInf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -542,6 +544,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
+            services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ITenMstMaintenanceRepository, TenMstMaintenanceRepository>();
         }
 
@@ -676,6 +679,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
+            busBuilder.RegisterUseCase<GetTrialAccountingInputData, GetTrialAccountingInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -948,6 +952,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
+            busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();

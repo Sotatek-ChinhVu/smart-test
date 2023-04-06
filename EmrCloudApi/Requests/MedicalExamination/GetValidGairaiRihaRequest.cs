@@ -1,6 +1,4 @@
-﻿using Domain.Models.OrdInfs;
-
-namespace EmrCloudApi.Requests.MedicalExamination
+﻿namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class GetValidGairaiRihaRequest
     {
@@ -8,6 +6,13 @@ namespace EmrCloudApi.Requests.MedicalExamination
         public long RaiinNo { get; set; }
         public int SinDate { get; set; }
         public int SyosaiKbn { get; set; }
-        public List<OrdInfModel> AllOdrInf { get; set; } = new();
+        public List<AllOrderItem> AllOdrInfItems { get; set; } = new();
+    }
+
+    public class AllOrderItem
+    {
+        public string ItemCd { get; set; } = string.Empty;
+
+        public string ItemName { get; set; } = string.Empty;
     }
 }
