@@ -27,57 +27,57 @@ namespace Interactor.SystemConf
                 //tab IryoKikanJoho
                 var roudouMst = _systemConfRepository.GetRoudouMst();
                 var hpInfs = _systemConfRepository.GetListHpInf(inputData.HpId);
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, 2000));
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, 2000));
 
-                ////tab KihonSetting
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, 2001));
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1000));
+                //tab KihonSetting
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, 2001));
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1000));
 
-                ////SanteiShien
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1001));
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1002));
+                //SanteiShien
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1001));
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1002));
 
-                ////JidoSantei
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuOnly(inputData.HpId, 3000));
-                //var autoSanteis = _santeiInfRepository.GetListAutoSanteiMst(inputData.HpId);
+                //JidoSantei
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuOnly(inputData.HpId, 3000));
+                var autoSanteis = _santeiInfRepository.GetListAutoSanteiMst(inputData.HpId);
 
-                ////Uketsuke
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1003));
+                //Uketsuke
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1003));
 
-                ////Shinsatsu
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1004));
+                //Shinsatsu
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1004));
 
-                ////Kaikei
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1005));
+                //Kaikei
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1005));
 
-                ////Bunsho
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1006));
+                //Bunsho
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1006));
 
-                ////KensaKanren
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1013));
-                //var kensaCenterMstList = _mstItemRepository.GetListKensaCenterMst(inputData.HpId);
-                //var centerCds = _systemConfRepository.GetListCenterCd(inputData.HpId); //check lai cai nay
+                //KensaKanren
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1013));
+                var kensaCenterMstList = _mstItemRepository.GetListKensaCenterMst(inputData.HpId);
+                var centerCds = _systemConfRepository.GetListCenterCd(inputData.HpId); //check lai cai nay
 
-                ////SystemOther
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1007));
+                //SystemOther
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1007));
 
-                ////FormUketsuke
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1008));
+                //FormUketsuke
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1008));
 
-                ////FormShinsatsu
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1009));
+                //FormShinsatsu
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1009));
 
-                //// FormKaikei
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1010));
+                // FormKaikei
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1010));
 
-                ////Reseputo
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1011));
+                //Reseputo
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1011));
 
-                ////FormOther
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1012));
+                //FormOther
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1012));
 
-                ////GaibuRenkei
-                //systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1014));
+                //GaibuRenkei
+                systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, 1014));
 
                 //KanrishaSettei chua lam
 
