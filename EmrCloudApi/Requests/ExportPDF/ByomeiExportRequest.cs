@@ -10,6 +10,6 @@
 
         public bool TenkiIn { get; set; }
 
-        public List<int> HokenIdList { get; set; }
+        public List<int> HokenIdList { get; set; } = new();
     }
 }
