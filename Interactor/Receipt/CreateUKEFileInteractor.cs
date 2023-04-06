@@ -148,8 +148,10 @@ namespace Interactor.Receipt
 
             FileInfo fileTemp = new FileInfo(filePath);
             if (!fileTemp.Exists)
-                File.Create(filePath);
-
+            {
+                using FileStream fs = File.Create(filePath);
+            }
+                
             List<ArgumentModel> arguments = new List<ArgumentModel>();
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

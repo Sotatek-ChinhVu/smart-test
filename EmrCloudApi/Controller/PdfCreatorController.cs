@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Reporting.Interface;
 using System.Text;
-using System.Text.Json;
 
 namespace EmrCloudApi.Controller
 {
@@ -26,7 +26,6 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateKarte1Report([FromQuery] Karte1ExportRequest request)
         {
             var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
-
             return await RenderPdf(karte1Data, ReportType.Karte1);
         }
 
@@ -34,25 +33,19 @@ namespace EmrCloudApi.Controller
         public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
         {
             var drugInfo = _drugInfoCoReportService.SetOrderInfo(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-            var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(drugInfo.Item2);
-            return await RenderPdf(drugInfo.Item2, drugInfo.Item1);
+            return await RenderPdf(drugInfo, ReportType.DrugInfo);
         }
 
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
-            StringContent jsonContent = new StringContent(JsonSerializer.Serialize(data),Encoding.UTF8,"application/json");
+            StringContent jsonContent = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
             string functionName = reportType switch
             {
                 ReportType.Karte1 => "reporting-fm-karte1",
-                ReportType.DrgInfType2_1 => "frmDrgInfType2_1",
-                ReportType.DrgInfType2_2 => "frmDrgInfType2_2",
-                ReportType.DrgInfType2_3 => "frmDrgInfType2_3",
-                ReportType.DrgInf1 => "frmDrgInf1",
-                ReportType.DrgInf2 => "reporting-fm-drugInfo",
-                ReportType.DrgInf3 => "frmDrgInf3",
+                ReportType.DrugInfo => "reporting-fm-drugInfo",
 
                 _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
             } ?? string.Empty;

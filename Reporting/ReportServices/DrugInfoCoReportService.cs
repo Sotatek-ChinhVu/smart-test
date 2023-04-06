@@ -20,111 +20,73 @@ namespace Reporting.ReportServices
         {
             _systemConfRepository = systemConfRepository;
             _coDrugInfFinder = coDrugInfFinder;
-            OrderInfoModels = new();
+            orderInfoModels = new();
         }
 
-        int ConfigType = 0;
-        int SelectedFormType = 0;
+        int configType = 0;
+        int selectedFormType = 0;
         DrugInfoModel basicInfo = new DrugInfoModel();
-        List<OrderInfoModel> OrderInfoModels { get; set; }
-        List<DrugInfoModel> DrugInfoModels = new List<DrugInfoModel>();
+        List<OrderInfoModel> orderInfoModels { get; set; }
+        List<DrugInfoModel> drugInfoList = new();
 
-        public (ReportType, List<DrugInfoModel>) SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
+        public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
         {
             basicInfo = _coDrugInfFinder.GetBasicInfo(hpId, ptId, sinDate);
             //   LoadPathConf();
 
-            ConfigType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
+            configType = (int)_systemConfRepository.GetSettingValue(92004, 1, hpId); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
 
-            SelectedFormType = (int)_systemConfRepository.GetSettingValue(92004, 17, hpId);
+            selectedFormType = (int)_systemConfRepository.GetSettingValue(92004, 17, hpId);
 
-            OrderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
+            orderInfoModels = _coDrugInfFinder.GetOrderByRaiinNo(raiinNo);
 
-            foreach (var orderInfoModel in OrderInfoModels)
+            foreach (var orderInfoModel in orderInfoModels)
             {
                 SetupPrintData(hpId, orderInfoModel);
             }
 
-            var reportType = SelectFormType(ConfigType, SelectedFormType);
-
-            return (reportType, DrugInfoModels);
-        }
-
-        private ReportType SelectFormType(int configType, int configFormType)
-        {
-            if (configFormType == 1)
-            {
-                switch (configType)
-                {
-                    case 0:
-                    case 1:
-                        return ReportType.DrgInfType2_1;
-
-                    case 2:
-                        return ReportType.DrgInfType2_2;
-
-                    case 3:
-                        return ReportType.DrgInfType2_3;
-
-                }
-            }
-            else
-            {
-                switch (configType)
-                {
-                    case 0:
-                    case 1:
-                        return ReportType.DrgInf1;
-
-                    case 2:
-                        return ReportType.DrgInf2;
-
-                    case 3:
-                        return ReportType.DrgInf3;
-
-                }
-            }
-
-            return ReportType.DrgInf1;
+            return new DrugInfoData(
+                       selectedFormType,
+                       configType,
+                       drugInfoList);
         }
 
         private void SetupPrintData(int hpId, OrderInfoModel orderInfoModel)
         {
-
-            var usage = orderInfoModel.OrderInfDetailCollection.Where(o => o.YohoKbn == 1).FirstOrDefault();
-            var jikochu = orderInfoModel.OrderInfDetailCollection.Where(o => o.SinKouiKbn == 28).FirstOrDefault();
+            var usage = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.YohoKbn == 1);
+            var jikochu = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.SinKouiKbn == 28);
             if (usage == null && jikochu == null) return;
             var drugs = orderInfoModel.OrderInfDetailCollection.Where(o => new[] { 20, 30 }.Contains(o.SinKouiKbn)).ToList();
             foreach (var drug in drugs)
             {
                 DrugInfoModel drugInfoModel = new DrugInfoModel();
-                drugInfoModel.DrgName = drug.ItemName;
+                drugInfoModel.drgName = drug.ItemName;
 
                 //Main usage
-                drugInfoModel.Usage = jikochu != null ? "自己注射" : usage.ItemName;
+                drugInfoModel.usage = jikochu != null ? "自己注射" : usage?.ItemName ?? string.Empty;
                 //2st usage
-                var subUsage = orderInfoModel.OrderInfDetailCollection.Where(o => o.YohoKbn == 2).FirstOrDefault();
+                var subUsage = orderInfoModel.OrderInfDetailCollection.FirstOrDefault(o => o.YohoKbn == 2);
                 if (subUsage != null)
                 {
-                    drugInfoModel.Usage2 = subUsage.ItemName;
+                    drugInfoModel.usage2 = subUsage.ItemName;
                 }
 
-                drugInfoModel.DrgKbn = orderInfoModel.OdrKouiKbn;//TODO
+                //TODO
+                drugInfoModel.drgKbn = orderInfoModel.OdrKouiKbn;
 
                 string yjCd = _coDrugInfFinder.GetYJCode(drug.ItemCd);
 
                 var singleDosageMstCollection = _coDrugInfFinder.GetSingleDosageMstCollection(hpId, drug.UnitName);
 
-                drugInfoModel.UnitName = drug.UnitName;
-                //
+                drugInfoModel.unitName = drug.UnitName;
                 if (drug.Suryo > 0 && !string.IsNullOrEmpty(drug.UnitName))
                 {
-                    drugInfoModel.Amount = drug.Suryo.AsString() + drug.UnitName;
+                    drugInfoModel.amount = drug.Suryo.AsString() + drug.UnitName;
                 }
 
                 if (usage != null)
                 {
-                    drugInfoModel.UsageSpan = usage.Suryo + usage.UnitName;
+                    drugInfoModel.usageSpan = usage.Suryo + usage.UnitName;
                     string itemCd = usage.ItemCd;
 
                     var tenMst = _coDrugInfFinder.GetTenMstModel(itemCd);
@@ -144,95 +106,95 @@ namespace Reporting.ReportServices
                     //Rise
                     if (tenMst.Rise == 0)//0は空白
                     {
-                        drugInfoModel.UsageSign1 = "";
+                        drugInfoModel.usageSign1 = "";
                     }
                     else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                     {
-                        drugInfoModel.UsageSign1 = "●";// 剤形マスタ未登録は●
+                        drugInfoModel.usageSign1 = "●";// 剤形マスタ未登録は●
                     }
                     else
                     {
                         string usageSignVal = ((wkFloat * tenMst.Rise * 100) / 100).AsString();
-                        drugInfoModel.UsageSign1 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                        drugInfoModel.usageSign1 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                     }
 
                     //Morning
                     if (tenMst.Morning == 0)
                     {
-                        drugInfoModel.UsageSign2 = "";
+                        drugInfoModel.usageSign2 = "";
                     }
                     else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                     {
-                        drugInfoModel.UsageSign2 = "●";// 剤形マスタ未登録は●
+                        drugInfoModel.usageSign2 = "●";// 剤形マスタ未登録は●
                     }
                     else
                     {
                         string usageSignVal = ((wkFloat * tenMst.Morning * 100) / 100).AsString();
-                        drugInfoModel.UsageSign2 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                        drugInfoModel.usageSign2 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                     }
 
                     //DayTime
                     if (tenMst.DayTime == 0)
                     {
-                        drugInfoModel.UsageSign3 = "";
+                        drugInfoModel.usageSign3 = "";
                     }
                     else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                     {
-                        drugInfoModel.UsageSign3 = "●";// 剤形マスタ未登録は●
+                        drugInfoModel.usageSign3 = "●";// 剤形マスタ未登録は●
                     }
                     else
                     {
                         string usageSignVal = ((wkFloat * tenMst.DayTime * 100) / 100).AsString();
-                        drugInfoModel.UsageSign3 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                        drugInfoModel.usageSign3 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                     }
 
                     //Evening
                     if (tenMst.Evening == 0)
                     {
-                        drugInfoModel.UsageSign4 = "";
+                        drugInfoModel.usageSign4 = "";
                     }
                     else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                     {
-                        drugInfoModel.UsageSign4 = "●";// 剤形マスタ未登録は●
+                        drugInfoModel.usageSign4 = "●";// 剤形マスタ未登録は●
                     }
                     else
                     {
                         string usageSignVal = ((wkFloat * tenMst.Evening * 100) / 100).AsString();
-                        drugInfoModel.UsageSign4 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                        drugInfoModel.usageSign4 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                     }
 
                     //Sleep
                     if (tenMst.Sleep == 0)
                     {
-                        drugInfoModel.UsageSign5 = "";
+                        drugInfoModel.usageSign5 = "";
                     }
                     else if (singleDosageMstCollection == null || singleDosageMstCollection.Count == 0)
                     {
-                        drugInfoModel.UsageSign5 = "●";// 剤形マスタ未登録は●
+                        drugInfoModel.usageSign5 = "●";// 剤形マスタ未登録は●
                     }
                     else
                     {
                         string usageSignVal = ((wkFloat * tenMst.Sleep * 100) / 100).AsString();
-                        drugInfoModel.UsageSign5 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
+                        drugInfoModel.usageSign5 = CIUtil.Copy(usageSignVal, 1, 4);// 剤形マスタ登録は用時の数値
                     }
                 }
 
-                drugInfoModel.IntAge = basicInfo.IntAge;
-                drugInfoModel.Sex = basicInfo.Sex;
+                drugInfoModel.intAge = basicInfo.intAge;
+                drugInfoModel.sex = basicInfo.sex;
 
                 //ConfigType=3: No image
-                if (ConfigType != 3)
+                if (configType != 3)
                 {
                     SetupPrintImage(hpId, drug, drugInfoModel, yjCd);
                 }
 
-                if (SelectedFormType == 1)
+                if (selectedFormType == 1)
                 {
-                    SetupDrugDocumentType2(ConfigType, hpId, drug, drugInfoModel);
+                    SetupDrugDocumentType2(configType, hpId, drug, drugInfoModel);
                 }
                 else
                 {
-                    SetupDrugDocument(ConfigType, hpId, drug, drugInfoModel);
+                    SetupDrugDocument(configType, hpId, drug, drugInfoModel);
                 }
                 if ((int)_systemConfRepository.GetSettingValue(92004, 18, hpId) == 0) //PrintDrugCommentSetting
                 {
@@ -240,7 +202,7 @@ namespace Reporting.ReportServices
                 }
                 else
                 {
-                    drugInfoModel.DrgComment = string.Empty;
+                    drugInfoModel.drgComment = string.Empty;
                 }
                 if (jikochu != null)
                 {
@@ -248,9 +210,9 @@ namespace Reporting.ReportServices
                 }
                 else
                 {
-                    SetupUsageComment(orderInfoModel, usage, drugInfoModel);
+                    SetupUsageComment(orderInfoModel, usage ?? new(), drugInfoModel);
                 }
-                DrugInfoModels.Add(drugInfoModel);
+                drugInfoList.Add(drugInfoModel);
             }
 
         }
@@ -269,10 +231,10 @@ namespace Reporting.ReportServices
                 return;
             }
 
-            var picHou = images.Where(i => i.ImageType == 1).FirstOrDefault();
+            var picHou = images.FirstOrDefault(i => i.ImageType == 1);
             if (picHou != null)
             {
-                drugInfoModel.PicHou = picHou.FileName ?? string.Empty;
+                drugInfoModel.picHou = picHou.FileName ?? string.Empty;
             }
             else
             {
@@ -282,7 +244,7 @@ namespace Reporting.ReportServices
             var picZai = images.Where(i => i.ImageType == 0).FirstOrDefault();
             if (picZai != null)
             {
-                drugInfoModel.PicZai = picZai.FileName ?? string.Empty;
+                drugInfoModel.picZai = picZai.FileName ?? string.Empty;
             }
             else
             {
@@ -325,8 +287,8 @@ namespace Reporting.ReportServices
         private void SetupDrugDocumentType2(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel)
         {
 
-            int age = drugInfoModel.IntAge;
-            int gender = drugInfoModel.Sex == "M" ? 1 : 2;
+            int age = drugInfoModel.intAge;
+            int gender = drugInfoModel.sex == "M" ? 1 : 2;
             var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender);
 
             if (drugInfs == null) return;
@@ -343,7 +305,7 @@ namespace Reporting.ReportServices
             tText.AddRange(GetListDocumentLine(drugInfs.Where(item => item.InfKbn == 1).ToList(), 1, nLen));
             tText.AddRange(GetListDocumentLine(drugInfs.Where(item => item.InfKbn != 1).ToList(), 0, nLen));
 
-            drugInfoModel.Tyui = tText;
+            drugInfoModel.tyui = tText;
 
         }
 
@@ -365,7 +327,7 @@ namespace Reporting.ReportServices
 
             foreach (var drugInf in drugInfs)
             {
-                var listItem = drugInf.DrugInfo.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var listItem = drugInf.DrugInfo?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 foreach (var item in listItem)
                 {
                     wsBuf += item;
@@ -387,14 +349,14 @@ namespace Reporting.ReportServices
                 if (!string.IsNullOrEmpty(sBuf1))
                 {
                     DocumentLine documentLine = new DocumentLine();
-                    documentLine.Text = sBuf1;
+                    documentLine.text = sBuf1;
                     if (infKbn == 1)
                     {
-                        documentLine.Color = Color.Blue;
+                        documentLine.color = Color.Blue;
                     }
                     else
                     {
-                        documentLine.Color = Color.Black;
+                        documentLine.color = Color.Black;
                     }
 
                     tText.Add(documentLine);
@@ -408,8 +370,8 @@ namespace Reporting.ReportServices
 
         private void SetupDrugDocument(int reportType, int hpId, OrderInfDetailModel orderInfDetailModel, DrugInfoModel drugInfoModel)
         {
-            int age = drugInfoModel.IntAge;
-            int gender = drugInfoModel.Sex == "M" ? 1 : 2;
+            int age = drugInfoModel.intAge;
+            int gender = drugInfoModel.sex == "M" ? 1 : 2;
             var drugInfs = _coDrugInfFinder.GetDrugInfo(hpId, orderInfDetailModel.ItemCd, age, gender);
 
             if (drugInfs == null) return;
@@ -453,14 +415,14 @@ namespace Reporting.ReportServices
                             if (!string.IsNullOrEmpty(sBuf1))
                             {
                                 DocumentLine documentLine = new DocumentLine();
-                                documentLine.Text = sBuf1;
+                                documentLine.text = sBuf1;
                                 if (drugInf.InfKbn == 1)
                                 {
-                                    documentLine.Color = Color.Blue;
+                                    documentLine.color = Color.Blue;
                                 }
                                 else
                                 {
-                                    documentLine.Color = Color.Black;
+                                    documentLine.color = Color.Black;
                                 }
 
                                 tText.Add(documentLine);
@@ -474,14 +436,14 @@ namespace Reporting.ReportServices
                         if (!string.IsNullOrEmpty(item))
                         {
                             DocumentLine documentLine = new DocumentLine();
-                            documentLine.Text = sSymbol + item;
+                            documentLine.text = sSymbol + item;
                             if (drugInf.InfKbn == 1)
                             {
-                                documentLine.Color = Color.Blue;
+                                documentLine.color = Color.Blue;
                             }
                             else
                             {
-                                documentLine.Color = Color.Black;
+                                documentLine.color = Color.Black;
                             }
 
                             tText.Add(documentLine);
@@ -490,7 +452,7 @@ namespace Reporting.ReportServices
                 }
             }
 
-            drugInfoModel.Tyui = tText;
+            drugInfoModel.tyui = tText;
 
         }
 
@@ -523,7 +485,7 @@ namespace Reporting.ReportServices
             {
                 drgComment = "※" + drgComment;
             }
-            drugInfoModel.DrgComment = drgComment;
+            drugInfoModel.drgComment = drgComment;
         }
 
         private void SetupUsageComment(OrderInfoModel orderInfoModel, OrderInfDetailModel usage, DrugInfoModel drugInfoModel)
@@ -550,7 +512,7 @@ namespace Reporting.ReportServices
                 }
                 i++;
             }
-            drugInfoModel.UsageComment = usageComment;
+            drugInfoModel.usageComment = usageComment;
         }
     }
 }

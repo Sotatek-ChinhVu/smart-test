@@ -7,6 +7,6 @@ namespace Domain.Models.SpecialNote
 {
     public interface ISpecialNoteRepository : IRepositoryBase
     {
-        bool SaveSpecialNote(int hpId, long ptId, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId);
+        bool SaveSpecialNote(int hpId, long ptId, int sinDate, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId);
     }
 }

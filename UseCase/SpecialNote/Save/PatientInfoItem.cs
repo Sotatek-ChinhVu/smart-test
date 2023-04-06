@@ -5,7 +5,7 @@ namespace UseCase.SpecialNote.Save
 {
     public class PatientInfoItem
     {
-        public PatientInfoItem(List<PtPregnancyModel> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<KensaInfDetailModel> kensaInfDetailModels)
+        public PatientInfoItem(List<PtPregnancyItem> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<KensaInfDetailModel> kensaInfDetailModels)
         {
             PregnancyItems = pregnancyItems;
             PtCmtInfItems = ptCmtInfItems;
@@ -13,7 +13,7 @@ namespace UseCase.SpecialNote.Save
             KensaInfDetailModels = kensaInfDetailModels;
         }
 
-        public List<PtPregnancyModel> PregnancyItems { get; private set; }
+        public List<PtPregnancyItem> PregnancyItems { get; private set; }
 
         public PtCmtInfModel PtCmtInfItems { get; private set; }
 
