@@ -57,6 +57,7 @@ using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.TenMstMaintenance;
 using Domain.Models.TimeZone;
 using Domain.Models.TodayOdr;
 using Domain.Models.Todo;
@@ -132,6 +133,7 @@ using Interactor.SuperSetDetail;
 using Interactor.SwapHoken;
 using Interactor.SystemConf;
 using Interactor.SystemGenerationConf;
+using Interactor.TenMstMaintenance;
 using Interactor.Todo;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
@@ -384,6 +386,7 @@ using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
+using UseCase.TenMstMaintenance.GetListTenMstOrigin;
 using UseCase.Todo.TodoGrpMst;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
@@ -539,6 +542,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
+            services.AddTransient<ITenMstMaintenanceRepository, TenMstMaintenanceRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -947,6 +951,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
+
+            //TenMstMaintenance
+            busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
