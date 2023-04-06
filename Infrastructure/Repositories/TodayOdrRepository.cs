@@ -2614,7 +2614,7 @@ namespace Infrastructure.Repositories
                                 stringBuilder.Append("'に置き換えますか？");
 
                                 string msg = stringBuilder.ToString();
-
+                                detail.ChangeItemCd(targetItem.ItemCd);
                                 result.Add(new(1, msg, odrInfIndex, odrInfDetailIndex, targetItem, 0));
                             }
                             else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
@@ -2681,6 +2681,7 @@ namespace Infrastructure.Repositories
                 //                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
                 //                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                bool isAdded = false;
                 foreach (var detail in odrInfDetails)
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
@@ -2778,9 +2779,10 @@ namespace Infrastructure.Repositories
                                 checkingOdr.ChangeOdrKouiKbn(detail.SinKouiKbn);
                                 //if (checkGroupOrder != null)
                                 //{
-                                result.Add(new(index, new(DeleteTypes.Deleted)));
+                                //result.Add(new(index, new(DeleteTypes.Deleted)));
                                 detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                                result.Add(new(index, checkingOdr));
+                                //result.Add(new(index, checkingOdr));
+                                isAdded = true;
                                 //}
                             }
                         }
@@ -2946,18 +2948,26 @@ namespace Infrastructure.Repositories
                                 );
 
                             result.Add(new(-1, odrInf));
-                            result.Add(new(index, new(DeleteTypes.Deleted)));
+                            checkingOdr.OrdInfDetails.Remove(detail);
+                            isAdded = true;
                         }
                     }
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
-                        result.Add(new(index, new(DeleteTypes.Deleted)));
-                        result.Add(new(index, checkingOdr));
+                        //result.Add(new(index, new(DeleteTypes.Deleted)));
+                        //result.Add(new(index, checkingOdr));
+                        isAdded = true;
                     }
                     odrInfDetailIndex++;
                 }
 
+                if (isAdded)
+                {
+                    result.Add(new(index, new(DeleteTypes.Deleted)));
+                    result.Add(new(index, checkingOdr));
+                }
+          
                 odrInfIndex++;
             }
 
