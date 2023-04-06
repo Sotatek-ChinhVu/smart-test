@@ -15,13 +15,13 @@ using ByomeiCoPtHokenInfModel = Reporting.Byomei.Model.CoPtHokenInfModel;
 using LabelCoPtInfModel = Reporting.NameLabel.Models.CoPtInfModel;
 using Reporting.Mappers.Common;
 
-namespace Reporting
+namespace Reporting.ReportServices
 {
-    public class ReportService : IReportService
+    public class Karte1ReportService : IReportService
     {
         private readonly ITenantProvider _tenantProvider;
 
-        public ReportService(ITenantProvider tenantProvider)
+        public Karte1ReportService(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
         }
