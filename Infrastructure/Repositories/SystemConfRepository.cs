@@ -1,5 +1,6 @@
 ﻿using Domain.Models.SystemConf;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Collections;
@@ -35,6 +36,40 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? string.Empty);
+    }
+
+    public bool SaveSystemConfigList(int hpId, int userId, List<SystemConfModel> systemConfigList)
+    {
+        var grpCdList = systemConfigList.Select(item => item.GrpCd).Distinct().ToList();
+        var systemConfigDBList = TrackingDataContext.SystemConfs.Where(item => item.HpId == hpId
+                                                                               && grpCdList.Contains(item.GrpCd))
+                                                                .ToList();
+        foreach (var model in systemConfigList)
+        {
+            bool addNew = false;
+            var systemConfigItem = systemConfigDBList.FirstOrDefault(item => item.GrpCd == model.GrpCd && item.GrpEdaNo == model.GrpEdaNo);
+            if (systemConfigItem == null)
+            {
+                addNew = true;
+                systemConfigItem = new SystemConf();
+                systemConfigItem.GrpEdaNo = model.GrpEdaNo;
+                systemConfigItem.GrpCd = model.GrpCd;
+                systemConfigItem.HpId = hpId;
+                systemConfigItem.CreateDate = CIUtil.GetJapanDateTimeNow();
+                systemConfigItem.CreateId = userId;
+            }
+            systemConfigItem.Param = model.Param;
+            systemConfigItem.Val = model.Val;
+            systemConfigItem.Biko = model.Biko;
+            systemConfigItem.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            systemConfigItem.UpdateId = userId;
+            if (addNew)
+            {
+                TrackingDataContext.SystemConfs.Add(systemConfigItem);
+            }
+        }
+        TrackingDataContext.SaveChanges();
+        return true;
     }
 
     public List<SystemConfModel> GetAllSystemConfig(int hpId)
@@ -103,5 +138,4 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
     {
         DisposeDataContext();
     }
-
 }

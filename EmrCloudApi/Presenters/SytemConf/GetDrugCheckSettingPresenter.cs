@@ -5,7 +5,7 @@ using UseCase.SystemConf.GetDrugCheckSetting;
 
 namespace EmrCloudApi.Presenters.SytemConf;
 
-public class GetDrugCheckSettingPresenter : IGEtDrugCheckSettingOutputPort
+public class GetDrugCheckSettingPresenter : IGetDrugCheckSettingOutputPort
 {
     public Response<GetDrugCheckSettingResponse> Result { get; private set; } = new();
 

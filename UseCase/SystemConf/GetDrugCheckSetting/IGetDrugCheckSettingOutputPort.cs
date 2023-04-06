@@ -2,6 +2,6 @@
 
 namespace UseCase.SystemConf.GetDrugCheckSetting;
 
-public interface IGEtDrugCheckSettingOutputPort : IOutputPort<GetDrugCheckSettingOutputData>
+public interface IGetDrugCheckSettingOutputPort : IOutputPort<GetDrugCheckSettingOutputData>
 {
 }

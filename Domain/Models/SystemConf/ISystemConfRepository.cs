@@ -18,4 +18,6 @@ public interface ISystemConfRepository : IRepositoryBase
     string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");
 
     Hashtable GetConfigForPrintFunction(int hpId);
+
+    bool SaveSystemConfigList(int hpId, int userId, List<SystemConfModel> systemConfigList);
 }

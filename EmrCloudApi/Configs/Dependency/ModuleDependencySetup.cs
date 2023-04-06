@@ -415,6 +415,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.SystemConf.SaveDrugCheckSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -809,6 +810,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemConfListInputData, GetSystemConfListInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfForPrintInputData, GetSystemConfForPrintInteractor>();
             busBuilder.RegisterUseCase<GetDrugCheckSettingInputData, GetDrugCheckSettingInteractor>();
+            busBuilder.RegisterUseCase<SaveDrugCheckSettingInputData, SaveDrugCheckSettingInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();

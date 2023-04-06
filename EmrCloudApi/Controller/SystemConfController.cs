@@ -10,6 +10,8 @@ using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.SaveDrugCheckSetting;
+using UseCase.SystemConf;
 
 namespace EmrCloudApi.Controller
 {
@@ -68,6 +70,42 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDrugCheckSettingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveDrugCheckSetting)]
+        public ActionResult<Response<SaveDrugCheckSettingResponse>> SaveDrugCheckSetting([FromBody] SaveDrugCheckSettingRequest request)
+        {
+            var input = new SaveDrugCheckSettingInputData(HpId, UserId, ConvertToDrugCheckSettingItem(request));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveDrugCheckSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveDrugCheckSettingResponse>>(presenter.Result);
+        }
+
+        private DrugCheckSettingItem ConvertToDrugCheckSettingItem(SaveDrugCheckSettingRequest request)
+        {
+            return new DrugCheckSettingItem(
+                       request.CheckDrugSameName,
+                       request.StrainCheckSeibun,
+                       request.StrainCheckPurodoragu,
+                       request.StrainCheckRuiji,
+                       request.StrainCheckKeito,
+                       request.AgentCheckSetting,
+                       request.DosageDrinkingDrugSetting,
+                       request.DosageDrugAsOrderSetting,
+                       request.DosageOtherDrugSetting,
+                       request.DosageRatioSetting,
+                       request.AllergyMedicineSeibun,
+                       request.AllergyMedicinePurodoragu,
+                       request.AllergyMedicineRuiji,
+                       request.AllergyMedicineKeito,
+                       request.FoodAllergyLevelSetting,
+                       request.DiseaseLevelSetting,
+                       request.KinkiLevelSetting,
+                       request.DosageMinCheckSetting,
+                       request.AgeLevelSetting);
         }
     }
 }

@@ -17,8 +17,16 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
     {
         try
         {
-
-            return new SaveDrugCheckSettingOutputData(SaveDrugCheckSettingStatus.Successed);
+            var validateResult = ValidateInput(inputData.DrugCheckSetting);
+            if (validateResult.Status != SaveDrugCheckSettingStatus.ValidateSuccess)
+            {
+                return new SaveDrugCheckSettingOutputData(validateResult.Status);
+            }
+            if (_systemConfRepository.SaveSystemConfigList(inputData.HpId, inputData.UserId, validateResult.SystemConfigList))
+            {
+                return new SaveDrugCheckSettingOutputData(SaveDrugCheckSettingStatus.Successed);
+            }
+            return new SaveDrugCheckSettingOutputData(SaveDrugCheckSettingStatus.Failed);
         }
         finally
         {
@@ -26,7 +34,7 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
         }
     }
 
-    private (List<SystemConfModel> systemConfigList, SaveDrugCheckSettingStatus status) ValidateInput(DrugCheckSettingItem input)
+    private (List<SystemConfModel> SystemConfigList, SaveDrugCheckSettingStatus Status) ValidateInput(DrugCheckSettingItem input)
     {
         List<SystemConfModel> result = new();
 
@@ -66,6 +74,10 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
         result.Add(ConvertToSystemConfModel(2023, 4, input.DosageOtherDrugSetting ? 1 : 0));
 
         //set data for DosageRatioSetting
+        if (input.DosageRatioSetting < 1 || input.DosageRatioSetting > 9.999)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidDosageRatioSetting);
+        }
         result.Add(ConvertToSystemConfModel(2023, 0, input.DosageRatioSetting));
 
         //set data for AllergyMedicineSeibun
@@ -81,30 +93,41 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
         result.Add(ConvertToSystemConfModel(2026, 3, input.AllergyMedicineKeito ? 1 : 0));
 
         //set data for FoodAllergyLevelSetting
-
+        if (input.FoodAllergyLevelSetting < 0 || input.FoodAllergyLevelSetting > 3)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidFoodAllergyLevelSetting);
+        }
+        result.Add(ConvertToSystemConfModel(2027, 0, input.FoodAllergyLevelSetting));
 
         //set data for DiseaseLevelSetting
-
+        if (input.DiseaseLevelSetting < 0 || input.DiseaseLevelSetting > 3)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidDiseaseLevelSetting);
+        }
+        result.Add(ConvertToSystemConfModel(2027, 2, input.DiseaseLevelSetting));
 
         //set data for KinkiLevelSetting
-
+        if (input.KinkiLevelSetting < 0 || input.KinkiLevelSetting > 3)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidKinkiLevelSetting);
+        }
+        result.Add(ConvertToSystemConfModel(2027, 1, input.KinkiLevelSetting));
 
         //set data for DosageMinCheckSetting
-
+        if (input.DosageMinCheckSetting < 0 || input.DosageMinCheckSetting > 1)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidDosageMinCheckSetting);
+        }
+        result.Add(ConvertToSystemConfModel(2023, 1, input.DosageMinCheckSetting));
 
         //set data for AgeLevelSetting
+        if (input.AgeLevelSetting < 0 || input.AgeLevelSetting > 10)
+        {
+            return (new(), SaveDrugCheckSettingStatus.InvalidAgeLevelSetting);
+        }
+        result.Add(ConvertToSystemConfModel(2027, 3, input.AgeLevelSetting));
 
         return (result, SaveDrugCheckSettingStatus.ValidateSuccess);
-    }
-
-    private double GetConfigValue(List<SystemConfModel> systemConfigList, int grpCd, int grpEdaNo, double defaultValue = 0)
-    {
-        if (systemConfigList == null)
-        {
-            return defaultValue;
-        }
-        var systemConfig = systemConfigList.FirstOrDefault(u => u.GrpCd == grpCd && u.GrpEdaNo == grpEdaNo);
-        return systemConfig == null ? defaultValue : systemConfig.Val;
     }
 
     private SystemConfModel ConvertToSystemConfModel(int grpCd, int grpEdaNo, double val)

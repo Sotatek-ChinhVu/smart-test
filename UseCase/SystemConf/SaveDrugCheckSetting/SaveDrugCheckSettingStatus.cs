@@ -7,4 +7,10 @@ public enum SaveDrugCheckSettingStatus : byte
     Failed,
     InvalidCheckDrugSameName,
     InvalidAgentCheckSetting,
+    InvalidDosageRatioSetting,
+    InvalidFoodAllergyLevelSetting,
+    InvalidDiseaseLevelSetting,
+    InvalidKinkiLevelSetting,
+    InvalidDosageMinCheckSetting,
+    InvalidAgeLevelSetting
 }
