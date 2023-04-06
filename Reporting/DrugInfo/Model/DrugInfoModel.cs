@@ -37,7 +37,6 @@ namespace Reporting.DrugInfo.Model
         public string usageSign4 { get; set; } = string.Empty;
         public string usageSign5 { get; set; } = string.Empty;
         public List<DocumentLine> tyui { get; set; } = new();
-
     }
     public class DocumentLine
     {
