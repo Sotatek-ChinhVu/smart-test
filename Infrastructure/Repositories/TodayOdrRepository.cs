@@ -2493,6 +2493,7 @@ namespace Infrastructure.Repositories
             foreach (var checkingOdr in addingOdrList)
             {
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                odrInfDetailIndex = 0;
                 foreach (var detail in odrInfDetails)
                 {
                     if (string.IsNullOrEmpty(detail.ItemCd))
@@ -2682,6 +2683,7 @@ namespace Infrastructure.Repositories
                 //                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
                 bool isAdded = false;
+                odrInfDetailIndex = 0;
                 foreach (var detail in odrInfDetails)
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
