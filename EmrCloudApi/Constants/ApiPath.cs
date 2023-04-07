@@ -75,6 +75,8 @@
 
         // ExportReport
         public const string ExportKarte1 = "ExportKarte1";
+        public const string ExportDrugInfo = "ExportDrugInfo";
+        public const string ExportByomei = "ExportByomei";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -174,6 +176,7 @@
         public const string GetHistoryFollowSinDate = "GetHistoryFollowSinDate";
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
+        public const string TrialAccounting = "TrialAccounting";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -227,6 +230,8 @@
         public const string GetSinDateRaiinInfList = "GetSinDateRaiinInfList";
         public const string GetReceByomeiChecking = "GetReceByomeiChecking";
         public const string SaveReceiptEdit = "SaveReceiptEdit";
+        public const string SaveReceStatus = "SaveReceStatus";
+        public const string GetReceStatus = "GetReceStatus";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
@@ -260,5 +265,11 @@
 
         //WeightedSetConfirmation
         public const string IsOpenWeightChecking = "IsOpenWeightChecking";
+
+        //ReceiptCreation
+        public const string CreateUKEFile = "CreateUKEFile";
+
+        //TenMstMaintenance
+        public const string GetListTenMstOrigin = "GetListTenMstOrigin";
     }
 }

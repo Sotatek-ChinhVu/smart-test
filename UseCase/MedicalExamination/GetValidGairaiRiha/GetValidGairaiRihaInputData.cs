@@ -1,19 +1,17 @@
-﻿using Domain.Models.OrdInfs;
-using UseCase.Core.Sync.Core;
-using UseCase.MedicalExamination.UpsertTodayOrd;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.GetValidGairaiRiha
 {
     public class GetValidGairaiRihaInputData : IInputData<GetValidGairaiRihaOutputData>
     {
-        public GetValidGairaiRihaInputData(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<OdrInfItemInputData> allOdrInf)
+        public GetValidGairaiRihaInputData(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
         {
             HpId = hpId;
             PtId = ptId;
             RaiinNo = raiinNo;
             SinDate = sinDate;
             SyosaiKbn = syosaiKbn;
-            AllOdrInf = allOdrInf;
+            AllOdrInfItem = allOdrInfItem;
         }
 
         public int HpId { get; private set; }
@@ -21,6 +19,6 @@ namespace UseCase.MedicalExamination.GetValidGairaiRiha
         public long RaiinNo { get; private set; }
         public int SinDate { get; private set; }
         public int SyosaiKbn { get; private set; }
-        public List<OdrInfItemInputData> AllOdrInf { get; private set; }
+        public List<Tuple<string, string>> AllOdrInfItem { get; private set; }
     }
 }

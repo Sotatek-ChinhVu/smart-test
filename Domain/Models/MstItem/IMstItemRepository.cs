@@ -63,5 +63,7 @@ namespace Domain.Models.MstItem
         List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
 
         List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate);
+
+        List<TenMstOriginModel> GetGroupTenMst(string itemCd);
     }
 }

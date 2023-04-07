@@ -14,5 +14,8 @@ namespace Domain.Models.Todo
         bool CheckExistedPtId(List<long> ptIds);
 
         List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone);
+        
+        //Item1: TodoNo, Item2: TodoEdaNo, Item3: PtId
+        bool CheckExist(List<Tuple<int, int, long>> inputs);
     }
 }

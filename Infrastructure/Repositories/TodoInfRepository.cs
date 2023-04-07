@@ -19,16 +19,13 @@ namespace Infrastructure.Repositories
             foreach (var input in upsertTodoList)
             {
                 var todoInfs = TrackingDataContext.TodoInfs.FirstOrDefault(x => x.TodoNo == input.TodoNo && x.TodoEdaNo == input.TodoEdaNo && x.PtId == input.PtId && x.IsDeleted == DeleteTypes.None);
-                if (input.IsDeleted == DeleteTypes.Deleted)
+                if (todoInfs != null)
                 {
-                    if (todoInfs != null)
+                    if (input.IsDeleted == DeleteTypes.Deleted)
                     {
                         todoInfs.IsDeleted = DeleteTypes.Deleted;
                     }
-                }
-                else
-                {
-                    if (todoInfs != null)
+                    else
                     {
                         todoInfs.SinDate = input.SinDate;
                         todoInfs.RaiinNo = input.RaiinNo;
@@ -43,10 +40,10 @@ namespace Infrastructure.Repositories
                         todoInfs.UpdateId = userId;
                         todoInfs.UpdateMachine = string.Empty;
                     }
-                    else
-                    {
-                        TrackingDataContext.TodoInfs.AddRange(ConvertTo_TodoGrpMst(input, userId, hpId));
-                    }
+                }
+                else
+                {
+                    TrackingDataContext.TodoInfs.AddRange(ConvertTo_TodoGrpMst(input, userId, hpId));
                 }
             }
             TrackingDataContext.SaveChanges();
@@ -84,22 +81,16 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public bool CheckExistedTodoNo(List<int> todoNos)
+        /// <summary>
+        /// item1:TodoNo, item2: TodoEdaNo, item3: PtId
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <returns></returns>
+        public bool CheckExist(List<Tuple<int, int, long>> inputs)
         {
-            var countTodoNos = NoTrackingDataContext.TodoInfs.Where(x => x.TodoNo > 0).Distinct().Count(x => todoNos.Contains(x.TodoNo));
-            return todoNos.Count == countTodoNos;
-        }
-
-        public bool CheckExistedTodoEdaNo(List<int> todoEdaNos)
-        {
-            var countTodoEdaNos = NoTrackingDataContext.TodoInfs.Where(x => x.TodoEdaNo > 0).Distinct().Count(x => todoEdaNos.Contains(x.TodoEdaNo));
-            return todoEdaNos.Count == countTodoEdaNos;
-        }
-
-        public bool CheckExistedPtId(List<long> ptIds)
-        {
-            var countptIds = NoTrackingDataContext.TodoInfs.Where(x => x.PtId > 0).Distinct().Count(x => ptIds.Contains(x.PtId));
-            return ptIds.Count == countptIds;
+            inputs = inputs.Distinct().ToList();
+            var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 ==  t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
+            return inputs.Count == countptIds;
         }
 
         public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone)

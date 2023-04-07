@@ -352,6 +352,30 @@ namespace Domain.Models.Diseases
             HosokuCmt = string.Empty;
         }
 
+        public PtDiseaseModel(long ptId, string byomeiCd, long seqNo, int sortNo, int syubyoKbn, int sikkanKbn, string byomei, int startDate, int tenkiDate, string hosokuCmt, int togetuByomei, int isNodspRece, int tenkiKbn, List<PrefixSuffixModel> prefixList)
+        {
+            PtId = ptId;
+            ByomeiCd = byomeiCd;
+            SeqNo = seqNo;
+            SyubyoKbn = syubyoKbn;
+            SikkanKbn = sikkanKbn;
+            SortNo = sortNo;
+            Byomei = byomei;
+            StartDate = startDate;
+            TenkiDate = tenkiDate;
+            HosokuCmt = hosokuCmt;
+            TogetuByomei = togetuByomei;
+            IsNodspRece = isNodspRece;
+            TenkiKbn = tenkiKbn;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            PrefixSuffixList.AddRange(prefixList);
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            ItemCd = string.Empty;
+        }
+
         public ValidationStatus Validation()
         {
             #region common
@@ -540,6 +564,8 @@ namespace Domain.Models.Diseases
         public bool IsAdopted { get; private set; }
 
         public string FullByomei { get => string.Concat(Byomei, HosokuCmt); }
+
+        public bool IsDspRece { get => IsNodspRece == 0; }
 
         public int ReceTenkiKbn
         {

@@ -19,6 +19,11 @@ public class PtHokenPatternModel
         EndDate = endDate;
     }
 
+    public PtHokenPatternModel()
+    {
+        HokenMemo = string.Empty;
+    }
+
     public long PtId { get; set; }
 
     public int HokenPid { get; set; }

@@ -42,14 +42,9 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public int IsDeleted { get; set; }
 
-        public DateTime UpdateDate { get; set; }
-
-        public int UpdateId { get; set; }
-
-        public string UpdateMachine { get; set; } = String.Empty;
-        public PtPregnancyModel Map()
+        public PtPregnancyItem Map()
         {
-            return new PtPregnancyModel(Id,
+            return new PtPregnancyItem(Id,
             HpId,
             PtId,
             SeqNo,
@@ -60,9 +55,6 @@ namespace EmrCloudApi.Requests.SpecialNote
             OvulationDate,
             OvulationDueDate,
             IsDeleted,
-            UpdateDate,
-            UpdateId,
-            UpdateMachine,
             0);
         }
 
@@ -183,10 +175,9 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public string CmtCd2 { get; set; } = String.Empty;
 
-        public DateTime UpdateDate { get; set; }
         public KensaInfDetailModel Map()
         {
-            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, UpdateDate, string.Empty, string.Empty, 0);
+            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, DateTime.UtcNow, string.Empty, string.Empty, 0);
         }
     }
 }

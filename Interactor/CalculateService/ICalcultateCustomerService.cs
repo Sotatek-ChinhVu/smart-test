@@ -13,19 +13,30 @@ namespace Interactor.CalculateService
         /// <param name="input">object json</param>
         /// <returns></returns>
         Task<CalcultateCustomerResponse<T>> RunCaculationPostAsync<T>(TypeCalculate type, object input);
+
+        /// <summary>
+        /// Run not need get response
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        Task RunCaculationPostAsync(TypeCalculate type, object input);
     }
 
     public class CalcultateCustomerResponse<T>
     {
-        public CalcultateCustomerResponse(T data, HttpStatusCode status)
+        public CalcultateCustomerResponse(T data, HttpStatusCode status, bool isSuccess)
         {
             Data = data;
             Status = status;
+            IsSuccess = isSuccess;
         }
 
         public T Data { get; private set; }
 
         public HttpStatusCode Status { get; private set; }
+
+        public bool IsSuccess { get; private set; }
     }
 
     public enum TypeCalculate
@@ -33,6 +44,8 @@ namespace Interactor.CalculateService
         [Description("ReceFutan/ReceFutanCalculateMain")]
         ReceFutanCalculateMain,
         [Description("Calculate/RunCalculateMonth")]
-        RunCalculateMonth
+        RunCalculateMonth,
+        [Description("Receden/GetRecedenData")]
+        GetRecedenData
     }
 }

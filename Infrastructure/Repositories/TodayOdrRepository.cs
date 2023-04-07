@@ -10,6 +10,7 @@ using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -125,26 +126,109 @@ namespace Infrastructure.Repositories
 
 
 
-        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId, byte status)
+        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId, byte modeSaveData)
         {
             var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
 
             if (raiinInf != null)
             {
-                raiinInf.Status = status != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
+                var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
+                raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
+                    //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;
                 raiinInf.SanteiKbn = santeiKbn;
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
-                raiinInf.UketukeTime = uketukeTime;
-                raiinInf.SinEndTime = sinEndTime;
-                raiinInf.SinStartTime = sinStartTime;
+                raiinInf.UketukeTime = string.IsNullOrEmpty(preProcess.uketukeTime) ? raiinInf.UketukeTime : preProcess.uketukeTime;
+                raiinInf.SinEndTime = string.IsNullOrEmpty(preProcess.sinEndTime) ? raiinInf.SinEndTime : preProcess.sinEndTime;
+                raiinInf.SinStartTime = string.IsNullOrEmpty(preProcess.sinStartTime) ? raiinInf.SinStartTime : preProcess.sinStartTime;
                 raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 TrackingDataContext.SaveChanges();
             }
+        }
+
+        private (int status, string sinStartTime, string sinEndTime, string uketukeTime) GetModeSaveDate(byte modeSaveData, int status, string sinEndTime, string sinStartTime, string uketukeTime)
+        {
+            string sinStartTimeReCalculate = "", sinEndTimeReCalculate = "", uketukeTimeReCalculate = "";
+            int statusRecalculate = 0;
+
+            if (modeSaveData == (byte)ModeSaveData.KeisanSave)
+            {
+                if (status != RaiinState.Waiting && status != RaiinState.Settled)
+                {
+                    // Update mode
+                    if (status >= RaiinState.TempSave)
+                    {
+                        //診察終了時間がなければ
+                        if (string.IsNullOrEmpty(sinEndTime) || sinEndTime == "0")
+                        {
+                            sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        }
+                    }
+                    // Add new mode
+                    else
+                    {
+                        sinStartTimeReCalculate = sinStartTime;
+                        sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        // 来院時間がないときは更新する
+                        if (string.IsNullOrEmpty(uketukeTime) || uketukeTime == "0")
+                        {
+                            uketukeTimeReCalculate = sinStartTime;
+                        }
+                    }
+
+                    //if (status != RaiinState.Calculate)
+                    //{
+                    //    eventCode = EventCode.UpdateToCalculate;
+                    //}
+                    statusRecalculate = RaiinState.Calculate;
+                }
+            }
+            // 保存
+            else if (modeSaveData == (byte)ModeSaveData.KaikeiSave)
+            {
+                // Update mode
+                if (status >= RaiinState.TempSave)
+                {
+                    if (status <= RaiinState.Waiting)
+                    {
+                        //if (RaiinInfModel.Status != RaiinState.Waiting)
+                        //{
+                        //    eventCode = EventCode.UpdateToWaiting;
+                        //}
+                        statusRecalculate = RaiinState.Waiting;
+                    }
+                    if (status == RaiinState.Calculate || status == RaiinState.Waiting)
+                    {
+                        //診察終了時間がなければ
+                        if (string.IsNullOrEmpty(sinEndTime) || sinEndTime == "0")
+                        {
+                            sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow());
+                        }
+                    }
+                }
+                // Add new mode
+                else
+                {
+                    sinStartTimeReCalculate = sinStartTime;
+                    sinEndTimeReCalculate = CIUtil.DateTimeToTime(CIUtil.GetJapanDateTimeNow()); ;
+                    // 来院時間がないときは更新する
+                    if (string.IsNullOrEmpty(uketukeTime) || uketukeTime == "0")
+                    {
+                        uketukeTimeReCalculate = sinStartTime;
+                    }
+                    //if (status != RaiinState.Waiting)
+                    //{
+                    //    eventCode = EventCode.UpdateToWaiting;
+                    //}
+                    statusRecalculate = RaiinState.Waiting;
+                }
+            }
+
+            return new(statusRecalculate, sinEndTimeReCalculate, sinStartTimeReCalculate, uketukeTimeReCalculate);
         }
 
         private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
@@ -534,6 +618,8 @@ namespace Infrastructure.Repositories
                     if (ordInfo != null)
                     {
                         ordInfo.IsDeleted = DeleteTypes.Deleted;
+                        ordInfo.UpdateId = userId;
+                        ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                 }
                 else
@@ -614,6 +700,8 @@ namespace Infrastructure.Repositories
                     else
                     {
                         ordInf.IsDeleted = DeleteTypes.Deleted;
+                        ordInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        ordInf.UpdateId = userId;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
@@ -984,7 +1072,7 @@ namespace Infrastructure.Repositories
             return ptByomeiModels;
         }
 
-        public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double>> currentOdrList)
+        public List<(int, int, List<Tuple<string, string, long>>)> GetAutoAddOrders(int hpId, long ptId, int sinDate, List<Tuple<int, int, string>> addingOdrList, List<Tuple<int, int, string, double, int>> currentOdrList)
         {
             var itemCds = new List<string>();
             var autoItems = new List<(int, int, List<Tuple<string, string, long>>)>();
@@ -1051,7 +1139,14 @@ namespace Infrastructure.Repositories
                             {
                                 if (autoOdrDetailItemCdList.Contains(item.Item3))
                                 {
-                                    countInCurrentOdr += (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    if (item.Item5 == DeleteTypes.None)
+                                    {
+                                        countInCurrentOdr += (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    }
+                                    else
+                                    {
+                                        countInCurrentOdr -= (item.Item4 <= 0 || ItemCdConst.ZaitakuTokushu.Contains(item.Item3)) ? 1 : item.Item4;
+                                    }
                                 }
                             }
                         }
@@ -1061,7 +1156,14 @@ namespace Infrastructure.Repositories
                             {
                                 if (autoOdrDetailItemCdList.Contains(item.Item3))
                                 {
-                                    countInCurrentOdr++;
+                                    if (item.Item5 == DeleteTypes.None)
+                                    {
+                                        countInCurrentOdr++;
+                                    }
+                                    else
+                                    {
+                                        countInCurrentOdr--;
+                                    }
                                 }
                             }
                         }
@@ -1570,7 +1672,7 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// 外来リハ初再診チェック
         /// </summary>
-        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<OrdInfModel> allOdrInf)
+        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
         {
             var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                   p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 0)?.Val ?? 0;
@@ -1626,15 +1728,12 @@ namespace Infrastructure.Repositories
             {
                 //外来リハビリテーション診療料がオーダーされているか？
                 string rihaItemName = string.Empty;
-                foreach (var odrInf in allOdrInf)
+                foreach (var allOdrInfItem in allOdrInfItems)
                 {
-                    foreach (var detail in odrInf.OrdInfDetails)
+                    if (allOdrInfItem.Item1 == ItemCdConst.IgakuGairaiRiha1 || allOdrInfItem.Item1 == ItemCdConst.IgakuGairaiRiha2)
                     {
-                        if (detail.ItemCd == ItemCdConst.IgakuGairaiRiha1 || detail.ItemCd == ItemCdConst.IgakuGairaiRiha2)
-                        {
-                            rihaItemName = detail.ItemName;
-                            break;
-                        }
+                        rihaItemName = allOdrInfItem.Item2;
+                        break;
                     }
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
@@ -1651,7 +1750,7 @@ namespace Infrastructure.Repositories
         /// 予防注射再診チェック
         /// </summary>
         /// <returns></returns>
-        public (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<OrdInfModel> allOrder)
+        public (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<string> itemCds)
         {
             var systemSetting = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                   p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 2)?.Val ?? 0;
@@ -1660,54 +1759,49 @@ namespace Infrastructure.Repositories
 
             if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
             {
-                var itemCds = new List<string>();
-                foreach (var item in allOrder)
-                {
-                    itemCds.AddRange(item.OrdInfDetails.Select(o => o.ItemCd));
-                }
+                itemCds = itemCds.Distinct().ToList();
+
                 var tenMstItems = NoTrackingDataContext.TenMsts.Where(p =>
                p.HpId == hpId &&
                p.StartDate <= sinDate &&
                p.EndDate >= sinDate &&
                itemCds.Contains(p.ItemCd));
-                foreach (var odrInf in allOrder)
+                foreach (var itemCd in itemCds)
                 {
                     isExistYoboItemOnly = true;
                     bool hasItemDetail = false;
 
-                    foreach (var detail in odrInf.OrdInfDetails)
+                    if (!string.IsNullOrEmpty(itemCd) && !IsCommentMaster(itemCd))
                     {
-                        if (!string.IsNullOrEmpty(detail.ItemCd) && !detail.IsCommentMaster)
+                        hasItemDetail = true;
+                        var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == itemCd) ?? new();
+                        if (tenMstItem != null)
                         {
-                            hasItemDetail = true;
-                            var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == detail.ItemCd) ?? new();
-                            if (tenMstItem != null)
+                            if (tenMstItem.JihiSbt == 0)
                             {
-                                if (tenMstItem.JihiSbt == 0)
-                                {
-                                    isExistYoboItemOnly = false;
-                                    break;
-                                }
-                                var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
-                                                .FirstOrDefault(i => i.HpId == hpId
-                                                && i.IsDeleted == DeleteTypes.None
-                                                && i.JihiSbt == tenMstItem.JihiSbt);
-                                if (jihiSbtItem != null)
-                                {
-                                    if (jihiSbtItem.IsYobo != 1)
-                                    {
-                                        isExistYoboItemOnly = false;
-                                        break;
-                                    }
-                                }
-                                else
+                                isExistYoboItemOnly = false;
+                                break;
+                            }
+                            var jihiSbtItem = NoTrackingDataContext.JihiSbtMsts
+                                            .FirstOrDefault(i => i.HpId == hpId
+                                            && i.IsDeleted == DeleteTypes.None
+                                            && i.JihiSbt == tenMstItem.JihiSbt);
+                            if (jihiSbtItem != null)
+                            {
+                                if (jihiSbtItem.IsYobo != 1)
                                 {
                                     isExistYoboItemOnly = false;
                                     break;
                                 }
                             }
+                            else
+                            {
+                                isExistYoboItemOnly = false;
+                                break;
+                            }
                         }
                     }
+
                     if (!hasItemDetail) // Contain comment only
                     {
                         isExistYoboItemOnly = false;
@@ -1720,6 +1814,21 @@ namespace Infrastructure.Repositories
             }
 
             return (systemSetting, isExistYoboItemOnly);
+        }
+
+        private bool IsCommentMaster(string itemCd)
+        {
+            return !string.IsNullOrEmpty(itemCd) && (itemCd.StartsWith(ItemCdConst.Comment820Pattern) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment830Pattern) || itemCd.StartsWith(ItemCdConst.Comment831Pattern)
+
+                || itemCd.StartsWith(ItemCdConst.Comment850Pattern) || itemCd.StartsWith(ItemCdConst.Comment851Pattern) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment852Pattern) || itemCd.StartsWith(ItemCdConst.Comment853Pattern) ||
+
+                (itemCd.StartsWith(ItemCdConst.Comment840Pattern) && itemCd != ItemCdConst.GazoDensibaitaiHozon) ||
+
+                itemCd.StartsWith(ItemCdConst.Comment842Pattern) || itemCd.StartsWith(ItemCdConst.Comment880Pattern));
         }
 
         private int GetLastDaySantei(int hpId, long ptId, int sinDate, long raiinNo, string itemCd)
@@ -2384,6 +2493,7 @@ namespace Infrastructure.Repositories
             foreach (var checkingOdr in addingOdrList)
             {
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                odrInfDetailIndex = 0;
                 foreach (var detail in odrInfDetails)
                 {
                     if (string.IsNullOrEmpty(detail.ItemCd))
@@ -2418,7 +2528,14 @@ namespace Infrastructure.Repositories
                                     {
                                         if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
-                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            if (item.IsDeleted == DeleteTypes.None)
+                                            {
+                                                countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            }
+                                            else
+                                            {
+                                                countInCurrentOdr -= (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                            }
                                         }
                                     }
                                 }
@@ -2431,7 +2548,14 @@ namespace Infrastructure.Repositories
                                     {
                                         if (item.Id != checkingOdr.Id && itemDetail.ItemCd == detail.ItemCd)
                                         {
-                                            countInCurrentOdr++;
+                                            if (item.IsDeleted == DeleteTypes.None)
+                                            {
+                                                countInCurrentOdr++;
+                                            }
+                                            else
+                                            {
+                                                countInCurrentOdr--;
+                                            }
                                         }
                                     }
                                 }
@@ -2491,7 +2615,7 @@ namespace Infrastructure.Repositories
                                 stringBuilder.Append("'に置き換えますか？");
 
                                 string msg = stringBuilder.ToString();
-
+                                detail.ChangeItemCd(targetItem.ItemCd);
                                 result.Add(new(1, msg, odrInfIndex, odrInfDetailIndex, targetItem, 0));
                             }
                             else if (totalSanteiCount + detail.Suryo > santeiCntCheck.MaxCnt)
@@ -2550,14 +2674,16 @@ namespace Infrastructure.Repositories
             foreach (var checkingOdr in addingOdrList)
             {
                 var index = odrInfs.FindIndex(o => o.Equals(checkingOdr));
-                var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
-                                                     && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
-                                                     && odrInf.InoutKbn == checkingOdr?.InoutKbn
-                                                     && odrInf.SyohoSbt == checkingOdr?.SyohoSbt
-                                                     && odrInf.SikyuKbn == checkingOdr.SikyuKbn
-                                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
-                                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
+                //var checkGroupOrder = currentListOrder.FirstOrDefault(odrInf => odrInf.HokenPid == checkingOdr.HokenPid
+                //                                     && odrInf.GroupKoui.Value == checkingOdr.GroupKoui.Value
+                //                                     && odrInf.InoutKbn == checkingOdr?.InoutKbn
+                //                                     && odrInf.SyohoSbt == checkingOdr?.SyohoSbt
+                //                                     && odrInf.SikyuKbn == checkingOdr.SikyuKbn
+                //                                     && odrInf.TosekiKbn == checkingOdr.TosekiKbn
+                //                                     && odrInf.SanteiKbn == checkingOdr.SanteiKbn);
                 var odrInfDetails = checkingOdr.OrdInfDetails.Where(d => !d.IsEmpty).ToList();
+                bool isAdded = false;
+                odrInfDetailIndex = 0;
                 foreach (var detail in odrInfDetails)
                 {
                     var targetItem = targetItems.FirstOrDefault(t => t.Item3 == odrInfIndex && t.Item4 == odrInfDetailIndex);
@@ -2653,12 +2779,13 @@ namespace Infrastructure.Repositories
                             if (itemShugiList.Count == 1)
                             {
                                 checkingOdr.ChangeOdrKouiKbn(detail.SinKouiKbn);
-                                if (checkGroupOrder != null)
-                                {
-                                    result.Add(new(index, new(DeleteTypes.Deleted)));
-                                    detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
-                                    result.Add(new(index, checkingOdr));
-                                }
+                                //if (checkGroupOrder != null)
+                                //{
+                                //result.Add(new(index, new(DeleteTypes.Deleted)));
+                                detail.ChangeOrdInfDetail(itemCd, itemName, sinKouiKbn, kohatuKbn, drugKbn, unitSBT, unitName, termVal, suryo, yohoKbn, ipnCd, ipnName, kokuji1, kokuji2, syohoKbn, syohoLimitKbn);
+                                //result.Add(new(index, checkingOdr));
+                                isAdded = true;
+                                //}
                             }
                         }
                         else
@@ -2823,18 +2950,26 @@ namespace Infrastructure.Repositories
                                 );
 
                             result.Add(new(-1, odrInf));
-                            result.Add(new(index, new(DeleteTypes.Deleted)));
+                            checkingOdr.OrdInfDetails.Remove(detail);
+                            isAdded = true;
                         }
                     }
                     else
                     {
                         detail.ChangeSuryo(targetItem.Item6);
-                        result.Add(new(index, new(DeleteTypes.Deleted)));
-                        result.Add(new(index, checkingOdr));
+                        //result.Add(new(index, new(DeleteTypes.Deleted)));
+                        //result.Add(new(index, checkingOdr));
+                        isAdded = true;
                     }
                     odrInfDetailIndex++;
                 }
 
+                if (isAdded)
+                {
+                    result.Add(new(index, new(DeleteTypes.Deleted)));
+                    result.Add(new(index, checkingOdr));
+                }
+          
                 odrInfIndex++;
             }
 

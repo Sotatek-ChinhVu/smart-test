@@ -1027,8 +1027,8 @@ namespace EmrCalculateApi.Ika.DB.Finder
                 from a in tm.DefaultIfEmpty()
                 where (
                         (
-                            a.TenMst.StartDate <= (b == null ? sinDtl.sinDtl.SinYm * 100 + 28 : b.LastDate) &&
-                            (a.TenMst.EndDate >= (b == null ? sinDtl.sinDtl.SinYm * 100 + 28 : b.LastDate) || a.TenMst.EndDate == 12341234)
+                            a.TenMst.StartDate <= (b.SeqNo == 0 ? sinDtl.sinDtl.SinYm * 100 + 28 : b.LastDate) &&
+                            (a.TenMst.EndDate >= (b.SeqNo == 0 ? sinDtl.sinDtl.SinYm * 100 + 28 : b.LastDate) || a.TenMst.EndDate == 12341234)
                         )
                         &&
                     (

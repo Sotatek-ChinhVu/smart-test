@@ -562,5 +562,11 @@ namespace Domain.Models.OrdInfDetails
             IsDummy = isDummy;
             return this;
         }
+
+        public OrdInfDetailModel ChangeItemCd(string itemCd)
+        {
+            ItemCd = itemCd;
+            return this;
+        }
     }
 }

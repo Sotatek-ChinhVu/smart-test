@@ -492,8 +492,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
 
                         var rootSet = listCopyItems.FirstOrDefault(item => item.SetCd == copyItem.SetCd);
+                        var rootSetCd = 0;
                         if (rootSet != null)
                         {
+                            rootSetCd = rootSet.SetCd;
                             listCopyItems.Remove(rootSet);
 
                             rootSet.SetCd = 0;
@@ -530,13 +532,22 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         foreach (var copy in listCopyItems)
                         {
                             var pasteItemToMap = listPasteItems.FirstOrDefault(paste => paste.Level1 == copy.Level1 && paste.Level2 == copy.Level2 && paste.Level3 == copy.Level3);
-                            if (pasteItemToMap != null)
+                            if (pasteItemToMap != null && !dictionarySetMstMap.ContainsKey(copy.SetCd))
                             {
                                 dictionarySetMstMap.Add(copy.SetCd, pasteItemToMap);
                             }
                         }
 
                         var listCopySetCds = listCopyItems.Select(item => item.SetCd).ToList();
+                        if (rootSet != null && !dictionarySetMstMap.ContainsKey(rootSet.SetCd))
+                        {
+                            listCopySetCds.Add(rootSetCd);
+                            var pasteItemToMap = listPasteItems.FirstOrDefault(paste => paste.Level1 == rootSet.Level1 && paste.Level2 == rootSet.Level2 && paste.Level3 == rootSet.Level3);
+                            if (pasteItemToMap != null)
+                            {
+                                dictionarySetMstMap.Add(rootSetCd, pasteItemToMap);
+                            }
+                        }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
 
                         // Set level for item 
@@ -652,7 +663,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             item.Level3 = 0;
                         }
                     }
-                    else
+                    // if copy item is level 2
+                    else if (GetLevelItem(copyItem) == 2)
                     {
                         foreach (var item in listPasteItems)
                         {
@@ -660,8 +672,18 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             item.Level2 = indexPaste;
                         }
                     }
+                    // if copy item is level 3
+                    else if (GetLevelItem(copyItem) == 3)
+                    {
+                        foreach (var item in listPasteItems)
+                        {
+                            item.Level1 = pasteItem.Level1;
+                            item.Level2 = indexPaste;
+                            item.Level3 = 0;
+                        }
+                    }
                     break;
-                // if paste item is level 1
+                // if paste item is level 2
                 case 2:
                     foreach (var item in listPasteItems)
                     {
@@ -762,6 +784,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
+        listCopySetCds = listCopySetCds.Distinct().ToList();
         // Order inf
         var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();

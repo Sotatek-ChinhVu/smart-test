@@ -31,9 +31,7 @@ namespace EmrCloudApi.Presenters.Todo
             UpsertTodoInfStatus.InvalidTerm => ResponseMessage.InvalidTerm,
             UpsertTodoInfStatus.InvalidIsDone => ResponseMessage.InvalidIsDone,
             UpsertTodoInfStatus.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
-            UpsertTodoInfStatus.InvalidExistedTodoNo => ResponseMessage.InvalidExistedTodoNo,
-            UpsertTodoInfStatus.InvalidExistedTodoEdaNo => ResponseMessage.InvalidExistedTodoEdaNo,
-            UpsertTodoInfStatus.InvalidExistedPtId => ResponseMessage.InvalidExistedPtId,
+            UpsertTodoInfStatus.InvalidExistedInput => ResponseMessage.InvalidExistedInput,
             _ => string.Empty
         };
     }

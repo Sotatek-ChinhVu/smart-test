@@ -203,7 +203,7 @@ namespace Interactor.ReceSeikyu
                                 _receSeikyuRepository.RemoveReceSeikyuDuplicateIfExist(receSeikyu.PtId, receSeikyu.SinYm, receSeikyu.HokenId, inputData.UserAct, inputData.HpId);
 
                                 //Call httpClient 
-                                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                                _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                                 {
                                     PtIds = new List<long>() { receSeikyu.PtId },
                                     SeikyuYm = receSeikyu.SeikyuYm
@@ -213,7 +213,7 @@ namespace Interactor.ReceSeikyu
                             // Case insert new sinym
                             else
                             {
-                                _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                                _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                                 {
                                     PtIds = new List<long>() { receSeikyu.PtId },
                                     SeikyuYm = receSeikyu.SinYm
@@ -241,7 +241,7 @@ namespace Interactor.ReceSeikyu
                             {
                                 break;
                             }
-                            _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.RunCalculateMonth, new
+                            _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.RunCalculateMonth, new
                             {
                                 HpId = inputData.HpId,
                                 SeikyuYm = receInfos[i].SeikyuYm,
@@ -262,7 +262,7 @@ namespace Interactor.ReceSeikyu
                             {
                                 break;
                             }
-                            _calcultateCustomerService.RunCaculationPostAsync<string>(TypeCalculate.ReceFutanCalculateMain, new
+                            _calcultateCustomerService.RunCaculationPostAsync(TypeCalculate.ReceFutanCalculateMain, new
                             {
                                 SeikyuYm = receInfos[i].SeikyuYm,
                                 PtIds = new List<long> { receInfos[i].PtId }

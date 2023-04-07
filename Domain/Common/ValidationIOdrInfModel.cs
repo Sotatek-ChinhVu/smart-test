@@ -51,6 +51,14 @@ namespace Domain.Common
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsage);
                 }
+                if (!checkOther && checkDrugOfDetail && !checkRefill)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrugButNotUsage);
+                }
+                if (!checkOther && checkUsageOfDetail && !checkRefill)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotDrug);
+                }
             }
 
             //Check has not Injection 
