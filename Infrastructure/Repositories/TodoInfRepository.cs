@@ -191,10 +191,6 @@ namespace Infrastructure.Repositories
                             HokenPatterns = listHokenPatterns.FirstOrDefault()
                         };
 
-            var count1 = query.Count();
-
-            var count0 = todoInfRes2.Count();
-
             result = query.AsEnumerable().Select((x) => new TodoInfModel(
                             x.PtInfs.PtNum,
                             x.RaiinInfs.SinDate,
@@ -215,8 +211,7 @@ namespace Infrastructure.Repositories
                             x.HokenPatterns.HokenKbn,
                             x.HokenInf.HokensyaNo ?? string.Empty,
                             x.HokenInf.HokenId
-                            ))
-                    .ToList();
+                            )).OrderByDescending(x => x.CreateDate).ThenBy(x => x.PtId).ToList();
             return result;
         }
     }
