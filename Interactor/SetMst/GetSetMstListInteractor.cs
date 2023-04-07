@@ -36,12 +36,11 @@ namespace Interactor.SetMst
                     return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSinDate);
                 }
                 var generationId = _setGenerationRepository.GetGenerationId(inputData.HpId, inputData.SinDate);
-                var sets = _setRepository.GetList(inputData.HpId, inputData.SetKbn, inputData.SetKbnEdaNo, inputData.TextSearch);
-                var result = sets.Where(r => r.GenerationId == generationId);
+                var sets = _setRepository.GetList(inputData.HpId, inputData.SetKbn, inputData.SetKbnEdaNo, generationId, inputData.TextSearch);
 
-                var output = BuildTreeSetKbn(result, !string.IsNullOrEmpty(inputData.TextSearch));
+                var output = BuildTreeSetKbn(sets);
 
-                return (output?.Count > 0) ? new GetSetMstListOutputData(BuildTreeSetKbn(result, !string.IsNullOrEmpty(inputData.TextSearch)), GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
+                return (output?.Count > 0) ? new GetSetMstListOutputData(output, GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
             }
             finally
             {
@@ -49,10 +48,10 @@ namespace Interactor.SetMst
                 _setRepository.ReleaseResource();
             }
         }
-        private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas, bool isSearch)
+        private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas)
         {
             List<GetSetMstListOutputItem> result = new List<GetSetMstListOutputItem>();
-            var topNodes = !isSearch ? datas?.Where(c => c.Level2 == 0 && c.Level3 == 0) : datas;
+            var topNodes =  datas?.Where(c => c.Level2 == 0 && c.Level3 == 0);
             if (topNodes?.Any() != true) { return result; }
             var obj = new object();
 
