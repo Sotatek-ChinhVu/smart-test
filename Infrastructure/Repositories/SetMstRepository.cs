@@ -492,8 +492,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
 
                         var rootSet = listCopyItems.FirstOrDefault(item => item.SetCd == copyItem.SetCd);
+                        var rootSetCd = 0;
                         if (rootSet != null)
                         {
+                            rootSetCd = rootSet.SetCd;
                             listCopyItems.Remove(rootSet);
 
                             rootSet.SetCd = 0;
@@ -539,11 +541,11 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         var listCopySetCds = listCopyItems.Select(item => item.SetCd).ToList();
                         if (rootSet != null && !dictionarySetMstMap.ContainsKey(rootSet.SetCd))
                         {
-                            listCopySetCds.Add(rootSet.SetCd);
+                            listCopySetCds.Add(rootSetCd);
                             var pasteItemToMap = listPasteItems.FirstOrDefault(paste => paste.Level1 == rootSet.Level1 && paste.Level2 == rootSet.Level2 && paste.Level3 == rootSet.Level3);
                             if (pasteItemToMap != null)
                             {
-                                dictionarySetMstMap.Add(rootSet.SetCd, pasteItemToMap);
+                                dictionarySetMstMap.Add(rootSetCd, pasteItemToMap);
                             }
                         }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
