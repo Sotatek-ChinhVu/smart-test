@@ -268,5 +268,8 @@
 
         //ReceiptCreation
         public const string CreateUKEFile = "CreateUKEFile";
+
+        //TenMstMaintenance
+        public const string GetListTenMstOrigin = "GetListTenMstOrigin";
     }
 }
