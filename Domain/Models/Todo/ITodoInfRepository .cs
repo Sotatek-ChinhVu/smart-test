@@ -12,5 +12,7 @@ namespace Domain.Models.Todo
         bool CheckExistedTodoEdaNo(List<int> todoEdaNos);
 
         bool CheckExistedPtId(List<long> ptIds);
+
+        List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone);
     }
 }

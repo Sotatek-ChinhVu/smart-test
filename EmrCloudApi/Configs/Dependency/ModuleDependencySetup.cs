@@ -379,6 +379,7 @@ using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemGenerationConf;
+using UseCase.Todo.GetTodoInf;
 using UseCase.Todo.TodoGrpMst;
 using UseCase.Todo.TodoInf;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -938,6 +939,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
+            busBuilder.RegisterUseCase<GetTodoInfInputData, GetTodoInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

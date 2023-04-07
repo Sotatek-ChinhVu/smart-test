@@ -1,5 +1,4 @@
-﻿using Domain.Models.Todo;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
 using EmrCloudApi.Presenters.Todo;
 using EmrCloudApi.Requests.Todo;
@@ -9,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
+using UseCase.Todo.GetTodoInf;
 using UseCase.Todo.TodoInf;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -47,6 +47,17 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpsertTodoInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpsertTodoInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetTodoInfResponse>> GetList([FromQuery] GetTodoInfRequest request)
+        {
+            var input = new GetTodoInfInputData(HpId, request.TodoNo, request.TodoEdaNo, request.PtId, request.IsDone);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetTodoInfPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTodoInfResponse>>(presenter.Result);
         }
     }
 }
