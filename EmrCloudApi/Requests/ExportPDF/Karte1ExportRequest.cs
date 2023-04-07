@@ -2,6 +2,8 @@
 
 public class Karte1ExportRequest
 {
+    public int HpId { get; set; }
+
     public long PtId { get; set; }
 
     public int SinDate { get; set; }
