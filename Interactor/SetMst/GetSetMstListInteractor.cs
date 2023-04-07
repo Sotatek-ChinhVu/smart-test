@@ -39,9 +39,9 @@ namespace Interactor.SetMst
                 var sets = _setRepository.GetList(inputData.HpId, inputData.SetKbn, inputData.SetKbnEdaNo, inputData.TextSearch);
                 var result = sets.Where(r => r.GenerationId == generationId);
 
-                var output = BuildTreeSetKbn(result);
+                var output = BuildTreeSetKbn(result, !string.IsNullOrEmpty(inputData.TextSearch));
 
-                return (output?.Count > 0) ? new GetSetMstListOutputData(BuildTreeSetKbn(result), GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
+                return (output?.Count > 0) ? new GetSetMstListOutputData(BuildTreeSetKbn(result, !string.IsNullOrEmpty(inputData.TextSearch)), GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
             }
             finally
             {
@@ -49,10 +49,10 @@ namespace Interactor.SetMst
                 _setRepository.ReleaseResource();
             }
         }
-        private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas)
+        private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas, bool isSearch)
         {
             List<GetSetMstListOutputItem> result = new List<GetSetMstListOutputItem>();
-            var topNodes = datas?.Where(c => c.Level2 == 0 && c.Level3 == 0);
+            var topNodes = !isSearch ? datas?.Where(c => c.Level2 == 0 && c.Level3 == 0) : datas;
             if (topNodes?.Any() != true) { return result; }
             var obj = new object();
 
