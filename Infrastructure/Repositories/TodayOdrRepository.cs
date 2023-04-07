@@ -3044,7 +3044,8 @@ namespace Infrastructure.Repositories
                    entity.CnvTermVal,
                    entity.DefaultVal,
                    entity.Kokuji1 ?? string.Empty,
-                   entity.Kokuji2 ?? string.Empty
+                   entity.Kokuji2 ?? string.Empty,
+                   string.Empty
                 ) : new();
 
         }
