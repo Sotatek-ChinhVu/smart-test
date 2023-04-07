@@ -1,15 +1,15 @@
-﻿using Domain.Models.TenMstMaintenance;
-using UseCase.TenMstMaintenance.GetListTenMstOrigin;
+﻿using Domain.Models.MstItem;
+using UseCase.MstItem.GetListTenMstOrigin;
 
-namespace Interactor.TenMstMaintenance
+namespace Interactor.MstItem
 {
     public class GetListTenMstOriginInteractor : IGetListTenMstOriginInputPort
     {
-        private readonly ITenMstMaintenanceRepository _tenMstMaintenanceRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public GetListTenMstOriginInteractor(ITenMstMaintenanceRepository tenMstMaintenanceRepository)
+        public GetListTenMstOriginInteractor(IMstItemRepository tenMstMaintenanceRepository)
         {
-            _tenMstMaintenanceRepository = tenMstMaintenanceRepository;
+            _mstItemRepository = tenMstMaintenanceRepository;
         }
 
         public GetListTenMstOriginOutputData Handle(GetListTenMstOriginInputData inputData)
@@ -19,7 +19,7 @@ namespace Interactor.TenMstMaintenance
                 if (string.IsNullOrEmpty(inputData.ItemCd))
                     return new GetListTenMstOriginOutputData(new List<TenMstOriginModel>(), GetListTenMstOriginStatus.InvalidItemCd);
 
-                var tenMstModelLists = _tenMstMaintenanceRepository.GetGroupTenMst(inputData.ItemCd);
+                var tenMstModelLists = _mstItemRepository.GetGroupTenMst(inputData.ItemCd);
                 if (!tenMstModelLists.Any())
                     return new GetListTenMstOriginOutputData(tenMstModelLists, GetListTenMstOriginStatus.NoData);
                 else
@@ -27,7 +27,7 @@ namespace Interactor.TenMstMaintenance
             }
             finally
             {
-                _tenMstMaintenanceRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
             }
         }
     }

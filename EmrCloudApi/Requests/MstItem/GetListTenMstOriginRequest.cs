@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Requests.TenMstMaintenance
+﻿namespace EmrCloudApi.Requests.MstItem
 {
     public class GetListTenMstOriginRequest
     {

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.TenMstMaintenance
+﻿namespace Domain.Models.MstItem
 {
     public class TenMstOriginModel
     {

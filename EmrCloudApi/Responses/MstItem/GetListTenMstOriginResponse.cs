@@ -1,6 +1,6 @@
-﻿using Domain.Models.TenMstMaintenance;
+﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Responses.GetListTenMstOrigin
+namespace EmrCloudApi.Responses.MstItem
 {
     public class GetListTenMstOriginResponse
     {

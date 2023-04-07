@@ -1,5 +1,5 @@
 ﻿
-namespace UseCase.TenMstMaintenance.GetListTenMstOrigin
+namespace UseCase.MstItem.GetListTenMstOrigin
 {
     public enum GetListTenMstOriginStatus
     {

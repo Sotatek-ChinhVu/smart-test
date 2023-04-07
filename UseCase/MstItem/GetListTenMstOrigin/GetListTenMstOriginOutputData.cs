@@ -1,7 +1,7 @@
-﻿using Domain.Models.TenMstMaintenance;
+﻿using Domain.Models.MstItem;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.TenMstMaintenance.GetListTenMstOrigin
+namespace UseCase.MstItem.GetListTenMstOrigin
 {
     public class GetListTenMstOriginOutputData : IOutputData
     {

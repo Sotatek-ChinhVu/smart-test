@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.TenMstMaintenance.GetListTenMstOrigin
+namespace UseCase.MstItem.GetListTenMstOrigin
 {
     public class GetListTenMstOriginInputData : IInputData<GetListTenMstOriginOutputData>
     {

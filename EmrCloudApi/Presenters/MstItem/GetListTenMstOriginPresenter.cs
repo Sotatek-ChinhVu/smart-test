@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using UseCase.TenMstMaintenance.GetListTenMstOrigin;
-using EmrCloudApi.Responses.GetListTenMstOrigin;
+using EmrCloudApi.Responses.MstItem;
+using UseCase.MstItem.GetListTenMstOrigin;
 
-namespace EmrCloudApi.Presenters.TenMstMaintenance
+namespace EmrCloudApi.Presenters.MstItem
 {
     public class GetListTenMstOriginPresenter : IGetListTenMstOriginOutputPort
     {
