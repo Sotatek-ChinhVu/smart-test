@@ -38,6 +38,30 @@ namespace Infrastructure.Repositories
                                                 ) : new HpInfModel();
         }
 
+        public List<HpInfModel> GetListHpInf(int hpId)
+        {
+            var hpInfs = NoTrackingDataContext.HpInfs.Where(u => u.HpId == hpId).OrderBy(u => u.StartDate).ToList();
+            if (hpInfs == null)
+            {
+                return new();
+            }
+
+            return hpInfs.Select(h => new HpInfModel(h.HpId,
+                                                     h.StartDate,
+                                                     h.HpCd ?? string.Empty,
+                                                     h.RousaiHpCd ?? string.Empty,
+                                                     h.HpName ?? string.Empty,
+                                                     h.ReceHpName ?? string.Empty,
+                                                     h.KaisetuName ?? string.Empty,
+                                                     h.PostCd ?? string.Empty,
+                                                     h.PrefNo,
+                                                     h.Address1 ?? string.Empty,
+                                                     h.Address2 ?? string.Empty,
+                                                     h.Tel ?? string.Empty,
+                                                     h.FaxNo ?? string.Empty,
+                                                     h.OtherContacts ?? string.Empty))
+                          .ToList();
+        }
         public void ReleaseResource()
         {
             DisposeDataContext();
