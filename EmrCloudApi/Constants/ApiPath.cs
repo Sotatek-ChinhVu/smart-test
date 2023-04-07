@@ -271,5 +271,6 @@
 
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
+        public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
     }
 }

@@ -15,6 +15,7 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
+using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -195,6 +196,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListTenMstOriginPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListTenMstOriginResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstOriginInfoCreate)]
+        public ActionResult<Response<GetTenMstOriginInfoCreateResponse>> GetTenMstOriginInfoCreate([FromQuery] GetTenMstOriginInfoCreateRequest request)
+        {
+            var input = new GetTenMstOriginInfoCreateInputData(request.Type, HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstOriginInfoCreatePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstOriginInfoCreateResponse>>(presenter.Result);
         }
     }
 }

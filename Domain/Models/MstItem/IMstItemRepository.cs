@@ -65,5 +65,9 @@ namespace Domain.Models.MstItem
         List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate);
 
         List<TenMstOriginModel> GetGroupTenMst(string itemCd);
+
+        string GetMaxItemCdByTypeForAdd(string startWithstr);
+
+        int GetMinJihiSbtMst(int hpId);
     }
 }

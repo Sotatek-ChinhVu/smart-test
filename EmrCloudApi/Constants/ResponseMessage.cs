@@ -971,5 +971,7 @@
         public static readonly string InvalidThisCredit = "Invalid This Credit";
         public static readonly string NoPaymentInfo = "NoPaymentInfo";
         public static readonly string TryAgainLater = "TryAgainLater";
+
+        public static readonly string InvalidTypeItem = "Invalid type item";
     }
 }
