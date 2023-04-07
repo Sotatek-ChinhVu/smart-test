@@ -1,4 +1,5 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Models.HpInf;
+using Domain.Models.MstItem;
 using Domain.Models.Santei;
 using Domain.Models.SystemConf;
 using UseCase.SystemConf.SystemSetting;
@@ -10,12 +11,14 @@ namespace Interactor.SystemConf
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly ISanteiInfRepository _santeiInfRepository;
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly IHpInfRepository _hpInfRepository;
 
-        public GetSystemSettingInteractor(ISystemConfRepository systemConfRepository, ISanteiInfRepository santeiInfRepository, IMstItemRepository mstItemRepository)
+        public GetSystemSettingInteractor(ISystemConfRepository systemConfRepository, ISanteiInfRepository santeiInfRepository, IMstItemRepository mstItemRepository, IHpInfRepository hpInfRepository)
         {
             _systemConfRepository = systemConfRepository;
             _santeiInfRepository = santeiInfRepository;
             _mstItemRepository = mstItemRepository;
+            _hpInfRepository = hpInfRepository;
         }
 
         public GetSystemSettingOutputData Handle(GetSystemSettingInputData inputData)
@@ -26,7 +29,7 @@ namespace Interactor.SystemConf
 
                 //tab IryoKikanJoho
                 var roudouMst = _systemConfRepository.GetRoudouMst();
-                var hpInfs = _systemConfRepository.GetListHpInf(inputData.HpId);
+                var hpInfs = _hpInfRepository.GetListHpInf(inputData.HpId);
                 systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuWithGeneration(inputData.HpId, new List<int> { 2000, 2001 }));
                 systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenu(inputData.HpId, new List<int> { 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014 }));
                 systemSetting.AddRange(_systemConfRepository.GetListSystemConfMenuOnly(inputData.HpId, 3000));
@@ -41,6 +44,7 @@ namespace Interactor.SystemConf
                 _systemConfRepository.ReleaseResource();
                 _santeiInfRepository.ReleaseResource();
                 _mstItemRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
             }
         }
     }

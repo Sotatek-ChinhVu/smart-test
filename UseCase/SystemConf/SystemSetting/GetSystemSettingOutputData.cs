@@ -19,6 +19,7 @@ namespace UseCase.SystemConf.SystemSetting
             Status = status;
         }
 
+        //Key: RoudouCd, Value: RoudouName
         public Dictionary<string, string> RoudouMst { get; private set; }
         public List<HpInfModel> HpInfs { get; private set; }
         public List<SanteiInfDetailModel> SanteiInfs { get; private set; }

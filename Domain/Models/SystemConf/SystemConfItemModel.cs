@@ -14,20 +14,20 @@
             ParamMax = paramMax;
         }
 
-        public int HpId { get; set; }
+        public int HpId { get; private set; }
 
-        public int MenuId { get; set; }
+        public int MenuId { get; private set; }
 
-        public int SeqNo { get; set; }
+        public int SeqNo { get; private set; }
 
-        public int SortNo { get; set; }
+        public int SortNo { get; private set; }
 
-        public string ItemName { get; set; }
+        public string ItemName { get; private set; }
 
-        public int Val { get; set; }
+        public int Val { get; private set; }
 
-        public int ParamMin { get; set; }
+        public int ParamMin { get; private set; }
 
-        public int ParamMax { get; set; }
+        public int ParamMax { get; private set; }
     }
 }
