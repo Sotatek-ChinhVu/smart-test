@@ -15,9 +15,9 @@ namespace UseCase.MstItem.GetListTenMstOrigin
 
         public GetListTenMstOriginStatus Status { get; private set; }
 
-        public IEnumerable<int> StartDateDisplay
+        public List<int> StartDateDisplay
         {
-            get => TenMsts.Select(x => x.StartDate);
+            get => TenMsts.Select(x => x.StartDate).ToList();
         }
     }
 }

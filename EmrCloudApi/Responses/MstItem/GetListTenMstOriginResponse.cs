@@ -4,7 +4,7 @@ namespace EmrCloudApi.Responses.MstItem
 {
     public class GetListTenMstOriginResponse
     {
-        public GetListTenMstOriginResponse(List<TenMstOriginModel> tenMsts, IEnumerable<int> startDateDisplay)
+        public GetListTenMstOriginResponse(List<TenMstOriginModel> tenMsts, List<int> startDateDisplay)
         {
             TenMsts = tenMsts;
             StartDateDisplay = startDateDisplay;
@@ -12,6 +12,6 @@ namespace EmrCloudApi.Responses.MstItem
 
         public List<TenMstOriginModel> TenMsts { get; private set; }
 
-        public IEnumerable<int> StartDateDisplay { get; private set; }
+        public List<int> StartDateDisplay { get; private set; }
     }
 }
