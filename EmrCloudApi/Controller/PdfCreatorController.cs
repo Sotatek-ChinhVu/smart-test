@@ -46,6 +46,20 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(byomeiData, ReportType.Common);
         }
 
+        [HttpPost(ApiPath.ExportSijisen)]
+        public async Task<IActionResult> GenerateSijisenReport([FromBody] SijisenExportRequest request)
+        {
+            var odrKouiKbns = new List<(int from, int to)>();
+            foreach (var item in request.OdrKouiKbns)
+            {
+                odrKouiKbns.Add(new(item.From, item.To));
+            }
+
+            var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
+
+            return await RenderPdf(sijisenData, ReportType.Common);
+        }
+
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
             StringContent jsonContent = (reportType ==

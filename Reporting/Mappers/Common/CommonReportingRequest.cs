@@ -1,21 +1,31 @@
 ﻿namespace Reporting.Mappers.Common
 {
+
     public class CommonReportingRequest : ICommonReportingRequest
     {
         public CommonReportingRequestModel GetData()
         {
             CommonReportingRequestModel result = new CommonReportingRequestModel()
             {
-                FormNameList = GetFormNameList(),
+                ReportType = GetReportType(),
                 SingleFieldData = GetSingleFieldData(),
                 TableFieldData = GetTableFieldData(),
-                VisibleFieldData = GetVisibleFieldData(),
-                WrapFieldData = GetWrapFieldData()
+                ReportConfigModel = new ReportConfigModel()
+                {
+                    VisibleFieldList = GetVisibleFieldData(),
+                    WrapFieldList = GetWrapFieldData(),
+                    RowCountFieldName = GetRowCountFieldName(),
+                }
             };
             return result;
         }
 
-        public virtual List<string> GetFormNameList()
+        public virtual int GetReportType()
+        {
+            return (int)CoReportType.Common;
+        }
+
+        public virtual string GetRowCountFieldName()
         {
             throw new NotImplementedException();
         }
@@ -25,7 +35,7 @@
             throw new NotImplementedException();
         }
 
-        public virtual List<Dictionary<string, string>> GetTableFieldData()
+        public virtual List<Dictionary<string, CellModel>> GetTableFieldData()
         {
             throw new NotImplementedException();
         }
