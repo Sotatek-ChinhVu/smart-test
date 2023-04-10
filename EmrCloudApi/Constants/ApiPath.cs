@@ -258,6 +258,7 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+        public const string GetSystemSetting = "GetSystemSetting";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
@@ -269,5 +270,8 @@
 
         //ReceiptCreation
         public const string CreateUKEFile = "CreateUKEFile";
+
+        //TenMstMaintenance
+        public const string GetListTenMstOrigin = "GetListTenMstOrigin";
     }
 }

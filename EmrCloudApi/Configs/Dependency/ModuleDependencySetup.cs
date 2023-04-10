@@ -270,6 +270,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -389,6 +390,7 @@ using UseCase.SwapHoken.Validate;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.Todo.TodoGrpMst;
 using UseCase.Todo.TodoInf;
@@ -822,6 +824,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfListInputData, GetSystemConfListInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfForPrintInputData, GetSystemConfForPrintInteractor>();
+            busBuilder.RegisterUseCase<GetSystemSettingInputData, GetSystemSettingInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
@@ -965,6 +968,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
+
+            //TenMstMaintenance
+            busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
