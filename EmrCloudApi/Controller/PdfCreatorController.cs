@@ -3,7 +3,7 @@ using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.DrugInfo.Service;
-using Reporting.Interface;
+using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
 
@@ -29,6 +29,13 @@ public class PdfCreatorController : ControllerBase
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
         return await RenderPdf(karte1Data, ReportType.Karte1);
     }
+    
+    [HttpGet(ApiPath.ExportNameLabel)]
+    public async Task<IActionResult> GenerateNameLabelReport([FromQuery] NameLabelExportRequest request)
+    {
+        var data = _reportService.GetNameLabelReportingData(request.PtId, request.KanjiName, request.SinDate);
+        return await RenderPdf(data, ReportType.Common);
+    }
 
     [HttpGet(ApiPath.ExportDrugInfo)]
     public async Task<IActionResult> GenerateDrugInfReport([FromQuery] DrugInfoExportRequest request)
@@ -41,7 +48,6 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateByomeiReport([FromBody] ByomeiExportRequest request)
     {
         var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
-
         return await RenderPdf(byomeiData, ReportType.Common);
     }
 
@@ -53,9 +59,8 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-        var byomeiData = _reportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
-
-        return await RenderPdf(byomeiData, ReportType.Common);
+        var data = _reportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
+        return await RenderPdf(data, ReportType.Common);
     }
 
     [HttpPost(ApiPath.ExportSijisen)]
@@ -66,9 +71,7 @@ public class PdfCreatorController : ControllerBase
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
-
         var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
-
         return await RenderPdf(sijisenData, ReportType.Common);
     }
 

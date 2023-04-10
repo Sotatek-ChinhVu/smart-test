@@ -8,7 +8,7 @@ using ByomeiCoPtHokenInfModel = Reporting.Byomei.Model.CoPtHokenInfModel;
 
 namespace Reporting.Byomei.Service;
 
-public class ByomeiService
+public class ByomeiService : IByomeiService
 {
     private readonly ITenantProvider _tenantProvider;
 

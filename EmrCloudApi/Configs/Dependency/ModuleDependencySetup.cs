@@ -141,15 +141,18 @@ using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Reporting.Byomei.Service;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
-using Reporting.Interface;
+using Reporting.Karte1.Service;
+using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
 using Reporting.ReportServices;
+using Reporting.Sijisen.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -473,6 +476,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfig, SystemConfig>();
             services.AddTransient<ICoOrderLabelFinder, CoOrderLabelFinder>();
             services.AddTransient<IOrderLabelCoReportService, OrderLabelCoReportService>();
+            services.AddTransient<INameLabelService, NameLabelService>();
+            services.AddTransient<ISijisenReportService, SijisenReportService>();
+            services.AddTransient<IByomeiService, ByomeiService>();
+            services.AddTransient<IKarte1Service, Karte1Service>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

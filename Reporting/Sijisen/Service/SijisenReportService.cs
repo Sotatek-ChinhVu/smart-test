@@ -1,8 +1,8 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Reporting.Common;
-using Reporting.Enums;
+using Reporting.CommonMasters.Config;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Mapper;
@@ -10,12 +10,15 @@ using Reporting.Sijisen.Model;
 
 namespace Reporting.Sijisen.Service;
 
-public class SijisenReportService
+public class SijisenReportService : ISijisenReportService
 {
     private readonly ITenantProvider _tenantProvider;
-    public SijisenReportService(ITenantProvider tenantProvider)
+    private readonly ISystemConfig _systemConfig;
+
+    public SijisenReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig)
     {
         _tenantProvider = tenantProvider;
+        _systemConfig = systemConfig;
     }
 
     public CommonReportingRequestModel GetSijisenReportingData(int formType, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, bool printNoOdr)
@@ -65,12 +68,12 @@ public class SijisenReportService
             // 来院区分
             List<CoRaiinKbnInfModel> raiinKbnInfs = finder.FindRaiinKbnInf(hpId, ptId, sinDate, raiinNo);
 
-            if (formType == (int)CoSijisenFormType.JyusinHyo && !string.IsNullOrEmpty(SystemConfig.Instance.JyusinHyoRaiinKbn))
+            if (formType == (int)CoSijisenFormType.JyusinHyo && !string.IsNullOrEmpty(_systemConfig.JyusinHyoRaiinKbn()))
             {
                 // 受診票 来院区分指定印刷
 
                 bool find = false;
-                List<string> raiinKbns = SystemConfig.Instance.JyusinHyoRaiinKbn.Split(',').ToList();
+                List<string> raiinKbns = _systemConfig.JyusinHyoRaiinKbn().Split(',').ToList();
                 foreach (string raiinKbn in raiinKbns)
                 {
                     List<string> splitRaiinKbn = raiinKbn.Split('=').ToList();
@@ -102,7 +105,7 @@ public class SijisenReportService
             {
                 // オーダーあり or
                 // 受診票で、オーダーなしでも印刷の指示あり
-                return new SijisenMapper(formType, coSijisen, raiinKbnMstModels).GetData();
+                return new SijisenMapper(formType, coSijisen, raiinKbnMstModels, _systemConfig).GetData();
             }
             else
             {

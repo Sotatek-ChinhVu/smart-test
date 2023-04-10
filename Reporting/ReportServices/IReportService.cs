@@ -1,14 +1,13 @@
 ﻿using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
-using Reporting.NameLabel.Models;
 using Reporting.OrderLabel.Model;
 
-namespace Reporting.Interface;
+namespace Reporting.ReportServices;
 
 public interface IReportService
 {
-    CoNameLabelModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
+    CommonReportingRequestModel GetNameLabelReportingData(long ptId, string kanjiName, int sinDate);
 
     Karte1Mapper GetKarte1ReportingData(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei, bool syuByomei);
 

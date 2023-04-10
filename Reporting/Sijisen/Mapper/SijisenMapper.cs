@@ -1,8 +1,9 @@
 ﻿using Helper.Common;
-using Reporting.Common;
-using Reporting.Enums;
+using Reporting.CommonMasters.Config;
+using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.Sijisen.Model;
+using System.Text;
 
 namespace Reporting.Sijisen.Mapper
 {
@@ -13,18 +14,20 @@ namespace Reporting.Sijisen.Mapper
         private readonly List<CoRaiinKbnMstModel> _raiinKbnMstList;
         private readonly DateTime _printoutDateTime;
         private readonly int _formType;
+        private readonly ISystemConfig _systemConfig;
 
         private const int _dataCharCount = 68;
         private const int _suryoCharCount = 9;
         private const int _unitCharCount = 8;
         private const int _dataRowCount = 40;
 
-        public SijisenMapper(int formType, CoSijisenModel coSijisen, List<CoRaiinKbnMstModel> raiinKbnMstList)
+        public SijisenMapper(int formType, CoSijisenModel coSijisen, List<CoRaiinKbnMstModel> raiinKbnMstList, ISystemConfig systemConfig)
         {
             _coSijisen = coSijisen;
             _raiinKbnMstList = raiinKbnMstList;
             _printoutDateTime = DateTime.Now;
             _formType = formType;
+            _systemConfig = systemConfig;
         }
 
         #region override function
@@ -412,8 +415,8 @@ namespace Reporting.Sijisen.Mapper
 
                 if (!string.IsNullOrEmpty(odrInf.RpName) &&
                     (
-                        (_formType == (int)CoSijisenFormType.Sijisen && SystemConfig.Instance.SijisenRpName == 1) ||
-                        (_formType == (int)CoSijisenFormType.JyusinHyo && SystemConfig.Instance.JyusinHyoRpName == 1)
+                        (_formType == (int)CoSijisenFormType.Sijisen && _systemConfig.SijisenRpName() == 1) ||
+                        (_formType == (int)CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoRpName() == 1)
                     )
                   )
                 {
@@ -544,8 +547,8 @@ namespace Reporting.Sijisen.Mapper
 
             // アレルギー
             List<CoSijisenPrintDataModel> addAlrgyData = new List<CoSijisenPrintDataModel>();
-            if ((_formType == (int)CoSijisenFormType.Sijisen && SystemConfig.Instance.SijisenAlrgy == 0) ||
-                    (_formType == (int)CoSijisenFormType.JyusinHyo && SystemConfig.Instance.JyusinHyoAlrgy == 0))
+            if ((_formType == (int)CoSijisenFormType.Sijisen && _systemConfig.SijisenAlrgy() == 0) ||
+                    (_formType == (int)CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoAlrgy() == 0))
             {
                 addAlrgyData = _getAlrgyList();
             }
@@ -553,8 +556,8 @@ namespace Reporting.Sijisen.Mapper
 
             // 患者コメント
             List<CoSijisenPrintDataModel> addPtCmtData = new List<CoSijisenPrintDataModel>();
-            if ((_formType == (int)CoSijisenFormType.Sijisen && SystemConfig.Instance.SijisenPtCmt == 0) ||
-                    (_formType == (int)CoSijisenFormType.JyusinHyo && SystemConfig.Instance.JyusinHyoPtCmt == 0))
+            if ((_formType == (int)CoSijisenFormType.Sijisen && _systemConfig.SijisenPtCmt() == 0) ||
+                    (_formType == (int)CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoPtCmt() == 0))
             {
                 addPtCmtData = _getPtCmtList();
             }
@@ -563,26 +566,26 @@ namespace Reporting.Sijisen.Mapper
             List<CoSijisenPrintDataModel> addYokiData = new List<CoSijisenPrintDataModel>();
             if (
                 (
-                    (_formType == (int)CoSijisenFormType.Sijisen && SystemConfig.Instance.SijisenKensaYokiZairyo == 1) ||
-                    (_formType == (int)CoSijisenFormType.JyusinHyo && SystemConfig.Instance.JyusinHyoKensaYokiZairyo == 1)
+                    (_formType == (int)CoSijisenFormType.Sijisen && _systemConfig.SijisenKensaYokiZairyo() == 1) ||
+                    (_formType == (int)CoSijisenFormType.JyusinHyo && _systemConfig.JyusinHyoKensaYokiZairyo() == 1)
                 ) && kensaContainers.Any())
             {
-                string containers = "";
+                StringBuilder containers = new();
 
                 foreach (string container in kensaContainers)
                 {
-                    if (containers != "")
-                        containers += ",";
-                    containers += container;
+                    if (containers.Length > 0)
+                        containers.Append(",");
+                    containers.Append(container);
                 }
 
-                if (containers != "")
+                if (containers.Length > 0)
                 {
 
                     addYokiData.Add(new CoSijisenPrintDataModel());
                     addYokiData.Last().Data = "[容器情報]";
 
-                    addYokiData.AddRange(_addList(containers, _dataCharCount));
+                    addYokiData.AddRange(_addList(containers.ToString(), _dataCharCount));
                 }
             }
 
@@ -591,7 +594,7 @@ namespace Reporting.Sijisen.Mapper
             {
                 addPrintOutData = new List<CoSijisenPrintDataModel>();
 
-                if (_dataRowCount - (_printOutData.Count() % _dataRowCount) > 0)
+                if (_dataRowCount - (_printOutData.Count % _dataRowCount) > 0)
                 {
                     _printOutData.Add(new CoSijisenPrintDataModel());
                     _printOutData.Last().Data = new string('ー', _dataCharCount);

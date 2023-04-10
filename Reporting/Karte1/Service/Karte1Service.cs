@@ -5,7 +5,7 @@ using Reporting.Karte1.Model;
 
 namespace Reporting.Karte1.Service;
 
-public class Karte1Service
+public class Karte1Service : IKarte1Service
 {
     private readonly ITenantProvider _tenantProvider;
     public Karte1Service(ITenantProvider tenantProvider)

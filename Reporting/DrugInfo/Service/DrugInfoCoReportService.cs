@@ -4,9 +4,10 @@ using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Model;
-using Reporting.Interface;
 using System.Drawing;
+using System.Text;
 
 namespace Reporting.DrugInfo.Service;
 
@@ -26,7 +27,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
     int selectedFormType = 0;
     DrugInfoModel basicInfo = new DrugInfoModel();
     List<OrderInfoModel> orderInfoModels { get; set; }
-    List<DrugInfoModel> drugInfoList = new();
+    readonly List<DrugInfoModel> drugInfoList = new();
 
     public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
     {
@@ -313,7 +314,7 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
     {
         List<DocumentLine> tText = new List<DocumentLine>();
 
-        string wsBuf = "";
+        StringBuilder wsBuf = new();
         string sSymbol = "";
         if (infKbn == 1)
         {
@@ -329,22 +330,22 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
             var listItem = drugInf.DrugInfo?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new();
             foreach (var item in listItem)
             {
-                wsBuf += item;
+                wsBuf.Append(item);
             }
         }
 
-        if (string.IsNullOrEmpty(wsBuf))
+        if (string.IsNullOrEmpty(wsBuf.ToString()))
         {
             return tText;
         }
 
-        wsBuf = sSymbol + wsBuf;
+        wsBuf.Append(sSymbol + wsBuf);
 
         int tPos = 0;
-        var width = CIUtil.MecsStringWidth(wsBuf);
+        var width = CIUtil.MecsStringWidth(wsBuf.ToString());
         while (tPos <= width)
         {
-            string sBuf1 = CIUtil.CiCopyStrWidth(wsBuf, tPos + 1, nLen, 0);
+            string sBuf1 = CIUtil.CiCopyStrWidth(wsBuf.ToString(), tPos + 1, nLen, 0);
             if (!string.IsNullOrEmpty(sBuf1))
             {
                 DocumentLine documentLine = new DocumentLine();

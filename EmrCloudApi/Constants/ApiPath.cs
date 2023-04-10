@@ -79,6 +79,7 @@
         public const string ExportByomei = "ExportByomei";
         public const string ExportOrderLabel = "ExportOrderLabel";
         public const string ExportSijisen = "ExportSijisen";
+        public const string ExportNameLabel = "ExportNameLabel";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
