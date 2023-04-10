@@ -44,7 +44,7 @@ namespace Reporting.DrugInfo.DB
                 info.ptNo = ptInfo.PtNum;
                 info.ptName = ptInfo.Name ?? string.Empty;
                 info.sex = ptInfo.Sex == 1 ? "M" : "F";
-                info.intAge = (int)(info.orderDate - ptInfo.Birthday) / 10000;
+                info.intAge = (info.orderDate - ptInfo.Birthday) / 10000;
             }
 
             return info;
@@ -94,7 +94,6 @@ namespace Reporting.DrugInfo.DB
 
         public string GetYJCode(string ItemCd)
         {
-            TenMstModel tenMstModel = new TenMstModel();
             int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
             var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
             if (tenMst != null)
@@ -137,9 +136,8 @@ namespace Reporting.DrugInfo.DB
 
         public List<DrugInf> GetDrugInfo(int hpId, string itemCd, int age, int gender)
         {
-            var result = new List<DrugInf>();
+            List<DrugInf> result = new();
             string strSex = gender.AsString();
-            //
             var drugInf = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 1).ToList();
             if (!drugInf.Any())
             {
@@ -172,7 +170,6 @@ namespace Reporting.DrugInfo.DB
             }
             result.AddRange(drugInf);
 
-            //
             var drugInf1 = NoTrackingDataContext.DrugInfs.Where(d => d.HpId == hpId && d.ItemCd == itemCd && d.IsDeleted == 0 && d.InfKbn == 2).AsEnumerable().ToList();
             if (drugInf1 == null || drugInf1.Count == 0)
             {

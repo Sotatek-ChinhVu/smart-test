@@ -145,8 +145,10 @@ using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
 using Reporting.DrugInfo.DB;
+using Reporting.DrugInfo.Service;
 using Reporting.Interface;
 using Reporting.OrderLabel.DB;
+using Reporting.OrderLabel.Service;
 using Reporting.ReportServices;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
@@ -463,7 +465,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reportting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
-            services.AddTransient<IReportService, Karte1ReportService>();
+            services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
             services.AddTransient<IDrugInfoCoReportService, DrugInfoCoReportService>();
             services.AddTransient<IUserConfReportCommon, UserConfReportCommon>();

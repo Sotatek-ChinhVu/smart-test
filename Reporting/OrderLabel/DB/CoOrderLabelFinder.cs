@@ -334,7 +334,7 @@ public class CoOrderLabelFinder : RepositoryBase, ICoOrderLabelFinder
             )
             .ToList();
 
-        List<CoPtInfModel> results = new List<CoPtInfModel>();
+        List<CoPtInfModel> results = new();
 
         entities?.ForEach(entity =>
         {
@@ -344,7 +344,7 @@ public class CoOrderLabelFinder : RepositoryBase, ICoOrderLabelFinder
                 ));
         });
 
-        return results.FirstOrDefault();
+        return results.FirstOrDefault() ?? new();
     }
 
     /// <summary>
@@ -404,14 +404,14 @@ public class CoOrderLabelFinder : RepositoryBase, ICoOrderLabelFinder
             )
             .ToList();
 
-        List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
+        List<CoRaiinInfModel> results = new();
 
         entities?.ForEach(entity =>
         {
             results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst));
         });
 
-        return results.FirstOrDefault();
+        return results.FirstOrDefault()??new();
     }
 
     public List<CoYoyakuModel> FindYoyaku(int hpId, long ptId, int sinDate)

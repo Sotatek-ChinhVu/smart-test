@@ -2,7 +2,7 @@
 using Helper.Common;
 using Reporting.Karte1.Model;
 
-namespace Reporting.Mappers
+namespace Reporting.Karte1.Mapper
 {
     public class Karte1Mapper
     {
