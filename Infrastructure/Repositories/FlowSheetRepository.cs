@@ -466,7 +466,10 @@ namespace Infrastructure.Repositories
 
                     }
                 }
-                result.Add(new(date, tooltip));
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    result.Add(new(date, tooltip));
+                }
             }
 
             return result;

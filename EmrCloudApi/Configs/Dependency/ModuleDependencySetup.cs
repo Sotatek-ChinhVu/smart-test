@@ -193,6 +193,7 @@ using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
@@ -717,6 +718,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
             busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
+            busBuilder.RegisterUseCase<GetTooltipInputData, GetTooltipFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();

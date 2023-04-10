@@ -4,7 +4,7 @@ namespace UseCase.FlowSheet.GetTooltip
 {
     public class GetTooltipInputData : IInputData<GetTooltipOutputData>
     {
-        public GetTooltipInputData(int hpId, long ptId, int sinDate, long startDate, bool endDate)
+        public GetTooltipInputData(int hpId, long ptId, int sinDate, int startDate, int endDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -19,9 +19,9 @@ namespace UseCase.FlowSheet.GetTooltip
 
         public int SinDate { get; private set; }
 
-        public long StartDate { get; private set; }
+        public int StartDate { get; private set; }
 
-        public bool EndDate { get; private set; }
+        public int EndDate { get; private set; }
 
     }
 }
