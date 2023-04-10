@@ -185,7 +185,7 @@ namespace Reporting.DrugInfo.DB
                                  on t.YjCd equals pr.YjCd
                                  select new { pr.SeqNo, pr.PrecautionCd });
 
-                var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault().SeqNo }).ToList();
+                var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault()!.SeqNo }).ToList();
 
                 var precautionCodes = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                                                             || (pr.AgeMax >= age && pr.AgeMin <= age)
