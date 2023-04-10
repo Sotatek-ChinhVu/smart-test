@@ -19,6 +19,10 @@ namespace Reporting.Sijisen.Model
             RaiinCmtInf = raiinCmtInf;
         }
 
+        public CoRaiinInfModel()
+        {
+        }
+
         /// <summary>
         /// 来院情報
         /// </summary>

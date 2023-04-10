@@ -44,14 +44,14 @@ namespace Reporting.ReportServices
 
                 List<ByomeiCoPtByomeiModel> results = new List<ByomeiCoPtByomeiModel>();
 
-                if (ptHokenInfs == null || ptHokenInfs.Any() == false)
+                if (ptHokenInfs == null || !ptHokenInfs.Any())
                 {
                     if (ptByomeis.Any())
                     {
                         results.Add(new ByomeiCoPtByomeiModel(fromDay, toDay, ptInf, new(), ptByomeis));
                     }
                 }
-                else if (ptHokenInfs.Count() == 1)
+                else if (ptHokenInfs.Count == 1)
                 {
                     // 使用されている保険が1つの場合、共通(0)とその保険分をまとめて出力
                     if (ptByomeis.Any())

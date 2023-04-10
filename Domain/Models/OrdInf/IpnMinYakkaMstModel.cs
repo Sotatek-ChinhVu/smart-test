@@ -13,6 +13,10 @@
             SeqNo = seqNo;
             IsDeleted = isDeleted;
         }
+        public IpnMinYakkaMstModel()
+        {
+            IpnNameCd = string.Empty;
+        }
 
         public int Id { get; private set; }
         public int HpId { get; private set; }
