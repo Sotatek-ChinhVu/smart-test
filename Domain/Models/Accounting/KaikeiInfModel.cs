@@ -47,6 +47,10 @@
             AdjustFutanRange = adjustFutanRange;
             AdjustRateVal = adjustRateVal;
             AdjustRateRange = adjustRateRange;
+            Kohi1Priority = string.Empty;
+            Kohi2Priority = string.Empty;
+            Kohi3Priority = string.Empty;
+            Kohi4Priority = string.Empty;
         }
 
         public KaikeiInfModel(int hpId, long ptId, int sinDate, long raiinNo, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int hokenKbn, int hokenSbtCd, string receSbt, string houbetu, string kohi1Houbetu, string kohi2Houbetu, string kohi3Houbetu, string kohi4Houbetu, int honkeKbn, int hokenRate, int ptRate, int dispRate, int tensu, int totalIryohi, int ptFutan, int jihiFutan, int jihiTax, int jihiOuttax, int jihiFutanTaxfree, int jihiFutanTaxNr, int jihiFutanTaxGen, int jihiFutanOuttaxNr, int jihiFutanOuttaxGen, int jihiTaxNr, int jihiTaxGen, int jihiOuttaxNr, int jihiOuttaxGen, int adjustFutan, int adjustRound, int totalPtFutan, int adjustFutanVal, int adjustFutanRange, int adjustRateVal, int adjustRateRange, string kohi1Priority, string kohi2Priority, string kohi3Priority, string kohi4Priority) : this(hpId, ptId, sinDate, raiinNo, hokenId, kohi1Id, kohi2Id, kohi3Id, kohi4Id, hokenKbn, hokenSbtCd, receSbt, houbetu, kohi1Houbetu, kohi2Houbetu, kohi3Houbetu, kohi4Houbetu, honkeKbn, hokenRate, ptRate, dispRate, tensu, totalIryohi, ptFutan, jihiFutan, jihiTax, jihiOuttax, jihiFutanTaxfree, jihiFutanTaxNr, jihiFutanTaxGen, jihiFutanOuttaxNr, jihiFutanOuttaxGen, jihiTaxNr, jihiTaxGen, jihiOuttaxNr, jihiOuttaxGen, adjustFutan, adjustRound, totalPtFutan, adjustFutanVal, adjustFutanRange, adjustRateVal, adjustRateRange)
@@ -65,6 +69,10 @@
             Kohi2Houbetu = string.Empty;
             Kohi3Houbetu = string.Empty;
             Kohi4Houbetu = string.Empty;
+            Kohi1Priority = string.Empty;
+            Kohi2Priority = string.Empty;
+            Kohi3Priority = string.Empty;
+            Kohi4Priority = string.Empty;
         }
 
         public int HpId { get; private set; }

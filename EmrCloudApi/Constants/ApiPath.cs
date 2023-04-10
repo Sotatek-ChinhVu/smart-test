@@ -75,6 +75,10 @@
 
         // ExportReport
         public const string ExportKarte1 = "ExportKarte1";
+        public const string ExportDrugInfo = "ExportDrugInfo";
+        public const string ExportByomei = "ExportByomei";
+        public const string ExportOrderLabel = "ExportOrderLabel";
+        public const string ExportSijisen = "ExportSijisen";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -257,6 +261,7 @@
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
         public const string GetDrugCheckSetting = "GetDrugCheckSetting";
         public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
+        public const string GetSystemSetting = "GetSystemSetting";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
@@ -268,5 +273,9 @@
 
         //ReceiptCreation
         public const string CreateUKEFile = "CreateUKEFile";
+
+        //TenMstMaintenance
+        public const string GetListTenMstOrigin = "GetListTenMstOrigin";
+        public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
     }
 }

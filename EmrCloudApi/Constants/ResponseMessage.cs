@@ -137,6 +137,15 @@
         public static readonly string InvalidTodoGrpMst = "Invalid TodoGrpMst";
         public static readonly string InvalidExistedTodoGrpNo = "Invalid Existed TodoGrpNo";
 
+        //TodoInf
+        public static readonly string InvalidTodoNo = "Invalid TodoNo";
+        public static readonly string InvalidTodoEdaNo = "Invalid TodoEdaNo";
+        public static readonly string InvalidTodoKbnNo = "Invalid TodoKbnNo";
+        public static readonly string InvalidTanto = "Invalid Tanto";
+        public static readonly string InvalidTerm = "Invalid Term";
+        public static readonly string InvalidIsDone = "Invalid IsDone";
+        public static readonly string InvalidExistedInput = "Invalid Existed Input";
+
         //Insurance
         // Validate Main Insurance
         public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
@@ -972,5 +981,7 @@
         public static readonly string InvalidKinkiLevelSetting = "Invalid KinkiLevelSetting.";
         public static readonly string InvalidDosageMinCheckSetting = "Invalid DosageMinCheckSetting.";
         public static readonly string InvalidAgeLevelSetting = "Invalid AgeLevelSetting.";
+
+        public static readonly string InvalidTypeItem = "Invalid type item";
     }
 }
