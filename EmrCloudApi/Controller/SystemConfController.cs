@@ -10,6 +10,7 @@ using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.SystemSetting;
 
 namespace EmrCloudApi.Controller
 {
@@ -68,6 +69,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDrugCheckSettingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSystemSetting)]
+        public ActionResult<Response<GetSystemSettingResponse>> GetList([FromQuery] GetSystemSettingRequest request)
+        {
+            var input = new GetSystemSettingInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSystemSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSystemSettingResponse>>(presenter.Result);
         }
     }
 }

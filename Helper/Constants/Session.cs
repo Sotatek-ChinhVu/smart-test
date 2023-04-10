@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Helper.Constants;
 
-namespace Helper.Constants
+public class Session
 {
-    public class Session
-    {
-        public static int HospitalID = 1;
-    }
+    public static int HospitalID = 1;
+    public static int UserID = 1;
 }

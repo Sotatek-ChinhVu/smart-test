@@ -48,21 +48,70 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return setMstModelList;
     }
 
-    public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch)
+    public IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId, string textSearch)
     {
         if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetMstModel>? setMstModelList))
         {
             setMstModelList = ReloadCache(hpId);
         }
 
-        var result = setMstModelList!
-          .Where(s => s.HpId == hpId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch))))
-          .OrderBy(s => s.Level1)
-          .ThenBy(s => s.Level2)
-          .ThenBy(s => s.Level3)
-          .ToList();
+        var result = new List<SetMstModel>();
+        if (string.IsNullOrEmpty(textSearch))
+        {
+            result = setMstModelList!
+         .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0).ToList();
+        }
+        else
+        {
+            var searchItems = setMstModelList!
+          .Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == setKbn && s.SetKbnEdaNo == setKbnEdaNo - 1 && s.IsDeleted == 0 && (string.IsNullOrEmpty(textSearch) || (s.SetName != null && s.SetName.Contains(textSearch)))).ToList();
+            var filters = searchItems.Where(s => s.Level3 == 0).ToList();
+            foreach (var filter in filters)
+            {
+                if(filter.Level2 > 0)
+                   searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 == filter.Level2 && s.Level3 > 0);
+                else
+                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 > 0);
+            }
 
-        return result;
+            foreach (var searchItem in searchItems)
+            {
+                if (searchItem.Level2 == 0 && searchItem.Level3 == 0)
+                {
+                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1);
+                    result.AddRange(resultItem);
+                }
+                else if(searchItem.Level3 == 0)
+                {
+                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId  && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2);
+                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId  && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
+                    if (rootItem != null)
+                    {
+                        result.Add(rootItem);
+                    }
+                    result.AddRange(resultItem);
+                }
+                else
+                {
+                    var level2RootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2 && s.Level3 == 0);
+                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
+                    if (rootItem != null)
+                    {
+                        result.Add(rootItem);
+                    }
+                    if (level2RootItem != null)
+                    {
+                        result.Add(level2RootItem);
+                    }
+                    result.Add(searchItem);
+                }
+            }
+        }
+
+        return result.OrderBy(s => s.Level1)
+         .ThenBy(s => s.Level2)
+         .ThenBy(s => s.Level3)
+         .ToList();
     }
 
     public SetMstTooltipModel GetToolTip(int hpId, int setCd)
@@ -492,8 +541,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         }
 
                         var rootSet = listCopyItems.FirstOrDefault(item => item.SetCd == copyItem.SetCd);
+                        var rootSetCd = 0;
                         if (rootSet != null)
                         {
+                            rootSetCd = rootSet.SetCd;
                             listCopyItems.Remove(rootSet);
 
                             rootSet.SetCd = 0;
@@ -530,13 +581,22 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                         foreach (var copy in listCopyItems)
                         {
                             var pasteItemToMap = listPasteItems.FirstOrDefault(paste => paste.Level1 == copy.Level1 && paste.Level2 == copy.Level2 && paste.Level3 == copy.Level3);
-                            if (pasteItemToMap != null)
+                            if (pasteItemToMap != null && !dictionarySetMstMap.ContainsKey(copy.SetCd))
                             {
                                 dictionarySetMstMap.Add(copy.SetCd, pasteItemToMap);
                             }
                         }
 
                         var listCopySetCds = listCopyItems.Select(item => item.SetCd).ToList();
+                        if (rootSet != null && !dictionarySetMstMap.ContainsKey(rootSet.SetCd))
+                        {
+                            listCopySetCds.Add(rootSetCd);
+                            var pasteItemToMap = listPasteItems.FirstOrDefault(paste => paste.Level1 == rootSet.Level1 && paste.Level2 == rootSet.Level2 && paste.Level3 == rootSet.Level3);
+                            if (pasteItemToMap != null)
+                            {
+                                dictionarySetMstMap.Add(rootSetCd, pasteItemToMap);
+                            }
+                        }
                         AddNewItemToSave(userId, listCopySetCds, dictionarySetMstMap);
 
                         // Set level for item 
@@ -652,7 +712,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             item.Level3 = 0;
                         }
                     }
-                    else
+                    // if copy item is level 2
+                    else if (GetLevelItem(copyItem) == 2)
                     {
                         foreach (var item in listPasteItems)
                         {
@@ -660,8 +721,18 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                             item.Level2 = indexPaste;
                         }
                     }
+                    // if copy item is level 3
+                    else if (GetLevelItem(copyItem) == 3)
+                    {
+                        foreach (var item in listPasteItems)
+                        {
+                            item.Level1 = pasteItem.Level1;
+                            item.Level2 = indexPaste;
+                            item.Level3 = 0;
+                        }
+                    }
                     break;
-                // if paste item is level 1
+                // if paste item is level 2
                 case 2:
                     foreach (var item in listPasteItems)
                     {
@@ -762,6 +833,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
 
     private void AddNewItemToSave(int userId, List<int> listCopySetCds, Dictionary<int, SetMst> dictionarySetMstMap)
     {
+        listCopySetCds = listCopySetCds.Distinct().ToList();
         // Order inf
         var listCopySetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd) && item.IsDeleted != 1).ToList();
         var listPasteSetOrderInfs = new List<SetOdrInf>();

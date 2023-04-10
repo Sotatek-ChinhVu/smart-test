@@ -141,8 +141,13 @@ using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Reporting;
+using Reporting.CommonMasters.Common;
+using Reporting.CommonMasters.Common.Interface;
+using Reporting.CommonMasters.Config;
+using Reporting.DrugInfo.DB;
 using Reporting.Interface;
+using Reporting.OrderLabel.DB;
+using Reporting.ReportServices;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -192,6 +197,7 @@ using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
@@ -265,7 +271,9 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
+using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -385,8 +393,10 @@ using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.Todo.TodoGrpMst;
+using UseCase.Todo.TodoInf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -452,8 +462,16 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
+            // Reportting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
-            services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IReportService, Karte1ReportService>();
+            services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
+            services.AddTransient<IDrugInfoCoReportService, DrugInfoCoReportService>();
+            services.AddTransient<IUserConfReportCommon, UserConfReportCommon>();
+            services.AddTransient<IUserMstCache, UserMstCache>();
+            services.AddTransient<ISystemConfig, SystemConfig>();
+            services.AddTransient<ICoOrderLabelFinder, CoOrderLabelFinder>();
+            services.AddTransient<IOrderLabelCoReportService, OrderLabelCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -541,6 +559,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
+            services.AddTransient<ITodoInfRepository, TodoInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -713,6 +732,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
             busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
+            busBuilder.RegisterUseCase<GetTooltipInputData, GetTooltipFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
@@ -809,6 +829,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSystemConfListInputData, GetSystemConfListInteractor>();
             busBuilder.RegisterUseCase<GetSystemConfForPrintInputData, GetSystemConfForPrintInteractor>();
             busBuilder.RegisterUseCase<GetDrugCheckSettingInputData, GetDrugCheckSettingInteractor>();
+            busBuilder.RegisterUseCase<GetSystemSettingInputData, GetSystemSettingInteractor>();
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
@@ -948,9 +969,14 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Todo
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
+            busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
+
+            //TenMstMaintenance
+            busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
