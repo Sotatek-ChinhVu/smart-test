@@ -17,11 +17,13 @@ namespace EmrCloudApi.Controller
         private readonly IReportService _reportService;
         private readonly IConfiguration _configuration;
         private readonly IDrugInfoCoReportService _drugInfoCoReportService;
-        public PdfCreatorController(IReportService reportService, IConfiguration configuration, IDrugInfoCoReportService drugInfoCoReportService)
+        private readonly IOrderLabelCoReportService _orderLabelCoReportService;
+        public PdfCreatorController(IReportService reportService, IConfiguration configuration, IDrugInfoCoReportService drugInfoCoReportService, IOrderLabelCoReportService orderLabelCoReportService)
         {
             _reportService = reportService;
             _configuration = configuration;
             _drugInfoCoReportService = drugInfoCoReportService;
+            _orderLabelCoReportService = orderLabelCoReportService;
         }
 
         [HttpGet(ApiPath.ExportKarte1)]
@@ -46,10 +48,20 @@ namespace EmrCloudApi.Controller
             return await RenderPdf(byomeiData, ReportType.Common);
         }
 
+        [HttpPost(ApiPath.ExportOrderLabel)]
+        public async Task<IActionResult> GenerateOrderLabelReport([FromBody] OrderLabelExportRequest request)
+        {
+            var byomeiData = _orderLabelCoReportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrKouiKbns, new());
+
+            return await RenderPdf(byomeiData, ReportType.Common);
+        }
+
         private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
         {
             StringContent jsonContent = (reportType ==
-              ReportType.Karte1 || reportType == ReportType.DrugInfo) ?  new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
+              ReportType.Karte1
+              || reportType == ReportType.DrugInfo
+              ) ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
               new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;

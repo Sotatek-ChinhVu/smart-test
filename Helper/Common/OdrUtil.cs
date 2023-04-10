@@ -1,5 +1,7 @@
-﻿using Helper.Extension;
+﻿using Helper.Constants;
+using Helper.Extension;
 using System.Globalization;
+using System.Text;
 
 namespace Helper.Common
 {
@@ -536,7 +538,139 @@ namespace Helper.Common
                     return string.Empty;
             }
         }
+
+        public static string GetItemNameComment(string cmtName, string cmtOpt,
+                int pos1, int length1, int pos2, int length2, int pos3, int length3, int pos4, int length4)
+        {
+            string markComment = "＊";
+
+            string itemName = cmtName;
+            if (pos1 > 0 && length1 > 0)
+            {
+                StringBuilder val1 = new();
+
+                if (string.IsNullOrEmpty(cmtOpt))
+                {
+                    for (int i = 0; i < length1; i++)
+                    {
+                        val1.Append(val1 + markComment);
+                    }
+                }
+                else
+                {
+                    val1.Append(CIUtil.Copy(cmtOpt, 1, length1));
+                }
+
+                string partRight = CIUtil.Copy(itemName, pos1 + length1, itemName.Length - (pos1 + length1 - 1));
+                itemName = CIUtil.Copy(itemName, 1, pos1 - 1) + HenkanJ.Instance.ToFullsize(val1.ToString()) + partRight;
+            }
+
+            if (pos2 > 0 && length2 > 0)
+            {
+                StringBuilder val2 = new();
+
+                if (string.IsNullOrEmpty(cmtOpt))
+                {
+                    for (int i = 0; i < length2; i++)
+                    {
+                        val2.Append(val2 + markComment);
+                    }
+                }
+                else
+                {
+                    val2.Append(CIUtil.Copy(cmtOpt, length1 + 1, length2));
+                }
+
+                string partRight = CIUtil.Copy(itemName, pos2 + length2, itemName.Length - (pos2 + length2 - 1));
+                itemName = CIUtil.Copy(itemName, 1, pos2 - 1) + HenkanJ.Instance.ToFullsize(val2.ToString()) + partRight;
+            }
+
+            if (pos3 > 0 && length3 > 0)
+            {
+                StringBuilder val3 = new();
+
+                if (string.IsNullOrEmpty(cmtOpt))
+                {
+                    for (int i = 0; i < length3; i++)
+                    {
+                        val3.Append(val3 + markComment);
+                    }
+                }
+                else
+                {
+                    val3.Append(CIUtil.Copy(cmtOpt, length1 + length2 + 1, length3));
+                }
+
+                string partRight = CIUtil.Copy(itemName, pos3 + length3, itemName.Length - (pos3 + length3 - 1));
+                itemName = CIUtil.Copy(itemName, 1, pos3 - 1) + HenkanJ.Instance.ToFullsize(val3.ToString()) + partRight;
+            }
+
+            if (pos4 > 0 && length4 > 0)
+            {
+                StringBuilder val4 = new();
+
+                if (string.IsNullOrEmpty(cmtOpt))
+                {
+                    for (int i = 0; i < length4; i++)
+                    {
+                        val4.Append(val4 + markComment);
+                    }
+                }
+                else
+                {
+                    val4.Append(CIUtil.Copy(cmtOpt, length1 + length2 + length3 + 1, length4));
+                }
+
+                string partRight = CIUtil.Copy(itemName, pos4 + length4, itemName.Length - (pos4 + length4 - 1));
+                itemName = CIUtil.Copy(itemName, 1, pos4 - 1) + HenkanJ.Instance.ToFullsize(val4.ToString()) + partRight;
+            }
+
+            return itemName;
+        }
+
+        /// <summary>
+        /// 先発品
+        /// </summary>
+        /// <param name="syohoKbn">処方せん記載区分</param>
+        /// <param name="syohoLimitKbn">処方せん記載制限区分</param>
+        /// <returns></returns>
+        public static ReleasedDrugType SyohoToSempatu(int syohoKbn, int syohoLimitKbn)
+        {
+            switch (syohoKbn)
+            {
+                case 0:
+                    // 後発品のない先発品
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.None;
+                    break;
+                case 1:
+                    // 後発品への変更不可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Unchangeable;
+                    break;
+                case 2:
+                    // 後発品への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Changeable;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.Changeable_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+                case 3:
+                    // 一般名処方への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.CommonName;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.CommonName_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+            }
+            return ReleasedDrugType.None;
+        }
     }
+
 
     public static class RinjiKubun
     {

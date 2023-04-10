@@ -3,16 +3,18 @@
 public class CoOrderLabelModel
 {
     // 患者情報
-    public CoPtInfModel PtInfModel;
+    public CoPtInfModel PtInfModel { get; set; }
+
     // 来院情報
-    public CoRaiinInfModel RaiinInfModel;
+    public CoRaiinInfModel RaiinInfModel { get; set; }
+
     // オーダー情報
-    public List<CoCommonOdrInfModel> OdrInfModels;
+    public List<CoCommonOdrInfModel> OdrInfModels { get; set; }
 
     // オーダー情報詳細
-    public List<CoCommonOdrInfDetailModel> OdrInfDetailModels;
+    public List<CoCommonOdrInfDetailModel> OdrInfDetailModels { get; set; }
 
-    public List<CoYoyakuModel> YoyakuModels;
+    public List<CoYoyakuModel> YoyakuModels { get; set; }
     public CoOrderLabelModel
         (CoPtInfModel ptInf, CoRaiinInfModel raiinInf,
             List<CoCommonOdrInfModel> odrInf, List<CoCommonOdrInfDetailModel> odrDtl,
@@ -24,6 +26,16 @@ public class CoOrderLabelModel
         OdrInfDetailModels = odrDtl;
         YoyakuModels = yoyakuModels;
         IsYoyaku = isYoyaku;
+    }
+
+    public CoOrderLabelModel()
+    {
+        PtInfModel = new();
+        RaiinInfModel = new();
+        OdrInfModels = new();
+        OdrInfDetailModels = new();
+        YoyakuModels = new();
+        IsYoyaku = new();
     }
 
     /// <summary>

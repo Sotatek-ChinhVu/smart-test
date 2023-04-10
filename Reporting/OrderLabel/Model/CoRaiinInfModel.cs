@@ -14,6 +14,13 @@ public class CoRaiinInfModel
         UserMst = userMst;
     }
 
+    public CoRaiinInfModel()
+    {
+        RaiinInf = new();
+        KaMst = new();
+        UserMst = new();
+    }
+
     /// <summary>
     /// 来院情報
     /// </summary>

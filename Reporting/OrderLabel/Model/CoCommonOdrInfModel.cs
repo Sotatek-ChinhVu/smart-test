@@ -26,6 +26,11 @@ public class CoCommonOdrInfModel
         CreateId = createId;
     }
 
+    public CoCommonOdrInfModel()
+    {
+        RpName = string.Empty;
+    }
+
     /// <summary>
     /// 医療機関識別ID
     /// </summary>

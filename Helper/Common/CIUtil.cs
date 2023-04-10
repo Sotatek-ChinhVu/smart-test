@@ -3146,5 +3146,64 @@ namespace Helper.Common
             if (result == string.Empty) return string.Empty;
             return result.Substring(0, result.Length - 3);
         }
+        /// <summary>
+        /// 指定日の曜日を取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 日～土
+        /// </returns>
+        public static string GetYobi(int baseDate)
+        {
+            string week = "";
+            switch (GetWeek(baseDate))
+            {
+                case 0:
+                    week = "日";
+                    break;
+                case 1:
+                    week = "月";
+                    break;
+                case 2:
+                    week = "火";
+                    break;
+                case 3:
+                    week = "水";
+                    break;
+                case 4:
+                    week = "木";
+                    break;
+                case 5:
+                    week = "金";
+                    break;
+                case 6:
+                    week = "土";
+                    break;
+            }
+            return week;
+        }
+
+        /// <summary>
+        /// 指定日の曜日を番号で取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 0:日曜～6:土曜
+        /// </returns>
+        public static int GetWeek(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int ret = 0;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                ret = (int)dt1.DayOfWeek;
+            }
+
+            return ret;
+        }
     }
 }

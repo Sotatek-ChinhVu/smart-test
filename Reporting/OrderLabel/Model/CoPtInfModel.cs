@@ -11,6 +11,11 @@ public class CoPtInfModel
         PtInf = ptInf;
     }
 
+    public CoPtInfModel()
+    {
+        PtInf = new();
+    }
+
     /// <summary>
     /// 患者情報
     /// </summary>

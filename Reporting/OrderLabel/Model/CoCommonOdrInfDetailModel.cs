@@ -30,6 +30,15 @@ public class CoCommonOdrInfDetailModel
         Bunkatu = bunkatu;
 
     }
+    
+    public CoCommonOdrInfDetailModel()
+    {
+        ItemCd = string.Empty;
+        ItemName = string.Empty;
+        UnitName = string.Empty;
+        Bunkatu = string.Empty;
+
+    }
     /// <summary>
     /// 医療機関識別ID
     /// </summary>
