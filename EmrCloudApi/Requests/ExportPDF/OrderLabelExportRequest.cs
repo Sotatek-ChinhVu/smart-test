@@ -12,5 +12,12 @@ public class OrderLabelExportRequest
 
     public long RaiinNo { get; set; }
 
-    public List<(int from, int to)> OdrKouiKbns { get; set; } = new();
+    public List<KouiKbnModel> OdrKouiKbns { get; set; } = new();
+}
+
+public class KouiKbnModel
+{
+    public int From { get; set; }
+
+    public int To { get; set; }
 }

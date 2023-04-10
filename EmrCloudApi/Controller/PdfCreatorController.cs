@@ -51,7 +51,12 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.ExportOrderLabel)]
         public async Task<IActionResult> GenerateOrderLabelReport([FromBody] OrderLabelExportRequest request)
         {
-            var byomeiData = _orderLabelCoReportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, request.OdrKouiKbns, new());
+            List<(int from, int to)> odrKouiKbns = new();
+            foreach (var item in request.OdrKouiKbns)
+            {
+                odrKouiKbns.Add(new(item.From, item.To));
+            }
+            var byomeiData = _orderLabelCoReportService.GetOrderLabelReportingData(0, request.HpId, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, new());
 
             return await RenderPdf(byomeiData, ReportType.Common);
         }
