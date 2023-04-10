@@ -38,7 +38,7 @@ namespace Interactor.FlowSheet
 
                 var result = _flowsheetRepository.GetTooltip(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.StartDate, inputData.EndDate);
 
-                return new GetTooltipOutputData(result, GetTooltipStatus.InvalidHpId);
+                return new GetTooltipOutputData(result, GetTooltipStatus.Success);
             }
             finally
             {
