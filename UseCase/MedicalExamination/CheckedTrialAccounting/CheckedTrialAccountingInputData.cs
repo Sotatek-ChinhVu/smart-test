@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.OrdInfs;
+using UseCase.Core.Sync.Core;
 using UseCase.MedicalExamination.GetCheckedOrder;
 
 namespace UseCase.MedicalExamination.CheckedTrialAccounting
@@ -20,6 +21,6 @@ namespace UseCase.MedicalExamination.CheckedTrialAccounting
         public int SinDate { get; private set; }
         public int TantoId { get; private set; }
         public int KaId { get; private set; }
-        public List<OdrInfItem> OdrInfItems { get; private set; }
+        public List<OrdInfModel> OdrInfItems { get; private set; }
     }
 }
