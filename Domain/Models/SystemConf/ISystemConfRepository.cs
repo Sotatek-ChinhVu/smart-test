@@ -8,6 +8,8 @@ public interface ISystemConfRepository : IRepositoryBase
 {
     List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
 
+    List<SystemConfModel> GetList(int hpId, List<int> grpCodeList);
+
     SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo);
 
     List<SystemConfModel> GetAllSystemConfig(int hpId);
@@ -17,6 +19,8 @@ public interface ISystemConfRepository : IRepositoryBase
     string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");
 
     Hashtable GetConfigForPrintFunction(int hpId);
+
+    bool SaveSystemConfigList(int hpId, int userId, List<SystemConfModel> systemConfigList);
 
     List<SystemConfMenuModel> GetListSystemConfMenuWithGeneration(int hpId, List<int> menuGrp);
 

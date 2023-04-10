@@ -259,6 +259,8 @@
 
         //System Conf
         public const string GetSystemConfForPrint = "GetSystemConfForPrint";
+        public const string GetDrugCheckSetting = "GetDrugCheckSetting";
+        public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
         public const string GetSystemSetting = "GetSystemSetting";
 
         //ReceSeikyus
