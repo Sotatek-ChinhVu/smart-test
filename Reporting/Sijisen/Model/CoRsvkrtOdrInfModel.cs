@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRsvkrtOdrInfModel
     {
-        public RsvkrtOdrInf RsvkrtOdrInf { get; } = null;
+        public RsvkrtOdrInf RsvkrtOdrInf { get; } = new();
 
         public CoRsvkrtOdrInfModel(RsvkrtOdrInf rsvkrtOdrInf)
         {
@@ -88,7 +88,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string RpName
         {
-            get { return RsvkrtOdrInf.RpName; }
+            get { return RsvkrtOdrInf.RpName ?? string.Empty; }
         }
 
         /// <summary>

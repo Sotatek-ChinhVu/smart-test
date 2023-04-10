@@ -4,8 +4,8 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRaiinKbnInfModel
     {
-        public RaiinKbnInf RaiinKbnInf { get; } = null;
-        public RaiinKbnDetail RaiinKbnDetail { get; } = null;
+        public RaiinKbnInf RaiinKbnInf { get; } = new();
+        public RaiinKbnDetail RaiinKbnDetail { get; } = new();
 
         public CoRaiinKbnInfModel(RaiinKbnInf raiinKbnInf, RaiinKbnDetail raiinKbnDetail)
         {

@@ -1,8 +1,6 @@
 ﻿using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
-using Infrastructure.Services;
-using Microsoft.EntityFrameworkCore.Internal;
 using PostgreDataContext;
 using Reporting.Sijisen.Model;
 
@@ -55,13 +53,14 @@ namespace Reporting.Sijisen.DB
 
             var entities = join.AsEnumerable().Select(
                 data =>
-                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, null, null, null)
+                    new CoPtInfModel(data.ptInf, sinDate, data.ptCmtJoin, new(), new(), new())
                 )
                 .ToList();
 
             List<CoPtInfModel> results = new List<CoPtInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(
                     new CoPtInfModel(
                         entity.PtInf,
@@ -73,7 +72,7 @@ namespace Reporting.Sijisen.DB
                     ));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
         /// <summary>
         /// 患者薬剤アレルギー情報を取得する
@@ -141,7 +140,8 @@ namespace Reporting.Sijisen.DB
 
             List<CoPtAlrgyFoodModel> results = new List<CoPtAlrgyFoodModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(
                     new CoPtAlrgyFoodModel(
                         entity.PtAlrgyFood,
@@ -258,7 +258,8 @@ namespace Reporting.Sijisen.DB
 
             List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
@@ -344,7 +345,8 @@ namespace Reporting.Sijisen.DB
 
             List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
@@ -363,8 +365,6 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public List<CoOdrInfModel> FindOdrInf(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns)
         {
-            const string conFncName = nameof(FindOdrInf);
-
             var odrInfs = _tenantNoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -403,7 +403,8 @@ namespace Reporting.Sijisen.DB
 
             List<CoOdrInfModel> results = new List<CoOdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoOdrInfModel(entity.OdrInf));
             });
 
@@ -420,8 +421,6 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoOdrInfDetailModel> FindOdrInfDetail(int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns)
         {
-            const string conFncName = nameof(FindOdrInfDetail);
-
             var odrInfs = _tenantNoTrackingDataContext.OdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -463,7 +462,7 @@ namespace Reporting.Sijisen.DB
                     new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrInfDetail.HpId, odrInfDetail.PtId, odrInfDetail.RaiinNo, odrInfDetail.RpNo, odrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd.Trim() } equals
+                    new { odrInfDetail.HpId, ItemCd = odrInfDetail.ItemCd == null ? string.Empty : odrInfDetail.ItemCd.Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on
@@ -505,7 +504,8 @@ namespace Reporting.Sijisen.DB
                 .ToList();
             List<CoOdrInfDetailModel> results = new List<CoOdrInfDetailModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
 
                 results.Add(
                     new CoOdrInfDetailModel(
@@ -535,8 +535,6 @@ namespace Reporting.Sijisen.DB
         /// </returns>
         public List<CoRsvkrtOdrInfModel> FindRsvKrtOdrInf(int hpId, long ptId, int rsvDate, List<(int from, int to)> odrKouiKbns)
         {
-            const string conFncName = nameof(FindOdrInf);
-
             var rsvKrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -575,7 +573,8 @@ namespace Reporting.Sijisen.DB
 
             List<CoRsvkrtOdrInfModel> results = new List<CoRsvkrtOdrInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
                 results.Add(new CoRsvkrtOdrInfModel(entity.RsvkrtOdrInf));
             });
 
@@ -592,8 +591,6 @@ namespace Reporting.Sijisen.DB
         /// <returns></returns>
         public List<CoRsvkrtOdrInfDetailModel> FindRsvKrtOdrInfDetail(int hpId, long ptId, int rsvDate, List<(int from, int to)> odrKouiKbns)
         {
-            const string conFncName = nameof(FindOdrInfDetail);
-
             var rsvKrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(o =>
                 o.HpId == hpId &&
                 o.PtId == ptId &&
@@ -636,7 +633,7 @@ namespace Reporting.Sijisen.DB
                     new { rsvKrtOdrInf.HpId, rsvKrtOdrInf.PtId, rsvKrtOdrInf.RsvkrtNo, rsvKrtOdrInf.RpNo, rsvKrtOdrInf.RpEdaNo } equals
                     new { rsvKrtOdrInfDetail.HpId, rsvKrtOdrInfDetail.PtId, rsvKrtOdrInfDetail.RsvkrtNo, rsvKrtOdrInfDetail.RpNo, rsvKrtOdrInfDetail.RpEdaNo }
                 join tenMst in tenMsts on
-                    new { rsvKrtOdrInfDetail.HpId, ItemCd = rsvKrtOdrInfDetail.ItemCd.Trim() } equals
+                    new { rsvKrtOdrInfDetail.HpId, ItemCd = rsvKrtOdrInfDetail.ItemCd == null ? string.Empty : rsvKrtOdrInfDetail.ItemCd.Trim() } equals
                     new { tenMst.HpId, tenMst.ItemCd } into oJoin
                 from oj in oJoin.DefaultIfEmpty()
                 join kensaMst in kensaMsts on
@@ -678,7 +675,8 @@ namespace Reporting.Sijisen.DB
                 .ToList();
             List<CoRsvkrtOdrInfDetailModel> results = new List<CoRsvkrtOdrInfDetailModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
 
                 results.Add(
                     new CoRsvkrtOdrInfDetailModel(
@@ -744,7 +742,8 @@ namespace Reporting.Sijisen.DB
                 .ToList();
             List<CoRaiinKbnInfModel> results = new List<CoRaiinKbnInfModel>();
 
-            entities?.ForEach(entity => {
+            entities?.ForEach(entity =>
+            {
 
                 results.Add(
                     new CoRaiinKbnInfModel(

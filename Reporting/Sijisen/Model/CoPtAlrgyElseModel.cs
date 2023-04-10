@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.Model
 {
     public class CoPtAlrgyElseModel
     {
-        public PtAlrgyElse PtAlrgyElse { get; } = null;
+        public PtAlrgyElse PtAlrgyElse { get; } = new();
 
         public CoPtAlrgyElseModel(PtAlrgyElse ptAlrgyElse)
         {
@@ -53,7 +53,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string AlrgyName
         {
-            get { return PtAlrgyElse.AlrgyName; }
+            get { return PtAlrgyElse.AlrgyName ?? string.Empty; }
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string Cmt
         {
-            get { return PtAlrgyElse.Cmt; }
+            get { return PtAlrgyElse.Cmt ?? string.Empty; }
         }
 
         /// <summary>

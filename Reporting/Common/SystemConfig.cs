@@ -2,7 +2,7 @@
 {
     public class SystemConfig
     {
-        private static SystemConfig instance;
+        private static SystemConfig? instance;
         public static SystemConfig Instance {
             get
             {
@@ -36,6 +36,6 @@
 
         public int JyusinHyoKensaYokiZairyo { get; set; }
 
-        public string JyusinHyoRaiinKbn { get; set; }
+        public string JyusinHyoRaiinKbn { get; set; } = string.Empty; 
     }
 }

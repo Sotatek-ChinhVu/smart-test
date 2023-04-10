@@ -37,6 +37,8 @@ namespace Reporting.Sijisen.Model
             RaiinKbnInfModels = raiinKbnInfs;
             OtherRaiinInfModels = otherRaiinInfs;
             LastSinDate = lastSinDate;
+            RsvkrtOdrInfModels = new();
+            RsvkrtOdrInfDetailModels = new();
         }
 
         /// <summary>
@@ -193,7 +195,7 @@ namespace Reporting.Sijisen.Model
 
             if (RaiinKbnInfModels != null && RaiinKbnInfModels.Any(p => p.GrpId == grpId))
             {
-                ret = RaiinKbnInfModels.Find(p => p.GrpId == grpId).KbnName;
+                ret = RaiinKbnInfModels.Find(p => p.GrpId == grpId)?.KbnName ?? string.Empty;
             }
 
             return ret;

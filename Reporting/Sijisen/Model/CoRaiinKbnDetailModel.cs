@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRaiinKbnDetailModel
     {
-        public RaiinKbnDetail RaiinKbnDetail { get; } = null;
+        public RaiinKbnDetail RaiinKbnDetail { get; } = new();
 
         public CoRaiinKbnDetailModel(RaiinKbnDetail raiinKbnDetail)
         {
@@ -51,7 +51,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string KbnName
         {
-            get { return RaiinKbnDetail.KbnName; }
+            get { return RaiinKbnDetail.KbnName ?? string.Empty; }
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string ColorCd
         {
-            get { return RaiinKbnDetail.ColorCd; }
+            get { return RaiinKbnDetail.ColorCd ?? string.Empty; }
         }
 
         /// <summary>

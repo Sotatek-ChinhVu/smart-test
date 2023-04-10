@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRaiinKbnMstModel
     {
-        public RaiinKbnMst RaiinKbnMst { get; } = null;
+        public RaiinKbnMst RaiinKbnMst { get; } = new();
 
         public CoRaiinKbnMstModel(RaiinKbnMst raiinKbnMst)
         {
@@ -43,7 +43,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string GrpName
         {
-            get { return RaiinKbnMst.GrpName; }
+            get { return RaiinKbnMst.GrpName ?? string.Empty; }
         }
 
         /// <summary>

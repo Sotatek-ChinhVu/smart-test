@@ -4,14 +4,14 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRsvkrtOdrInfDetailModel
     {
-        public RsvkrtOdrInfDetail RsvkrtOdrInfDetail { get; } = null;
-        public RsvkrtOdrInf RsvkrtOdrInf { get; } = null;
-        public TenMst TenMst { get; } = null;
+        public RsvkrtOdrInfDetail RsvkrtOdrInfDetail { get; } = new();
+        public RsvkrtOdrInf RsvkrtOdrInf { get; } = new();
+        public TenMst TenMst { get; } = new();
 
-        public KensaMst KensaMst { get; } = null;
+        public KensaMst KensaMst { get; } = new();
 
-        public MaterialMst MaterialMst { get; } = null;
-        public ContainerMst ContainerMst { get; } = null;
+        public MaterialMst MaterialMst { get; } = new();
+        public ContainerMst ContainerMst { get; } = new();
         public CoRsvkrtOdrInfDetailModel(RsvkrtOdrInfDetail rsvkrtOdrInfDetail, RsvkrtOdrInf rsvkrtOdrInf, TenMst tenMst, KensaMst kensaMst, MaterialMst materialMst, ContainerMst containerMst)
         {
             RsvkrtOdrInfDetail = rsvkrtOdrInfDetail;
@@ -99,7 +99,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string ItemCd
         {
-            get { return RsvkrtOdrInfDetail.ItemCd; }
+            get { return RsvkrtOdrInfDetail.ItemCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string ItemName
         {
-            get { return RsvkrtOdrInfDetail.ItemName; }
+            get { return RsvkrtOdrInfDetail.ItemName ?? string.Empty; }
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string UnitName
         {
-            get { return RsvkrtOdrInfDetail.UnitName; }
+            get { return RsvkrtOdrInfDetail.UnitName ?? string.Empty; }
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string Kokuji1
         {
-            get { return RsvkrtOdrInfDetail.Kokuji1; }
+            get { return RsvkrtOdrInfDetail.Kokuji1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string Kokuji2
         {
-            get { return RsvkrtOdrInfDetail.Kokuji2; }
+            get { return RsvkrtOdrInfDetail.Kokuji2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string IpnCd
         {
-            get { return RsvkrtOdrInfDetail.IpnCd; }
+            get { return RsvkrtOdrInfDetail.IpnCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string IpnName
         {
-            get { return RsvkrtOdrInfDetail.IpnName; }
+            get { return RsvkrtOdrInfDetail.IpnName ?? string.Empty; }
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string Bunkatu
         {
-            get { return RsvkrtOdrInfDetail.Bunkatu; }
+            get { return RsvkrtOdrInfDetail.Bunkatu ?? string.Empty; }
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string CmtName
         {
-            get { return RsvkrtOdrInfDetail.CmtName; }
+            get { return RsvkrtOdrInfDetail.CmtName ?? string.Empty; }
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string CmtOpt
         {
-            get { return RsvkrtOdrInfDetail.CmtOpt; }
+            get { return RsvkrtOdrInfDetail.CmtOpt ?? string.Empty; }
         }
 
         /// <summary>
@@ -305,7 +305,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string FontColor
         {
-            get { return RsvkrtOdrInfDetail.FontColor; }
+            get { return RsvkrtOdrInfDetail.FontColor ?? string.Empty; }
         }
 
         /// <summary>

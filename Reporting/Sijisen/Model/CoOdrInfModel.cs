@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.DB
 {
     public class CoOdrInfModel
     {
-        public OdrInf OdrInf { get; } = null;
+        public OdrInf OdrInf { get; } = new();
 
         public CoOdrInfModel(OdrInf odrInf)
         {

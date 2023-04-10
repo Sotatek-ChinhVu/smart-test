@@ -327,7 +327,7 @@ namespace Reporting.ReportServices
 
             foreach (var drugInf in drugInfs)
             {
-                var listItem = drugInf.DrugInfo?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var listItem = drugInf.DrugInfo?.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new();
                 foreach (var item in listItem)
                 {
                     wsBuf += item;

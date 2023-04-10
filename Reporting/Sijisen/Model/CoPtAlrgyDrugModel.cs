@@ -4,7 +4,7 @@ namespace Reporting.Sijisen.Model
 {
     public class CoPtAlrgyDrugModel
     {
-        public PtAlrgyDrug PtAlrgyDrug { get; } = null;
+        public PtAlrgyDrug PtAlrgyDrug { get; } = new();
 
         public CoPtAlrgyDrugModel(PtAlrgyDrug ptAlrgyDrug)
         {
@@ -53,7 +53,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string ItemCd
         {
-            get { return PtAlrgyDrug.ItemCd; }
+            get { return PtAlrgyDrug.ItemCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Reporting.Sijisen.Model
         /// </summary>
         public string Cmt
         {
-            get { return PtAlrgyDrug.Cmt; }
+            get { return PtAlrgyDrug.Cmt ?? string.Empty; }
         }
 
         /// <summary>

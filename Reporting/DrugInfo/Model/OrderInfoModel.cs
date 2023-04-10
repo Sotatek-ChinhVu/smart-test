@@ -5,6 +5,6 @@
         public long RaiinNo { get; set; }
         public long RpNo { get; set; }
         public int OdrKouiKbn { get; set; }
-        public List<OrderInfDetailModel> OrderInfDetailCollection { get; set; }
+        public List<OrderInfDetailModel> OrderInfDetailCollection { get; set; } = new();
     }
 }

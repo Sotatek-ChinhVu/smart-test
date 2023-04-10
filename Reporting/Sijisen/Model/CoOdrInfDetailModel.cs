@@ -4,14 +4,14 @@ namespace Reporting.Sijisen.DB
 {
     public class CoOdrInfDetailModel
     {
-        public OdrInfDetail OdrInfDetail { get; } = null;
-        public OdrInf OdrInf { get; } = null;
-        public TenMst TenMst { get; } = null;
+        public OdrInfDetail OdrInfDetail { get; } = new();
+        public OdrInf OdrInf { get; } = new();
+        public TenMst TenMst { get; } = new();
 
-        public KensaMst KensaMst { get; } = null;
+        public KensaMst KensaMst { get; } = new();
 
-        public MaterialMst MaterialMst { get; } = null;
-        public ContainerMst ContainerMst { get; } = null;
+        public MaterialMst MaterialMst { get; } = new();
+        public ContainerMst ContainerMst { get; } = new();
 
         public CoOdrInfDetailModel(OdrInfDetail odrInfDetail, OdrInf odrInf, TenMst tenMst, KensaMst kensaMst, MaterialMst materialMst, ContainerMst containerMst)
         {
@@ -221,7 +221,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string Kokuji1
         {
-            get { return OdrInfDetail.Kokuji1; }
+            get { return OdrInfDetail.Kokuji1 ?? string.Empty; }
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string Kokiji2
         {
-            get { return OdrInfDetail.Kokiji2; }
+            get { return OdrInfDetail.Kokiji2 ?? string.Empty; }
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string IpnCd
         {
-            get { return OdrInfDetail.IpnCd; }
+            get { return OdrInfDetail.IpnCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string IpnName
         {
-            get { return OdrInfDetail.IpnName; }
+            get { return OdrInfDetail.IpnName ?? string.Empty; }
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string JissiMachine
         {
-            get { return OdrInfDetail.JissiMachine; }
+            get { return OdrInfDetail.JissiMachine ?? string.Empty; }
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string ReqCd
         {
-            get { return OdrInfDetail.ReqCd; }
+            get { return OdrInfDetail.ReqCd ?? string.Empty; }
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string Bunkatu
         {
-            get { return OdrInfDetail.Bunkatu; }
+            get { return OdrInfDetail.Bunkatu ?? string.Empty ; }
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string CmtName
         {
-            get { return OdrInfDetail.CmtName; }
+            get { return OdrInfDetail.CmtName ?? string.Empty; }
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string CmtOpt
         {
-            get { return OdrInfDetail.CmtOpt; }
+            get { return OdrInfDetail.CmtOpt ?? string.Empty; }
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace Reporting.Sijisen.DB
         /// </summary>
         public string FontColor
         {
-            get { return OdrInfDetail.FontColor; }
+            get { return OdrInfDetail.FontColor ?? string.Empty; }
         }
 
         /// <summary>
