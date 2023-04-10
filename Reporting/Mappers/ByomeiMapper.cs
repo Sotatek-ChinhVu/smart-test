@@ -12,11 +12,6 @@ namespace Reporting.Mappers
             _byomeiList = byomeiList;
         }
 
-        public override List<string> GetFormNameList()
-        {
-            return new List<string>() { "fmByomeiList.rse" };
-        }
-
         public override Dictionary<string, string> GetSingleFieldData()
         {
             if (_byomeiList == null ||
@@ -82,25 +77,25 @@ namespace Reporting.Mappers
             return data;
         }
 
-        public override List<Dictionary<string, string>> GetTableFieldData()
+        public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
             if (_byomeiList == null)
             {
-                return new List<Dictionary<string, string>>();
+                return new List<Dictionary<string, CellModel>>();
             }
 
-            List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+            List<Dictionary<string, CellModel>> result = new List<Dictionary<string, CellModel>>();
             foreach (var item in _byomeiList)
             {
                 if (item.ListByomei != null)
                 {
                     foreach (var byomei in item.ListByomei)
                     {
-                        Dictionary<string, string> data = new Dictionary<string, string>();
-                        data.Add("lsByomei", byomei.ByomeiName);
-                        data.Add("lsStartDate", byomei.StartDate);
-                        data.Add("lsTenkiDate", byomei.TenkiDate);
-                        data.Add("lsTenki", byomei.DisplayTenki);
+                        Dictionary<string, CellModel> data = new Dictionary<string, CellModel>();
+                        data.Add("lsByomei", new CellModel(byomei.ByomeiName));
+                        data.Add("lsStartDate", new CellModel(byomei.StartDate));
+                        data.Add("lsTenkiDate", new CellModel(byomei.TenkiDate));
+                        data.Add("lsTenki", new CellModel(byomei.DisplayTenki));
                         result.Add(data);
                     }
                 }
@@ -148,6 +143,16 @@ namespace Reporting.Mappers
         public override Dictionary<string, bool> GetWrapFieldData()
         {
             return new Dictionary<string, bool>() { { "lsByomei", true } };
+        }
+
+        public override int GetReportType()
+        {
+            return (int)CoReportType.Byomei;
+        }
+
+        public override string GetRowCountFieldName()
+        {
+            return "lsByomei";
         }
     }
 }
