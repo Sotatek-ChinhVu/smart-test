@@ -24,9 +24,9 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     }
 
     private readonly ITenantProvider _tenantProvider;
-    private CoOrderLabelModel _coModel;
-    private List<CoUserMstModel> _userMsts;
-    private List<CoOrderLabelPrintDataModel> _printOutData;
+    private CoOrderLabelModel _coModel = new();
+    private List<CoUserMstModel> _userMsts = new();
+    private List<CoOrderLabelPrintDataModel> _printOutData = new();
     private readonly ISystemConfig _systemConfig;
 
     public OrderLabelCoReportService(ITenantProvider tenantProvider, ISystemConfig systemConfig)

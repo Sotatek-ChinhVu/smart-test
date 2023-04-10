@@ -1,10 +1,10 @@
-﻿namespace Reporting.Mappers.Common
+﻿namespace Reporting.Mappers.Common;
+
+public enum CoReportType
 {
-    public enum CoReportType
-    {
-        Common = 0,
-        Sijisen = 1,
-        JyusinHyo = 2,
-        Byomei = 3,
-    }
+    Common = 0,
+    Sijisen = 1,
+    JyusinHyo = 2,
+    Byomei = 3,
+    OrderLabel,
 }

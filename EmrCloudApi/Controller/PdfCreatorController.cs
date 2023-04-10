@@ -2,7 +2,6 @@
 using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
-//using Newtonsoft.Json;
 using Reporting.Interface;
 using System.Text;
 using System.Text.Json;
