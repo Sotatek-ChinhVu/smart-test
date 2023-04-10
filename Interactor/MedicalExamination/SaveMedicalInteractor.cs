@@ -10,6 +10,8 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
@@ -19,6 +21,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Interactor.CalculateService;
 using Interactor.Family.ValidateFamilyList;
+using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
 using UseCase.Accounting.Recaculate;
 using UseCase.Family;
@@ -164,7 +167,40 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             // Family list
             var familyList = ConvertToFamilyList(inputDatas.FamilyList);
 
-            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList);
+            // Next Order
+            var ipnCds = new List<Tuple<string, string>>();
+            foreach (var nextOrder in inputDatas.NextOrderItems)
+            {
+                foreach (var orderInfModel in nextOrder.RsvKrtOrderInfItems)
+                {
+                    ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
+                }
+            }
+            var nextOrderModels = inputDatas.NextOrderItems.Select(n => NextOrderCommon.ConvertNextOrderToModel(inputDatas.HpId, inputDatas.PtId, ipnCds, n)).ToList();
+
+            //Special Note
+            var summaryTab = inputDatas.SpecialNoteItem.SummaryTab;
+            var summaryInfModel = new SummaryInfModel(summaryTab.Id, summaryTab.HpId, summaryTab.PtId, summaryTab.SeqNo, summaryTab.Text, summaryTab.Rtext, DateTime.UtcNow, DateTime.UtcNow);
+            var patientInfTab = new PatientInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.PregnancyItems.Select(p => new PtPregnancyModel(
+                        p.Id,
+                        p.HpId,
+                        p.PtId,
+                        p.SeqNo,
+                        p.StartDate,
+                        p.EndDate,
+                        p.PeriodDate,
+                        p.PeriodDueDate,
+                        p.OvulationDate,
+                        p.OvulationDueDate,
+                        p.IsDeleted,
+                        DateTime.UtcNow,
+                        inputDatas.UserId,
+                        string.Empty,
+                        p.SinDate
+
+                    )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailModels) });
+
+            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab);
             if (inputDatas.FileItem.IsUpdateFile)
             {
                 if (check)
@@ -637,4 +673,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         }
         return result;
     }
+
+
 }

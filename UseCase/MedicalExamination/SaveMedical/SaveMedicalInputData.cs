@@ -1,12 +1,14 @@
 ﻿using UseCase.Core.Sync.Core;
 using UseCase.Family;
 using UseCase.MedicalExamination.UpsertTodayOrd;
+using UseCase.NextOrder;
+using UseCase.SpecialNote.Save;
 
 namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily)
+    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem)
     {
         HpId = hpId;
         PtId = ptId;
@@ -25,6 +27,8 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
         UserId = userId;
         FileItem = fileItem;
         FamilyList = listFamily;
+        NextOrderItems = nextOrderItems;
+        SpecialNoteItem = specialNoteItem;
     }
 
     public int HpId { get; private set; }
@@ -61,4 +65,8 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 
     // Family input data
     public List<FamilyItem> FamilyList { get; private set; }
+
+    public List<NextOrderItem> NextOrderItems { get; private set; }
+
+    public SpecialNoteItem SpecialNoteItem { get; private set; }
 }
