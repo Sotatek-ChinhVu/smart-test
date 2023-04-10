@@ -67,5 +67,9 @@ namespace Domain.Models.MstItem
         List<KensaCenterMstModel> GetListKensaCenterMst(int hpId);
 
         List<TenMstOriginModel> GetGroupTenMst(string itemCd);
+
+        string GetMaxItemCdByTypeForAdd(string startWithstr);
+
+        int GetMinJihiSbtMst(int hpId);
     }
 }

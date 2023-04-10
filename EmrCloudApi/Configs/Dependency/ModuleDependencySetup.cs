@@ -268,6 +268,7 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
+using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -961,6 +962,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //TenMstMaintenance
             busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
