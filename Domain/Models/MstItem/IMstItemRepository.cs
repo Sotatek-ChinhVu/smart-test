@@ -67,5 +67,7 @@ namespace Domain.Models.MstItem
         List<KensaCenterMstModel> GetListKensaCenterMst(int hpId);
 
         List<TenMstOriginModel> GetGroupTenMst(string itemCd);
+
+        Dictionary<int, string> GetKaDict(int hpId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using static Helper.Constants.UserConfConst;
+﻿using Helper.Extension;
+using static Helper.Constants.UserConfConst;
 
 namespace Domain.Models.UserConf;
 
@@ -14,6 +15,13 @@ public class UserConfModel
         Param = param;
     }
 
+    public UserConfModel(string commentCheckSaveParam, string inputCheckSaveParam, string santeiCheckSaveParam)
+    {
+        CommentCheckSaveParam = commentCheckSaveParam;
+        InputCheckSaveParam = inputCheckSaveParam;
+        SanteiCheckSaveParam = santeiCheckSaveParam;
+    }
+
     public int UserId { get; private set; }
 
     public int GrpCd { get; private set; }
@@ -25,6 +33,44 @@ public class UserConfModel
     public int Val { get; private set; }
 
     public string Param { get; private set; }
+
+    public string CommentCheckSaveParam { get; private set; }
+
+    public string InputCheckSaveParam { get; private set; }
+
+    public string SanteiCheckSaveParam { get; private set; }
+
+    public bool IsCmtCheckPrint => CommentCheckSaveParam[4].AsInteger() == 1;
+
+    public bool IsInputCheckPrint => InputCheckSaveParam[4].AsInteger() == 1;
+
+    public bool IsSanteiCheckPrint => SanteiCheckSaveParam[4].AsInteger() == 1;
+
+    public bool IsCmtCheckTrialCalc => CommentCheckSaveParam[3].AsInteger() == 1;
+
+    public bool IsInputCheckTrialCalc => InputCheckSaveParam[3].AsInteger() == 1;
+
+    public bool IsSanteiCheckTrialCalc => SanteiCheckSaveParam[3].AsInteger() == 1;
+
+    public bool ShowSaveConfirmWithPrint
+    {
+        get
+        {
+            return IsCmtCheckPrint ||
+                   IsInputCheckPrint ||
+                   IsSanteiCheckPrint;
+        }
+    }
+
+    public bool ShowSaveConfirmWithTrialCalc
+    {
+        get
+        {
+            return IsCmtCheckTrialCalc ||
+                   IsInputCheckTrialCalc ||
+                   IsSanteiCheckTrialCalc;
+        }
+    }
 
     public UserConfStatus Validation()
     {

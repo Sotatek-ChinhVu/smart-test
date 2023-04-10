@@ -435,5 +435,30 @@ namespace Infrastructure.Repositories
                     throw new NotSupportedException("Not supported for code : " + permissionCode);
             }
         }
+
+        public List<UserMstModel> GetListDoctorBySinDate(int hpId, int sinDate)
+        {
+            return NoTrackingDataContext.UserMsts.Where(p => p.HpId == hpId && p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1)
+                                                .Select(p => new UserMstModel(
+                                                        p.HpId,
+                                                        p.Id,
+                                                        p.UserId,
+                                                        p.JobCd,
+                                                        p.ManagerKbn,
+                                                        p.KaId,
+                                                        p.KanaName ?? string.Empty,
+                                                        p.Name ?? string.Empty,
+                                                        p.Sname ?? string.Empty,
+                                                        p.DrName ?? string.Empty,
+                                                        p.LoginId ?? string.Empty,
+                                                        string.Empty,
+                                                        p.MayakuLicenseNo ?? string.Empty,
+                                                        p.StartDate,
+                                                        p.EndDate,
+                                                        p.SortNo,
+                                                        p.RenkeiCd1 ?? string.Empty,
+                                                        p.IsDeleted))
+                                                .OrderBy(p => p.SortNo).ToList();
+        }
     }
 }

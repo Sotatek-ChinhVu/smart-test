@@ -1567,11 +1567,11 @@ namespace Infrastructure.Repositories
                     item.HolidayKbn > 0 &&
                     item.KyusinKbn > 0).AsEnumerable();
 
-                return holidayMsts.Select(item => new HolidayModel(item.SinDate,
-                                                item.HolidayKbn,
-                                                item.HolidayName ?? string.Empty))
-                .OrderBy(item => item.SinDate)
-                .ToList();
+            return holidayMsts.Select(item => new HolidayModel(item.SinDate,
+                                            item.HolidayKbn,
+                                            item.HolidayName ?? string.Empty))
+            .OrderBy(item => item.SinDate)
+            .ToList();
         }
 
         public List<KensaCenterMstModel> GetListKensaCenterMst(int hpId)
@@ -1590,8 +1590,8 @@ namespace Infrastructure.Repositories
                                                         x.PrimaryKbn,
                                                         x.SortNo
                                         )).ToList();
-         }
-         
+        }
+
         public List<TenMstOriginModel> GetGroupTenMst(string itemCd)
         {
             return NoTrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd)
@@ -1777,6 +1777,20 @@ namespace Infrastructure.Repositories
                                                                                    x.IsDeleted,
                                                                                    false,
                                                                                    x.StartDate)).ToList();
+        }
+
+        public Dictionary<int, string> GetKaDict(int hpId)
+        {
+            Dictionary<int, string> kaDict = new Dictionary<int, string>();
+            var kaMsts = NoTrackingDataContext.KaMsts.Where(p => p.HpId == hpId && p.IsDeleted != 1).OrderBy(u => u.SortNo).ThenBy(u => u.KaId).ToList();
+            if (kaMsts != null)
+            {
+                foreach (var kaMst in kaMsts)
+                {
+                    kaDict.Add(kaMst.KaId, kaMst.KaSname ?? string.Empty);
+                }
+            }
+            return kaDict;
         }
     }
 }
