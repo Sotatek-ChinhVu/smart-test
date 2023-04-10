@@ -78,8 +78,8 @@ namespace EmrCloudApi.Controller
         {
             StringContent jsonContent = (reportType ==
               ReportType.Karte1
-              || reportType == ReportType.DrugInfo
-              ) ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
+              || reportType == ReportType.DrugInfo)
+              ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
               new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
             string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;

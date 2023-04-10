@@ -9,7 +9,7 @@ namespace Reporting.CommonMasters.Common;
 public class UserMstCache : RepositoryBase, IUserMstCache
 {
     public delegate void UserMstCacheDelegate();
-    public UserMstCacheDelegate ChangedData;
+    public UserMstCacheDelegate? ChangedData;
 
     private static readonly object _threadsafelock = new object();
 

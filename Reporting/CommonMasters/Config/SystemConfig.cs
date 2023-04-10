@@ -29,12 +29,12 @@ public class SystemConfig : RepositoryBase, ISystemConfig
             SystemConf systemConf = new();
             if (!fromLastestDb)
             {
-                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo)??new();
+                systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
             }
             else
             {
                 systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
-                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault()??new();
+                    p.HpId == Session.HospitalID && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new();
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }

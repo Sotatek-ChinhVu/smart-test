@@ -11,6 +11,11 @@ public class KensaMstModel
         KensaMst = kensaMst;
     }
 
+    public KensaMstModel()
+    {
+        KensaMst = new();
+    }
+
     /// <summary>
     /// 医療機関識別ID
     /// 

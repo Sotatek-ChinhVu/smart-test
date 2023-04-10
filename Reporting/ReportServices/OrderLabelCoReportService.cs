@@ -214,7 +214,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     {
         #region sub method
         // 初再診
-        string _getSyosai(double suryo)
+        string getSyosai(double suryo)
         {
             string itemName = "";
             // 初再診
@@ -252,7 +252,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             return itemName;
         }
         // 時間枠
-        string _getJikan(double suryo)
+        string getJikan(double suryo)
         {
             string itemName = "";
 
@@ -277,7 +277,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             return itemName;
         }
 
-        string _makeHeader(int sinDate, int date, bool yoyaku)
+        string makeHeader(int sinDate, int date, bool yoyaku)
         {
             string ret = CIUtil.SDateToShowSDate(sinDate);
 
@@ -296,7 +296,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             return ret;
         }
 
-        string _getCreateUserName(int userId)
+        string getCreateUserName(int userId)
         {
             string user = "";
 
@@ -332,7 +332,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             if (i == 0)
             {
                 // 最初にヘッダー印字
-                header = _makeHeader(sinDate, odrInf.SinDate, _coModel.IsYoyaku);
+                header = makeHeader(sinDate, odrInf.SinDate, _coModel.IsYoyaku);
 
                 addPrintOutData.Add(AddItem(TargetControl.Comment, header));
 
@@ -357,7 +357,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                         CoCommonOdrInfDetailModel odrDtlSin = _coModel.OdrInfDetailModels.FirstOrDefault(p => p.ItemCd == "@SHIN") ?? new();
                         if (odrDtlSin != null)
                         {
-                            syosai = _getSyosai(odrDtlSin.Suryo);
+                            syosai = getSyosai(odrDtlSin.Suryo);
                         }
 
                         if (syosai != "")
@@ -365,7 +365,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                             CoCommonOdrInfDetailModel odrDtlJikan = _coModel.OdrInfDetailModels.FirstOrDefault(p => p.ItemCd == "@JIKAN") ?? new();
                             if (odrDtlJikan != null)
                             {
-                                string jikan = _getJikan(odrDtlJikan.Suryo);
+                                string jikan = getJikan(odrDtlJikan.Suryo);
                                 if (jikan != "")
                                 {
                                     syosai += $"({jikan})";
@@ -384,7 +384,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                     createId != odrInf.CreateId)
                 {
                     // 入力者
-                    string user = _getCreateUserName(odrInf.CreateId);
+                    string user = getCreateUserName(odrInf.CreateId);
                     if (!string.IsNullOrEmpty(user))
                     {
                         // 1行あけて・・・
@@ -402,7 +402,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
                 addPrintOutData.Add(AddItem(TargetControl.Comment, header));
 
                 // 入力者
-                string user = _getCreateUserName(odrInf.CreateId);
+                string user = getCreateUserName(odrInf.CreateId);
                 if (!string.IsNullOrEmpty(user))
                 {
                     addPrintOutData.Add(AddItem(TargetControl.Comment, $"{user}"));
@@ -411,7 +411,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             else if (_systemConfig.OrderLabelCreateNamePrint() == 1 &&
                 createId != odrInf.CreateId)
             {
-                string user = _getCreateUserName(odrInf.CreateId);
+                string user = getCreateUserName(odrInf.CreateId);
                 if (!string.IsNullOrEmpty(user))
                 {
                     // 1行あけて・・・
@@ -425,7 +425,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             // 行為名を除くRp先頭行のみ*を付ける
             rpNo++;
             string preSet = $"{rpNo:D2})";
-            string mark = _getMark(odrInf.SikyuKbn, odrInf.SanteiKbn);
+            string mark = GetMark(odrInf.SikyuKbn, odrInf.SanteiKbn);
             string inout = "";
             if (((odrInf.OdrKouiKbn >= 20 && odrInf.OdrKouiKbn < 29) || (odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69)) && odrInf.InoutKbn == 1)
             {
@@ -549,7 +549,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
     /// <param name="sikyuKbn">至急区分</param>
     /// <param name="santeiKbn">算定区分</param>
     /// <returns></returns>
-    private string _getMark(int sikyuKbn, int santeiKbn)
+    private string GetMark(int sikyuKbn, int santeiKbn)
     {
         string sikyu = "";
 

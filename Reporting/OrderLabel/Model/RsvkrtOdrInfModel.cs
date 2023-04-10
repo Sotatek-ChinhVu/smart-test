@@ -21,6 +21,8 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
         _userMstCache = userMstCache;
         RsvkrtOdrInf = rsvkrtOdrInf;
         OdrInfDetailModels = rsvkrtOdrInfDetails;
+        OdrInfDetailModelView = new();
+        SelectedOrderDetailModel = new();
     }
 
     public int Index { get; set; }
@@ -361,14 +363,14 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
     }
 
     #region Exposed properties
-    private List<RsvkrtOdrInfDetailModel> _rsvkrtOdrInfDetailModels;
+    private List<RsvkrtOdrInfDetailModel> rsvkrtOdrInfDetailModels = new();
 
     public List<RsvkrtOdrInfDetailModel> OdrInfDetailModels
     {
-        get => _rsvkrtOdrInfDetailModels;
+        get => rsvkrtOdrInfDetailModels;
         set
         {
-            _rsvkrtOdrInfDetailModels = value;
+            rsvkrtOdrInfDetailModels = value;
             if (value != null)
             {
                 foreach (var odrDetail in OdrInfDetailModels)
@@ -416,11 +418,11 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
     {
         string result = Index + ") ";
 
-        int DisplaySetName = _userConfReportCommon.DisplaySetName();
-        int DisplayUserInput = _userConfReportCommon.DisplayUserInput();
-        int DisplayTimeInput = _userConfReportCommon.DisplayTimeInput();
+        int displaySetName = _userConfReportCommon.DisplaySetName();
+        int displayUserInput = _userConfReportCommon.DisplayUserInput();
+        int displayTimeInput = _userConfReportCommon.DisplayTimeInput();
 
-        if (DisplaySetName == 1)
+        if (displaySetName == 1)
         {
             if (!string.IsNullOrEmpty(RpName))
             {
@@ -445,7 +447,7 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
             }
         }
 
-        if (DisplayTimeInput == 1)
+        if (displayTimeInput == 1)
         {
             // 入力日時
             if (CreateDate != DateTime.MinValue)
@@ -454,7 +456,7 @@ public class RsvkrtOdrInfModel : IOdrInfModel<RsvkrtOdrInfDetailModel>
             }
         }
 
-        if (DisplayUserInput == 1)
+        if (displayUserInput == 1)
         {
             //入力者
             if (CreateId != 0)

@@ -263,7 +263,7 @@ namespace Reporting.Sijisen.DB
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
 
         /// <summary>

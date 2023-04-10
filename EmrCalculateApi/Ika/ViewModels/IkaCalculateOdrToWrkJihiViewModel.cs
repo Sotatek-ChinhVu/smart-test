@@ -41,7 +41,7 @@ namespace EmrCalculateApi.Ika.ViewModels
             const string conFncName = nameof(Calculate);
             _emrLogger.WriteLogStart( this, conFncName, "");
 
-            if (_common.Odr.ExistOdrKoui(EmrCalculateApi.Constants.OdrKouiKbnConst.Jihi, EmrCalculateApi.Constants.OdrKouiKbnConst.Jihi))
+            if (_common.Odr.ExistOdrKoui(OdrKouiKbnConst.Jihi, OdrKouiKbnConst.Jihi))
             {
                 // 保険
                 CalculateHoken();

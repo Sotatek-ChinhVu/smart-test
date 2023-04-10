@@ -47,7 +47,7 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
     }
 
     public delegate void UserConfCommonDelegate();
-    public UserConfCommonDelegate ChangedData { get; set; }
+    public UserConfCommonDelegate? ChangedData { get; set; }
 
     private static void InitConfigDefaultValue()
     {
@@ -171,15 +171,15 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
     {
         if (ConfigGroupDefault.ContainsKey(groupCd))
         {
-            var ConfigItemDefault = ConfigGroupDefault[groupCd];
+            var configItemDefault = ConfigGroupDefault[groupCd];
 
-            if (ConfigItemDefault.ContainsKey(groupItem))
+            if (configItemDefault.ContainsKey(groupItem))
             {
-                ConfigItemDefault[groupItem] = defaultValue;
+                configItemDefault[groupItem] = defaultValue;
             }
             else
             {
-                ConfigItemDefault.Add(groupItem, defaultValue);
+                configItemDefault.Add(groupItem, defaultValue);
             }
         }
         else
@@ -192,10 +192,10 @@ public class UserConfReportCommon : RepositoryBase, IUserConfReportCommon
     {
         if (ConfigGroupDefault.ContainsKey(groupCd))
         {
-            var ConfigItemDefault = ConfigGroupDefault[groupCd];
-            if (ConfigItemDefault.ContainsKey(groupItemCd))
+            var configItemDefault = ConfigGroupDefault[groupCd];
+            if (configItemDefault.ContainsKey(groupItemCd))
             {
-                return ConfigItemDefault[groupItemCd];
+                return configItemDefault[groupItemCd];
             }
             return 0;
         }

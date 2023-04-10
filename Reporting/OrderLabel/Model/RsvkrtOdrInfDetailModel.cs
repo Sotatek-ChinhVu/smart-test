@@ -14,6 +14,15 @@ namespace Reporting.OrderLabel.Model
         public RsvkrtOdrInfDetailModel(RsvkrtOdrInfDetail rsvkrtOdrInfDetail)
         {
             RsvkrtOdrInfDetail = rsvkrtOdrInfDetail;
+            KensaMstModel = new();
+            IpnMinYakkaMstModel = new();
+        }
+
+        public RsvkrtOdrInfDetailModel()
+        {
+            RsvkrtOdrInfDetail = new();
+            KensaMstModel = new();
+            IpnMinYakkaMstModel = new();
         }
 
         /// <summary>
@@ -750,7 +759,7 @@ namespace Reporting.OrderLabel.Model
             {
                 if (string.IsNullOrEmpty(FontColor))
                 {
-                    return "#" + FontColorConst.BLACK;
+                    return "#" + FontColorConst.Black;
                 }
                 return "#" + FontColor;
             }
