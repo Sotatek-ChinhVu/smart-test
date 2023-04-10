@@ -101,18 +101,18 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             var taskByomei = Task<List<SetByomeiModel>>.Factory.StartNew(() => ExcuGetByomeisForEachDetailItem(currentSetCd, byomeiObj, allSetByomeis, allByomeiMstList));
             var taskKarte = Task<SetKarteInfModel?>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
             var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, ipnKansanMsts, yohoSetMsts ?? new(), tenMstYohos, settingValues, kensaIrai, kensaIraiCondition));
-            var taskKarteFile = Task<List<SetFileInfModel>>.Factory.StartNew(() => ExcuGetKarteFileForEachDetailItem(setCd, karteFileObj, allKarteFiles, lastSeqNos));
+            var taskKarteFile = Task<List<SetFileInfModel>>.Factory.StartNew(() => ExcuGetKarteFileForEachDetailItem(currentSetCd, karteFileObj, allKarteFiles, lastSeqNos));
 
             Task.WaitAll(taskByomei, taskKarte, taskOrder, taskKarteFile);
 
             var karteInf = taskKarte.Result;
-            var karteFiles = taskKarteFile.Result;
+            var karteFileOfItem = taskKarteFile.Result;
 
             byomeis.AddRange(taskByomei.Result);
             if (karteInf != null)
                 karteInfs.Add(karteInf);
-            if (karteFiles != null && karteFiles.Count > 0)
-                karteFiles.AddRange(karteFiles);
+            if (karteFileOfItem != null && karteFileOfItem.Count > 0)
+                karteFiles.AddRange(karteFileOfItem);
             ordInfs.AddRange(taskOrder.Result);
         });
 
