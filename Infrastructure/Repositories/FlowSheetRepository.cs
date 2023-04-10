@@ -461,7 +461,7 @@ namespace Infrastructure.Repositories
                     {
                         if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
                         {
-                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : result + Environment.NewLine) + SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn];
+                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn)?SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
                         }
 
                     }
