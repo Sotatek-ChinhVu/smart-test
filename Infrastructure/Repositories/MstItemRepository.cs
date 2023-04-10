@@ -5,9 +5,9 @@ using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -1777,6 +1777,34 @@ namespace Infrastructure.Repositories
                                                                                    x.IsDeleted,
                                                                                    false,
                                                                                    x.StartDate)).ToList();
+        }
+
+        public string GetMaxItemCdByTypeForAdd(string startWithstr)
+        {
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.ItemCd.StartsWith(startWithstr)).ToList();
+
+            var tenMst = tenMstList.Where(item => item.ItemCd.Substring(startWithstr.Length).AsInteger() != 0)
+                                   .OrderByDescending(item => item.ItemCd.Replace(startWithstr, string.Empty).PadLeft(10, '0'))
+                                   .FirstOrDefault();
+            if (tenMst != null)
+            {
+                return startWithstr + (tenMst.ItemCd.Replace(startWithstr, "").AsInteger() + 1);
+            }
+
+            return startWithstr + "1";
+        }
+
+
+        public int GetMinJihiSbtMst(int hpId)
+        {
+            var jihiSbtMst = NoTrackingDataContext.JihiSbtMsts.Where(i => i.HpId == hpId && i.IsDeleted == DeleteStatus.None)
+                                                            .OrderBy(item => item.JihiSbt)
+                                                            .FirstOrDefault();
+            if (jihiSbtMst != null)
+            {
+                return jihiSbtMst.JihiSbt;
+            }
+            return 0;
         }
     }
 }
