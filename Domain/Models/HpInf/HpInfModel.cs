@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.HpInf;
+﻿using Helper.Constants;
+using System.Text.Json.Serialization;
+
+namespace Domain.Models.HpInf;
 
 public class HpInfModel
 {
@@ -38,6 +41,27 @@ public class HpInfModel
         OtherContacts = string.Empty;
     }
 
+    [JsonConstructor]
+    public HpInfModel(int hpId, int startDate, string hpCd, string rousaiHpCd, string hpName, string receHpName, string kaisetuName, string postCd, int prefNo, string address1, string address2, string tel, string faxNo, string otherContacts, int updateId, ModelStatus hpInfModelStatus)
+    {
+        HpId = hpId;
+        StartDate = startDate;
+        HpCd = hpCd;
+        RousaiHpCd = rousaiHpCd;
+        HpName = hpName;
+        ReceHpName = receHpName;
+        KaisetuName = kaisetuName;
+        PostCd = postCd;
+        PrefNo = prefNo;
+        Address1 = address1;
+        Address2 = address2;
+        Tel = tel;
+        FaxNo = faxNo;
+        OtherContacts = otherContacts;
+        UpdateId = updateId;
+        HpInfModelStatus = hpInfModelStatus;
+    }
+
     public int HpId { get; private set; }
 
     public int StartDate { get; private set; }
@@ -65,4 +89,8 @@ public class HpInfModel
     public string FaxNo { get; private set; }
 
     public string OtherContacts { get; private set; }
+
+    public int UpdateId { get; private set; }
+
+    public ModelStatus HpInfModelStatus { get; private set; }
 }
