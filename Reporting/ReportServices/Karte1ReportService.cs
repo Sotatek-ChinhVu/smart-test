@@ -5,15 +5,14 @@ using Reporting.Interface;
 using Reporting.Karte1.DB;
 using Reporting.Karte1.Model;
 using Reporting.Mappers;
+using Reporting.Mappers.Common;
 using Reporting.NameLabel.DB;
 using Reporting.NameLabel.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Linq.Dynamic.Core.Tokenizer;
-using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
+using Reporting.Sijisen.Service;
 using ByomeiCoPtByomeiModel = Reporting.Byomei.Model.CoPtByomeiModel;
 using ByomeiCoPtHokenInfModel = Reporting.Byomei.Model.CoPtHokenInfModel;
+using CoPtInfModel = Reporting.Karte1.Model.CoPtInfModel;
 using LabelCoPtInfModel = Reporting.NameLabel.Models.CoPtInfModel;
-using Reporting.Mappers.Common;
 
 namespace Reporting.ReportServices
 {
@@ -130,6 +129,12 @@ namespace Reporting.ReportServices
 
                 return new CoNameLabelModel(ptInf, kanjiName, sinDate);
             }
+        }
+
+        public CommonReportingRequestModel GetSijisenReportingData(int formType, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, bool printNoOdr)
+        {
+            var sijisenService = new SijisenReportService(_tenantProvider);
+            return sijisenService.GetSijisenReportingData(formType, ptId, sinDate, raiinNo, odrKouiKbns, printNoOdr);
         }
     }
 }

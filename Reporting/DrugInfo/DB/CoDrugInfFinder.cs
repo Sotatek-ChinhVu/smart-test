@@ -55,7 +55,7 @@ namespace Reporting.DrugInfo.DB
             var listOrderInfo = new List<OrderInfoModel>();
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(o => o.RaiinNo == raiinNo && o.IsDeleted == 0 && new[] { 21, 22, 23, 28 }.Contains(o.OdrKouiKbn) && o.InoutKbn == 0).ToList();
 
-            var infDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.RaiinNo == raiinNo && !(d.ItemCd.StartsWith("8") && d.ItemCd.Length == 9)).ToList();
+            var infDetails = NoTrackingDataContext.OdrInfDetails.Where(d => d.RaiinNo == raiinNo && !(d.ItemCd != null && d.ItemCd.StartsWith("8") && d.ItemCd.Length == 9)).ToList();
             if (odrInfs != null && odrInfs.Count > 0)
             {
                 foreach (var odrInf in odrInfs)
