@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.GetTooltip;
 using UseCase.FlowSheet.Upsert;
 
 namespace EmrCloudApi.Controller
@@ -79,6 +80,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<UpsertFlowSheetResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetToolTip)]
+        public ActionResult<Response<GetFlowSheetTooltipResponse>> GetToolTip([FromQuery] GetFlowSheetTooltipRequest inputData)
+        {
+
+            var input = new GetTooltipInputData(HpId, inputData.PtId, inputData.SinDate, inputData.StartDate, inputData.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetFlowSheetTooltipPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetFlowSheetTooltipResponse>>(presenter.Result);
         }
     }
 }
