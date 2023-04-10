@@ -441,10 +441,13 @@ namespace Infrastructure.Repositories
             }
 
             List<(int, string)> result = new();
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.SyosaisinKbn, r.Status });
-            var holidays = NoTrackingDataContext.HolidayMsts.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.HolidayName });
+            var raiinInfs = NoTrackingDataContext.RaiinInfs
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate)
+                .Select(r => new { r.SinDate, r.SyosaisinKbn, r.Status }).ToList();
+            var holidays = NoTrackingDataContext.HolidayMsts.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.HolidayName }).ToList();
 
-            foreach (var date in dates)
+            object obj = new object();
+            Parallel.ForEach(dates, date =>
             {
                 string tooltip = "";
                 var holiday = holidays.FirstOrDefault(h => h.SinDate == date);
@@ -461,16 +464,19 @@ namespace Infrastructure.Repositories
                     {
                         if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
                         {
-                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn)?SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
+                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
                         }
 
                     }
                 }
                 if (!string.IsNullOrEmpty(tooltip))
                 {
-                    result.Add(new(date, tooltip));
+                    lock (obj)
+                    {
+                        result.Add(new(date, tooltip));
+                    }
                 }
-            }
+            });
 
             return result;
         }
