@@ -16,11 +16,11 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
     {
         try
         {
-            if(input.HpId < 0)
+            if(input.HpId <= 0)
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidHpId, new());
             }
-            if (input.TodoNo < 0)
+            if (input.TodoNo <= 0)
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoNo, new());
             }
@@ -28,7 +28,7 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoEdaNo, new());
             }
-            if (input.PtId < 0)
+            if (input.PtId <= 0)
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidPtId, new());
             }
