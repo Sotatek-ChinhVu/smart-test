@@ -4,7 +4,7 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
 {
     public class SetOrderInfDetailItem
     {
-        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, double price, bool isSpecialItem, bool isYoho, bool isKensa, bool is820Cmt, bool is830Cmt, bool is831Cmt, bool is850Cmt, bool is851Cmt, bool is852Cmt, bool is840Cmt, bool is842Cmt, bool isShohoComment, bool isShohoBiko, bool isDrug, bool isInjection, bool isDrugUsage, bool isStandardUsage, bool isSuppUsage, bool isInjectionUsage, bool isNormalComment, bool isComment, bool isUsage, string displayedQuantity, string editingQuantity, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets)
+        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, double price, bool isSpecialItem, bool isYoho, bool isKensa, bool is820Cmt, bool is830Cmt, bool is831Cmt, bool is850Cmt, bool is851Cmt, bool is852Cmt, bool is840Cmt, bool is842Cmt, bool isShohoComment, bool isShohoBiko, bool isDrug, bool isInjection, bool isDrugUsage, bool isStandardUsage, bool isSuppUsage, bool isInjectionUsage, bool isNormalComment, bool isComment, bool isUsage, string displayedQuantity, string editingQuantity, string centerItemCd1, string centerItemCd2, int kasan1, int kasan2, List<YohoSetMstModel> yohoSets, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol1, int cmtCol2, int cmtCol3, int cmtCol4)
         {
             HpId = hpId;
             SetCd = setCd;
@@ -74,6 +74,14 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
             Kasan1 = kasan1;
             Kasan2 = kasan2;
             YohoSets = yohoSets;
+            CmtCol1 = cmtCol1;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
         }
 
         public int HpId { get; private set; }
@@ -211,5 +219,21 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
         public int Kasan2 { get; private set; }
 
         public List<YohoSetMstModel> YohoSets { get; private set; }
+
+        public int CmtColKeta1 { get; private set; }
+
+        public int CmtColKeta2 { get; private set; }
+
+        public int CmtColKeta3 { get; private set; }
+
+        public int CmtColKeta4 { get; private set; }
+
+        public int CmtCol1 { get; private set; }
+
+        public int CmtCol2 { get; private set; }
+
+        public int CmtCol3 { get; private set; }
+
+        public int CmtCol4 { get; private set; }
     }
 }
