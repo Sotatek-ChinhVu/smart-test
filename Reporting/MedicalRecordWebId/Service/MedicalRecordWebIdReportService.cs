@@ -40,7 +40,10 @@ public class MedicalRecordWebIdReportService : IMedicalRecordWebIdReportService
         var hpInf = finder.GetHpInf(hpId, sinDate);
         var ptInf = finder.GetPtInf(hpId, ptId);
         var ptJibkar = finder.GetPtJibkar(hpId, ptId);
+        var webIdQrCode = _systemConfig.WebIdQrCode();
+        var medicalInstitutionCode = _systemConfig.MedicalInstitutionCode();
+        var webIdUrlForPc = _systemConfig.WebIdUrlForPc();
 
-        return new CoMedicalRecordWebIdModel(sinDate, hpInf, ptInf, ptJibkar, _systemConfig.WebIdQrCode(), _systemConfig.MedicalInstitutionCode(), _systemConfig.WebIdUrlForPc());
+        return new CoMedicalRecordWebIdModel(sinDate, hpInf, ptInf, ptJibkar, webIdQrCode, medicalInstitutionCode, webIdUrlForPc);
     }
 }
