@@ -27,6 +27,7 @@ using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
 using UseCase.Accounting.Recaculate;
 using UseCase.Family;
+using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
@@ -116,9 +117,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         ValidateFamilyListStatus.ValidateSuccess,
+                        UpsertFlowSheetStatus.Success,
                         0,
                         0,
-                        0);
+                        0
+                        );
                 }
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
@@ -150,10 +153,13 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 validateKarte = karteModel.Validation();
             }
 
-            // validate family
+            // Validate family
             var validateFamilyList = _validateFamilyList.ValidateData(hpId, ptId, inputDatas.FamilyList);
 
-            if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess)
+            // Validate flowsheet
+            var validateFlowsheet = ValidateFlowSheet(inputDatas.FlowSheetItems);
+
+            if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess || validateFlowsheet != UpsertFlowSheetStatus.Success)
             {
                 return new SaveMedicalOutputData(
                     SaveMedicalStatus.Failed,
@@ -161,9 +167,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     resultOrder.Item1,
                     validateKarte,
                     validateFamilyList,
+                    validateFlowsheet,
                     0,
                     0,
-                    0);
+                    0
+                    );
             }
 
             // Family list
@@ -298,9 +306,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                     KarteValidationStatus.Valid,
                     ValidateFamilyListStatus.ValidateSuccess,
+                    UpsertFlowSheetStatus.Success,
                     sinDate,
                     raiinNo,
-                    ptId)
+                    ptId
+                    )
                 :
                 new SaveMedicalOutputData(
                     SaveMedicalStatus.Failed,
@@ -308,21 +318,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                     KarteValidationStatus.Valid,
                     ValidateFamilyListStatus.ValidateSuccess,
+                    UpsertFlowSheetStatus.Failed,
                     sinDate,
                     raiinNo,
-                    ptId);
-        }
-        catch
-        {
-            return new SaveMedicalOutputData(
-                SaveMedicalStatus.Failed,
-                RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-                new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
-                KarteValidationStatus.Valid,
-                ValidateFamilyListStatus.ValidateSuccess,
-                0,
-                0,
-                0);
+                    ptId
+                    );
         }
         finally
         {
@@ -733,6 +733,22 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                                                           )).ToList()));
         }
         return result;
+    }
+
+    private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
+    {
+        if (flowSheets.Any(i => i.Flag))
+        {
+            foreach (var flowSheet in flowSheets.Where(i => i.Flag))
+            {
+                var check = int.TryParse(flowSheet.Value, out int tagNo);
+                if ((tagNo < 0 && tagNo > 7) || !check)
+                {
+                    return UpsertFlowSheetStatus.TagNoNoValid;
+                }
+            }
+        }
+        return UpsertFlowSheetStatus.Success;
     }
 
 
