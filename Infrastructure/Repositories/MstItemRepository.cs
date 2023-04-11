@@ -1567,11 +1567,11 @@ namespace Infrastructure.Repositories
                     item.HolidayKbn > 0 &&
                     item.KyusinKbn > 0).AsEnumerable();
 
-                return holidayMsts.Select(item => new HolidayModel(item.SinDate,
-                                                item.HolidayKbn,
-                                                item.HolidayName ?? string.Empty))
-                .OrderBy(item => item.SinDate)
-                .ToList();
+            return holidayMsts.Select(item => new HolidayModel(item.SinDate,
+                                            item.HolidayKbn,
+                                            item.HolidayName ?? string.Empty))
+            .OrderBy(item => item.SinDate)
+            .ToList();
         }
 
         public List<KensaCenterMstModel> GetListKensaCenterMst(int hpId)
@@ -1590,8 +1590,8 @@ namespace Infrastructure.Repositories
                                                         x.PrimaryKbn,
                                                         x.SortNo
                                         )).ToList();
-         }
-         
+        }
+
         public List<TenMstOriginModel> GetGroupTenMst(string itemCd)
         {
             return NoTrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd)
@@ -1805,6 +1805,60 @@ namespace Infrastructure.Repositories
                 return jihiSbtMst.JihiSbt;
             }
             return 0;
+        }
+
+        public bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels)
+        {
+            var addedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Added);
+            var updatedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Modified);
+            var deletedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Deleted);
+
+            if (!addedModels.Any() && !updatedModels.Any() && !deletedModels.Any()) return true;
+
+            if (deletedModels.Any())
+            {
+                var modelsToDelete = TrackingDataContext.KensaCenterMsts.Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
+                TrackingDataContext.KensaCenterMsts.RemoveRange(modelsToDelete);
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    NoTrackingDataContext.KensaCenterMsts.Update(new KensaCenterMst()
+                    {
+                        HpId = model.HpId,
+                        CenterCd = model.CenterCd,
+                        CenterName = model.CenterName,
+                        PrimaryKbn = model.PrimaryKbn,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        Id = model.Id,
+                        SortNo = model.SortNo
+                    });
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    NoTrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
+                    {
+                        HpId = model.HpId,
+                        CenterCd = model.CenterCd,
+                        CenterName = model.CenterName,
+                        PrimaryKbn = model.PrimaryKbn,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        SortNo = model.SortNo
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

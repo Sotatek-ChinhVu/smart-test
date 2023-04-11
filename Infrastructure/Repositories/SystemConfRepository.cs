@@ -344,39 +344,41 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     public bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels)
     {
-        var AddedGenModels = new List<SystemGenerationConfModel>();
-        var UpdatedGenModels = new List<SystemGenerationConfModel>();
-        var DeletedGenModels = new List<SystemGenerationConfModel>();
+        var addedGenModels = new List<SystemGenerationConfModel>();
+        var updatedGenModels = new List<SystemGenerationConfModel>();
+        var deletedGenModels = new List<SystemGenerationConfModel>();
         var listSystemConfMenuModels = systemConfMenuModels.Where(u => u.SystemGenerationConfs != null);
 
-        foreach (var modelVal in systemConfMenuModels)
+        foreach (var modelVal in listSystemConfMenuModels)
         {
             foreach (var modelGenVal in modelVal.SystemGenerationConfs)
             {
                 if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Added && !modelGenVal.CheckDefaultValue())
                 {
-                    AddedGenModels.Add(modelGenVal);
+                    addedGenModels.Add(modelGenVal);
                 }
                 if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Modified)
                 {
-                    UpdatedGenModels.Add(modelGenVal);
+                    updatedGenModels.Add(modelGenVal);
                 }
                 if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Deleted)
                 {
-                    DeletedGenModels.Add(modelGenVal);
+                    deletedGenModels.Add(modelGenVal);
                 }
             }
         }
 
-        if (DeletedGenModels.Any())
+        if (!addedGenModels.Any() && !updatedGenModels.Any() && !deletedGenModels.Any()) return true;
+
+        if (deletedGenModels.Any())
         {
-            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.Where(x => DeletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo));
+            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.Where(x => deletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo && d.Id == x.Id));
             TrackingDataContext.SystemGenerationConfs.RemoveRange(modelsToDelete);
         }
 
-        if (UpdatedGenModels.Any())
+        if (updatedGenModels.Any())
         {
-            foreach (var model in UpdatedGenModels)
+            foreach (var model in updatedGenModels)
             {
                 TrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
                 {
@@ -395,7 +397,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             }
         }
 
-        foreach (var model in AddedGenModels)
+        foreach (var model in addedGenModels)
         {
             TrackingDataContext.SystemGenerationConfs.Add(new SystemGenerationConf()
             {
@@ -408,8 +410,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 Param = model.Param,
                 Biko = model.Biko,
                 CreateId = userId,
-                CreateDate = CIUtil.GetJapanDateTimeNow(),
-                Id = model.Id
+                CreateDate = CIUtil.GetJapanDateTimeNow()
             });
         }
 
@@ -418,14 +419,16 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
     public bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels)
     {
-        var SystemSettingModels = SystemConfMenuModels.Select(u => u.SystemConf);
+        var systemSettingModels = SystemConfMenuModels.Select(u => u.SystemConf);
 
-        var AddedSettingModels = SystemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Added).ToList();
-        var UpdatedSettingModels = SystemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Modified).ToList();
+        var addedSettingModels = systemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Added).ToList();
+        var updatedSettingModels = systemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Modified).ToList();
 
-        if (UpdatedSettingModels.Any())
+        if (!addedSettingModels.Any() && !updatedSettingModels.Any()) return true;
+
+        if (updatedSettingModels.Any())
         {
-            foreach (var model in UpdatedSettingModels)
+            foreach (var model in updatedSettingModels)
             {
                 TrackingDataContext.SystemConfs.Update(new SystemConf()
                 {
@@ -448,9 +451,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             }
         }
 
-        if (AddedSettingModels.Any())
+        if (addedSettingModels.Any())
         {
-            foreach (var model in AddedSettingModels)
+            foreach (var model in addedSettingModels)
             {
                 TrackingDataContext.SystemConfs.Update(new SystemConf()
                 {
@@ -483,6 +486,8 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         var query = from PtInfs in TrackingDataContext.PtInfs
                     where PtInfs.HpId == model.HpId && PtInfs.IsRyosyoDetail != model.Val.AsInteger()
                     select PtInfs;
+
+        if (!query.Any()) return;
 
         foreach (var item in query)
         {
