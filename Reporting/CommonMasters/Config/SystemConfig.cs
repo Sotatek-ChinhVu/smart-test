@@ -1962,22 +1962,31 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int ByomeiJikarCondition() { return (int)GetSettingValue(100017, 12); }
 
-    public int WebIdLicense => (int)GetSettingValue(100017, 0, 0);
+    public int WebIdLicense() { return (int)GetSettingValue(100017, 0, 0); }
 
     /// <summary>
     /// 医療機関コード
     /// </summary>
-    public string MedicalInstitutionCode => GetSettingParam(100017, 0, "");
+    public string MedicalInstitutionCode()
+    {
+        return GetSettingParam(100017, 0, "");
+    }
 
     /// <summary>
     /// QRコード
     /// </summary>
-    public string WebIdQrCode => GetSettingParam(100017, 15, "");
+    public string WebIdQrCode()
+    {
+        return GetSettingParam(100017, 15, "");
+    }
 
     /// <summary>
     /// PC用URL
     /// </summary>
-    public string WebIdUrlForPc => GetSettingParam(100017, 16, "");
+    public string WebIdUrlForPc()
+    {
+        return GetSettingParam(100017, 16, "");
+    }
 
     /// <summary>
     /// Ip cloud WebId

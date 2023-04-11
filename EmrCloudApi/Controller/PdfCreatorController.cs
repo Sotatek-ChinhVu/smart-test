@@ -74,6 +74,13 @@ public class PdfCreatorController : ControllerBase
         var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
         return await RenderPdf(sijisenData, ReportType.Common);
     }
+    
+    [HttpGet(ApiPath.MedicalRecordWebId)]
+    public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
+    {
+        var date = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
+        return await RenderPdf(date, ReportType.Common);
+    }
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
     {
