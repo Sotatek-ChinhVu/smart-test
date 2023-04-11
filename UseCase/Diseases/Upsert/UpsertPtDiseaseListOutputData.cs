@@ -4,7 +4,6 @@ namespace UseCase.Diseases.Upsert
 {
     public class UpsertPtDiseaseListOutputData : IOutputData
     {
-
         public List<long> Ids { get; private set; }
         public UpsertPtDiseaseListStatus Status { get; private set; }
 

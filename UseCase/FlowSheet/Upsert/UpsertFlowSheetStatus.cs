@@ -11,5 +11,6 @@ public enum UpsertFlowSheetStatus
     TagNoNoValid,
     PtIdNoExist,
     RaiinNoExist,
-    Failed
+    Failed,
+    Valid
 }

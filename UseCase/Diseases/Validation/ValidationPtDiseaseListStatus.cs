@@ -1,6 +1,6 @@
-﻿namespace UseCase.Diseases.Upsert
+﻿namespace UseCase.Diseases.Validation
 {
-    public enum UpsertPtDiseaseListStatus
+    public enum ValidationPtDiseaseListStatus
     {
         Success = 1,
         PtDiseaseListInputNoData = 2,

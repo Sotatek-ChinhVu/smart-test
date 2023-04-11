@@ -166,6 +166,7 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
+using UseCase.Diseases.Validation;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.ConfirmReplaceDocParam;
 using UseCase.Document.DeleteDocCategory;
@@ -563,6 +564,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<ValidationPtDiseaseListInputData, ValidationPtDiseaseListInteractor>();
 
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();

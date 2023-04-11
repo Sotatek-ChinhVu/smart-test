@@ -26,12 +26,14 @@ using Interactor.Family.ValidateFamilyList;
 using Interactor.NextOrder;
 using Microsoft.Extensions.Options;
 using UseCase.Accounting.Recaculate;
+using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
+using DiseaseValidationStatus = Helper.Constants.PtDiseaseConst.ValidationStatus;
 
 namespace Interactor.MedicalExamination;
 
@@ -117,7 +119,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                         KarteValidationStatus.Valid,
                         ValidateFamilyListStatus.ValidateSuccess,
-                        UpsertFlowSheetStatus.Success,
+                        UpsertFlowSheetStatus.Valid,
+                        UpsertPtDiseaseListStatus.Valid,
                         0,
                         0,
                         0
@@ -159,6 +162,37 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             // Validate flowsheet
             var validateFlowsheet = ValidateFlowSheet(inputDatas.FlowSheetItems);
 
+            // Validate disease
+            var ptDiseaseModels = inputDatas.UpsertPtDiseaseListInputItems.Select(i => new PtDiseaseModel(
+                     i.HpId,
+                     i.PtId,
+                     i.SeqNo,
+                     i.ByomeiCd,
+                     i.SortNo,
+                     i.PrefixList,
+                     i.SuffixList,
+                     i.Byomei,
+                     i.StartDate,
+                     i.TenkiKbn,
+                     i.TenkiDate,
+                     i.SyubyoKbn,
+                     i.SikkanKbn,
+                     i.NanByoCd,
+                     i.IsNodspRece,
+                     i.IsNodspKarte,
+                     i.IsDeleted,
+                     i.Id,
+                     i.IsImportant,
+                     0,
+                     "",
+                     "",
+                     "",
+                     "",
+                     i.HokenPid,
+                     i.HosokuCmt
+                 )).ToList();
+            var validateDisease = ValidateDiseaseList(ptDiseaseModels);
+
             if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess || validateFlowsheet != UpsertFlowSheetStatus.Success)
             {
                 return new SaveMedicalOutputData(
@@ -168,6 +202,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     validateKarte,
                     validateFamilyList,
                     validateFlowsheet,
+                    validateDisease,
                     0,
                     0,
                     0
@@ -209,36 +244,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         p.SinDate
 
                     )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailModels) });
-
-            //Disease List
-            var ptDiseaseModels = inputDatas.UpsertPtDiseaseListInputItems.Select(i => new PtDiseaseModel(
-                     i.HpId,
-                     i.PtId,
-                     i.SeqNo,
-                     i.ByomeiCd,
-                     i.SortNo,
-                     i.PrefixList,
-                     i.SuffixList,
-                     i.Byomei,
-                     i.StartDate,
-                     i.TenkiKbn,
-                     i.TenkiDate,
-                     i.SyubyoKbn,
-                     i.SikkanKbn,
-                     i.NanByoCd,
-                     i.IsNodspRece,
-                     i.IsNodspKarte,
-                     i.IsDeleted,
-                     i.Id,
-                     i.IsImportant,
-                     0,
-                     "",
-                     "",
-                     "",
-                     "",
-                     i.HokenPid,
-                     i.HosokuCmt
-                 )).ToList();
 
             var dataTags = inputDatas.FlowSheetItems.Where(i => i.Flag).Select(i => new FlowSheetModel(
                        i.SinDate,
@@ -306,7 +311,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                     KarteValidationStatus.Valid,
                     ValidateFamilyListStatus.ValidateSuccess,
-                    UpsertFlowSheetStatus.Success,
+                    UpsertFlowSheetStatus.Valid,
+                    UpsertPtDiseaseListStatus.Valid,
                     sinDate,
                     raiinNo,
                     ptId
@@ -319,6 +325,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     KarteValidationStatus.Valid,
                     ValidateFamilyListStatus.ValidateSuccess,
                     UpsertFlowSheetStatus.Failed,
+                    UpsertPtDiseaseListStatus.Failed,
                     sinDate,
                     raiinNo,
                     ptId
@@ -338,6 +345,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
+
         }
     }
 
@@ -387,8 +395,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         var sinDateMin = inputDataList.Count > 0 ? inputDataList.Min(i => i.SinDate) : 0;
         var ipnNameMsts = _ordInfRepository.GetIpnMst(hpId, sinDateMin, sinDateMax, ipnNameCds);
 
-        var obj = new object();
-        Parallel.ForEach(inputDataList, item =>
+        foreach (var item in inputDataList)
         {
             var ordInf = new OrdInfModel(
                     item.HpId,
@@ -418,8 +425,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     ""
                 );
 
-            var objDetail = new object();
-            Parallel.ForEach(item.OdrDetails, itemDetail =>
+            foreach (var itemDetail in item.OdrDetails)
             {
                 var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
                 refillSetting = itemDetail == null ? 999 : refillSetting;
@@ -428,7 +434,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
                 if (itemDetail == null)
                 {
-                    return;
+                    break;
                 }
 
                 var ordInfDetail = new OrdInfDetailModel(
@@ -487,16 +493,10 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                             "",
                             ""
                         );
-                lock (objDetail)
-                {
-                    ordInf.OrdInfDetails.Add(ordInfDetail);
-                }
-            });
-            lock (obj)
-            {
-                allOdrInfs.Add(ordInf);
+                ordInf.OrdInfDetails.Add(ordInfDetail);
             }
-        });
+            allOdrInfs.Add(ordInf);
+        }
 
         return allOdrInfs;
     }
@@ -633,7 +633,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
             if (status != (byte)ModeSaveData.TempSave)
             {
-                Parallel.For(0, inputDataList.Count, index =>
+                for (int index = 0; index < inputDataList.Count; index++)
                 {
                     var item = inputDataList[index];
 
@@ -642,8 +642,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                         var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                         if (!check)
                         {
-                            AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                            return;
+                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                            break;
                         }
                     }
 
@@ -651,32 +651,31 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                     if (checkObjs.Count >= 2 && positionOrd == index)
                     {
-
-                        AddErrorStatus(obj, dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                        return;
+                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                        break;
                     }
 
                     var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                     if (!checkHokenPid)
                     {
-                        AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-                        return;
+                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                        break;
                     }
 
                     var odrDetail = item.OdrDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo);
                     if (odrDetail != null)
                     {
                         var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
-                        AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                        dicValidation.Add(index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                     }
-                });
+                }
             }
 
             allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
 
             if (status != (byte)ModeSaveData.TempSave)
             {
-                Parallel.For(0, allOdrInfs.Count, index =>
+                for (int index = 0; index < allOdrInfs.Count; index++)
                 {
 
                     var item = allOdrInfs[index];
@@ -689,7 +688,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                             dicValidation.Add(index.ToString(), modelValidation);
                         }
                     }
-                });
+                }
             }
         }
 
@@ -751,5 +750,75 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         return UpsertFlowSheetStatus.Success;
     }
 
+    private UpsertPtDiseaseListStatus ValidateDiseaseList(List<PtDiseaseModel> ptDiseases)
+    {
+        foreach (var data in ptDiseases)
+        {
+            var status = data.Validation();
+            if (status != DiseaseValidationStatus.Valid)
+            {
+                return ConvertStatus(status);
+            }
+        }
+
+        if (!_patientInforRepository.CheckExistIdList(ptDiseases.Select(i => i.PtId).Distinct().ToList()))
+        {
+            return UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist;
+        }
+
+        return UpsertPtDiseaseListStatus.Valid;
+    }
+
+    private static UpsertPtDiseaseListStatus ConvertStatus(DiseaseValidationStatus status)
+    {
+        if (status == DiseaseValidationStatus.InvalidTenkiKbn)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn;
+        if (status == DiseaseValidationStatus.InvalidSikkanKbn)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn;
+        if (status == DiseaseValidationStatus.InvalidNanByoCd)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd;
+        if (status == DiseaseValidationStatus.InvalidFreeWord)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord;
+        if (status == DiseaseValidationStatus.InvalidTenkiDateContinue)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+        if (status == DiseaseValidationStatus.InvalidTenkiDateCommon)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateCommon;
+        if (status == DiseaseValidationStatus.InvalidTekiDateAndStartDate)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate;
+        if (status == DiseaseValidationStatus.InvalidByomei)
+            return UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei;
+        if (status == DiseaseValidationStatus.InvalidId)
+            return UpsertPtDiseaseListStatus.PtInvalidId;
+        if (status == DiseaseValidationStatus.InvalidHpId)
+            return UpsertPtDiseaseListStatus.PtInvalidHpId;
+        if (status == DiseaseValidationStatus.InvalidPtId)
+            return UpsertPtDiseaseListStatus.PtInvalidPtId;
+        if (status == DiseaseValidationStatus.InvalidSortNo)
+            return UpsertPtDiseaseListStatus.PtInvalidSortNo;
+        if (status == DiseaseValidationStatus.InvalidByomeiCd)
+            return UpsertPtDiseaseListStatus.PtInvalidByomeiCd;
+        if (status == DiseaseValidationStatus.InvalidStartDate)
+            return UpsertPtDiseaseListStatus.PtInvalidStartDate;
+        if (status == DiseaseValidationStatus.InvalidTenkiDate)
+            return UpsertPtDiseaseListStatus.PtInvalidTenkiDate;
+        if (status == DiseaseValidationStatus.InvalidSyubyoKbn)
+            return UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn;
+        if (status == DiseaseValidationStatus.InvalidHosokuCmt)
+            return UpsertPtDiseaseListStatus.PtInvalidHosokuCmt;
+        if (status == DiseaseValidationStatus.InvalidHokenPid)
+            return UpsertPtDiseaseListStatus.PtInvalidHokenPid;
+        if (status == DiseaseValidationStatus.InvalidIsNodspRece)
+            return UpsertPtDiseaseListStatus.PtInvalidIsNodspRece;
+        if (status == DiseaseValidationStatus.InvalidIsNodspKarte)
+            return UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte;
+        if (status == DiseaseValidationStatus.InvalidSeqNo)
+            return UpsertPtDiseaseListStatus.PtInvalidSeqNo;
+        if (status == DiseaseValidationStatus.InvalidIsImportant)
+            return UpsertPtDiseaseListStatus.PtInvalidIsImportant;
+        if (status == DiseaseValidationStatus.InvalidIsDeleted)
+            return UpsertPtDiseaseListStatus.PtInvalidIsDeleted;
+
+        return UpsertPtDiseaseListStatus.Success;
+    }
 
 }

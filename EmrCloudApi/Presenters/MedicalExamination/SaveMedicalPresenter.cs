@@ -1,9 +1,13 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Diseases;
+using EmrCloudApi.Responses.FlowSheet;
 using EmrCloudApi.Responses.KarteInf;
 using EmrCloudApi.Responses.MedicalExamination;
 using Helper.Constants;
+using UseCase.Diseases.Upsert;
 using UseCase.Family;
+using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
 
 namespace EmrCloudApi.Presenters.MedicalExamination;
@@ -314,10 +318,16 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
                 break;
         }
 
-        // validate family
+        // Validate family
         ValidateFamilyListResponse validationFamily = new ValidateFamilyListResponse(outputData.ValidateFamily, GetMessageFamily(outputData.ValidateFamily));
 
-        Result.Data = new SaveMedicalResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte, validationFamily);
+        // Validate flowsheet
+        var validationFlowsheet = new UpsertFlowSheetMedicalResponse(outputData.ValidationFlowSheetStatus, GetMessageFlowSheet(outputData.ValidationFlowSheetStatus));
+
+        // Validate disease
+        var validationDisease = new UpsertPtDiseaseListMedicalResponse(outputData.ValidationPtDiseaseListStatus, GetMessageDisease(outputData.ValidationPtDiseaseListStatus));
+
+        Result.Data = new SaveMedicalResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte, validationFamily, validationFlowsheet, validationDisease);
     }
 
     private static string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
@@ -368,6 +378,64 @@ public class SaveMedicalPresenter : ISaveMedicalOutputPort
         ValidateFamilyListStatus.DuplicateFamily => ResponseMessage.DuplicateFamily,
         ValidateFamilyListStatus.InvalidNameMaxLength => ResponseMessage.InvalidNameMaxLength,
         ValidateFamilyListStatus.InvalidKanaNameMaxLength => ResponseMessage.InvalidKanaNameMaxLength,
+        _ => string.Empty
+    };
+
+    private string GetMessageFlowSheet(UpsertFlowSheetStatus status) => status switch
+    {
+        UpsertFlowSheetStatus.TagNoNoValid => ResponseMessage.UpsertFlowSheetInvalidTagNo,
+        UpsertFlowSheetStatus.Valid => ResponseMessage.Valid,
+        UpsertFlowSheetStatus.Failed => ResponseMessage.Failed,
+        _ => string.Empty
+    };
+
+    private string GetMessageDisease(UpsertPtDiseaseListStatus status) => status switch
+    {
+        UpsertPtDiseaseListStatus.Success => ResponseMessage.PtDiseaseUpsertSuccess,
+        UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.PtDiseaseUpsertFail,
+        UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.PtDiseaseUpsertInputNoData,
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist => ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist => ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord => ResponseMessage.MEnt00040_1,
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => string.Format(ResponseMessage.MInp00010, ResponseMessage.MTenkiContinue),
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateCommon => string.Format(ResponseMessage.MInp00010, ResponseMessage.MTenkiDate),
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => string.Format(ResponseMessage.MInp00110, ResponseMessage.MTenkiDate, ResponseMessage.MTenkiStartDate),
+        UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei => string.Format(ResponseMessage.MInp00160_1, ResponseMessage.MDisease),
+        UpsertPtDiseaseListStatus.PtInvalidId =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidHpId =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidPtId =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidSortNo =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidByomeiCd =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidStartDate =>
+          ResponseMessage.MTenkiStartDate_2,
+        UpsertPtDiseaseListStatus.PtInvalidTenkiDate =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidHosokuCmt =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidHokenPid =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidIsNodspRece =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidSeqNo =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidIsImportant =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.PtInvalidIsDeleted =>
+          ResponseMessage.MCommonError,
+        UpsertPtDiseaseListStatus.Valid =>
+  ResponseMessage.Valid,
         _ => string.Empty
     };
 }
