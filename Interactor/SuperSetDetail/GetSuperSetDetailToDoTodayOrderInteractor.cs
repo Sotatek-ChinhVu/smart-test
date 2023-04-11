@@ -1,4 +1,9 @@
 ﻿using Domain.Models.SuperSetDetail;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 
 namespace Interactor.SuperSetDetail;
@@ -6,10 +11,14 @@ namespace Interactor.SuperSetDetail;
 public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoTodayOrderInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
+    private readonly IAmazonS3Service _amazonS3Service;
+    private readonly AmazonS3Options _options;
 
-    public GetSuperSetDetailToDoTodayOrderInteractor(ISuperSetDetailRepository superSetDetailRepository)
+    public GetSuperSetDetailToDoTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, ISuperSetDetailRepository superSetDetailRepository, IAmazonS3Service amazonS3Service)
     {
         _superSetDetailRepository = superSetDetailRepository;
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
     }
 
     public GetSuperSetDetailToDoTodayOrderOutputData Handle(GetSuperSetDetailToDoTodayOrderInputData inputData)
@@ -39,7 +48,13 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
             }
 
-            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), result.setFileInfModels, GetSuperSetDetailToDoTodayOrderStatus.Successed);
+            var setFiles = new List<SetFileInfModel>();
+            foreach (var setFileInfModel in result.setFileInfModels)
+            {
+                setFiles.AddRange(ConvertToListSetKarteFileItem(setFileInfModel.setCd, setFileInfModel.setFiles).ToList());
+            }
+
+            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), setFiles, GetSuperSetDetailToDoTodayOrderStatus.Successed);
         }
         catch
         {
@@ -143,5 +158,30 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                     )
                 ).ToList()
             )).ToList();
+    }
+
+    private List<SetFileInfModel> ConvertToListSetKarteFileItem(int setCd, List<SetFileInfModel> listModel)
+    {
+        List<SetFileInfModel> result = new();
+        if (listModel.Any())
+        {
+            List<string> listFolders = new();
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            listFolders.Add(CommonConstants.SetPic);
+            listFolders.Add(setCd.ToString());
+
+            string path = _amazonS3Service.GetFolderUploadOther(listFolders);
+            foreach (var model in listModel)
+            {
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(model.LinkFile);
+                result.Add(new SetFileInfModel(model.IsSchema, fileName.ToString()));
+            }
+        }
+        return result;
     }
 }
