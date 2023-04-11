@@ -15,6 +15,11 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
 {
     private readonly ISystemConfRepository _systemConfRepository;
     private readonly ICoDrugInfFinder _coDrugInfFinder;
+    private int configType = 0;
+    private int selectedFormType = 0;
+    private DrugInfoModel basicInfo = new DrugInfoModel();
+    private List<OrderInfoModel> orderInfoModels { get; set; }
+    private readonly List<DrugInfoModel> drugInfoList = new();
 
     public DrugInfoCoReportService(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, ICoDrugInfFinder coDrugInfFinder) : base(tenantProvider)
     {
@@ -22,12 +27,6 @@ public class DrugInfoCoReportService : RepositoryBase, IDrugInfoCoReportService
         _coDrugInfFinder = coDrugInfFinder;
         orderInfoModels = new();
     }
-
-    int configType = 0;
-    int selectedFormType = 0;
-    DrugInfoModel basicInfo = new DrugInfoModel();
-    List<OrderInfoModel> orderInfoModels { get; set; }
-    readonly List<DrugInfoModel> drugInfoList = new();
 
     public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
     {
