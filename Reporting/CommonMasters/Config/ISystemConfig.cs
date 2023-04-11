@@ -18,4 +18,7 @@ public interface ISystemConfig
     int JyusinHyoPtCmt();
     int SijisenKensaYokiZairyo();
     int JyusinHyoKensaYokiZairyo();
+    string WebIdQrCode();
+    string MedicalInstitutionCode();
+    string WebIdUrlForPc();
 }

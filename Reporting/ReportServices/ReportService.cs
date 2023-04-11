@@ -1,10 +1,10 @@
-﻿using Infrastructure.Interfaces;
-using Reporting.Byomei.Service;
+﻿using Reporting.Byomei.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Mapper;
 using Reporting.Karte1.Service;
 using Reporting.Mappers.Common;
+using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
@@ -20,8 +20,9 @@ public class ReportService : IReportService
     private readonly IByomeiService _byomeiService;
     private readonly IKarte1Service _karte1Service;
     private readonly INameLabelService _nameLabelService;
+    private readonly IMedicalRecordWebIdReportService _medicalRecordWebIdReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -29,6 +30,7 @@ public class ReportService : IReportService
         _byomeiService = byomeiService;
         _karte1Service = karte1Service;
         _nameLabelService = nameLabelService;
+        _medicalRecordWebIdReportService = medicalRecordWebIdReportService;
     }
 
     //Byomei
@@ -65,5 +67,11 @@ public class ReportService : IReportService
     public DrugInfoData SetOrderInfo(int hpId, long ptId, int sinDate, long raiinNo)
     {
         return _drugInfoCoReportService.SetOrderInfo(hpId, ptId, sinDate, raiinNo);
+    }
+
+    //MedicalRecordWebId
+    public CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate)
+    {
+        return _medicalRecordWebIdReportService.GetMedicalRecordWebIdReportingData(hpId, ptId, sinDate);
     }
 }
