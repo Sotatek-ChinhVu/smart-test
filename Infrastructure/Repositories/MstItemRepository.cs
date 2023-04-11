@@ -2,12 +2,15 @@
 using Domain.Constant;
 using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
+using Domain.Models.OrdInf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -1805,6 +1808,322 @@ namespace Infrastructure.Repositories
                 return jihiSbtMst.JihiSbt;
             }
             return 0;
+        }
+
+        public List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd)
+        {
+            return NoTrackingDataContext.CmtKbnMsts
+                                        .Where(item => item.HpId == hpId && item.ItemCd == itemCd)
+                                        .OrderByDescending(item => item.StartDate)
+                                        .Select(x=> new CmtKbnMstModel(x.Id, x.StartDate, x.EndDate, x.CmtKbn, x.ItemCd, false))
+                                        .ToList();
+        }
+
+        public TenMstOriginModel GetTenMstOriginModel(int hpId ,string itemCd, int sinDate)
+        {
+            var model = NoTrackingDataContext.TenMsts.FirstOrDefault(
+                x => x.HpId == hpId &&
+                     x.StartDate <= sinDate &&
+                     x.EndDate >= sinDate &&
+                     x.ItemCd == itemCd &&
+                     x.IsDeleted == DeleteTypes.None);
+
+            if (model == null)
+                return new TenMstOriginModel();
+            else
+            {
+                return new TenMstOriginModel(model.HpId,
+                                             model.ItemCd,
+                                             model.StartDate,
+                                             model.EndDate,
+                                             model.MasterSbt ?? string.Empty,
+                                             model.SinKouiKbn,
+                                             model.Name ?? string.Empty,
+                                             model.KanaName1 ?? string.Empty,
+                                             model.KanaName2 ?? string.Empty,
+                                             model.KanaName3 ?? string.Empty,
+                                             model.KanaName4 ?? string.Empty,
+                                             model.KanaName5 ?? string.Empty,
+                                             model.KanaName6 ?? string.Empty,
+                                             model.KanaName7 ?? string.Empty,
+                                             model.RyosyuName ?? string.Empty,
+                                             model.ReceName ?? string.Empty,
+                                             model.TenId,
+                                             model.Ten,
+                                             model.ReceUnitCd ?? string.Empty,
+                                             model.ReceUnitName ?? string.Empty,
+                                             model.OdrUnitName ?? string.Empty,
+                                             model.CnvUnitName ?? string.Empty,
+                                             model.OdrTermVal,
+                                             model.CnvTermVal,
+                                             model.DefaultVal,
+                                             model.IsAdopted,
+                                             model.KoukiKbn,
+                                             model.HokatuKensa,
+                                             model.ByomeiKbn,
+                                             model.Igakukanri,
+                                             model.JitudayCount,
+                                             model.Jituday,
+                                             model.DayCount,
+                                             model.DrugKanrenKbn,
+                                             model.KizamiId,
+                                             model.KizamiMin,
+                                             model.KizamiMax,
+                                             model.KizamiVal,
+                                             model.KizamiTen,
+                                             model.KizamiErr,
+                                             model.MaxCount,
+                                             model.MaxCountErr,
+                                             model.TyuCd ?? string.Empty,
+                                             model.TyuSeq ?? string.Empty,
+                                             model.TusokuAge,
+                                             model.MinAge ?? string.Empty,
+                                             model.MaxAge ?? string.Empty,
+                                             model.AgeCheck,
+                                             model.TimeKasanKbn,
+                                             model.FutekiKbn,
+                                             model.FutekiSisetuKbn,
+                                             model.SyotiNyuyojiKbn,
+                                             model.LowWeightKbn,
+                                             model.HandanKbn,
+                                             model.HandanGrpKbn,
+                                             model.TeigenKbn,
+                                             model.SekituiKbn,
+                                             model.KeibuKbn,
+                                             model.AutoHougouKbn,
+                                             model.GairaiKanriKbn,
+                                             model.TusokuTargetKbn,
+                                             model.HokatuKbn,
+                                             model.TyoonpaNaisiKbn,
+                                             model.AutoFungoKbn,
+                                             model.TyoonpaGyokoKbn,
+                                             model.GazoKasan,
+                                             model.KansatuKbn,
+                                             model.MasuiKbn,
+                                             model.FukubikuNaisiKasan,
+                                             model.FukubikuKotunanKasan,
+                                             model.MasuiKasan,
+                                             model.MoniterKasan,
+                                             model.ToketuKasan,
+                                             model.TenKbnNo ?? string.Empty,
+                                             model.ShortstayOpe,
+                                             model.BuiKbn,
+                                             model.Sisetucd1,
+                                             model.Sisetucd2,
+                                             model.Sisetucd3,
+                                             model.Sisetucd4,
+                                             model.Sisetucd5,
+                                             model.Sisetucd6,
+                                             model.Sisetucd7,
+                                             model.Sisetucd8,
+                                             model.Sisetucd9,
+                                             model.Sisetucd10,
+                                             model.AgekasanMin1 ?? string.Empty,
+                                             model.AgekasanMax1 ?? string.Empty,
+                                             model.AgekasanCd1 ?? string.Empty,
+                                             model.AgekasanMin2 ?? string.Empty,
+                                             model.AgekasanMax2 ?? string.Empty,
+                                             model.AgekasanCd2 ?? string.Empty,
+                                             model.AgekasanMin3 ?? string.Empty,
+                                             model.AgekasanMax3 ?? string.Empty,
+                                             model.AgekasanCd3 ?? string.Empty,
+                                             model.AgekasanMin4 ?? string.Empty,
+                                             model.AgekasanMax4 ?? string.Empty,
+                                             model.AgekasanCd4 ?? string.Empty,
+                                             model.KensaCmt,
+                                             model.MadokuKbn,
+                                             model.SinkeiKbn,
+                                             model.SeibutuKbn,
+                                             model.ZoueiKbn,
+                                             model.DrugKbn,
+                                             model.ZaiKbn,
+                                             model.ZaikeiPoint,
+                                             model.Capacity,
+                                             model.KohatuKbn,
+                                             model.TokuzaiAgeKbn,
+                                             model.SansoKbn,
+                                             model.TokuzaiSbt,
+                                             model.MaxPrice,
+                                             model.MaxTen,
+                                             model.SyukeiSaki ?? string.Empty,
+                                             model.CdKbn ?? string.Empty,
+                                             model.CdSyo,
+                                             model.CdBu,
+                                             model.CdKbnno,
+                                             model.CdEdano,
+                                             model.CdKouno,
+                                             model.KokujiKbn ?? string.Empty,
+                                             model.KokujiSyo,
+                                             model.KokujiBu,
+                                             model.KokujiKbnNo,
+                                             model.KokujiEdaNo,
+                                             model.KokujiKouNo,
+                                             model.Kokuji1 ?? string.Empty,
+                                             model.Kokuji2 ?? string.Empty,
+                                             model.KohyoJun,
+                                             model.YjCd ?? string.Empty,
+                                             model.YakkaCd ?? string.Empty,
+                                             model.SyusaiSbt,
+                                             model.SyohinKanren ?? string.Empty,
+                                             model.UpdDate,
+                                             model.DelDate,
+                                             model.KeikaDate,
+                                             model.RousaiKbn,
+                                             model.SisiKbn,
+                                             model.ShotCnt,
+                                             model.IsNosearch,
+                                             model.IsNodspPaperRece,
+                                             model.IsNodspRece,
+                                             model.IsNodspRyosyu,
+                                             model.IsNodspKarte,
+                                             model.IsNodspYakutai,
+                                             model.JihiSbt,
+                                             model.KazeiKbn,
+                                             model.YohoKbn,
+                                             model.IpnNameCd ?? string.Empty,
+                                             model.FukuyoRise,
+                                             model.FukuyoMorning,
+                                             model.FukuyoDaytime,
+                                             model.FukuyoNight,
+                                             model.FukuyoSleep,
+                                             model.SuryoRoundupKbn,
+                                             model.KouseisinKbn,
+                                             model.ChusyaDrugSbt,
+                                             model.KensaFukusuSantei,
+                                             model.SanteiItemCd ?? string.Empty,
+                                             model.SanteigaiKbn,
+                                             model.KensaItemCd ?? string.Empty,
+                                             model.KensaItemSeqNo,
+                                             model.RenkeiCd1 ?? string.Empty,
+                                             model.RenkeiCd2 ?? string.Empty,
+                                             model.SaiketuKbn,
+                                             model.CmtKbn,
+                                             model.CmtCol1,
+                                             model.CmtColKeta1,
+                                             model.CmtCol2,
+                                             model.CmtColKeta2,
+                                             model.CmtCol3,
+                                             model.CmtColKeta3,
+                                             model.CmtCol4,
+                                             model.CmtColKeta4,
+                                             model.SelectCmtId,
+                                             model.KensaLabel,
+                                             false,
+                                             false,
+                                             model.IsDeleted,
+                                             false,
+                                             model.StartDate);
+            }
+
+        }
+
+
+        public string GetTenMstName(int hpId ,string santeiItemCd)
+        {
+            var model = NoTrackingDataContext.TenMsts.Where(
+                x => x.HpId == hpId &&
+                     x.ItemCd == santeiItemCd)
+                .OrderByDescending(item => item.StartDate)
+                .FirstOrDefault();
+            if (model == null) 
+                return string.Empty;
+            else 
+                return model.Name ?? string.Empty;
+        }
+
+        public List<M10DayLimitModel> GetM10DayLimitModels(string yjCdItem)
+        {
+            return NoTrackingDataContext.M10DayLimit.Where(
+                    x => x.YjCd == yjCdItem)
+                    .Select(x => new M10DayLimitModel(x.YjCd, 
+                                                      x.SeqNo, 
+                                                      x.LimitDay,
+                                                      x.StDate ?? string.Empty,
+                                                      x.EdDate ?? string.Empty,
+                                                      x.Cmt ?? string.Empty))
+                    .ToList();
+        }
+
+
+        public List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId ,string IpnNameCd)
+        {
+            return NoTrackingDataContext.IpnMinYakkaMsts.Where(
+                    x => x.HpId == hpId &&
+                         x.IsDeleted == 0 &&
+                         x.IpnNameCd == IpnNameCd)
+                    .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId ,x.IpnNameCd ,x.StartDate , x.EndDate, x.Yakka, x.SeqNo , x.IsDeleted))
+                    .ToList();
+        }
+
+
+        public List<DrugDayLimitModel> GetDrugDayLimitModels(int hpId, string ItemCd)
+        {
+            return NoTrackingDataContext.DrugDayLimits.Where(
+                    x => x.HpId == hpId &&
+                         x.IsDeleted == 0 &&
+                         x.ItemCd == ItemCd)
+                    .AsEnumerable()
+                    .Select(x => new DrugDayLimitModel(x.Id, x.HpId, x.ItemCd, x.SeqNo, x.LimitDay, x.StartDate, x.EndDate, x.IsDeleted, false))
+                    .ToList();
+        }
+
+        public DosageMstModel GetDosageMstModel(int hpId ,string ItemCd)
+        {
+            var model = NoTrackingDataContext.DosageMsts.FirstOrDefault(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.ItemCd == ItemCd);
+
+            if (model == null)
+                return new DosageMstModel(hpId, ItemCd);
+            else
+            {
+                return Mapper.Map(model, Activator.CreateInstance<DosageMstModel>());
+            }
+        }
+
+        public IpnNameMstModel GetIpnNameMstModel(int hpId, string ipnNameCd, int sinDate)
+        {
+            var model = NoTrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
+                        x.HpId == hpId &&
+                        x.IsDeleted == 0 &&
+                        x.IpnNameCd == ipnNameCd &&
+                        x.StartDate <= sinDate &&
+                        x.EndDate >= sinDate);
+
+            if (model == null)
+                return new IpnNameMstModel(hpId);
+            else
+            {
+                return Mapper.Map(model, Activator.CreateInstance<IpnNameMstModel>());
+            }
+        }
+
+        public string GetYohoInfMstPrefixByItemCd(string itemCd)
+        {
+            var model = NoTrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.ItemCd == itemCd);
+            if (model == null)
+                return string.Empty;
+            else
+                return model.YohoSuffix ?? string.Empty;
+        }
+
+        public List<DrugInfModel> GetDrugInfByItemCd(int hpId ,string itemCd)
+        {
+            List<DrugInfModel> result = new List<DrugInfModel>();
+            var listDrugInf = NoTrackingDataContext.DrugInfs.Where(u => u.HpId == hpId &&
+                                                                   u.ItemCd == itemCd &&
+                                                                   u.IsDeleted == 0)
+                                                .OrderByDescending(u => u.UpdateDate).ToList();
+
+            DrugInf description = listDrugInf.FirstOrDefault(u => u.InfKbn == 0) ?? new DrugInf() { InfKbn = 0, ItemCd = itemCd };
+            DrugInf drugAction = listDrugInf.FirstOrDefault(u => u.InfKbn == 1) ?? new DrugInf() { InfKbn = 1, ItemCd = itemCd };
+            DrugInf precautions = listDrugInf.FirstOrDefault(u => u.InfKbn == 2) ?? new DrugInf() { InfKbn = 2, ItemCd = itemCd };
+
+            result.Add(new DrugInfModel(description.HpId, description.ItemCd, description.InfKbn, description.SeqNo, description.DrugInfo ?? string.Empty, description.IsDeleted, false));
+            result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false));
+            result.Add(new DrugInfModel(precautions.HpId, precautions.ItemCd, precautions.InfKbn, precautions.SeqNo, precautions.DrugInfo ?? string.Empty, precautions.IsDeleted, false));
+            return result;
         }
     }
 }

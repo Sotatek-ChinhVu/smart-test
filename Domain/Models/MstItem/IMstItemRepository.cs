@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.FlowSheet;
+using Domain.Models.OrdInf;
 
 namespace Domain.Models.MstItem
 {
@@ -71,5 +72,25 @@ namespace Domain.Models.MstItem
         string GetMaxItemCdByTypeForAdd(string startWithstr);
 
         int GetMinJihiSbtMst(int hpId);
+
+        List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
+
+        TenMstOriginModel GetTenMstOriginModel(int hpId,string itemCd, int sinDate);
+
+        string GetTenMstName(int hpId, string santeiItemCd);
+
+        List<M10DayLimitModel> GetM10DayLimitModels(string yjCdItem);
+
+        List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId, string IpnNameCd);
+
+        List<DrugDayLimitModel> GetDrugDayLimitModels(int hpId, string ItemCd);
+
+        DosageMstModel GetDosageMstModel(int hpId, string ItemCd);
+
+        IpnNameMstModel GetIpnNameMstModel(int hpId, string ipnNameCd, int sinDate);
+
+        string GetYohoInfMstPrefixByItemCd(string itemCd);
+
+        List<DrugInfModel> GetDrugInfByItemCd(int hpId, string itemCd);
     }
 }

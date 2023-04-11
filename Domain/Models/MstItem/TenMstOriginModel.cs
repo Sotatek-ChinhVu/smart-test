@@ -192,6 +192,60 @@
             OriginStartDate = originStartDate;
         }
 
+        public TenMstOriginModel()
+        {
+            ItemCd = string.Empty;
+            MasterSbt = string.Empty;
+            Name = string.Empty;
+            KanaName1 = string.Empty;
+            KanaName2 = string.Empty;
+            KanaName3 = string.Empty;
+            KanaName4 = string.Empty;
+            KanaName5 = string.Empty;
+            KanaName6 = string.Empty;
+            KanaName7 = string.Empty;
+            RyosyuName = string.Empty;
+            ReceName = string.Empty;
+            ReceUnitCd = string.Empty;
+            ReceUnitName = string.Empty;
+            OdrUnitName = string.Empty;
+            CnvUnitName = string.Empty;
+            TyuCd = string.Empty;
+            TyuSeq = string.Empty;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            AgekasanMin1 = string.Empty;
+            AgekasanMax1 = string.Empty;
+            AgekasanCd1 = string.Empty;
+            AgekasanCd1Note = string.Empty;
+            AgekasanMin2 = string.Empty;
+            AgekasanMax2 = string.Empty;
+            AgekasanCd2 = string.Empty;
+            AgekasanCd2Note = string.Empty;
+            AgekasanMin3 = string.Empty;
+            AgekasanMax3 = string.Empty;
+            AgekasanCd3 = string.Empty;
+            AgekasanCd3Note = string.Empty;
+            AgekasanMin4 = string.Empty;
+            AgekasanMax4 = string.Empty;
+            AgekasanCd4 = string.Empty;
+            AgekasanCd4Note = string.Empty;
+            SyukeiSaki = string.Empty;
+            CdKbn = string.Empty;
+            KokujiKbn = string.Empty;
+            Kokuji1 = string.Empty;
+            Kokuji2 = string.Empty;
+            YjCd = string.Empty;
+            YakkaCd = string.Empty;
+            SyohinKanren = string.Empty;
+            IpnNameCd = string.Empty;
+            SanteiItemCd = string.Empty;
+            KensaItemCd = string.Empty;
+            RenkeiCd1 = string.Empty;
+            RenkeiCd2 = string.Empty;
+            TenKbnNo = string.Empty;
+        }
+
 
         /// <summary>
         /// 点数マスタ
