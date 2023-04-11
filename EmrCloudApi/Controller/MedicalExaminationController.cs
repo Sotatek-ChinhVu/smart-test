@@ -503,7 +503,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetHistoryFollowSinDate)]
         public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
         {
-            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo, request.IsKarteInf);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryFollowSindatePresenter();
