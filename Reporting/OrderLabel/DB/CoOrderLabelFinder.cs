@@ -2,7 +2,6 @@
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 using Reporting.OrderLabel.Model;
 
 namespace Reporting.OrderLabel.DB;
@@ -411,7 +410,7 @@ public class CoOrderLabelFinder : RepositoryBase, ICoOrderLabelFinder
             results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst));
         });
 
-        return results.FirstOrDefault()??new();
+        return results.FirstOrDefault() ?? new();
     }
 
     public List<CoYoyakuModel> FindYoyaku(int hpId, long ptId, int sinDate)

@@ -91,10 +91,10 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
         return listOrderInfo;
     }
 
-    public string GetYJCode(string ItemCd)
+    public string GetYJCode(string itemCd)
     {
         int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
-        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
             return tenMst.YjCd ?? string.Empty;
@@ -110,11 +110,11 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
 
     }
 
-    public TenMstModel GetTenMstModel(string ItemCd)
+    public TenMstModel GetTenMstModel(string itemCd)
     {
         var tenMstModel = new TenMstModel();
         int sinDate = CIUtil.DateTimeToInt(DateTime.Now);
-        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == ItemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+        var tenMst = NoTrackingDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
         if (tenMst != null)
         {
             tenMstModel.ItemCD = tenMst.ItemCd;
@@ -181,7 +181,7 @@ public class CoDrugInfFinder : RepositoryBase, ICoDrugInfFinder
                              on t.YjCd equals pr.YjCd
                              select new { pr.SeqNo, pr.PrecautionCd });
 
-            var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault().SeqNo }).ToList();
+            var precautionCds = joinQuery.GroupBy(g => new { g.PrecautionCd }).Select(g => new { g.Key.PrecautionCd, g.FirstOrDefault()!.SeqNo }).ToList();
 
             var precautionCodes = NoTrackingDataContext.M34PrecautionCodes.Where(pr => ((pr.AgeMax <= 0 && pr.AgeMin <= 0)
                                                                                                         || (pr.AgeMax >= age && pr.AgeMin <= age)
