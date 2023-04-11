@@ -6,12 +6,13 @@ using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.SystemConf.GetDrugCheckSetting;
+using UseCase.SystemConf;
 using UseCase.SystemConf.Get;
+using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
 using UseCase.SystemConf.SaveDrugCheckSetting;
-using UseCase.SystemConf;
+using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 
 namespace EmrCloudApi.Controller
@@ -119,6 +120,18 @@ namespace EmrCloudApi.Controller
                        request.KinkiLevelSetting,
                        request.DosageMinCheckSetting,
                        request.AgeLevelSetting);
+        }
+
+        [HttpPost(ApiPath.SaveSystemSetting)]
+        public ActionResult<Response<SaveSystemSettingResponse>> SaveSystemSetting([FromBody] SaveSystemSettingRequest request)
+        {
+            var input = new SaveSystemSettingInputData(UserId, request.HpInfs, request.SystemConfMenus, request.IsUpdateHpInfo, request.IsUpdateSystemGenerationConf);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveSystemSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveSystemSettingResponse>>(presenter.Result);
         }
     }
 }

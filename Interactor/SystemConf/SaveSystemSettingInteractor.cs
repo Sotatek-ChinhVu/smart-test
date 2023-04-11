@@ -1,6 +1,5 @@
 ﻿using Domain.Models.HpInf;
 using Domain.Models.SystemConf;
-using Infrastructure.Repositories;
 using UseCase.SystemConf.SaveSystemSetting;
 
 namespace Interactor.SystemConf
@@ -18,9 +17,25 @@ namespace Interactor.SystemConf
 
         public SaveSystemSettingOutputData Handle(SaveSystemSettingInputData inputData)
         {
-            if (inputData.IsUpdateHpInfo)
+            try
             {
-                _hpInfRepository.SaveHpInf(inputData.UserId, inputData.HpInfs);
+                if (inputData.IsUpdateHpInfo)
+                {
+                    _hpInfRepository.SaveHpInf(inputData.UserId, inputData.HpInfs);
+                }
+
+                if (inputData.IsUpdateSystemGenerationConf)
+                {
+                    _systemConfRepository.SaveSystemGenerationConf(inputData.UserId, inputData.SystemConfMenus);
+                }
+
+
+                return new SaveSystemSettingOutputData(SaveSystemSettingStatus.Successed);
+            }
+            finally
+            {
+                _hpInfRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
             }
         }
     }

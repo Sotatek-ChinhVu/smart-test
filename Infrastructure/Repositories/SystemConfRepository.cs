@@ -1,8 +1,8 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.SystemConf;
+﻿using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Collections;
@@ -341,5 +341,77 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         return centerCds;
     }
 
+    public bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels)
+    {
+        var AddedGenModels = new List<SystemGenerationConfModel>();
+        var UpdatedGenModels = new List<SystemGenerationConfModel>();
+        var DeletedGenModels = new List<SystemGenerationConfModel>();
+        var listSystemConfMenuModels = systemConfMenuModels.Where(u => u.SystemGenerationConfs != null);
 
+        foreach (var modelVal in systemConfMenuModels)
+        {
+            foreach (var modelGenVal in modelVal.SystemGenerationConfs)
+            {
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Added && !modelGenVal.CheckDefaultValue())
+                {
+                    AddedGenModels.Add(modelGenVal);
+                }
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Modified)
+                {
+                    UpdatedGenModels.Add(modelGenVal);
+                }
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Deleted)
+                {
+                    DeletedGenModels.Add(modelGenVal);
+                }
+            }
+        }
+
+        if (DeletedGenModels.Any())
+        {
+            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.Where(x => DeletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo));
+            TrackingDataContext.SystemGenerationConfs.RemoveRange(modelsToDelete);
+        }
+
+        if (UpdatedGenModels.Any())
+        {
+            foreach (var model in UpdatedGenModels)
+            {
+                NoTrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
+                {
+                    HpId = model.HpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    Id = model.Id
+                });
+            }
+        }
+
+        foreach (var model in AddedGenModels)
+        {
+            NoTrackingDataContext.SystemGenerationConfs.Add(new SystemGenerationConf()
+            {
+                HpId = model.HpId,
+                GrpCd = model.GrpCd,
+                GrpEdaNo = model.GrpEdaNo,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Val = model.Val,
+                Param = model.Param,
+                Biko = model.Biko,
+                CreateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                Id = model.Id
+            });
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
 }

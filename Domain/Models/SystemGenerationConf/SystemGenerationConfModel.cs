@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.SystemGenerationConf
+﻿using Helper.Constants;
+using System.Text.Json.Serialization;
+
+namespace Domain.Models.SystemGenerationConf
 {
     public class SystemGenerationConfModel
     {
@@ -15,6 +18,21 @@
             Biko = biko;
         }
 
+        [JsonConstructor]
+        public SystemGenerationConfModel(long id, int hpId, int grpCd, int grpEdaNo, int startDate, int endDate, int val, string param, string biko, ModelStatus systemGenerationConfStatus)
+        {
+            Id = id;
+            HpId = hpId;
+            GrpCd = grpCd;
+            GrpEdaNo = grpEdaNo;
+            StartDate = startDate;
+            EndDate = endDate;
+            Val = val;
+            Param = param;
+            Biko = biko;
+            SystemGenerationConfStatus = systemGenerationConfStatus;
+        }
+
         public long Id { get; private set; }
         public int HpId { get; private set; }
         public int GrpCd { get; private set; }
@@ -24,5 +42,11 @@
         public int Val { get; private set; }
         public string Param { get; private set; }
         public string Biko { get; private set; }
+        public ModelStatus SystemGenerationConfStatus { get; private set; }
+
+        public bool CheckDefaultValue()
+        {
+            return StartDate == 0 && (EndDate == 99999999 || EndDate == 0) && Val < 0 && string.IsNullOrEmpty(Param);
+        }
     }
 }

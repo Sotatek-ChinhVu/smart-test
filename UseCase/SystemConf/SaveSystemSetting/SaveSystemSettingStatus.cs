@@ -2,6 +2,7 @@
 {
     public enum SaveSystemSettingStatus
     {
-        Successed = 1
+        Successed = 1,
+        Failed = 2,
     }
 }
