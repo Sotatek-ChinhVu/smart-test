@@ -1,4 +1,6 @@
-﻿using Domain.Models.Family;
+﻿using Domain.Models.Diseases;
+using Domain.Models.Family;
+using Domain.Models.FlowSheet;
 using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
@@ -200,7 +202,66 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
                     )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailModels) });
 
-            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab);
+            //Disease List
+            var ptDiseaseModels = inputDatas.UpsertPtDiseaseListInputItems.Select(i => new PtDiseaseModel(
+                     i.HpId,
+                     i.PtId,
+                     i.SeqNo,
+                     i.ByomeiCd,
+                     i.SortNo,
+                     i.PrefixList,
+                     i.SuffixList,
+                     i.Byomei,
+                     i.StartDate,
+                     i.TenkiKbn,
+                     i.TenkiDate,
+                     i.SyubyoKbn,
+                     i.SikkanKbn,
+                     i.NanByoCd,
+                     i.IsNodspRece,
+                     i.IsNodspKarte,
+                     i.IsDeleted,
+                     i.Id,
+                     i.IsImportant,
+                     0,
+                     "",
+                     "",
+                     "",
+                     "",
+                     i.HokenPid,
+                     i.HosokuCmt
+                 )).ToList();
+
+            var dataTags = inputDatas.FlowSheetItems.Where(i => i.Flag).Select(i => new FlowSheetModel(
+                       i.SinDate,
+                       int.Parse(i.Value),
+                       "",
+                       i.RainNo,
+                       0,
+                       string.Empty,
+                       0,
+                       true,
+                       true,
+                       new List<RaiinListInfModel>(),
+                       i.PtId,
+                       false
+                   )).ToList() ?? new List<FlowSheetModel>();
+            var dataCmts = inputDatas.FlowSheetItems.Where(i => !i.Flag).Select(i => new FlowSheetModel(
+                   i.SinDate,
+                   0,
+                   "",
+                   i.RainNo,
+                   0,
+                   i.Value,
+                   0,
+                   true,
+                   true,
+                   new List<RaiinListInfModel>(),
+                   i.PtId,
+                   false
+               )).ToList() ?? new List<FlowSheetModel>();
+
+            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, dataTags, dataCmts);
             if (inputDatas.FileItem.IsUpdateFile)
             {
                 if (check)

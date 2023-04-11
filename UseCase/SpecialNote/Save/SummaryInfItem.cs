@@ -12,6 +12,12 @@
             Rtext = rtext;
         }
 
+        public SummaryInfItem()
+        {
+            Text = string.Empty;
+            Rtext = string.Empty;
+        }
+
         public long Id { get; private set; }
 
         public int HpId { get; private set; }

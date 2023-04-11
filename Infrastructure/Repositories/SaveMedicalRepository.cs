@@ -1,4 +1,6 @@
-﻿using Domain.Models.Family;
+﻿using Domain.Models.Diseases;
+using Domain.Models.Family;
+using Domain.Models.FlowSheet;
 using Domain.Models.KarteInfs;
 using Domain.Models.Medical;
 using Domain.Models.NextOrder;
@@ -20,16 +22,20 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
     private readonly ITodayOdrRepository _todayOdrRepository;
     private readonly INextOrderRepository _nextOrderRepository;
     private readonly ISpecialNoteRepository _specialNoteRepository;
+    private readonly IPtDiseaseRepository _ptDiseaseRepository;
+    private readonly IFlowSheetRepository _flowSheetRepository;
 
-    public SaveMedicalRepository(ITenantProvider tenantProvider, IFamilyRepository familyRepository, ITodayOdrRepository todayOdrRepository, INextOrderRepository nextOrderRepository, ISpecialNoteRepository specialNoteRepository) : base(tenantProvider)
+    public SaveMedicalRepository(ITenantProvider tenantProvider, IFamilyRepository familyRepository, ITodayOdrRepository todayOdrRepository, INextOrderRepository nextOrderRepository, ISpecialNoteRepository specialNoteRepository, IPtDiseaseRepository ptDiseaseRepository, IFlowSheetRepository flowSheetRepository) : base(tenantProvider)
     {
         _familyRepository = familyRepository;
         _todayOdrRepository = todayOdrRepository;
         _nextOrderRepository = nextOrderRepository;
         _specialNoteRepository = specialNoteRepository;
+        _ptDiseaseRepository = ptDiseaseRepository;
+        _flowSheetRepository = flowSheetRepository;
     }
 
-    public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, List<FamilyModel> familyList, List<NextOrderModel> rsvkrtOrderInfModels, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel)
+    public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, List<FamilyModel> familyList, List<NextOrderModel> rsvkrtOrderInfModels, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, List<PtDiseaseModel> ptDiseaseModels, List<FlowSheetModel> dataTags, List<FlowSheetModel> dataCmts)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
@@ -56,6 +62,16 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                         transaction.Rollback();
                         return false;
                     }
+
+                    var disease = _ptDiseaseRepository.Upsert(ptDiseaseModels, hpId, userId);
+                    if (!(disease.Count > 0))
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+
+                    _flowSheetRepository.UpsertTag(dataTags, hpId, userId);
+                    _flowSheetRepository.UpsertCmt(dataCmts, hpId, userId);
 
                     if (!_familyRepository.SaveFamilyList(hpId, userId, familyList))
                     {

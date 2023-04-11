@@ -13,6 +13,14 @@ namespace UseCase.SpecialNote.Save
             KensaInfDetailModels = kensaInfDetailModels;
         }
 
+        public PatientInfoItem()
+        {
+            PregnancyItems = new();
+            PtCmtInfItems = new();
+            SeikatureInfItems = new();
+            KensaInfDetailModels = new();
+        }
+
         public List<PtPregnancyItem> PregnancyItems { get; private set; }
 
         public PtCmtInfModel PtCmtInfItems { get; private set; }

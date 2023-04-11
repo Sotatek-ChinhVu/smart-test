@@ -455,7 +455,11 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.RichText),
                 UserId,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
-                familyList
+                familyList,
+                request.NextOrderItems,
+                request.SpecialNoteItem,
+                request.UpsertPtDiseaseListInputItems,
+                request.FlowSheetItems
             );
             var output = _bus.Handle(input);
 

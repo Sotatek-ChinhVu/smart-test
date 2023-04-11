@@ -17,6 +17,13 @@ namespace UseCase.MedicalExamination.SaveMedical
             PatientInfoTab = patientInfoTab;
         }
 
+        public SpecialNoteItem()
+        {
+            SummaryTab = new();
+            ImportantNoteTab = new();
+            PatientInfoTab = new();
+        }
+
         public SummaryInfItem SummaryTab { get; private set; }
 
         public ImportantNoteModel ImportantNoteTab { get; private set; }
