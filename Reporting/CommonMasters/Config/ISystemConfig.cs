@@ -9,4 +9,13 @@ public interface ISystemConfig
     int OrderLabelKensaDsp();
     int OrderLabelYoyakuDateDsp();
     int OrderLabelSanteiGaiDsp();
+    string JyusinHyoRaiinKbn();
+    int SijisenRpName();
+    int JyusinHyoRpName();
+    int SijisenAlrgy();
+    int JyusinHyoAlrgy();
+    int SijisenPtCmt();
+    int JyusinHyoPtCmt();
+    int SijisenKensaYokiZairyo();
+    int JyusinHyoKensaYokiZairyo();
 }

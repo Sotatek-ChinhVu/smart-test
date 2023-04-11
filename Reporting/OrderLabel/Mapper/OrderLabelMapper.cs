@@ -1,7 +1,7 @@
 ﻿using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 
-namespace Reporting.Mappers;
+namespace Reporting.OrderLabel.Mapper;
 
 public class OrderLabelMapper : CommonReportingRequest
 {

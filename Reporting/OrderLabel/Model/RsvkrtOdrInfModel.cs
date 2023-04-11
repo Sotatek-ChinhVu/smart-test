@@ -1,9 +1,7 @@
-﻿using Domain.Types;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
-using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 
 namespace Reporting.OrderLabel.Model;

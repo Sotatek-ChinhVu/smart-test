@@ -1,14 +1,13 @@
 ﻿using Helper.Common;
 using Infrastructure.Interfaces;
 using Reporting.CommonMasters.Config;
-using Reporting.Interface;
-using Reporting.Mappers;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.DB;
+using Reporting.OrderLabel.Mapper;
 using Reporting.OrderLabel.Model;
 using System.Text;
 
-namespace Reporting.ReportServices;
+namespace Reporting.OrderLabel.Service;
 
 public class OrderLabelCoReportService : IOrderLabelCoReportService
 {
@@ -86,9 +85,9 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
 
         CoOrderLabelModel coOrderLabel = new();
 
-        if ((odrInfs != null && odrInfs.Any(p => p.OdrKouiKbn > 10) && odrInfDtls != null && odrInfDtls.Any()) ||
-            (commonOdrInfs != null && commonOdrInfs.Any(p => p.OdrKouiKbn > 10) && commonOdrDtls != null && commonOdrDtls.Any()) ||
-            (yoyakuModels != null && yoyakuModels.Any()))
+        if (odrInfs != null && odrInfs.Any(p => p.OdrKouiKbn > 10) && odrInfDtls != null && odrInfDtls.Any() ||
+            commonOdrInfs != null && commonOdrInfs.Any(p => p.OdrKouiKbn > 10) && commonOdrDtls != null && commonOdrDtls.Any() ||
+            yoyakuModels != null && yoyakuModels.Any())
         {
             coOrderLabel = new CoOrderLabelModel(ptInf, raiinInf, commonOdrInfs ?? new(), commonOdrDtls ?? new(), yoyakuModels, false);
         }
@@ -427,12 +426,12 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             string preSet = $"{rpNo:D2})";
             string mark = GetMark(odrInf.SikyuKbn, odrInf.SanteiKbn);
             string inout = "";
-            if (((odrInf.OdrKouiKbn >= 20 && odrInf.OdrKouiKbn < 29) || (odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69)) && odrInf.InoutKbn == 1)
+            if ((odrInf.OdrKouiKbn >= 20 && odrInf.OdrKouiKbn < 29 || odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69) && odrInf.InoutKbn == 1)
             {
                 inout = "院外";
             }
 
-            if ((odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69) && _systemConfig.OrderLabelKensaDsp() == 0)
+            if (odrInf.OdrKouiKbn >= 60 && odrInf.OdrKouiKbn < 69 && _systemConfig.OrderLabelKensaDsp() == 0)
             {
                 // 検査1行複数表示
                 StringBuilder itemName = new();
@@ -457,7 +456,7 @@ public class OrderLabelCoReportService : IOrderLabelCoReportService
             {
                 foreach (CoCommonOdrInfDetailModel odrDtl in _coModel.OdrInfDetailModels.FindAll(p => p.RpNo == odrInf.RpNo && p.RpEdaNo == odrInf.RpEdaNo))
                 {
-                    if (string.IsNullOrEmpty(odrDtl.ItemCd) || odrDtl.ItemCd.StartsWith("C") || (odrDtl.ItemCd.StartsWith("8") && odrDtl.ItemCd.Length == 9))
+                    if (string.IsNullOrEmpty(odrDtl.ItemCd) || odrDtl.ItemCd.StartsWith("C") || odrDtl.ItemCd.StartsWith("8") && odrDtl.ItemCd.Length == 9)
                     {
                         // コメント
                         addPrintOutData.Add(AddItem(TargetControl.Data, mark + odrDtl.ItemName, preSet, inout));

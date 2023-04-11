@@ -4,12 +4,25 @@ namespace Reporting.Sijisen.Model
 {
     public class CoRaiinInfModel
     {
-        public RaiinInf RaiinInf { get; } = new();
-        public KaMst KaMst { get; } = new();
-        public UserMst UserMst { get; } = new();
-        public UketukeSbtMst UketukeSbtMst { get; } = new();
+        public RaiinInf RaiinInf { get; }
 
-        public RaiinCmtInf RaiinCmtInf { get; } = new();
+        public KaMst KaMst { get; }
+
+        public UserMst UserMst { get; }
+
+        public UketukeSbtMst UketukeSbtMst { get; }
+
+        public RaiinCmtInf RaiinCmtInf { get; }
+
+        public CoRaiinInfModel()
+        {
+            RaiinInf = new();
+            KaMst = new();
+            UserMst = new();
+            UketukeSbtMst = new();
+            RaiinCmtInf = new();
+        }
+
         public CoRaiinInfModel(RaiinInf raiinInf, KaMst kaMst, UserMst userMst, UketukeSbtMst uketukeSbtMst, RaiinCmtInf raiinCmtInf)
         {
             RaiinInf = raiinInf;
@@ -17,10 +30,6 @@ namespace Reporting.Sijisen.Model
             UserMst = userMst;
             UketukeSbtMst = uketukeSbtMst;
             RaiinCmtInf = raiinCmtInf;
-        }
-
-        public CoRaiinInfModel()
-        {
         }
 
         /// <summary>

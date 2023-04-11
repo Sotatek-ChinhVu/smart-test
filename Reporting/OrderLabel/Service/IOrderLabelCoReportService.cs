@@ -1,7 +1,7 @@
 ﻿using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 
-namespace Reporting.Interface;
+namespace Reporting.OrderLabel.Service;
 
 public interface IOrderLabelCoReportService
 {

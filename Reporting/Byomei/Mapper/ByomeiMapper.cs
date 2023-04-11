@@ -2,7 +2,7 @@
 using Reporting.Byomei.Model;
 using Reporting.Mappers.Common;
 
-namespace Reporting.Mappers
+namespace Reporting.Byomei.Mapper
 {
     public class ByomeiMapper : CommonReportingRequest
     {

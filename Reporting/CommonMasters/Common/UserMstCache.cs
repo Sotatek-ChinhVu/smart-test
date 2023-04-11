@@ -9,19 +9,16 @@ namespace Reporting.CommonMasters.Common;
 public class UserMstCache : RepositoryBase, IUserMstCache
 {
     public delegate void UserMstCacheDelegate();
-    public UserMstCacheDelegate? ChangedData;
-
     private static readonly object _threadsafelock = new object();
 
-
-    private List<UserMst> _allOfUserMst = new List<UserMst>();
+    private List<UserMst> _allOfUserMst = new();
     private List<UserMst> _listUserMst
     {
         get
         {
             if (_allOfUserMst == null) return new List<UserMst>();
 
-            return _allOfUserMst.Where(p => p.IsDeleted == DeleteTypes.None)?.ToList() ?? new();
+            return _allOfUserMst.Where(p => p.IsDeleted == DeleteTypes.None).ToList();
         }
     }
 
@@ -32,16 +29,9 @@ public class UserMstCache : RepositoryBase, IUserMstCache
 
     public void RefreshData()
     {
-        try
+        lock (_threadsafelock)
         {
-            lock (_threadsafelock)
-            {
-                _allOfUserMst = NoTrackingDataContext.UserMsts.Where(p => p.HpId == Session.HospitalID).ToList();
-            }
-        }
-        finally
-        {
-            ChangedData?.Invoke();
+            _allOfUserMst = NoTrackingDataContext.UserMsts.Where(p => p.HpId == Session.HospitalID).ToList();
         }
     }
 
