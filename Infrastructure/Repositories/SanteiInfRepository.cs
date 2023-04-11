@@ -1,8 +1,10 @@
 ﻿using Domain.Models.Santei;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -360,6 +362,49 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                 x.StartDate,
                                                 x.EndDate
                               )).ToList();
+    }
+
+    public bool SaveAutoSanteiMst(List<SanteiInfDetailModel> santeiMst)
+    {
+        var AddedGenModels = new List<SanteiInfDetailModel>();
+        var UpdatedGenModels = new List<SanteiInfDetailModel>();
+        var DeletedGenModels = new List<SanteiInfDetailModel>();
+
+        foreach (var modelVal in santeiMst)
+        {
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Added && !modelVal.CheckDefaultValue())
+            {
+                AddedGenModels.Add(modelVal);
+            }
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Modified)
+            {
+                UpdatedGenModels.Add(modelVal);
+            }
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Deleted)
+            {
+                DeletedGenModels.Add(modelVal);
+            }
+        }
+
+        TrackingDataContext.AutoSanteiMstRepository.RemoveRange(DeletedGenModels.Select(p => p.AutoSanteiMst));
+
+        foreach (var model in UpdatedGenModels)
+        {
+            model.AutoSanteiMst.UpdateId = _userId;
+            model.AutoSanteiMst.UpdateDate = DateTime.Now;
+            model.AutoSanteiMst.UpdateMachine = CIUtil.GetComputerName();
+        }
+
+        foreach (var model in AddedGenModels)
+        {
+            model.AutoSanteiMst.CreateId = _userId;
+            model.AutoSanteiMst.CreateDate = DateTime.Now;
+            model.AutoSanteiMst.CreateMachine = CIUtil.GetComputerName();
+            model.AutoSanteiMst.UpdateId = _userId;
+            model.AutoSanteiMst.UpdateDate = DateTime.Now;
+            model.AutoSanteiMst.UpdateMachine = CIUtil.GetComputerName();
+        }
+        dbService.AutoSanteiMstRepository.AddRange(AddedGenModels.Select(p => p.AutoSanteiMst));
     }
 
     public void ReleaseResource()
