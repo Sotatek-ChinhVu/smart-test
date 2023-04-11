@@ -180,7 +180,8 @@ namespace Infrastructure.Repositories
                 tenMst?.CnvTermVal ?? 0,
                 tenMst?.DefaultVal ?? 0,
                 tenMst?.Kokuji1 ?? string.Empty,
-                tenMst?.Kokuji2 ?? string.Empty
+                tenMst?.Kokuji2 ?? string.Empty,
+                string.Empty
             );
         }
 
@@ -229,7 +230,8 @@ namespace Infrastructure.Repositories
                 tenMst.CnvTermVal,
                 tenMst.DefaultVal,
                 tenMst.Kokuji1 ?? string.Empty,
-                tenMst.Kokuji2 ?? string.Empty
+                tenMst.Kokuji2 ?? string.Empty,
+                string.Empty
             )).ToList();
         }
         /// <summary>
@@ -626,14 +628,20 @@ namespace Infrastructure.Repositories
             var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
             var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
 
-            var queryJoinWithKensa = from q in queryFinal
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
+            var queryJoinWithKensaIpnName = from q in queryFinal
                                      join k in kensaMstList
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
-            var totalCount = queryJoinWithKensa.Count(item => item.TenMst != null);
+                                     join i  in ipnNameMstList
+                                     on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                                     from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                                            select new { q.TenMst, q.tenKN, KensaMst = kensaMst, IpnName = ipnNameMst?.IpnName ?? string.Empty };
+            var totalCount = queryJoinWithKensaIpnName.Count(item => item.TenMst != null);
 
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            var listTenMst = queryJoinWithKensaIpnName.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
             if (pageCount > 0)
             {
                 listTenMst = listTenMst.Take(pageCount);
@@ -683,7 +691,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CnvTermVal ?? 0,
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
-                                                           item.TenMst?.Kokuji2 ?? string.Empty
+                                                           item.TenMst?.Kokuji2 ?? string.Empty,
+                                                           item.IpnName
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -777,7 +786,8 @@ namespace Infrastructure.Repositories
                                                            item.CnvTermVal,
                                                            item.DefaultVal,
                                                            item.Kokuji1 ?? string.Empty,
-                                                           item.Kokuji2 ?? string.Empty
+                                                           item.Kokuji2 ?? string.Empty,
+                                                           string.Empty
                                                            )).ToList();
             }
 
@@ -941,7 +951,8 @@ namespace Infrastructure.Repositories
                     entity?.CnvTermVal ?? 0,
                     entity?.DefaultVal ?? 0,
                     entity?.Kokuji1 ?? string.Empty,
-                    entity?.Kokuji2 ?? string.Empty
+                    entity?.Kokuji2 ?? string.Empty,
+                    string.Empty
                );
         }
 
@@ -995,7 +1006,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1046,7 +1058,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1098,7 +1111,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1471,7 +1485,8 @@ namespace Infrastructure.Repositories
                         0,
                         tenMst?.DefaultVal ?? 0,
                         tenMst?.Kokuji1 ?? string.Empty,
-                        tenMst?.Kokuji2 ?? string.Empty
+                        tenMst?.Kokuji2 ?? string.Empty,
+                        string.Empty
                         );
         }
 
