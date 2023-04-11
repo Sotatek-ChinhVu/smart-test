@@ -148,6 +148,8 @@ using Reporting.CommonMasters.Config;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Service;
+using Reporting.MedicalRecordWebId.DB;
+using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
@@ -480,6 +482,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISijisenReportService, SijisenReportService>();
             services.AddTransient<IByomeiService, ByomeiService>();
             services.AddTransient<IKarte1Service, Karte1Service>();
+            services.AddTransient<IMedicalRecordWebIdReportService, MedicalRecordWebIdReportService>();
+            services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
