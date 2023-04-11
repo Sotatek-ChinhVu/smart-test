@@ -170,7 +170,15 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                          od.CenterItemCd2,
                          od.Kasan1,
                          od.Kasan2,
-                         od.YohoSets
+                         od.YohoSets,
+                         od.CmtColKeta1,
+                         od.CmtColKeta2,
+                         od.CmtColKeta3,
+                         od.CmtColKeta4,
+                         od.CmtCol1,
+                         od.CmtCol2,
+                         od.CmtCol3,
+                         od.CmtCol4
                     )
                 ).ToList()
             )).ToList();
