@@ -6,9 +6,13 @@ using EmrCloudApi.Responses.SystemConf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SystemConf.GetDrugCheckSetting;
 using UseCase.SystemConf.Get;
 using UseCase.SystemConf.GetSystemConfForPrint;
 using UseCase.SystemConf.GetSystemConfList;
+using UseCase.SystemConf.SaveDrugCheckSetting;
+using UseCase.SystemConf;
+using UseCase.SystemConf.SystemSetting;
 
 namespace EmrCloudApi.Controller
 {
@@ -55,6 +59,66 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSystemConfForPrintResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDrugCheckSetting)]
+        public ActionResult<Response<GetDrugCheckSettingResponse>> DrugCheckSetting()
+        {
+            var input = new GetDrugCheckSettingInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDrugCheckSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDrugCheckSettingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSystemSetting)]
+        public ActionResult<Response<GetSystemSettingResponse>> GetList([FromQuery] GetSystemSettingRequest request)
+        {
+            var input = new GetSystemSettingInputData(HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSystemSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSystemSettingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveDrugCheckSetting)]
+        public ActionResult<Response<SaveDrugCheckSettingResponse>> SaveDrugCheckSetting([FromBody] SaveDrugCheckSettingRequest request)
+        {
+            var input = new SaveDrugCheckSettingInputData(HpId, UserId, ConvertToDrugCheckSettingItem(request));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveDrugCheckSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveDrugCheckSettingResponse>>(presenter.Result);
+        }
+
+        private DrugCheckSettingItem ConvertToDrugCheckSettingItem(SaveDrugCheckSettingRequest request)
+        {
+            return new DrugCheckSettingItem(
+                       request.CheckDrugSameName,
+                       request.StrainCheckSeibun,
+                       request.StrainCheckPurodoragu,
+                       request.StrainCheckRuiji,
+                       request.StrainCheckKeito,
+                       request.AgentCheckSetting,
+                       request.DosageDrinkingDrugSetting,
+                       request.DosageDrugAsOrderSetting,
+                       request.DosageOtherDrugSetting,
+                       request.DosageRatioSetting,
+                       request.AllergyMedicineSeibun,
+                       request.AllergyMedicinePurodoragu,
+                       request.AllergyMedicineRuiji,
+                       request.AllergyMedicineKeito,
+                       request.FoodAllergyLevelSetting,
+                       request.DiseaseLevelSetting,
+                       request.KinkiLevelSetting,
+                       request.DosageMinCheckSetting,
+                       request.AgeLevelSetting);
         }
     }
 }

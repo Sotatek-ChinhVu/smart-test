@@ -11,7 +11,7 @@ public class GetSuperSetDetailToDoTodayOrderPresenter : IGetSuperSetDetailToDoTo
 
     public void Complete(GetSuperSetDetailToDoTodayOrderOutputData output)
     {
-        Result.Data = new GetSuperSetDetailToDoTodayOrderResponse(output.SetByomeiItems, output.SetKarteInfItems, output.SetOrderInfItems);
+        Result.Data = new GetSuperSetDetailToDoTodayOrderResponse(output.SetByomeiItems, output.SetKarteInfItems, output.SetOrderInfItems, output.SetFileInfModels);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

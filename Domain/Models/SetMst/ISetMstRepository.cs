@@ -4,7 +4,7 @@ namespace Domain.Models.SetMst;
 
 public interface ISetMstRepository : IRepositoryBase
 {
-    IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch);
+    IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, int generationId,  string textSearch);
 
     bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem);
 

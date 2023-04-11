@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
 
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)  
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
                 .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.SyosaisinKbn, r.Status))
                 .ToList();
 
@@ -73,9 +73,9 @@ namespace Infrastructure.Repositories
 
 
             var allFlowSheetQueryable = allRaiinInfList.Union(groupNextOdr);
-            
+
             totalCount = allFlowSheetQueryable.Count();
-            List<FlowSheetModel> flowSheetModelList = 
+            List<FlowSheetModel> flowSheetModelList =
                 allFlowSheetQueryable.OrderByDescending(r => r.SinDate)
                                      .ThenByDescending(r => r.RaiinNo)
                                      .ToList();
@@ -421,13 +421,62 @@ namespace Infrastructure.Repositories
                      (
                         from raiinListInf in NoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId)
                         join raiinListMst in NoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId , raiinListMst.KbnCd }
+                        on new { raiinListInf.GrpId, raiinListInf.KbnCd } equals new { raiinListMst.GrpId, raiinListMst.KbnCd }
                         select new { raiinListInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd }
                      );
 
             var result = raiinListInfs
                 .GroupBy(r => r.RaiinNo)
                 .ToDictionary(g => g.Key, g => g.Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd)).ToList());
+
+            return result;
+        }
+
+        public List<(int date, string tooltip)> GetTooltip(int hpId, long ptId, int sinDate, int startDate, int endDate)
+        {
+            List<int> dates = new();
+            for (int i = startDate; i <= endDate; i++)
+            {
+                dates.Add(i);
+            }
+
+            List<(int, string)> result = new();
+            var raiinInfs = NoTrackingDataContext.RaiinInfs
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate)
+                .Select(r => new { r.SinDate, r.SyosaisinKbn, r.Status }).ToList();
+            var holidays = NoTrackingDataContext.HolidayMsts.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None && r.SinDate >= startDate && r.SinDate <= endDate).Select(r => new { r.SinDate, r.HolidayName }).ToList();
+
+            object obj = new object();
+            Parallel.ForEach(dates, date =>
+            {
+                string tooltip = "";
+                var holiday = holidays.FirstOrDefault(h => h.SinDate == date);
+                if (!string.IsNullOrEmpty(holiday?.HolidayName ?? string.Empty))
+                {
+                    tooltip = string.Format("{0} {1}", CIUtil.IntToDate(date).ToString("MM/dd"), holiday?.HolidayName ?? string.Empty);
+                }
+
+                var dateSyosaiItems = raiinInfs.Where(item => item.SinDate == date);
+                var datetateItem = raiinInfs.FirstOrDefault(item => item.SinDate == date);
+                foreach (var dateSyosaiItem in dateSyosaiItems)
+                {
+                    if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)))
+                    {
+                        if (!(!datetateItem?.Equals(default(KeyValuePair<int, int>)) == true && date == sinDate && datetateItem?.Status < RaiinState.TempSave))
+                        {
+                            tooltip = (string.IsNullOrEmpty(tooltip) ? "" : tooltip + Environment.NewLine) + (SyosaiConst.FlowSheetCalendarDict.ContainsKey(dateSyosaiItem.SyosaisinKbn) ? SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.SyosaisinKbn] : string.Empty);
+                        }
+
+                    }
+                }
+                if (!string.IsNullOrEmpty(tooltip))
+                {
+                    lock (obj)
+                    {
+                        result.Add(new(date, tooltip));
+                    }
+                }
+            });
 
             return result;
         }
