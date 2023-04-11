@@ -33,7 +33,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             );
     }
 
-    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel> orderInfModels, List<SetFileInfModel> setFileInfModels) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate)
+    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel> orderInfModels, List<(int setCd, List<SetFileInfModel> setFiles)> setFileInfModels) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate)
     {
         var rootSuperSet = NoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
         List<int> setCds;
@@ -90,7 +90,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
 
         List<SetByomeiModel> byomeis = new();
         List<SetKarteInfModel> karteInfs = new();
-        List<SetFileInfModel> karteFiles = new();
+        List<(int, List<SetFileInfModel>)> karteFiles = new();
         List<SetOrderInfModel> ordInfs = new();
         var byomeiObj = new object();
         var karteObj = new object();
@@ -112,7 +112,7 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             if (karteInf != null)
                 karteInfs.Add(karteInf);
             if (karteFileOfItem != null && karteFileOfItem.Count > 0)
-                karteFiles.AddRange(karteFileOfItem);
+                karteFiles.Add(new (currentSetCd, karteFileOfItem));
             ordInfs.AddRange(taskOrder.Result);
         });
 
