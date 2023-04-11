@@ -22,7 +22,7 @@
 
         public virtual int GetReportType()
         {
-            return (int)CoReportType.Common;
+            throw new NotImplementedException();
         }
 
         public virtual string GetRowCountFieldName()

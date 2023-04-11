@@ -18,32 +18,32 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
         {
             if (inputData.HpId <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidHpId);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidHpId);
             }
             if (inputData.UserId <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidUserId);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidUserId);
             }
             else if (inputData.SetCd <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
             }
             else if (inputData.SetCd <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
             }
 
             var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.UserId, inputData.SetCd, inputData.SinDate);
             if (result.Item1.Count == 0 && result.Item2.Count == 0 && result.Item3.Count == 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
             }
 
-            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.Item1), result.Item2, ConvertSetOrderInfToItem(result.Item3), GetSuperSetDetailToDoTodayOrderStatus.Successed);
+            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), result.setFileInfModels, GetSuperSetDetailToDoTodayOrderStatus.Successed);
         }
         catch
         {
-            return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
+            return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
         }
         finally
         {
@@ -131,7 +131,15 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                          od.CenterItemCd2,
                          od.Kasan1,
                          od.Kasan2,
-                         od.YohoSets
+                         od.YohoSets,
+                         od.CmtColKeta1,
+                         od.CmtColKeta2,
+                         od.CmtColKeta3,
+                         od.CmtColKeta4,
+                         od.CmtCol1,
+                         od.CmtCol2,
+                         od.CmtCol3,
+                         od.CmtCol4
                     )
                 ).ToList()
             )).ToList();

@@ -3,7 +3,7 @@
 namespace Domain.Types
 {
     public interface IOdrInfModel<TOdrInfDetailModel>
-     where TOdrInfDetailModel : class, IOdrInfDetailModel
+       where TOdrInfDetailModel : class, IOdrInfDetailModel
     {
         long Id { get; }
 

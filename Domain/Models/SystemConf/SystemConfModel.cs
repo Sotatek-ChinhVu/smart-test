@@ -14,17 +14,15 @@ public class SystemConfModel
 
     public SystemConfModel()
     {
-        GrpCd = 0;
-        GrpEdaNo = 0;
-        Val = 0;
         Param = string.Empty;
         Biko = string.Empty;
     }
 
-    public SystemConfModel(int grpCd, int grpEdaNo)
+    public SystemConfModel(int grpCd, int grpEdaNo, double val)
     {
         GrpCd = grpCd;
         GrpEdaNo = grpEdaNo;
+        Val = val;
         Param = string.Empty;
         Biko = string.Empty;
     }

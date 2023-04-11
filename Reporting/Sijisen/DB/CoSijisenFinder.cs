@@ -239,7 +239,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,
@@ -256,14 +256,14 @@ namespace Reporting.Sijisen.DB
                 )
                 .ToList();
 
-            List<CoRaiinInfModel> results = new List<CoRaiinInfModel>();
+            List<CoRaiinInfModel> results = new();
 
             entities?.ForEach(entity =>
             {
                 results.Add(new CoRaiinInfModel(entity.RaiinInf, entity.KaMst, entity.UserMst, entity.UketukeSbtMst, entity.RaiinCmtInf));
             });
 
-            return results.FirstOrDefault();
+            return results.FirstOrDefault() ?? new();
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace Reporting.Sijisen.DB
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteStatus.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring(raiinInf.SinStartTime.Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("0000" + raiinInf.SinStartTime).Substring((raiinInf.SinStartTime ?? string.Empty).Length, 4), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,

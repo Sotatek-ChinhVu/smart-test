@@ -972,6 +972,16 @@
         public static readonly string NoPaymentInfo = "NoPaymentInfo";
         public static readonly string TryAgainLater = "TryAgainLater";
 
+        //SystemConfig
+        public static readonly string InvalidCheckDrugSameName = "Invalid CheckDrugSameName.";
+        public static readonly string InvalidAgentCheckSetting = "Invalid AgentCheckSetting.";
+        public static readonly string InvalidDosageRatioSetting = "Invalid DosageRatioSetting.";
+        public static readonly string InvalidFoodAllergyLevelSetting = "Invalid FoodAllergyLevelSetting.";
+        public static readonly string InvalidDiseaseLevelSetting = "Invalid DiseaseLevelSetting.";
+        public static readonly string InvalidKinkiLevelSetting = "Invalid KinkiLevelSetting.";
+        public static readonly string InvalidDosageMinCheckSetting = "Invalid DosageMinCheckSetting.";
+        public static readonly string InvalidAgeLevelSetting = "Invalid AgeLevelSetting.";
+
         public static readonly string InvalidTypeItem = "Invalid type item";
     }
 }
