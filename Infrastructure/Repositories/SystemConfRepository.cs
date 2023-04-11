@@ -3,6 +3,7 @@ using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Collections;
@@ -377,7 +378,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         {
             foreach (var model in UpdatedGenModels)
             {
-                NoTrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
+                TrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
                 {
                     HpId = model.HpId,
                     GrpCd = model.GrpCd,
@@ -396,7 +397,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
         foreach (var model in AddedGenModels)
         {
-            NoTrackingDataContext.SystemGenerationConfs.Add(new SystemGenerationConf()
+            TrackingDataContext.SystemGenerationConfs.Add(new SystemGenerationConf()
             {
                 HpId = model.HpId,
                 GrpCd = model.GrpCd,
@@ -413,5 +414,81 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         }
 
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels)
+    {
+        var SystemSettingModels = SystemConfMenuModels.Select(u => u.SystemConf);
+
+        var AddedSettingModels = SystemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Added).ToList();
+        var UpdatedSettingModels = SystemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Modified).ToList();
+
+        if (UpdatedSettingModels.Any())
+        {
+            foreach (var model in UpdatedSettingModels)
+            {
+                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                {
+                    HpId = hpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                });
+
+                if (model.GrpCd == 93002 &&
+                    model.GrpEdaNo == 0 &&
+                    model.IsUpdatePtRyosyo) // Check seting 明細書
+                {
+                    UpdatePtRyosyoDetail(userId, model);
+                }
+            }
+        }
+
+        if (AddedSettingModels.Any())
+        {
+            foreach (var model in AddedSettingModels)
+            {
+                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                {
+                    HpId = hpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                });
+
+                if (model.GrpCd == 93002 &&
+                    model.GrpEdaNo == 0 &&
+                    model.IsUpdatePtRyosyo) // Check seting 明細書
+                {
+                    UpdatePtRyosyoDetail(userId, model);
+                }
+            }
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private void UpdatePtRyosyoDetail(int userId, SystemConfModel model)
+    {
+        var query = from PtInfs in TrackingDataContext.PtInfs
+                    where PtInfs.HpId == model.HpId && PtInfs.IsRyosyoDetail != model.Val.AsInteger()
+                    select PtInfs;
+
+        foreach (var item in query)
+        {
+            item.IsRyosyoDetail = model.Val.AsInteger();
+            item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            item.UpdateId = userId;
+        }
     }
 }

@@ -125,7 +125,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SaveSystemSetting)]
         public ActionResult<Response<SaveSystemSettingResponse>> SaveSystemSetting([FromBody] SaveSystemSettingRequest request)
         {
-            var input = new SaveSystemSettingInputData(UserId, request.HpInfs, request.SystemConfMenus, request.IsUpdateHpInfo, request.IsUpdateSystemGenerationConf);
+            var input = new SaveSystemSettingInputData(HpId, UserId, request.HpInfs, request.SystemConfMenus, request.IsUpdateHpInfo, request.IsUpdateSystemGenerationConf);
             var output = _bus.Handle(input);
 
             var presenter = new SaveSystemSettingPresenter();

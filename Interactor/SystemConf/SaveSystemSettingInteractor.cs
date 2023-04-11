@@ -29,6 +29,7 @@ namespace Interactor.SystemConf
                     _systemConfRepository.SaveSystemGenerationConf(inputData.UserId, inputData.SystemConfMenus);
                 }
 
+                _systemConfRepository.SaveSystemSetting(inputData.HpId, inputData.UserId, inputData.SystemConfMenus);
 
                 return new SaveSystemSettingOutputData(SaveSystemSettingStatus.Successed);
             }

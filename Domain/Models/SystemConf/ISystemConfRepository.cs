@@ -33,4 +33,6 @@ public interface ISystemConfRepository : IRepositoryBase
     List<string> GetListCenterCd(int hpId);
 
     bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels);
+
+    bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels);
 }

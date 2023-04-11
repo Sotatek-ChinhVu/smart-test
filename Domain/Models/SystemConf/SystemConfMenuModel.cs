@@ -93,31 +93,12 @@ namespace Domain.Models.SystemConf
         }
 
         [JsonConstructor]
-        public SystemConfMenuModel(int hpId, int menuId, int menuGrp, int sortNo, string menuName, int grpCd, int grpEdaNo, int pathGrpCd, int isParam, int paramMask, int paramType, string paramHint, double valMin, double valMax, double paramMin, double paramMax, string itemCd, int prefNo, int isVisible, int managerKbn, int isValue, int paramMaxLength, List<SystemConfItemModel> systemConfItems, List<SystemGenerationConfModel> systemGenerationConfs, SystemConfModel systemConf)
+        public SystemConfMenuModel(List<SystemGenerationConfModel> systemGenerationConfs, SystemConfModel systemConf)
         {
-            HpId = hpId;
-            MenuId = menuId;
-            MenuGrp = menuGrp;
-            SortNo = sortNo;
-            MenuName = menuName;
-            GrpCd = grpCd;
-            GrpEdaNo = grpEdaNo;
-            PathGrpCd = pathGrpCd;
-            IsParam = isParam;
-            ParamMask = paramMask;
-            ParamType = paramType;
-            ParamHint = paramHint;
-            ValMin = valMin;
-            ValMax = valMax;
-            ParamMin = paramMin;
-            ParamMax = paramMax;
-            ItemCd = itemCd;
-            PrefNo = prefNo;
-            IsVisible = isVisible;
-            ManagerKbn = managerKbn;
-            IsValue = isValue;
-            ParamMaxLength = paramMaxLength;
-            SystemConfItems = systemConfItems;
+            MenuName = string.Empty;
+            ItemCd = string.Empty;
+            ParamHint = string.Empty;
+            SystemConfItems = new();
             SystemGenerationConfs = systemGenerationConfs;
             SystemConf = systemConf;
         }
@@ -171,6 +152,5 @@ namespace Domain.Models.SystemConf
         public List<SystemGenerationConfModel> SystemGenerationConfs { get; private set; }
 
         public SystemConfModel SystemConf { get; private set; }
-
     }
 }
