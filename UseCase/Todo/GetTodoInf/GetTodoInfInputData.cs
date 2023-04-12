@@ -4,13 +4,12 @@ namespace UseCase.Todo.GetTodoInf;
 
 public class GetTodoInfInputData : IInputData<GetTodoInfOutputData>
 {
-    public GetTodoInfInputData(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone)
+    public GetTodoInfInputData(int hpId, int todoNo, int todoEdaNo, bool incDone)
     {
         HpId = hpId;
         TodoNo = todoNo;
         TodoEdaNo = todoEdaNo;
-        PtId = ptId;
-        IsDone = isDone;
+        IncDone = incDone;
     }
 
     public int HpId { get; private set;}
@@ -19,7 +18,5 @@ public class GetTodoInfInputData : IInputData<GetTodoInfOutputData>
 
     public int TodoEdaNo { get; private set;}
 
-    public int PtId { get; private set;}
-
-    public int IsDone { get; private set;}
+    public bool IncDone { get; private set;}
 }

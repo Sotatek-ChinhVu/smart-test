@@ -6,8 +6,6 @@
 
         public int TodoEdaNo { get; set; }
 
-        public int PtId { get; set; }
-
-        public int IsDone { get; set; } 
+        public bool IncDone { get; set; }
     }
 }

@@ -20,7 +20,7 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidHpId, new());
             }
-            if (input.TodoNo <= 0)
+            if (input.TodoNo < 0)
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoNo, new());
             }
@@ -28,35 +28,29 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
             {
                 return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoEdaNo, new());
             }
-            if (input.PtId <= 0)
-            {
-                return new GetTodoInfOutputData(GetTodoInfStatus.InvalidPtId, new());
-            }
-            if (input.IsDone < 0)
-            {
-                return new GetTodoInfOutputData(GetTodoInfStatus.InvalidIsDone, new());
-            }
 
-            var TodoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.PtId, input.IsDone).Select(item => new GetListTodoInfOutputItem(item.HpId,
-                                        item.PtNum,
-                                        item.PatientName,
-                                        item.SinDate,
-                                        item.PrimaryDoctorName,
-                                        item.KaSname,
-                                        item.TodoKbnName,
-                                        item.TantoName,
-                                        item.Cmt2,
-                                        item.CreateDate,
-                                        item.UpdaterName,
-                                        item.Cmt1,
-                                        item.CreaterName,
-                                        item.TodoGrpName,
-                                        item.Term,
-                                        item.Houbetu,
-                                        item.HokensyaNo,    
-                                        item.HokenPid,
-                                        item.HokenKbn,
-                                        item.HokenId))
+            var TodoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone).Select(item => new GetListTodoInfOutputItem(item.HpId,
+                                                                        item.PtId,
+                                                                        item.PtNum,
+                                                                        item.PatientName,
+                                                                        item.SinDate,
+                                                                        item.PrimaryDoctorName,
+                                                                        item.KaSname,
+                                                                        item.TodoKbnName,
+                                                                        item.Cmt1,
+                                                                        item.CreateDate,
+                                                                        item.CreaterName,
+                                                                        item.TantoName,
+                                                                        item.Cmt2,
+                                                                        item.UpdateDate,
+                                                                        item.UpdaterName,
+                                                                        item.TodoGrpName,
+                                                                        item.Term,
+                                                                        item.HokenPid,
+                                                                        item.Houbetu,
+                                                                        item.HokenKbn,
+                                                                        item.HokensyaNo,
+                                                                        item.HokenId))
                                         .ToList();
 
             return new GetTodoInfOutputData(GetTodoInfStatus.Success, TodoInf);
@@ -67,28 +61,30 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
         }
     }
 
-    private List<GetListTodoInfOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone)
+    private List<GetListTodoInfOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, bool incDone)
     {
-        List<GetListTodoInfOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, ptId, isDone).Select(x => new GetListTodoInfOutputItem(
+        List<GetListTodoInfOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, incDone).Select(x => new GetListTodoInfOutputItem(
                                                                         hpId,
+                                                                        x.PtId,
                                                                         x.PtNum,
                                                                         x.PatientName,
                                                                         x.SinDate,
                                                                         x.PrimaryDoctorName,
                                                                         x.KaSname,
                                                                         x.TodoKbnName,
+                                                                        x.Cmt1,
+                                                                        x.CreateDate,
+                                                                        x.CreaterName,
                                                                         x.TantoName,
                                                                         x.Cmt2,
-                                                                        x.CreateDate,
+                                                                        x.UpdateDate,
                                                                         x.UpdaterName,
-                                                                        x.Cmt1,
-                                                                        x.CreaterName,
                                                                         x.TodoGrpName,
                                                                         x.Term,
-                                                                        x.Houbetu,
-                                                                        x.HokensyaNo,
                                                                         x.HokenPid,
+                                                                        x.Houbetu,
                                                                         x.HokenKbn,
+                                                                        x.HokensyaNo,
                                                                         x.HokenId)));
         return result;
     }

@@ -20,8 +20,6 @@ public class GetTodoInfPresenter : IGetTodoInfOutputPort
         GetTodoInfStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetTodoInfStatus.InvalidTodoNo => ResponseMessage.InvalidTodoNo,
         GetTodoInfStatus.InvalidTodoEdaNo => ResponseMessage.InvalidTodoEdaNo,
-        GetTodoInfStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-        GetTodoInfStatus.InvalidIsDone => ResponseMessage.InvalidIsDone,
         _ => string.Empty
     };
 }

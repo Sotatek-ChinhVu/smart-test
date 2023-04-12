@@ -29,13 +29,13 @@ public class TodoInfModel
         HokensyaNo = string.Empty;
     }
 
-    public TodoInfModel(long ptNum, int sinDate, string patientName, string primaryDoctorName, string kaSname, string todoKbnName, string tantoName,
-        string cmt2, DateTime createDate, string updaterName, string cmt1, string createrName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
+    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
     {
+        HpId = hpId;
+        PtId = ptId;
         PtNum = ptNum;
         SinDate = sinDate;
         PatientName = patientName;
-        SinDate = 0;
         PrimaryDoctorName = primaryDoctorName;
         KaSname = kaSname;
         TodoKbnName = todoKbnName;
@@ -52,7 +52,12 @@ public class TodoInfModel
         HokenKbn = hokenKbn;
         HokensyaNo = hokensyaNo;
         HokenId = hokenId;
+        UpdateDate = updateDate;
     }
+
+    public int HpId { get; private set; }
+
+    public long PtId { get; private set; }
 
     public long PtNum { get; private set; }
 
@@ -68,6 +73,8 @@ public class TodoInfModel
 
     public DateTime CreateDate { get; private set; }
 
+    public DateTime UpdateDate { get; private set; }
+
     public string UpdaterName { get; private set; }
 
     public string CreaterName { get; private set; }
@@ -77,8 +84,6 @@ public class TodoInfModel
     public int TodoNo { get; private set; }
 
     public int TodoEdaNo { get; private set; }
-
-    public long PtId { get; private set; }
 
     public int SinDate { get; private set; }
 
@@ -94,8 +99,6 @@ public class TodoInfModel
 
     public int HokenPid { get; private set; }
 
-    public string Houbetu { get; private set; }
-
     public int HokenKbn { get; private set; }
 
     public string Cmt1 { get; private set; }
@@ -109,4 +112,6 @@ public class TodoInfModel
     public string HokensyaNo { get; private set; }
 
     public int HokenId { get; private set; }
+
+    public string Houbetu { get; private set; }
 }

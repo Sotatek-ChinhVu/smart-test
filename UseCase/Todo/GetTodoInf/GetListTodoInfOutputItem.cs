@@ -6,12 +6,13 @@ namespace UseCase.Todo.GetTodoInf
     public class GetListTodoInfOutputItem
     {
 
-        public GetListTodoInfOutputItem(int hpId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string tantoName, string cmt2, DateTime createDate, string updaterName, string cmt1, string createrName, string todoGrpName, int term, string houbetu, string hokensyaNo, int hokenPid, int hokenKbn, int hokenId)
+        public GetListTodoInfOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
         {
             HpId = hpId;
+            PtId = ptId;
             PtNum = ptNum;
-            PatientName = patientName;
             SinDate = sinDate;
+            PatientName = patientName;
             PrimaryDoctorName = primaryDoctorName;
             KaSname = kaSname;
             TodoKbnName = todoKbnName;
@@ -23,41 +24,26 @@ namespace UseCase.Todo.GetTodoInf
             CreaterName = createrName;
             TodoGrpName = todoGrpName;
             Term = term;
-            Houbetu = houbetu;
-            HokensyaNo = hokensyaNo;
             HokenPid = hokenPid;
+            Houbetu = houbetu;
             HokenKbn = hokenKbn;
+            HokensyaNo = hokensyaNo;
             HokenId = hokenId;
+            UpdateDate = updateDate;
         }
-
-        public int HpId { get; private set; }
 
         public long PtNum { get; private set; }
 
         public string PatientName { get; private set; }
 
-        public string PrimaryDoctorName { get; private set; }
-
-        public string KaSname { get; private set; }
-
-        public string TodoKbnName { get; private set; }
-
-        public string TantoName { get; private set; }
-
-        public DateTime CreateDate { get; private set; }
-
-        public string UpdaterName { get; private set; }
-
-        public string CreaterName { get; private set; }
-
-        public string TodoGrpName { get; private set; }
-
-        public int SinDate { get; private set; }
-
         public string DisplaySinDate
         {
             get { return CIUtil.SDateToShowSDate(SinDate); }
         }
+
+        public string PrimaryDoctorName { get; private set; }
+
+        public string KaSname { get; private set; }
 
         public string HokenKbnName
         {
@@ -115,16 +101,41 @@ namespace UseCase.Todo.GetTodoInf
             }
         }
 
-        public int Term { get; private set; }
+        public string TodoKbnName { get; private set; }
 
         public string Cmt1 { get; private set; }
 
+
+        public string CreateTimeDisplay
+        {
+            get { return CreateDate.ToString(); }
+        }
+
+        public string CreaterName { get; private set; }
+
+        public string TantoName { get; private set; }
+
         public string Cmt2 { get; private set; }
+
+        public string UpdatTimeDisplay
+        {
+            get { return UpdateDate.ToString(); }
+        }
+
+        public string UpdaterName { get; private set; }
+
+        public string TodoGrpName { get; private set; }
 
         public string DisplayTerm
         {
             get { return CIUtil.SDateToShowSDate(Term); }
         }
+
+        public DateTime CreateDate { get; private set; }
+
+        public DateTime UpdateDate { get; private set; }
+
+        public int Term { get; private set; }
 
         public string Houbetu { get; private set; }
 
@@ -135,6 +146,10 @@ namespace UseCase.Todo.GetTodoInf
         public int HokenId { get; private set; }
 
         public int HokenPid { get; private set; }
+
+        public int SinDate { get; private set; }
+
+        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
     }

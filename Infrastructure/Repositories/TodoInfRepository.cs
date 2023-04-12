@@ -1,9 +1,11 @@
-﻿using Domain.Models.Todo;
+﻿using Domain.Models.ReceptionSameVisit;
+using Domain.Models.Todo;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -93,125 +95,143 @@ namespace Infrastructure.Repositories
             return inputs.Count == countptIds;
         }
 
-        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, int ptId, int isDone)
+        public List<TodoInfModel> GetList(int hpId, int todoNo, int todoEdaNo, bool incDone)
         {
             List<TodoInfModel> result;
-            var todoInfs = NoTrackingDataContext.TodoInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            var todoGrpMsts = NoTrackingDataContext.TodoGrpMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            var userMsts = NoTrackingDataContext.UserMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId);
-
-            var patientInfs = NoTrackingDataContext.PtInfs.Where(x => x.HpId == hpId && x.IsDelete == 0);
-
-            var kaMsts = NoTrackingDataContext.KaMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            var todoKbnMsts = NoTrackingDataContext.TodoKbnMsts.Where(x => x.HpId == hpId);
-
-            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+            var todoInfRes = NoTrackingDataContext.TodoInfs.Where(inf => inf.HpId == hpId && inf.IsDeleted == 0);
+            var raiinInfRes = NoTrackingDataContext.RaiinInfs.Where(inf => inf.HpId == hpId);
+            var patientInfRes = NoTrackingDataContext.PtInfs.Where(inf => inf.HpId == hpId && inf.IsDelete == 0);
+            var userMstRes = NoTrackingDataContext.UserMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var kaMstRes = NoTrackingDataContext.KaMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var todoKbnMstRes = NoTrackingDataContext.TodoKbnMsts.Where(mst => mst.HpId == hpId);
+            var todoGrpMstRes = NoTrackingDataContext.TodoGrpMsts.Where(mst => mst.HpId == hpId && mst.IsDeleted == 0);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(
+                (p) => p.HpId == Session.HospitalID &&
+                       p.IsDeleted == 0
+            );
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(
+                (p) => p.HpId == Session.HospitalID &&
+                       p.IsDeleted == 0
+            );
 
             var todoInfRes2 =
-                    from ti1 in todoInfs
-                    join ri1 in raiinInfs on
-                        new { ti1.HpId, ti1.PtId, ti1.SinDate, ti1.RaiinNo } equals
-                        new { ri1.HpId, ri1.PtId, ri1.SinDate, ri1.RaiinNo } into listraiinInf
-                    from ri2 in listraiinInf.DefaultIfEmpty()
-                    where
-                        (todoNo <= 0 || todoEdaNo <= 0 || (ti1.TodoNo == todoNo && ti1.TodoEdaNo == todoEdaNo)) &&
-                        (ti1.IsDone == 0)
-                    select new
-                    {
-                        TodoInf = ti1,
-                        Status = ri2 == null ? 0 : ri2.Status,
-                        KaId = ri2 == null ? 0 : ri2.KaId,
-                        TantoId = ri2 == null ? 0 : ri2.TantoId,
-                        PtId = ri2 == null ? 0 : ri2.PtId,
-                        HokenPid = ri2 == null ? 0 : ri2.HokenPid,
-                        IsYoyaku = ri2 == null ? 0 : ri2.IsYoyaku,
-                        OyaRaiinNo = ri2 == null ? 0 : ri2.OyaRaiinNo,
-                        SyosaisinKbn = ri2 == null ? 0 : ri2.SyosaisinKbn,
-                        JikanKbn = ri2 == null ? 0 : ri2.JikanKbn,
-                        IsVisitDeleted = ri2 == null ? false : (ri2.IsDeleted == DeleteTypes.Deleted || ri2.IsDeleted == DeleteTypes.Confirm),
-                    };
+                from ti1 in todoInfRes
+                join ri1 in raiinInfRes on
+                    new { ti1.HpId, ti1.PtId, ti1.SinDate, ti1.RaiinNo } equals
+                    new { ri1.HpId, ri1.PtId, ri1.SinDate, ri1.RaiinNo } into raiinInfs
+                from ri2 in raiinInfs.DefaultIfEmpty()
+                where
+                    (todoNo <= 0 || todoEdaNo <= 0 || (ti1.TodoNo == todoNo && ti1.TodoEdaNo == todoEdaNo)) &&
+                    (incDone || (ti1.IsDone == 0))
+                select new
+                {
+                    TodoInf = ti1,
+                    Status = ri2 == null ? 0 : ri2.Status,
+                    KaId = ri2 == null ? 0 : ri2.KaId,
+                    TantoId = ri2 == null ? 0 : ri2.TantoId,
+                    PtId = ri2 == null ? 0 : ri2.PtId,
+                    HokenPid = ri2 == null ? 0 : ri2.HokenPid,
+                    IsYoyaku = ri2 == null ? 0 : ri2.IsYoyaku,
+                    OyaRaiinNo = ri2 == null ? 0 : ri2.OyaRaiinNo,
+                    SyosaisinKbn = ri2 == null ? 0 : ri2.SyosaisinKbn,
+                    JikanKbn = ri2 == null ? 0 : ri2.JikanKbn,
+                    IsVisitDeleted = ri2 == null ? false : (ri2.IsDeleted == DeleteTypes.Deleted || ri2.IsDeleted == DeleteTypes.Confirm),
+                };
 
-            var query = from todoInfRes in todoInfRes2.AsEnumerable()
-                        join ptInf in patientInfs on
-                            new { todoInfRes.TodoInf.HpId, todoInfRes.PtId } equals
-                            new { ptInf.HpId, ptInf.PtId } into listPtInfs
-                        join todoGrpMst in todoGrpMsts on
-                            new { todoInfRes.TodoInf.HpId, todoInfRes.TodoInf.TodoGrpNo } equals
-                            new { todoGrpMst.HpId, todoGrpMst.TodoGrpNo } into listTodoGrpMsts
-                        join todoKbnMst in todoKbnMsts on
-                             new { todoInfRes.TodoInf.HpId, todoInfRes.TodoInf.TodoKbnNo } equals
-                             new { todoKbnMst.HpId, todoKbnMst.TodoKbnNo } into listTodoKbnMsts
-                        join raiinInf in raiinInfs on
-                            new { todoInfRes.TodoInf.HpId, todoInfRes.TodoInf.PtId } equals
-                            new { raiinInf.HpId, raiinInf.PtId } into listRaiinInfs
-                        from listRaiinInf in listRaiinInfs.DefaultIfEmpty()
-                        join kaMst in kaMsts on
-                             new { listRaiinInf.HpId, listRaiinInf.KaId } equals
-                             new { kaMst.HpId, kaMst.KaId } into listKaMsts
-                        join userMst1 in userMsts on
-                             new { listRaiinInf.HpId, listRaiinInf.TantoId } equals
-                             new { userMst1.HpId, TantoId = userMst1.UserId } into listUserMsts1
-                        join userMst2 in userMsts on
-                             new { listRaiinInf.HpId, listRaiinInf.CreateId } equals
-                             new { userMst2.HpId, CreateId = userMst2.UserId } into listUserMsts2
-                        join userMst3 in userMsts on
-                             new { listRaiinInf.HpId, listRaiinInf.UpdateId } equals
-                             new { userMst3.HpId, UpdateId = userMst3.UserId } into listUserMsts3
-                        join userMst4 in userMsts on
-                            new {listRaiinInf.HpId, PrimaryDoctor = listRaiinInf.TantoId} equals
-                            new {userMst4.HpId, PrimaryDoctor = userMst4.UserId} into listUserMsts4
-                        join ptHokenPattern in ptHokenPatterns on
-                             new { todoInfRes.TodoInf.HpId, todoInfRes.TodoInf.PtId, todoInfRes.HokenPid } equals
-                             new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into listHokenPatterns
-                        from listHokenPattern in listHokenPatterns.DefaultIfEmpty()
-                        join ptHokenInf in ptHokenInfs on
-                             new { listHokenPattern.HpId, listHokenPattern.PtId, listHokenPattern.HokenId } equals
-                             new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into listHokenInfs
-                        from listHokenInf in listHokenInfs.DefaultIfEmpty()
-                        select new
-                        {
-                            TodoInf = todoInfRes,
-                            HokenInf = listHokenInf,
-                            TodoGrpMsts = listTodoGrpMsts.FirstOrDefault(),
-                            PtInfs = listPtInfs.FirstOrDefault(),
-                            RaiinInfs = listRaiinInfs.FirstOrDefault(),
-                            TodoKbnMsts = listTodoKbnMsts.FirstOrDefault(),
-                            KaMsts = listKaMsts.FirstOrDefault(),
-                            UserMsts1 = listUserMsts1.FirstOrDefault(),
-                            UserMsts2 = listUserMsts2.FirstOrDefault(),
-                            UserMsts3 = listUserMsts3.FirstOrDefault(),
-                            UserMsts4 = listUserMsts4.FirstOrDefault(),
-                            HokenPatterns = listHokenPatterns.FirstOrDefault()
-                        };
+            var query =
+                from ti2 in todoInfRes2
+                join pi1 in patientInfRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.PtId } equals
+                    new { pi1.HpId, pi1.PtId }
+                join um1 in userMstRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.Tanto } equals
+                    new { um1.HpId, Tanto = um1.UserId } into tantoList
+                from tantoInf in tantoList.DefaultIfEmpty()
+                join um2 in userMstRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.CreateId } equals
+                    new { um2.HpId, CreateId = um2.UserId } into createrList
+                from createrInf in createrList.DefaultIfEmpty()
+                join um3 in userMstRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.UpdateId } equals
+                    new { um3.HpId, UpdateId = um3.UserId } into updaterList
+                from updaterInf in updaterList.DefaultIfEmpty()
+                join km1 in kaMstRes on
+                    new { ti2.TodoInf.HpId, KaId = ti2.KaId } equals
+                    new { km1.HpId, km1.KaId } into kaList
+                from kaInf in kaList.DefaultIfEmpty()
+                join um4 in userMstRes on
+                    new { ti2.TodoInf.HpId, PrimaryDoctor = ti2.TantoId } equals
+                    new { um4.HpId, PrimaryDoctor = um4.UserId } into primaryDoctorList
+                from primaryDoctor in primaryDoctorList.DefaultIfEmpty()
+                join tkm1 in todoKbnMstRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.TodoKbnNo } equals
+                    new { tkm1.HpId, tkm1.TodoKbnNo } into todoKbnMstList
+                from todoKbnMstInf in todoKbnMstList.DefaultIfEmpty()
+                join tgm1 in todoGrpMstRes on
+                    new { ti2.TodoInf.HpId, ti2.TodoInf.TodoGrpNo } equals
+                    new { tgm1.HpId, tgm1.TodoGrpNo } into todoGrpMstList
+                from todoGrpMstInf in todoGrpMstList.DefaultIfEmpty()
+                join ptHokenPattern in ptHokenPatterns on
+                    new { ti2.TodoInf.HpId, ti2.PtId, ti2.HokenPid } equals
+                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenPid } into ptHokenPatternList
+                from ptHokenPatternItem in ptHokenPatternList.DefaultIfEmpty()
+                join ptHokenInf in ptHokenInfs on
+                    new { ptHokenPatternItem.HpId, ptHokenPatternItem.PtId, ptHokenPatternItem.HokenId } equals
+                    new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } into ptHokenInfList
+                from ptHokenInfItem in ptHokenInfList.DefaultIfEmpty()
+                select new
+                {
+                    ti2.TodoInf,
+                    ti2.IsYoyaku,
+                    ti2.OyaRaiinNo,
+                    ti2.SyosaisinKbn,
+                    ti2.JikanKbn,
+                    ti2.Status,
+                    ti2.IsVisitDeleted,
+                    PtNum = pi1 == null ? 0 : pi1.PtNum,
+                    PatientName = pi1 == null ? string.Empty : pi1.Name,
+                    PrimaryDoctorName = primaryDoctor == null ? string.Empty : primaryDoctor.Sname,
+                    KaSname = kaInf == null ? string.Empty : kaInf.KaSname,
+                    TodoKbnName = todoKbnMstInf == null ? string.Empty : todoKbnMstInf.TodoKbnName,
+                    TodoKbnNo = todoKbnMstInf == null ? 0 : todoKbnMstInf.TodoKbnNo,
+                    CreaterName = createrInf == null ? string.Empty : createrInf.Sname,
+                    TantoName = tantoInf == null ? string.Empty : tantoInf.Sname,
+                    UpdaterName = updaterInf == null ? string.Empty : updaterInf.Sname,
+                    TodoGrpNo = todoGrpMstInf == null ? 0 : todoGrpMstInf.TodoGrpNo,
+                    TodoGrpName = todoGrpMstInf == null ? string.Empty : todoGrpMstInf.TodoGrpName,
+                    TodoGrpColor = todoGrpMstInf == null ? string.Empty : todoGrpMstInf.GrpColor,
+                    Gender = pi1 == null ? 0 : pi1.Sex,
+                    HokenPattern = ptHokenPatternItem,
+                    PtHokenInf = ptHokenInfItem,
+                };
 
-            result = query.AsEnumerable().Select((x) => new TodoInfModel(
-                            x.PtInfs.PtNum,
-                            x.RaiinInfs.SinDate,
-                            x.PtInfs.Name ?? string.Empty,
-                            x.UserMsts4.Sname ?? string.Empty,
-                            x.KaMsts.KaName ?? string.Empty,
-                            x.TodoKbnMsts.TodoKbnName ?? string.Empty,
-                            x.UserMsts1.Sname ?? string.Empty,
-                            x.TodoInf.TodoInf.Cmt2 ?? string.Empty,
-                            x.TodoInf.TodoInf.CreateDate,
-                            x.UserMsts3.Sname ?? string.Empty,
-                            x.TodoInf.TodoInf.Cmt1 ?? string.Empty,
-                            x.UserMsts2.Sname ?? string.Empty,
-                            x.TodoGrpMsts.TodoGrpName ?? string.Empty,
-                            x.TodoInf.TodoInf.Term,
-                            x.HokenPatterns.HokenPid,
-                            x.HokenInf.Houbetu ?? string.Empty,
-                            x.HokenPatterns.HokenKbn,
-                            x.HokenInf.HokensyaNo ?? string.Empty,
-                            x.HokenInf.HokenId
-                            )).OrderByDescending(x => x.CreateDate).ThenBy(x => x.PtId).ToList();
+            result = query.AsEnumerable().Select(
+                            x => new TodoInfModel(
+                                hpId,
+                                x.TodoInf.PtId,
+                                x.PtNum,
+                                x.PatientName,
+                                x.TodoInf.SinDate,
+                                x.PrimaryDoctorName,
+                                x.KaSname,
+                                x.TodoKbnName,
+                                x.TodoInf.Cmt1 ?? string.Empty,
+                                x.TodoInf.CreateDate,
+                                x.CreaterName,
+                                x.TantoName,
+                                x.TodoInf.Cmt2 ?? string.Empty,
+                                x.TodoInf.UpdateDate,
+                                x.UpdaterName,
+                                x.TodoGrpName,
+                                x.TodoInf.Term,
+                                x.HokenPattern.HokenPid,
+                                x.PtHokenInf.Houbetu ?? string.Empty,
+                                x.HokenPattern.HokenKbn,
+                                x.PtHokenInf.HokensyaNo ?? string.Empty,
+                                x.PtHokenInf.HokenId
+                                )).OrderByDescending(model => model.UpdateDate)
+                                .ThenBy(model => model.PtId)
+                                .ToList();
             return result;
         }
     }

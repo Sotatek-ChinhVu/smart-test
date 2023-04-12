@@ -52,7 +52,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetTodoInfResponse>> GetList([FromQuery] GetTodoInfRequest request)
         {
-            var input = new GetTodoInfInputData(HpId, request.TodoNo, request.TodoEdaNo, request.PtId, request.IsDone);
+            var input = new GetTodoInfInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone);
             var output = _bus.Handle(input);
 
             var presenter = new GetTodoInfPresenter();
