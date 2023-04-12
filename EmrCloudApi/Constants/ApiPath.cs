@@ -265,6 +265,7 @@
         public const string GetDrugCheckSetting = "GetDrugCheckSetting";
         public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
         public const string GetSystemSetting = "GetSystemSetting";
+        public const string SaveSystemSetting = "SaveSystemSetting";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
