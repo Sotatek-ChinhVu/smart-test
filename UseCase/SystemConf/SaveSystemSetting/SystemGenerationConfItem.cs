@@ -1,24 +1,10 @@
 ﻿using Helper.Constants;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models.SystemGenerationConf
+namespace UseCase.SystemConf.SaveSystemSetting
 {
-    public class SystemGenerationConfModel
+    public class SystemGenerationConfItem
     {
-        public SystemGenerationConfModel(long id, int hpId, int grpCd, int grpEdaNo, int startDate, int endDate, int val, string param, string biko)
-        {
-            Id = id;
-            HpId = hpId;
-            GrpCd = grpCd;
-            GrpEdaNo = grpEdaNo;
-            StartDate = startDate;
-            EndDate = endDate;
-            Val = val;
-            Param = param;
-            Biko = biko;
-        }
-
-        public SystemGenerationConfModel(long id, int hpId, int grpCd, int grpEdaNo, int startDate, int endDate, int val, string param, string biko, ModelStatus systemGenerationConfStatus)
+        public SystemGenerationConfItem(long id, int hpId, int grpCd, int grpEdaNo, int startDate, int endDate, int val, string param, string biko, ModelStatus systemGenerationConfStatus)
         {
             Id = id;
             HpId = hpId;

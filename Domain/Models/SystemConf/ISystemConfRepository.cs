@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Domain.Models.HpInf;
 using System.Collections;
 
 namespace Domain.Models.SystemConf;
@@ -32,4 +31,8 @@ public interface ISystemConfRepository : IRepositoryBase
     List<SystemConfMenuModel> GetListSystemConfMenuOnly(int hpId, int menuGrp);
 
     List<string> GetListCenterCd(int hpId);
+
+    bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels);
+
+    bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels);
 }

@@ -44,15 +44,15 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(drugInfo, ReportType.DrugInfo);
     }
 
-    [HttpPost(ApiPath.ExportByomei)]
-    public async Task<IActionResult> GenerateByomeiReport([FromBody] ByomeiExportRequest request)
+    [HttpGet(ApiPath.ExportByomei)]
+    public async Task<IActionResult> GenerateByomeiReport([FromQuery] ByomeiExportRequest request)
     {
         var byomeiData = _reportService.GetByomeiReportingData(request.PtId, request.FromDay, request.ToDay, request.TenkiIn, request.HokenIdList);
         return await RenderPdf(byomeiData, ReportType.Common);
     }
 
-    [HttpPost(ApiPath.ExportOrderLabel)]
-    public async Task<IActionResult> GenerateOrderLabelReport([FromBody] OrderLabelExportRequest request)
+    [HttpGet(ApiPath.ExportOrderLabel)]
+    public async Task<IActionResult> GenerateOrderLabelReport([FromQuery] OrderLabelExportRequest request)
     {
         List<(int from, int to)> odrKouiKbns = new();
         foreach (var item in request.OdrKouiKbns)
@@ -63,8 +63,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
-    [HttpPost(ApiPath.ExportSijisen)]
-    public async Task<IActionResult> GenerateSijisenReport([FromBody] SijisenExportRequest request)
+    [HttpGet(ApiPath.ExportSijisen)]
+    public async Task<IActionResult> GenerateSijisenReport([FromQuery] SijisenExportRequest request)
     {
         var odrKouiKbns = new List<(int from, int to)>();
         foreach (var item in request.OdrKouiKbns)

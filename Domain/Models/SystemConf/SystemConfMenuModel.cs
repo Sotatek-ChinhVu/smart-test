@@ -1,4 +1,5 @@
 ﻿using Domain.Models.SystemGenerationConf;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.SystemConf
 {
@@ -91,6 +92,16 @@ namespace Domain.Models.SystemConf
             SystemGenerationConfs = new();
         }
 
+        public SystemConfMenuModel(List<SystemGenerationConfModel> systemGenerationConfs, SystemConfModel systemConf)
+        {
+            MenuName = string.Empty;
+            ItemCd = string.Empty;
+            ParamHint = string.Empty;
+            SystemConfItems = new();
+            SystemGenerationConfs = systemGenerationConfs;
+            SystemConf = systemConf;
+        }
+
         public int HpId { get; private set; }
 
         public int MenuId { get; private set; }
@@ -140,6 +151,5 @@ namespace Domain.Models.SystemConf
         public List<SystemGenerationConfModel> SystemGenerationConfs { get; private set; }
 
         public SystemConfModel SystemConf { get; private set; }
-
     }
 }
