@@ -35,8 +35,8 @@ namespace Domain.Models.MonshinInf
                 return ValidationStatus.InvalidPtId;
             if (RaiinNo <= 0)
                 return ValidationStatus.InValidRaiinNo;
-            if (SinDate <= 0)
-                return ValidationStatus.InvalidSinDate;
+            if (GetKbn != 0 || GetKbn != 1)
+                return ValidationStatus.InvalidKbn;
             #endregion
 
             return ValidationStatus.Valid;

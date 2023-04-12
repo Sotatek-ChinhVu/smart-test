@@ -8,6 +8,7 @@
             InvalidHpId,
             InValidRaiinNo,
             InvalidSinDate,
+            InvalidKbn,
             Valid
         };
     }
