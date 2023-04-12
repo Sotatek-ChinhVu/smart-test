@@ -433,6 +433,8 @@ using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiin
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using UseCase.SystemConf.SaveDrugCheckSetting;
+using Reporting.OutDrug.DB;
+using Reporting.OutDrug.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -486,6 +488,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarte1Service, Karte1Service>();
             services.AddTransient<IMedicalRecordWebIdReportService, MedicalRecordWebIdReportService>();
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
+            services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
+            services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

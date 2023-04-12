@@ -79,16 +79,22 @@ public class CoOutDrugFinder : RepositoryBase, ICoOutDrugFinder
             o.PtId == ptId &&
             o.SinDate == sinDate &&
             o.RaiinNo == raiinNo &&
-            o.IsDeleted == DeleteStatus.None);
+            o.IsDeleted == DeleteStatus.None)
+            .ToList();
+
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails.Where(o =>
             o.HpId == hpId &&
             o.PtId == ptId &&
             o.SinDate == sinDate &&
-            (!(o.ItemCd ?? string.Empty).StartsWith("8") || (o.ItemCd ?? string.Empty).Length != 9));
+            o.ItemCd != null &&
+            (!(o.ItemCd).StartsWith("8") || (o.ItemCd).Length != 9))
+            .ToList();
+
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t =>
             t.HpId == hpId &&
             t.StartDate <= sinDate &&
             (t.EndDate >= sinDate || t.EndDate == 12341234));
+
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(o =>
             o.HpId == hpId);
 

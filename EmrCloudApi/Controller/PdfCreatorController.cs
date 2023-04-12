@@ -2,6 +2,7 @@
 using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
@@ -15,11 +16,13 @@ public class PdfCreatorController : ControllerBase
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
+    private readonly IOutDrugCoReportService _outDrugCoReportService;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService)
     {
         _reportService = reportService;
         _configuration = configuration;
+        _outDrugCoReportService = outDrugCoReportService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -77,8 +80,17 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
-        var date = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
-        return await RenderPdf(date, ReportType.Common);
+        var data = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
+        return await RenderPdf(data, ReportType.Common);
+    }
+    
+    [HttpGet(ApiPath.OutDrug)]
+    public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
+    {
+        var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data1 = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var data2 = JsonSerializer.Serialize(data);
+        return await RenderPdf(data, ReportType.Common);
     }
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType)

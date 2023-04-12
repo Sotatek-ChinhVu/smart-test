@@ -4,6 +4,10 @@ public class CoOutDrugModel
 {
     readonly CoOutDrugQRData? _qrData;
 
+    public CoOutDrugModel()
+    {
+    }
+
     public CoOutDrugModel(CoOutDrugPrintData printData, CoOutDrugQRData? qrData)
     {
         PrintData = printData;

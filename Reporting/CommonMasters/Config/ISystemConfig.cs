@@ -26,4 +26,7 @@ public interface ISystemConfig
     int SyohosenRinjiKisai();
     int SyohosenTani();
     int SyohosenHikae();
+    int SyohosenFutanRate();
+    string SyohosenRefillZero();
+    int SyohosenRefillStrikeLine();
 }
