@@ -44,7 +44,8 @@ namespace Interactor.MedicalExamination
                     inputData.SinDate,
                     0,
                     inputData.DeleteConditon,
-                    inputData.RaiinNo
+                    inputData.RaiinNo,
+                    inputData.IsKarteInf
                     );
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
