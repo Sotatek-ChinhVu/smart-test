@@ -193,7 +193,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                  )).ToList();
             var validateDisease = ValidateDiseaseList(ptDiseaseModels);
 
-            if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess || validateFlowsheet != UpsertFlowSheetStatus.Success)
+            if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any() || validateFamilyList != ValidateFamilyListStatus.ValidateSuccess || validateFlowsheet != UpsertFlowSheetStatus.Valid && validateDisease != UpsertPtDiseaseListStatus.Valid)
             {
                 return new SaveMedicalOutputData(
                     SaveMedicalStatus.Failed,
@@ -747,7 +747,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 }
             }
         }
-        return UpsertFlowSheetStatus.Success;
+        return UpsertFlowSheetStatus.Valid;
     }
 
     private UpsertPtDiseaseListStatus ValidateDiseaseList(List<PtDiseaseModel> ptDiseases)
@@ -818,7 +818,7 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         if (status == DiseaseValidationStatus.InvalidIsDeleted)
             return UpsertPtDiseaseListStatus.PtInvalidIsDeleted;
 
-        return UpsertPtDiseaseListStatus.Success;
+        return UpsertPtDiseaseListStatus.Valid;
     }
 
 }

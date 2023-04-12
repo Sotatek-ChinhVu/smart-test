@@ -1,10 +1,12 @@
 ﻿using Domain.Models.PtCmtInf;
 using Domain.Models.SpecialNote.PatientInfo;
+using System.Text.Json.Serialization;
 
 namespace UseCase.SpecialNote.Save
 {
     public class PatientInfoItem
     {
+        [JsonConstructor]
         public PatientInfoItem(List<PtPregnancyItem> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<KensaInfDetailModel> kensaInfDetailModels)
         {
             PregnancyItems = pregnancyItems;

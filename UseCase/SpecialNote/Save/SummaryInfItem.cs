@@ -1,7 +1,10 @@
-﻿namespace UseCase.SpecialNote.Save
+﻿using System.Text.Json.Serialization;
+
+namespace UseCase.SpecialNote.Save
 {
     public class SummaryInfItem
     {
+        [JsonConstructor]
         public SummaryInfItem(long id, int hpId, long ptId, long seqNo, string text, string rtext)
         {
             Id = id;

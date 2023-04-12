@@ -50,11 +50,8 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                         transaction.Rollback();
                         return false;
                     }
-                    if (_nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels) == 0)
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
+
+                    _nextOrderRepository.Upsert(userId, hpId, ptId, rsvkrtOrderInfModels);
 
                     var specialNote = _specialNoteRepository.SaveSpecialNote(hpId, ptId, sinDate, summaryInfModel, importantNoteModel, patientInfoModel, userId);
                     if (!specialNote)
@@ -63,12 +60,7 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                         return false;
                     }
 
-                    var disease = _ptDiseaseRepository.Upsert(ptDiseaseModels, hpId, userId);
-                    if (!(disease.Count > 0))
-                    {
-                        transaction.Rollback();
-                        return false;
-                    }
+                    _ptDiseaseRepository.Upsert(ptDiseaseModels, hpId, userId);
 
                     _flowSheetRepository.UpsertTag(dataTags, hpId, userId);
                     _flowSheetRepository.UpsertCmt(dataCmts, hpId, userId);

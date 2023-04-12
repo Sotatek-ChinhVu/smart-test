@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.SpecialNote.ImportantNote
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class ImportantNoteModel
     {
+        [JsonConstructor]
         public ImportantNoteModel(List<PtAlrgyFoodModel> alrgyFoodItems, List<PtAlrgyElseModel> alrgyElseItems, List<PtAlrgyDrugModel> alrgyDrugItems, List<PtKioRekiModel> kioRekiItems, List<PtInfectionModel> infectionsItems, List<PtOtherDrugModel> otherDrugItems, List<PtOtcDrugModel> otcDrugItems, List<PtSuppleModel> suppleItems)
         {
             AlrgyFoodItems = alrgyFoodItems;

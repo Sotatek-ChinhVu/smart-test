@@ -1,5 +1,5 @@
-﻿using EmrCloudApi.Requests.Family;
-using UseCase.Diseases.Upsert;
+﻿using EmrCloudApi.Requests.Diseases;
+using EmrCloudApi.Requests.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
 using UseCase.NextOrder;
@@ -39,11 +39,11 @@ public class SaveMedicalRequest
 
     public List<FamilyRequestItem> FamilyList { get; set; } = new();
 
-    public List<NextOrderItem> NextOrderItems { get; private set; } = new();
+    public List<NextOrderItem> NextOrderItems { get; set; } = new();
 
-    public SpecialNoteItem SpecialNoteItem { get; private set; } = new();
+    public SpecialNoteItem SpecialNoteItem { get; set; } = new();
 
-    public List<UpsertPtDiseaseListInputItem> UpsertPtDiseaseListInputItems { get; private set; } = new();
+    public List<UpsertPtDiseaseListItem> DiseaseListItems { get; set; } = new();
 
-    public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; private set; } = new();
+    public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; set; } = new();
 }
