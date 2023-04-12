@@ -44,7 +44,6 @@ public class SanteiInfDetailModel
         Comment = string.Empty;
     }
 
-    [JsonConstructor]
     public SanteiInfDetailModel(long id, long ptId, string itemCd, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
     {
         Id = id;

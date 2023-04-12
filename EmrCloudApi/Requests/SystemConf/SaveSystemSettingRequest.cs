@@ -1,7 +1,4 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.MstItem;
-using Domain.Models.Santei;
-using Domain.Models.SystemConf;
+﻿using UseCase.SystemConf.SaveSystemSetting;
 
 namespace EmrCloudApi.Requests.SystemConf
 {
@@ -9,9 +6,9 @@ namespace EmrCloudApi.Requests.SystemConf
     {
         public int HpId { get; set; }
         public int UserId { get; set; }
-        public List<HpInfModel> HpInfs { get; set; } = new();
-        public List<SystemConfMenuModel> SystemConfMenus { get; set; } = new();
-        public List<SanteiInfDetailModel> SanteiInfs { get; set; } = new();
-        public List<KensaCenterMstModel> KensaCenters { get; set; } = new();
+        public List<HpInfItem> HpInfs { get; set; } = new();
+        public List<SystemConfMenuItem> SystemConfMenus { get; set; } = new();
+        public List<SanteiInfDetailItem> SanteiInfs { get; set; } = new();
+        public List<KensaCenterMstItem> KensaCenters { get; set; } = new();
     }
 }

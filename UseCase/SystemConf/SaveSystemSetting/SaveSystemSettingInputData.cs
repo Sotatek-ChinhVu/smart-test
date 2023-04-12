@@ -1,14 +1,10 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.MstItem;
-using Domain.Models.Santei;
-using Domain.Models.SystemConf;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.SystemConf.SaveSystemSetting
 {
     public class SaveSystemSettingInputData : IInputData<SaveSystemSettingOutputData>
     {
-        public SaveSystemSettingInputData(int hpId, int userId, List<HpInfModel> hpInfs, List<SystemConfMenuModel> systemConfMenus, List<SanteiInfDetailModel> santeiInfs, List<KensaCenterMstModel> kensaCenters)
+        public SaveSystemSettingInputData(int hpId, int userId, List<HpInfItem> hpInfs, List<SystemConfMenuItem> systemConfMenus, List<SanteiInfDetailItem> santeiInfs, List<KensaCenterMstItem> kensaCenters)
         {
             HpId = hpId;
             UserId = userId;
@@ -20,9 +16,9 @@ namespace UseCase.SystemConf.SaveSystemSetting
 
         public int HpId { get; private set; }
         public int UserId { get; private set; }
-        public List<HpInfModel> HpInfs { get; private set; }
-        public List<SystemConfMenuModel> SystemConfMenus { get; private set; }
-        public List<SanteiInfDetailModel> SanteiInfs { get; private set; }
-        public List<KensaCenterMstModel> KensaCenters { get; private set; }
+        public List<HpInfItem> HpInfs { get; private set; }
+        public List<SystemConfMenuItem> SystemConfMenus { get; private set; }
+        public List<SanteiInfDetailItem> SanteiInfs { get; private set; }
+        public List<KensaCenterMstItem> KensaCenters { get; private set; }
     }
 }

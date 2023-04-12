@@ -1,5 +1,4 @@
 ﻿using Helper.Constants;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.SystemConf;
 
@@ -30,7 +29,6 @@ public class SystemConfModel
         Biko = string.Empty;
     }
 
-    [JsonConstructor]
     public SystemConfModel(int hpId, int grpCd, int grpEdaNo, double val, string param, string biko, bool isUpdatePtRyosyo, ModelStatus systemSettingModelStatus)
     {
         HpId = hpId;

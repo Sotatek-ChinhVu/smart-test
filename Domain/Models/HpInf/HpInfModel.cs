@@ -41,7 +41,6 @@ public class HpInfModel
         OtherContacts = string.Empty;
     }
 
-    [JsonConstructor]
     public HpInfModel(int hpId, int startDate, string hpCd, string rousaiHpCd, string hpName, string receHpName, string kaisetuName, string postCd, int prefNo, string address1, string address2, string tel, string faxNo, string otherContacts, int updateId, ModelStatus hpInfModelStatus)
     {
         HpId = hpId;
@@ -60,12 +59,6 @@ public class HpInfModel
         OtherContacts = otherContacts;
         UpdateId = updateId;
         HpInfModelStatus = hpInfModelStatus;
-    }
-
-    public HpInfModel(int hpId, int startDate)
-    {
-        HpId = hpId;
-        StartDate = startDate;
     }
 
     public int HpId { get; private set; }

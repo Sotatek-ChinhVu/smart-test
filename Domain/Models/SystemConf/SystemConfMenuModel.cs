@@ -92,7 +92,6 @@ namespace Domain.Models.SystemConf
             SystemGenerationConfs = new();
         }
 
-        [JsonConstructor]
         public SystemConfMenuModel(List<SystemGenerationConfModel> systemGenerationConfs, SystemConfModel systemConf)
         {
             MenuName = string.Empty;

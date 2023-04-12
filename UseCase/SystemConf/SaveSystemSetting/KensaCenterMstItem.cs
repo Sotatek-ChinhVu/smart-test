@@ -1,21 +1,10 @@
 ﻿using Helper.Constants;
-using System.Text.Json.Serialization;
 
-namespace Domain.Models.MstItem
+namespace UseCase.SystemConf.SaveSystemSetting
 {
-    public class KensaCenterMstModel
+    public class KensaCenterMstItem
     {
-        public KensaCenterMstModel(long id, int hpId, string centerCd, string centerName, int primaryKbn, int sortNo)
-        {
-            Id = id;
-            HpId = hpId;
-            CenterCd = centerCd;
-            CenterName = centerName;
-            PrimaryKbn = primaryKbn;
-            SortNo = sortNo;
-        }
-
-        public KensaCenterMstModel(long id, int hpId, string centerCd, string centerName, int primaryKbn, int sortNo, ModelStatus kensaCenterMstModelStatus)
+        public KensaCenterMstItem(long id, int hpId, string centerCd, string centerName, int primaryKbn, int sortNo, ModelStatus kensaCenterMstModelStatus)
         {
             Id = id;
             HpId = hpId;
