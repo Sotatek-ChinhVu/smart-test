@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Santei;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -360,6 +361,74 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                                 x.StartDate,
                                                 x.EndDate
                               )).ToList();
+    }
+
+    public bool SaveAutoSanteiMst(int hpId, int userId, List<SanteiInfDetailModel> santeiMst)
+    {
+        var addedGenModels = new List<SanteiInfDetailModel>();
+        var updatedGenModels = new List<SanteiInfDetailModel>();
+        var deletedGenModels = new List<SanteiInfDetailModel>();
+
+        foreach (var modelVal in santeiMst)
+        {
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Added && !modelVal.CheckDefaultValue())
+            {
+                addedGenModels.Add(modelVal);
+            }
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Modified)
+            {
+                updatedGenModels.Add(modelVal);
+            }
+            if (modelVal.AutoSanteiMstModelStatus == ModelStatus.Deleted)
+            {
+                deletedGenModels.Add(modelVal);
+            }
+        }
+
+        if (!addedGenModels.Any() && !updatedGenModels.Any() && !deletedGenModels.Any()) return true;
+
+        if (deletedGenModels.Any())
+        {
+            var modelsToDelete = TrackingDataContext.AutoSanteiMsts.AsEnumerable().Where(x => deletedGenModels.Any(d => d.Id == x.Id && x.HpId == hpId && d.ItemCd == x.ItemCd)).ToList();
+            TrackingDataContext.AutoSanteiMsts.RemoveRange(modelsToDelete);
+        }
+
+        if (updatedGenModels.Any())
+        {
+            foreach (var model in updatedGenModels)
+            {
+                TrackingDataContext.AutoSanteiMsts.Update(new AutoSanteiMst()
+                {
+                    HpId = hpId,
+                    ItemCd = model.ItemCd,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                    Id = model.Id
+                });
+            }
+        }
+
+        if (addedGenModels.Any())
+        {
+            foreach (var model in addedGenModels)
+            {
+                TrackingDataContext.AutoSanteiMsts.Add(new AutoSanteiMst()
+                {
+                    HpId = hpId,
+                    ItemCd = model.ItemCd,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId
+                });
+            }
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()

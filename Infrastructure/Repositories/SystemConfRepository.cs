@@ -1,8 +1,9 @@
-﻿using Domain.Models.HpInf;
-using Domain.Models.SystemConf;
+﻿using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using System.Collections;
@@ -339,5 +340,160 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
             return new();
         }
         return centerCds;
+    }
+
+    public bool SaveSystemGenerationConf(int userId, List<SystemConfMenuModel> systemConfMenuModels)
+    {
+        var addedGenModels = new List<SystemGenerationConfModel>();
+        var updatedGenModels = new List<SystemGenerationConfModel>();
+        var deletedGenModels = new List<SystemGenerationConfModel>();
+        var listSystemConfMenuModels = systemConfMenuModels.Where(u => u.SystemGenerationConfs != null);
+
+        foreach (var modelVal in listSystemConfMenuModels)
+        {
+            foreach (var modelGenVal in modelVal.SystemGenerationConfs)
+            {
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Added && !modelGenVal.CheckDefaultValue())
+                {
+                    addedGenModels.Add(modelGenVal);
+                }
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Modified)
+                {
+                    updatedGenModels.Add(modelGenVal);
+                }
+                if (modelGenVal.SystemGenerationConfStatus == ModelStatus.Deleted)
+                {
+                    deletedGenModels.Add(modelGenVal);
+                }
+            }
+        }
+
+        if (!addedGenModels.Any() && !updatedGenModels.Any() && !deletedGenModels.Any()) return true;
+
+        if (deletedGenModels.Any())
+        {
+            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.AsEnumerable().Where(x => deletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo && d.Id == x.Id)).ToList();
+            TrackingDataContext.SystemGenerationConfs.RemoveRange(modelsToDelete);
+        }
+
+        if (updatedGenModels.Any())
+        {
+            foreach (var model in updatedGenModels)
+            {
+                TrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
+                {
+                    HpId = model.HpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    UpdateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    Id = model.Id
+                });
+            }
+        }
+
+        foreach (var model in addedGenModels)
+        {
+            TrackingDataContext.SystemGenerationConfs.Add(new SystemGenerationConf()
+            {
+                HpId = model.HpId,
+                GrpCd = model.GrpCd,
+                GrpEdaNo = model.GrpEdaNo,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                Val = model.Val,
+                Param = model.Param,
+                Biko = model.Biko,
+                CreateId = userId,
+                CreateDate = CIUtil.GetJapanDateTimeNow()
+            });
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public bool SaveSystemSetting(int hpId, int userId, List<SystemConfMenuModel> SystemConfMenuModels)
+    {
+        var systemSettingModels = SystemConfMenuModels.Select(u => u.SystemConf);
+
+        var addedSettingModels = systemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Added).ToList();
+        var updatedSettingModels = systemSettingModels.Where(k => k.SystemSettingModelStatus == ModelStatus.Modified).ToList();
+
+        if (!addedSettingModels.Any() && !updatedSettingModels.Any()) return true;
+
+        if (updatedSettingModels.Any())
+        {
+            foreach (var model in updatedSettingModels)
+            {
+                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                {
+                    HpId = hpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                });
+
+                if (model.GrpCd == 93002 &&
+                    model.GrpEdaNo == 0 &&
+                    model.IsUpdatePtRyosyo) // Check seting 明細書
+                {
+                    UpdatePtRyosyoDetail(userId, model);
+                }
+            }
+        }
+
+        if (addedSettingModels.Any())
+        {
+            foreach (var model in addedSettingModels)
+            {
+                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                {
+                    HpId = hpId,
+                    GrpCd = model.GrpCd,
+                    GrpEdaNo = model.GrpEdaNo,
+                    Val = model.Val,
+                    Param = model.Param,
+                    Biko = model.Biko,
+                    CreateDate = CIUtil.GetJapanDateTimeNow(),
+                    CreateId = userId,
+                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                    UpdateId = userId,
+                });
+
+                if (model.GrpCd == 93002 &&
+                    model.GrpEdaNo == 0 &&
+                    model.IsUpdatePtRyosyo) // Check seting 明細書
+                {
+                    UpdatePtRyosyoDetail(userId, model);
+                }
+            }
+        }
+
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    private void UpdatePtRyosyoDetail(int userId, SystemConfModel model)
+    {
+        var query = from PtInfs in TrackingDataContext.PtInfs
+                    where PtInfs.HpId == model.HpId && PtInfs.IsRyosyoDetail != model.Val.AsInteger()
+                    select PtInfs;
+
+        if (!query.Any()) return;
+
+        foreach (var item in query)
+        {
+            item.IsRyosyoDetail = model.Val.AsInteger();
+            item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            item.UpdateId = userId;
+        }
     }
 }

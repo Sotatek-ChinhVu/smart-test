@@ -71,5 +71,7 @@ namespace Domain.Models.MstItem
         string GetMaxItemCdByTypeForAdd(string startWithstr);
 
         int GetMinJihiSbtMst(int hpId);
+
+        bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
     }
 }
