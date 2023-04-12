@@ -389,7 +389,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         if (deletedGenModels.Any())
         {
-            var modelsToDelete = TrackingDataContext.AutoSanteiMsts.Where(x => deletedGenModels.Any(d => d.Id == x.Id && x.HpId == hpId && d.ItemCd == x.ItemCd));
+            var modelsToDelete = TrackingDataContext.AutoSanteiMsts.AsEnumerable().Where(x => deletedGenModels.Any(d => d.Id == x.Id && x.HpId == hpId && d.ItemCd == x.ItemCd)).ToList();
             TrackingDataContext.AutoSanteiMsts.RemoveRange(modelsToDelete);
         }
 

@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
 
             if (deletedModels.Any())
             {
-                var modelsToDelete = TrackingDataContext.HpInfs.Where(x => deletedModels.Any(d => d.HpId == x.HpId && d.StartDate == x.StartDate));
+                var modelsToDelete = TrackingDataContext.HpInfs.AsEnumerable().Where(x => deletedModels.Any(d => d.HpId == x.HpId && d.StartDate == x.StartDate)).ToList();
                 TrackingDataContext.HpInfs.RemoveRange(modelsToDelete);
             }
 

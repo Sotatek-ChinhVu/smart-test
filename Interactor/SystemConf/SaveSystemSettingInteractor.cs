@@ -40,6 +40,7 @@ namespace Interactor.SystemConf
                 {
                     _santeiInfRepository.SaveAutoSanteiMst(inputData.HpId, inputData.UserId, inputData.SanteiInfs);
                 }
+
                 if (inputData.KensaCenters.Any())
                 {
                     _mstItemRepository.SaveKensaCenterMst(inputData.UserId, inputData.KensaCenters);

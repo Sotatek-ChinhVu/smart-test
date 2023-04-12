@@ -62,6 +62,12 @@ public class HpInfModel
         HpInfModelStatus = hpInfModelStatus;
     }
 
+    public HpInfModel(int hpId, int startDate)
+    {
+        HpId = hpId;
+        StartDate = startDate;
+    }
+
     public int HpId { get; private set; }
 
     public int StartDate { get; private set; }

@@ -372,7 +372,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
 
         if (deletedGenModels.Any())
         {
-            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.Where(x => deletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo && d.Id == x.Id));
+            var modelsToDelete = TrackingDataContext.SystemGenerationConfs.AsEnumerable().Where(x => deletedGenModels.Any(d => d.HpId == x.HpId && d.GrpCd == x.GrpCd && d.GrpEdaNo == x.GrpEdaNo && d.Id == x.Id)).ToList();
             TrackingDataContext.SystemGenerationConfs.RemoveRange(modelsToDelete);
         }
 
