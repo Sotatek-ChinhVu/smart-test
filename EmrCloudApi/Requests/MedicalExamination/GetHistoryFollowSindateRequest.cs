@@ -20,6 +20,6 @@
 
         public long RaiinNo { get; set; }
 
-        public bool IsKarteInf { get; set; }
+        public byte Flag { get; set; }
     }
 }

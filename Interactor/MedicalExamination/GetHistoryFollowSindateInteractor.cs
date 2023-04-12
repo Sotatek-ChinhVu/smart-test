@@ -31,6 +31,8 @@ namespace Interactor.MedicalExamination
             _patientInforRepository = patientInforRepository;
         }
 
+        //flag == 0 : get for accounting
+        //flag == 1 : get for one rp in todayorder
         public GetHistoryFollowSindateOutputData Handle(GetHistoryFollowSindateInputData inputData)
         {
             try
@@ -45,7 +47,7 @@ namespace Interactor.MedicalExamination
                     0,
                     inputData.DeleteConditon,
                     inputData.RaiinNo,
-                    inputData.IsKarteInf
+                    inputData.Flag
                     );
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
@@ -63,7 +65,7 @@ namespace Interactor.MedicalExamination
                 {
                     var karteInfs = history.KarteInfModels;
                     var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
-                    var historyKarteOdrRaiin = !inputData.IsKarteInf ? new HistoryKarteOdrRaiinItem
+                    var historyKarteOdrRaiin = !(inputData.Flag == 1) ? new HistoryKarteOdrRaiinItem
                         (
                             history.RaiinNo,
                             history.SinDate,
