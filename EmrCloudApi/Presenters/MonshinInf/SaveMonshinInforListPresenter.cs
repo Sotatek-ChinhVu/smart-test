@@ -25,6 +25,7 @@ namespace EmrCloudApi.Presenters.MonshinInf
             SaveMonshinStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             SaveMonshinStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
             SaveMonshinStatus.InValidRaiinNo => ResponseMessage.InvalidRaiinNo,
+            SaveMonshinStatus.InValidKbn => ResponseMessage.InvalidKbnId,
             SaveMonshinStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
