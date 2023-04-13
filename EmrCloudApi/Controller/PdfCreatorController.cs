@@ -88,9 +88,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
         var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-        var data1 = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-        var data2 = JsonSerializer.Serialize(data);
-        return await RenderPdf(data, ReportType.Common);
+        return await RenderPdf(data, ReportType.OutDug);
     }
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
@@ -108,6 +106,7 @@ public class PdfCreatorController : ControllerBase
             ReportType.Karte1 => "reporting-fm-karte1",
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
+            ReportType.OutDug => "reporting-out-drug",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
 
