@@ -1,6 +1,10 @@
 ﻿using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 using Helper.Enum;
+using Helper.Extension;
+using Microsoft.Extensions.Configuration;
+using System.Runtime.Serialization;
 using UseCase.MstItem.GetSetDataTenMst;
 
 namespace Interactor.MstItem
@@ -19,21 +23,28 @@ namespace Interactor.MstItem
             try
             {
                 if(inputData.HpId <= 0)
-                {
+                    return new GetSetDataTenMstOutputData(GetSetDataTenMstStatus.InvalidHpId, ObjectExtension.CreateInstance<SetDataTenMstOriginModel>());
 
-                }
-
-                if (string.IsNullOrEmpty(inputData.ItemSelected.ItemCd))
-                {
-
-                }
+                if (string.IsNullOrEmpty(inputData.ItemCd))
+                    return new GetSetDataTenMstOutputData(GetSetDataTenMstStatus.InvalidItemCd, ObjectExtension.CreateInstance<SetDataTenMstOriginModel>());
 
                 var categoryList = TenMstMaintenanceUtil.InitCategoryList();
-                ItemTypeEnums itemType = TenMstMaintenanceUtil.GetItemType(inputData.ItemSelected.ItemCd);
+                ItemTypeEnums itemType = TenMstMaintenanceUtil.GetItemType(inputData.ItemCd);
                 FitlerCategoryListByItemType(itemType, ref categoryList);
 
+                SetDataTenMstOriginModel result = ReloadSubVMSelectedItem(inputData.ItemCd, 
+                                                                          inputData.JiCd,
+                                                                          inputData.IpnNameCd, 
+                                                                          inputData.SanteiItemCd,
+                                                                          inputData.AgekasanCd1Note, 
+                                                                          inputData.AgekasanCd2Note,
+                                                                          inputData.AgekasanCd3Note, 
+                                                                          inputData.AgekasanCd4Note, 
+                                                                          categoryList, 
+                                                                          inputData.HpId, 
+                                                                          inputData.SinDate);
 
-                throw new NotImplementedException();
+                return new GetSetDataTenMstOutputData(GetSetDataTenMstStatus.Successful, result);
             }
             finally
             {
@@ -140,14 +151,20 @@ namespace Interactor.MstItem
         }
 
 
-        private void ReloadSubVMSelectedItem(TenMstOriginModel tenMstOrigin, List<CategoryItemModel> listCategories, int hpId, int sinDate)
+        private SetDataTenMstOriginModel ReloadSubVMSelectedItem(string itemCd, string jiCd , string ipnNameCd, string santeiItemCd, string agekasanCd1, string agekasanCd2, string agekasanCd3, string agekasanCd4, List<CategoryItemModel> listCategories, int hpId, int sinDate)
         {
             List<CategoryItemModel> visibleList = listCategories.FindAll(item => item.Visibility);
 
-            BasicSettingTabModel basicSettingTab = Activator.CreateInstance<BasicSettingTabModel>();
-            IjiSettingTabModel ijiSettingTab = Activator.CreateInstance<IjiSettingTabModel>();
-            PrecriptionSettingTabModel precriptionSettingTab = Activator.CreateInstance<PrecriptionSettingTabModel>();
-            UsageSettingTabModel usageSettingTab = Activator.CreateInstance<UsageSettingTabModel>();
+            BasicSettingTabModel basicSettingTab = ObjectExtension.CreateInstance<BasicSettingTabModel>();
+            IjiSettingTabModel ijiSettingTab = ObjectExtension.CreateInstance<IjiSettingTabModel>();
+            PrecriptionSettingTabModel precriptionSettingTab = ObjectExtension.CreateInstance<PrecriptionSettingTabModel>();
+            UsageSettingTabModel usageSettingTab = ObjectExtension.CreateInstance<UsageSettingTabModel>();
+            DrugInfomationTabModel drugInfomationTab = ObjectExtension.CreateInstance<DrugInfomationTabModel>();
+            TeikyoByomeiTabModel teikyoByomeiTab = ObjectExtension.CreateInstance<TeikyoByomeiTabModel>();
+            SanteiKaishuTabModel santeiKaishuTab = ObjectExtension.CreateInstance<SanteiKaishuTabModel>();
+            HaihanTabModel haihanTab = ObjectExtension.CreateInstance<HaihanTabModel>();
+            HoukatsuTabModel houkatsuTab = ObjectExtension.CreateInstance<HoukatsuTabModel>();
+            CombinedContraindicationTabModel combinedContraindicationTab = ObjectExtension.CreateInstance<CombinedContraindicationTabModel>();
 
             // Update function
             foreach (CategoryItemModel category in visibleList)
@@ -155,83 +172,132 @@ namespace Interactor.MstItem
                 switch (category.CategoryItemEnums)
                 {
                     case CategoryItemEnums.BasicSetting:
-                        basicSettingTab = new BasicSettingTabModel(_mstItemRepository.GetListCmtKbnMstModelByItemCd(hpId, tenMstOrigin.ItemCd));
+                        basicSettingTab = new BasicSettingTabModel(_mstItemRepository.GetListCmtKbnMstModelByItemCd(hpId, itemCd));
                         break;
                     case CategoryItemEnums.IjiSetting:
-                        ijiSettingTab = new IjiSettingTabModel(LoadIjiSetting(ref tenMstOrigin, hpId, sinDate));
+                        ijiSettingTab = LoadIjiSetting(santeiItemCd , agekasanCd1, agekasanCd2 ,agekasanCd3 ,agekasanCd4, hpId, sinDate);
                         break;
                     case CategoryItemEnums.PrecriptionSetting:
-                        precriptionSettingTab = LoadPrecriptionSetting(tenMstOrigin, hpId, sinDate);
+                        precriptionSettingTab = LoadPrecriptionSetting(itemCd, jiCd, ipnNameCd, hpId, sinDate);
                         break;
                     case CategoryItemEnums.UsageSetting:
-                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(tenMstOrigin.ItemCd));
+                        usageSettingTab = new UsageSettingTabModel(_mstItemRepository.GetYohoInfMstPrefixByItemCd(itemCd));
                         break;
                     case CategoryItemEnums.SpecialMaterialSetting:
                         break;
                     case CategoryItemEnums.DrugInfomation:
-                        DrugInfomationRelateVM.LoadData(selectedModel);
-                        if (!IsEnableViewSetting) DrugInfomationRelateVM.IsEnableViewSetting = false;
+                        drugInfomationTab = LoadDrugInfomation(itemCd, hpId);
                         break;
                     case CategoryItemEnums.TeikyoByomei:
-                        TeikyoByomeiVM.LoadData(selectedModel, IsEditMode);
-                        if (!IsEnableViewSetting) TeikyoByomeiVM.IsEnableViewSetting = false;
+                        teikyoByomeiTab = LoadTeikyoByomeiTab(itemCd, hpId);
                         break;
                     case CategoryItemEnums.SanteiKaishu:
-                        SanteiKaishuVM.LoadData(selectedModel, IsEditMode);
-                        if (!IsEnableViewSetting) SanteiKaishuVM.IsEnableViewSetting = false;
+                        santeiKaishuTab = LoadSanteiKaishuTab(itemCd, hpId);
                         break;
                     case CategoryItemEnums.Haihan:
-                        HaihanVM.LoadData(selectedModel, IsEditMode);
-                        if (!IsEnableViewSetting) HaihanVM.IsEnableViewSetting = false;
+                        haihanTab = LoadHaihanTab(itemCd, hpId);
                         break;
                     case CategoryItemEnums.Houkatsu:
-                        HokatsuVM.LoadData(selectedModel, SinDate);
-                        if (!IsEnableViewSetting) HokatsuVM.IsEnableViewSetting = false;
+                        houkatsuTab = LoadHoukatsuTab(itemCd, hpId, sinDate);
                         break;
                     case CategoryItemEnums.CombinedContraindication:
-                        CombinedContraindicationVM.LoadData(selectedModel, IsEditMode, SinDate);
-                        if (!IsEnableViewSetting) CombinedContraindicationVM.IsEnableViewSetting = false;
+                        combinedContraindicationTab = LoadCombinedContraindication(itemCd, sinDate);
                         break;
                     case CategoryItemEnums.RenkeiSetting:
-                        RenkeiSettingVM.LoadData(selectedModel, IsEditMode);
-                        if (!IsEnableViewSetting) RenkeiSettingVM.IsEnableViewSetting = false;
                         break;
                 }
             }
-            HeaderTenMstVM.LoadData(selectedModel, IsEditMode);
-            if (!IsEnableViewSetting) HeaderTenMstVM.IsEnableViewSetting = false;
-            selectedModel.PropertyChanged -= SelectedItemModel_PropertyChanged;
-            selectedModel.PropertyChanged += SelectedItemModel_PropertyChanged;
+
+            return new SetDataTenMstOriginModel(basicSettingTab, 
+                                                ijiSettingTab, 
+                                                precriptionSettingTab, 
+                                                usageSettingTab, 
+                                                drugInfomationTab, 
+                                                teikyoByomeiTab, 
+                                                santeiKaishuTab,
+                                                haihanTab, 
+                                                houkatsuTab, 
+                                                combinedContraindicationTab);
         }
 
-        private string LoadIjiSetting(ref TenMstOriginModel tenMstOrigin, int hpId, int sinDate)
+        private IjiSettingTabModel LoadIjiSetting(string santeiItemCd, string agekasanCd1, string agekasanCd2, string agekasanCd3, string agekasanCd4, int hpId, int sinDate)
         {
-            tenMstOrigin.SetAgekasanCd1Note(_mstItemRepository.GetTenMstOriginModel(hpId, tenMstOrigin.AgekasanCd1, sinDate).Name);
-            tenMstOrigin.SetAgekasanCd2Note(_mstItemRepository.GetTenMstOriginModel(hpId, tenMstOrigin.AgekasanCd2, sinDate).Name);
-            tenMstOrigin.SetAgekasanCd3Note(_mstItemRepository.GetTenMstOriginModel(hpId, tenMstOrigin.AgekasanCd3, sinDate).Name);
-            tenMstOrigin.SetAgekasanCd4Note(_mstItemRepository.GetTenMstOriginModel(hpId, tenMstOrigin.AgekasanCd4, sinDate).Name);
+            string searchItemName = string.Empty;
+            string agekasanCd1Note = _mstItemRepository.GetTenMstOriginModel(hpId, agekasanCd1, sinDate).Name;
+            string agekasanCd2Note = _mstItemRepository.GetTenMstOriginModel(hpId, agekasanCd2, sinDate).Name;
+            string agekasanCd3Note = _mstItemRepository.GetTenMstOriginModel(hpId, agekasanCd3, sinDate).Name;
+            string agekasanCd4Note = _mstItemRepository.GetTenMstOriginModel(hpId, agekasanCd4, sinDate).Name;
 
-            if (!string.IsNullOrEmpty(tenMstOrigin.SanteiItemCd) && tenMstOrigin.SanteiItemCd != "9999999999")
+            if (!string.IsNullOrEmpty(santeiItemCd) && santeiItemCd != "9999999999")
             {
-                return _mstItemRepository.GetTenMstName(hpId, tenMstOrigin.SanteiItemCd);
+                searchItemName = _mstItemRepository.GetTenMstName(hpId, santeiItemCd);
             }
-
-            return string.Empty;
+            return new IjiSettingTabModel(searchItemName, agekasanCd1Note, agekasanCd2Note, agekasanCd3Note, agekasanCd4Note);
         }
 
-        private PrecriptionSettingTabModel LoadPrecriptionSetting(TenMstOriginModel tenMstOrigin, int hpId, int sinDate)
+        private PrecriptionSettingTabModel LoadPrecriptionSetting(string itemCd, string yiCd, string ipnNameCd, int hpId, int sinDate)
         {
-            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(tenMstOrigin.YjCd);
+            List<M10DayLimitModel> m10DayLimits = _mstItemRepository.GetM10DayLimitModels(yiCd);
+            List<IpnMinYakkaMstModel> ipnMinYakkaMsts = _mstItemRepository.GetIpnMinYakkaMstModels(hpId, ipnNameCd);
+            List<DrugDayLimitModel> drugDayLimits = _mstItemRepository.GetDrugDayLimitModels(hpId, itemCd);
 
-            List<IpnMinYakkaMstModel> ipnMinYakkaMsts = _mstItemRepository.GetIpnMinYakkaMstModels(hpId, tenMstOrigin.IpnNameCd);
-
-            List<DrugDayLimitModel> drugDayLimits = _mstItemRepository.GetDrugDayLimitModels(hpId, tenMstOrigin.ItemCd);
-
-            DosageMstModel dosageMst = _mstItemRepository.GetDosageMstModel(hpId, tenMstOrigin.ItemCd);
-
-            IpnNameMstModel ipnNameMst = _mstItemRepository.GetIpnNameMstModel(hpId, tenMstOrigin.IpnNameCd, sinDate);
+            DosageMstModel dosageMst = _mstItemRepository.GetDosageMstModel(hpId, itemCd);
+            IpnNameMstModel ipnNameMst = _mstItemRepository.GetIpnNameMstModel(hpId, ipnNameCd, sinDate);
 
             return new PrecriptionSettingTabModel(m10DayLimits, ipnMinYakkaMsts, drugDayLimits, dosageMst, ipnNameMst);
+        }
+
+        private DrugInfomationTabModel LoadDrugInfomation(string itemCd, int hpId) 
+        {
+            List<DrugInfModel> drugInfs = _mstItemRepository.GetDrugInfByItemCd(hpId, itemCd);
+
+            PiImageModel zaiImage = _mstItemRepository.GetImagePiByItemCd(hpId, itemCd, 0);
+            PiImageModel houImage = _mstItemRepository.GetImagePiByItemCd(hpId, itemCd, 1);
+
+            return new DrugInfomationTabModel(drugInfs, zaiImage, houImage);
+        }
+
+
+        private TeikyoByomeiTabModel LoadTeikyoByomeiTab(string itemCd, int hpId)
+        {
+            List<TeikyoByomeiModel> teikyoByomeis = _mstItemRepository.GetTeikyoByomeiModel(hpId, itemCd);
+
+            TekiouByomeiMstExcludedModel tekiouByomeiMstExcluded = _mstItemRepository.GetTekiouByomeiMstExcludedModelByItemCd(hpId, itemCd);
+
+            return new TeikyoByomeiTabModel(teikyoByomeis, tekiouByomeiMstExcluded);
+        }
+
+
+        private SanteiKaishuTabModel LoadSanteiKaishuTab(string itemCd, int hpId)
+        {
+            List<DensiSanteiKaisuModel> listDensiSanteis = _mstItemRepository.GetDensiSanteiKaisuByItemCd(hpId, itemCd);
+            return new SanteiKaishuTabModel(listDensiSanteis);
+        }
+
+        private HaihanTabModel LoadHaihanTab(string itemCd, int hpId)
+        {
+            List<DensiHaihanModel> densiHaihanModel1s = _mstItemRepository.GetDensiHaihans(hpId, itemCd, 2);
+            List<DensiHaihanModel> densiHaihanModel2s = _mstItemRepository.GetDensiHaihans(hpId, itemCd, 1);
+            List<DensiHaihanModel> densiHaihanModel3s = _mstItemRepository.GetDensiHaihans(hpId, itemCd, 3);
+
+            return new HaihanTabModel(densiHaihanModel1s, densiHaihanModel2s, densiHaihanModel3s);
+        }
+
+        private HoukatsuTabModel LoadHoukatsuTab(string itemCd, int hpId, int sinDate)
+        {
+            List<DensiHoukatuModel> listDensiHoukatuModels = _mstItemRepository.GetListDensiHoukatuByItemCd(hpId, itemCd, sinDate);
+            List<DensiHoukatuGrpModel> listDensiHoukatuGrpModels = _mstItemRepository.GetListDensiHoukatuGrpByItemCd(hpId, itemCd, sinDate);
+
+            List<string> listGroupNo = listDensiHoukatuModels.GroupBy(x => x.HoukatuGrpNo).Select(x => x.First()).Select(x => x.HoukatuGrpNo).ToList();
+            List<DensiHoukatuModel> listDensiHoukatuMasters = _mstItemRepository.GetListDensiHoukatuMaster(hpId, listGroupNo);
+
+            return new HoukatsuTabModel(listDensiHoukatuModels, listDensiHoukatuGrpModels, listDensiHoukatuMasters);
+        }
+
+        private CombinedContraindicationTabModel LoadCombinedContraindication(string itemCd, int sinDate)
+        {
+            List<CombinedContraindicationModel> combinedContraindications = _mstItemRepository.GetContraindicationModelList(sinDate, itemCd);
+            return new CombinedContraindicationTabModel(combinedContraindications);
         }
     }
 }

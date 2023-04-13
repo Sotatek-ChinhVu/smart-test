@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Models.FlowSheet;
 using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 
 namespace Domain.Models.MstItem
 {
@@ -92,5 +93,23 @@ namespace Domain.Models.MstItem
         string GetYohoInfMstPrefixByItemCd(string itemCd);
 
         List<DrugInfModel> GetDrugInfByItemCd(int hpId, string itemCd);
+
+        PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType);
+
+        List<TeikyoByomeiModel> GetTeikyoByomeiModel(int hpId, string itemCd, bool isFromCheckingView = false);
+
+        TekiouByomeiMstExcludedModel GetTekiouByomeiMstExcludedModelByItemCd(int hpId, string itemCd);
+
+        List<DensiSanteiKaisuModel> GetDensiSanteiKaisuByItemCd(int hpId, string itemCd);
+
+        List<DensiHaihanModel> GetDensiHaihans(int hpId, string itemCd, int haihanKbn);
+
+        List<DensiHoukatuModel> GetListDensiHoukatuByItemCd(int hpId, string itemCd, int sinDate);
+
+        List<DensiHoukatuGrpModel> GetListDensiHoukatuGrpByItemCd(int hpId, string itemCd, int sinDate);
+
+        List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo);
+
+        List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
     }
 }

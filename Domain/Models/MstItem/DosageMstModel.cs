@@ -26,6 +26,11 @@
             ItemCd = itemCd;
         }
 
+        public DosageMstModel()
+        {
+            ItemCd = string.Empty;
+        }
+
         public bool CheckDefaultValue()
         {
             return

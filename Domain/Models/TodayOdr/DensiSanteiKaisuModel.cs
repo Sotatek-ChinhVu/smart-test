@@ -2,6 +2,27 @@
 {
     public class DensiSanteiKaisuModel
     {
+        public DensiSanteiKaisuModel(int id, int hpId, string itemCd, int unitCd, int maxCount, int spJyoken, int startDate, int endDate, long seqNo, int userSetting, int targetKbn, int termCount, int termSbt, int isInvalid, int itemGrpCd, bool isModified, bool isDeleted)
+        {
+            Id = id;
+            HpId = hpId;
+            ItemCd = itemCd;
+            UnitCd = unitCd;
+            MaxCount = maxCount;
+            SpJyoken = spJyoken;
+            StartDate = startDate;
+            EndDate = endDate;
+            SeqNo = seqNo;
+            UserSetting = userSetting;
+            TargetKbn = targetKbn;
+            TermCount = termCount;
+            TermSbt = termSbt;
+            IsInvalid = isInvalid;
+            ItemGrpCd = itemGrpCd;
+            IsModified = isModified;
+            IsDeleted = isDeleted;
+        }
+
         public DensiSanteiKaisuModel(int id, int hpId, string itemCd, int unitCd, int maxCount, int spJyoken, int startDate, int endDate, long seqNo, int userSetting, int targetKbn, int termCount, int termSbt, int isInvalid, int itemGrpCd)
         {
             Id = id;
@@ -50,5 +71,9 @@
         public int IsInvalid { get; private set; }
 
         public long ItemGrpCd { get; private set; }
+
+        public bool IsModified { get; private set; }
+
+        public bool IsDeleted { get; private set; }
     }
 }

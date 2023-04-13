@@ -21,6 +21,11 @@
             IpnName = string.Empty;
         }
 
+        public IpnNameMstModel()
+        {
+            IpnNameCd = string.Empty;
+            IpnName = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID

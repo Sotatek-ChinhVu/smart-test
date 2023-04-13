@@ -3,14 +3,15 @@ using Domain.Constant;
 using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Enum;
 using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -19,6 +20,8 @@ namespace Infrastructure.Repositories
         public MstItemRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
+
+        private readonly List<int> _HoukatuTermExclude = new List<int> { 0, 5, 6 };
 
         public List<DosageDrugModel> GetDosages(List<string> yjCds)
         {
@@ -2078,7 +2081,7 @@ namespace Infrastructure.Repositories
                 return new DosageMstModel(hpId, ItemCd);
             else
             {
-                return Mapper.Map(model, Activator.CreateInstance<DosageMstModel>());
+                return Mapper.Map(model, new DosageMstModel());
             }
         }
 
@@ -2095,7 +2098,7 @@ namespace Infrastructure.Repositories
                 return new IpnNameMstModel(hpId);
             else
             {
-                return Mapper.Map(model, Activator.CreateInstance<IpnNameMstModel>());
+                return Mapper.Map(model, new IpnNameMstModel());
             }
         }
 
@@ -2124,6 +2127,487 @@ namespace Infrastructure.Repositories
             result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false));
             result.Add(new DrugInfModel(precautions.HpId, precautions.ItemCd, precautions.InfKbn, precautions.SeqNo, precautions.DrugInfo ?? string.Empty, precautions.IsDeleted, false));
             return result;
+        }
+
+
+        public PiImageModel GetImagePiByItemCd(int hpId ,string itemCd, int imageType)
+        {
+            var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
+            if (piImage != null)
+            {
+                return new PiImageModel(piImage.HpId, piImage.ImageType, piImage.ItemCd, piImage.FileName ?? string.Empty, false, false);
+            }
+            else
+            {
+                return new PiImageModel(hpId, itemCd, imageType);
+            }
+        }
+
+
+        public List<TeikyoByomeiModel> GetTeikyoByomeiModel(int hpId, string itemCd, bool isFromCheckingView = false)
+        {
+            var result = new List<TeikyoByomeiModel>();
+
+            var teikyoByomeis = NoTrackingDataContext.TekiouByomeiMsts.Where(
+                    (x) => x.HpId == hpId && x.ItemCd == itemCd && (!isFromCheckingView || x.IsInvalidTokusyo != 1));
+
+
+            var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where((x) => x.HpId == Session.HospitalID);
+
+            var query = from teikyoByomei in teikyoByomeis
+                        join byomeiMst in byomeiMsts on
+                        teikyoByomei.ByomeiCd equals byomeiMst.ByomeiCd
+                        select new
+                        {
+                            TeikyoByomei = teikyoByomei,
+                            ByomeiMst = byomeiMst
+                        };
+
+            result = query.AsEnumerable()
+                          .Select(x => new TeikyoByomeiModel(x.ByomeiMst.SikkanCd, 
+                                                             x.TeikyoByomei.HpId, 
+                                                             x.TeikyoByomei.ItemCd, 
+                                                             x.TeikyoByomei.ByomeiCd,
+                                                             x.TeikyoByomei.StartYM,
+                                                             x.TeikyoByomei.EndYM, 
+                                                             x.TeikyoByomei.IsInvalid, 
+                                                             x.TeikyoByomei.IsInvalidTokusyo,
+                                                             x.TeikyoByomei.EditKbn, 
+                                                             x.TeikyoByomei.SystemData, 
+                                                             x.ByomeiMst.Byomei ?? string.Empty, 
+                                                             x.ByomeiMst.KanaName1 ?? string.Empty, 
+                                                             false, 
+                                                             false))
+                          .OrderByDescending(x => x.SystemData)
+                          .ThenBy(x => x.KanaName)
+                          .ToList();
+            return result;
+        }
+
+        public TekiouByomeiMstExcludedModel GetTekiouByomeiMstExcludedModelByItemCd(int hpId, string itemCd)
+        {
+            var model = NoTrackingDataContext.TekiouByomeiMstExcludeds.FirstOrDefault(
+               x => x.HpId == hpId && x.IsDeleted == 0 && x.ItemCd == itemCd);
+
+            if (model is null)
+                return new TekiouByomeiMstExcludedModel(hpId, "", 0, 1);
+
+            else
+                return new TekiouByomeiMstExcludedModel(model.HpId, model.ItemCd, model.SeqNo, model.IsDeleted);
+        }
+
+        public List<DensiSanteiKaisuModel> GetDensiSanteiKaisuByItemCd(int hpId, string itemCd)
+        {
+            return NoTrackingDataContext.DensiSanteiKaisus.Where(
+                     x => x.HpId == hpId &&
+                          x.ItemCd == itemCd
+                    )
+                    .Select(x => new DensiSanteiKaisuModel(x.Id, 
+                                                           x.HpId, 
+                                                           x.ItemCd, 
+                                                           x.UnitCd,
+                                                           x.MaxCount, 
+                                                           x.SpJyoken,
+                                                           x.StartDate,
+                                                           x.EndDate,
+                                                           x.SeqNo,
+                                                           x.UserSetting,
+                                                           x.TargetKbn, 
+                                                           x.TermCount, 
+                                                           x.TermSbt, 
+                                                           x.IsInvalid, 
+                                                           x.ItemGrpCd,
+                                                           false, 
+                                                           false))
+                    .ToList();
+        }
+
+
+        public List<DensiHaihanModel> GetDensiHaihans(int hpId, string itemCd, int haihanKbn)
+        {
+            List<DensiHaihanModel> result = new List<DensiHaihanModel>();
+
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None)
+                                                        .OrderByDescending(item => item.StartDate);
+
+            var densiHaihanCustomEntities = NoTrackingDataContext.DensiHaihanCustoms.Where(x => x.HpId == hpId &&
+                                                                                             x.ItemCd1 == itemCd &&
+                                                                                             x.HaihanKbn == haihanKbn);
+
+            var densiHaihanCustoms = (from densiHaihanCustomEntity in densiHaihanCustomEntities
+                                      select new
+                                      {
+                                          densiHaihanCustomEntity,
+                                          Name = (from tenMst in tenMsts
+                                                  where densiHaihanCustomEntity.ItemCd2 == tenMst.ItemCd
+                                                  select tenMst.Name).FirstOrDefault()
+                                      })
+                                    .AsEnumerable()
+                                    .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_CUSTOM,
+                                                                    (int)HaiHanModelType.DENSI_HAIHAN_CUSTOM,
+                                                                    x.densiHaihanCustomEntity.Id,
+                                                                    x.densiHaihanCustomEntity.HpId, x.densiHaihanCustomEntity.ItemCd1,
+                                                                    x.densiHaihanCustomEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanCustomEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanCustomEntity.ItemCd2 ?? string.Empty,
+                                                                    x.Name ?? string.Empty,
+                                                                    x.densiHaihanCustomEntity.HaihanKbn,
+                                                                    x.densiHaihanCustomEntity.SpJyoken,
+                                                                    x.densiHaihanCustomEntity.StartDate,
+                                                                    x.densiHaihanCustomEntity.EndDate,
+                                                                    x.densiHaihanCustomEntity.SeqNo,
+                                                                    x.densiHaihanCustomEntity.UserSetting,
+                                                                    x.densiHaihanCustomEntity.TargetKbn,
+                                                                    x.densiHaihanCustomEntity.TermCnt,
+                                                                    x.densiHaihanCustomEntity.TermSbt,
+                                                                    x.densiHaihanCustomEntity.IsInvalid,
+                                                                    x.densiHaihanCustomEntity.UserSetting == 0 || x.densiHaihanCustomEntity.UserSetting == 1,
+                                                                    false,
+                                                                    false))
+                                    .ToList();
+
+            if (densiHaihanCustoms != null)
+            {
+                result.AddRange(densiHaihanCustoms);
+            }
+
+            var densiHaihanDayEntites = NoTrackingDataContext.DensiHaihanDays.Where(
+                x => x.HpId == hpId &&
+                     x.ItemCd1 == itemCd &&
+                     x.HaihanKbn == haihanKbn);
+
+            var densiHaihanDays = (from densiHaihanDayEntity in densiHaihanDayEntites
+                                   select new
+                                   {
+                                       densiHaihanDayEntity,
+                                       Name = (from tenMst in tenMsts
+                                               where densiHaihanDayEntity.ItemCd2 == tenMst.ItemCd
+                                               select tenMst.Name).FirstOrDefault()
+                                   })
+                                    .AsEnumerable()
+                                    .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_DAY,
+                                                                    (int)HaiHanModelType.DENSI_HAIHAN_DAY,
+                                                                    x.densiHaihanDayEntity.Id,
+                                                                    x.densiHaihanDayEntity.HpId, 
+                                                                    x.densiHaihanDayEntity.ItemCd1,
+                                                                    x.densiHaihanDayEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanDayEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanDayEntity.ItemCd2 ?? string.Empty,
+                                                                    x.Name ?? string.Empty,
+                                                                    x.densiHaihanDayEntity.HaihanKbn,
+                                                                    x.densiHaihanDayEntity.SpJyoken,
+                                                                    x.densiHaihanDayEntity.StartDate,
+                                                                    x.densiHaihanDayEntity.EndDate,
+                                                                    x.densiHaihanDayEntity.SeqNo,
+                                                                    x.densiHaihanDayEntity.UserSetting,
+                                                                    x.densiHaihanDayEntity.TargetKbn,
+                                                                    0,
+                                                                    0,
+                                                                    x.densiHaihanDayEntity.IsInvalid,
+                                                                    x.densiHaihanDayEntity.UserSetting == 0 || x.densiHaihanDayEntity.UserSetting == 1,
+                                                                    false,
+                                                                    false))
+                                    .ToList();
+
+            if (densiHaihanDays != null)
+            {
+                result.AddRange(densiHaihanDays);
+            }
+
+            var densiHaihanKarteEntites = NoTrackingDataContext.DensiHaihanKartes.Where(
+                 x => x.HpId == hpId &&
+                      x.ItemCd1 == itemCd &&
+                      x.HaihanKbn == haihanKbn);
+
+            var densiHaihanKartes = (from densiHaihanKarteEntity in densiHaihanKarteEntites
+                                     select new
+                                     {
+                                         densiHaihanKarteEntity,
+                                         Name = (from tenMst in tenMsts
+                                                 where densiHaihanKarteEntity.ItemCd2 == tenMst.ItemCd
+                                                 select tenMst.Name).FirstOrDefault()
+                                     })
+                                    .AsEnumerable()
+                                    .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_KARTE,
+                                                                    (int)HaiHanModelType.DENSI_HAIHAN_KARTE,
+                                                                    x.densiHaihanKarteEntity.Id,
+                                                                    x.densiHaihanKarteEntity.HpId,
+                                                                    x.densiHaihanKarteEntity.ItemCd1,
+                                                                    x.densiHaihanKarteEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanKarteEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanKarteEntity.ItemCd2 ?? string.Empty,
+                                                                    x.Name ?? string.Empty,
+                                                                    x.densiHaihanKarteEntity.HaihanKbn,
+                                                                    x.densiHaihanKarteEntity.SpJyoken,
+                                                                    x.densiHaihanKarteEntity.StartDate,
+                                                                    x.densiHaihanKarteEntity.EndDate,
+                                                                    x.densiHaihanKarteEntity.SeqNo,
+                                                                    x.densiHaihanKarteEntity.UserSetting,
+                                                                    x.densiHaihanKarteEntity.TargetKbn,
+                                                                    0,
+                                                                    0,
+                                                                    x.densiHaihanKarteEntity.IsInvalid,
+                                                                    x.densiHaihanKarteEntity.UserSetting == 0 || x.densiHaihanKarteEntity.UserSetting == 1,
+                                                                    false,
+                                                                    false))
+                                    .ToList();
+
+            if (densiHaihanKartes != null)
+            {
+                result.AddRange(densiHaihanKartes);
+            }
+
+            var densiHaihanMonthEntites = NoTrackingDataContext.DensiHaihanMonths.Where(x => x.HpId == hpId &&
+                                                                                        x.ItemCd1 == itemCd &&
+                                                                                        x.HaihanKbn == haihanKbn);
+
+            var densiHaihanMonths = (from densiHaihanMonthEntity in densiHaihanMonthEntites
+                                     select new
+                                     {
+                                         densiHaihanMonthEntity,
+                                         Name = (from tenMst in tenMsts
+                                                 where densiHaihanMonthEntity.ItemCd2 == tenMst.ItemCd
+                                                 select tenMst.Name).FirstOrDefault()
+                                     })
+                                    .AsEnumerable()
+                                    .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_MONTH,
+                                                                    (int)HaiHanModelType.DENSI_HAIHAN_MONTH,
+                                                                    x.densiHaihanMonthEntity.Id,
+                                                                    x.densiHaihanMonthEntity.HpId,
+                                                                    x.densiHaihanMonthEntity.ItemCd1,
+                                                                    x.densiHaihanMonthEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanMonthEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanMonthEntity.ItemCd2 ?? string.Empty,
+                                                                    x.Name ?? string.Empty,
+                                                                    x.densiHaihanMonthEntity.HaihanKbn,
+                                                                    x.densiHaihanMonthEntity.SpJyoken,
+                                                                    x.densiHaihanMonthEntity.StartDate,
+                                                                    x.densiHaihanMonthEntity.EndDate,
+                                                                    x.densiHaihanMonthEntity.SeqNo,
+                                                                    x.densiHaihanMonthEntity.UserSetting,
+                                                                    x.densiHaihanMonthEntity.TargetKbn,
+                                                                    0,
+                                                                    0,
+                                                                    x.densiHaihanMonthEntity.IsInvalid,
+                                                                    x.densiHaihanMonthEntity.UserSetting == 0 || x.densiHaihanMonthEntity.UserSetting == 1,
+                                                                    false,
+                                                                    false))
+                                    .ToList();
+
+            if (densiHaihanMonths != null)
+            {
+                result.AddRange(densiHaihanMonths);
+            }
+
+            var densiHaihanWeekEntites = NoTrackingDataContext.DensiHaihanWeeks.Where(x => x.HpId == hpId &&
+                                                                                          x.ItemCd1 == itemCd &&
+                                                                                          x.HaihanKbn == haihanKbn);
+
+            var densiHaihanWeeks = (from densiHaihanWeekEntity in densiHaihanWeekEntites
+                                    select new
+                                    {
+                                        densiHaihanWeekEntity,
+                                        Name = (from tenMst in tenMsts
+                                                where densiHaihanWeekEntity.ItemCd2 == tenMst.ItemCd
+                                                select tenMst.Name).FirstOrDefault()
+                                    })
+                                    .AsEnumerable()
+                                    .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_WEEK,
+                                                                    (int)HaiHanModelType.DENSI_HAIHAN_WEEK,
+                                                                    x.densiHaihanWeekEntity.Id,
+                                                                    x.densiHaihanWeekEntity.HpId,
+                                                                    x.densiHaihanWeekEntity.ItemCd1,
+                                                                    x.densiHaihanWeekEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanWeekEntity.ItemCd2 ?? string.Empty,
+                                                                    x.densiHaihanWeekEntity.ItemCd2 ?? string.Empty,
+                                                                    x.Name ?? string.Empty,
+                                                                    x.densiHaihanWeekEntity.HaihanKbn,
+                                                                    x.densiHaihanWeekEntity.SpJyoken,
+                                                                    x.densiHaihanWeekEntity.StartDate,
+                                                                    x.densiHaihanWeekEntity.EndDate,
+                                                                    x.densiHaihanWeekEntity.SeqNo,
+                                                                    x.densiHaihanWeekEntity.UserSetting,
+                                                                    x.densiHaihanWeekEntity.TargetKbn,
+                                                                    0,
+                                                                    0,
+                                                                    x.densiHaihanWeekEntity.IsInvalid,
+                                                                    x.densiHaihanWeekEntity.UserSetting == 0 || x.densiHaihanWeekEntity.UserSetting == 1,
+                                                                    false,
+                                                                    false))
+                                    .ToList();
+            if (densiHaihanWeeks != null)
+            {
+                result.AddRange(densiHaihanWeeks);
+            }
+
+            return result
+                    .OrderBy(x => (int)x.ModelType)
+                    .ThenByDescending(x => x.StartDate)
+                    .ThenBy(x => x.ItemCd2)
+                    .ThenBy(x => x.UserSetting)
+                    .ToList();
+        }
+
+        public List<DensiHoukatuModel> GetListDensiHoukatuByItemCd(int hpId ,string itemCd, int sinDate)
+        {
+            List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
+            var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
+                                                                                          u.ItemCd == itemCd &&
+                                                                                          u.StartDate <= sinDate &&
+                                                                                          u.EndDate >= sinDate &&
+                                                                                          !_HoukatuTermExclude.Contains(u.HoukatuTerm));
+
+            var listHoukatuGrp = NoTrackingDataContext.DensiHoukatuGrps.Where(u => u.HpId == hpId &&
+                                                                                            u.StartDate <= sinDate &&
+                                                                                            u.EndDate >= sinDate);
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
+
+            var query = from hokatu in listHoukatu
+                        join hokatuGrp in listHoukatuGrp on hokatu.HoukatuGrpNo equals hokatuGrp.HoukatuGrpNo
+                        join tenMst in tenMstQuery on hokatuGrp.ItemCd equals tenMst.ItemCd into ListTenMst
+                        from tenMstItem in ListTenMst.DefaultIfEmpty()
+                        select new
+                        {
+                            Hokatu = hokatu,
+                            HokatuGbp = hokatuGrp,
+                            ItemName = tenMstItem.Name,
+                        };
+            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                        .Select(x => new DensiHoukatuModel(x.Hokatu.HpId, 
+                                                                           x.Hokatu.ItemCd,
+                                                                           x.Hokatu.StartDate,
+                                                                           x.Hokatu.EndDate,
+                                                                           x.Hokatu.TargetKbn,
+                                                                           x.Hokatu.SeqNo,
+                                                                           x.Hokatu.HoukatuTerm,
+                                                                           x.Hokatu.HoukatuGrpNo ?? string.Empty,
+                                                                           x.Hokatu.UserSetting,
+                                                                           x.Hokatu.IsInvalid,
+                                                                           x.ItemName,
+                                                                           x.HokatuGbp.ItemCd,
+                                                                           x.HokatuGbp.SpJyoken,
+                                                                           false,
+                                                                           false))
+                                        .OrderBy(u => u.HoukatuGrpNo)
+                                        .ThenBy(u => u.ItemCd)
+                                        .ThenBy(u => u.SeqNo)
+                                        .ToList();
+            return result;
+        }
+
+        public List<DensiHoukatuGrpModel> GetListDensiHoukatuGrpByItemCd(int hpId ,string itemCd, int sinDate)
+        {
+            List<DensiHoukatuGrpModel> result = new List<DensiHoukatuGrpModel>();
+            var listHoukatuGrp = NoTrackingDataContext.DensiHoukatuGrps.Where(u => u.HpId == hpId &&
+                                                                                             u.ItemCd == itemCd &&
+                                                                                             u.StartDate <= sinDate &&
+                                                                                             u.EndDate >= sinDate);
+
+            var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
+                                                                  u.StartDate <= sinDate &&
+                                                                  u.EndDate >= sinDate &&
+                                                                  !_HoukatuTermExclude.Contains(u.HoukatuTerm));
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.StartDate <= sinDate && e.EndDate >= sinDate && e.IsDeleted == DeleteTypes.None);
+
+            var query = from hokatuGrp in listHoukatuGrp
+                        join hokatu in listHoukatu on hokatuGrp.HoukatuGrpNo equals hokatu.HoukatuGrpNo
+                        join tenMst in tenMstQuery on hokatu.ItemCd equals tenMst.ItemCd into ListTenMst
+                        from tenMstItem in ListTenMst.DefaultIfEmpty()
+                        select new
+                        {
+                            HokatuGrp = hokatuGrp,
+                            Hokatu = hokatu,
+                            ItemName = tenMstItem.Name,
+                        };
+
+            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                         .Select(x => new DensiHoukatuGrpModel(x.HokatuGrp.HpId,
+                                                                              x.HokatuGrp.HoukatuGrpNo,
+                                                                              x.HokatuGrp.ItemCd,
+                                                                              x.HokatuGrp.SpJyoken,
+                                                                              x.HokatuGrp.StartDate,
+                                                                              x.HokatuGrp.EndDate,
+                                                                              x.HokatuGrp.SeqNo,
+                                                                              x.HokatuGrp.UserSetting,
+                                                                              x.HokatuGrp.TargetKbn,
+                                                                              x.HokatuGrp.IsInvalid,
+                                                                              x.Hokatu.HoukatuTerm,
+                                                                              x.ItemName,
+                                                                              x.Hokatu.ItemCd,
+                                                                              false,
+                                                                              false))
+                                         .OrderBy(u => u.HoukatuGrpNo)
+                                         .ThenBy(u => u.HoukatuItemCd)
+                                         .ThenBy(u => u.SeqNo)
+                                         .ToList();
+            return result;
+        }
+
+        public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId ,List<string> listGrpNo)
+        {
+            List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
+            var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
+                                                                        u.HoukatuGrpNo != null && listGrpNo.Contains(u.HoukatuGrpNo));
+
+            var tenMstQuery = NoTrackingDataContext.TenMsts.Where(e => e.HpId == hpId && e.IsDeleted == DeleteTypes.None);
+
+            var query = from hokatu in listHoukatu
+                        join tenMst in tenMstQuery on hokatu.ItemCd equals tenMst.ItemCd into ListTenMstLeft
+                        from tenMst in ListTenMstLeft.Where(item => hokatu.StartDate <= item.StartDate && hokatu.EndDate >= item.EndDate).OrderByDescending(item => item.StartDate).Take(1)
+                        select new
+                        {
+                            Hokatu = hokatu,
+                            ItemName = tenMst.Name,
+                        };
+            result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
+                                         .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
+                                                                           x.Hokatu.ItemCd,
+                                                                           x.Hokatu.StartDate,
+                                                                           x.Hokatu.EndDate,
+                                                                           x.Hokatu.TargetKbn,
+                                                                           x.Hokatu.SeqNo,
+                                                                           x.Hokatu.HoukatuTerm,
+                                                                           x.Hokatu.HoukatuGrpNo ?? string.Empty,
+                                                                           x.Hokatu.UserSetting,
+                                                                           x.Hokatu.IsInvalid,
+                                                                           x.ItemName,
+                                                                           string.Empty,
+                                                                           0,
+                                                                           false,
+                                                                           false))
+                                         .GroupBy(x => new { x.ItemCd, x.StartDate })
+                                         .Select(x => x.First()).ToList();
+
+            return result;
+        }
+
+        public List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd)
+        {
+            var kinkiQuery = NoTrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd);
+            var itemMstQuery = NoTrackingDataContext.TenMsts.Where(item => item.StartDate <= sinDate && item.EndDate >= sinDate && item.IsDeleted == DeleteTypes.None);
+
+            var query = from kinki in kinkiQuery
+                        join tenMst in itemMstQuery on new { kinki.HpId, ItemCd = kinki.BCd }
+                                                equals new { tenMst.HpId, tenMst.ItemCd } into tenMstLeft
+                        from tMst in tenMstLeft.DefaultIfEmpty()
+                        select new
+                        {
+                            Kinki = kinki,
+                            TenMst = tMst ?? new TenMst()
+                        };
+
+            return query.AsEnumerable().Select(
+                   data => new CombinedContraindicationModel(data.Kinki.HpId,
+                                                             data.Kinki.ACd,
+                                                             data.Kinki.BCd ?? string.Empty,
+                                                             data.Kinki.SeqNo,
+                                                             false,
+                                                             data.TenMst?.Name ?? string.Empty,
+                                                             false,
+                                                             false,
+                                                             data.Kinki.BCd ?? string.Empty)).ToList();
         }
     }
 }
