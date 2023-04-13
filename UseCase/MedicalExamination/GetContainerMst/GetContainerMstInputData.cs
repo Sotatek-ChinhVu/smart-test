@@ -1,24 +1,55 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace UseCase.MedicalExamination.GetContainerMst
 {
     public class GetContainerMstInputData : IInputData<GetContainerMstOutputData>
     {
-        public GetContainerMstInputData(long raiinNo, int sinDate, long ptId, string eventCd)
+        public GetContainerMstInputData(int hpId, int sinDate, bool defaultChecked, List<OdrInfItem> odrInfItems)
         {
-            RaiinNo = raiinNo;
+            HpId = hpId;
             SinDate = sinDate;
-            PtId = ptId;
-            EventCd = eventCd;
+            DefaultChecked = defaultChecked;
+            OdrInfItems = odrInfItems;
         }
 
-        public long RaiinNo { get; private set; }
+        public int HpId { get; private set; }
 
         public int SinDate { get; private set; }
 
-        public long PtId { get; private set; }
+        public bool DefaultChecked { get; private set; }
 
-        public string EventCd { get; private set; }
+        public List<OdrInfItem> OdrInfItems { get; private set; }
+    }
+
+    public class OdrInfItem
+    {
+        public OdrInfItem(int inoutKbn, int odrKouiKbn, int isDeleted, List<OdrInfDetailItem> odrInfDetailItems)
+        {
+            InoutKbn = inoutKbn;
+            OdrKouiKbn = odrKouiKbn;
+            IsDeleted = isDeleted;
+            OdrInfDetailItems = odrInfDetailItems;
+        }
+
+        public int InoutKbn { get; private set; }
+
+        public int OdrKouiKbn { get; private set; }
+
+        public int IsDeleted { get; private set; }
+
+        public List<OdrInfDetailItem> OdrInfDetailItems { get; private set; }
+    }
+
+    public class OdrInfDetailItem
+    {
+        public OdrInfDetailItem(string itemCd, string masterSbt)
+        {
+            ItemCd = itemCd;
+            MasterSbt = masterSbt;
+        }
+
+        public string ItemCd { get; private set; }
+
+        public string MasterSbt { get; private set; }
     }
 }

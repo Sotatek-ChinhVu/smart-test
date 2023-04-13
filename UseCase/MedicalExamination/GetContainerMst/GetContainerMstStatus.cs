@@ -3,8 +3,7 @@
     public enum GetContainerMstStatus : byte
     {
         Successed = 1,
-        InvalidRaiinNo,
+        InvalidHpId,
         InvalidSinDate,
-        InvalidPtId,
     }
 }

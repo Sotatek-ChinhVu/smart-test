@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.Medical
 {
-    public class KensaPrinterItemItem
+    public class AuditTrailLogModel
     {
-        public KensaPrinterItemItem(long logId, DateTime logDate, int hpId, int userId, string eventCd, long ptId, int sinDate, long raiinNo, string machine, string hosuke)
+        public AuditTrailLogModel(long logId, DateTime logDate, int hpId, int userId, string eventCd, long ptId, int sinDate, long raiinNo, string machine, string hosuke)
         {
             LogId = logId;
             LogDate = logDate;

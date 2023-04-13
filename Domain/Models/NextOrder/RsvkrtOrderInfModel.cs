@@ -6,7 +6,7 @@ namespace Domain.Models.NextOrder
 {
     public class RsvkrtOrderInfModel : IOdrInfModel<RsvKrtOrderInfDetailModel>
     {
-        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
+        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels, DateTime updateDate, string createMachine, string updateMachine)
         {
             HpId = hpId;
             PtId = ptId;
@@ -31,6 +31,9 @@ namespace Domain.Models.NextOrder
             CreateId = createId;
             CreateName = createName;
             OrdInfDetails = orderInfDetailModels;
+            UpdateDate = updateDate;
+            CreateMachine = createMachine;
+            UpdateMachine = updateMachine;
         }
         public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
@@ -117,6 +120,12 @@ namespace Domain.Models.NextOrder
         public int CreateId { get; private set; }
 
         public string CreateName { get; private set; }
+
+        public DateTime UpdateDate { get; private set; }
+
+        public string CreateMachine { get; private set; }
+
+        public string UpdateMachine { get; private set; }
 
         public List<RsvKrtOrderInfDetailModel> OrdInfDetails { get; private set; }
 

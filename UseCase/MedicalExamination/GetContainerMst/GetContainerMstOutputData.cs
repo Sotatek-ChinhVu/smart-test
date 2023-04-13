@@ -1,16 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Medical;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.GetContainerMst
 {
     public class GetContainerMstOutputData : IOutputData
     {
-        public GetContainerMstOutputData(GetContainerMstStatus status, List<AuditTrailLogItem> auditTrailLogItems)
+        public GetContainerMstOutputData(GetContainerMstStatus status, List<KensaPrinterItem> kensaPrinterItems)
         {
             Status = status;
-            AuditTrailLogItems = auditTrailLogItems;
+            KensaPrinterItems = kensaPrinterItems;
         }
 
         public GetContainerMstStatus Status { get; private set; }
-        public List<AuditTrailLogItem> AuditTrailLogItems { get; private set; }
+        public List<KensaPrinterItem> KensaPrinterItems { get; private set; }
     }
 }

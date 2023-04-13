@@ -1,11 +1,10 @@
 ﻿using Domain.Types;
-using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.GetContainerMst
 {
-    public class AuditTrailLogItem : IOutputData
+    public class KensaPrinterItem
     {
-        public AuditTrailLogItem(string itemCd, string containerName, long containerCd, bool isChecked, int kensaLabel, string selectedPrinterName, Thickness textBoxBorderThickness, Thickness comboboxBorderThickness, string itemName, int inoutKbn, int odrKouiKbn)
+        public KensaPrinterItem(string itemCd, string containerName, long containerCd, bool isChecked, int kensaLabel, string selectedPrinterName, Thickness textBoxBorderThickness, Thickness comboboxBorderThickness, string itemName, int inoutKbn, int odrKouiKbn)
         {
             ItemCd = itemCd;
             ContainerName = containerName;

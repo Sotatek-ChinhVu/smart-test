@@ -156,7 +156,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     )).ToList();
 
                 var diseases = inputData.DiseaseItems.Select(i => new PtDiseaseModel(

@@ -1562,7 +1562,9 @@ namespace Infrastructure.Repositories
                         "",
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
-                        ""
+                        "",
+                        ordInf.CreateMachine ?? string.Empty,
+                        ordInf.UpdateMachine ?? string.Empty
                    );
 
             ;
@@ -2285,6 +2287,8 @@ namespace Infrastructure.Repositories
                    string.Empty,
                    DateTime.MinValue,
                    userId,
+                   string.Empty,
+                   string.Empty,
                    string.Empty
                );
                 ordInfModels.Add(newTodayOdrInfModel);
@@ -2362,7 +2366,7 @@ namespace Infrastructure.Repositories
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
-                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty);
+                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty, string.Empty, string.Empty);
                 ordInfs.Add(odrInf);
             }
             return ordInfs;
@@ -2947,6 +2951,8 @@ namespace Infrastructure.Repositories
                                     string.Empty,
                                     DateTime.MinValue,
                                     userId,
+                                    string.Empty,
+                                    string.Empty,
                                     string.Empty
                                 );
 
