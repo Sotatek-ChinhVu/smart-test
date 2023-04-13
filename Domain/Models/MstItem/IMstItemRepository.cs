@@ -74,6 +74,8 @@ namespace Domain.Models.MstItem
 
         int GetMinJihiSbtMst(int hpId);
 
+        bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
+
         List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
 
         TenMstOriginModel GetTenMstOriginModel(int hpId,string itemCd, int sinDate);
