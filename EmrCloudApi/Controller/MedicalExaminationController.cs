@@ -455,7 +455,8 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.RichText),
                 UserId,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
-                familyList
+                familyList,
+                request.Monshin
             );
             var output = _bus.Handle(input);
 

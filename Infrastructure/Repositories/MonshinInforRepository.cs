@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = model.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = monshinInfor.GetKbn,
+                            GetKbn = 0,
                             IsDeleted = monshinInfor.IsDeleted,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
@@ -137,6 +137,19 @@ namespace Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public bool SaveMonshinSheet(MonshinInforModel monshin)
+        {
+            var monshinInf = TrackingDataContext.MonshinInfo.FirstOrDefault(x =>
+                                                               x.HpId == monshin.HpId && x.PtId == monshin.PtId &&
+                                                               x.RaiinNo == monshin.RaiinNo && x.GetKbn == 0);
+
+            if (monshinInf == null) return true;
+
+            monshinInf.GetKbn = 1;
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

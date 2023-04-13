@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Requests.Family;
+﻿using Domain.Models.MonshinInf;
+using EmrCloudApi.Requests.Family;
 
 namespace EmrCloudApi.Requests.MedicalExamination;
 
@@ -35,4 +36,6 @@ public class SaveMedicalRequest
 
     // Family list
     public List<FamilyRequestItem> FamilyList { get; set; } = new();
+
+    public MonshinInforModel Monshin { get; set; } = new();
 }
