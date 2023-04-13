@@ -50,6 +50,7 @@ namespace EmrCloudApi.Responses.MstItem
             OdrTermVal = model.OdrTermVal;
             CnvTermVal = model.CnvTermVal;
             DefaultValue = model.DefaultValue;
+            IpnName = model.IpnName;
         }
 
         [JsonConstructor]
@@ -99,6 +100,7 @@ namespace EmrCloudApi.Responses.MstItem
             CnvTermVal = cnvTermVal;
             DefaultValue = defaultValue;
             ModeStatus = modeStatus;
+            IpnName = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -188,5 +190,7 @@ namespace EmrCloudApi.Responses.MstItem
         public double DefaultValue { get; private set; }
 
         public int ModeStatus { get; private set; }
+
+        public string IpnName { get; private set; }
     }
 }

@@ -927,16 +927,16 @@
         // Family
         public static readonly string InvalidPtIdOrFamilyPtId = "違法患者番号／患者の家族番号";
         public static readonly string InvalidFamilyId = "違法家族番号";
-        public static readonly string InvalidZokugaraCd = "違法続柄Cd";
+        public static readonly string InvalidZokugaraCd = "続柄は重複されました。";
         public static readonly string InvalidFamilyBirthday = "違法生年月日";
         public static readonly string InvalidFamilyIsSeparated = "違法別居";
-        public static readonly string InvalidFamilyBiko = "違法備考";
+        public static readonly string InvalidFamilyBiko = "120文字以内に入力してください。";
         public static readonly string InvalidFamilyRekiId = "違法家族歴番号";
-        public static readonly string InvalidByomeiCd = "違法病名Cd";
-        public static readonly string InvalidFamilyCmt = "違法コメント";
-        public static readonly string DuplicateFamily = "重複家族";
+        public static readonly string InvalidByomeiCd = "検索対象が見つかりません。\n・あいまい検索する場合は、全角文字で入力してください。";
+        public static readonly string InvalidFamilyCmt = "1００文字以内に入力してください。";
+        public static readonly string DuplicateFamily = "家族は重複されました。";
         public static readonly string InvalidNameMaxLength = "違法氏名最大長";
-        public static readonly string InvalidKanaNameMaxLength = "違法カナ氏名最大長";
+        public static readonly string InvalidKanaNameMaxLength = "1００文字以内に入力してください。";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
@@ -971,5 +971,17 @@
         public static readonly string InvalidThisCredit = "Invalid This Credit";
         public static readonly string NoPaymentInfo = "NoPaymentInfo";
         public static readonly string TryAgainLater = "TryAgainLater";
+
+        //SystemConfig
+        public static readonly string InvalidCheckDrugSameName = "Invalid CheckDrugSameName.";
+        public static readonly string InvalidAgentCheckSetting = "Invalid AgentCheckSetting.";
+        public static readonly string InvalidDosageRatioSetting = "Invalid DosageRatioSetting.";
+        public static readonly string InvalidFoodAllergyLevelSetting = "Invalid FoodAllergyLevelSetting.";
+        public static readonly string InvalidDiseaseLevelSetting = "Invalid DiseaseLevelSetting.";
+        public static readonly string InvalidKinkiLevelSetting = "Invalid KinkiLevelSetting.";
+        public static readonly string InvalidDosageMinCheckSetting = "Invalid DosageMinCheckSetting.";
+        public static readonly string InvalidAgeLevelSetting = "Invalid AgeLevelSetting.";
+
+        public static readonly string InvalidTypeItem = "Invalid type item";
     }
 }

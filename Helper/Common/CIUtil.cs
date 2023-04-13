@@ -16,6 +16,68 @@ namespace Helper.Common
             return input.ToString("#,###");
         }
 
+        /// <summary>
+        /// 指定の文字列の幅を返す（半角1、全角2）
+        /// </summary>
+        /// <param name="stTarget">幅を取得する元になる文字列。<param>
+        /// <returns>バイト数</returns>
+        public static int LenB(string stTarget)
+        {
+            int ret = 0;
+
+            if (stTarget != null)
+            {
+                for (int i = 0; i < stTarget.Length; i++)
+                {
+                    //Console.Write(stTarget[i]);
+                    ret += LenB(stTarget[i]);
+                }
+            }
+
+            return ret;
+        }
+
+        public static int LenB(char stTarget)
+        {
+            int ret = 0;
+
+            Char ch = stTarget;
+            if (Char.IsHighSurrogate(ch))
+            {
+                ret++;
+            }
+            else if (Char.IsLowSurrogate(ch))
+            {
+                ret++;
+            }
+            else if ((!((0x0020 <= (ch)) && ((ch) <= 0x007f))) && (!((0xff61 <= (ch)) && ((ch) <= 0xff9f))))
+            {
+                ret += 2;
+            }
+            else
+            {
+                ret++;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 郵便番号をハイフン付きに変換
+        /// </summary>
+        /// <param name="postcd"></param>
+        /// <returns></returns>
+        public static string GetDspPostCd(string postcd)
+        {
+            string ret = postcd ?? "";
+
+            if (ret.Length > 5 && ret.Contains("-") == false)
+            {
+                ret = $"{ret.Substring(0, 3)}-{ret.Substring(3, ret.Length - 3)}";
+            }
+            return ret;
+        }
+
         public struct WarekiYmd
         {
             public string Ymd;
@@ -3145,6 +3207,65 @@ namespace Helper.Common
             string result = SDateToShowSWDate(ym * 100 + 1, fmtReki, fmtWeek, fmtDate);
             if (result == string.Empty) return string.Empty;
             return result.Substring(0, result.Length - 3);
+        }
+        /// <summary>
+        /// 指定日の曜日を取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 日～土
+        /// </returns>
+        public static string GetYobi(int baseDate)
+        {
+            string week = "";
+            switch (GetWeek(baseDate))
+            {
+                case 0:
+                    week = "日";
+                    break;
+                case 1:
+                    week = "月";
+                    break;
+                case 2:
+                    week = "火";
+                    break;
+                case 3:
+                    week = "水";
+                    break;
+                case 4:
+                    week = "木";
+                    break;
+                case 5:
+                    week = "金";
+                    break;
+                case 6:
+                    week = "土";
+                    break;
+            }
+            return week;
+        }
+
+        /// <summary>
+        /// 指定日の曜日を番号で取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 0:日曜～6:土曜
+        /// </returns>
+        public static int GetWeek(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int ret = 0;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                ret = (int)dt1.DayOfWeek;
+            }
+
+            return ret;
         }
     }
 }

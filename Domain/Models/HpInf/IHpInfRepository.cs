@@ -7,5 +7,9 @@ namespace Domain.Models.HpInf
         bool CheckHpId(int hpId);
 
         HpInfModel GetHpInf(int hpId);
+
+        List<HpInfModel> GetListHpInf(int hpId);
+
+        bool SaveHpInf(int userId, List<HpInfModel> hpInfModels);
     }
 }

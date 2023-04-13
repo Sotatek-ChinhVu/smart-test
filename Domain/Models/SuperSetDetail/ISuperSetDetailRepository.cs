@@ -14,7 +14,7 @@ public interface ISuperSetDetailRepository : IRepositoryBase
 
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
 
-    (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate);
+    (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel> orderInfModels, List<(int setCd, List<SetFileInfModel> setFiles)> setFileInfModels) GetSuperSetDetailForTodayOrder(int hpId, int userId, int setCd, int sinDate);
 
     bool CheckExistSupperSetDetail(int hpId, int setCd);
 

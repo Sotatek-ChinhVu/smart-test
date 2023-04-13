@@ -2,7 +2,7 @@
 {
     public class TenMstModel
     {
-        public string ItemCD { get; set; }
+        public string ItemCD { get; set; } = string.Empty;
         public int DayTime { get; set; }
         public int Rise { get; set; }
         public int Morning { get; set; }

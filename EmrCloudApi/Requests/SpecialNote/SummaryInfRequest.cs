@@ -16,7 +16,6 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public string Rtext { get; set; } = string.Empty;
 
-        public DateTime CreateDate { get; set; }
         public SummaryInfItem Map()
         {
             return new SummaryInfItem(Id, HpId, PtId, SeqNo, Text, Rtext);

@@ -6,14 +6,16 @@ namespace Reporting.Mappers
     {
         CommonReportingRequestModel GetData();
 
-        List<string> GetFormNameList();
-
         Dictionary<string, string> GetSingleFieldData();
 
         Dictionary<string, bool> GetVisibleFieldData();
 
         Dictionary<string, bool> GetWrapFieldData();
 
-        List<Dictionary<string, string>> GetTableFieldData();
+        List<Dictionary<string, CellModel>> GetTableFieldData();
+
+        string GetRowCountFieldName();
+
+        int GetReportType();
     }
 }
