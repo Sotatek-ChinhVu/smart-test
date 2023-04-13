@@ -30,6 +30,26 @@
             KensaInfDetailModels = kensaInfDetailModels;
         }
 
+        public PhysicalInfoModel(List<KensaInfDetailModel> kensaInfDetailModels)
+        {
+            KensaItemCd = string.Empty;
+            CenterCd = string.Empty;
+            KensaName = string.Empty;
+            KensaKana = string.Empty;
+            Unit = string.Empty;
+            MaleStd = string.Empty;
+            MaleStdLow = string.Empty;
+            FemaleStdHigh = string.Empty;
+            MaleStdHigh = string.Empty;
+            FemaleStd = string.Empty;
+            Formula = string.Empty;
+            FemaleStdLow = string.Empty;
+            OyaItemCd = string.Empty;
+            CenterItemCd1 = string.Empty;
+            CenterItemCd2 = string.Empty;
+            KensaInfDetailModels = kensaInfDetailModels;
+        }
+
         public int HpId { get; private set; }
 
         public string KensaItemCd { get; private set; }

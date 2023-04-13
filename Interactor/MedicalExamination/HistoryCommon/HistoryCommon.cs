@@ -82,16 +82,16 @@ public class HistoryCommon : IHistoryCommon
                     history.TagNo,
                     history.SinryoTitle,
                     history.HokenType,
-                    new List<HokenGroupHistoryItem>(),
+                    new(),
                     karteHistoryList,
                     history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
                                          .OrderBy(item => item.SeqNo)
                                          .ToList(),
                     history.Status,
-                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.UketukeTime, 1, 4))),
+                    CIUtil.TimeToShowTime(ParseInt(CIUtil.Copy(history.UketukeTime, 1, 4))),
                     uketuke != null ? uketuke.Sname : string.Empty,
-                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.SinStartTime, 1, 4))),
-                    CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(history.SinEndTime, 1, 4)))
+                    CIUtil.TimeToShowTime(ParseInt(CIUtil.Copy(history.SinStartTime, 1, 4))),
+                    CIUtil.TimeToShowTime(ParseInt(CIUtil.Copy(history.SinEndTime, 1, 4)))
                 );
 
             //Excute order
@@ -103,6 +103,18 @@ public class HistoryCommon : IHistoryCommon
             return result;
         else
             return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
+    }
+
+    private int ParseInt(string input)
+    {
+        try
+        {
+           return int.Parse(input);
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
     }
 
     #region private function

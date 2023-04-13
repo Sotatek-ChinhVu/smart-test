@@ -95,7 +95,8 @@ namespace Interactor.Accounting
                                                             isVisiblePrintDrgInf,
                                                             isCheckedPrintDrgInf,
                                                             isVisiblePrintDrgNote,
-                                                            isCheckedPrintDrgNote
+                                                            isCheckedPrintDrgNote,
+                                                            isRyosyoDetail
                                                             );
 
             return new GetAccountingConfigOutputData(AccountingConfig, GetAccountingConfigStatus.Successed);

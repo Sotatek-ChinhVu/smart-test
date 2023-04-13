@@ -76,7 +76,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             int allCheckCount = receRecalculationList.Count;
 
             // run Recalculation
-            if (success && !isStopCalc && inputData.IsRecalculationCheckBox)
+            if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
                 success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
             }
@@ -84,7 +84,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(inputData.HpId, receRecalculationList, allCheckCount);
+                success = ReceFutanCalculateMain(receRecalculationList, allCheckCount);
             }
 
             // check error in month
@@ -93,6 +93,10 @@ public class RecalculationInteractor : IRecalculationInputPort
                 success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
             }
 
+            if (!inputData.IsCheckErrorCheckBox && !inputData.IsReceiptAggregationCheckBox && !inputData.IsRecalculationCheckBox)
+            {
+                SendMessager(new RecalculationStatus(true, 0, 0, 0, string.Empty));
+            }
             return new RecalculationOutputData(success);
         }
         finally
@@ -117,7 +121,7 @@ public class RecalculationInteractor : IRecalculationInputPort
         foreach (var item in receRecalculationList)
         {
             var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = (bool)statusCallBack.Result.Result;
+            isStopCalc = statusCallBack.Result.Result;
             if (isStopCalc)
             {
                 break;
@@ -139,14 +143,14 @@ public class RecalculationInteractor : IRecalculationInputPort
         return true;
     }
 
-    private bool ReceFutanCalculateMain(int hpId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    private bool ReceFutanCalculateMain(List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
     {
         SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
         int successCount = 1;
         foreach (var item in receRecalculationList)
         {
             var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = (bool)statusCallBack.Result.Result;
+            isStopCalc = statusCallBack.Result.Result;
             if (isStopCalc)
             {
                 break;
@@ -204,7 +208,7 @@ public class RecalculationInteractor : IRecalculationInputPort
             newReceCheckErrList = CheckRosaiError(inputData.SinYm, ref errorText, recalculationItem, oldReceCheckErrList, newReceCheckErrList, sinKouiCountList, systemConfigList, allIsKantokuCdValidList, allSyobyoKeikaList);
             newReceCheckErrList = CheckAftercare(inputData.SinYm, recalculationItem, oldReceCheckErrList, newReceCheckErrList, systemConfigList, allSyobyoKeikaList);
             errorTextSinKouiCount = GetErrorTextSinKouiCount(inputData.SinYm, errorTextSinKouiCount, recalculationItem, sinKouiCountList);
-            
+
             if (allCheckCount == successCount)
             {
                 break;
@@ -399,7 +403,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 {
                     if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 0)
                     {
-                        if (PtDiseaseModels.Any(p => buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                        if (PtDiseaseModels.Any(p => buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -408,7 +412,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 1)
                     {
                         if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right) ||
-                            p.ByomeiHankToZen.ToString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                            p.ByomeiHankToZen.ToString().Contains(_both)) && buiOdrByomeiMsts.Any(q => p.ByomeiHankToZen.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
@@ -417,14 +421,14 @@ public class RecalculationInteractor : IRecalculationInputPort
                     else if (buiOdrByomeiMst.LrKbn == 1 && buiOdrByomeiMst.BothKbn == 0)
                     {
                         if (PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_left) || p.ByomeiHankToZen.ToString().Contains(_right))
-                            && !p.ByomeiHankToZen.ToString().Contains(_leftRight) && !p.ByomeiHankToZen.ToString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                            && !p.ByomeiHankToZen.ToString().Contains(_leftRight) && !p.ByomeiHankToZen.ToString().Contains(_rightLeft) && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                         {
                             hasError = false;
                             break;
                         }
                     }
                     else if (buiOdrByomeiMst.LrKbn == 0 && buiOdrByomeiMst.BothKbn == 1 && PtDiseaseModels.Any(p => (p.ByomeiHankToZen.ToString().Contains(_both) || p.ByomeiHankToZen.ToString().Contains(_leftRight) || p.ByomeiHankToZen.ToString().Contains(_rightLeft))
-                            && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.HankToZen(q.ByomeiBui)))))
+                            && buiOdrByomeiMsts.Any(q => p.Byomei.Contains(HenkanJ.Instance.ToFullsize(q.ByomeiBui)))))
                     {
                         hasError = false;
                         break;
@@ -455,7 +459,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                 List<BuiOdrMstModel> buiOdrMstCheckList = new();
                 List<BuiOdrMstModel> filteredBuiOdrMsts = new();
                 string compareName = IsSpecialComment(detail) ? detail.ItemName.Replace(detail.CmtName, "") : detail.ItemName;
-                compareName = HenkanJ.HankToZen(compareName);
+                compareName = HenkanJ.Instance.ToFullsize(compareName);
                 List<BuiOdrMstModel> buiOdrMstContainItemNames = new();
                 foreach (var buiOdrMst in buiOdrMstList)
                 {
@@ -486,7 +490,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     {
                         odrBuiPatterns.Add(buiOdrMst.OdrBui);
                     }
-                    var ptByomeiAdd = odrBuiPatterns.FirstOrDefault(pattern => compareName.Contains(HenkanJ.HankToZen(pattern)));
+                    var ptByomeiAdd = odrBuiPatterns.FirstOrDefault(pattern => compareName.Contains(HenkanJ.Instance.ToFullsize(pattern)));
                     if (ptByomeiAdd != null)
                     {
                         buiOdrMstContainItemNames.Add(buiOdrMst);
@@ -534,7 +538,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     List<PtDiseaseModel> ptByomeisContainByomeiBui = new();
                     foreach (var ptByomei in ptByomeiList)
                     {
-                        var ptByomeiAdd = filteredBuiOdrByomeiMsts.FirstOrDefault(mst => HenkanJ.HankToZen(ptByomei.Byomei).Contains(HenkanJ.HankToZen(mst.ByomeiBui)));
+                        var ptByomeiAdd = filteredBuiOdrByomeiMsts.FirstOrDefault(mst => HenkanJ.Instance.ToFullsize(ptByomei.Byomei).Contains(HenkanJ.Instance.ToFullsize(mst.ByomeiBui)));
                         if (ptByomeiAdd != null)
                         {
                             ptByomeisContainByomeiBui.Add(ptByomei);
@@ -542,7 +546,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                     }
                     foreach (var ptByomei in ptByomeisContainByomeiBui)
                     {
-                        isValid = ValidateByomeiReflectOdrSite(compareName, HenkanJ.HankToZen(ptByomei.Byomei), buiOdrMst.LrKbn, buiOdrMst.BothKbn);
+                        isValid = ValidateByomeiReflectOdrSite(compareName, HenkanJ.Instance.ToFullsize(ptByomei.Byomei), buiOdrMst.LrKbn, buiOdrMst.BothKbn);
                         if (isValid) break;
                     }
                     if (!isValid)
@@ -2091,7 +2095,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                          item?.PtId ?? 0,
                                                                                          item?.ItemCd ?? string.Empty,
-                                                                                         santeiEndDateList[item?.PtId ?? 0]))
+                                                                                         santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                      .ToList();
 
                         var allHasErrorWithSanteiByStartDateList = _receiptRepository.GetHasErrorWithSanteiByStartDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2132,7 +2136,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         var hasErrorWithSanteiInputModel = keysGroupBy.Select(item => new HasErrorWithSanteiModel(
                                                                                           item?.PtId ?? 0,
                                                                                           item?.ItemCd ?? string.Empty,
-                                                                                          santeiEndDateList[item?.PtId ?? 0]))
+                                                                                          santeiEndDateList.ContainsKey(item?.PtId ?? 0) ? santeiEndDateList[item?.PtId ?? 0] : 0))
                                                                       .ToList();
 
                         var allHasErrorWithSanteiByEndDateList = _receiptRepository.GetHasErrorWithSanteiByEndDateList(hpId, seikyuYm, hasErrorWithSanteiInputModel);
@@ -2141,7 +2145,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                         {
                             if (kouiDetails.Count(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key.ItemCd) >= 4)
                             {
-                                int santeiEndDate = santeiEndDateList[key?.PtId ?? 0];
+                                int santeiEndDate = santeiEndDateList.ContainsKey(key?.PtId ?? 0) ? santeiEndDateList[key?.PtId ?? 0] : 0;
                                 if (allHasErrorWithSanteiByEndDateList.FirstOrDefault(item => item.PtId == key?.PtId && item.Sindate == santeiEndDate && item.ItemCd == key?.ItemCd)?.IsHasError ?? false)
                                 {
                                     var sinKouiDetail = kouiDetails.FirstOrDefault(item => item.PtId == key?.PtId && item.SinYm == key.SinYm && item.ItemCd == key?.ItemCd);

@@ -4,7 +4,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
 {
     public class PatientInfoModel
     {
-        public PatientInfoModel(PtPregnancyModel pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<PhysicalInfoModel> physicalInfItems)
+        public PatientInfoModel(List<PtPregnancyModel> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<PhysicalInfoModel> physicalInfItems)
         {
             PregnancyItems = pregnancyItems;
             PtCmtInfItems = ptCmtInfItems;
@@ -14,13 +14,13 @@ namespace Domain.Models.SpecialNote.PatientInfo
 
         public PatientInfoModel()
         {
-            PregnancyItems = new PtPregnancyModel();
+            PregnancyItems = new List<PtPregnancyModel>();
             PtCmtInfItems = new PtCmtInfModel();
             SeikatureInfItems = new SeikaturekiInfModel();
             PhysicalInfItems = new List<PhysicalInfoModel>();
         }
 
-        public PtPregnancyModel PregnancyItems { get; private set; }
+        public List<PtPregnancyModel> PregnancyItems { get; private set; }
 
         public PtCmtInfModel PtCmtInfItems { get; private set; }
 

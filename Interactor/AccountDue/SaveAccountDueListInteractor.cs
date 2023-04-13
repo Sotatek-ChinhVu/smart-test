@@ -191,10 +191,6 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidSortNo;
         }
-        else if (inputData.SyunoNyukinInputItems.Any(item => item.AdjustFutan < 0))
-        {
-            return SaveAccountDueListStatus.InvalidAdjustFutan;
-        }
         else if (inputData.SyunoNyukinInputItems.Any(item => item.PaymentMethodCd < 0))
         {
             return SaveAccountDueListStatus.InvalidPaymentMethodCd;

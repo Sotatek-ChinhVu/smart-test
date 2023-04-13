@@ -131,7 +131,7 @@ namespace Interactor.MedicalExamination
                     inputData.TargetItems.Select(t => new Tuple<int, string, int, int, TenItemModel, double>(t.Type, t.Message, t.OdrInfPosition, t.OdrInfDetailPosition, t.TenItemMst, t.Suryo)).ToList()
                     );
 
-                return new ChangeAfterAutoCheckOrderOutputData(ChangeAfterAutoCheckOrderStatus.Successed, result.Select(o => new ChangeAfterAutoCheckOrderItem( o.position, new OdrInfItem(
+                return new ChangeAfterAutoCheckOrderOutputData(ChangeAfterAutoCheckOrderStatus.Successed, result.Select(o => new ChangeAfterAutoCheckOrderItem(o.position, new OdrInfItem(
                         o.odrInfModel.HpId,
                         o.odrInfModel.RaiinNo,
                         o.odrInfModel.RpNo,
@@ -208,7 +208,8 @@ namespace Interactor.MedicalExamination
                             ).ToList(),
                         o.odrInfModel.CreateDate,
                         o.odrInfModel.CreateId,
-                        o.odrInfModel.CreateName
+                        o.odrInfModel.CreateName,
+                        o.odrInfModel.IsDeleted
                     ))).ToList()
                     );
             }

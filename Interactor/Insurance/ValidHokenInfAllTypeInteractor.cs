@@ -123,7 +123,7 @@ namespace Interactor.Insurance
         private void IsValidRodo(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
-            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
+            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
             if (rousaiReceder == 1)
             {
                 if (string.IsNullOrEmpty(rodoBango))

@@ -5,9 +5,9 @@ using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -44,6 +44,7 @@ namespace Infrastructure.Repositories
             var OtcMains = NoTrackingDataContext.M38OtcMain.AsQueryable();
             var UsageCodes = NoTrackingDataContext.M56UsageCode.AsQueryable();
             var OtcClassCodes = NoTrackingDataContext.M38ClassCode.AsQueryable();
+            var checkSerialNum = int.TryParse(searchValue, out int serialNum);
             var query = from main in OtcMains.AsEnumerable()
                         join classcode in OtcClassCodes on main.ClassCd equals classcode.ClassCd into classLeft
                         from clas in classLeft.DefaultIfEmpty()
@@ -56,7 +57,9 @@ namespace Infrastructure.Repositories
                         where ((main.TradeKana ?? string.Empty).Contains(searchValue)
                                 || (main.TradeName ?? string.Empty).Contains(searchValue)
                                 || (maker.MakerKana ?? string.Empty).Contains(searchValue)
-                                || (maker.MakerName ?? string.Empty).Contains(searchValue))
+                                || (maker.MakerName ?? string.Empty).Contains(searchValue)
+                                || (checkSerialNum && main.SerialNum == serialNum)
+                                )
                         select new OtcItemModel(
                             main.SerialNum,
                             main.OtcCd ?? string.Empty,
@@ -105,7 +108,7 @@ namespace Infrastructure.Repositories
                              from supplement in supplementList.DefaultIfEmpty()
                              join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
                              from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where (indexDef.IndexWord ?? string.Empty).Contains(searchValue)
+                             where ((indexDef.IndexWord ?? string.Empty).Contains(searchValue) || supplement.IndexCd.StartsWith(searchValue))
                              select new SearchSupplementModel(
                                  ingreItem.SeibunCd,
                                  ingreItem.Seibun ?? string.Empty,
@@ -177,7 +180,8 @@ namespace Infrastructure.Repositories
                 tenMst?.CnvTermVal ?? 0,
                 tenMst?.DefaultVal ?? 0,
                 tenMst?.Kokuji1 ?? string.Empty,
-                tenMst?.Kokuji2 ?? string.Empty
+                tenMst?.Kokuji2 ?? string.Empty,
+                string.Empty
             );
         }
 
@@ -226,7 +230,8 @@ namespace Infrastructure.Repositories
                 tenMst.CnvTermVal,
                 tenMst.DefaultVal,
                 tenMst.Kokuji1 ?? string.Empty,
-                tenMst.Kokuji2 ?? string.Empty
+                tenMst.Kokuji2 ?? string.Empty,
+                string.Empty
             )).ToList();
         }
         /// <summary>
@@ -623,14 +628,20 @@ namespace Infrastructure.Repositories
             var kensaItemCdList = queryFinal.Select(q => q.TenMst.KensaItemCd).ToList();
             var kensaMstList = NoTrackingDataContext.KensaMsts.Where(k => kensaItemCdList.Contains(k.KensaItemCd)).ToList();
 
-            var queryJoinWithKensa = from q in queryFinal
+            var ipnCdList = queryFinal.Select(q => q.TenMst.IpnNameCd).ToList();
+            var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
+
+            var queryJoinWithKensaIpnName = from q in queryFinal
                                      join k in kensaMstList
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
-            var totalCount = queryJoinWithKensa.Count(item => item.TenMst != null);
+                                     join i  in ipnNameMstList
+                                     on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                                     from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                                            select new { q.TenMst, q.tenKN, KensaMst = kensaMst, IpnName = ipnNameMst?.IpnName ?? string.Empty };
+            var totalCount = queryJoinWithKensaIpnName.Count(item => item.TenMst != null);
 
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            var listTenMst = queryJoinWithKensaIpnName.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
             if (pageCount > 0)
             {
                 listTenMst = listTenMst.Take(pageCount);
@@ -680,7 +691,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CnvTermVal ?? 0,
                                                            item.TenMst?.DefaultVal ?? 0,
                                                            item.TenMst?.Kokuji1 ?? string.Empty,
-                                                           item.TenMst?.Kokuji2 ?? string.Empty
+                                                           item.TenMst?.Kokuji2 ?? string.Empty,
+                                                           item.IpnName
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -774,7 +786,8 @@ namespace Infrastructure.Repositories
                                                            item.CnvTermVal,
                                                            item.DefaultVal,
                                                            item.Kokuji1 ?? string.Empty,
-                                                           item.Kokuji2 ?? string.Empty
+                                                           item.Kokuji2 ?? string.Empty,
+                                                           string.Empty
                                                            )).ToList();
             }
 
@@ -938,7 +951,8 @@ namespace Infrastructure.Repositories
                     entity?.CnvTermVal ?? 0,
                     entity?.DefaultVal ?? 0,
                     entity?.Kokuji1 ?? string.Empty,
-                    entity?.Kokuji2 ?? string.Empty
+                    entity?.Kokuji2 ?? string.Empty,
+                    string.Empty
                );
         }
 
@@ -992,7 +1006,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1043,7 +1058,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1095,7 +1111,8 @@ namespace Infrastructure.Repositories
                     entity.CnvTermVal,
                     entity.DefaultVal,
                     entity.Kokuji1 ?? string.Empty,
-                    entity.Kokuji2 ?? string.Empty
+                    entity.Kokuji2 ?? string.Empty,
+                    string.Empty
                )).ToList();
         }
 
@@ -1326,7 +1343,8 @@ namespace Infrastructure.Repositories
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? string.Empty, mst.Icd102 ?? string.Empty),
                     ConvertIcd102013Display(mst.Icd1012013 ?? string.Empty, mst.Icd1022013 ?? string.Empty),
-                    mst.IsAdopted == 1
+                    mst.IsAdopted == 1,
+                    mst.NanbyoCd
                 );
         }
 
@@ -1467,7 +1485,8 @@ namespace Infrastructure.Repositories
                         0,
                         tenMst?.DefaultVal ?? 0,
                         tenMst?.Kokuji1 ?? string.Empty,
-                        tenMst?.Kokuji2 ?? string.Empty
+                        tenMst?.Kokuji2 ?? string.Empty,
+                        string.Empty
                         );
         }
 
@@ -1563,11 +1582,298 @@ namespace Infrastructure.Repositories
                     item.HolidayKbn > 0 &&
                     item.KyusinKbn > 0).AsEnumerable();
 
-                return holidayMsts.Select(item => new HolidayModel(item.SinDate,
-                                                item.HolidayKbn,
-                                                item.HolidayName ?? string.Empty))
-                .OrderBy(item => item.SinDate)
-                .ToList();
+            return holidayMsts.Select(item => new HolidayModel(item.SinDate,
+                                            item.HolidayKbn,
+                                            item.HolidayName ?? string.Empty))
+            .OrderBy(item => item.SinDate)
+            .ToList();
+        }
+
+        public List<KensaCenterMstModel> GetListKensaCenterMst(int hpId)
+        {
+            var kensaCenterMstModels = NoTrackingDataContext.KensaCenterMsts.Where(u => u.HpId == hpId);
+            if (!kensaCenterMstModels.Any())
+            {
+                return new();
+            }
+
+            return kensaCenterMstModels.Select(x => new KensaCenterMstModel(
+                                                        x.Id,
+                                                        x.HpId,
+                                                        x.CenterCd ?? string.Empty,
+                                                        x.CenterName ?? string.Empty,
+                                                        x.PrimaryKbn,
+                                                        x.SortNo
+                                        )).ToList();
+        }
+
+        public List<TenMstOriginModel> GetGroupTenMst(string itemCd)
+        {
+            return NoTrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd)
+                                                .OrderByDescending(item => item.StartDate)
+                                                .Select(x => new TenMstOriginModel(x.HpId,
+                                                                                   x.ItemCd,
+                                                                                   x.StartDate,
+                                                                                   x.EndDate,
+                                                                                   x.MasterSbt ?? string.Empty,
+                                                                                   x.SinKouiKbn,
+                                                                                   x.Name ?? string.Empty,
+                                                                                   x.KanaName1 ?? string.Empty,
+                                                                                   x.KanaName2 ?? string.Empty,
+                                                                                   x.KanaName3 ?? string.Empty,
+                                                                                   x.KanaName4 ?? string.Empty,
+                                                                                   x.KanaName5 ?? string.Empty,
+                                                                                   x.KanaName6 ?? string.Empty,
+                                                                                   x.KanaName7 ?? string.Empty,
+                                                                                   x.RyosyuName ?? string.Empty,
+                                                                                   x.ReceName ?? string.Empty,
+                                                                                   x.TenId,
+                                                                                   x.Ten,
+                                                                                   x.ReceUnitCd ?? string.Empty,
+                                                                                   x.ReceUnitName ?? string.Empty,
+                                                                                   x.OdrUnitName ?? string.Empty,
+                                                                                   x.CnvUnitName ?? string.Empty,
+                                                                                   x.OdrTermVal,
+                                                                                   x.CnvTermVal,
+                                                                                   x.DefaultVal,
+                                                                                   x.IsAdopted,
+                                                                                   x.KoukiKbn,
+                                                                                   x.HokatuKensa,
+                                                                                   x.ByomeiKbn,
+                                                                                   x.Igakukanri,
+                                                                                   x.JitudayCount,
+                                                                                   x.Jituday,
+                                                                                   x.DayCount,
+                                                                                   x.DrugKanrenKbn,
+                                                                                   x.KizamiId,
+                                                                                   x.KizamiMin,
+                                                                                   x.KizamiMax,
+                                                                                   x.KizamiVal,
+                                                                                   x.KizamiTen,
+                                                                                   x.KizamiErr,
+                                                                                   x.MaxCount,
+                                                                                   x.MaxCountErr,
+                                                                                   x.TyuCd ?? string.Empty,
+                                                                                   x.TyuSeq ?? string.Empty,
+                                                                                   x.TusokuAge,
+                                                                                   x.MinAge ?? string.Empty,
+                                                                                   x.MaxAge ?? string.Empty,
+                                                                                   x.AgeCheck,
+                                                                                   x.TimeKasanKbn,
+                                                                                   x.FutekiKbn,
+                                                                                   x.FutekiSisetuKbn,
+                                                                                   x.SyotiNyuyojiKbn,
+                                                                                   x.LowWeightKbn,
+                                                                                   x.HandanKbn,
+                                                                                   x.HandanGrpKbn,
+                                                                                   x.TeigenKbn,
+                                                                                   x.SekituiKbn,
+                                                                                   x.KeibuKbn,
+                                                                                   x.AutoHougouKbn,
+                                                                                   x.GairaiKanriKbn,
+                                                                                   x.TusokuTargetKbn,
+                                                                                   x.HokatuKbn,
+                                                                                   x.TyoonpaNaisiKbn,
+                                                                                   x.AutoFungoKbn,
+                                                                                   x.TyoonpaGyokoKbn,
+                                                                                   x.GazoKasan,
+                                                                                   x.KansatuKbn,
+                                                                                   x.MasuiKbn,
+                                                                                   x.FukubikuNaisiKasan,
+                                                                                   x.FukubikuKotunanKasan,
+                                                                                   x.MasuiKasan,
+                                                                                   x.MoniterKasan,
+                                                                                   x.ToketuKasan,
+                                                                                   x.TenKbnNo ?? string.Empty,
+                                                                                   x.ShortstayOpe,
+                                                                                   x.BuiKbn,
+                                                                                   x.Sisetucd1,
+                                                                                   x.Sisetucd2,
+                                                                                   x.Sisetucd3,
+                                                                                   x.Sisetucd4,
+                                                                                   x.Sisetucd5,
+                                                                                   x.Sisetucd6,
+                                                                                   x.Sisetucd7,
+                                                                                   x.Sisetucd8,
+                                                                                   x.Sisetucd9,
+                                                                                   x.Sisetucd10,
+                                                                                   x.AgekasanMin1 ?? string.Empty,
+                                                                                   x.AgekasanMax1 ?? string.Empty,
+                                                                                   x.AgekasanCd1 ?? string.Empty,
+                                                                                   x.AgekasanMin2 ?? string.Empty,
+                                                                                   x.AgekasanMax2 ?? string.Empty,
+                                                                                   x.AgekasanCd2 ?? string.Empty,
+                                                                                   x.AgekasanMin3 ?? string.Empty,
+                                                                                   x.AgekasanMax3 ?? string.Empty,
+                                                                                   x.AgekasanCd3 ?? string.Empty,
+                                                                                   x.AgekasanMin4 ?? string.Empty,
+                                                                                   x.AgekasanMax4 ?? string.Empty,
+                                                                                   x.AgekasanCd4 ?? string.Empty,
+                                                                                   x.KensaCmt,
+                                                                                   x.MadokuKbn,
+                                                                                   x.SinkeiKbn,
+                                                                                   x.SeibutuKbn,
+                                                                                   x.ZoueiKbn,
+                                                                                   x.DrugKbn,
+                                                                                   x.ZaiKbn,
+                                                                                   x.ZaikeiPoint,
+                                                                                   x.Capacity,
+                                                                                   x.KohatuKbn,
+                                                                                   x.TokuzaiAgeKbn,
+                                                                                   x.SansoKbn,
+                                                                                   x.TokuzaiSbt,
+                                                                                   x.MaxPrice,
+                                                                                   x.MaxTen,
+                                                                                   x.SyukeiSaki ?? string.Empty,
+                                                                                   x.CdKbn ?? string.Empty,
+                                                                                   x.CdSyo,
+                                                                                   x.CdBu,
+                                                                                   x.CdKbnno,
+                                                                                   x.CdEdano,
+                                                                                   x.CdKouno,
+                                                                                   x.KokujiKbn ?? string.Empty,
+                                                                                   x.KokujiSyo,
+                                                                                   x.KokujiBu,
+                                                                                   x.KokujiKbnNo,
+                                                                                   x.KokujiEdaNo,
+                                                                                   x.KokujiKouNo,
+                                                                                   x.Kokuji1 ?? string.Empty,
+                                                                                   x.Kokuji2 ?? string.Empty,
+                                                                                   x.KohyoJun,
+                                                                                   x.YjCd ?? string.Empty,
+                                                                                   x.YakkaCd ?? string.Empty,
+                                                                                   x.SyusaiSbt,
+                                                                                   x.SyohinKanren ?? string.Empty,
+                                                                                   x.UpdDate,
+                                                                                   x.DelDate,
+                                                                                   x.KeikaDate,
+                                                                                   x.RousaiKbn,
+                                                                                   x.SisiKbn,
+                                                                                   x.ShotCnt,
+                                                                                   x.IsNosearch,
+                                                                                   x.IsNodspPaperRece,
+                                                                                   x.IsNodspRece,
+                                                                                   x.IsNodspRyosyu,
+                                                                                   x.IsNodspKarte,
+                                                                                   x.IsNodspYakutai,
+                                                                                   x.JihiSbt,
+                                                                                   x.KazeiKbn,
+                                                                                   x.YohoKbn,
+                                                                                   x.IpnNameCd ?? string.Empty,
+                                                                                   x.FukuyoRise,
+                                                                                   x.FukuyoMorning,
+                                                                                   x.FukuyoDaytime,
+                                                                                   x.FukuyoNight,
+                                                                                   x.FukuyoSleep,
+                                                                                   x.SuryoRoundupKbn,
+                                                                                   x.KouseisinKbn,
+                                                                                   x.ChusyaDrugSbt,
+                                                                                   x.KensaFukusuSantei,
+                                                                                   x.SanteiItemCd ?? string.Empty,
+                                                                                   x.SanteigaiKbn,
+                                                                                   x.KensaItemCd ?? string.Empty,
+                                                                                   x.KensaItemSeqNo,
+                                                                                   x.RenkeiCd1 ?? string.Empty,
+                                                                                   x.RenkeiCd2 ?? string.Empty,
+                                                                                   x.SaiketuKbn,
+                                                                                   x.CmtKbn,
+                                                                                   x.CmtCol1,
+                                                                                   x.CmtColKeta1,
+                                                                                   x.CmtCol2,
+                                                                                   x.CmtColKeta2,
+                                                                                   x.CmtCol3,
+                                                                                   x.CmtColKeta3,
+                                                                                   x.CmtCol4,
+                                                                                   x.CmtColKeta4,
+                                                                                   x.SelectCmtId,
+                                                                                   x.KensaLabel,
+                                                                                   false,
+                                                                                   false,
+                                                                                   x.IsDeleted,
+                                                                                   false,
+                                                                                   x.StartDate)).ToList();
+        }
+
+        public string GetMaxItemCdByTypeForAdd(string startWithstr)
+        {
+            var tenMstList = NoTrackingDataContext.TenMsts.Where(item => item.ItemCd.StartsWith(startWithstr)).ToList();
+
+            var tenMst = tenMstList.Where(item => item.ItemCd.Substring(startWithstr.Length).AsInteger() != 0)
+                                   .OrderByDescending(item => item.ItemCd.Replace(startWithstr, string.Empty).PadLeft(10, '0'))
+                                   .FirstOrDefault();
+            if (tenMst != null)
+            {
+                return startWithstr + (tenMst.ItemCd.Replace(startWithstr, "").AsInteger() + 1);
+            }
+
+            return startWithstr + "1";
+        }
+
+
+        public int GetMinJihiSbtMst(int hpId)
+        {
+            var jihiSbtMst = NoTrackingDataContext.JihiSbtMsts.Where(i => i.HpId == hpId && i.IsDeleted == DeleteStatus.None)
+                                                            .OrderBy(item => item.JihiSbt)
+                                                            .FirstOrDefault();
+            if (jihiSbtMst != null)
+            {
+                return jihiSbtMst.JihiSbt;
+            }
+            return 0;
+        }
+
+        public bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels)
+        {
+            var addedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Added);
+            var updatedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Modified);
+            var deletedModels = kensaCenterMstModels.Where(u => u.KensaCenterMstModelStatus == ModelStatus.Deleted);
+
+            if (!addedModels.Any() && !updatedModels.Any() && !deletedModels.Any()) return true;
+
+            if (deletedModels.Any())
+            {
+                var modelsToDelete = TrackingDataContext.KensaCenterMsts.Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
+                TrackingDataContext.KensaCenterMsts.RemoveRange(modelsToDelete);
+            }
+
+            if (updatedModels.Any())
+            {
+                foreach (var model in updatedModels)
+                {
+                    NoTrackingDataContext.KensaCenterMsts.Update(new KensaCenterMst()
+                    {
+                        HpId = model.HpId,
+                        CenterCd = model.CenterCd,
+                        CenterName = model.CenterName,
+                        PrimaryKbn = model.PrimaryKbn,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        Id = model.Id,
+                        SortNo = model.SortNo
+                    });
+                }
+            }
+
+            if (addedModels.Any())
+            {
+                foreach (var model in addedModels)
+                {
+                    NoTrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
+                    {
+                        HpId = model.HpId,
+                        CenterCd = model.CenterCd,
+                        CenterName = model.CenterName,
+                        PrimaryKbn = model.PrimaryKbn,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        SortNo = model.SortNo
+                    });
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

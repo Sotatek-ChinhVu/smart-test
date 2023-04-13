@@ -32,7 +32,7 @@ namespace Interactor.MedicalExamination
                     return new GetAddedAutoItemOutputData(GetAddedAutoItemStatus.InvalidAddedAutoItem, new());
                 }
 
-                var result = _todayOdrRepository.GetAutoAddOrders(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.OrderInfItems.Select(o => new Tuple<int, int, string>(o.OrderDetailPosition, o.OrderDetailPosition, o.ItemCd)).ToList(), inputData.CurrentOrderInfs.Select(c => new Tuple<int, int, string, double>(c.OrderPosition, c.OrderDetailPosition, c.ItemCd, c.Suryo)).ToList());
+                var result = _todayOdrRepository.GetAutoAddOrders(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.OrderInfItems.Select(o => new Tuple<int, int, string>(o.OrderDetailPosition, o.OrderDetailPosition, o.ItemCd)).ToList(), inputData.CurrentOrderInfs.Select(c => new Tuple<int, int, string, double, int>(c.OrderPosition, c.OrderDetailPosition, c.ItemCd, c.Suryo, c.IsDeleted)).ToList());
 
 
                 return new GetAddedAutoItemOutputData(GetAddedAutoItemStatus.Successed, result.Select(r => new AddedAutoItem(r.Item1, r.Item2, r.Item3.Select(i3 => new AddedOrderDetail(i3.Item1, i3.Item2, i3.Item3)).ToList())).ToList());

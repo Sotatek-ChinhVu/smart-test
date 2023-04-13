@@ -5,8 +5,8 @@ namespace Reporting.NameLabel.Models
 {
     public class CoNameLabelModel
     {
-        CoPtInfModel PtInf { get; } = null;
-        
+        CoPtInfModel PtInf { get; }
+
         public CoNameLabelModel(CoPtInfModel ptInf, string ptName, int sinDate)
         {
             PtInf = ptInf;

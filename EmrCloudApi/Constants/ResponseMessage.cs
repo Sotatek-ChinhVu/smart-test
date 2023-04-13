@@ -48,6 +48,8 @@
         public static readonly string InvalidParam = "Invalid Param";
         public static readonly string InvalidInfoType = "Invalid InfoType";
         public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
+        public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
+        public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -127,6 +129,22 @@
         public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
         public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
         public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
+
+        //TodoGrpMst
+        public static readonly string InvalidGrpColor = "Invalid GrpColor";
+        public static readonly string InvalidTodoGrpName = "Invalid TodoGrpName";
+        public static readonly string InvalidTodoGrpNo = "Invalid TodoGrpNo";
+        public static readonly string InvalidTodoGrpMst = "Invalid TodoGrpMst";
+        public static readonly string InvalidExistedTodoGrpNo = "Invalid Existed TodoGrpNo";
+
+        //TodoInf
+        public static readonly string InvalidTodoNo = "Invalid TodoNo";
+        public static readonly string InvalidTodoEdaNo = "Invalid TodoEdaNo";
+        public static readonly string InvalidTodoKbnNo = "Invalid TodoKbnNo";
+        public static readonly string InvalidTanto = "Invalid Tanto";
+        public static readonly string InvalidTerm = "Invalid Term";
+        public static readonly string InvalidIsDone = "Invalid IsDone";
+        public static readonly string InvalidExistedInput = "Invalid Existed Input";
 
         //Insurance
         // Validate Main Insurance
@@ -797,7 +815,7 @@
 
         //Account Due
         public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
-        public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";
+        public static readonly string InvalidSortNo = "違法ソート番号.";
         public static readonly string InvalidAdjustFutan = "Invalid AdjustFutan, must more than or equal 0.";
         public static readonly string InvalidNyukinGaku = "Invalid NyukinGaku, must more than or equal 0.";
         public static readonly string InvalidPaymentMethodCd = "Invalid PaymentMethodCd, must more than or equal 0.";
@@ -896,7 +914,7 @@
         public static readonly string InvalidAlertTerm = "Invalid AlertTerm!";
         public static readonly string InvalidKisanSbt = "Invalid KisanSbt!";
         public static readonly string InvalidKisanDate = "Invalid KisanDate!";
-        public static readonly string InvalidByomei = "Invalid Byomei, Byomei is not exist!";
+        public static readonly string InvalidByomei = "違法病名";
         public static readonly string InvalidHosokuComment = "Invalid HosokuComment, maxlength is 80!";
         public static readonly string ThisSanteiInfDoesNotAllowSanteiInfDetail = "This SanteiInf does not allow have SanteiInfDetail!";
         public static readonly string InvalidSanteiInfDetail = "Invalid SanteiInfDetail, SanteiInf does not contain some SanteiInfDetail!";
@@ -907,22 +925,18 @@
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
 
         // Family
-        public static readonly string InvalidPtIdOrFamilyPtId = "Invalid PtId Or FamilyPtId";
-        public static readonly string InvalidFamilyId = "Invalid FamilyId";
-        public static readonly string InvalidZokugaraCd = "Invalid ZokugaraCd";
-        public static readonly string InvalidFamilyName = "Invalid Family Name";
-        public static readonly string InvalidFamilyKanaName = "Invalid Family KanaName";
-        public static readonly string InvalidFamilySex = "Invalid Family Sex";
-        public static readonly string InvalidFamilyBirthday = "Invalid Family Birthday";
-        public static readonly string InvalidFamilyIsDead = "Invalid Family IsDead";
-        public static readonly string InvalidFamilyIsSeparated = "Invalid Family IsSeparated";
-        public static readonly string InvalidFamilyBiko = "Invalid Family Biko";
-        public static readonly string InvalidFamilyRekiId = "Invalid Family RekiId";
-        public static readonly string InvalidByomeiCd = "Invalid ByomeiCd";
-        public static readonly string InvalidFamilyCmt = "Invalid Family Cmt";
-        public static readonly string DuplicateFamily = "Duplicate Family";
-        public static readonly string InvalidNameMaxLength = "Family Name max length is 100 characters!";
-        public static readonly string InvalidKanaNameMaxLength = "Family KanaName max length is 100 characters!";
+        public static readonly string InvalidPtIdOrFamilyPtId = "違法患者番号／患者の家族番号";
+        public static readonly string InvalidFamilyId = "違法家族番号";
+        public static readonly string InvalidZokugaraCd = "既に登録されています";
+        public static readonly string InvalidFamilyBirthday = "違法生年月日";
+        public static readonly string InvalidFamilyIsSeparated = "違法別居";
+        public static readonly string InvalidFamilyBiko = "120文字以内に入力してください。";
+        public static readonly string InvalidFamilyRekiId = "違法家族歴番号";
+        public static readonly string InvalidByomeiCd = "検索対象が見つかりません。\n・あいまい検索する場合は、全角文字で入力してください。";
+        public static readonly string InvalidFamilyCmt = "100文字以内に入力してください。";
+        public static readonly string DuplicateFamily = "既に登録されています";
+        public static readonly string InvalidNameMaxLength = "違法氏名最大長";
+        public static readonly string InvalidKanaNameMaxLength = "100文字以内に入力してください。";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
@@ -940,6 +954,8 @@
         public static readonly string InvalidSeikyuYm = "Invalid SeikyuYm!";
         public static readonly string InvalidNissuItem = "Invalid NissuItem!";
         public static readonly string InvalidTokkiItem = "Invalid TokkiItem!";
+        public static readonly string InvalidFusenKbn = "Invalid FusenKbn!";
+        public static readonly string InvalidStatusKbn = "Invalid StatusKbn!";
 
         //Accounting
         public static readonly string InvalidSumAdjust = "Invalid SumAdjust";
@@ -955,5 +971,17 @@
         public static readonly string InvalidThisCredit = "Invalid This Credit";
         public static readonly string NoPaymentInfo = "NoPaymentInfo";
         public static readonly string TryAgainLater = "TryAgainLater";
+
+        //SystemConfig
+        public static readonly string InvalidCheckDrugSameName = "Invalid CheckDrugSameName.";
+        public static readonly string InvalidAgentCheckSetting = "Invalid AgentCheckSetting.";
+        public static readonly string InvalidDosageRatioSetting = "Invalid DosageRatioSetting.";
+        public static readonly string InvalidFoodAllergyLevelSetting = "Invalid FoodAllergyLevelSetting.";
+        public static readonly string InvalidDiseaseLevelSetting = "Invalid DiseaseLevelSetting.";
+        public static readonly string InvalidKinkiLevelSetting = "Invalid KinkiLevelSetting.";
+        public static readonly string InvalidDosageMinCheckSetting = "Invalid DosageMinCheckSetting.";
+        public static readonly string InvalidAgeLevelSetting = "Invalid AgeLevelSetting.";
+
+        public static readonly string InvalidTypeItem = "Invalid type item";
     }
 }

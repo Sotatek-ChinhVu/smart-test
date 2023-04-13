@@ -88,7 +88,7 @@ namespace Infrastructure.Repositories
 
 
             // Raiin Count
-            string raiinCountString = "";
+            int raiinCount = 0;
 
             // status = RaiinState Receptionist
             var GetCountraiinInf = NoTrackingDataContext.RaiinInfs.Where(u => u.HpId == hpId &&
@@ -98,7 +98,7 @@ namespace Infrastructure.Repositories
                                                                          u.Status == 1).ToList();
             if (GetCountraiinInf != null && GetCountraiinInf.Count > 0)
             {
-                raiinCountString = GetCountraiinInf.Count.ToString() + "人";
+                raiinCount = GetCountraiinInf.Count;
             }
 
             if (itemData == null)
@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                     "",
                     0,
                     0,
-                    raiinCountString);
+                    raiinCount);
             }
             else
             {
@@ -229,7 +229,7 @@ namespace Infrastructure.Repositories
                     memo,
                     lastVisitDate,
                     firstDate,
-                    raiinCountString);
+                    raiinCount);
             }
         }
 
@@ -761,7 +761,7 @@ namespace Infrastructure.Repositories
                 memo,
                 lastVisitDate,
                 0,
-                "");
+                0);
         }
 
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
@@ -2007,7 +2007,7 @@ namespace Infrastructure.Repositories
                         string.Empty,
                         0,
                         0,
-                        string.Empty
+                        0
                     );
         }
 

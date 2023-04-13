@@ -19,7 +19,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public List<TOdrInf>? ErrorOrderList { get; set; }
 
-        public object ErrorInfo { get; set; } = null;
+        public object ErrorInfo { get; set; } = new();
 
         public TOdrInf CheckingData { get; private set; }
 

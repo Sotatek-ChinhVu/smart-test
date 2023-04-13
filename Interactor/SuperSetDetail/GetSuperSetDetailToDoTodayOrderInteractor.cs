@@ -1,4 +1,9 @@
 ﻿using Domain.Models.SuperSetDetail;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 
 namespace Interactor.SuperSetDetail;
@@ -6,10 +11,14 @@ namespace Interactor.SuperSetDetail;
 public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoTodayOrderInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
+    private readonly IAmazonS3Service _amazonS3Service;
+    private readonly AmazonS3Options _options;
 
-    public GetSuperSetDetailToDoTodayOrderInteractor(ISuperSetDetailRepository superSetDetailRepository)
+    public GetSuperSetDetailToDoTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, ISuperSetDetailRepository superSetDetailRepository, IAmazonS3Service amazonS3Service)
     {
         _superSetDetailRepository = superSetDetailRepository;
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
     }
 
     public GetSuperSetDetailToDoTodayOrderOutputData Handle(GetSuperSetDetailToDoTodayOrderInputData inputData)
@@ -18,32 +27,38 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
         {
             if (inputData.HpId <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidHpId);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidHpId);
             }
             if (inputData.UserId <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidUserId);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidUserId);
             }
             else if (inputData.SetCd <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
             }
             else if (inputData.SetCd <= 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
             }
 
             var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.UserId, inputData.SetCd, inputData.SinDate);
             if (result.Item1.Count == 0 && result.Item2.Count == 0 && result.Item3.Count == 0)
             {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
             }
 
-            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.Item1), result.Item2, ConvertSetOrderInfToItem(result.Item3), GetSuperSetDetailToDoTodayOrderStatus.Successed);
+            var setFiles = new List<SetFileInfModel>();
+            foreach (var setFileInfModel in result.setFileInfModels)
+            {
+                setFiles.AddRange(ConvertToListSetKarteFileItem(setFileInfModel.setCd, setFileInfModel.setFiles).ToList());
+            }
+
+            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.byomeis), result.karteInfs, ConvertSetOrderInfToItem(result.orderInfModels), setFiles, GetSuperSetDetailToDoTodayOrderStatus.Successed);
         }
         catch
         {
-            return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
+            return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
         }
         finally
         {
@@ -131,9 +146,42 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                          od.CenterItemCd2,
                          od.Kasan1,
                          od.Kasan2,
-                         od.YohoSets
+                         od.YohoSets,
+                         od.CmtColKeta1,
+                         od.CmtColKeta2,
+                         od.CmtColKeta3,
+                         od.CmtColKeta4,
+                         od.CmtCol1,
+                         od.CmtCol2,
+                         od.CmtCol3,
+                         od.CmtCol4
                     )
                 ).ToList()
             )).ToList();
+    }
+
+    private List<SetFileInfModel> ConvertToListSetKarteFileItem(int setCd, List<SetFileInfModel> listModel)
+    {
+        List<SetFileInfModel> result = new();
+        if (listModel.Any())
+        {
+            List<string> listFolders = new();
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            listFolders.Add(CommonConstants.SetPic);
+            listFolders.Add(setCd.ToString());
+
+            string path = _amazonS3Service.GetFolderUploadOther(listFolders);
+            foreach (var model in listModel)
+            {
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(model.LinkFile);
+                result.Add(new SetFileInfModel(model.IsSchema, fileName.ToString()));
+            }
+        }
+        return result;
     }
 }

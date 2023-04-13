@@ -76,7 +76,7 @@ public class CoKarte1Finder
                 ));
         });
 
-        return results.FirstOrDefault();
+        return results.FirstOrDefault() ?? new();
     }
 
     /// <summary>
@@ -243,13 +243,13 @@ public class CoKarte1Finder
                     data.ptHokenInf,
                     data.ptHokenMst,
                     data.ptKohi1,
-                    data.ptKohi1Mst?.hokenMst,
+                    data.ptKohi1Mst?.hokenMst ?? new(),
                     data.ptKohi2,
-                    data.ptKohi2Mst?.hokenMst,
+                    data.ptKohi2Mst?.hokenMst ?? new(),
                     data.ptKohi3,
-                    data.ptKohi3Mst?.hokenMst,
+                    data.ptKohi3Mst?.hokenMst ?? new(),
                     data.ptKohi4,
-                    data.ptKohi4Mst?.hokenMst
+                    data.ptKohi4Mst?.hokenMst ?? new()
                 )
             )
             .ToList();
@@ -259,7 +259,7 @@ public class CoKarte1Finder
             return new CoPtHokenInfModel(new PtHokenInf(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst(), new PtKohi(), new HokenMst());
         }
 
-        return entities?.FirstOrDefault();
+        return entities?.FirstOrDefault() ?? new();
 
     }
 }

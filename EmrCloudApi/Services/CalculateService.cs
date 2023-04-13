@@ -85,7 +85,7 @@ namespace EmrCloudApi.Services
                     return new();
 
                 var result = JsonConvert.DeserializeObject<SinMeiDataModelDto>(task.Result.ResponseMessage);
-                return result;
+                return result ?? new();
             }
             catch (Exception ex)
             {
@@ -120,8 +120,8 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus != ResponseStatus.Successed)
                     return new();
 
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
-                return result;
+                var result = JsonConvert.DeserializeObject<ReceInfModelDto>(task.Result.ResponseMessage);
+                return result ?? new();
             }
             catch (Exception)
             {
@@ -129,7 +129,7 @@ namespace EmrCloudApi.Services
             }
         }
 
-        public List<string> RunTrialCalculate(RunTraialCalculateRequest inputData)
+        public RunTraialCalculateResponse RunTrialCalculate(RunTraialCalculateRequest inputData)
         {
             try
             {
@@ -137,17 +137,17 @@ namespace EmrCloudApi.Services
                 if (task.Result.ResponseStatus == ResponseStatus.Successed)
                 {
                     var result = JsonConvert.DeserializeObject<RunTraialCalculateResponse>(task.Result.ResponseMessage);
-                    return result == null ? new() : result.SinMeiList.Select(s => s.ItemCd).ToList();
+                    return new RunTraialCalculateResponse(result?.SinMeiList ?? new(), result?.KaikeiInfList ?? new(), result?.CalcLogList ?? new());
                 }
                 else
                 {
-                    return new();
+                    return new RunTraialCalculateResponse(new(), new(), new());
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Function RunTrialCalculate " + ex);
-                return new();
+                return new RunTraialCalculateResponse(new(), new(), new());
             }
         }
 

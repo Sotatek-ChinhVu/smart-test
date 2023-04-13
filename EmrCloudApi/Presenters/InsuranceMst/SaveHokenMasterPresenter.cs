@@ -12,8 +12,8 @@ namespace EmrCloudApi.Presenters.InsuranceMst
         {
             Result.Data = new SaveHokenMasterResponse(outputData.Status);
             Result.Status = (int)outputData.Status;
-            Result.Message = outputData.Message ?? GetMessage(outputData.Status);
-        }
+            Result.Message = string.IsNullOrEmpty(outputData.Message) ? GetMessage(outputData.Status) : outputData.Message;
+        } 
 
         private string GetMessage(SaveHokenMasterStatus status) => status switch
         {

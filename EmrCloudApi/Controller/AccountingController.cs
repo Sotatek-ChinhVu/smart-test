@@ -10,7 +10,6 @@ using UseCase.Accounting.CheckOpenAccounting;
 using UseCase.Accounting.GetAccountingHeader;
 using UseCase.Accounting.GetAccountingInf;
 using UseCase.Accounting.GetAccountingSystemConf;
-using UseCase.Accounting.GetHistoryOrder;
 using UseCase.Accounting.GetPtByoMei;
 using UseCase.Accounting.GetSinMei;
 using UseCase.Accounting.PaymentMethod;
@@ -92,18 +91,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<SaveAccountingResponse>>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.HistoryOrder)]
-        public ActionResult<Response<GetAccountingHistoryOrderResponse>> GetList([FromQuery] GetAccountingHistoryOrderRequest request)
-        {
-            var input = new GetAccountingHistoryOrderInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
-            var output = _bus.Handle(input);
-
-            var presenter = new GetAccountingHistoryOrderPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<GetAccountingHistoryOrderResponse>>(presenter.Result);
-        }
-
         [HttpGet(ApiPath.GetHeaderInf)]
         public ActionResult<Response<GetAccountingHeaderResponse>> GetList([FromQuery] GetAccountingHeaderRequest request)
         {
@@ -164,7 +151,7 @@ namespace EmrCloudApi.Controller
 
             return new ActionResult<Response<CheckOpenAccountingResponse>>(presenter.Result);
         }
-        
+
         [HttpPost(ApiPath.Recaculation)]
         public ActionResult<Response<RecaculationResponse>> ActionResult([FromBody] RecaculationRequest request)
         {

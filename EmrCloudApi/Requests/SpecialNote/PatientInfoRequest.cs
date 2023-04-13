@@ -1,20 +1,21 @@
 ﻿using Domain.Models.PtCmtInf;
 using Domain.Models.SpecialNote.PatientInfo;
+using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Requests.SpecialNote
 {
     public class PatientInfoRequest
     {
-        public PtPregnancyRequest PregnancyItems { get; set; } = new PtPregnancyRequest();
+        public List<PtPregnancyRequest> PregnancyItems { get; set; } = new List<PtPregnancyRequest>();
 
         public PtCmtInfRequest PtCmtInfItems { get; set; } = new PtCmtInfRequest();
 
         public SeikaturekiInfRequest SeikatureInfItems { get; set; } = new SeikaturekiInfRequest();
 
-        public List<PhysicalInfoRequest> PhysicalInfItems { get; set; } = new List<PhysicalInfoRequest>();
-        public PatientInfoModel Map()
+        public List<KensaInfDetailRequest> KensaInfDetailModels { get; set; } = new List<KensaInfDetailRequest>();
+        public PatientInfoItem Map()
         {
-            return new PatientInfoModel(PregnancyItems.Map(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), PhysicalInfItems.Select(x => x.Map()).ToList());
+            return new PatientInfoItem(PregnancyItems.Select(p => p.Map()).ToList(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), KensaInfDetailModels.Select(k => k.Map()).ToList());
         }
     }
     public class PtPregnancyRequest
@@ -41,14 +42,9 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public int IsDeleted { get; set; }
 
-        public DateTime UpdateDate { get; set; }
-
-        public int UpdateId { get; set; }
-
-        public string UpdateMachine { get; set; } = String.Empty;
-        public PtPregnancyModel Map()
+        public PtPregnancyItem Map()
         {
-            return new PtPregnancyModel(Id,
+            return new PtPregnancyItem(Id,
             HpId,
             PtId,
             SeqNo,
@@ -59,9 +55,6 @@ namespace EmrCloudApi.Requests.SpecialNote
             OvulationDate,
             OvulationDueDate,
             IsDeleted,
-            UpdateDate,
-            UpdateId,
-            UpdateMachine,
             0);
         }
 
@@ -182,10 +175,9 @@ namespace EmrCloudApi.Requests.SpecialNote
 
         public string CmtCd2 { get; set; } = String.Empty;
 
-        public DateTime UpdateDate { get; set; }
         public KensaInfDetailModel Map()
         {
-            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, UpdateDate, string.Empty, string.Empty, 0);
+            return new KensaInfDetailModel(HpId, PtId, IraiCd, SeqNo, IraiDate, RaiinNo, KensaItemCd, ResultVal, ResultType, AbnormalKbn, IsDeleted, CmtCd1, CmtCd2, DateTime.UtcNow, string.Empty, string.Empty, 0);
         }
     }
 }
