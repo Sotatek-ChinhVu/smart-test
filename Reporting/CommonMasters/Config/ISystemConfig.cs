@@ -29,4 +29,5 @@ public interface ISystemConfig
     int SyohosenFutanRate();
     string SyohosenRefillZero();
     int SyohosenRefillStrikeLine();
+    int SyohosenQRKbn();
 }

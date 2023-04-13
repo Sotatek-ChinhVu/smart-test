@@ -165,7 +165,17 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                         PrintoutType = (int)_printoutType,
                         PrintDataId = printDataId,
                         PrintDataPrintType = (int)(_coModel.PrintData?.PrintType ?? 0),
-                        PrintDataSinDate = _coModel.PrintData?.SinDate ?? 0
+                        PrintDataSinDate = _coModel.PrintData?.SinDate ?? 0,
+                        PrintDataBunkatuMax = _coModel.PrintData?.BunkatuMax ?? 0,
+                        PrintDataHonKeKbn = _coModel.PrintData?.HonKeKbn ?? 0,
+                        PrintDataRefillCount = _coModel.PrintData?.RefillCount ?? 0,
+                        PrintDataSex = _coModel.PrintData?.Sex ?? 0,
+                        QRData = _coModel.QRData(),
+                        PtNum = _coModel.PrintData?.PtNum ?? 0,
+                        PtName = _coModel.PrintData?.PtName ?? string.Empty,
+                        HpFaxNo = _coModel.PrintData?.HpFaxNo ?? string.Empty,
+                        HpOtherContacts = _coModel.PrintData?.HpOtherContacts ?? string.Empty,
+                        HpTel = _coModel.PrintData?.HpTel ?? string.Empty,
                     };
                     result.Add(outputItem);
                 }
@@ -175,6 +185,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 Data = result,
                 RepeatMax = repeatMax,
                 SyohosenRefillStrikeLine = _systemConfig.SyohosenRefillStrikeLine(),
+                SyohosenQRKbn = _systemConfig.SyohosenQRKbn()
             };
         }
     }

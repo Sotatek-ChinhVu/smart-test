@@ -83,7 +83,7 @@ public class PdfCreatorController : ControllerBase
         var data = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
         return await RenderPdf(data, ReportType.Common);
     }
-    
+
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
