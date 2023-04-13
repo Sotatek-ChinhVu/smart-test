@@ -5,12 +5,16 @@ using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.SystemConf;
+using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using System.Drawing.Printing;
+using System.Linq;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -18,9 +22,11 @@ namespace Infrastructure.Repositories
 {
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
-        
-        public MedicalExaminationRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly ISystemConfRepository _systemConf;
+
+        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
         {
+            _systemConf = systemConf;
         }
         public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
         {
@@ -1579,6 +1585,132 @@ namespace Infrastructure.Repositories
                 return odrListQuery.Max(odr => odr.RpNo);
             }
             return 0;
+        }
+
+        public List<KensaPrinterItemItem> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo)
+        {
+            var trailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
+                                   x.HpId == Session.HospitalID &&
+                                   x.EventCd == eventCd &&
+                                   x.PtId == ptID &&
+                                   x.SinDay == sinDate &&
+                                   x.RaiinNo == raiinNo);
+            var detailLogs = NoTrackingDataContext.AuditTrailLogDetails;
+            var query = from trailLog in trailLogs
+                        join detailLog in detailLogs on
+                        trailLog.LogId equals detailLog.LogId
+                        select new
+                        {
+                            TrailLog = trailLog,
+                            Hosuke = detailLog.Hosoku
+                        };
+            return query.AsEnumerable().Select(x => new KensaPrinterItemItem(x.TrailLog.LogId, x.TrailLog.LogDate, x.TrailLog.HpId, x.TrailLog.UserId, x.TrailLog.EventCd ?? string.Empty, x.TrailLog.PtId, x.TrailLog.SinDay, x.TrailLog.RaiinNo, x.TrailLog.Machine ?? string.Empty, x.Hosuke)).ToList();
+        }
+
+        public List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int userId, int sinDate, List<OrdInfModel> allOrder, bool defaultChecked)
+        {
+            var kensaLabelCheckInHospital = _systemConf.GetSettingValue(92009, 1, hpId);
+            bool checkInHospital(string itemCd)
+            {
+                List<OrdInfModel> AllOrderKensaLabel = allOrder.Where(x => x.IsDeleted == 0 && x.OrdInfDetails.Any(detail => !string.IsNullOrEmpty(detail.ItemCd) &&
+                                                                                                                   (detail.ItemCd.StartsWith("J") ||
+                                                                                                                   detail.ItemCd.StartsWith("Z") ||
+                                                                                                                   detail.MasterSbt == "S")))
+                                                                    .ToList();
+                return (kensaLabelCheckInHospital == 0 && !(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && (o.InoutKbn == 0 && o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
+                       (kensaLabelCheckInHospital == 1 && !(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && (o.InoutKbn == 1 && o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
+                       (!(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && !(o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
+                       kensaLabelCheckInHospital == 2;
+            }
+            List<string> itemcds = new List<string>();
+            List<KensaPrinterItemModel> kensaItems = new List<KensaPrinterItemModel>();
+            foreach (var order in allOrder)
+            {
+                if (order.IsDeleted != 0) continue;
+                var kensaItemCds = order.OrdInfDetails.Where(x => !string.IsNullOrEmpty(x.ItemCd) &&
+                                                                       (x.ItemCd.StartsWith("J") || x.ItemCd.StartsWith("Z") || x.MasterSbt == "S"));
+
+                itemcds.AddRange(kensaItemCds.Select(x => x.ItemCd));
+            }
+            var tenmsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == Session.HospitalID &&
+                                                                                   x.StartDate <= sinDate &&
+                                                                                   x.EndDate >= sinDate &&
+                                                                                   x.KensaLabel > 0 &&
+                                                                                   x.IsDeleted == DeleteTypes.None)
+                                                    .Select(x => new { x.ItemCd, x.Name, x.KensaItemCd, x.KensaItemSeqNo, x.KensaLabel });
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == Session.HospitalID && x.IsDelete == 0)
+                                                        .Select(x => new { x.KensaItemCd, x.KensaItemSeqNo, x.ContainerCd });
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(x => x.HpId == Session.HospitalID)
+                                                                .Select(x => new { x.ContainerCd, x.ContainerName });
+            List<KensaPrinterItemModel> allItems = new List<KensaPrinterItemModel>();
+
+
+
+            foreach (var itemcd in itemcds)
+            {
+                var query = (from tenmst in tenmsts
+                             where tenmst.ItemCd == itemcd
+                             join kensaMst in kensaMsts on
+                             new { tenmst.KensaItemCd, tenmst.KensaItemSeqNo } equals
+                             new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo } into tenMstKensas
+                             from tenMstKensa in tenMstKensas.DefaultIfEmpty()
+                             join containerMst in containerMsts on
+                             tenMstKensa.ContainerCd equals containerMst.ContainerCd into tenMstKensaContainers
+                             from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
+                             select new
+                             {
+                                 ItemCd = tenmst.ItemCd,
+                                 Name = tenMstKensaContainer == null ? tenmst.Name : tenMstKensaContainer.ContainerName,
+                                 ContainerName = tenMstKensaContainer == null ? "" : tenMstKensaContainer.ContainerName,
+                                 ContainerCd = tenMstKensaContainer == null ? 0 : tenMstKensaContainer.ContainerCd,
+                                 KensaLabel = tenmst.KensaLabel
+                             }).ToList();
+                allItems.AddRange(query.Select(x => new KensaPrinterItemModel(x.ItemCd, x.Name, x.ContainerName, x.KensaLabel, x.ContainerCd, defaultChecked)));
+            }
+            allItems = allItems.Where(mst => checkInHospital(mst.ItemCd)).ToList();
+            var groupKensaExistContainerCds = allItems.Where(x => x.ContainerCd != 0).GroupBy(x => new { x.ContainerCd });
+            foreach (var group in groupKensaExistContainerCds)
+            {
+                int maxKensaLabel = group.ToList().Max(x => x.KensaLabel);
+                var item = group.FirstOrDefault();
+                item?.ChangeKensaLabel(maxKensaLabel);
+                if (item != null)
+                {
+                    kensaItems.Add(item);
+                }
+            }
+
+            var groupKensaNotExistContainercds = allItems.Where(x => x.ContainerCd == 0).GroupBy(x => x.ItemCd);
+            foreach (var group in groupKensaNotExistContainercds)
+            {
+                var item = group.FirstOrDefault();
+                if (item != null)
+                {
+                    kensaItems.Add(item);
+                }
+            }
+            for (int i = 0; i < kensaItems.Count; i++)
+            {
+                if (i == 0)
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness( new Thickness(1, 0.5, 0, 0.5 ));
+                    kensaItems[i].ChangeComboboxBorderThickness( new Thickness(1, 0, 0, 0 ));
+                }
+                else if (kensaItems.Count == i + 1)
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness(new Thickness(1, 1, 0, 0 ));
+                    kensaItems[i].ChangeComboboxBorderThickness(new Thickness(1, 1, 0, 0));
+                }
+                else
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness( new Thickness(1, 1, 0, 0.5 ));
+                    kensaItems[i].ChangeTextBoxBorderThickness( new Thickness(1, 1, 0, 0));
+                }
+                var odrInf = allOrder.FirstOrDefault(o => o.OrdInfDetails.Any(d => d.ItemCd == kensaItems[i].ItemCd));
+                if (odrInf == null) continue;
+                kensaItems[i].ChangeInoutKbnOdrKouiKbn(odrInf.InoutKbn, odrInf.OdrKouiKbn);
+            }
+            return kensaItems;
         }
     }
 }

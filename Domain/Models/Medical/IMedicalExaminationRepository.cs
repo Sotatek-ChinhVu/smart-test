@@ -37,5 +37,11 @@ namespace Domain.Models.MedicalExamination
         Dictionary<string, DateTime> GetMaxAuditTrailLogDateForPrint(long ptID, int sinDate, long raiinNo);
 
         List<OrdInfModel> TrialCalculate(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, List<CheckedOrderModel> checkingOrderModelList);
+
+        List<KensaPrinterItemItem> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo);
+
+        List<KensaPrinterItemModel>  GetContainerMstModels(int hpId, int userId, int sinDate, List<OrdInfModel> allOrder, bool defaultChecked);
+
+        (string defaultPrinter, List<string> printerNameList, string defaultName) GetPrinterSetting(int userId);
     }
 }
