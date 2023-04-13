@@ -280,5 +280,9 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+
+        //Monshin
+        public const string GetMonshinInf = "GetMonshinInf";
+        public const string SaveMonshinInf = "SaveMonshinInf";
     }
 }
