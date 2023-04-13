@@ -13,6 +13,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using System.ComponentModel;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
@@ -1658,12 +1659,13 @@ namespace Infrastructure.Repositories
                              new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo } into tenMstKensas
                              from tenMstKensa in tenMstKensas.DefaultIfEmpty()
                              join containerMst in containerMsts on
-                             tenMstKensa.ContainerCd equals containerMst.ContainerCd into tenMstKensaContainers
+                             tenMstKensa.ContainerCd  equals containerMst.ContainerCd into tenMstKensaContainers
                              from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
+                             where tenMstKensa != null
                              select new
                              {
                                  ItemCd = tenmst.ItemCd,
-                                 Name = tenMstKensaContainer == null ? tenmst.Name : tenMstKensaContainer.ContainerName,
+                                 Name = tenMstKensaContainer == null ? tenmst.Name : tenMstKensaContainer.ContainerName ?? string.Empty,
                                  ContainerName = tenMstKensaContainer == null ? "" : tenMstKensaContainer.ContainerName,
                                  ContainerCd = tenMstKensaContainer == null ? 0 : tenMstKensaContainer.ContainerCd,
                                  KensaLabel = tenmst.KensaLabel
