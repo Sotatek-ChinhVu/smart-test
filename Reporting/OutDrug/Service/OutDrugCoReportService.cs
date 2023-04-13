@@ -124,10 +124,10 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 result.Add(new CoOutDrugReportingOutputItem());
                 return new CoOutDrugReportingOutputData()
                 {
-                    data = result,
-                    repeatMax = repeatMax,
-                    syohosenRefillStrikeLine = _systemConfig.SyohosenRefillStrikeLine(),
-                    syohosenQRKbn = _systemConfig.SyohosenQRKbn()
+                    Data = result,
+                    RepeatMax = repeatMax,
+                    SyohosenRefillStrikeLine = _systemConfig.SyohosenRefillStrikeLine(),
+                    SyohosenQRKbn = _systemConfig.SyohosenQRKbn()
                 };
             }
 
@@ -172,33 +172,33 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     Dictionary<string, string> singleFieldData = UpdateFormHeader();
                     var outputItem = new CoOutDrugReportingOutputItem()
                     {
-                        singleFieldData = singleFieldData,
-                        printOutData = _dataList,
-                        bikoList = _bikoList,
-                        printoutType = (int)_printoutType,
-                        printDataId = printDataId,
-                        printDataPrintType = (int)(_coModel.PrintData?.PrintType ?? 0),
-                        printDataSinDate = _coModel.PrintData?.SinDate ?? 0,
-                        printDataBunkatuMax = _coModel.PrintData?.BunkatuMax ?? 0,
-                        printDataHonKeKbn = _coModel.PrintData?.HonKeKbn ?? 0,
-                        printDataRefillCount = _coModel.PrintData?.RefillCount ?? 0,
-                        printDataSex = _coModel.PrintData?.Sex ?? 0,
-                        qRData = _coModel.QRData(),
-                        ptNum = _coModel.PrintData?.PtNum ?? 0,
-                        ptName = _coModel.PrintData?.PtName ?? string.Empty,
-                        hpFaxNo = _coModel.PrintData?.HpFaxNo ?? string.Empty,
-                        hpOtherContacts = _coModel.PrintData?.HpOtherContacts ?? string.Empty,
-                        hpTel = _coModel.PrintData?.HpTel ?? string.Empty,
+                        SingleFieldData = singleFieldData,
+                        PrintOutData = _dataList,
+                        BikoList = _bikoList,
+                        PrintoutType = (int)_printoutType,
+                        PrintDataId = printDataId,
+                        PrintDataPrintType = (int)(_coModel.PrintData?.PrintType ?? 0),
+                        PrintDataSinDate = _coModel.PrintData?.SinDate ?? 0,
+                        PrintDataBunkatuMax = _coModel.PrintData?.BunkatuMax ?? 0,
+                        PrintDataHonKeKbn = _coModel.PrintData?.HonKeKbn ?? 0,
+                        PrintDataRefillCount = _coModel.PrintData?.RefillCount ?? 0,
+                        PrintDataSex = _coModel.PrintData?.Sex ?? 0,
+                        QRData = _coModel.QRData(),
+                        PtNum = _coModel.PrintData?.PtNum ?? 0,
+                        PtName = _coModel.PrintData?.PtName ?? string.Empty,
+                        HpFaxNo = _coModel.PrintData?.HpFaxNo ?? string.Empty,
+                        HpOtherContacts = _coModel.PrintData?.HpOtherContacts ?? string.Empty,
+                        HpTel = _coModel.PrintData?.HpTel ?? string.Empty,
                     };
                     result.Add(outputItem);
                 }
             }
             return new CoOutDrugReportingOutputData()
             {
-                data = result,
-                repeatMax = repeatMax,
-                syohosenRefillStrikeLine = _systemConfig.SyohosenRefillStrikeLine(),
-                syohosenQRKbn = _systemConfig.SyohosenQRKbn()
+                Data = result,
+                RepeatMax = repeatMax,
+                SyohosenRefillStrikeLine = _systemConfig.SyohosenRefillStrikeLine(),
+                SyohosenQRKbn = _systemConfig.SyohosenQRKbn()
             };
         }
     }
@@ -1369,14 +1369,14 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 }
 
                 PrintOutData printOutData = new PrintOutData();
-                printOutData.data = tmp;
+                printOutData.Data = tmp;
                 addPrintOutData.Add(printOutData);
 
                 if (firstAdd)
                 {
                     // 初回追加時は、変更マークをセット
                     firstAdd = false;
-                    addPrintOutData.Last().henkoMark = henkouMark;
+                    addPrintOutData.Last().HenkoMark = henkouMark;
                 }
 
                 // 今回出力分の文字列を削除
@@ -1404,7 +1404,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 }
 
                 PrintOutData printOutData = new();
-                printOutData.data = tmp;
+                printOutData.Data = tmp;
                 addPrintOutData.Add(printOutData);
 
                 // 今回出力分の文字列を削除
@@ -1494,7 +1494,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 if (ptKohi != null)
                 {
                     addPrintOutData.AddRange(_addList(_getKohiName(ptKohi), _dataCharCount, string.Empty));
-                    addPrintOutData.Last().rpInf = "====";
+                    addPrintOutData.Last().RpInf = "====";
                 }
 
                 kohiFutan = rpInf.KohiFutan;
@@ -1511,8 +1511,8 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
                     if (addPrintOutData.Any())
                     {
-                        addPrintOutData.Last().suryo = drugInf.Suryo.ToString();
-                        addPrintOutData.Last().unitName = drugInf.UnitName;
+                        addPrintOutData.Last().Suryo = drugInf.Suryo.ToString();
+                        addPrintOutData.Last().UnitName = drugInf.UnitName;
                     }
                 }
                 else if (new int[] { ItemTypeConst.Yoho, ItemTypeConst.Hojyo }.Contains(drugInf.ItemType))
@@ -1523,9 +1523,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     {
                         if (!string.IsNullOrEmpty(drugInf.UnitName.Trim()))
                         {
-                            addPrintOutData.Last().kaisu = drugInf.Suryo.ToString();
+                            addPrintOutData.Last().Kaisu = drugInf.Suryo.ToString();
                         }
-                        addPrintOutData.Last().yohoUnit = drugInf.UnitName;
+                        addPrintOutData.Last().YohoUnit = drugInf.UnitName;
                     }
                 }
                 else if (drugInf.ItemType == ItemTypeConst.Bunkatu)
@@ -1534,8 +1534,8 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                     addPrintOutData.AddRange(_addList(drugInf.Data, _dataCharCount, string.Empty));
                     if (addPrintOutData.Any())
                     {
-                        addPrintOutData.Last().data = string.Empty;
-                        addPrintOutData.Last().bunkatu = drugInf.Data.ToString();
+                        addPrintOutData.Last().Data = string.Empty;
+                        addPrintOutData.Last().Bunkatu = drugInf.Data.ToString();
                     }
                 }
                 else if (drugInf.ItemType == ItemTypeConst.NoAstComment)
@@ -1567,7 +1567,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 if (addComment != string.Empty)
                 {
                     _dataList.Add(new PrintOutData());
-                    _dataList.Last().data = addComment;
+                    _dataList.Last().Data = addComment;
                 }
 
                 // 追加する行数を決定する
@@ -1587,11 +1587,11 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                 // 処方コメント以外の場合、Rp番号を追加する
                 for (int j = 0; j < addPrintOutData.Count; j++)
                 {
-                    if (addPrintOutData[j].rpInf != "====")
+                    if (addPrintOutData[j].RpInf != "====")
                     {
                         // RpInf が、"===="の場合、公費の区切り行なので無視
 
-                        addPrintOutData[j].rpInf = $"{rpInf.RpNo})";
+                        addPrintOutData[j].RpInf = $"{rpInf.RpNo})";
                         break;
                     }
                 }
@@ -1610,7 +1610,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         {
             // 残り行数が1行以上の場合、コメント追加
             _dataList.Add(new PrintOutData());
-            _dataList.Last().data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
+            _dataList.Last().Data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
         }
         else if (_getRemainingLineCount() == 0)
         {
@@ -1618,13 +1618,13 @@ public class OutDrugCoReportService : IOutDrugCoReportService
             if (_dataList.Last().IsClearData)
             {
                 // 最終行が空行の場合、コメントをセット
-                _dataList.Last().data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
+                _dataList.Last().Data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
             }
             else
             {
                 // 空行ではない場合は次ページに
                 _dataList.Add(new PrintOutData());
-                _dataList.Last().data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
+                _dataList.Last().Data = _addHalfSpace("---- 以下余白 ----", _dataCharCount);
             }
         }
     }
