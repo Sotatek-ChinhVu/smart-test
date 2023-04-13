@@ -182,6 +182,7 @@
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
         public const string TrialAccounting = "TrialAccounting";
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
+        public const string GetContainerMst = "GetContainerMst";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

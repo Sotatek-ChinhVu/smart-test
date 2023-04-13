@@ -318,7 +318,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     "",
                     DateTime.MinValue,
                     0,
-                    ""
+                    "",
+                    string.Empty,
+                    string.Empty
                 );
 
             var objDetail = new object();

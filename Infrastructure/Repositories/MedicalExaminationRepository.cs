@@ -1587,7 +1587,7 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public List<KensaPrinterItemItem> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo)
+        public List<AuditTrailLogModel> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo)
         {
             var trailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
                                    x.HpId == Session.HospitalID &&
@@ -1604,33 +1604,36 @@ namespace Infrastructure.Repositories
                             TrailLog = trailLog,
                             Hosuke = detailLog.Hosoku
                         };
-            return query.AsEnumerable().Select(x => new KensaPrinterItemItem(x.TrailLog.LogId, x.TrailLog.LogDate, x.TrailLog.HpId, x.TrailLog.UserId, x.TrailLog.EventCd ?? string.Empty, x.TrailLog.PtId, x.TrailLog.SinDay, x.TrailLog.RaiinNo, x.TrailLog.Machine ?? string.Empty, x.Hosuke)).ToList();
+            return query.AsEnumerable().Select(x => new AuditTrailLogModel(x.TrailLog.LogId, x.TrailLog.LogDate, x.TrailLog.HpId, x.TrailLog.UserId, x.TrailLog.EventCd ?? string.Empty, x.TrailLog.PtId, x.TrailLog.SinDay, x.TrailLog.RaiinNo, x.TrailLog.Machine ?? string.Empty, x.Hosuke)).ToList();
         }
 
-        public List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int userId, int sinDate, List<OrdInfModel> allOrder, bool defaultChecked)
+        //Item1: InoutKbn
+        //Item2: OdrKouiKbn
+        //Item3: IsDeleted
+        //Item4: Details (Item1: Itemcd, Item2: MasterSbt) 
+        public List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int sinDate, List<Tuple<int, int, int, List<Tuple<string, string>>>> orderInfs, bool defaultChecked)
         {
             var kensaLabelCheckInHospital = _systemConf.GetSettingValue(92009, 1, hpId);
             bool checkInHospital(string itemCd)
             {
-                List<OrdInfModel> AllOrderKensaLabel = allOrder.Where(x => x.IsDeleted == 0 && x.OrdInfDetails.Any(detail => !string.IsNullOrEmpty(detail.ItemCd) &&
-                                                                                                                   (detail.ItemCd.StartsWith("J") ||
-                                                                                                                   detail.ItemCd.StartsWith("Z") ||
-                                                                                                                   detail.MasterSbt == "S")))
-                                                                    .ToList();
-                return (kensaLabelCheckInHospital == 0 && !(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && (o.InoutKbn == 0 && o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
-                       (kensaLabelCheckInHospital == 1 && !(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && (o.InoutKbn == 1 && o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
-                       (!(AllOrderKensaLabel.Where(o => o.IsDeleted == 0 && !(o.OdrKouiKbn >= 60 && o.OdrKouiKbn <= 69) && o.OrdInfDetails.Any(detail => detail.ItemCd == itemCd)).Count() == 0)) ||
+                var orderKensaLabels = orderInfs.Where(x => x.Item3 == 0 && x.Item4.Any(detail => !string.IsNullOrEmpty(itemCd) &&
+                                                                                                                   (detail.Item1.StartsWith("J") ||
+                                                                                                                   detail.Item1.StartsWith("Z") ||
+                                                                                                                   detail.Item2 == "S"))).ToList();
+                return (kensaLabelCheckInHospital == 0 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 0 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                       (kensaLabelCheckInHospital == 1 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 1 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                       (!(orderKensaLabels.Where(o => o.Item3 == 0 && !(o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
                        kensaLabelCheckInHospital == 2;
             }
             List<string> itemcds = new List<string>();
             List<KensaPrinterItemModel> kensaItems = new List<KensaPrinterItemModel>();
-            foreach (var order in allOrder)
+            foreach (var order in orderInfs)
             {
-                if (order.IsDeleted != 0) continue;
-                var kensaItemCds = order.OrdInfDetails.Where(x => !string.IsNullOrEmpty(x.ItemCd) &&
-                                                                       (x.ItemCd.StartsWith("J") || x.ItemCd.StartsWith("Z") || x.MasterSbt == "S"));
+                if (order.Item3 != 0) continue;
+                var kensaItemCds = order.Item4.Where(x => !string.IsNullOrEmpty(x.Item1) &&
+                                                                       (x.Item1.StartsWith("J") || x.Item1.StartsWith("Z") || x.Item2 == "S"));
 
-                itemcds.AddRange(kensaItemCds.Select(x => x.ItemCd));
+                itemcds.AddRange(kensaItemCds.Select(x => x.Item1));
             }
             var tenmsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == Session.HospitalID &&
                                                                                    x.StartDate <= sinDate &&
@@ -1706,9 +1709,9 @@ namespace Infrastructure.Repositories
                     kensaItems[i].ChangeTextBoxBorderThickness( new Thickness(1, 1, 0, 0.5 ));
                     kensaItems[i].ChangeTextBoxBorderThickness( new Thickness(1, 1, 0, 0));
                 }
-                var odrInf = allOrder.FirstOrDefault(o => o.OrdInfDetails.Any(d => d.ItemCd == kensaItems[i].ItemCd));
+                var odrInf = orderInfs.FirstOrDefault(o => o.Item4.Any(d => d.Item1 == kensaItems[i].ItemCd));
                 if (odrInf == null) continue;
-                kensaItems[i].ChangeInoutKbnOdrKouiKbn(odrInf.InoutKbn, odrInf.OdrKouiKbn);
+                kensaItems[i].ChangeInoutKbnOdrKouiKbn(odrInf.Item1, odrInf.Item2);
             }
             return kensaItems;
         }
