@@ -7,6 +7,7 @@ using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
@@ -206,6 +207,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenMstOriginInfoCreatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenMstOriginInfoCreateResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.DeleteOrRecoverTenMst)]
+        public ActionResult<Response<DeleteOrRecoverTenMstResponse>> DeleteOrRecoverTenMst([FromBody] DeleteOrRecoverTenMstRequest request)
+        {
+            var input = new DeleteOrRecoverTenMstInputData(request.ItemCd, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new DeleteOrRecoverTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
         }
     }
 }

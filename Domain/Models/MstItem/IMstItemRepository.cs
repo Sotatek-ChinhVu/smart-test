@@ -73,5 +73,7 @@ namespace Domain.Models.MstItem
         int GetMinJihiSbtMst(int hpId);
 
         bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
+
+        bool IsTenMstItemCdUsed(int hpId, string itemCd);
     }
 }

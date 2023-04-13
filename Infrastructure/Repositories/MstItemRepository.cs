@@ -1875,5 +1875,10 @@ namespace Infrastructure.Repositories
 
             return TrackingDataContext.SaveChanges() > 0;
         }
+
+        public bool IsTenMstItemCdUsed(int hpId, string itemCd)
+        {
+            return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
+        }
     }
 }
