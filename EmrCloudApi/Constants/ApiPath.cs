@@ -81,6 +81,7 @@
         public const string ExportSijisen = "ExportSijisen";
         public const string ExportNameLabel = "ExportNameLabel";
         public const string MedicalRecordWebId = "MedicalRecordWebId";
+        public const string OutDrug = "OutDrug";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -282,5 +283,9 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+
+        //Monshin
+        public const string GetMonshinInf = "GetMonshinInf";
+        public const string SaveMonshinInf = "SaveMonshinInf";
     }
 }

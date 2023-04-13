@@ -153,6 +153,8 @@ using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
+using Reporting.OutDrug.DB;
+using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -489,6 +491,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarte1Service, Karte1Service>();
             services.AddTransient<IMedicalRecordWebIdReportService, MedicalRecordWebIdReportService>();
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
+            services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
+            services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

@@ -788,7 +788,7 @@ namespace Infrastructure.Repositories
 
             if (karte.IsDeleted == DeleteTypes.Deleted)
             {
-                var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1);
                 if (karteMst != null)
                 {
                     karteMst.IsDeleted = DeleteTypes.Deleted;
@@ -796,7 +796,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn && karte.IsDeleted == DeleteTypes.None);
+                var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1 && karte.IsDeleted == DeleteTypes.None);
 
                 if (karteMst == null)
                 {
@@ -808,7 +808,7 @@ namespace Infrastructure.Repositories
                             PtId = karte.PtId,
                             SinDate = karte.SinDate,
                             RaiinNo = karte.RaiinNo,
-                            KarteKbn = karte.KarteKbn,
+                            KarteKbn = 1,
                             SeqNo = seqNo,
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
@@ -834,7 +834,7 @@ namespace Infrastructure.Repositories
                             PtId = karte.PtId,
                             SinDate = karte.SinDate,
                             RaiinNo = karte.RaiinNo,
-                            KarteKbn = karte.KarteKbn,
+                            KarteKbn = 1,
                             SeqNo = seqNo,
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
