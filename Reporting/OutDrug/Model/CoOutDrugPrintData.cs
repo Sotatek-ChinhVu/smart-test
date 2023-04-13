@@ -31,6 +31,8 @@ public class CoOutDrugPrintData
         RefillCount = refillCount;
 
         RpInfs = new List<CoOutDrugPrintDataRpInf>();
+
+        Biko = new();
     }
     /// <summary>
     /// 帳票タイプ
