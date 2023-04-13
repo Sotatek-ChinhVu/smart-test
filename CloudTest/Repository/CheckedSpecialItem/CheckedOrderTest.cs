@@ -82,6 +82,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate1, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -121,6 +122,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate1, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -166,6 +168,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -206,6 +209,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -262,6 +266,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -306,6 +311,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate1, hokenId, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
@@ -387,6 +393,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -472,6 +479,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -561,6 +569,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -619,6 +628,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
         var odrInfs = new List<int> { 1, 2, 3 };
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var sihifu = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfs, isJouhou);
@@ -664,6 +674,7 @@ public class CheckedOrderTest : BaseUT
         };
         var odrInfs = new List<int> { 1, 2, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate1, hokenId, iBirthDay, syosaisinKbn, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfs, isJouhou1);
@@ -746,6 +757,7 @@ public class CheckedOrderTest : BaseUT
         };
         var odrInfInputs = new List<int> { 1, 2, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInputs, isJouhou);
@@ -835,6 +847,7 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay1, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
@@ -925,6 +938,7 @@ public class CheckedOrderTest : BaseUT
         var odrInfInput1s = new List<int> { 1, 2, 3 };
         var odrInfInput2s = new List<int> { 1, 23, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay1, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
@@ -1012,6 +1026,7 @@ public class CheckedOrderTest : BaseUT
         };
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
@@ -1102,6 +1117,7 @@ public class CheckedOrderTest : BaseUT
         };
         var odrInfInput1s = new List<int> { 1, 2, 3 };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku2(hpId, ptId, sinDate, hokenId, iBirthDay, raiinNo, syosaisinKbn1, oyaRaiinNo, byomeiModelList, ordInfDetailModels, odrInfInput1s, isJouhou);
@@ -1148,6 +1164,7 @@ public class CheckedOrderTest : BaseUT
                 10
             )
         };
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var igakuTenka = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1226,6 +1243,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1314,6 +1332,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1398,6 +1417,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1447,6 +1467,7 @@ public class CheckedOrderTest : BaseUT
                 10
             )
         };
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var igakuTenka = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1525,6 +1546,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1613,6 +1635,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1701,6 +1724,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1785,6 +1809,7 @@ public class CheckedOrderTest : BaseUT
             )
         };
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
@@ -1804,6 +1829,7 @@ public class CheckedOrderTest : BaseUT
     public void InitPriorityCheckDetail_IgakuNanbyo()
     {
         // Arrange
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
@@ -1876,6 +1902,7 @@ public class CheckedOrderTest : BaseUT
     public void InitPriorityCheckDetail_IgakuTenkan()
     {
         // Arrange
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
@@ -1929,6 +1956,7 @@ public class CheckedOrderTest : BaseUT
     public void InitPriorityCheckDetail_SihifuToku1()
     {
         // Arrange
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
@@ -1973,6 +2001,7 @@ public class CheckedOrderTest : BaseUT
     public void InitPriorityCheckDetail_IgakuTokusitu()
     {
         // Arrange
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var checkOrders = new List<CheckedOrderModel>() {
             new CheckedOrderModel(
@@ -2010,6 +2039,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
         long ptId = 1;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2047,6 +2077,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
         long ptId = 1;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2085,6 +2116,7 @@ public class CheckedOrderTest : BaseUT
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2128,6 +2160,7 @@ public class CheckedOrderTest : BaseUT
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2173,6 +2206,7 @@ public class CheckedOrderTest : BaseUT
         tenant.SaveChanges();
         int hpId = 1, userId = 99999, sinDate = 20110101, primaryDoctor = 2, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2207,6 +2241,7 @@ public class CheckedOrderTest : BaseUT
         tenant.SaveChanges();
         int hpId = 1, userId = 99999, sinDate1 = 20110101, sinDate2 = 20180402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2244,6 +2279,7 @@ public class CheckedOrderTest : BaseUT
         tenant.SaveChanges();
         int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2272,6 +2308,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2294,6 +2331,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider); 
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2378,6 +2416,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2466,6 +2505,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2553,6 +2593,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2639,6 +2680,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2674,6 +2716,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2703,6 +2746,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate1 = 20220330, sinDate2 = 999999999;
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2760,6 +2804,7 @@ public class CheckedOrderTest : BaseUT
         }
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2839,6 +2884,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2905,6 +2951,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -2971,6 +3018,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3037,6 +3085,7 @@ public class CheckedOrderTest : BaseUT
 
         tenantTracking.SaveChanges();
 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3065,6 +3114,7 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3100,6 +3150,7 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3135,6 +3186,7 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3189,6 +3241,7 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3244,6 +3297,7 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModel1s = new List<OrdInfDetailModel>()
         {
@@ -3374,6 +3428,7 @@ public class CheckedOrderTest : BaseUT
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
         var byomeiModelList = new List<PtDiseaseModel>()
@@ -3450,6 +3505,7 @@ public class CheckedOrderTest : BaseUT
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
         var byomeiModelList = new List<PtDiseaseModel>()
@@ -3526,6 +3582,7 @@ public class CheckedOrderTest : BaseUT
         } };
         tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMst);
         tenant.SaveChanges();
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
         var byomeiModelList = new List<PtDiseaseModel>()

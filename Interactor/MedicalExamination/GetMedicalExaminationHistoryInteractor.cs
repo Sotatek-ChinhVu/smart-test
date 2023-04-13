@@ -299,7 +299,6 @@ namespace Interactor.MedicalExamination
                                                             rpOdrInf.CreateName,
                                                             rpOdrInf.UpdateDate,
                                                             rpOdrInf.IsDeleted,
-                                                            rpOdrInf.UpdateDate,
                                                             rpOdrInf.CreateMachine,
                                                             rpOdrInf.UpdateMachine
                                                          );
