@@ -1,7 +1,11 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
+using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
+using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
@@ -104,8 +108,13 @@ public class PdfCreatorController : ControllerBase
         var inputData = new GetDataPrintKarte2InputData(request.PtId, request.HpId, request.SinDate, request.StartDate, request.EndDate, request.IsCheckedHoken, request.IsCheckedJihi, request.IsCheckedHokenJihi, request.IsCheckedJihiRece, request.IsCheckedHokenRousai, request.IsCheckedHokenJibai, request.IsCheckedDoctor, request.IsCheckedStartTime, request.IsCheckedVisitingTime, request.IsCheckedEndTime, request.IsUketsukeNameChecked, request.IsCheckedSyosai, request.IsIncludeTempSave, request.IsCheckedApproved, request.IsCheckedInputDate, request.IsCheckedSetName, request.DeletedOdrVisibilitySetting, request.IsIppanNameChecked, request.IsCheckedHideOrder);
 
         var outputData = _historyCommon.GetDataKarte2(inputData);
-        GetDataPrintKarte2Response karte2Result = new GetDataPrintKarte2Response(outputData.RaiinfList, outputData.Karte2Input);
-        var stringKarte2Result = JsonSerializer.Serialize(karte2Result);
+
+        var present = new GetDataPrintKarte2Presenter();
+        present.Complete(outputData);
+
+        //var karte2Result = new ActionResult<Response<GetDataPrintKarte2Response>>(present.Result);
+        //GetDataPrintKarte2Response karte2Result = new GetDataPrintKarte2Response(outputData.RaiinfList, outputData.Karte2Input);
+        var stringKarte2Result = JsonSerializer.Serialize(present.Result);
 
         byte[] bytes = System.IO.File.ReadAllBytes(@"..\EmrCloudApi\Source\index.html");
         using (var memoryStream = new MemoryStream())
