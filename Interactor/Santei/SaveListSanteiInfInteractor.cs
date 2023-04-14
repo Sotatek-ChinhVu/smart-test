@@ -159,7 +159,7 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         }
 
         // validate EndDate
-        else if (CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
+        else if (santeiInfDetail.EndDate != 0 && CIUtil.SDateToShowSDate(santeiInfDetail.EndDate) == string.Empty)
         {
             return SaveListSanteiInfStatus.InvalidEndDate;
         }
@@ -171,13 +171,13 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
         }
 
         // validate Byomei
-        else if (!listByomeis.Contains(santeiInfDetail.Byomei))
+        else if (santeiInfDetail.Byomei.Length > 0 && !listByomeis.Contains(santeiInfDetail.Byomei))
         {
             return SaveListSanteiInfStatus.InvalidByomei;
         }
 
         // validate HosokuComment
-        else if (santeiInfDetail.HosokuComment.Length > 80)
+        else if (santeiInfDetail.HosokuComment.Length > 0 && santeiInfDetail.HosokuComment.Length > 80)
         {
             return SaveListSanteiInfStatus.InvalidHosokuComment;
         }
@@ -188,13 +188,14 @@ public class SaveListSanteiInfInteractor : ISaveListSanteiInfInputPort
     {
         return listSanteiInfInputs.Select(santaiInf => new SanteiInfModel(
                                                                         santaiInf.Id,
-                                                                        ptId,
+                                                                        santaiInf.PtId <= 0 ? 0 : ptId,
                                                                         santaiInf.ItemCd,
                                                                         santaiInf.AlertDays,
                                                                         santaiInf.AlertTerm,
+                                                                        santaiInf.SortNo,
                                                                         santaiInf.ListSanteInfDetails.Select(santaiInfDetail => new SanteiInfDetailModel(
                                                                                                                 santaiInfDetail.Id,
-                                                                                                                ptId,
+                                                                                                                santaiInf.PtId <= 0 ? 0 : ptId,
                                                                                                                 santaiInf.ItemCd,
                                                                                                                 santaiInfDetail.EndDate,
                                                                                                                 santaiInfDetail.KisanSbt,
