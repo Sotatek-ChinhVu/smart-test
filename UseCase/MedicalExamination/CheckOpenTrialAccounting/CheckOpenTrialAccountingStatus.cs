@@ -4,5 +4,6 @@
     {
         Successed = 1,
         InvalidHokenPattern = 2,
+        InvalidGaiRaiRiha = 3,
     }
 }

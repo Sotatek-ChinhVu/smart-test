@@ -167,6 +167,7 @@
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
         public static readonly string InvalidException = "Invalid Exception";
         public static readonly string InvalidNoDataSave = "Does not exist data to save";
+        public static readonly string InvalidGairaiRiha = "Invalid GairaiRiha";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";

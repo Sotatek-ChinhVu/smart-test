@@ -1,10 +1,8 @@
-﻿using UseCase.Core.Sync.Core;
-
-namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
+﻿namespace EmrCloudApi.Responses.MedicalExamination
 {
-    public class CheckOpenTrialAccountingOutputData : IOutputData
+    public class CheckOpenTrialAccountingResponse
     {
-        public CheckOpenTrialAccountingOutputData(int type, string itemName, int lastDaySanteiRiha, string rihaItemName, double systemSetting, bool isExistYoboItemOnly, CheckOpenTrialAccountingStatus status)
+        public CheckOpenTrialAccountingResponse(int type, string itemName, int lastDaySanteiRiha, string rihaItemName, double systemSetting, bool isExistYoboItemOnly)
         {
             Type = type;
             ItemName = itemName;
@@ -12,7 +10,6 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
             RihaItemName = rihaItemName;
             SystemSetting = systemSetting;
             IsExistYoboItemOnly = isExistYoboItemOnly;
-            Status = status;
         }
 
         public int Type { get; private set; }
@@ -21,6 +18,5 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
         public string RihaItemName { get; private set; }
         public double SystemSetting { get; private set; }
         public bool IsExistYoboItemOnly { get; private set; }
-        public CheckOpenTrialAccountingStatus Status { get; private set; }
     }
 }
