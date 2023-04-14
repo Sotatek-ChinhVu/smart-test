@@ -546,7 +546,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.CheckTrialAccounting)]
         public ActionResult<Response<CheckOpenTrialAccountingResponse>> CheckTrialAccounting([FromBody] CheckOpenTrialAccountingRequest request)
         {
-            var input = new CheckOpenTrialAccountingInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInfItem, request.OdrInfHokenPid, request.ItemCds);
+            var input = new CheckOpenTrialAccountingInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInfItem, request.OdrInfHokenPid);
             var output = _bus.Handle(input);
             var presenter = new CheckOpenTrialAccountingPresenter();
             presenter.Complete(output);

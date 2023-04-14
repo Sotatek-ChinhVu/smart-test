@@ -19,7 +19,7 @@ namespace Interactor.MedicalExamination
         {
             try
             {
-                var checkJihiYobo = GetValidJihiYobo(inputData.HpId, inputData.SinDate, inputData.SyosaiKbn, inputData.ItemCds);
+                var checkJihiYobo = GetValidJihiYobo(inputData.HpId, inputData.SinDate, inputData.SyosaiKbn, inputData.AllOdrInfItem);
                 var checkHokenPt = CheckHokenPatternSelect(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.OdrInfHokenPid);
                 if (checkHokenPt != CheckOpenTrialAccountingStatus.Successed)
                 {
@@ -64,9 +64,9 @@ namespace Interactor.MedicalExamination
             return (CheckOpenTrialAccountingStatus.InvalidGaiRaiRiha, check.type, check.itemName, check.lastDaySanteiRiha, check.rihaItemName);
         }
 
-        private (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int sinDate, int syosaiKbn, List<string> itemCds)
+        private (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
         {
-            var check = _todayOdrRepository.GetValidJihiYobo(hpId, sinDate, syosaiKbn, itemCds);
+            var check = _todayOdrRepository.GetValidJihiYobo(hpId, sinDate, syosaiKbn, allOdrInfItem.Select(x => x.Item1).Distinct().ToList());
 
             return (check.systemSetting, check.isExistYoboItemOnly);
         }

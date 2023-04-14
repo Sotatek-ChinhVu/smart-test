@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
 {
     public class CheckOpenTrialAccountingInputData : IInputData<CheckOpenTrialAccountingOutputData>
     {
-        public CheckOpenTrialAccountingInputData(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem, List<int> odrInfHokenPid, List<string> itemCds)
+        public CheckOpenTrialAccountingInputData(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem, List<int> odrInfHokenPid)
         {
             HpId = hpId;
             PtId = ptId;
@@ -13,7 +13,6 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
             SyosaiKbn = syosaiKbn;
             AllOdrInfItem = allOdrInfItem;
             OdrInfHokenPid = odrInfHokenPid;
-            ItemCds = itemCds;
         }
 
         public int HpId { get; private set; }
@@ -23,6 +22,5 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
         public int SyosaiKbn { get; private set; }
         public List<Tuple<string, string>> AllOdrInfItem { get; private set; }
         public List<int> OdrInfHokenPid { get; private set; }
-        public List<string> ItemCds { get; private set; }
     }
 }

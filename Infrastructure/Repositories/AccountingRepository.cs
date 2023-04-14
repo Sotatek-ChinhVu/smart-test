@@ -1718,7 +1718,7 @@ namespace Infrastructure.Repositories
             var hokenIds = listPtHokenPattern.Select(item => item.HokenId).Distinct().ToList();
 
             var listPtHokenInf = new List<PtHokenInf>();
-            if (!hokenIds.Any())
+            if (hokenIds.Any())
             {
                 listPtHokenInf = ptHokenInfRepos.Where(p => hokenIds.Contains(p.HokenId)).ToList();
             }
@@ -1730,7 +1730,7 @@ namespace Infrastructure.Repositories
 
 
             var listPtKohi = new List<PtKohi>();
-            if (!hokenIds.Any())
+            if (hokenIds.Any())
             {
                 listPtKohi = ptKohiRepos.Where(p => hokenIds.Contains(p.HokenId)).ToList();
             }

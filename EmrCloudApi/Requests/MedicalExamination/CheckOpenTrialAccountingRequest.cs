@@ -9,6 +9,5 @@
         public int SyosaiKbn { get; set; }
         public List<Tuple<string, string>> AllOdrInfItem { get; set; } = new();
         public List<int> OdrInfHokenPid { get; set; } = new();
-        public List<string> ItemCds { get; set; } = new();
     }
 }
