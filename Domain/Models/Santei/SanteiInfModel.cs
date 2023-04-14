@@ -41,7 +41,7 @@ public class SanteiInfModel
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
     }
 
-    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm, List<SanteiInfDetailModel> listSanteiInfDetails, bool isDeleted)
+    public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm, int sortNo, List<SanteiInfDetailModel> listSanteiInfDetails, bool isDeleted)
     {
         Id = id;
         PtId = ptId;
@@ -50,13 +50,8 @@ public class SanteiInfModel
         AlertTerm = alertTerm;
         SanteiInfDetailList = listSanteiInfDetails;
         IsDeleted = isDeleted;
-        SeqNo = 0;
+        SeqNo = sortNo;
         ItemName = string.Empty;
-        LastOdrDate = 0;
-        SanteiItemCount = 0;
-        SanteiItemSum = 0;
-        CurrentMonthSanteiItemCount = 0;
-        CurrentMonthSanteiItemSum = 0;
     }
 
     public SanteiInfModel(long id, long ptId, string itemCd, int alertDays, int alertTerm)
