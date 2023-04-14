@@ -104,7 +104,7 @@ namespace Infrastructure.Repositories
             foreach (var inputData in approvalInfs)
             {
                 var approvalInfo = TrackingDataContext.ApprovalInfs.FirstOrDefault(x => x.HpId == 1 && x.IsDeleted == 0);
-                if (inputData.Id == approvalInfo?.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate)
+                if (approvalInfo != null && (inputData.Id == approvalInfo.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate))
                 {
                     approvalInfo.CreateId = userId;
                     approvalInfo.CreateDate = CIUtil.GetJapanDateTimeNow();
@@ -119,7 +119,7 @@ namespace Infrastructure.Repositories
                     
                 }
 
-                if (inputData.Id == approvalInfo?.Id && inputData.RaiinNo == approvalInfo?.RaiinNo && inputData.IsDeleted != approvalInfo?.IsDeleted)
+                if (approvalInfo != null && (inputData.Id == approvalInfo.Id && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.IsDeleted != approvalInfo.IsDeleted))
                 {
                     approvalInfo.IsDeleted = inputData.IsDeleted;
                 }

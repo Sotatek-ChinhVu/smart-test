@@ -92,6 +92,7 @@ using UseCase.PtGroupMst.CheckAllowDelete;
 using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using Newtonsoft.Json;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
+using UseCase.PatientInfor.GetTokiMstList;
 
 namespace EmrCloudApi.Controller
 {
@@ -895,6 +896,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SearchPatientInfoByPtNumPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SearchPatientInfoByPtNumResponse>>(presenter.Result);
+        }
+    
+        [HttpGet(ApiPath.GetTokkiMstList)]
+        public ActionResult<Response<GetTokkiMstListResponse>> GetTokkiMstList([FromQuery] GetTokkiMstListRequest request)
+        {
+            var input = new GetTokkiMstListInputData(HpId, request.SeikyuYm);
+            var output = _bus.Handle(input);
+            var presenter = new GetTokkiMstListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTokkiMstListResponse>>(presenter.Result);
         }
     }
 }

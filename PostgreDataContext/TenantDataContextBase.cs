@@ -7,24 +7,10 @@ namespace PostgreDataContext
     public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
-
         public TenantDataContext(DbContextOptions options)
         : base(options)
         {
             _connectionString = string.Empty;
-        }
-
-        public override void Dispose()
-        {
-            try
-            {
-                base.Dispose();
-            }
-            finally
-            {
-                string info = $"Dispose TenantDataContext from: {Environment.NewLine} {Environment.StackTrace}";
-                Console.WriteLine(info);
-            }
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -135,7 +121,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });
             modelBuilder.Entity<RaiinListDetail>().HasKey(r => new { r.HpId, r.GrpId, r.KbnCd });
-            modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
             modelBuilder.Entity<RaiinListMst>().HasKey(r => new { r.HpId, r.GrpId });
             modelBuilder.Entity<RoudouMst>().HasKey(r => new { r.RoudouCd });
             modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.RoudouCd, r.KantokuCd });
@@ -289,7 +274,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<SessionInf>().HasKey(e => new { e.HpId, e.Machine });
             modelBuilder.Entity<SetOdrInfCmt>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo, e.EdaNo });
             modelBuilder.Entity<SinKoui>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.RpNo, e.SeqNo });
-            modelBuilder.Entity<SinKouiCount>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo, e.SeqNo });
             modelBuilder.Entity<SinrekiFilterMst>().HasKey(e => new { e.HpId, e.GrpCd });
             modelBuilder.Entity<SinrekiFilterMstDetail>().HasKey(e => new { e.HpId, e.GrpCd, e.Id });
             modelBuilder.Entity<SinRpNoInf>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo });

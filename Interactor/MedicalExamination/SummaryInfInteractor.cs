@@ -403,7 +403,7 @@ namespace Interactor.MedicalExamination
 
                     spaceHeaderName = 5.0;
                     spaceHeaderInfo = 30.0;
-                    var splitHeaderInf = headerInfo.Split("\r\n").ToList();
+                    var splitHeaderInf = headerInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
                     var result = new SummaryInfItem(headerInfo, headerName, propertyColor, spaceHeaderName, spaceHeaderInfo, summaryInfItem.HeaderNameSize, grpItemCd, summaryInfItem.Text, splitHeaderInf);
                     return summaryInfItem;
                 }
@@ -466,7 +466,7 @@ namespace Interactor.MedicalExamination
                         //家族歴
                         break;
                 }
-                var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ? headerInf.Split("\r\n").ToList() : summaryInfItem.HeaderInfo.Split("\r\n").ToList();
+                var splitHeaderInfo = !string.IsNullOrEmpty(headerInf) ? headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList() : summaryInfItem.HeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 summaryInfItem = new SummaryInfItem(!string.IsNullOrEmpty(headerInf) ? headerInf : summaryInfItem.HeaderInfo, !string.IsNullOrEmpty(headerName) ? headerName : summaryInfItem.HeaderName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
             }
@@ -598,7 +598,7 @@ namespace Interactor.MedicalExamination
             }
             headerInf = headerInf.TrimEnd('/') ?? string.Empty;
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -655,7 +655,7 @@ namespace Interactor.MedicalExamination
             }
 
             string strHeaderInf = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInf = strHeaderInf.Split("\r\n").ToList();
+            var splitHeaderInf = strHeaderInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var summaryInfItem = new SummaryInfItem(strHeaderInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -697,7 +697,7 @@ namespace Interactor.MedicalExamination
                 }
             }
             string strHeaderInfo = headerInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInfo = strHeaderInfo.Split("\r\n").ToList();
+            var splitHeaderInfo = strHeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInfo);
 
@@ -751,7 +751,7 @@ namespace Interactor.MedicalExamination
                 }
             }
             string strHeaderInfo = headerInf.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInf = strHeaderInfo.Split("\r\n").ToList();
+            var splitHeaderInf = strHeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -773,7 +773,7 @@ namespace Interactor.MedicalExamination
                 }
 
                 headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-                var splitHeaderInf = headerInf.Split("\r\n").ToList();
+                var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -830,7 +830,7 @@ namespace Interactor.MedicalExamination
                 }
 
                 string strHeaderInfo = headerInf.ToString().TrimEnd('/');
-                var splitHeaderInf = strHeaderInfo.Split("\r\n").ToList();
+                var splitHeaderInf = strHeaderInfo.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 var summaryInfItem = new SummaryInfItem(strHeaderInfo, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -875,7 +875,7 @@ namespace Interactor.MedicalExamination
             }
 
             headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -894,7 +894,7 @@ namespace Interactor.MedicalExamination
             }
 
             headerInf = headerInf.TrimEnd(Environment.NewLine.ToCharArray());
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
@@ -912,7 +912,7 @@ namespace Interactor.MedicalExamination
                 headerInf = ptInfModel.HomeAddress1 + space + ptInfModel.HomeAddress2;
             }
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -966,7 +966,7 @@ namespace Interactor.MedicalExamination
                 headerInf = strFutanInfo;
             }
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -1069,7 +1069,7 @@ namespace Interactor.MedicalExamination
                 headerInf = ptInfModel.Tel1 + Environment.NewLine + ptInfModel.Tel2;
             }
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -1086,7 +1086,7 @@ namespace Interactor.MedicalExamination
                 headerInf = seikaturekiInfModel.Text;
             }
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -1120,7 +1120,7 @@ namespace Interactor.MedicalExamination
                 }
             }
 
-            var splitHeaderInf = headerInf.Split("\r\n").ToList();
+            var splitHeaderInf = headerInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(headerInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;
@@ -1170,7 +1170,7 @@ namespace Interactor.MedicalExamination
             string headerName = "◆来院コメント";
             string textRaiinCmtInf = _raiinCmtInfRepository.GetRaiinCmtByPtId(hpId, ptId, sinDate, raiinNo);
 
-            var splitHeaderInf = textRaiinCmtInf.Split("\r\n").ToList();
+            var splitHeaderInf = textRaiinCmtInf.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var summaryInfItem = new SummaryInfItem(textRaiinCmtInf, headerName, string.Empty, 0, 0, 0, grpItemCd, string.Empty, splitHeaderInf);
 
             return summaryInfItem;

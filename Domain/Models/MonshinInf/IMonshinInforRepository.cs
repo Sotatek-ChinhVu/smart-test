@@ -6,7 +6,8 @@ namespace Domain.Models.MonshinInf
     {
         bool SaveList(List<MonshinInforModel> monshinInforModels, int userId);
 
-        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted);
+        List<MonshinInforModel> GetMonshinInfor(int hpId, long ptId, long raiinNo, bool isDeleted, bool isGetAll = true);
+
+        bool SaveMonshinSheet(MonshinInforModel monshin);
     }
 }
- 

@@ -63,5 +63,15 @@ namespace Domain.Models.MstItem
         List<TenItemModel> FindTenMst(int hpId, List<string> itemCds);
 
         List<HolidayModel> FindHolidayMstList(int hpId, int fromDate, int toDate);
+
+        List<KensaCenterMstModel> GetListKensaCenterMst(int hpId);
+
+        List<TenMstOriginModel> GetGroupTenMst(string itemCd);
+
+        string GetMaxItemCdByTypeForAdd(string startWithstr);
+
+        int GetMinJihiSbtMst(int hpId);
+
+        bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
     }
 }

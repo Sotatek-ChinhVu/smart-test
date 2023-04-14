@@ -1,6 +1,7 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -101,6 +102,14 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsInputCheckKeisanSave", isInputCheckKeisanSave);
         result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
         result.Add("IsInputCheckPrint", isInputCheckPrint);
+
+        string reportCheckSaveParam = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 4)?.Param ?? "10101";
+        var isReportCheckKeisanSave = reportCheckSaveParam[1].AsInteger();
+        var isReportCheckNormalSave = reportCheckSaveParam[0].AsInteger();
+        var isReportCheckTempSave = reportCheckSaveParam[2].AsInteger();
+        result.Add("IsReportCheckKeisanSave", isReportCheckKeisanSave);
+        result.Add("IsReportCheckNormalSave", isReportCheckNormalSave);
+        result.Add("IsReportCheckTempSave", isReportCheckTempSave);
 
         return result;
     }
@@ -384,12 +393,34 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
 
     public int GetSettingValue(int hpId, int userId, int groupCd, int grpItemCd = 0, int grpItemEdaNo = 0)
     {
-        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId 
-                                                                           && p.GrpCd == groupCd 
-                                                                           && p.GrpItemCd == grpItemCd 
-                                                                           && p.GrpItemEdaNo == grpItemEdaNo 
+        var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId
+                                                                           && p.GrpCd == groupCd
+                                                                           && p.GrpItemCd == grpItemCd
+                                                                           && p.GrpItemEdaNo == grpItemEdaNo
                                                                            && p.UserId == userId);
         return userConf != null ? userConf.Val : GetDefaultValue(groupCd, grpItemCd);
+    }
+
+    public List<(int groupItemCd, int value)> GetSettingValues(int hpId, int userId, int groupCd, int fromGroupItemCd, int toGroupItemCd)
+    {
+        var userConfs = NoTrackingDataContext.UserConfs.Where(p => p.HpId == hpId
+                                                                           && p.GrpCd == groupCd
+                                                                           && p.UserId == userId).ToList();
+        List<(int groupItemCd, int value)> values = new();
+        for (int i = fromGroupItemCd; i <= toGroupItemCd; i++)
+        {
+            var userConf = userConfs.FirstOrDefault(u => u.GrpItemCd == i);
+            if (userConf != null)
+            {
+                values.Add(new(userConf.GrpItemCd, userConf.Val));
+            }
+            else
+            {
+                values.Add(new(i, GetDefaultValue(groupCd, i)));
+            }
+        }
+
+        return values;
     }
 
     public void ReleaseResource()

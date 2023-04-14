@@ -19,6 +19,6 @@ namespace CommonChecker.Models.Futan
 
         public long MaxCnt => SanteiCntCheck.MaxCnt;
 
-        public string TargetCd => SanteiCntCheck.TargetCd;
+        public string TargetCd => SanteiCntCheck.TargetCd ?? string.Empty;
     }
 }

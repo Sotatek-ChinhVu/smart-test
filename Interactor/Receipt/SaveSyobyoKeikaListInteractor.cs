@@ -86,7 +86,7 @@ public class SaveSyobyoKeikaListInteractor : ISaveSyobyoKeikaListInputPort
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }
-        else if ((hokenKbn == 11 || hokenKbn == 12) && inputData.SyobyoKeikaList.Count > 1 && inputData.SyobyoKeikaList.Any(item => item.SinDay != 0))
+        else if ((hokenKbn == 11 || hokenKbn == 12) && (inputData.SyobyoKeikaList.Count > 1 || inputData.SyobyoKeikaList.Any(item => item.SinDay != 0)))
         {
             return SaveSyobyoKeikaListStatus.InvalidSinDay;
         }

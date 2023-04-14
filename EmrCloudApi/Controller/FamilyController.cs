@@ -11,6 +11,7 @@ using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
 using UseCase.Family.GetRaiinInfList;
 using UseCase.Family.SaveFamilyList;
+using UseCase.Family.ValidateFamilyList;
 
 namespace EmrCloudApi.Controller;
 
@@ -60,6 +61,19 @@ public class FamilyController : AuthorizeControllerBase
         return new ActionResult<Response<SaveFamilyListResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.ValidateFamilyList)]
+    public ActionResult<Response<ValidateFamilyListResponse>> ValidateFamilyList([FromBody] ValidateFamilyListRequest request)
+    {
+        var listFamilyInputData = ConvertToFamilyInputItem(request.FamilyList);
+        var input = new ValidateFamilyListInputData(HpId, request.PtId, listFamilyInputData);
+        var output = _bus.Handle(input);
+
+        var presenter = new ValidateFamilyListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ValidateFamilyListResponse>>(presenter.Result);
+    }
+
     [HttpGet(ApiPath.GetRaiinInfList)]
     public ActionResult<Response<GetRaiinInfListResponse>> GetListRaiinInf([FromQuery] GetRaiinInfListRequest request)
     {
@@ -71,31 +85,32 @@ public class FamilyController : AuthorizeControllerBase
 
         return new ActionResult<Response<GetRaiinInfListResponse>>(presenter.Result);
     }
+
     private List<FamilyItem> ConvertToFamilyInputItem(List<FamilyRequestItem> listFamilyRequest)
     {
         var result = listFamilyRequest.Select(family => new FamilyItem(
-                                                                                family.FamilyId,
-                                                                                family.PtId,
-                                                                                family.ZokugaraCd,
-                                                                                family.FamilyPtId,
-                                                                                family.Name,
-                                                                                family.KanaName,
-                                                                                family.Sex,
-                                                                                family.Birthday,
-                                                                                family.IsDead,
-                                                                                family.IsSeparated,
-                                                                                family.Biko,
-                                                                                family.SortNo,
-                                                                                family.IsDeleted,
-                                                                                family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
-                                                                                                                                                    reki.Id,
-                                                                                                                                                    reki.ByomeiCd,
-                                                                                                                                                    reki.Byomei,
-                                                                                                                                                    reki.Cmt,
-                                                                                                                                                    reki.SortNo,
-                                                                                                                                                    reki.IsDeleted
-                                                                                                                                                )).ToList()
-                                                                           )).ToList();
+                                                            family.FamilyId,
+                                                            family.PtId,
+                                                            family.ZokugaraCd,
+                                                            family.FamilyPtId,
+                                                            family.Name,
+                                                            family.KanaName,
+                                                            family.Sex,
+                                                            family.Birthday,
+                                                            family.IsDead,
+                                                            family.IsSeparated,
+                                                            family.Biko,
+                                                            family.SortNo,
+                                                            family.IsDeleted,
+                                                            family.PtFamilyRekiList.Select(reki => new FamilyRekiItem(
+                                                                                                       reki.Id,
+                                                                                                       reki.ByomeiCd,
+                                                                                                       reki.Byomei,
+                                                                                                       reki.Cmt,
+                                                                                                       reki.SortNo,
+                                                                                                       reki.IsDeleted))
+                                                                                   .ToList()))
+                                      .ToList();
         return result;
     }
 }

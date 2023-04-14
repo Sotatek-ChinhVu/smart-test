@@ -5,7 +5,7 @@ namespace Domain.Models.PatientInfor
 {
     public class PatientInforModel
     {
-        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, string rainCount)
+        public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, int firstVisitDate, int rainCount)
         {
             HpId = hpId;
             PtId = ptId;
@@ -47,7 +47,7 @@ namespace Domain.Models.PatientInfor
             Memo = memo;
             LastVisitDate = lastVisitDate;
             FirstVisitDate = firstVisitDate;
-            RainCount = rainCount;
+            RainCountInt = rainCount;
             Comment = string.Empty;
         }
 
@@ -56,16 +56,8 @@ namespace Domain.Models.PatientInfor
             HpId = hpId;
             PtId = ptId;
             Comment = comment;
-            ReferenceNo = 0;
-            SeqNo = 0;
-            PtNum = 0;
             KanaName = string.Empty;
             Name = string.Empty;
-            Sex = 0;
-            Birthday = 0;
-            LimitConsFlg = 0;
-            IsDead = 0;
-            DeathDate = 0;
             HomePost = string.Empty;
             HomeAddress1 = string.Empty;
             HomeAddress2 = string.Empty;
@@ -87,30 +79,13 @@ namespace Domain.Models.PatientInfor
             OfficeAddress2 = string.Empty;
             OfficeTel = string.Empty;
             OfficeMemo = string.Empty;
-            IsRyosyoDetail = 0;
-            PrimaryDoctor = 0;
-            IsTester = 0;
-            MainHokenPid = 0;
             Memo = string.Empty;
-            LastVisitDate = 0;
-            FirstVisitDate = 0;
-            RainCount = string.Empty;
         }
 
         public PatientInforModel()
         {
-            HpId = 0;
-            PtId = 0;
-            ReferenceNo = 0;
-            SeqNo = 0;
-            PtNum = 0;
             KanaName = string.Empty;
             Name = string.Empty;
-            Sex = 0;
-            Birthday = 0;
-            LimitConsFlg = 0;
-            IsDead = 0;
-            DeathDate = 0;
             HomePost = string.Empty;
             HomeAddress1 = string.Empty;
             HomeAddress2 = string.Empty;
@@ -132,14 +107,7 @@ namespace Domain.Models.PatientInfor
             OfficeAddress2 = string.Empty;
             OfficeTel = string.Empty;
             OfficeMemo = string.Empty;
-            IsRyosyoDetail = 0;
-            PrimaryDoctor = 0;
-            IsTester = 0;
-            MainHokenPid = 0;
             Memo = string.Empty;
-            LastVisitDate = 0;
-            FirstVisitDate = 0;
-            RainCount = string.Empty;
             Comment = string.Empty;
         }
 
@@ -147,16 +115,9 @@ namespace Domain.Models.PatientInfor
         {
             HpId = hpId;
             PtId = ptId;
-            ReferenceNo = 0;
-            SeqNo = 0;
             PtNum = ptNum;
             KanaName = string.Empty;
             Name = name;
-            Sex = 0;
-            Birthday = 0;
-            LimitConsFlg = 0;
-            IsDead = 0;
-            DeathDate = 0;
             HomePost = string.Empty;
             HomeAddress1 = string.Empty;
             HomeAddress2 = string.Empty;
@@ -178,24 +139,18 @@ namespace Domain.Models.PatientInfor
             OfficeAddress2 = string.Empty;
             OfficeTel = string.Empty;
             OfficeMemo = string.Empty;
-            IsRyosyoDetail = 0;
-            PrimaryDoctor = 0;
-            IsTester = 0;
-            MainHokenPid = 0;
             Memo = string.Empty;
-            LastVisitDate = 0;
-            FirstVisitDate = 0;
-            RainCount = string.Empty;
             Comment = string.Empty;
         }
 
-        public PatientInforModel(long ptId, long ptNum, string name, string kanaName, int sex)
+        public PatientInforModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthDay)
         {
             PtId = ptId;
             PtNum = ptNum;
             KanaName = kanaName;
             Name = name;
             Sex = sex;
+            Birthday = birthDay;
             HomePost = string.Empty;
             HomeAddress1 = string.Empty;
             HomeAddress2 = string.Empty;
@@ -218,7 +173,6 @@ namespace Domain.Models.PatientInfor
             OfficeTel = string.Empty;
             OfficeMemo = string.Empty;
             Memo = string.Empty;
-            RainCount = string.Empty;
             Comment = string.Empty;
         }
 
@@ -253,7 +207,6 @@ namespace Domain.Models.PatientInfor
             OfficeTel = string.Empty;
             OfficeMemo = string.Empty;
             Memo = string.Empty;
-            RainCount = string.Empty;
             Comment = string.Empty;
         }
 
@@ -335,7 +288,9 @@ namespace Domain.Models.PatientInfor
 
         public int FirstVisitDate { get; private set; }
 
-        public string RainCount { get; private set; }
+        public int RainCountInt { get; private set; }
+
+        public string RainCount => RainCountInt + "人";
 
         public string Comment { get; private set; }
 

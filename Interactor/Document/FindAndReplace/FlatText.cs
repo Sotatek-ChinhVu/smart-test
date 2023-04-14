@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Xml;
+using System.Xml.Linq;
 
 namespace FindAndReplace
 {
@@ -7,28 +8,33 @@ namespace FindAndReplace
     /// </summary>
     internal sealed class FlatText
     {
-        private readonly XElement textElement;
+        private readonly XElement? textElement;
 
         public int StartIndex { get; private set; }
         public int EndIndex { get; private set; }
 
         public FlatText(XElement textElement) { this.textElement = textElement; }
-        
+
+        public FlatText() { }
+
         public string Text
         {
-            get { return this.textElement.Value; }
+            get { return this.textElement?.Value ?? string.Empty; }
             set
             {
-                this.textElement.Value = value;
-
-                // If needed set preserve space on Text element.
-                if (value.StartsWith(" ") || value.EndsWith(" "))
+                if (this.textElement != null)
                 {
-                    XAttribute space = this.textElement.Attribute(FlatConstants.TextSpaceAttributeName);
-                    if (space == null)
-                        this.textElement.Add(new XAttribute(FlatConstants.TextSpaceAttributeName, "preserve"));
-                    else if (space.Value != "preserve")
-                        space.Value = "preserve";
+                    this.textElement.Value = value;
+
+                    // If needed set preserve space on Text element.
+                    if (value.StartsWith(" ") || value.EndsWith(" "))
+                    {
+                        XAttribute? space = this.textElement.Attribute(FlatConstants.TextSpaceAttributeName);
+                        if (space == null)
+                            this.textElement.Add(new XAttribute(FlatConstants.TextSpaceAttributeName, "preserve"));
+                        else if (space.Value != "preserve")
+                            space.Value = "preserve";
+                    }
                 }
             }
         }
@@ -39,6 +45,6 @@ namespace FindAndReplace
             this.EndIndex = startIndex + this.Text.Length - 1;
         }
 
-        public void Remove() { this.textElement.Parent.Remove(); }
+        public void Remove() { this.textElement?.Parent?.Remove(); }
     }
 }

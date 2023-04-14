@@ -1,6 +1,7 @@
-﻿using Domain.Models.HokenMst;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
+using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
@@ -77,8 +78,8 @@ namespace Domain.Models.Insurance
             HokenId = hokenId;
             StartDate = startDate;
             EndDate = endDate;
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
         }
 
         public HokenInfModel(int hokenId, long ptId, int hpId, int startDate, int endDate)
@@ -88,16 +89,16 @@ namespace Domain.Models.Insurance
             PtId = ptId;
             StartDate = startDate;
             EndDate = endDate;
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
         }
         public HokenInfModel()
         {
-            HokenMst = new HokenMstModel();
-            HokensyaMst = new HokensyaMstModel();
+            HokenMst = new();
+            HokensyaMst = new();
         }
 
-        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMasterModel hokenMasterModels, List<ConfirmDateModel> confirmDateModels)
+        public HokenInfModel(int hpId, long ptId, int hokenId, int hokenKbn, string houbetu, int startDate, int endDate, int sinDate, HokenMstModel hokenMst, List<ConfirmDateModel> confirmDateModels)
         {
             HpId = hpId;
             PtId = ptId;
@@ -107,11 +108,10 @@ namespace Domain.Models.Insurance
             StartDate = startDate;
             EndDate = endDate;
             SinDate = sinDate;
-            HokenMasterModels = hokenMasterModels;
+            HokenMst = hokenMst;
             ConfirmDateList = confirmDateModels;
+            HokensyaMst = new();
         }
-
-        public HokenMasterModel HokenMasterModels { get; private set; }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
@@ -362,6 +362,21 @@ namespace Domain.Models.Insurance
                     return true;
                 }
 
+                if (!ConfirmDateList.Any()) return false;
+
+                var isValidHokenChecks = ConfirmDateList
+                    .Where(x => x.IsDeleted == 0)
+                    .OrderByDescending(x => x.ConfirmDate)
+                    .ToList();
+                int sinYM = CIUtil.Copy(SinDate.AsString(), 1, 6).AsInteger();
+                foreach (var ptHokenCheck in isValidHokenChecks)
+                {
+                    int currentConfirmYM = CIUtil.Copy(ptHokenCheck.ConfirmDate.AsString(), 1, 6).AsInteger();
+                    if (currentConfirmYM == sinYM)
+                    {
+                        return true;
+                    }
+                }
                 return false;
             }
         }
@@ -372,7 +387,9 @@ namespace Domain.Models.Insurance
             {
                 if (!ConfirmDateList.Any()) return 0;
 
-                return ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate;
+                return CIUtil
+                    .Copy(ConfirmDateList.OrderByDescending(item => item.ConfirmDate).First().ConfirmDate
+                            .AsString(), 1, 8).AsInteger();
             }
         }
 

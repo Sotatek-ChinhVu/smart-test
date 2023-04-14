@@ -80,20 +80,16 @@ namespace Interactor.MedicalExamination
                 var allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
 
                 //Check in model
-                var obj = new object();
-                Parallel.For(0, allOdrInfs.Count, index =>
+                for (var index = 0; index < allOdrInfs.Count; index++)
                 {
                     var item = allOdrInfs[index];
 
                     var modelValidation = item.Validation(0);
                     if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        lock (obj)
-                        {
-                            dicValidation.Add(index.ToString(), modelValidation);
-                        }
+                        dicValidation.Add(index.ToString(), modelValidation);
                     }
-                });
+                };
 
                 // Karte
                 var karteModel = new KarteInfModel(
@@ -151,8 +147,7 @@ namespace Interactor.MedicalExamination
             var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999).Item1;
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
-            var obj = new object();
-            Parallel.ForEach(inputDataList, item =>
+            foreach (var item in inputDataList)
             {
                 var ordInf = new OrdInfModel(
                         item.HpId,
@@ -179,11 +174,12 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     );
 
-                var objDetail = new object();
-                Parallel.ForEach(item.OdrDetails, itemDetail =>
+                foreach (var itemDetail in item.OdrDetails)
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
                     refillSetting = itemDetail == null ? 999 : refillSetting;
@@ -192,7 +188,7 @@ namespace Interactor.MedicalExamination
 
                     if (itemDetail == null)
                     {
-                        return;
+                        break;
                     }
 
                     var ordInfDetail = new OrdInfDetailModel(
@@ -251,17 +247,11 @@ namespace Interactor.MedicalExamination
                                 "",
                                 ""
                             );
-                    lock (objDetail)
-                    {
-                        ordInf.OrdInfDetails.Add(ordInfDetail);
-                    }
-                });
-                lock (obj)
-                {
-
-                    allOdrInfs.Add(ordInf);
+                    ordInf.OrdInfDetails.Add(ordInfDetail);
                 }
-            });
+
+                allOdrInfs.Add(ordInf);
+            }
 
             return allOdrInfs;
         }
@@ -274,7 +264,7 @@ namespace Interactor.MedicalExamination
             var hokenPids = inputDataList.Select(i => i.HokenPid).Distinct().ToList();
             var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
             object obj = new();
-            Parallel.For(0, inputDataList.Count, index =>
+            for(var index = 0; index < inputDataList.Count; index++)
             {
                 var item = inputDataList[index];
 
@@ -310,7 +300,7 @@ namespace Interactor.MedicalExamination
                     var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
                     AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                 }
-            });
+            }
         }
 
         private RaiinInfConst.RaiinInfTodayOdrValidationStatus CheckRaiinInf(ValidationTodayOrdInputData inputDatas)

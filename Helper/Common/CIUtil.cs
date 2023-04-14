@@ -16,6 +16,68 @@ namespace Helper.Common
             return input.ToString("#,###");
         }
 
+        /// <summary>
+        /// 指定の文字列の幅を返す（半角1、全角2）
+        /// </summary>
+        /// <param name="stTarget">幅を取得する元になる文字列。<param>
+        /// <returns>バイト数</returns>
+        public static int LenB(string stTarget)
+        {
+            int ret = 0;
+
+            if (stTarget != null)
+            {
+                for (int i = 0; i < stTarget.Length; i++)
+                {
+                    //Console.Write(stTarget[i]);
+                    ret += LenB(stTarget[i]);
+                }
+            }
+
+            return ret;
+        }
+
+        public static int LenB(char stTarget)
+        {
+            int ret = 0;
+
+            Char ch = stTarget;
+            if (Char.IsHighSurrogate(ch))
+            {
+                ret++;
+            }
+            else if (Char.IsLowSurrogate(ch))
+            {
+                ret++;
+            }
+            else if ((!((0x0020 <= (ch)) && ((ch) <= 0x007f))) && (!((0xff61 <= (ch)) && ((ch) <= 0xff9f))))
+            {
+                ret += 2;
+            }
+            else
+            {
+                ret++;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 郵便番号をハイフン付きに変換
+        /// </summary>
+        /// <param name="postcd"></param>
+        /// <returns></returns>
+        public static string GetDspPostCd(string postcd)
+        {
+            string ret = postcd ?? "";
+
+            if (ret.Length > 5 && ret.Contains("-") == false)
+            {
+                ret = $"{ret.Substring(0, 3)}-{ret.Substring(3, ret.Length - 3)}";
+            }
+            return ret;
+        }
+
         public struct WarekiYmd
         {
             public string Ymd;
@@ -130,6 +192,7 @@ namespace Helper.Common
             else
                 return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
         }
+
         public static string ToHalfsize(string value)
         {
             if (value == null)
@@ -297,7 +360,7 @@ namespace Helper.Common
 
         public static string Copy(string input, int index, int lengthToCopy)
         {
-            if (input == null) return string.Empty;
+            if (input == string.Empty) return string.Empty;
 
             if (index <= 0 || index > input.Length) return string.Empty;
 
@@ -1556,7 +1619,7 @@ namespace Helper.Common
             string ret = "";
             string dummy1 = "";
             string dummy2 = "";
-            string val = "";
+            string? val = "";
 
             Dictionary<string, string> replaceChar;
 
@@ -1612,15 +1675,15 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val;
+                        ret += val ?? string.Empty;
                         i = i + 2;
                         continue;
                     }
                     else if (IsUntilJISKanjiLevel2InKana(s.Substring(i, 1), ref dummy1, ref dummy2))
                     {
-                        ret += Microsoft.VisualBasic.Strings.StrConv(s.Substring(i, 1), Microsoft.VisualBasic.VbStrConv.Wide, jaJP.LCID);
+                        ret += HenkanJ.Instance.ToFullsize(s.Substring(i, 1));
                     }
                     else
                     {
@@ -2561,8 +2624,7 @@ namespace Helper.Common
             sIn = sIn.Replace("\t", "");
             sIn = sIn.Replace(Environment.NewLine, "");
 
-            TextElementEnumerator textEnum = null;
-            textEnum = StringInfo.GetTextElementEnumerator(sIn);
+            TextElementEnumerator textEnum = StringInfo.GetTextElementEnumerator(sIn);
 
             while (textEnum.MoveNext())
             {
@@ -2716,7 +2778,7 @@ namespace Helper.Common
         public static string ReplaceHiraDakuten(string s)
         {
             string ret = "";
-            string val = "";
+            string? val = "";
 
             Dictionary<string, string> replaceChar
                    = new Dictionary<string, string>()
@@ -2734,9 +2796,9 @@ namespace Helper.Common
             {
                 while (i < s.Length)
                 {
-                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2), out val))
+                    if (i < s.Length - 1 && replaceChar.TryGetValue(s.Substring(i, 2) ?? string.Empty, out val))
                     {
-                        ret += val;
+                        ret += val ?? string.Empty;
                         i = i + 2;
                         continue;
                     }
@@ -2798,7 +2860,7 @@ namespace Helper.Common
             }
             else if (val > 0)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;
@@ -2837,7 +2899,7 @@ namespace Helper.Common
 
             if (val != null)
             {
-                ret = val.ToString();
+                ret = val?.ToString() ?? "";
             }
 
             return ret;
@@ -2871,7 +2933,7 @@ namespace Helper.Common
         /// <returns></returns>
         public static string ToNarrow(string s)
         {
-            return Microsoft.VisualBasic.Strings.StrConv(s, Microsoft.VisualBasic.VbStrConv.Narrow);
+            return HenkanJ.Instance.ToHalfsize(s);
         }
 
         /// <summary>
@@ -3146,6 +3208,65 @@ namespace Helper.Common
             string result = SDateToShowSWDate(ym * 100 + 1, fmtReki, fmtWeek, fmtDate);
             if (result == string.Empty) return string.Empty;
             return result.Substring(0, result.Length - 3);
+        }
+        /// <summary>
+        /// 指定日の曜日を取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 日～土
+        /// </returns>
+        public static string GetYobi(int baseDate)
+        {
+            string week = "";
+            switch (GetWeek(baseDate))
+            {
+                case 0:
+                    week = "日";
+                    break;
+                case 1:
+                    week = "月";
+                    break;
+                case 2:
+                    week = "火";
+                    break;
+                case 3:
+                    week = "水";
+                    break;
+                case 4:
+                    week = "木";
+                    break;
+                case 5:
+                    week = "金";
+                    break;
+                case 6:
+                    week = "土";
+                    break;
+            }
+            return week;
+        }
+
+        /// <summary>
+        /// 指定日の曜日を番号で取得する
+        /// </summary>
+        /// <param name="baseDate"></param>
+        /// <returns>
+        /// 0:日曜～6:土曜
+        /// </returns>
+        public static int GetWeek(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int ret = 0;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                ret = (int)dt1.DayOfWeek;
+            }
+
+            return ret;
         }
     }
 }

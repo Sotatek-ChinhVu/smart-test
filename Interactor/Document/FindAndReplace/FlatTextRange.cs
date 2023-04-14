@@ -56,7 +56,7 @@ namespace FindAndReplace
 
         private LinkedListNode<FlatText> FindNode(int searchStartIndex)
         {
-            for (LinkedListNode<FlatText> node = this.range.First; node != null; node = node.Next)
+            for (LinkedListNode<FlatText>? node = this.range.First; node != null; node = node.Next)
                 if (node.Value.StartIndex <= searchStartIndex && node.Value.EndIndex >= searchStartIndex)
                     return node;
 
@@ -83,7 +83,7 @@ namespace FindAndReplace
 
         private void RemoveNodes(LinkedListNode<FlatText> replacedNode, int searchEndIndex)
         {
-            LinkedListNode<FlatText> node;
+            LinkedListNode<FlatText>? node;
             FlatText flatText;
 
             while ((node = replacedNode.Next) != null &&

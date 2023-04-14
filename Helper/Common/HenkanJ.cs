@@ -6,30 +6,6 @@ namespace Helper.Common
 {
     public class HenkanJ
     {
-        private static readonly int _LCID = new System.Globalization.CultureInfo("ja-JP", true).LCID;
-
-        public static string HankToZen(string s)
-        {
-            string result;
-            try
-            {
-                result = Strings.StrConv(s, VbStrConv.Wide, _LCID);
-                //This function does not convert \ → ￥
-                //Replace by hand
-                result = result.Replace("\\", "￥");
-                //Win7の仕様変更（結合できない濁点[゛]が[?]に変換される）
-                result = result.Replace("゛", "?");
-                //Win7の仕様変更（結合できない半濁点[゜]が[?]に変換される）
-                result = result.Replace("゜", "?");
-            }
-            catch
-            {
-                result = s;
-            }
-
-            return result;
-        }
-
         private static HenkanJ? _instance;
         public static HenkanJ Instance
         {

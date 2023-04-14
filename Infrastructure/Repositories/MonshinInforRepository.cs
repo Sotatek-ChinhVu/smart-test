@@ -12,23 +12,41 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
+        public List<MonshinInforModel> GetMonshinInfor(int hpId, long ptId, long raiinNo, bool isDeleted, bool isGetAll = true)
         {
-            var monshinList = NoTrackingDataContext.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0))
-                .OrderByDescending(x => x.SinDate)
-                .ThenByDescending(x => x.RaiinNo)
-                .Select(x => new MonshinInforModel(
-                x.HpId,
-                x.PtId,
-                x.RaiinNo,
-                x.SinDate,
-                x.Text ?? string.Empty,
-                x.Rtext ?? string.Empty,
-                x.GetKbn,
-                x.IsDeleted))
-                .ToList();
-            return monshinList;
+            var monshins = new List<MonshinInforModel>();
+            if (isGetAll)
+            {
+                return NoTrackingDataContext.MonshinInfo
+                                .Where(x => x.HpId == hpId && x.PtId == ptId && (isDeleted || x.IsDeleted == 0))
+                                .OrderByDescending(x => x.SinDate)
+                                .ThenByDescending(x => x.RaiinNo)
+                                .Select(x => new MonshinInforModel(
+                                x.HpId,
+                                x.PtId,
+                                x.RaiinNo,
+                                x.SinDate,
+                                x.Text ?? string.Empty,
+                                x.Rtext ?? string.Empty,
+                                x.GetKbn,
+                                x.IsDeleted))
+                                .ToList();
+            }
+            else
+            {
+                return NoTrackingDataContext.MonshinInfo
+                                .Where(x => x.HpId == hpId && x.PtId == ptId && x.RaiinNo == raiinNo && (isDeleted || x.IsDeleted == 0))
+                                .Select(x => new MonshinInforModel(
+                                x.HpId,
+                                x.PtId,
+                                x.RaiinNo,
+                                x.SinDate,
+                                x.Text ?? string.Empty,
+                                x.Rtext ?? string.Empty,
+                                x.GetKbn,
+                                x.IsDeleted))
+                                .ToList();
+            }
         }
 
         public void ReleaseResource()
@@ -47,8 +65,7 @@ namespace Infrastructure.Repositories
                         && x.PtId == model.PtId
                         && x.RaiinNo == model.RaiinNo
                         && x.SinDate == model.SinDate
-                        && x.IsDeleted == 0
-                        && x.GetKbn == 0);
+                        && x.IsDeleted == 0);
 
                     //Update monshin when text change
                     if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
@@ -84,7 +101,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = monshinInfor.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = 0,
+                            GetKbn = monshinInfor.GetKbn,
                             IsDeleted = 1,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
@@ -120,6 +137,19 @@ namespace Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public bool SaveMonshinSheet(MonshinInforModel monshin)
+        {
+            var monshinInf = TrackingDataContext.MonshinInfo.FirstOrDefault(x =>
+                                                               x.HpId == monshin.HpId && x.PtId == monshin.PtId &&
+                                                               x.RaiinNo == monshin.RaiinNo && x.GetKbn == 0);
+
+            if (monshinInf == null) return true;
+
+            monshinInf.GetKbn = 1;
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
     }
 }

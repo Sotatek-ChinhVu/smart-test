@@ -20,7 +20,7 @@ namespace CloudUnitTest
                 .AddJsonFile("unittest.env.json", false, true)
                 .Build();
 
-            _unittestDBConnectionString = config["UnitTestDB"];
+            _unittestDBConnectionString = config["UnitTestDB"] ?? string.Empty;
         }
 
         protected ITenantProvider TenantProvider
