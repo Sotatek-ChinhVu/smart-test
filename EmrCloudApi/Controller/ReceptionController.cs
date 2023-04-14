@@ -262,10 +262,11 @@ namespace EmrCloudApi.Controller
         {
             var input = new DeleteReceptionInputData(HpId, UserId, req.RaiinNos);
             var output = _bus.Handle(input);
-            if (output.Status == DeleteReceptionStatus.Successed)
+            var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
+            if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)
             {
                 await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                    new CommonMessage { SinDate = input.SinDate, RaiinNo = output.RaiinNo, PtId = input.PtId });
+                    new CommonMessage { SinDate = deleteFirst.SinDate, RaiinNo = deleteFirst.RaiinNo, PtId = deleteFirst.PtId });
             }
 
             var presenter = new DeleteReceptionPresenter();
