@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmrCalculateApi.Ika.DB.CommandHandler
 {
-    public class SaveIkaCalculateCommandHandler 
+    public class SaveIkaCalculateCommandHandler
     {
         private readonly string ModuleName = ModuleNameConst.EmrCalculateIka;
         private readonly TenantDataContext _tenantDataContext;
@@ -50,16 +50,16 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError( this, conFncName, E);
+                _emrLogger.WriteLogError(this, conFncName, E);
             }
             return calcId;
         }
 
         public void AddWrkTalbes
             (TenantDataContext tenantDataContext,
-            List<WrkSinRpInfModel> wrkSinRpInfModels, 
-             List<WrkSinKouiModel> wrkSinKouiModels, 
-             List<WrkSinKouiDetailModel> wrkSinKouiDetailModels, 
+            List<WrkSinRpInfModel> wrkSinRpInfModels,
+             List<WrkSinKouiModel> wrkSinKouiModels,
+             List<WrkSinKouiDetailModel> wrkSinKouiDetailModels,
              List<WrkSinKouiDetailDelModel> wrkSinKouiDetailDelModels
              )
         {
@@ -77,12 +77,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //);
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
-                    {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        p.CreateId = Hardcode.UserID;
-                        p.CreateMachine = Hardcode.ComputerName;
+                {
+                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    p.CreateId = Hardcode.UserID;
+                    p.CreateMachine = Hardcode.ComputerName;
 
-                    }
+                }
                 );
                 tenantDataContext.WrkSinRpInfs.AddRange(wrkSinRps);
 
@@ -100,7 +100,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 {
                     p.CreateDate = CIUtil.GetJapanDateTimeNow();
                     p.CreateId = Hardcode.UserID;
-                p.CreateMachine = Hardcode.ComputerName;
+                    p.CreateMachine = Hardcode.ComputerName;
 
                 }
                 );
@@ -114,12 +114,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 List<WrkSinKouiDetail> wrkSinDtls = wrkSinKouiDetailModels.Select(p => p.WrkSinKouiDetail).ToList();
                 wrkSinDtls?.ForEach(p =>
+                {
+                    if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
                     {
-                        if(string.IsNullOrEmpty(p.TyuCd)==false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
-                        {
-                            p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
-                        }
+                        p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
                     }
+                }
                 );
                 tenantDataContext.WrkSinKouiDetails.AddRange(wrkSinDtls);
 
@@ -129,7 +129,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError( this, conFncName, E);
+                _emrLogger.WriteLogError(this, conFncName, E);
             }
         }
 
@@ -167,7 +167,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError( this, conFncName, E);
+                _emrLogger.WriteLogError(this, conFncName, E);
             }
             finally
             {
@@ -184,7 +184,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
             }
             catch (Exception E)
             {
-                _emrLogger.WriteLogError( this, conFncName, E);
+                _emrLogger.WriteLogError(this, conFncName, E);
             }
         }
 
@@ -336,7 +336,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 newDbContext.SaveChanges();
             }
             //catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //foreach (var errors in ex.EntityValidationErrors)
                 //{
@@ -363,7 +363,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
          List<SinRpNoInfModel> sinRpNoInfModels)
         {
             //string MachineName = Hardcode.ComputerName;
-                        
+
             var delSinRpInf = sinRpInfModels.FindAll(p => p.IsDeleted == 1).ToList();
             delSinRpInf?.ForEach(p =>
                 newDbContext.SinRpInfs.Remove(p.SinRpInf)
@@ -463,10 +463,10 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 _tenantDataContext.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ret = false;
-                _emrLogger.WriteLogError( this, conFncName, e);
+                _emrLogger.WriteLogError(this, conFncName, e);
             }
 
             return ret;
