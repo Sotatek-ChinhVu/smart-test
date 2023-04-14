@@ -360,7 +360,7 @@ namespace Helper.Common
 
         public static string Copy(string input, int index, int lengthToCopy)
         {
-            if (input == null) return string.Empty;
+            if (string.IsNullOrEmpty(input)) return string.Empty;
 
             if (index <= 0 || index > input.Length) return string.Empty;
 

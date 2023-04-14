@@ -84,7 +84,12 @@ namespace Interactor.MedicalExamination
                             history.HokenType,
                             new List<HokenGroupHistoryItem>(),
                             new(),
-                            new()
+                            new(),
+                            history.Status,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
                         ) : new HistoryKarteOdrRaiinItem
                         (
                             history.RaiinNo,
@@ -114,7 +119,12 @@ namespace Interactor.MedicalExamination
                             },
                             history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
                                                  .OrderBy(item => item.SeqNo)
-                                                 .ToList()
+                                                 .ToList(),
+                            history.Status,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
                         );
 
                     //Excute order
