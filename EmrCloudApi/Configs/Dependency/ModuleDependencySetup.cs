@@ -393,6 +393,7 @@ using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
+using UseCase.SpecialNote.GetPtWeight;
 using UseCase.SpecialNote.Save;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
@@ -780,6 +781,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
+            busBuilder.RegisterUseCase<GetPtWeightInputData, GetPtWeightInteractor>();
 
             // StickyNote
             busBuilder.RegisterUseCase<GetStickyNoteInputData, GetStickyNoteInteractor>();
