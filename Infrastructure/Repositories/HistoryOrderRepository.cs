@@ -377,18 +377,20 @@ namespace Infrastructure.Repositories
             return (totalCount, historyOrderModelList);
         }
 
-        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin)
+        //flag == 0 : get for accounting
+        //flag == 1 : get for one rp in todayorder
+        public List<HistoryOrderModel> GetListByRaiin(int hpId, int userId, long ptId, int sinDate, int filterId, int isDeleted, long raiin, byte flag)
         {
 
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted);
 
             var oyaRaiinNo = NoTrackingDataContext.RaiinInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiin && x.IsDeleted == 0);
-            if (oyaRaiinNo == null || oyaRaiinNo.Status <= 3)
+            if (oyaRaiinNo == null || (oyaRaiinNo.Status <= 3 && !(flag == 1)))
             {
                 return new List<HistoryOrderModel>();
             }
 
-            raiinInfEnumerable = raiinInfEnumerable.Where(x => x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo);
+            raiinInfEnumerable = raiinInfEnumerable.Where(x => x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && (!(flag == 1) || x.RaiinNo == oyaRaiinNo.RaiinNo));
 
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).ToList();
 

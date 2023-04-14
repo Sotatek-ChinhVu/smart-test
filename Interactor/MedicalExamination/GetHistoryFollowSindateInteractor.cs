@@ -2,6 +2,12 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.OrdInfs.GetListTrees;
@@ -12,13 +18,21 @@ namespace Interactor.MedicalExamination
     {
         private readonly IHistoryOrderRepository _historyOrderRepository;
         private readonly IInsuranceRepository _insuranceRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
+        private readonly IPatientInforRepository _patientInforRepository;
 
-        public GetHistoryFollowSindateInteractor(IHistoryOrderRepository historyOrderRepository, IInsuranceRepository insuranceRepository)
+        public GetHistoryFollowSindateInteractor(IHistoryOrderRepository historyOrderRepository, IInsuranceRepository insuranceRepository, IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository)
         {
             _historyOrderRepository = historyOrderRepository;
             _insuranceRepository = insuranceRepository;
+            _options = optionsAccessor.Value;
+            _amazonS3Service = amazonS3Service;
+            _patientInforRepository = patientInforRepository;
         }
 
+        //flag == 0 : get for accounting
+        //flag == 1 : get for one rp in todayorder
         public GetHistoryFollowSindateOutputData Handle(GetHistoryFollowSindateInputData inputData)
         {
             try
@@ -32,16 +46,26 @@ namespace Interactor.MedicalExamination
                     inputData.SinDate,
                     0,
                     inputData.DeleteConditon,
-                    inputData.RaiinNo
+                    inputData.RaiinNo,
+                    inputData.Flag
                     );
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
+                var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+                List<string> listFolders = new();
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+                var host = new StringBuilder();
+                host.Append(_options.BaseAccessUrl);
+                host.Append("/");
+                host.Append(path);
+
                 foreach (HistoryOrderModel history in historyList)
                 {
                     var karteInfs = history.KarteInfModels;
                     var karteInfHistoryItems = karteInfs.Select(karteInf => new KarteInfHistoryItem(karteInf.HpId, karteInf.RaiinNo, karteInf.KarteKbn, karteInf.SeqNo, karteInf.PtId, karteInf.SinDate, karteInf.Text, karteInf.UpdateDate, karteInf.CreateDate, karteInf.IsDeleted, karteInf.RichText, karteInf.CreateName)).ToList();
-
-                    var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
+                    var historyKarteOdrRaiin = !(inputData.Flag == 1) ? new HistoryKarteOdrRaiinItem
                         (
                             history.RaiinNo,
                             history.SinDate,
@@ -61,6 +85,41 @@ namespace Interactor.MedicalExamination
                             new List<HokenGroupHistoryItem>(),
                             new(),
                             new(),
+                            history.Status,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
+                        ) : new HistoryKarteOdrRaiinItem
+                        (
+                            history.RaiinNo,
+                            history.SinDate,
+                            history.HokenPid,
+                            history.HokenTitle,
+                            history.HokenRate,
+                            history.SyosaisinKbn,
+                            history.JikanKbn,
+                            history.KaId,
+                            history.KaName,
+                            history.TantoId,
+                            history.TantoName,
+                            history.SanteiKbn,
+                            history.TagNo,
+                            history.SinryoTitle,
+                            history.HokenType,
+                            new List<HokenGroupHistoryItem>(),
+                            new List<GrpKarteHistoryItem> {
+                                new GrpKarteHistoryItem(
+                                karteInfHistoryItems.FirstOrDefault()?.KarteKbn ?? 0,
+                                string.Empty,
+                                string.Empty,
+                                1,
+                                0,
+                                karteInfHistoryItems)
+                            },
+                            history.ListKarteFile.Select(item => new FileInfOutputItem(item, host.ToString()))
+                                                 .OrderBy(item => item.SeqNo)
+                                                 .ToList(),
                             history.Status,
                             string.Empty,
                             string.Empty,

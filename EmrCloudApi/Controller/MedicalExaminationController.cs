@@ -455,7 +455,8 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.RichText),
                 UserId,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
-                familyList
+                familyList,
+                request.Monshin
             );
             var output = _bus.Handle(input);
 
@@ -503,7 +504,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetHistoryFollowSinDate)]
         public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
         {
-            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo, request.Flag);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryFollowSindatePresenter();
