@@ -3,6 +3,7 @@ using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Futan.Models;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
+using Helper.Common;
 using PostgreDataContext;
 
 namespace EmrCalculateApi.Futan.DB.CommandHandler
@@ -26,7 +27,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
 
                 kaikeiInfs.ForEach(k =>
                     {
-                        k.CreateDate = DateTime.UtcNow;
+                        k.CreateDate = CIUtil.GetJapanDateTimeNow();
                         k.CreateId = Hardcode.UserID;
                         k.CreateMachine = Hardcode.ComputerName;
                     }
@@ -45,7 +46,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
             const string conFncName = nameof(AddKaikeiDetail);
             try
             {
-                kaikeiDetailModel.CreateDate = DateTime.UtcNow;
+                kaikeiDetailModel.CreateDate = CIUtil.GetJapanDateTimeNow();
                 kaikeiDetailModel.CreateId = Hardcode.UserID;
                 kaikeiDetailModel.CreateMachine = Hardcode.ComputerName;
 
@@ -67,7 +68,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
 
                 kaikeiDetails.ForEach(x =>
                     {
-                        x.CreateDate = DateTime.UtcNow;
+                        x.CreateDate = CIUtil.GetJapanDateTimeNow();
                         x.CreateId = Hardcode.UserID;
                         x.CreateMachine = Hardcode.ComputerName;
                     }
@@ -91,7 +92,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                 limitListInfs.ForEach(x =>
                     {
                         x.SeqNo = 0;
-                        x.CreateDate = DateTime.UtcNow;
+                        x.CreateDate = CIUtil.GetJapanDateTimeNow();
                         x.CreateId = Hardcode.UserID;
                         x.CreateMachine = Hardcode.ComputerName;
                     }
@@ -115,7 +116,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                 limitCntListInfs.ForEach(x =>
                 {
                     x.SeqNo = 0;
-                    x.CreateDate = DateTime.UtcNow;
+                    x.CreateDate = CIUtil.GetJapanDateTimeNow();
                     x.CreateId = Hardcode.UserID;
                     x.CreateMachine = Hardcode.ComputerName;
                 }
@@ -201,7 +202,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                     syunoSeikyu.NewSeikyuGaku = kaikeiInf.TotalPtFutan;
                     syunoSeikyu.NewSeikyuDetail = detailData;
 
-                    syunoSeikyu.CreateDate = DateTime.UtcNow;
+                    syunoSeikyu.CreateDate = CIUtil.GetJapanDateTimeNow();
                     syunoSeikyu.CreateId = Hardcode.UserID;
                     syunoSeikyu.CreateMachine = Hardcode.ComputerName;
 
@@ -248,7 +249,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                     syunoSeikyu.NewAdjustFutan = kaikeiInf.AdjustFutan;
                     syunoSeikyu.NewSeikyuGaku = kaikeiInf.TotalPtFutan;
                     syunoSeikyu.NewSeikyuDetail = detailData;
-                    syunoSeikyu.UpdateDate = DateTime.UtcNow;
+                    syunoSeikyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     syunoSeikyu.UpdateId = Hardcode.UserID;
                     syunoSeikyu.UpdateMachine = Hardcode.ComputerName;
                 }
@@ -283,7 +284,7 @@ namespace EmrCalculateApi.Futan.DB.CommandHandler
                 calcLogs.ForEach(c =>
                 {
                     c.SeqNo += seqNo;
-                    c.CreateDate = DateTime.UtcNow;
+                    c.CreateDate = CIUtil.GetJapanDateTimeNow();
                     c.CreateId = Hardcode.UserID;
                     c.CreateMachine = Hardcode.ComputerName;
                 }

@@ -11,14 +11,13 @@ namespace EmrCalculateApi.Ika.Models
     {
         private int _suryoRoundupKbn;
 
-        public TenMst TenMst { get; } = new();
+        public TenMst TenMst { get; } = null;
 
         public TenMstModel(TenMst tenMst)
         {
             TenMst = tenMst;
             _suryoRoundupKbn = tenMst.SuryoRoundupKbn;
         }
-        public TenMstModel() { }
 
         /// <summary>
         /// 医療機関識別ID

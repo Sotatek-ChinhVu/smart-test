@@ -1,3 +1,4 @@
+using EmrCalculateApi;
 using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Implementation;
@@ -5,10 +6,12 @@ using EmrCalculateApi.Interface;
 using EmrCalculateApi.ReceFutan.ViewModels;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
 
 builder.Services.AddControllers();

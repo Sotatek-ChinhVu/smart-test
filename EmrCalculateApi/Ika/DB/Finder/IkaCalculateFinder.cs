@@ -6,7 +6,6 @@ using Helper.Constants;
 using EmrCalculateApi.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
-using Infrastructure.Interfaces;
 
 namespace EmrCalculateApi.Ika.DB.Finder
 {
@@ -15,7 +14,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
         private int hospitalId = Hardcode.HospitalID;
         private readonly TenantDataContext _tenantDataContext;
 
-        public IkaCalculateFinder(TenantDataContext tenantDataContext, ITenantProvider tenantProvider)
+        public IkaCalculateFinder(TenantDataContext tenantDataContext)
         {
             _tenantDataContext = tenantDataContext;
         }
