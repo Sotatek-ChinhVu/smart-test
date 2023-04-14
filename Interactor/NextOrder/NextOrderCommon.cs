@@ -161,7 +161,10 @@ namespace Interactor.NextOrder
                     DateTime.MinValue,
                     0,
                     string.Empty,
-                    rsvkrtOrderInfItem.RsvKrtOrderInfDetailItems.Select(od => ConvertRsvkrtOrderDetailToModel(hpId, ptId, ipnCds, od)).ToList()
+                    rsvkrtOrderInfItem.RsvKrtOrderInfDetailItems.Select(od => ConvertRsvkrtOrderDetailToModel(hpId, ptId, ipnCds, od)).ToList(),
+                    DateTime.MinValue,
+                    string.Empty,
+                    string.Empty
                 );
         }
 

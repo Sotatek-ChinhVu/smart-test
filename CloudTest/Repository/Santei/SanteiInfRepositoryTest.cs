@@ -186,6 +186,7 @@ public class SanteiInfRepositoryTest : BaseUT
         string itemCd = "ItemCdTest";
         int alertDays = int.MaxValue;
         int alertTerm = random.Next(1, 6);
+        int seqNo = random.Next(1, int.MaxValue);
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var listSanteiModels = new List<SanteiInfModel>() { new SanteiInfModel(
                                                                                     0,
@@ -193,6 +194,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     itemCd,
                                                                                     alertDays,
                                                                                     alertTerm,
+                                                                                    seqNo,
                                                                                     new(),
                                                                                     false
                                                                                 )
@@ -221,6 +223,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     itemCd,
                                                                                     alertDays,
                                                                                     alertTerm,
+                                                                                    seqNo,
                                                                                     new(),
                                                                                     false
                                                                                 )
@@ -255,6 +258,7 @@ public class SanteiInfRepositoryTest : BaseUT
         int alertDays = int.MaxValue;
         int alertTerm = random.Next(1, 6);
         int newAlertDays = random.Next(int.MaxValue);
+        int seqNo = random.Next(1, int.MaxValue);
         int newAlertTerm = random.Next(1, 6);
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var santeiInfUnitTest = new SanteiInf()
@@ -281,6 +285,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     itemCd,
                                                                                     newAlertDays,
                                                                                     newAlertTerm,
+                                                                                    seqNo,
                                                                                     new(),
                                                                                     false
                                                                                 )
@@ -321,6 +326,7 @@ public class SanteiInfRepositoryTest : BaseUT
         string itemCd = "ItemCdTest";
         int alertDays = int.MaxValue;
         int alertTerm = random.Next(1, 6);
+        int seqNo = random.Next(1, int.MaxValue);
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var santeiInfUnitTest = new SanteiInf()
         {
@@ -346,6 +352,7 @@ public class SanteiInfRepositoryTest : BaseUT
                                                                                     itemCd,
                                                                                     alertDays,
                                                                                     alertTerm,
+                                                                                    seqNo,
                                                                                     new(),
                                                                                     true
                                                                                 )
@@ -732,7 +739,7 @@ public class SanteiInfRepositoryTest : BaseUT
         {
             return false;
         }
-        var santeiInfDetail = santeiModel.ListSanteiInfDetails.FirstOrDefault();
+        var santeiInfDetail = santeiModel.SanteiInfDetailList.FirstOrDefault();
         if (santeiInfDetail == null)
         {
             return false;

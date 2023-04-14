@@ -1,10 +1,12 @@
 ﻿
+using System.Text.Json.Serialization;
 using static Helper.Constants.MonshinInfConst;
 
 namespace Domain.Models.MonshinInf
 {
     public class MonshinInforModel
     {
+        [JsonConstructor]
         public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text, string rtext, int getKbn, int isDeleted)
         {
             HpId = hpId;
@@ -15,6 +17,12 @@ namespace Domain.Models.MonshinInf
             Rtext = rtext;
             GetKbn = getKbn;
             IsDeleted = isDeleted;
+        }
+
+        public MonshinInforModel()
+        {
+            Text = string.Empty;
+            Rtext = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -35,8 +43,6 @@ namespace Domain.Models.MonshinInf
                 return ValidationStatus.InvalidPtId;
             if (RaiinNo <= 0)
                 return ValidationStatus.InValidRaiinNo;
-            if (SinDate <= 0)
-                return ValidationStatus.InvalidSinDate;
             #endregion
 
             return ValidationStatus.Valid;

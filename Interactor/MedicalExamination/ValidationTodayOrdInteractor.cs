@@ -174,7 +174,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     );
 
                 foreach (var itemDetail in item.OdrDetails)

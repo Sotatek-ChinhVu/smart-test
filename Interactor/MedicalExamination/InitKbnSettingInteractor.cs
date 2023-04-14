@@ -131,7 +131,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     )).ToList();
                 var raiinKbnModels = _raiinKubunMstRepository.GetRaiinKbns(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
                 if (raiinKbnModels?.Count > 0)

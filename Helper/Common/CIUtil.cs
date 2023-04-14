@@ -192,6 +192,7 @@ namespace Helper.Common
             else
                 return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
         }
+
         public static string ToHalfsize(string value)
         {
             if (value == null)
@@ -359,7 +360,7 @@ namespace Helper.Common
 
         public static string Copy(string input, int index, int lengthToCopy)
         {
-            if (input == null) return string.Empty;
+            if (string.IsNullOrEmpty(input)) return string.Empty;
 
             if (index <= 0 || index > input.Length) return string.Empty;
 

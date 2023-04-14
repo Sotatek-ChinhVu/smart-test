@@ -50,10 +50,12 @@ public class SanteiController : AuthorizeControllerBase
         return listSanteiInfs.Select(santeiInf =>
                                             new SanteiInfInputItem(
                                                     santeiInf.Id,
+                                                    santeiInf.PtId,
                                                     santeiInf.ItemCd,
                                                     santeiInf.AlertDays,
                                                     santeiInf.AlertTerm,
                                                     santeiInf.IsDeleted,
+                                                    santeiInf.SortNo,
                                                     santeiInf.ListSanteInfDetails
                                                         .Select(santeiInfDeatail =>
                                                                     new SanteiInfDetailInputItem(

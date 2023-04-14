@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace UseCase.MedicalExamination.GetHistory
 {
@@ -15,8 +11,13 @@ namespace UseCase.MedicalExamination.GetHistory
             GroupOdrItems = groupOdrItems;
         }
 
+        [JsonPropertyName("hokenPid")]
         public int HokenPid { get; private set; }
+
+        [JsonPropertyName("hokenTitle")]
         public string HokenTitle { get; private set; }
+
+        [JsonPropertyName("groupOdrItems")]
         public List<GroupOdrGHistoryItem> GroupOdrItems { get; private set; }
     }
 }
