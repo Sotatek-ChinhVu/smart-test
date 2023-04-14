@@ -126,7 +126,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     )).ToList(),
                     inputData.TargetItems.Select(t => new Tuple<int, string, int, int, TenItemModel, double>(t.Type, t.Message, t.OdrInfPosition, t.OdrInfDetailPosition, t.TenItemMst, t.Suryo)).ToList()
                     );
@@ -209,7 +211,10 @@ namespace Interactor.MedicalExamination
                         o.odrInfModel.CreateDate,
                         o.odrInfModel.CreateId,
                         o.odrInfModel.CreateName,
-                        o.odrInfModel.IsDeleted
+                        o.odrInfModel.IsDeleted,
+                        o.odrInfModel.UpdateDate,
+                        o.odrInfModel.CreateMachine,
+                        o.odrInfModel.UpdateMachine
                     ))).ToList()
                     );
             }

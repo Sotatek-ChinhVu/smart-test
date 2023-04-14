@@ -151,7 +151,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     )).ToList(), filterExpiredItems);
 
                 var conversionItemOuput = conversionItem.Select(
@@ -233,7 +235,10 @@ namespace Interactor.MedicalExamination
                            r.CreateDate,
                            r.CreateId,
                            r.CreateName,
-                           r.IsDeleted
+                           r.IsDeleted,
+                           r.UpdateDate,
+                           r.CreateMachine,
+                           r.UpdateMachine
                         )).ToList();
 
                 if (!saveHistory)

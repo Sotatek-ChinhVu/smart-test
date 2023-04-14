@@ -286,7 +286,7 @@ namespace Infrastructure.Repositories
             return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
         }
 
-        public (int, List<HistoryOrderModel>) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted)
+        public (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
@@ -294,7 +294,7 @@ namespace Infrastructure.Repositories
             return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
         }
 
-        private (int, List<HistoryOrderModel>) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted)
+        private (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted)
         {
             if (!raiinInfList.Any())
             {

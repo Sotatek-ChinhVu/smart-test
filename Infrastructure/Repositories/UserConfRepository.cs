@@ -103,6 +103,14 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
         result.Add("IsInputCheckPrint", isInputCheckPrint);
 
+        string reportCheckSaveParam = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 4)?.Param ?? "10101";
+        var isReportCheckKeisanSave = reportCheckSaveParam[1].AsInteger();
+        var isReportCheckNormalSave = reportCheckSaveParam[0].AsInteger();
+        var isReportCheckTempSave = reportCheckSaveParam[2].AsInteger();
+        result.Add("IsReportCheckKeisanSave", isReportCheckKeisanSave);
+        result.Add("IsReportCheckNormalSave", isReportCheckNormalSave);
+        result.Add("IsReportCheckTempSave", isReportCheckTempSave);
+
         return result;
     }
 

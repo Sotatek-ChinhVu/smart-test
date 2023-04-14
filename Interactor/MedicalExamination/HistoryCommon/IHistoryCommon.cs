@@ -5,7 +5,7 @@ namespace Interactor.MedicalExamination.HistoryCommon;
 
 public interface IHistoryCommon
 {
-    GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int, List<HistoryOrderModel>) historyList);
+    GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList);
 
     void ReleaseResources();
 }

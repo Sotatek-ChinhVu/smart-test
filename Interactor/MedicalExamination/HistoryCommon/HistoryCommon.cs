@@ -34,11 +34,11 @@ public class HistoryCommon : IHistoryCommon
         _userRepository = userRepository;
     }
 
-    public GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int, List<HistoryOrderModel>) historyList)
+    public GetMedicalExaminationHistoryOutputData GetHistoryOutput(int hpId, long ptId, int sinDate, (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList)
     {
         var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
-        var listUserIds = historyList.Item2?.Select(d => d.UketukeId).ToList();
+        var listUserIds = historyList.historyOrderModelList?.Select(d => d.UketukeId).ToList();
         var listUsers = listUserIds == null ? new List<UserMstModel>() : _userRepository.GetListAnyUser(listUserIds)?.ToList();
         var insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
         List<string> listFolders = new();
@@ -50,7 +50,7 @@ public class HistoryCommon : IHistoryCommon
         host.Append(_options.BaseAccessUrl);
         host.Append("/");
         host.Append(path);
-        foreach (HistoryOrderModel history in historyList.Item2)
+        foreach (HistoryOrderModel history in historyList.historyOrderModelList ?? new())
         {
             var karteInfs = history.KarteInfModels;
             var uketuke = listUsers?.FirstOrDefault(uke => uke.UserId == history.UketukeId);
@@ -97,7 +97,7 @@ public class HistoryCommon : IHistoryCommon
             //Excute order
             ExcuteOrder(insuranceModelList, history.OrderInfList, historyKarteOdrRaiin, historyKarteOdrRaiins);
         }
-        var result = new GetMedicalExaminationHistoryOutputData(historyList.Item1, historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetMedicalExaminationHistoryStatus.Successed, 0);
+        var result = new GetMedicalExaminationHistoryOutputData(historyList.totalCount, historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetMedicalExaminationHistoryStatus.Successed, 0);
 
         if (historyKarteOdrRaiins?.Count > 0)
             return result;
@@ -109,16 +109,15 @@ public class HistoryCommon : IHistoryCommon
     {
         try
         {
-           return int.Parse(input);
+            return int.Parse(input);
         }
-        catch (Exception)
+        catch
         {
             return 0;
         }
     }
 
     #region private function
-
     /// <summary>
     /// Excute Order
     /// </summary>
@@ -251,7 +250,9 @@ public class HistoryCommon : IHistoryCommon
                                                         rpOdrInf.CreateId,
                                                         rpOdrInf.CreateName,
                                                         rpOdrInf.UpdateDate,
-                                                        rpOdrInf.IsDeleted
+                                                        rpOdrInf.IsDeleted,
+                                                        rpOdrInf.CreateMachine,
+                                                        rpOdrInf.UpdateMachine
                                                      );
 
                     group.OdrInfs.Add(odrModel);

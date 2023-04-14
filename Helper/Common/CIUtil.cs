@@ -192,6 +192,7 @@ namespace Helper.Common
             else
                 return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
         }
+
         public static string ToHalfsize(string value)
         {
             if (value == null)

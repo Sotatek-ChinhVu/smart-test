@@ -25,7 +25,7 @@ namespace Interactor.MedicalExamination
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), validate, 0);
                 }
 
-                (int, List<HistoryOrderModel>) historyList = _historyOrderRepository.GetList(
+                (int totalCount, List<HistoryOrderModel> historyOrderModelList) historyList = _historyOrderRepository.GetList(
                     inputData.HpId,
                     inputData.UserId,
                     inputData.PtId,
