@@ -1659,7 +1659,6 @@ namespace Infrastructure.Repositories
                              join containerMst in containerMsts on
                              tenMstKensa.ContainerCd  equals containerMst.ContainerCd into tenMstKensaContainers
                              from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
-                             where tenMstKensa != null
                              select new
                              {
                                  ItemCd = tenmst.ItemCd,
