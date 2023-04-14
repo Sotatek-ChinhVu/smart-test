@@ -38,7 +38,7 @@ namespace Domain.Models.MedicalExamination
 
         List<OrdInfModel> TrialCalculate(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, List<CheckedOrderModel> checkingOrderModelList);
 
-        List<AuditTrailLogModel> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo);
+        List<AuditTrailLogModel> GetKensaAuditTrailLogs(int hpId, string eventCd, long ptID, int sinDate, long raiinNo);
 
         List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int sinDate, List<Tuple<int, int, int, List<Tuple<string, string>>>> orderInfs, bool defaultChecked);
     }
