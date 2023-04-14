@@ -20,6 +20,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
 
             switch (outputData.Status)
             {
+                case GetKensaAuditTrailLogStatus.InvalidHpId:
+                    Result.Message = ResponseMessage.InvalidHpId;
+                    break;
                 case GetKensaAuditTrailLogStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;

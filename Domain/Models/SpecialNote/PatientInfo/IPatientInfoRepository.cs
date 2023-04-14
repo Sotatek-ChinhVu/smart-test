@@ -15,5 +15,7 @@ namespace Domain.Models.SpecialNote.PatientInfo
         List<KensaInfDetailModel> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate);
 
         List<PtPregnancyModel> GetPregnancyList(long ptId, int hpId, int sinDate);
+
+        KensaInfDetailModel GetPtWeight(long ptId, int sinDate);
     }
 }

@@ -13,6 +13,7 @@ using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
+using System.ComponentModel;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
@@ -1587,10 +1588,10 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public List<AuditTrailLogModel> GetKensaAuditTrailLogs(string eventCd, long ptID, int sinDate, long raiinNo)
+        public List<AuditTrailLogModel> GetKensaAuditTrailLogs(int hpId, string eventCd, long ptID, int sinDate, long raiinNo)
         {
             var trailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
-                                   x.HpId == Session.HospitalID &&
+                                   x.HpId == hpId &&
                                    x.EventCd == eventCd &&
                                    x.PtId == ptID &&
                                    x.SinDay == sinDate &&
@@ -1635,22 +1636,20 @@ namespace Infrastructure.Repositories
 
                 itemcds.AddRange(kensaItemCds.Select(x => x.Item1));
             }
-            var tenmsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == Session.HospitalID &&
+            var tenmsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId &&
                                                                                    x.StartDate <= sinDate &&
                                                                                    x.EndDate >= sinDate &&
                                                                                    x.KensaLabel > 0 &&
-                                                                                   x.IsDeleted == DeleteTypes.None)
-                                                    .Select(x => new { x.ItemCd, x.Name, x.KensaItemCd, x.KensaItemSeqNo, x.KensaLabel });
-            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == Session.HospitalID && x.IsDelete == 0)
-                                                        .Select(x => new { x.KensaItemCd, x.KensaItemSeqNo, x.ContainerCd });
-            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(x => x.HpId == Session.HospitalID)
-                                                                .Select(x => new { x.ContainerCd, x.ContainerName });
+                                                                                   x.IsDeleted == DeleteTypes.None);
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0);
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(x => x.HpId == hpId);
             List<KensaPrinterItemModel> allItems = new List<KensaPrinterItemModel>();
 
 
 
             foreach (var itemcd in itemcds)
             {
+
                 var query = (from tenmst in tenmsts
                              where tenmst.ItemCd == itemcd
                              join kensaMst in kensaMsts on
@@ -1658,12 +1657,12 @@ namespace Infrastructure.Repositories
                              new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo } into tenMstKensas
                              from tenMstKensa in tenMstKensas.DefaultIfEmpty()
                              join containerMst in containerMsts on
-                             tenMstKensa.ContainerCd equals containerMst.ContainerCd into tenMstKensaContainers
+                             tenMstKensa.ContainerCd  equals containerMst.ContainerCd into tenMstKensaContainers
                              from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
                              select new
                              {
                                  ItemCd = tenmst.ItemCd,
-                                 Name = tenMstKensaContainer == null ? tenmst.Name : tenMstKensaContainer.ContainerName,
+                                 Name = tenMstKensaContainer == null ? tenmst.Name ?? string.Empty :  tenMstKensaContainer.ContainerName,
                                  ContainerName = tenMstKensaContainer == null ? "" : tenMstKensaContainer.ContainerName,
                                  ContainerCd = tenMstKensaContainer == null ? 0 : tenMstKensaContainer.ContainerCd,
                                  KensaLabel = tenmst.KensaLabel

@@ -79,7 +79,12 @@ namespace Interactor.MedicalExamination
                             history.HokenType,
                             new(),
                             new(),
-                            new()
+                            new(),
+                            0,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
                         );
 
                     //Excute order

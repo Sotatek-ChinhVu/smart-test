@@ -548,7 +548,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetKensaAuditTrailLog)]
         public ActionResult<Response<GetKensaAuditTrailLogResponse>> GetKensaAuditTrailLog([FromQuery] GetKensaAuditTrailLogRequest request)
         {
-            var input = new GetKensaAuditTrailLogInputData(request.RaiinNo, request.SinDate, request.PtId, request.EventCd);
+            var input = new GetKensaAuditTrailLogInputData(HpId, request.RaiinNo, request.SinDate, request.PtId, request.EventCd);
             var output = _bus.Handle(input);
             var presenter = new GetKensaAuditLogTrailPresenter();
             presenter.Complete(output);

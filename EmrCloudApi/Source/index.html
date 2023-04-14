@@ -1,0 +1,912 @@
+<!-- https://babeljs.io/repl#?browsers=defaults%2C%20not%20ie%2011%2C%20not%20ie_mob%2011&build=&builtIns=false&corejs=3.21&spec=false&loose=false&code_lz=KYDwDg9gTgLgBAYwgOwM7wApQJbJgaQENZgAmAMV0IBs4BeOAM2gHdiATAJWEYAoAoOHF4BvOO0IxCWXAWIwycAL4AaOFB7lWHAJT0AfHBGChiFOnU96cAK6pg3RgB4AEgBUAsgBkAItgBuAKLUwAC2wHhwAD5wyDbU1Pq8cQk6ANwmQkho8ADaavYw3ITsAJ4AutZ2wADKUgq8jDT26fyZtvaBjIzACDC8vHp0hsampoXFZY3NwK3tQoVu2OEQNv2DBkbz48BFwCWlvDBQNrMZY0KqcACMAAz3rWNXuRJSMnhEJKTlc2MaMDYoMhhNsnOwAohqIRUKgAHKEcJ0EToUohVAAOgA1vJgEp9NshCIAPQAKjgACEICAAFxwbjIdjAKBwElEpQEuBggIcoQaRhI3hQIYjHmmPnohCAjSRBhQc4XBWLZbAVbrYVbBWauATfZTY6nR5a0xXO4PeVapTso2Q6FwhHAJEotHop24jn460iV7SHAfHGkdGhQhgAbYBShdWja2WAFAkHR0xc_yihUSZAAcyZq1Q1FKNV2AElkMgme5vEiowmxgB9asACxgoWotMzJagkmAAHkoIyoC5sOhoKUC-HeGGwjoVCmLpbp0J9E4ieD_B7o4aLTorZrF8vVwriWSnHXmUTDKytwqk6K-Ui-VooGwexfNa6K9OWNB2OSNIRMbSAOQAEY_piAC0NDUP-U7WrOWp7pqIjipKUDSvAABkaFwJmMDBGEEQwOSpScBALCCjwEpSvhaicJ2ADq1YYAAggA4oEm4cjuATwUInEru0hrsukQA&debug=false&forceAllTransforms=false&modules=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=true&presets=env%2Creact%2Cstage-2&prettier=false&targets=&version=7.21.3&externalPlugins=&assumptions=%7B%7D -->
+<!-- https://www.cssportal.com/scss-to-css/ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> -->
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    /> -->
+    <title>Document</title>
+    <script>
+      // Response BE .NET fill in here
+      const DATA_KARTE2 = __DATA_KARTE2__;
+      window.dataPrintKarte2 = DATA_KARTE2.data.karteOrdRaiins;
+    </script>
+    <style>
+      /* http://meyerweb.com/eric/tools/css/reset/ 
+  v2.0 | 20110126
+  License: none (public domain)
+*/
+
+      html,
+      body,
+      div,
+      span,
+      applet,
+      object,
+      iframe,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      blockquote,
+      pre,
+      a,
+      abbr,
+      acronym,
+      address,
+      big,
+      cite,
+      code,
+      del,
+      dfn,
+      em,
+      img,
+      ins,
+      kbd,
+      q,
+      s,
+      samp,
+      small,
+      strike,
+      strong,
+      sub,
+      sup,
+      tt,
+      var,
+      b,
+      u,
+      i,
+      center,
+      dl,
+      dt,
+      dd,
+      ol,
+      ul,
+      li,
+      fieldset,
+      form,
+      label,
+      legend,
+      table,
+      caption,
+      tbody,
+      tfoot,
+      thead,
+      tr,
+      th,
+      td,
+      article,
+      aside,
+      canvas,
+      details,
+      embed,
+      figure,
+      figcaption,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      output,
+      ruby,
+      section,
+      summary,
+      time,
+      mark,
+      audio,
+      video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+      /* HTML5 display-role reset for older browsers */
+      article,
+      aside,
+      details,
+      figcaption,
+      figure,
+      footer,
+      header,
+      hgroup,
+      menu,
+      nav,
+      section {
+        display: block;
+      }
+      body {
+        line-height: 1;
+      }
+      ol,
+      ul {
+        list-style: none;
+      }
+      blockquote,
+      q {
+        quotes: none;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+        content: '';
+        content: none;
+      }
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+    </style>
+
+    <style>
+      img,
+      svg {
+        vertical-align: middle;
+      }
+    </style>
+    <style>
+      body {
+        margin: 0;
+      }
+      .page-break {
+        display: block;
+        height: 1122px;
+        position: relative;
+      }
+      :root {
+        font-size: 14px;
+        --width-content-karte2: 734px;
+      }
+      @font-face {
+        font-family: 'MS Gothic';
+        src: url('https://smartkarte.sotatek.works/MSGOTHIC.TTC')
+          format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+      * {
+        /* font-family: '游ゴシック', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN',
+          'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN' !important; */
+        /* font-family: YuGothic, "游ゴシック", "Yu Gothic", sans-serif !important; */
+
+        font-family: MS Gothic, 'MS Gothic', sans-serif !important;
+        line-height: 21px !important;
+      }
+      .style {
+        width: var(--width-content-karte2);
+        position: fixed;
+        opacity: 0;
+        top: 0;
+        z-index: -1;
+        word-break: break-all;
+      }
+      .text {
+        overflow: hidden;
+        position: absolute;
+        margin-top: 130px;
+        margin-left: 31px;
+        width: var(--width-content-karte2);
+      }
+      .content {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0px;
+      }
+      p {
+        margin: 0;
+        min-height: 21px;
+      }
+      .page-break {
+        display: block;
+        position: relative;
+        height: 1122px;
+      }
+      @media print {
+        .page-break {
+          display: block;
+          position: relative;
+          height: 1122px;
+          page-break-before: always;
+        }
+      }
+      .orderHistory {
+        width: var(--width-content-karte2);
+      }
+      .orderHistoryInfor {
+        display: flex;
+        gap: 4px;
+      }
+      .orderHistoryInforTitle {
+        /* font-weight: bold; */
+        font-size: 18px;
+      }
+      .orderHistoryContent {
+        display: flex;
+        word-break: break-all;
+        gap: 13px;
+      }
+      .orderHistoryContent .richText {
+        flex: 1;
+      }
+      .orderHistoryContent .orderDetail {
+        flex: 1;
+      }
+      .orderHistoryContent .orderDetail .orderItemTitle {
+        text-decoration: underline;
+      }
+      .orderHistoryContent .orderDetail .orderItemList {
+        list-style: none;
+        /* Remove list bullets */
+        padding: 0;
+        margin: 0;
+      }
+      .orderHistoryContent .orderDetail .orderItemList li::before {
+        content: '＊';
+        color: black;
+        /* Insert content that looks like bullets */
+        position: absolute;
+        left: 10px;
+        top: 0;
+        /* font-size: 12px; */
+      }
+      .orderHistoryContent .orderDetail .orderItemList li {
+        padding-left: 24px;
+        position: relative;
+      }
+      .lineThrough {
+        flex: 1;
+        position: relative;
+      }
+      /* .lineThrough::before {
+        content: ' ';
+        position: absolute;
+        top: 10px;
+        left: 0;
+        border-bottom: 1px dotted #111;
+        width: 100%;
+      } */
+      .lineThrough::before {
+        content: '..............................................................................';
+        position: absolute;
+        top: -2px;
+        font-size: 7.5px;
+        left: 0;
+        width: 100%;
+      }
+      .receptionDate {
+        width: calc(50% - 20px);
+        font-size: 15px;
+      }
+      .receptionTextColor {
+        color: #a81b51;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+    ></script>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      window.styles = {};
+      const HistoryKarte = {
+        Latest: 0,
+        LatestAndDeleting: 1,
+        All: 2,
+      };
+      const EMPTY_DATA = '---';
+      const LINE_HEIGHT = 21;
+      const HEIGHT_CONTENT_PAGE = LINE_HEIGHT * 45;
+      const MAX_HEIGHT_IMG = LINE_HEIGHT * 5;
+
+      const htmlDateCreateDeleted = (createDate, createName) => {
+        return `<del><div style='color: rgb(236,129,236)'>​${createDate} ${
+          createName ?? ''
+        }​</div></del>`;
+      };
+
+      const htmlDateUpdate = (updateDate, createName) => {
+        return `<div style='color: rgb(236,129,236)'>​${updateDate} ${
+          createName ?? ''
+        }​</div>`;
+      };
+
+      const htmlDateNew = (date, createName) => {
+        return `<div style='color: rgb(164,42,42)'>​${date} ${
+          createName ?? ''
+        }​</div>`;
+      };
+
+      function PrintKarte2Final() {
+        const ref = React.useRef(null);
+        const [, setReady] = React.useState(false);
+
+        // useEffect(() => {
+        //   setReady(false);
+
+        //   setTimeout(() => {
+        //     setReady(true);
+        //   }, 1000);
+        // }, [dataPrintKarte2]);
+
+        return (
+          <div className="karte">
+            {/* Box: Render */}
+            <div
+              ref={(r) => {
+                ref.current = r;
+                setTimeout(() => {
+                  setReady(true);
+                  window.status = 'ready';
+                }, 1000);
+              }}
+              className="style" // fix
+            >
+              {dataPrintKarte2.map((item, index) => {
+                return (
+                  <div
+                    key={index}
+                    dangerouslySetInnerHTML={{
+                      __html: generateOrderHistoryItem(item),
+                    }}
+                  ></div>
+                );
+              })}
+            </div>
+            {/* <hr /> */}
+            <div
+              style={{
+                wordBreak: 'break-all',
+              }}
+            >
+              {ref.current && getElementByRow(ref.current, HEIGHT_CONTENT_PAGE)}
+            </div>
+          </div>
+        );
+      }
+
+      function getElementByRow(el, height) {
+        const length = Math.ceil(el.offsetHeight / height);
+        // const lineHeight = getLineHeight(el);
+        const result = [];
+
+        // Create container (base clone)
+        const container = document.createElement('div');
+        // container.style.visibility = 'hidden'; // fix
+        container.style.lineHeight = LINE_HEIGHT + 'px';
+
+        // JSX to DOM
+        const doc = new DOMParser().parseFromString(el.outerHTML, 'text/html');
+        container.appendChild(doc.documentElement);
+        document.body.appendChild(container);
+
+        //
+        const objPositionImg = {};
+        let startPrint = 0;
+
+        for (let index = 0; index < length; index++) {
+          startPrint += index === 0 ? 0 : height;
+
+          const endPage_line_break = startPrint + HEIGHT_CONTENT_PAGE;
+          const imgs = container.querySelectorAll('img');
+
+          container.querySelectorAll('img').forEach((v, i) => {
+            // console.log(index, v.offsetTop, end);
+
+            const startImage = v.offsetTop;
+            const endImage = v.offsetTop + MAX_HEIGHT_IMG;
+
+            if (
+              startImage < endPage_line_break &&
+              endImage > endPage_line_break
+            ) {
+              // fix
+              objPositionImg[`${startImage}_${endImage}`] = true;
+            }
+
+            console.log(
+              `thứ tự img: ${
+                i + 1
+              } Vị trí: ${startImage} ${endImage}; page: ${index}`,
+              v
+            );
+          });
+          // console.log('image:', index + 1, objPositionImg, endPage_line_break);
+          console.log(
+            `>>>>>>>>>: ${index} Vị trí: ${JSON.stringify(
+              objPositionImg
+            )}; pageEnd: ${endPage_line_break}`
+          );
+
+          let bufferForImage = 0;
+
+          const clone = el.cloneNode(true);
+          const clone3 = document.createElement('div');
+          clone3.style.visibility = 'hidden';
+          clone3.style.lineHeight = LINE_HEIGHT + 'px';
+          clone3.style.position = 'fixed';
+          clone3.style.top = '0';
+          clone3.style.zIndex = '-999999';
+          document.body.appendChild(clone3);
+          clone3.appendChild(clone);
+
+          Object.keys(objPositionImg).forEach((v) => {
+            const [s, e] = v.split('_');
+            if (
+              Number(s) < endPage_line_break &&
+              Number(e) > endPage_line_break
+            ) {
+              clone.querySelectorAll('img, div, p').forEach((elementAfter) => {
+                if (
+                  elementAfter.offsetTop < endPage_line_break &&
+                  elementAfter.offsetTop + MAX_HEIGHT_IMG > endPage_line_break
+                ) {
+                  elementAfter.remove();
+                }
+              });
+              bufferForImage = Number(s) - endPage_line_break;
+            }
+          });
+          const html = clone.innerHTML;
+          document.body.removeChild(clone3);
+
+          result[index] = (
+            <div className="page-break">
+              {/* <h1>--Start: page {index + 1}--</h1> */}
+              <PrintKarte2Background
+                information={{
+                  kanID: '1015',
+                  kanKana: 'ｶﾝｼﾞｬ 1015',
+                  kanNm: '患者 1015',
+                  kanBirth: '昭和 53年10月14日 (女)',
+                  prtDate: '2023/01/03 16:37',
+                  prtStartDate: '2022/10/10(月)',
+                  prtEndDate: '',
+                }}
+                key={index}
+                page={index + 1}
+                className="content"
+              />
+              <div
+                style={{
+                  height: '1120px',
+                }}
+              >
+                <div className="text">
+                  <div
+                    style={{
+                      marginTop: -startPrint + 'px',
+                      height: startPrint + height + 'px',
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: html,
+                    }}
+                  ></div>
+                </div>
+              </div>
+              {/* <h1>--End: page {index + 1}--</h1> */}
+            </div>
+          );
+
+          if (bufferForImage !== 0) {
+            startPrint += bufferForImage;
+          }
+        }
+
+        document.body.removeChild(container);
+
+        return result;
+      }
+
+      const PrintKarte2Background = ({ page, information, ...props }) => {
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            version="1.1"
+            width="595.32pt"
+            height="841.92007pt"
+            viewBox="0 0 595.32 841.92007"
+            {...props}
+          >
+            <g enableBackground="new">
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 398.56 99.2 L 398.56 1081.44 "
+              />
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 24.16 121.92 L 767.04 121.92 "
+              />
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 24.16 99.2 L 767.68 99.2 "
+              />
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan
+                  y="117.6"
+                  x="100 114.7206 129.4412 144.01459 158.73519 173.45578 188.02918 202.74977 217.47037 232.04376 246.76436 261.48497 276.05836 290.77897 305.49958"
+                >
+                  既往歴・原因・主要症状・経過等
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="117.28" x="492.64 507.36064">
+                  処方
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="117.28" x="536.64">
+                  ・
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="117.28" x="566.08 580.6534">
+                  手術
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="117.28" x="610.08">
+                  ・
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="117.28" x="639.36 653.93338 668.65396">
+                  処置等
+                </tspan>
+              </text>
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 23.68 99.2 L 24.32 1081.44 "
+              />
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 767.68 99.2 L 767.68 1081.44 "
+              />
+              <path
+                transform="matrix(.75,0,0,.75,0,0)"
+                strokeWidth=".96"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                stroke="#000000"
+                d="M 24.16 1081.6 L 767.68 1081.6 "
+              />
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="71.2" x="24.96 67.20812">
+                  氏名
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="71.2" x="93.44">
+                  {information?.kanNm || EMPTY_DATA}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="1097.6" x="365.28 372.6403 379.85337 387.21366">
+                  Page
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="1097.92" x="414.88">
+                  {page}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="12.0005"
+                fontFamily="F1"
+              >
+                <tspan y="53.76" x="93.44 99.56026 105.440509">
+                  {information?.kanKana || EMPTY_DATA}
+                </tspan>
+              </text>
+
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="93.92" x="24.48 39.053396 53.773996 68.4946">
+                  生年月日
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="93.92" x="93.372409">
+                  {information?.kanBirth || EMPTY_DATA}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="37.28" x="25.44 40.013395 54.733995 69.45459">
+                  患者番号
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="38.4" x="94.08 101.4403 108.65339 116.01369">
+                  {information?.kanID || EMPTY_DATA}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan
+                  y={40}
+                  x="628.64 636.0003 643.3606 650.7209 658.0812 665.29428 672.65457 680.01486 687.3751 694.7354 702.0957 709.3088 716.66909 724.02938 731.38967 738.74996"
+                >
+                  {information?.prtDate || EMPTY_DATA}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="39.04" x="560 574.7206 589.29397 604.0145">
+                  発行日時
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="61.92" x="561.28 575.8534 590.574 605.29458">
+                  印刷開始
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="85.12" x="561.12 575.8406 590.56118 605.1345">
+                  印刷終了
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan
+                  y="61.92"
+                  x="629.44 636.8003 644.1606 651.5209 658.88119 666.24148 673.4545 680.8148 688.1751 695.5354 702.8957 710.256 724.82937"
+                >
+                  {information?.prtStartDate || EMPTY_DATA}
+                </tspan>
+              </text>
+              <text
+                xmlSpace="preserve"
+                transform="matrix(.75 0 0 .75 0 0)"
+                fontSize="14.7206"
+                fontFamily="F1"
+              >
+                <tspan y="84.32" x="629.92 637.2803 644.49337">
+                  {information?.prtEndDate || EMPTY_DATA}
+                </tspan>
+              </text>
+            </g>
+          </svg>
+        );
+      };
+
+      const generateOrderHistoryItem = (data) => {
+        const getRichTextArr = () => {
+          const histories = data?.karteHistories[0]?.karteData ?? [];
+          if (histories.length >= 1) {
+            return data?.karteHistories[0]?.karteData?.map(
+              ({
+                richText,
+                isDeleted,
+                createDateDisplay,
+                updateDateDisplay,
+                createName,
+              }) => {
+                if (isDeleted !== HistoryKarte.Latest) {
+                  return (
+                    htmlDateCreateDeleted(createDateDisplay, createName) +
+                    htmlDateUpdate(updateDateDisplay, createName) +
+                    `<del>${richText}</del>`
+                  );
+                }
+                return `${
+                  richText ? htmlDateNew(updateDateDisplay, createName) : ''
+                }${richText}`;
+              }
+            );
+          } else {
+            return histories[0]?.richText;
+          }
+        };
+        const richTextArr = getRichTextArr();
+
+        const richText = Array.isArray(richTextArr)
+          ? richTextArr?.join?.('')
+          : richTextArr;
+
+        const arrImage = data.listKarteFiles
+          .map(
+            (item) => `<img src=${item.linkFile} height="${MAX_HEIGHT_IMG}"/>`
+          )
+          .join('');
+
+        return `
+        <div class='orderHistory'>
+        <div class='orderHistoryInfor'>
+          <span class='orderHistoryInforTitle'>${dayjs(
+            data.sinDate.toString()
+          ).format('YYYY/MM/DD')}</span>
+          <div class='lineThrough'></div>
+          <div class='receptionDate receptionTextColor'>
+            <span>&nbsp受付:17:20 杠葉Dr 診察:10:24-10:26 杠葉Dr （承認: 杠葉Dr 2022/10/17 10:26）</span>
+          </div>
+        </div>
+        <div class='orderHistoryContent'>
+          <div class='richText'>
+              ${richText || ''}
+              ${arrImage || ''}
+          </div>
+
+          <div class='orderDetail'>
+            <div class='orderItem'>
+              <span class='orderItemTitle'>初再診</span>
+
+              <ul class='orderItemList'>
+                <li>
+                  <div class='receptionTextColor'>2022/10/17 10:26 杠葉Dr</div>
+                  <div>１０ｍｇセルシン錠 1錠</div>
+                  <div>（【般】ジアゼパム錠１０ｍｇ）</div>
+                  <div>分１ 起床時 1日分）</div>
+                </li>
+                <li>
+                  <div class='receptionTextColor'>2022/10/17 10:26 杠葉Dr</div>
+                  <div>１０ｍｇセルシン錠 1錠</div>
+                  <div>（【般】ジアゼパム錠１０ｍｇ）</div>
+                  <div>分１ 起床時 1日分）</div>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+        `;
+      };
+    </script>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        // <React.StrictMode>
+        <>
+          <PrintKarte2Final />
+        </>
+        // </React.StrictMode>
+      );
+    </script>
+  </body>
+</html>

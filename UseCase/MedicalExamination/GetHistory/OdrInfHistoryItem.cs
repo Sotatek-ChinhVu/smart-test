@@ -1,4 +1,5 @@
-﻿using UseCase.OrdInfs.GetListTrees;
+﻿using System.Text.Json.Serialization;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace UseCase.MedicalExamination.GetHistory
 {
@@ -8,10 +9,13 @@ namespace UseCase.MedicalExamination.GetHistory
         {
         }
 
+        [JsonPropertyName("updateDateDisplay")]
         public string UpdateDateDisplay
         {
             get => UpdateDate.ToString("yyyy/MM/dd hh:mm");
         }
+
+        [JsonPropertyName("createDateDisplay")]
         public string CreateDateDisplay
         {
             get => CreateDate.ToString("yyyy/MM/dd hh:mm");

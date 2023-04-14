@@ -16,6 +16,10 @@ namespace Interactor.MedicalExamination
         {
             try
             {
+                if (inputData.HpId <= 0)
+                {
+                    return new GetKensaAuditTrailLogOutputData(GetKensaAuditTrailLogStatus.InvalidHpId, new());
+                }
                 if (inputData.PtId <= 0)
                 {
                     return new GetKensaAuditTrailLogOutputData(GetKensaAuditTrailLogStatus.InvalidPtId, new());
@@ -29,7 +33,7 @@ namespace Interactor.MedicalExamination
                     return new GetKensaAuditTrailLogOutputData(GetKensaAuditTrailLogStatus.InvalidRaiinNo, new());
                 }
 
-                var auditTrailLogs = _medicalExaminationRepository.GetKensaAuditTrailLogs(inputData.EventCd, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                var auditTrailLogs = _medicalExaminationRepository.GetKensaAuditTrailLogs(inputData.HpId, inputData.EventCd, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
                 var result = auditTrailLogs.Select(a => new AuditTrailLogItem(
                         a.LogId,
                         a.LogDate,
