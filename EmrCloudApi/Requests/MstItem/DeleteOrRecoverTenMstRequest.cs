@@ -4,15 +4,18 @@ namespace EmrCloudApi.Requests.MstItem
 {
     public class DeleteOrRecoverTenMstRequest
     {
-        public DeleteOrRecoverTenMstRequest(string itemCd ,DeleteOrRecoverTenMstMode mode, List<TenMstOriginModelDto> tenMsts)
+        public DeleteOrRecoverTenMstRequest(string itemCd, string selectedTenMstModelName, DeleteOrRecoverTenMstMode mode, List<TenMstOriginModelDto> tenMsts, bool confirmDeleteIfModeIsDeleted)
         {
             ItemCd = itemCd;
+            SelectedTenMstModelName = selectedTenMstModelName;
             Mode = mode;
             TenMsts = tenMsts;
+            ConfirmDeleteIfModeIsDeleted = confirmDeleteIfModeIsDeleted;
         }
 
         public string ItemCd { get; private set; }
 
+        public string SelectedTenMstModelName { get; private set; }
 
         public DeleteOrRecoverTenMstMode Mode { get; private set; }
 
@@ -20,5 +23,7 @@ namespace EmrCloudApi.Requests.MstItem
         /// Only pass IsStartDateKeyUpdated = true;
         /// </summary>
         public List<TenMstOriginModelDto> TenMsts { get; private set; }
+
+        public bool ConfirmDeleteIfModeIsDeleted { get; private set; }
     }
 }

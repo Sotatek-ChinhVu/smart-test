@@ -5,6 +5,7 @@
         Successful,
         Failed,
         InvalidUserId,
-        InvalidItemCd
+        InvalidItemCd,
+        RequiredConfirmDelete
     }
 }

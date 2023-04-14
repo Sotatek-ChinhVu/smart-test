@@ -16,20 +16,28 @@ namespace EmrCloudApi.Presenters.MstItem
                 Data = new DeleteOrRecoverTenMstResponse(outputData.Status),
                 Status = (int)outputData.Status
             };
-            switch (outputData.Status)
+
+            if(string.IsNullOrEmpty(outputData.Message))
             {
-                case DeleteOrRecoverTenMstStatus.InvalidUserId:
-                    Result.Message = ResponseMessage.InvalidUserId;
-                    break;
-                case DeleteOrRecoverTenMstStatus.Successful:
-                    Result.Message = ResponseMessage.Success;
-                    break;
-                case DeleteOrRecoverTenMstStatus.Failed:
-                    Result.Message = ResponseMessage.Failed;
-                    break;
-                case DeleteOrRecoverTenMstStatus.InvalidItemCd:
-                    Result.Message = ResponseMessage.InvalidItemCd;
-                    break;
+                switch (outputData.Status)
+                {
+                    case DeleteOrRecoverTenMstStatus.InvalidUserId:
+                        Result.Message = ResponseMessage.InvalidUserId;
+                        break;
+                    case DeleteOrRecoverTenMstStatus.Successful:
+                        Result.Message = ResponseMessage.Success;
+                        break;
+                    case DeleteOrRecoverTenMstStatus.Failed:
+                        Result.Message = ResponseMessage.Failed;
+                        break;
+                    case DeleteOrRecoverTenMstStatus.InvalidItemCd:
+                        Result.Message = ResponseMessage.InvalidItemCd;
+                        break;
+                }
+            }
+            else
+            {
+                Result.Message = outputData.Message;
             }
         }
     }

@@ -219,7 +219,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.DeleteOrRecoverTenMst)]
         public ActionResult<Response<DeleteOrRecoverTenMstResponse>> DeleteOrRecoverTenMst([FromBody] DeleteOrRecoverTenMstRequest request)
         {
-            var input = new DeleteOrRecoverTenMstInputData(request.ItemCd, request.Mode, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenMsts), UserId);
+            var input = new DeleteOrRecoverTenMstInputData(request.ItemCd , request.SelectedTenMstModelName, request.Mode, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenMsts), UserId, HpId , request.ConfirmDeleteIfModeIsDeleted);
             var output = _bus.Handle(input);
             var presenter = new DeleteOrRecoverTenMstPresenter();
             presenter.Complete(output);
