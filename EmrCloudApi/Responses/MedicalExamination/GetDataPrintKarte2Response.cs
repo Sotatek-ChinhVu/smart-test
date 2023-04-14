@@ -5,13 +5,13 @@ namespace EmrCloudApi.Responses.MedicalExamination;
 
 public class GetDataPrintKarte2Response
 {
-    public GetDataPrintKarte2Response(List<HistoryKarteOdrRaiinItem>? karteOrdRaiins, GetDataPrintKarte2InputData input)
+    public GetDataPrintKarte2Response(List<HistoryKarteOdrRaiinItem> karteOrdRaiins, GetDataPrintKarte2InputData input)
     {
         KarteOrdRaiins = karteOrdRaiins;
         DisplaySetting = new DisplaySetting(input);
     }
 
-    public List<HistoryKarteOdrRaiinItem>? KarteOrdRaiins { get; private set; }
+    public List<HistoryKarteOdrRaiinItem> KarteOrdRaiins { get; private set; }
 
     public DisplaySetting DisplaySetting { get; private set; }
 }
