@@ -1,14 +1,15 @@
 ﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
-using Helper.Common;
+using PostgreDataContext;
 using Helper.Constants;
+using EmrCalculateApi.Ika.Models;
+using Helper.Common;
+using EmrCalculateApi.Ika.Constants;
+using EmrCalculateApi.Ika.ViewModels;
+using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 
 namespace EmrCalculateApi.Ika.DB.CommandHandler
 {
@@ -76,12 +77,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 //);
                 List<WrkSinRpInf> wrkSinRps = wrkSinRpInfModels.Select(p => p.WrkSinRpInf).ToList();
                 wrkSinRps.ForEach(p =>
-                    {
-                        p.CreateDate = CIUtil.GetJapanDateTimeNow();
-                        p.CreateId = Hardcode.UserID;
-                        p.CreateMachine = Hardcode.ComputerName;
+                {
+                    p.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    p.CreateId = Hardcode.UserID;
+                    p.CreateMachine = Hardcode.ComputerName;
 
-                    }
+                }
                 );
                 tenantDataContext.WrkSinRpInfs.AddRange(wrkSinRps);
 
@@ -113,12 +114,12 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
 
                 List<WrkSinKouiDetail> wrkSinDtls = wrkSinKouiDetailModels.Select(p => p.WrkSinKouiDetail).ToList();
                 wrkSinDtls?.ForEach(p =>
+                {
+                    if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
                     {
-                        if (string.IsNullOrEmpty(p.TyuCd) == false && p.TyuCd.Length >= 5 && p.TyuCd.EndsWith("D"))
-                        {
-                            p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
-                        }
+                        p.TyuCd = p.TyuCd.Substring(0, p.TyuCd.Length - 1);
                     }
+                }
                 );
                 tenantDataContext.WrkSinKouiDetails.AddRange(wrkSinDtls);
 
@@ -459,6 +460,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                     calcStatus.UpdateId = Hardcode.UserID;
                     calcStatus.UpdateMachine = Hardcode.ComputerName;
                 }
+
                 _tenantDataContext.SaveChanges();
             }
             catch (Exception e)
@@ -477,6 +479,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 calcStatus.UpdateId = Hardcode.UserID;
                 calcStatus.UpdateMachine = Hardcode.ComputerName;
             }
+
             _tenantDataContext.SaveChanges();
         }
 
@@ -493,6 +496,7 @@ namespace EmrCalculateApi.Ika.DB.CommandHandler
                 receStatus.UpdateId = Hardcode.UserID;
                 receStatus.UpdateMachine = Hardcode.ComputerName;
             }
+
             _tenantDataContext.SaveChanges();
         }
     }
