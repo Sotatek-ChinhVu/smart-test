@@ -22,7 +22,7 @@ namespace Interactor.MstItem
                 if (inputData.UserId < 0)
                     return new DeleteOrRecoverTenMstOutputData(DeleteOrRecoverTenMstStatus.InvalidUserId);
 
-                bool result = true;
+                bool result = _mstItemRepository.SaveDeleteOrRecoverTenMstOrigin(inputData.Mode ,inputData.ItemCd, inputData.UserId, inputData.TenMsts);
 
                 if (result)
                     return new DeleteOrRecoverTenMstOutputData(DeleteOrRecoverTenMstStatus.Successful);

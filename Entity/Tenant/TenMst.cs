@@ -12,7 +12,6 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        
         [Column("HP_ID", Order = 1)]
         //[Index("TEN_MST_IDX01", 1)]
         //[Index("TEN_MST_IDX02", 1)]
