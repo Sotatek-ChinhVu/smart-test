@@ -472,7 +472,10 @@ namespace Infrastructure.Repositories
                     odrInf.CreateDate,
                     odrInf.CreateId,
                     createName,
-                    odrInfDetailModels
+                    odrInfDetailModels,
+                    odrInf.UpdateDate,
+                    odrInf.CreateMachine ?? string.Empty,
+                    odrInf.UpdateMachine ?? string.Empty
                 );
         }
 
@@ -500,7 +503,10 @@ namespace Infrastructure.Repositories
                     odrInf.CreateDate,
                     odrInf.CreateId,
                     string.Empty,
-                    new()
+                    new(),
+                    odrInf.UpdateDate,
+                    odrInf.CreateMachine ?? string.Empty,
+                    odrInf.UpdateMachine ?? string.Empty
                 );
         }
 

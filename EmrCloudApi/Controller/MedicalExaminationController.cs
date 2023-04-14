@@ -17,8 +17,10 @@ using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.MedicalExamination.GetContainerMst;
 using UseCase.MedicalExamination.GetDefaultSelectedTime;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
+using UseCase.MedicalExamination.GetKensaAuditTrailLog;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
@@ -455,7 +457,8 @@ namespace EmrCloudApi.Controllers
                     request.KarteItem.RichText),
                 UserId,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
-                familyList
+                familyList,
+                request.Monshin
             );
             var output = _bus.Handle(input);
 
@@ -503,7 +506,7 @@ namespace EmrCloudApi.Controllers
         [HttpGet(ApiPath.GetHistoryFollowSinDate)]
         public ActionResult<Response<GetHistoryFollowSindateResponse>> GetHistoryFollowSinDate([FromQuery] GetHistoryFollowSindateRequest request)
         {
-            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo);
+            var input = new GetHistoryFollowSindateInputData(request.PtId, HpId, UserId, request.SinDate, request.DeleteConditon, request.RaiinNo, request.Flag);
             var output = _bus.Handle(input);
 
             var presenter = new GetHistoryFollowSindatePresenter();
@@ -540,6 +543,26 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetTrialAccountingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTrialAccountingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetKensaAuditTrailLog)]
+        public ActionResult<Response<GetKensaAuditTrailLogResponse>> GetKensaAuditTrailLog([FromQuery] GetKensaAuditTrailLogRequest request)
+        {
+            var input = new GetKensaAuditTrailLogInputData(HpId, request.RaiinNo, request.SinDate, request.PtId, request.EventCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetKensaAuditLogTrailPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetKensaAuditTrailLogResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetContainerMst)]
+        public ActionResult<Response<GetContainerMstResponse>> GetContainerMst([FromBody] GetContainerMstRequest request)
+        {
+            var input = new GetContainerMstInputData(request.HpId, request.SinDate, request.DefaultChecked, request.OdrInfItems);
+            var output = _bus.Handle(input);
+            var presenter = new GetContainerMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetContainerMstResponse>>(presenter.Result);
         }
     }
 }

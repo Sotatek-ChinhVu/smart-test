@@ -2,7 +2,7 @@
 using EmrCloudApi.Requests.ExportPDF;
 using Helper.Enum;
 using Microsoft.AspNetCore.Mvc;
-using Reporting.DrugInfo.Service;
+using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
@@ -16,11 +16,13 @@ public class PdfCreatorController : ControllerBase
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
+    private readonly IOutDrugCoReportService _outDrugCoReportService;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService)
     {
         _reportService = reportService;
         _configuration = configuration;
+        _outDrugCoReportService = outDrugCoReportService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -29,7 +31,7 @@ public class PdfCreatorController : ControllerBase
         var karte1Data = _reportService.GetKarte1ReportingData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei, request.SyuByomei);
         return await RenderPdf(karte1Data, ReportType.Karte1);
     }
-    
+
     [HttpGet(ApiPath.ExportNameLabel)]
     public async Task<IActionResult> GenerateNameLabelReport([FromQuery] NameLabelExportRequest request)
     {
@@ -74,13 +76,68 @@ public class PdfCreatorController : ControllerBase
         var sijisenData = _reportService.GetSijisenReportingData(request.FormType, request.PtId, request.SinDate, request.RaiinNo, odrKouiKbns, request.PrintNoOdr);
         return await RenderPdf(sijisenData, ReportType.Common);
     }
-    
+
     [HttpGet(ApiPath.MedicalRecordWebId)]
     public async Task<IActionResult> GenerateMedicalRecordWebIdReport([FromQuery] MedicalRecordWebIdRequest request)
     {
-        var date = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
-        return await RenderPdf(date, ReportType.Common);
+        var data = _reportService.GetMedicalRecordWebIdReportingData(request.HpId, request.PtId, request.SinDate);
+        return await RenderPdf(data, ReportType.Common);
     }
+
+    [HttpGet(ApiPath.OutDrug)]
+    public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
+    {
+        var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        return await RenderPdf(data, ReportType.OutDug);
+    }
+
+        [HttpPost("ExportKarte2")]
+        public async Task<IActionResult> GenerateKarte2Report([FromForm] double marginTop,
+                                                              [FromForm] double marginBottom,
+                                                              [FromForm] double marginLeft,
+                                                              [FromForm] double marginRight,
+                                                              [FromForm] IFormFile files,
+                                                              [FromForm] double paperWidth,
+                                                              [FromForm] double paperHeight,
+                                                              [FromForm] string waitForExpression)
+        {
+            byte[] bytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                files.CopyTo(memoryStream);
+                string decoded = Encoding.UTF8.GetString(memoryStream.ToArray());
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+                //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
+                //bytes = Encoding.ASCII.GetBytes(decoded);
+                //bytes = memoryStream.ToArray();
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent(marginTop.ToString()), "marginTop");
+            form.Add(new StringContent(marginBottom.ToString()), "marginBottom");
+            form.Add(new StringContent(marginLeft.ToString()), "marginLeft");
+            form.Add(new StringContent(marginRight.ToString()), "marginRight");
+            form.Add(new StringContent(paperWidth.ToString()), "paperWidth");
+            form.Add(new StringContent(paperHeight.ToString()), "paperHeight");
+            form.Add(new StringContent(waitForExpression), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", files.FileName);
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    var byteData = streamingData.ToArray();
+
+                    return File(byteData, "application/pdf");
+                }
+            }
+        }
 
     private async Task<IActionResult> RenderPdf(object data, ReportType reportType)
     {
@@ -97,6 +154,7 @@ public class PdfCreatorController : ControllerBase
             ReportType.Karte1 => "reporting-fm-karte1",
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
+            ReportType.OutDug => "reporting-out-drug",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
 

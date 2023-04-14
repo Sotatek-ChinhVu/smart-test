@@ -81,6 +81,7 @@
         public const string ExportSijisen = "ExportSijisen";
         public const string ExportNameLabel = "ExportNameLabel";
         public const string MedicalRecordWebId = "MedicalRecordWebId";
+        public const string OutDrug = "OutDrug";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -181,6 +182,8 @@
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
         public const string TrialAccounting = "TrialAccounting";
+        public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
+        public const string GetContainerMst = "GetContainerMst";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
@@ -280,6 +283,10 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+
+        //Monshin
+        public const string GetMonshinInf = "GetMonshinInf";
+        public const string SaveMonshinInf = "SaveMonshinInf";
         public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
     }
 }

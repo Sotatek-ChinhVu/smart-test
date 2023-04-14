@@ -153,6 +153,8 @@ using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
+using Reporting.OutDrug.DB;
+using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -256,9 +258,11 @@ using UseCase.MedicalExamination.ConvertNextOrderToTodayOdr;
 using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
+using UseCase.MedicalExamination.GetContainerMst;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
+using UseCase.MedicalExamination.GetKensaAuditTrailLog;
 using UseCase.MedicalExamination.GetMaxAuditTrailLogDateForPrint;
 using UseCase.MedicalExamination.GetOrdersForOneOrderSheetGroup;
 using UseCase.MedicalExamination.GetOrderSheetGroup;
@@ -435,6 +439,21 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.DoReceCmt;
+using UseCase.ReceSeikyu.SearchReceInf;
+using UseCase.Receipt.ReceiptEdit;
+using Interactor.MedicalExamination.HistoryCommon;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
+using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.WeightedSetConfirmation.CheckOpen;
+using Interactor.WeightedSetConfirmation;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
+using Interactor.Family.ValidateFamilyList;
+using UseCase.Family.ValidateFamilyList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -488,6 +507,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarte1Service, Karte1Service>();
             services.AddTransient<IMedicalRecordWebIdReportService, MedicalRecordWebIdReportService>();
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
+            services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
+            services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -572,6 +593,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRsvInfRepository, RsvInfRepository>();
             services.AddTransient<ICommonMedicalCheck, CommonMedicalCheck>();
             services.AddTransient<IReceSeikyuRepository, ReceSeikyuRepository>();
+            services.AddTransient<IHistoryCommon, HistoryCommon>();
             services.AddTransient<ISaveMedicalRepository, SaveMedicalRepository>();
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
@@ -706,10 +728,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputDataOfMedical, GetDefaultSelectedTimeInteractorOfMedical>();
             busBuilder.RegisterUseCase<ConvertItemInputData, ConvertItemInteractor>();
             busBuilder.RegisterUseCase<CalculateInputData, CalculateInteractor>();
+            busBuilder.RegisterUseCase<GetDataPrintKarte2InputData, GetDataPrintKarte2Interactor>();
             busBuilder.RegisterUseCase<GetHistoryFollowSindateInputData, GetHistoryFollowSindateInteractor>();
             busBuilder.RegisterUseCase<GetOrdersForOneOrderSheetGroupInputData, GetOrdersForOneOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetOrderSheetGroupInputData, GetOrderSheetGroupInteractor>();
             busBuilder.RegisterUseCase<GetTrialAccountingInputData, GetTrialAccountingInteractor>();
+            busBuilder.RegisterUseCase<GetKensaAuditTrailLogInputData, GetKensaAuditTrailLogInteractor>();
+            busBuilder.RegisterUseCase<GetContainerMstInputData, GetContainerMstInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
