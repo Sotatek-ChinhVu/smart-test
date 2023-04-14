@@ -90,16 +90,16 @@ namespace UseCase.MedicalExamination.GetHistory
         public int Status { get; private set; }
 
         [JsonPropertyName("uketukeTime")]
-        public string UketukeTime { get; set; }
+        public string UketukeTime { get; private set; }
 
         [JsonPropertyName("uketsukeName")]
-        public string UketsukeName { get; set; }
+        public string UketsukeName { get; private set; }
 
         [JsonPropertyName("sinStartTime")]
-        public string SinStartTime { get; set; }
+        public string SinStartTime { get; private set; }
 
         [JsonPropertyName("sinEndTime")]
-        public string SinEndTime { get; set; }
+        public string SinEndTime { get; private set; }
 
         [JsonPropertyName("hokenGroups")]
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
