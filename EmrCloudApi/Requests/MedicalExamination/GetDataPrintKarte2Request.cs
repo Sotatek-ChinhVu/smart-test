@@ -2,6 +2,7 @@
 
 public class GetDataPrintKarte2Request
 {
+    public int HpId { get; set; }
     public long PtId { get; set; }
     public int SinDate { get; set; }
 

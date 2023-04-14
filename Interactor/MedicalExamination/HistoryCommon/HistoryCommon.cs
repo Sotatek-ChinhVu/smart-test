@@ -10,6 +10,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Text;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -103,6 +104,131 @@ public class HistoryCommon : IHistoryCommon
             return result;
         else
             return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
+    }
+
+    public void FilterData(ref List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, GetDataPrintKarte2InputData inputData)
+    {
+        List<OrderHokenType> GetListAcceptedHokenType()
+        {
+            List<OrderHokenType> result = new();
+            if (inputData.IsCheckedHoken)
+            {
+                result.Add(OrderHokenType.Hoken);
+            }
+            if (inputData.IsCheckedJihi)
+            {
+                result.Add(OrderHokenType.Jihi);
+            }
+            if (inputData.IsCheckedHokenJihi)
+            {
+                result.Add(OrderHokenType.HokenJihi);
+            }
+            if (inputData.IsCheckedJihiRece)
+            {
+                result.Add(OrderHokenType.JihiRece);
+            }
+            if (inputData.IsCheckedHokenRousai)
+            {
+                result.Add(OrderHokenType.Rousai);
+            }
+            if (inputData.IsCheckedHokenJibai)
+            {
+                result.Add(OrderHokenType.Jibai);
+            }
+            return result;
+        }
+
+        if (!inputData.IsIncludeTempSave)
+        {
+            historyKarteOdrRaiinItems = historyKarteOdrRaiinItems.Where(k => k.Status != 3).ToList();
+        }
+
+        List<OrderHokenType> listAcceptedHokenType = GetListAcceptedHokenType();
+
+        //Filter raiin as hoken setting
+        List<HistoryKarteOdrRaiinItem> filteredKaruteList = new();
+        foreach (var history in historyKarteOdrRaiinItems)
+        {
+            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            {
+                continue;
+            }
+
+            if (listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+            {
+                filteredKaruteList.Add(history);
+                continue;
+            }
+
+            if (inputData.DeletedOdrVisibilitySetting == 0)
+            {
+                foreach (var hokenGroup in history.HokenGroups)
+                {
+                    bool isDataExisted = false;
+                    foreach (var group in hokenGroup.GroupOdrItems)
+                    {
+                        isDataExisted = group.OdrInfs.Any(o => o.IsDeleted == 0);
+                        if (isDataExisted)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (isDataExisted && listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+                    {
+                        filteredKaruteList.Add(history);
+                        break;
+                    }
+                }
+            }
+            else if (inputData.DeletedOdrVisibilitySetting == 2)
+            {
+                foreach (var hokenGroup in history.HokenGroups)
+                {
+                    bool isDataExisted = false;
+                    foreach (var group in hokenGroup.GroupOdrItems)
+                    {
+                        isDataExisted = group.OdrInfs.Any(o => o.IsDeleted != 2);
+                        if (isDataExisted)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (isDataExisted && listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+                    {
+                        filteredKaruteList.Add(history);
+                        break;
+                    }
+                }
+            }
+        }
+
+        historyKarteOdrRaiinItems = filteredKaruteList;
+
+        //Filter karte and order empty
+        historyKarteOdrRaiinItems = historyKarteOdrRaiinItems.Where(k => k.HokenGroups != null && k.HokenGroups.Any() && k.KarteHistories != null && k.KarteHistories.Any()).ToList();
+    }
+
+    public GetMedicalExaminationHistoryOutputData GetDataKarte2(GetDataPrintKarte2InputData inputData)
+    {
+        try
+        {
+            var historyList = _historyOrderRepository.GetList(inputData.HpId,
+                                                              inputData.PtId,
+                                                              inputData.SinDate,
+                                                              inputData.StartDate,
+                                                              inputData.EndDate,
+                                                              1);
+            var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
+            List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
+            FilterData(ref historyKarteOdrRaiinList, inputData);
+            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData);
+        }
+        finally
+        {
+            ReleaseResources();
+        }
     }
 
     private int ParseInt(string input)
@@ -270,5 +396,6 @@ public class HistoryCommon : IHistoryCommon
         _historyOrderRepository.ReleaseResource();
         _insuranceRepository.ReleaseResource();
         _patientInforRepository.ReleaseResource();
+        _userRepository.ReleaseResource();
     }
 }
