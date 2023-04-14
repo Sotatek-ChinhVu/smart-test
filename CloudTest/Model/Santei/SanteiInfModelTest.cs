@@ -68,7 +68,7 @@ public class SanteiInfModelTest
                         && santeiInfModel.SanteiItemSum == santeiItemSum
                         && santeiInfModel.CurrentMonthSanteiItemCount == currentMonthSanteiItemCount
                         && santeiInfModel.CurrentMonthSanteiItemSum == currentMonthSanteiItemSum
-                        && santeiInfModel.ListSanteiInfDetails == listSanteiInfDetails
+                        && santeiInfModel.SanteiInfDetailList == listSanteiInfDetails
                         && !santeiInfModel.IsDeleted
                     );
     }
@@ -106,7 +106,7 @@ public class SanteiInfModelTest
                         && santeiInfModel.SanteiItemSum == santeiItemSum
                         && santeiInfModel.CurrentMonthSanteiItemCount == currentMonthSanteiItemCount
                         && santeiInfModel.CurrentMonthSanteiItemSum == currentMonthSanteiItemSum
-                        && !santeiInfModel.ListSanteiInfDetails.Any()
+                        && !santeiInfModel.SanteiInfDetailList.Any()
                         && !santeiInfModel.IsDeleted
                     );
     }
@@ -160,7 +160,7 @@ public class SanteiInfModelTest
                         && santeiInfModel.SanteiItemSum == 0
                         && santeiInfModel.CurrentMonthSanteiItemCount == 0
                         && santeiInfModel.CurrentMonthSanteiItemSum == 0
-                        && santeiInfModel.ListSanteiInfDetails == listSanteiInfDetails
+                        && santeiInfModel.SanteiInfDetailList == listSanteiInfDetails
                         && santeiInfModel.IsDeleted == isDelete
                     );
     }
@@ -198,7 +198,7 @@ public class SanteiInfModelTest
                         && santeiInfModel.SanteiItemSum == 0
                         && santeiInfModel.CurrentMonthSanteiItemCount == 0
                         && santeiInfModel.CurrentMonthSanteiItemSum == 0
-                        && !santeiInfModel.ListSanteiInfDetails.Any()
+                        && !santeiInfModel.SanteiInfDetailList.Any()
                         && !santeiInfModel.IsDeleted
                     );
     }
