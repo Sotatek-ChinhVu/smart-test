@@ -2,7 +2,7 @@
 <!-- https://www.cssportal.com/scss-to-css/ -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,301 +14,324 @@
     /> -->
     <title>Document</title>
     <script>
-      // Response BE .NET fill in here
-      const DATA_KARTE2 = __DATA_KARTE2__;
-      window.dataPrintKarte2 = DATA_KARTE2.data.karteOrdRaiins;
+        // Response BE .NET fill in here
+        const DATA_KARTE2 = __DATA_KARTE2__;
+        window.dataPrintKarte2 = DATA_KARTE2.data.karteOrdRaiins;
+        window.displaySetting = DATA_KARTE2.data.displaySetting;
     </script>
     <style>
-      /* http://meyerweb.com/eric/tools/css/reset/ 
-  v2.0 | 20110126
-  License: none (public domain)
-*/
+                /* http://meyerweb.com/eric/tools/css/reset/
+          v2.0 | 20110126
+          License: none (public domain)
+        */
 
-      html,
-      body,
-      div,
-      span,
-      applet,
-      object,
-      iframe,
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6,
-      p,
-      blockquote,
-      pre,
-      a,
-      abbr,
-      acronym,
-      address,
-      big,
-      cite,
-      code,
-      del,
-      dfn,
-      em,
-      img,
-      ins,
-      kbd,
-      q,
-      s,
-      samp,
-      small,
-      strike,
-      strong,
-      sub,
-      sup,
-      tt,
-      var,
-      b,
-      u,
-      i,
-      center,
-      dl,
-      dt,
-      dd,
-      ol,
-      ul,
-      li,
-      fieldset,
-      form,
-      label,
-      legend,
-      table,
-      caption,
-      tbody,
-      tfoot,
-      thead,
-      tr,
-      th,
-      td,
-      article,
-      aside,
-      canvas,
-      details,
-      embed,
-      figure,
-      figcaption,
-      footer,
-      header,
-      hgroup,
-      menu,
-      nav,
-      output,
-      ruby,
-      section,
-      summary,
-      time,
-      mark,
-      audio,
-      video {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        font-size: 100%;
-        font: inherit;
-        vertical-align: baseline;
-      }
-      /* HTML5 display-role reset for older browsers */
-      article,
-      aside,
-      details,
-      figcaption,
-      figure,
-      footer,
-      header,
-      hgroup,
-      menu,
-      nav,
-      section {
-        display: block;
-      }
-      body {
-        line-height: 1;
-      }
-      ol,
-      ul {
-        list-style: none;
-      }
-      blockquote,
-      q {
-        quotes: none;
-      }
-      blockquote:before,
-      blockquote:after,
-      q:before,
-      q:after {
-        content: '';
-        content: none;
-      }
-      table {
-        border-collapse: collapse;
-        border-spacing: 0;
-      }
+                html,
+                body,
+                div,
+                span,
+                applet,
+                object,
+                iframe,
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6,
+                p,
+                blockquote,
+                pre,
+                a,
+                abbr,
+                acronym,
+                address,
+                big,
+                cite,
+                code,
+                del,
+                dfn,
+                em,
+                img,
+                ins,
+                kbd,
+                q,
+                s,
+                samp,
+                small,
+                strike,
+                strong,
+                sub,
+                sup,
+                tt,
+                var,
+                b,
+                u,
+                i,
+                center,
+                dl,
+                dt,
+                dd,
+                ol,
+                ul,
+                li,
+                fieldset,
+                form,
+                label,
+                legend,
+                table,
+                caption,
+                tbody,
+                tfoot,
+                thead,
+                tr,
+                th,
+                td,
+                article,
+                aside,
+                canvas,
+                details,
+                embed,
+                figure,
+                figcaption,
+                footer,
+                header,
+                hgroup,
+                menu,
+                nav,
+                output,
+                ruby,
+                section,
+                summary,
+                time,
+                mark,
+                audio,
+                video {
+                    margin: 0;
+                    padding: 0;
+                    border: 0;
+                    font-size: 100%;
+                    font: inherit;
+                    vertical-align: baseline;
+                }
+                /* HTML5 display-role reset for older browsers */
+                article,
+                aside,
+                details,
+                figcaption,
+                figure,
+                footer,
+                header,
+                hgroup,
+                menu,
+                nav,
+                section {
+                    display: block;
+                }
+
+                body {
+                    line-height: 1;
+                }
+
+                ol,
+                ul {
+                    list-style: none;
+                }
+
+                blockquote,
+                q {
+                    quotes: none;
+                }
+
+                    blockquote:before,
+                    blockquote:after,
+                    q:before,
+                    q:after {
+                        content: '';
+                        content: none;
+                    }
+
+                table {
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                }
     </style>
 
     <style>
-      img,
-      svg {
-        vertical-align: middle;
-      }
-    </style>
-    <style>
-      body {
-        margin: 0;
-      }
-      .page-break {
-        display: block;
-        height: 1122px;
-        position: relative;
-      }
-      :root {
-        font-size: 14px;
-        --width-content-karte2: 734px;
-      }
-      @font-face {
-        font-family: 'MS Gothic';
-        src: url('https://smartkarte.sotatek.works/MSGOTHIC.TTC')
-          format('truetype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      * {
-        /* font-family: '游ゴシック', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN',
-          'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN' !important; */
-        /* font-family: YuGothic, "游ゴシック", "Yu Gothic", sans-serif !important; */
-
-        font-family: MS Gothic, 'MS Gothic', sans-serif !important;
-        line-height: 21px !important;
-      }
-      .style {
-        width: var(--width-content-karte2);
-        position: fixed;
-        opacity: 0;
-        top: 0;
-        z-index: -1;
-        word-break: break-all;
-      }
-      .text {
-        overflow: hidden;
-        position: absolute;
-        margin-top: 130px;
-        margin-left: 31px;
-        width: var(--width-content-karte2);
-      }
-      .content {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0px;
-      }
-      p {
-        margin: 0;
-        min-height: 21px;
-      }
-      .page-break {
-        display: block;
-        position: relative;
-        height: 1122px;
-      }
-      @media print {
-        .page-break {
-          display: block;
-          position: relative;
-          height: 1122px;
-          page-break-before: always;
+        img,
+        svg {
+            vertical-align: middle;
         }
-      }
-      .orderHistory {
-        width: var(--width-content-karte2);
-      }
-      .orderHistoryInfor {
-        display: flex;
-        gap: 4px;
-      }
-      .orderHistoryInforTitle {
-        /* font-weight: bold; */
-        font-size: 18px;
-      }
-      .orderHistoryContent {
-        display: flex;
-        word-break: break-all;
-        gap: 13px;
-      }
-      .orderHistoryContent .richText {
-        flex: 1;
-      }
-      .orderHistoryContent .orderDetail {
-        flex: 1;
-      }
-      .orderHistoryContent .orderDetail .orderItemTitle {
-        text-decoration: underline;
-      }
-      .orderHistoryContent .orderDetail .orderItemList {
-        list-style: none;
-        /* Remove list bullets */
-        padding: 0;
-        margin: 0;
-      }
-      .orderHistoryContent .orderDetail .orderItemList li::before {
-        content: '＊';
-        color: black;
-        /* Insert content that looks like bullets */
-        position: absolute;
-        left: 10px;
-        top: 0;
-        /* font-size: 12px; */
-      }
-      .orderHistoryContent .orderDetail .orderItemList li {
-        padding-left: 24px;
-        position: relative;
-      }
-      .lineThrough {
-        flex: 1;
-        position: relative;
-      }
-      /* .lineThrough::before {
-        content: ' ';
-        position: absolute;
-        top: 10px;
-        left: 0;
-        border-bottom: 1px dotted #111;
-        width: 100%;
-      } */
-      .lineThrough::before {
-        content: '..............................................................................';
-        position: absolute;
-        top: -2px;
-        font-size: 7.5px;
-        left: 0;
-        width: 100%;
-      }
-      .receptionDate {
-        width: calc(50% - 20px);
-        font-size: 15px;
-      }
-      .receptionTextColor {
-        color: #a81b51;
-      }
     </style>
-  </head>
-  <body>
+    <style>
+          body {
+              margin: 0;
+          }
+
+          .page-break {
+              display: block;
+              height: 1122px;
+              position: relative;
+          }
+
+          :root {
+              font-size: 14px;
+              --width-content-karte2: 734px;
+          }
+
+          @font-face {
+              font-family: 'MS Gothic';
+              font-weight: normal;
+              font-style: normal;
+          }
+
+          * {
+              /* font-family: '游ゴシック', 'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN',
+            'Noto Sans JP', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN' !important; */
+              /* font-family: YuGothic, "游ゴシック", "Yu Gothic", sans-serif !important; */
+
+              font-family: MS Gothic, 'MS Gothic', sans-serif !important;
+              line-height: 21px !important;
+          }
+
+          .style {
+              width: var(--width-content-karte2);
+              position: fixed;
+              opacity: 0;
+              top: 0;
+              z-index: -1;
+              word-break: break-all;
+          }
+
+          .text {
+              overflow: hidden;
+              position: absolute;
+              margin-top: 130px;
+              margin-left: 31px;
+              width: var(--width-content-karte2);
+          }
+
+          .content {
+              position: absolute;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0px;
+          }
+
+          p {
+              margin: 0;
+              min-height: 21px;
+          }
+
+          .page-break {
+              display: block;
+              position: relative;
+              height: 1122px;
+          }
+
+          @media print {
+              .page-break {
+                  display: block;
+                  position: relative;
+                  height: 1122px;
+                  page-break-before: always;
+              }
+          }
+
+          .orderHistory {
+              width: var(--width-content-karte2);
+          }
+
+          .orderHistoryInfor {
+              display: flex;
+              gap: 4px;
+          }
+
+          .orderHistoryInforTitle {
+              /* font-weight: bold; */
+              font-size: 18px;
+          }
+
+          .orderHistoryContent {
+              display: flex;
+              word-break: break-all;
+              gap: 13px;
+          }
+
+              .orderHistoryContent .richText {
+                  flex: 1;
+              }
+
+              .orderHistoryContent .orderDetail {
+                  flex: 1;
+              }
+
+                  .orderHistoryContent .orderDetail .orderItemTitle {
+                      text-decoration: underline;
+                  }
+
+                  .orderHistoryContent .orderDetail .orderItemList {
+                      list-style: none;
+                      /* Remove list bullets */
+                      padding: 0;
+                      margin: 0;
+                  }
+
+                      .orderHistoryContent .orderDetail .orderItemList li::before {
+                          content: '＊';
+                          color: black;
+                          /* Insert content that looks like bullets */
+                          position: absolute;
+                          left: 10px;
+                          top: 0;
+                          /* font-size: 12px; */
+                      }
+
+                      .orderHistoryContent .orderDetail .orderItemList li {
+                          padding-left: 24px;
+                          position: relative;
+                      }
+
+          .lineThrough {
+              flex: 1;
+              position: relative;
+          }
+              /* .lineThrough::before {
+          content: ' ';
+          position: absolute;
+          top: 10px;
+          left: 0;
+          border-bottom: 1px dotted #111;
+          width: 100%;
+        } */
+              .lineThrough::before {
+                  content: '..............................................................................';
+                  position: absolute;
+                  top: -2px;
+                  font-size: 7.5px;
+                  left: 0;
+                  width: 100%;
+              }
+
+          .receptionDate {
+              width: calc(50% - 20px);
+              font-size: 15px;
+          }
+
+          .receptionTextColor {
+              color: #a81b51;
+          }
+    </style>
+</head>
+<body>
     <div id="root"></div>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.development.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-    ></script>
+    <script crossorigin
+            src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
     <script type="text/babel">
       const { useState, useEffect } = React;
@@ -372,7 +395,7 @@
                   <div
                     key={index}
                     dangerouslySetInnerHTML={{
-                      __html: generateOrderHistoryItem(item),
+                      __html: generateOrderHistoryItem(item, displaySetting),
                     }}
                   ></div>
                 );
@@ -814,7 +837,43 @@
         );
       };
 
-      const generateOrderHistoryItem = (data) => {
+      const ItemCdConst = {
+        TouyakuChozaiNaiTon: '120000710',
+        TouyakuChozaiGai: '120001010',
+        comment820Pattern: '820',
+        comment830Pattern: '830',
+        comment831Pattern: '831',
+        comment840Pattern: '840',
+        comment842Pattern: '842',
+        comment850Pattern: '850',
+        comment851Pattern: '851',
+        comment852Pattern: '852',
+        comment853Pattern: '853',
+        comment880Pattern: '880',
+        gazoDensibaitaiHozon: '840000100',
+        con_TouyakuOrSiBunkatu: '@BUNKATU',
+        con_Refill: '@REFILL',
+        itemJihi: 'J',
+        zanGigi: '@ZANGIGI',
+        zanTeiKyo: '@ZANTEIKYO',
+        touyakuTokuSyo1Syoho: '120002270',
+        touyakuTokuSyo2Syoho: '120003170',
+        touyakuTokuSyo1Syohosen: '120002570',
+        touyakuTokuSyo2Syohosen: '120003270',
+        OnlineSinryo: '112023210',
+        IgakuNanbyo: '113002910',
+        IgakuTokusitu: '113001810',
+        SiHifuToku2: '113002310',
+        IgakuTenkan: '113002850',
+        SiHifuToku1: '113000910',
+        yakuzaiJoho: '120002370',
+        yakuzaiJohoTeiyo: '113701310',
+        syosaiKihon: '@SHIN',
+        jikanKihon: '@JIKAN',
+        chusyaJikocyu: '@30024',
+      };
+
+      const generateOrderHistoryItem = (data, displaySetting) => {
         const getRichTextArr = () => {
           const histories = data?.karteHistories[0]?.karteData ?? [];
           if (histories.length >= 1) {
@@ -854,59 +913,214 @@
           )
           .join('');
 
+        // Print order section
+        const is820Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment820Pattern);
+
+        const is830Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment830Pattern);
+
+        const is831Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment831Pattern);
+
+        const is850Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment850Pattern);
+
+        const is851Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment851Pattern);
+
+        const is852Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment852Pattern);
+
+        const is853Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment853Pattern);
+
+        const is840Cmt = (itemCd) =>
+          itemCd !== null &&
+          !!itemCd.startsWith(ItemCdConst.comment840Pattern) &&
+          itemCd !== ItemCdConst.gazoDensibaitaiHozon;
+
+        const is842Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment842Pattern);
+
+        const is880Cmt = (itemCd) =>
+          !!itemCd?.startsWith(ItemCdConst.comment880Pattern);
+
+        function getBunkatu(kouiKbn, bunkatu) {
+          let result = '';
+          if (!bunkatu) return result;
+
+          let sTani = '';
+          if (kouiKbn === 21) {
+            // 内服
+            sTani = '日分';
+          } else {
+            sTani = '回分';
+          }
+
+          let sKatu = bunkatu.split('+').filter((item) => !!item);
+          for (let katu of sKatu) {
+            if (result) {
+              result += '，';
+            }
+            result += Number(katu) + sTani;
+          }
+
+          if (result) {
+            result = '（' + result + '）';
+          }
+
+          return result;
+        }
+
+        function getOrderDetailTitle(data) {
+          if (data.itemCd === ItemCdConst.con_TouyakuOrSiBunkatu) {
+            return data.itemName + getBunkatu(data.bunkatuKoui, data.bunkatu);
+          }
+
+          if (
+            is840Cmt(data.itemCd) ||
+            is842Cmt(data.itemCd) ||
+            is830Cmt(data.itemCd) ||
+            is831Cmt(data.itemCd) ||
+            is850Cmt(data.itemCd) ||
+            is851Cmt(data.itemCd) ||
+            is852Cmt(data.itemCd) ||
+            is853Cmt(data.itemCd) ||
+            is880Cmt(data.itemCd)
+          ) {
+            return data.itemName;
+          }
+
+          if (
+            !data.itemCd &&
+            data.sinKouiKbn !== 100 &&
+            data.sinKouiKbn !== 101
+          ) {
+            return data.itemName;
+          }
+
+          return data.itemName;
+        }
+
+        const getOrderRpElement = (orders) => {
+          return orders
+            .map((item) => {
+              const title = `${dayjs(item.createDate).format(
+                'YYYY/MM/DD HH:mm'
+              )} ${item.createName}`;
+              const detailText = item.odrDetails
+                .map((detail) => {
+                  return `<div>${getOrderDetailTitle(detail)}</div>`;
+                })
+                .join('');
+
+              return `<li>
+                        <div class='receptionTextColor'>${title}</div>
+                       ${detailText}
+                      </li>`;
+            })
+            .join('');
+        };
+
+        const getOrderGroupElement = (item) => {
+          const allGroup = data.hokenGroups.flatMap((hoken) => {
+            return hoken.groupOdrItems;
+          });
+
+          return allGroup
+            .map((group) => {
+              const orderText = getOrderRpElement(group.odrInfs);
+
+              return `<div class='orderItem'>
+                    <span class='orderItemTitle'>${group.groupName}</span>
+                    <ul class='orderItemList'>
+                      ${orderText}
+                    </ul>
+
+                  </div>`;
+            })
+            .join('');
+        };
+
+        const getOrderTitle = () => {
+          let result = '';
+
+          if (displaySetting.isCheckedVisitingTime) {
+            result += data.uketukeTime
+              ? `受付:${data.uketukeTime}`
+              : `受付:  :  `;
+          }
+
+          if (displaySetting.isUketsukeNameChecked && data.uketsukeName) {
+            result += ` ${data.uketsukeName}`;
+          }
+
+          if (displaySetting.isCheckedStartTime) {
+            result += ` 診察:${data.sinStartTime}`;
+          }
+
+          if (
+            displaySetting.isCheckedStartTime &&
+            displaySetting.isCheckedEndTime
+          ) {
+            result += data.sinEndTime ? `-${data.sinEndTime}` : '-  :  ';
+          }
+
+          if (
+            !displaySetting.isCheckedStartTime &&
+            displaySetting.isCheckedEndTime
+          ) {
+            result += data.sinEndTime
+              ? ` 診察:-${data.sinEndTime}`
+              : ' 診察:-  :  ';
+          }
+
+          if (displaySetting.isCheckedDoctor) {
+            result += ' ' + data.tantoName;
+          }
+
+          if (displaySetting.isCheckedApproved) {
+            result += ' ' + data.sinryoTitle;
+          }
+
+          return result || '＊';
+        };
+
         return `
-        <div class='orderHistory'>
-        <div class='orderHistoryInfor'>
-          <span class='orderHistoryInforTitle'>${dayjs(
-            data.sinDate.toString()
-          ).format('YYYY/MM/DD')}</span>
-          <div class='lineThrough'></div>
-          <div class='receptionDate receptionTextColor'>
-            <span>&nbsp受付:17:20 杠葉Dr 診察:10:24-10:26 杠葉Dr （承認: 杠葉Dr 2022/10/17 10:26）</span>
-          </div>
-        </div>
-        <div class='orderHistoryContent'>
-          <div class='richText'>
-              ${richText || ''}
-              ${arrImage || ''}
-          </div>
-
-          <div class='orderDetail'>
-            <div class='orderItem'>
-              <span class='orderItemTitle'>初再診</span>
-
-              <ul class='orderItemList'>
-                <li>
-                  <div class='receptionTextColor'>2022/10/17 10:26 杠葉Dr</div>
-                  <div>１０ｍｇセルシン錠 1錠</div>
-                  <div>（【般】ジアゼパム錠１０ｍｇ）</div>
-                  <div>分１ 起床時 1日分）</div>
-                </li>
-                <li>
-                  <div class='receptionTextColor'>2022/10/17 10:26 杠葉Dr</div>
-                  <div>１０ｍｇセルシン錠 1錠</div>
-                  <div>（【般】ジアゼパム錠１０ｍｇ）</div>
-                  <div>分１ 起床時 1日分）</div>
-                </li>
-              </ul>
+              <div class='orderHistory'>
+              <div class='orderHistoryInfor'>
+                <span class='orderHistoryInforTitle'>${dayjs(
+                  data.sinDate.toString()
+                ).format('YYYY/MM/DD')}</span>
+                <div class='lineThrough'></div>
+                <div class='receptionDate receptionTextColor'>
+                  <span>&nbsp${getOrderTitle()}</span>
+                </div>
+              </div>
+              <div class='orderHistoryContent'>
+                <div class='richText'>
+                    ${richText || ''}
+                    ${arrImage || ''}
+                </div>
+                <div class='orderDetail'>
+                  ${getOrderGroupElement(data)}
+                </div>
+              </div>
             </div>
 
-          </div>
-        </div>
-      </div>
-
-        `;
+              `;
       };
     </script>
     <script type="text/babel">
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(
-        // <React.StrictMode>
-        <>
-          <PrintKarte2Final />
-        </>
-        // </React.StrictMode>
-      );
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+          // <React.StrictMode>
+          <>
+            <PrintKarte2Final />
+          </>
+          // </React.StrictMode>
+        );
     </script>
-  </body>
+</body>
 </html>
