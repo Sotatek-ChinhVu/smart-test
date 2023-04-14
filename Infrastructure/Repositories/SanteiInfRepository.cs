@@ -528,7 +528,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         List<SanteiInfDetailModel> listSanteiInfDetailUpdates = new();
         foreach (var model in listSanteiInfModels)
         {
-            listSanteiInfDetailUpdates.AddRange(model.ListSanteiInfDetails);
+            listSanteiInfDetailUpdates.AddRange(model.SanteiInfDetailList);
             if (model.Id <= 0 && !model.IsDeleted)
             {
                 int lastSeqNo = lastSeqNoDic.FirstOrDefault(item => item.Key == model.PtId).Value;

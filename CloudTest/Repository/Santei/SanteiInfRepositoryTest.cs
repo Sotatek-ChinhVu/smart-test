@@ -732,7 +732,7 @@ public class SanteiInfRepositoryTest : BaseUT
         {
             return false;
         }
-        var santeiInfDetail = santeiModel.ListSanteiInfDetails.FirstOrDefault();
+        var santeiInfDetail = santeiModel.SanteiInfDetailList.FirstOrDefault();
         if (santeiInfDetail == null)
         {
             return false;

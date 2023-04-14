@@ -18,7 +18,7 @@ public class SanteiInfModel
         SanteiItemSum = santeiItemSum;
         CurrentMonthSanteiItemCount = currentMonthSanteiItemCount;
         CurrentMonthSanteiItemSum = currentMonthSanteiItemSum;
-        ListSanteiInfDetails = listSanteiInfDetails;
+        SanteiInfDetailList = listSanteiInfDetails;
         IsDeleted = false;
         SinDate = sinDate;
     }
@@ -32,7 +32,7 @@ public class SanteiInfModel
         ItemName = string.Empty;
         LastOdrDate = 0;
         PtId = 0;
-        ListSanteiInfDetails = new();
+        SanteiInfDetailList = new();
         IsDeleted = false;
         ItemCd = itemCd;
         SanteiItemCount = santeiItemCount;
@@ -48,7 +48,7 @@ public class SanteiInfModel
         ItemCd = itemCd;
         AlertDays = alertDays;
         AlertTerm = alertTerm;
-        ListSanteiInfDetails = listSanteiInfDetails;
+        SanteiInfDetailList = listSanteiInfDetails;
         IsDeleted = isDeleted;
         SeqNo = 0;
         ItemName = string.Empty;
@@ -73,7 +73,7 @@ public class SanteiInfModel
         SanteiItemSum = 0;
         CurrentMonthSanteiItemCount = 0;
         CurrentMonthSanteiItemSum = 0;
-        ListSanteiInfDetails = new();
+        SanteiInfDetailList = new();
         IsDeleted = false;
     }
 
@@ -105,7 +105,7 @@ public class SanteiInfModel
 
     public int SinDate { get; private set; }
 
-    public List<SanteiInfDetailModel> ListSanteiInfDetails { get; private set; }
+    public List<SanteiInfDetailModel> SanteiInfDetailList { get; private set; }
 
     public int DayCount
     {
@@ -149,7 +149,7 @@ public class SanteiInfModel
     {
         get
         {
-            var santeiInfDetail = ListSanteiInfDetails.OrderByDescending(u => u.KisanDate).FirstOrDefault();
+            var santeiInfDetail = SanteiInfDetailList.OrderByDescending(u => u.KisanDate).FirstOrDefault();
             if (santeiInfDetail != null)
             {
                 return GetKisanName(santeiInfDetail.KisanSbt);
