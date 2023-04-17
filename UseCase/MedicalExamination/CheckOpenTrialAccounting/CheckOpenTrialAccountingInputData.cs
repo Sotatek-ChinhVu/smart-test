@@ -20,6 +20,7 @@ namespace UseCase.MedicalExamination.CheckOpenTrialAccounting
         public long RaiinNo { get; private set; }
         public int SinDate { get; private set; }
         public int SyosaiKbn { get; private set; }
+        //Item1: ItemCd, Item2: ItemName
         public List<Tuple<string, string>> AllOdrInfItem { get; private set; }
         public List<int> OdrInfHokenPid { get; private set; }
     }

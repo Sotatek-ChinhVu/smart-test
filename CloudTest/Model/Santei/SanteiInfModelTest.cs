@@ -144,6 +144,7 @@ public class SanteiInfModelTest
                                                     itemCd,
                                                     alertDays,
                                                     alertTerm,
+                                                    1,
                                                     listSanteiInfDetails,
                                                     isDelete
                                                 );
