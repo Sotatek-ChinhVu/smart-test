@@ -67,8 +67,9 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportOrderLabel)]
     public async Task<IActionResult> GenerateOrderLabelReport([FromQuery] OrderLabelExportRequest request)
     {
+        var odrKouiKbnList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<KouiKbnModel>>(request.OdrKouiKbns);
         List<(int from, int to)> odrKouiKbns = new();
-        foreach (var item in request.OdrKouiKbns)
+        foreach (var item in odrKouiKbnList ?? new())
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
@@ -79,8 +80,9 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ExportSijisen)]
     public async Task<IActionResult> GenerateSijisenReport([FromQuery] SijisenExportRequest request)
     {
+        var odrKouiKbnList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<LimitModel>>(request.OdrKouiKbns);
         var odrKouiKbns = new List<(int from, int to)>();
-        foreach (var item in request.OdrKouiKbns)
+        foreach (var item in odrKouiKbnList ?? new())
         {
             odrKouiKbns.Add(new(item.From, item.To));
         }
