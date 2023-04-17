@@ -1742,7 +1742,7 @@ namespace Infrastructure.Repositories
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
                 {
-                    return new(3, string.Empty, 0, string.Empty);
+                    return new(3, string.Empty, 0, rihaItemName);
 
                 }
             }
