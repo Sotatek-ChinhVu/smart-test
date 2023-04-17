@@ -1,10 +1,11 @@
-﻿using Domain.Models.UserConf;
+﻿using Domain.Models.SetKbnMst;
+using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
@@ -14,6 +15,9 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
     private readonly IMemoryCache _memoryCache;
+    private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
+    private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
+    private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
     public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
@@ -421,6 +425,53 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         }
 
         return values;
+    }
+
+
+    public Dictionary<string, List<UserConfModel>> GetList(int userId, int hpId, int sinDate)
+    {
+        var functionViews = GetListConfig(userId, hpId, listFunctionButtonCode);
+        var tabSuperSetConfigurationModels = GetListConfig(userId, hpId, listSuperSetButtonCode);
+        var listSKbnMstModels = GetListKbnMst(hpId, listSuperSetButtonCodeItem, sinDate);
+
+
+    }
+
+    private List<UserConfModel> GetListConfig(int userId, int hpId, List<int> grpCodes)
+    {
+        List<UserConf> userconfig = NoTrackingDataContext.UserConfs.Where(u => u.UserId == userId && u.HpId == hpId && grpCodes.Contains(u.GrpCd)).ToList();
+        if (userconfig == null)
+        {
+            return new List<UserConfModel>();
+        }
+
+        return userconfig.Select(u => new UserConfModel(u.UserId, u.GrpCd, u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param ?? string.Empty)).ToList();
+    }
+
+    private List<SetKbnMstModel> GetListKbnMst(int hpId, List<int> grpCodes, int sinDate)
+    {
+            List<SetKbnMstModel> result = new List<SetKbnMstModel>();
+            var lowerSetGenarationMsts = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId &&
+                                                                            x.IsDeleted == 0 &&
+                                                                            x.StartDate <= sinDate)
+                                                                          .OrderByDescending(x => x.StartDate)
+                                                                          .ToList();
+            var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
+
+            if (setGenarationMst != null)
+            {
+                var setKbnMsts = NoTrackingDataContext.SetKbnMsts.Where(x => x.HpId == hpId &&
+                                                                               grpCodes.Contains(x.SetKbn) &&
+                                                                               x.IsDeleted == 0 &&
+                                                                               x.GenerationId == setGenarationMst.GenerationId)
+                                                               .OrderBy(x => x.SetKbn)
+                                                               .ToList();
+                foreach (var item in setKbnMsts)
+                {
+                    result.Add(new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.SetKbnName, item.KaCd, item.DocCd, item.IsDeleted, item.GenerationId));
+                }
+            }
+            return result;
     }
 
     public void ReleaseResource()
