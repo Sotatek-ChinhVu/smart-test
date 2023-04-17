@@ -328,7 +328,7 @@ namespace Infrastructure.Repositories
             var preSuffixList = model.PrefixSuffixList;
             return new PtByomei
             {
-                Id = model.Id,
+                Id = 0,
                 HpId = hpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,
