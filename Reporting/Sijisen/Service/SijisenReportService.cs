@@ -88,7 +88,7 @@ public class SijisenReportService : ISijisenReportService
                 if (!find)
                 {
                     // 印刷しない
-                    return new CommonReportingRequestModel();
+                    return new SijisenMapper(formType, new(), new(), _systemConfig).GetData();
                 }
             }
 
@@ -109,7 +109,7 @@ public class SijisenReportService : ISijisenReportService
             }
             else
             {
-                return new CommonReportingRequestModel();
+                return new SijisenMapper(formType, new(), new(), _systemConfig).GetData();
             }
 
         }
