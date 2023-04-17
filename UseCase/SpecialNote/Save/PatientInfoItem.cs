@@ -7,12 +7,12 @@ namespace UseCase.SpecialNote.Save
     public class PatientInfoItem
     {
         [JsonConstructor]
-        public PatientInfoItem(List<PtPregnancyItem> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<KensaInfDetailModel> kensaInfDetailModels)
+        public PatientInfoItem(List<PtPregnancyItem> pregnancyItems, PtCmtInfModel ptCmtInfItems, SeikaturekiInfModel seikatureInfItems, List<KensaInfDetailItem> kensaInfDetailItems)
         {
             PregnancyItems = pregnancyItems;
             PtCmtInfItems = ptCmtInfItems;
             SeikatureInfItems = seikatureInfItems;
-            KensaInfDetailModels = kensaInfDetailModels;
+            KensaInfDetailItems = kensaInfDetailItems;
         }
 
         public PatientInfoItem()
@@ -20,7 +20,7 @@ namespace UseCase.SpecialNote.Save
             PregnancyItems = new();
             PtCmtInfItems = new();
             SeikatureInfItems = new();
-            KensaInfDetailModels = new();
+            KensaInfDetailItems = new();
         }
 
         public List<PtPregnancyItem> PregnancyItems { get; private set; }
@@ -29,6 +29,6 @@ namespace UseCase.SpecialNote.Save
 
         public SeikaturekiInfModel SeikatureInfItems { get; private set; }
 
-        public List<KensaInfDetailModel> KensaInfDetailModels { get; private set; }
+        public List<KensaInfDetailItem> KensaInfDetailItems { get; private set; }
     }
 }
