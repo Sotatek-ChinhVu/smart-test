@@ -15,6 +15,7 @@ using UseCase.Core.Sync;
 using UseCase.Family;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
+using UseCase.MedicalExamination.CheckOpenTrialAccounting;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
@@ -543,6 +544,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetTrialAccountingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTrialAccountingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckTrialAccounting)]
+        public ActionResult<Response<CheckOpenTrialAccountingResponse>> CheckTrialAccounting([FromBody] CheckOpenTrialAccountingRequest request)
+        {
+            var input = new CheckOpenTrialAccountingInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInfItem.Select(a => new Tuple<string, string>(a.ItemCd, a.ItemName)).ToList(), request.OdrInfHokenPid);
+            var output = _bus.Handle(input);
+            var presenter = new CheckOpenTrialAccountingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckOpenTrialAccountingResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetKensaAuditTrailLog)]
