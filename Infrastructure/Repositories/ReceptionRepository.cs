@@ -986,7 +986,17 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
         }
 
-        public bool Delete(int hpId, int userId, List<long> raiinNos)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="raiinNos"></param>
+        /// <returns></returns>
+        /// Item1: SinDate
+        /// Item2: RaiinNo
+        /// Item3: PtId
+        public List<Tuple<int, long, long>> Delete(int hpId, int userId, List<long> raiinNos)
         {
             raiinNos = raiinNos.Distinct().ToList();
             var raiinInfs = TrackingDataContext.RaiinInfs.Where(r => raiinNos.Contains(r.RaiinNo)).ToList();
@@ -997,7 +1007,8 @@ namespace Infrastructure.Repositories
                 raiinInf.UpdateId = userId;
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            var result = raiinInfs.Select(r => new Tuple<int, long, long>(r.SinDate, r.RaiinNo, r.PtId)).ToList();
+            return result;
         }
 
         public void ReleaseResource()

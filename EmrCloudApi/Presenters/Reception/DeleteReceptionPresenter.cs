@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.Reception
         {
             Result = new Response<DeleteReceptionResponse>()
             {
-                Data = new DeleteReceptionResponse(outputData.Status == DeleteReceptionStatus.Successed),
+                Data = new DeleteReceptionResponse(outputData.DeleteReceptionItems),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

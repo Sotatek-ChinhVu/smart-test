@@ -1,12 +1,14 @@
-﻿namespace EmrCloudApi.Responses.Reception
+﻿using UseCase.Reception.Delete;
+
+namespace EmrCloudApi.Responses.Reception
 {
     public class DeleteReceptionResponse
     {
-        public DeleteReceptionResponse(bool status)
+        public DeleteReceptionResponse(List<DeleteReceptionItem> deleteReceptionItems)
         {
-            Status = status;
+            DeleteReceptionItems = deleteReceptionItems;
         }
 
-        public bool Status { get; private set; }
+        public List<DeleteReceptionItem> DeleteReceptionItems { get; private set; }
     }
 }
