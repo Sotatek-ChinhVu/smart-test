@@ -1,24 +1,23 @@
-﻿using Domain.Models.Todo;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Todo.TodoGrpMst;
+namespace UseCase.Todo.UpsertTodoGrpMst;
 
 public class UpsertTodoGrpMstInputData : IInputData<UpsertTodoGrpMstOutputData>
 {
-    public UpsertTodoGrpMstInputData(List<InsertTodoGrpMstDto> todoGrpMsts, int userId, int hpId)
+    public UpsertTodoGrpMstInputData(List<TodoGrpMstDto> todoGrpMsts, int userId, int hpId)
     {
         TodoGrpMsts = todoGrpMsts;
         UserId = userId;
         HpId = hpId;
     }
 
-    public List<InsertTodoGrpMstDto> TodoGrpMsts { get; private set; }
+    public List<TodoGrpMstDto> TodoGrpMsts { get; private set; }
 
     public int UserId { get; private set; }
 
     public int HpId { get; private set; }
 
-    public List<InsertTodoGrpMstDto> ToList()
+    public List<TodoGrpMstDto> ToList()
     {
         return TodoGrpMsts;
     }

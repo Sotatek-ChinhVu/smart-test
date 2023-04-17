@@ -1,11 +1,8 @@
-﻿using Domain.Models.Todo;
-using UseCase.Todo.TodoGrpMst;
-
-namespace UseCase.Todo
+﻿namespace UseCase.Todo
 {
-    public class InsertTodoGrpMstDto
+    public class TodoGrpMstDto
     {
-        public InsertTodoGrpMstDto(int todoGrpNo, string todoGrpName, string grpColor, int sortNo, int isDeleted)
+        public TodoGrpMstDto(int todoGrpNo, string todoGrpName, string grpColor, int sortNo, int isDeleted)
         {
             TodoGrpNo = todoGrpNo;
             TodoGrpName = todoGrpName;

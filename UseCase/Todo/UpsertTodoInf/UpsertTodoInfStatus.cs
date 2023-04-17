@@ -1,4 +1,4 @@
-﻿namespace UseCase.Todo.TodoInf;
+﻿namespace UseCase.Todo.UpsertTodoInf;
 
 public enum UpsertTodoInfStatus
 {

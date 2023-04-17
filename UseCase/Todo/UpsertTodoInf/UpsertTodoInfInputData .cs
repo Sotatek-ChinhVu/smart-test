@@ -1,24 +1,23 @@
-﻿using Domain.Models.Todo;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Todo.TodoInf;
+namespace UseCase.Todo.UpsertTodoInf;
 
 public class UpsertTodoInfInputData : IInputData<UpsertTodoInfOutputData>
 {
-    public UpsertTodoInfInputData(List<InsertTodoInfDto> todoInfs, int userId, int hpId)
+    public UpsertTodoInfInputData(List<TodoInfDto> todoInfs, int userId, int hpId)
     {
         TodoInfs = todoInfs;
         UserId = userId;
         HpId = hpId;
     }
 
-    public List<InsertTodoInfDto> TodoInfs { get; private set; }
+    public List<TodoInfDto> TodoInfs { get; private set; }
 
     public int UserId { get; private set; }
 
     public int HpId { get; private set; }
 
-    public List<InsertTodoInfDto> ToList()
+    public List<TodoInfDto> ToList()
     {
         return TodoInfs;
     }
