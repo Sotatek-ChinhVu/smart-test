@@ -25,7 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpsertList)]
         public ActionResult<Response<UpsertTodoInfResponse>> Upsert([FromBody] UpsertTodoInfRequest request)
         {
-            var input = new UpsertTodoInfInputData(request.UpsertTodoInf.Select(x => new InsertTodoInfDto(
+            var input = new UpsertTodoInfInputData(request.UpsertTodoInf.Select(x => new TodoInfDto(
                                                         x.TodoNo,
                                                         x.TodoEdaNo,
                                                         x.PtId,

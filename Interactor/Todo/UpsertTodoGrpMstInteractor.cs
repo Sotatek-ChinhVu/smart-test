@@ -51,7 +51,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
         }
     }
 
-    private List<TodoGrpMstModel> ConvertToInsertTodoGrpMstDto(List<InsertTodoGrpMstDto> insertTodoGrpMstDtos)
+    private List<TodoGrpMstModel> ConvertToInsertTodoGrpMstDto(List<TodoGrpMstDto> insertTodoGrpMstDtos)
     {
         List<TodoGrpMstModel> result = new();
         foreach (var todoGrpMst in insertTodoGrpMstDtos)
@@ -67,7 +67,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
         return result;
     }
 
-    private UpsertTodoGrpMstStatus ValidateDataInput(List<InsertTodoGrpMstDto> insertTodoGrpMstDtos)
+    private UpsertTodoGrpMstStatus ValidateDataInput(List<TodoGrpMstDto> insertTodoGrpMstDtos)
     {
         foreach (var insertTodoGrpMst in insertTodoGrpMstDtos)
         {

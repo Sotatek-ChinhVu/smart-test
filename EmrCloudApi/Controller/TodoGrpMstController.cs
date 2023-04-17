@@ -24,7 +24,7 @@ public class TodoGrpMstController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertTodoGrpMstResponse>> Upsert([FromBody] UpsertTodoGrpMstRequest request)
     {
-        var input = new UpsertTodoGrpMstInputData(request.TodoGrpMstList.Select(x => new InsertTodoGrpMstDto(
+        var input = new UpsertTodoGrpMstInputData(request.TodoGrpMstList.Select(x => new TodoGrpMstDto(
                                                                                 x.TodoGrpNo,
                                                                                 x.TodoGrpName,
                                                                                 x.GrpColor,
