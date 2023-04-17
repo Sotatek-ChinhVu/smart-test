@@ -1,7 +1,6 @@
-﻿using Domain.Models.Todo;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Todo.TodoInf;
+namespace UseCase.Todo.UpsertTodoInf;
 
 public class UpsertTodoInfInputData : IInputData<UpsertTodoInfOutputData>
 {

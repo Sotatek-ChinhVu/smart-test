@@ -1,7 +1,4 @@
-﻿using Domain.Models.Todo;
-using UseCase.Todo.TodoGrpMst;
-
-namespace UseCase.Todo
+﻿namespace UseCase.Todo
 {
     public class InsertTodoGrpMstDto
     {

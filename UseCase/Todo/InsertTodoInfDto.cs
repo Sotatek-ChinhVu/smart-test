@@ -11,6 +11,7 @@ namespace UseCase.Todo
             PtId = ptId;
             SinDate = sinDate;
             RaiinNo = raiinNo;
+            RaiinNo = raiinNo;
             TodoKbnNo = todoKbnNo;
             TodoGrpNo = todoGrpNo;
             Tanto = tanto;

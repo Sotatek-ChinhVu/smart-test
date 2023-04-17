@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Todo;
 using UseCase.Todo;
-using UseCase.Todo.TodoInf;
+using UseCase.Todo.UpsertTodoInf;
 
 namespace Interactor.Todo;
 

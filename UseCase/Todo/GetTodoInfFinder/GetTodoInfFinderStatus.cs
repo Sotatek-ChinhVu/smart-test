@@ -1,6 +1,6 @@
-﻿namespace UseCase.Todo.GetTodoInf
+﻿namespace UseCase.Todo.GetTodoInfFinder
 {
-    public enum GetTodoInfStatus
+    public enum GetTodoInfFinderStatus
     {
         Success,
         InvalidHpId,

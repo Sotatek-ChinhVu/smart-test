@@ -1,12 +1,12 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 
-namespace UseCase.Todo.GetTodoInf
+namespace UseCase.Todo.GetTodoInfFinder
 {
-    public class GetListTodoInfOutputItem
+    public class GetListTodoInfFinderOutputItem
     {
 
-        public GetListTodoInfOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
+        public GetListTodoInfFinderOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
         {
             HpId = hpId;
             PtId = ptId;

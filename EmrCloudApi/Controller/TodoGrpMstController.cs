@@ -7,7 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
-using UseCase.Todo.TodoGrpMst;
+using UseCase.Todo.UpsertTodoGrpMst;
 
 namespace EmrCloudApi.Controller;
 

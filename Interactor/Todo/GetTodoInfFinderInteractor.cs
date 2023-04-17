@@ -1,35 +1,34 @@
 ﻿using Domain.Models.Todo;
-using UseCase.Reception.GetListRaiinInf;
-using UseCase.Todo.GetTodoInf;
+using UseCase.Todo.GetTodoInfFinder;
 
 namespace Interactor.Todo;
 
-public class GetTodoInfInteractor : IGetTodoInfInputPort
+public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
 {
     private readonly ITodoInfRepository _todoInfRepository;
-    public GetTodoInfInteractor(ITodoInfRepository todoInfRepository)
+    public GetTodoInfFinderInteractor(ITodoInfRepository todoInfRepository)
     {
         _todoInfRepository = todoInfRepository;
     }
 
-    public GetTodoInfOutputData Handle(GetTodoInfInputData input)
+    public GetTodoInfFinderOutputData Handle(GetTodoInfFinderInputData input)
     {
         try
         {
-            if(input.HpId <= 0)
+            if (input.HpId <= 0)
             {
-                return new GetTodoInfOutputData(GetTodoInfStatus.InvalidHpId, new());
+                return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.InvalidHpId, new());
             }
             if (input.TodoNo < 0)
             {
-                return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoNo, new());
+                return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.InvalidTodoNo, new());
             }
             if (input.TodoEdaNo < 0)
             {
-                return new GetTodoInfOutputData(GetTodoInfStatus.InvalidTodoEdaNo, new());
+                return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.InvalidTodoEdaNo, new());
             }
 
-            var TodoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone).Select(item => new GetListTodoInfOutputItem(item.HpId,
+            var TodoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone).Select(item => new GetListTodoInfFinderOutputItem(item.HpId,
                                                                         item.PtId,
                                                                         item.PtNum,
                                                                         item.PatientName,
@@ -50,20 +49,19 @@ public class GetTodoInfInteractor : IGetTodoInfInputPort
                                                                         item.Houbetu,
                                                                         item.HokenKbn,
                                                                         item.HokensyaNo,
-                                                                        item.HokenId))
-                                        .ToList();
+                                                                        item.HokenId)).ToList();
 
-            return new GetTodoInfOutputData(GetTodoInfStatus.Success, TodoInf);
+            return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.Success, TodoInf);
         }
-        finally 
+        finally
         {
             _todoInfRepository.ReleaseResource();
         }
     }
 
-    private List<GetListTodoInfOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, bool incDone)
+    private List<GetListTodoInfFinderOutputItem> GetListTodoInfos(int hpId, int todoNo, int todoEdaNo, bool incDone)
     {
-        List<GetListTodoInfOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, incDone).Select(x => new GetListTodoInfOutputItem(
+        List<GetListTodoInfFinderOutputItem> result = new(_todoInfRepository.GetList(hpId, todoNo, todoEdaNo, incDone).Select(x => new GetListTodoInfFinderOutputItem(
                                                                         hpId,
                                                                         x.PtId,
                                                                         x.PtNum,

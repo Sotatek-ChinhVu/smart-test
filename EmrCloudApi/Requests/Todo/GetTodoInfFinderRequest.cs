@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Todo
 {
-    public class GetTodoInfRequest
+    public class GetTodoInfFinderRequest
     {
         public int TodoNo { get; set; }
 

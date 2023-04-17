@@ -1,5 +1,4 @@
-﻿using Domain.Models.Todo;
-using UseCase.Todo;
+﻿using UseCase.Todo;
 
 namespace EmrCloudApi.Requests.Todo;
 

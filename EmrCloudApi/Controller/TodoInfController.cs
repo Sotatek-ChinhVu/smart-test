@@ -8,8 +8,8 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
-using UseCase.Todo.GetTodoInf;
-using UseCase.Todo.TodoInf;
+using UseCase.Todo.GetTodoInfFinder;
+using UseCase.Todo.UpsertTodoInf;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -50,14 +50,14 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetTodoInfResponse>> GetList([FromQuery] GetTodoInfRequest request)
+        public ActionResult<Response<GetTodoInfFinderResponse>> GetList([FromQuery] GetTodoInfFinderRequest request)
         {
-            var input = new GetTodoInfInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone);
+            var input = new GetTodoInfFinderInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone);
             var output = _bus.Handle(input);
 
-            var presenter = new GetTodoInfPresenter();
+            var presenter = new GetTodoInfFinderPresenter();
             presenter.Complete(output);
-            return new ActionResult<Response<GetTodoInfResponse>>(presenter.Result);
+            return new ActionResult<Response<GetTodoInfFinderResponse>>(presenter.Result);
         }
     }
 }

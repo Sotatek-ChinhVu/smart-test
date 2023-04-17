@@ -1,6 +1,5 @@
 ﻿using Domain.Models.Todo;
 using UseCase.Todo;
-using UseCase.Todo.TodoGrpMst;
 using UseCase.Todo.UpsertTodoGrpMst;
 
 namespace Interactor.Todo;
@@ -19,7 +18,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
         try
         {
             var validateResult = ValidateDataInput(input.TodoGrpMsts);
-            if(validateResult != UpsertTodoGrpMstStatus.Success)
+            if (validateResult != UpsertTodoGrpMstStatus.Success)
             {
                 return new UpsertTodoGrpMstOutputData(validateResult);
             }
@@ -72,10 +71,10 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
     {
         foreach (var insertTodoGrpMst in insertTodoGrpMstDtos)
         {
-            if(insertTodoGrpMst.TodoGrpNo < 0)
+            if (insertTodoGrpMst.TodoGrpNo < 0)
             {
                 return UpsertTodoGrpMstStatus.InvalidTodoGrpNo;
-            } 
+            }
             else if (insertTodoGrpMst.TodoGrpName.Length > 20)
             {
                 return UpsertTodoGrpMstStatus.InvalidTodoGrpName;
@@ -84,7 +83,7 @@ public class UpsertTodoGrpMstInteractor : IUpsertTodoGrpMstInputPort
             {
                 return UpsertTodoGrpMstStatus.InvalidGrpColor;
             }
-            else if (insertTodoGrpMst.SortNo < 0) 
+            else if (insertTodoGrpMst.SortNo < 0)
             {
                 return UpsertTodoGrpMstStatus.InvalidSortNo;
             }

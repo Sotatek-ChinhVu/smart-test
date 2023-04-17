@@ -1,11 +1,9 @@
-﻿using Domain.Models.ReceptionSameVisit;
-using Domain.Models.Todo;
+﻿using Domain.Models.Todo;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -91,7 +89,7 @@ namespace Infrastructure.Repositories
         public bool CheckExist(List<Tuple<int, int, long>> inputs)
         {
             inputs = inputs.Distinct().ToList();
-            var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 ==  t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
+            var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
             return inputs.Count == countptIds;
         }
 

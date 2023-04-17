@@ -1,4 +1,4 @@
-﻿namespace UseCase.Todo.TodoGrpMst;
+﻿namespace UseCase.Todo.UpsertTodoGrpMst;
 
 public enum UpsertTodoGrpMstStatus : byte
 {

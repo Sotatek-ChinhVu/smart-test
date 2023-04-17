@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Todo.GetTodoInf;
+namespace UseCase.Todo.GetTodoInfFinder;
 
-public class GetTodoInfInputData : IInputData<GetTodoInfOutputData>
+public class GetTodoInfFinderInputData : IInputData<GetTodoInfFinderOutputData>
 {
-    public GetTodoInfInputData(int hpId, int todoNo, int todoEdaNo, bool incDone)
+    public GetTodoInfFinderInputData(int hpId, int todoNo, int todoEdaNo, bool incDone)
     {
         HpId = hpId;
         TodoNo = todoNo;
