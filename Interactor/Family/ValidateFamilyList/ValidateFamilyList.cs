@@ -67,6 +67,8 @@ public class ValidateFamilyList : IValidateFamilyList
             return ValidateFamilyListStatus.InvalidFamilyId;
         }
 
+        // add item to family 
+
         foreach (var familyItem in listFamily)
         {
             // check family ptInf information
@@ -98,15 +100,11 @@ public class ValidateFamilyList : IValidateFamilyList
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
-                var totalItemSameZokugaraCd = onlyFamlilyList.Count(item => item.FamilyId != familyItem.FamilyId
-                                                                            && familyItem.FamilyId != 0
-                                                                            && item.ZokugaraCd.Equals(familyItem.ZokugaraCd))
-                                              + listFamily.Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
-                                                                         && familyItem.FamilyId == 0
-                                                                         && familyItem.FamilyPtId != item.FamilyPtId)
-                                              + 1;
 
-                if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd])
+                var totalItemSameZokugaraCd = listFamily.Count(item => item.ZokugaraCd.Equals(familyItem.ZokugaraCd)
+                                                                       && !item.IsDeleted);
+
+                if (totalItemSameZokugaraCd > dicZokugaraCd[familyItem.ZokugaraCd] && !familyItem.IsDeleted)
                 {
                     return ValidateFamilyListStatus.InvalidZokugaraCd;
                 }
