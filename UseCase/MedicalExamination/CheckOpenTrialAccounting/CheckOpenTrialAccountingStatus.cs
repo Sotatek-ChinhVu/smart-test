@@ -3,5 +3,6 @@
     public enum CheckOpenTrialAccountingStatus
     {
         Successed = 1,
+        NoData = 2,
     }
 }

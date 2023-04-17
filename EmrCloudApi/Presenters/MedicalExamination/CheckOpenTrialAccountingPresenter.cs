@@ -20,6 +20,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         private string GetMessage(object status) => status switch
         {
             CheckOpenTrialAccountingStatus.Successed => ResponseMessage.Success,
+            CheckOpenTrialAccountingStatus.NoData => ResponseMessage.NoData,
             _ => string.Empty
         };
     }

@@ -19,6 +19,9 @@ namespace Interactor.MedicalExamination
         {
             try
             {
+                if (inputData.HpId <= 0 || inputData.PtId <= 0 || inputData.RaiinNo <= 0)
+                    return new CheckOpenTrialAccountingOutputData(false, 0, string.Empty, 0, string.Empty, 0, false, CheckOpenTrialAccountingStatus.NoData);
+
                 var isHokenPtSelect = CheckHokenPatternSelect(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.OdrInfHokenPid);
                 var checkJihiYobo = GetValidJihiYobo(inputData.HpId, inputData.SinDate, inputData.SyosaiKbn, inputData.AllOdrInfItem);
                 var checkGaiRaiRiha = GetValidGairaiRiha(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.SyosaiKbn, inputData.AllOdrInfItem);
