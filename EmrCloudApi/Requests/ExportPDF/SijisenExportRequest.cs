@@ -10,7 +10,7 @@
 
         public long RaiinNo { get; set; }
 
-        public string OdrKouiKbns { get; set; } = string.Empty;
+        public List<LimitModel> OdrKouiKbns { get; set; } = new List<LimitModel> { };
 
         public bool PrintNoOdr { get; set; }
     }

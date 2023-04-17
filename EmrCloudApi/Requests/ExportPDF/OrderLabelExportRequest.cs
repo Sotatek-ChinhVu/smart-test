@@ -12,7 +12,7 @@ public class OrderLabelExportRequest
 
     public long RaiinNo { get; set; }
 
-    public string OdrKouiKbns { get; set; } = string.Empty;
+    public List<KouiKbnModel> OdrKouiKbns { get; set; } = new();
 }
 
 public class KouiKbnModel
