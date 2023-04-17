@@ -60,14 +60,38 @@ public class ValidateFamilyList : IValidateFamilyList
         List<FamilyRekiItem> familyRekiList = new();
 
         // validate familyId
-        var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).ToList();
+        var listFamilyId = listFamily.Where(item => item.FamilyId > 0).Select(item => item.FamilyId).Distinct().ToList();
         var onlyFamlilyList = _familyRepository.GetListByPtId(hpId, ptId);
         if (onlyFamlilyList.Count(item => listFamilyId.Contains(item.FamilyId)) != listFamilyId.Count)
         {
             return ValidateFamilyListStatus.InvalidFamilyId;
         }
 
-        // add item to family 
+        // add item to family if don't exist in input list
+        var familyIdNotExistDB = onlyFamlilyList.Select(item => item.FamilyId).Distinct()
+                                .Where(familyId => !listFamilyId.Contains(familyId))
+                                .Distinct()
+                                .ToList();
+        var familyNotExistDB = onlyFamlilyList.Where(item => familyIdNotExistDB.Contains(item.FamilyId)).ToList();
+        foreach (var item in familyNotExistDB)
+        {
+            listFamily.Add(new FamilyItem(
+                    item.FamilyId,
+                    item.PtId,
+                    item.ZokugaraCd,
+                    item.FamilyPtId,
+                    item.Name,
+                    item.KanaName,
+                    item.Sex,
+                    item.Birthday,
+                    item.IsDead,
+                    item.IsSeparated,
+                    item.Biko,
+                    item.SortNo,
+                    false,
+                    new()
+                ));
+        }
 
         foreach (var familyItem in listFamily)
         {
