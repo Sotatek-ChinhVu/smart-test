@@ -17,12 +17,73 @@ public class TodoInfModel
         Cmt2 = cmt2;
         IsDone = isDone;
         IsDeleted = isDeleted;
+        PatientName = string.Empty;
+        PrimaryDoctorName = string.Empty;
+        KaSname = string.Empty;
+        TodoKbnName = string.Empty;
+        TantoName = string.Empty;
+        UpdaterName = string.Empty;
+        CreaterName = string.Empty;
+        TodoGrpName = string.Empty;
+        Houbetu = string.Empty;
+        HokensyaNo = string.Empty;
     }
+
+    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
+    {
+        HpId = hpId;
+        PtId = ptId;
+        PtNum = ptNum;
+        SinDate = sinDate;
+        PatientName = patientName;
+        PrimaryDoctorName = primaryDoctorName;
+        KaSname = kaSname;
+        TodoKbnName = todoKbnName;
+        TantoName = tantoName;
+        Cmt2 = cmt2;
+        CreateDate = createDate;
+        UpdaterName = updaterName;
+        Cmt1 = cmt1;
+        CreaterName = createrName;
+        TodoGrpName = todoGrpName;
+        Term = term;
+        HokenPid = hokenPid;
+        Houbetu = houbetu;
+        HokenKbn = hokenKbn;
+        HokensyaNo = hokensyaNo;
+        HokenId = hokenId;
+        UpdateDate = updateDate;
+    }
+
+    public int HpId { get; private set; }
+
+    public long PtId { get; private set; }
+
+    public long PtNum { get; private set; }
+
+    public string PatientName { get; private set; }
+
+    public string PrimaryDoctorName { get; private set; }
+
+    public string KaSname { get; private set; }
+
+    public string TodoKbnName { get; private set; }
+
+    public string TantoName { get; private set; }
+
+    public DateTime CreateDate { get; private set; }
+
+    public DateTime UpdateDate { get; private set; }
+
+    public string UpdaterName { get; private set; }
+
+    public string CreaterName { get; private set; }
+
+    public string TodoGrpName { get; private set; }
+
     public int TodoNo { get; private set; }
 
     public int TodoEdaNo { get; private set; }
-
-    public long PtId { get; private set; }
 
     public int SinDate { get; private set; }
 
@@ -36,6 +97,10 @@ public class TodoInfModel
 
     public int Term { get; private set; }
 
+    public int HokenPid { get; private set; }
+
+    public int HokenKbn { get; private set; }
+
     public string Cmt1 { get; private set; }
 
     public string Cmt2 { get; private set; }
@@ -43,4 +108,10 @@ public class TodoInfModel
     public int IsDone { get; private set; }
 
     public int IsDeleted { get; private set; }
+
+    public string HokensyaNo { get; private set; }
+
+    public int HokenId { get; private set; }
+
+    public string Houbetu { get; private set; }
 }

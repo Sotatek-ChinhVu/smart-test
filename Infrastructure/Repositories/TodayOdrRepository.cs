@@ -1675,6 +1675,7 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// 外来リハ初再診チェック
         /// </summary>
+        /// Item1: ItemCd, Item2: ItemName
         public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
         {
             var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
@@ -1741,7 +1742,7 @@ namespace Infrastructure.Repositories
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
                 {
-                    return new(3, string.Empty, 0, string.Empty);
+                    return new(3, string.Empty, 0, rihaItemName);
 
                 }
             }

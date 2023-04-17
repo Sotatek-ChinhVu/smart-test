@@ -2,14 +2,15 @@
 
 namespace UseCase.Todo
 {
-    public class InsertTodoInfDto
+    public class TodoInfDto
     {
-        public InsertTodoInfDto(int todoNo, int todoEdaNo, long ptId, int sinDate, long raiinNo, int todoKbnNo, int todoGrpNo, int tanto, int term, string cmt1, string cmt2, int isDone, int isDeleted)
+        public TodoInfDto(int todoNo, int todoEdaNo, long ptId, int sinDate, long raiinNo, int todoKbnNo, int todoGrpNo, int tanto, int term, string cmt1, string cmt2, int isDone, int isDeleted)
         {
             TodoNo = todoNo;
             TodoEdaNo = todoEdaNo;
             PtId = ptId;
             SinDate = sinDate;
+            RaiinNo = raiinNo;
             RaiinNo = raiinNo;
             TodoKbnNo = todoKbnNo;
             TodoGrpNo = todoGrpNo;
@@ -21,7 +22,7 @@ namespace UseCase.Todo
             IsDeleted = isDeleted;
         }
 
-        public InsertTodoInfDto(TodoInfModel model)
+        public TodoInfDto(TodoInfModel model)
         {
             TodoNo = model.TodoNo;
             TodoEdaNo = model.TodoEdaNo;
