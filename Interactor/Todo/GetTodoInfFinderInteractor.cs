@@ -28,7 +28,7 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
                 return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.InvalidTodoEdaNo, new());
             }
 
-            var TodoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone).Select(item => new GetListTodoInfFinderOutputItem(item.HpId,
+            var todoInf = GetListTodoInfos(input.HpId, input.TodoNo, input.TodoEdaNo, input.IncDone).Select(item => new GetListTodoInfFinderOutputItem(item.HpId,
                                                                         item.PtId,
                                                                         item.PtNum,
                                                                         item.PatientName,
@@ -51,7 +51,7 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
                                                                         item.HokensyaNo,
                                                                         item.HokenId)).ToList();
 
-            return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.Success, TodoInf);
+            return new GetTodoInfFinderOutputData(GetTodoInfFinderStatus.Success, todoInf);
         }
         finally
         {
