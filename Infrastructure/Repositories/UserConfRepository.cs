@@ -1,7 +1,6 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -119,6 +118,26 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
              p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.UserId == userId);
         return userConf != null ? userConf.Param ?? string.Empty : defaultValue;
+    }
+
+    public List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "")
+    {
+        var result = new List<UserConfModel>();
+        foreach (var cd in groupCode)
+        {
+            var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
+             p.HpId == hpId && p.GrpCd == cd.Item1 && p.GrpItemCd == cd.Item2 && p.UserId == userId);
+
+            result.Add(new UserConfModel(
+                userId,
+                cd.Item1,
+                cd.Item2,
+                userConf != null ? userConf.GrpItemEdaNo : 0,
+                userConf != null ? userConf.Val : 0,
+                userConf != null ? userConf.Param ?? string.Empty : defaultValue));
+        }
+
+        return result;
     }
 
     private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)
