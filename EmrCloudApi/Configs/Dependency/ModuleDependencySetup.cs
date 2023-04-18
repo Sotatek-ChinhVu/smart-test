@@ -456,6 +456,7 @@ using Interactor.WeightedSetConfirmation;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
+using UseCase.User.GetUserConfModelList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -916,6 +917,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SagakuInputData, SagakuInteractor>();
             busBuilder.RegisterUseCase<UpsertUserConfListInputData, UpsertUserConfListInteractor>();
             busBuilder.RegisterUseCase<GetListMedicalExaminationConfigInputData, GetListMedicalExaminationConfigInteractor>();
+            busBuilder.RegisterUseCase<GetUserConfModelListInputData, GetUserConfModelListInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();

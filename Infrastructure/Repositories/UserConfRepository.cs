@@ -51,6 +51,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         return result!;
     }
 
+    public List<UserConfModel> GetList(int hpId, int userId)
+    {
+        var entities = NoTrackingDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+        var result = entities.Select(e => new UserConfModel(e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo, e.Val, e.Param ?? string.Empty)).ToList();
+        return result;
+    }
+
     public Dictionary<string, int> GetList(int userId)
     {
         var result = new Dictionary<string, int>();

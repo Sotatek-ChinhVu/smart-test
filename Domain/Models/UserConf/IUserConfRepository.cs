@@ -27,4 +27,6 @@ public interface IUserConfRepository : IRepositoryBase
     string GetSettingParam(int hpId, int userId, int groupCd, int grpItemCd = 0, string defaultValue = "");
 
     bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs);
+
+    List<UserConfModel> GetList(int hpId, int userId);
 }
