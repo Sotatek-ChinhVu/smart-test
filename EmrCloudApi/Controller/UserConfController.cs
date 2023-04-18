@@ -8,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
+using UseCase.User.GetUserConfModelList;
 using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertUserConfList;
@@ -96,6 +97,18 @@ public class UserConfController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpsertUserConfListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList + "ForModel")]
+    public ActionResult<Response<GetUserConfModelListResponse>> GetList()
+    {
+        var input = new GetUserConfModelListInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetUserConfModelListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetUserConfModelListResponse>>(presenter.Result);
     }
 
     private static UserConfModel ConvertToModel(int userId, UserConfListItem userConfListItem)

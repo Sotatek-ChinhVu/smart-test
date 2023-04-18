@@ -1,11 +1,9 @@
-﻿using Domain.Models.SetKbnMst;
-using Domain.Models.UserConf;
+﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories;
@@ -441,85 +439,6 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         }
 
         return values;
-    }
-
-
-    public Dictionary<string, List<UserConfModel>> GetList(int userId, int hpId, int sinDate)
-    {
-        var functionViews = GetListConfig(userId, hpId, listFunctionButtonCode);
-        var tabSuperSetConfigurationModels = GetListConfig(userId, hpId, listSuperSetButtonCode);
-        var listSKbnMstModels = GetListKbnMst(hpId, listSuperSetButtonCodeItem, sinDate);
-        var summaryConfiguration = GetListConfig(userId, hpId, summaryGrpCds);
-        var layoutConfigurations = GetListConfig(userId, hpId, summaryGrpCds);
-        var tabOtherConfigurationModels = GetListConfig(userId, hpId, listOtherButtonCode);
-        var tabOrderConfigurationModels = GetListConfig(userId, hpId, listOrderButtonCode);
-        var headerConfiguration = GetListConfig(userId, hpId, headerGrpCds);
-        var karteConfigurations = GetListConfig(userId, hpId, karteGrpCds);
-        var claimSagakuComboboxConfig = GetConfigurationModelWithParam(hpId, userId, claimSagakuGrpCd);
-        var claimSagakuAtReceTimeConfig = GetConfigurationModelWithParam(hpId, userId, claimSagakuAtReceTimeGrpCd);
-        var noteScreenDisplayComboboxConfig = GetConfigurationModelWithParam(hpId, userId, noteScreenDisplayGrpCd);
-        var commentCheckConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 0, "00000");
-        var santeiCheckConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 1, "10100");
-        var inputCheckConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 2, "10100");
-        var kubunCheckConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 3, "10100");
-        var reportCheckConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 4, "10101");
-        var tenkeiByomeConfig = GetConfigurationModelWithParam(hpId, userId, saveCheckGrpCd, 5, "11111");
-
-        Dictionary<string, List<UserConfModel>> result = new();
-
-        result.Add()
-    }
-
-    private List<UserConfModel> GetListConfig(int userId, int hpId, List<int> grpCodes)
-    {
-        List<UserConf> userconfig = NoTrackingDataContext.UserConfs.Where(u => u.UserId == userId && u.HpId == hpId && grpCodes.Contains(u.GrpCd)).ToList();
-        if (userconfig == null)
-        {
-            return new List<UserConfModel>();
-        }
-
-        return userconfig.Select(u => new UserConfModel(u.UserId, u.GrpCd, u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param ?? string.Empty)).ToList();
-    }
-
-    private List<SetKbnMstModel> GetListKbnMst(int hpId, List<int> grpCodes, int sinDate)
-    {
-        List<SetKbnMstModel> result = new List<SetKbnMstModel>();
-        var lowerSetGenarationMsts = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId &&
-                                                                        x.IsDeleted == 0 &&
-                                                                        x.StartDate <= sinDate)
-                                                                      .OrderByDescending(x => x.StartDate)
-                                                                      .ToList();
-        var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
-
-        if (setGenarationMst != null)
-        {
-            var setKbnMsts = NoTrackingDataContext.SetKbnMsts.Where(x => x.HpId == hpId &&
-                                                                           grpCodes.Contains(x.SetKbn) &&
-                                                                           x.IsDeleted == 0 &&
-                                                                           x.GenerationId == setGenarationMst.GenerationId)
-                                                           .OrderBy(x => x.SetKbn)
-                                                           .ToList();
-            foreach (var item in setKbnMsts)
-            {
-                result.Add(new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.SetKbnName ?? string.Empty, item.KaCd, item.DocCd, item.IsDeleted, item.GenerationId));
-            }
-        }
-        return result;
-    }
-
-    private UserConfModel GetConfigurationModelWithParam(int hpId, int userId, int grpCd, int grpItemCd = 0, string defaultParam = null)
-    {
-        var userConf = NoTrackingDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId && u.GrpCd == grpCd && u.GrpItemCd == grpItemCd).FirstOrDefault();
-        if (userConf != null)
-        {
-            var result = new UserConfModel(userConf.UserId, userConf.GrpCd, userConf.GrpItemCd, userConf.GrpItemEdaNo, userConf.Val, userConf.Param ?? string.Empty);
-            if (string.IsNullOrEmpty(result.Param))
-            {
-                result.ChangeParam(defaultParam);
-            }
-            return result;
-        }
-        return new UserConfModel(hpId, userId, grpCd, grpItemCd, GetDefaultValue(grpCd, grpItemCd), defaultParam);
     }
 
     public void ReleaseResource()
