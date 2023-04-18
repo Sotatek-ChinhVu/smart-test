@@ -4,17 +4,15 @@ namespace UseCase.UserConf.UserSettingParam
 {
     public class GetUserConfigParamInputData : IInputData<GetUserConfigParamOutputData>
     {
-        public GetUserConfigParamInputData(int hpId, int userId, int grpCd, int grpItemCd)
+        public GetUserConfigParamInputData(int hpId, int userId, List<Tuple<int, int>> groupCode)
         {
             HpId = hpId;
             UserId = userId;
-            GrpCd = grpCd;
-            GrpItemCd = grpItemCd;
+            GroupCode = groupCode;
         }
 
         public int HpId { get; private set; }
         public int UserId { get; private set; }
-        public int GrpCd { get; private set; }
-        public int GrpItemCd { get; private set; }
+        public List<Tuple<int, int>> GroupCode { get; private set; }
     }
 }

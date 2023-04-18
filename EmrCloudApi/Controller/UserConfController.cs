@@ -113,10 +113,10 @@ public class UserConfController : AuthorizeControllerBase
         return userConfModel;
     }
 
-    [HttpGet(ApiPath.GetUserConfParam)]
-    public ActionResult<Response<GetUserConfigParamResponse>> GetUserConfParam([FromQuery] GetUserConfigParamRequest request)
+    [HttpPost(ApiPath.GetUserConfParam)]
+    public ActionResult<Response<GetUserConfigParamResponse>> GetUserConfParam([FromBody] GetUserConfigParamRequest request)
     {
-        var input = new GetUserConfigParamInputData(HpId, UserId, request.GrpCd, request.GrpItemCd);
+        var input = new GetUserConfigParamInputData(HpId, UserId, request.GroupCodes.Select(a => new Tuple<int, int>(a.GrpCd, a.GrpItemCd)).ToList());
         var output = _bus.Handle(input);
 
         var presenter = new GetUserConfigParamPresenter();

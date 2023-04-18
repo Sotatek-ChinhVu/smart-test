@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.UserConf
 
         public void Complete(GetUserConfigParamOutputData outputData)
         {
-            Result.Data = new GetUserConfigParamResponse(outputData.Param);
+            Result.Data = new GetUserConfigParamResponse(outputData.UserConfs);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

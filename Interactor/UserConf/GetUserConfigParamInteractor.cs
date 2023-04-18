@@ -14,11 +14,18 @@ namespace Interactor.UserConf
 
         public GetUserConfigParamOutputData Handle(GetUserConfigParamInputData inputData)
         {
-            if (inputData.HpId <= 0 || inputData.UserId <= 0) return new GetUserConfigParamOutputData(string.Empty, GetUserConfigParamStatus.NoData);
+            try
+            {
+                if (inputData.HpId <= 0 || inputData.UserId <= 0) return new GetUserConfigParamOutputData(new(), GetUserConfigParamStatus.NoData);
 
-            var param = _userConfRepository.GetSettingParam(inputData.HpId, inputData.UserId, inputData.GrpCd, inputData.GrpItemCd);
+                var param = _userConfRepository.GetListSettingParam(inputData.HpId, inputData.UserId, inputData.GroupCode);
 
-            return new GetUserConfigParamOutputData(param, GetUserConfigParamStatus.Successed);
+                return new GetUserConfigParamOutputData(param, GetUserConfigParamStatus.Successed);
+            }
+            finally
+            {
+                _userConfRepository.ReleaseResource();
+            }
 
         }
     }

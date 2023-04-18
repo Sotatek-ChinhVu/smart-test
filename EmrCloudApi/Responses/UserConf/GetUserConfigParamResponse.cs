@@ -1,12 +1,14 @@
-﻿namespace EmrCloudApi.Responses.UserConf
+﻿using Domain.Models.UserConf;
+
+namespace EmrCloudApi.Responses.UserConf
 {
     public class GetUserConfigParamResponse
     {
-        public GetUserConfigParamResponse(string param)
+        public GetUserConfigParamResponse(List<UserConfModel> userConfs)
         {
-            Param = param;
+            UserConfs = userConfs;
         }
 
-        public string Param { get; private set; }
+        public List<UserConfModel> UserConfs { get; private set; }
     }
 }
