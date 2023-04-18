@@ -1,6 +1,7 @@
-﻿using Entity.Tenant;
+﻿using EmrCalculateApi.Futan.Models;
+using EmrCalculateApi.Receipt.Models;
+using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 
 namespace Reporting.Receipt.Models
 {
