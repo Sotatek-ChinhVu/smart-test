@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Todo.TodoGrpMst
+namespace UseCase.Todo.UpsertTodoGrpMst
 {
     public interface IUpsertTodoGrpMstOutputPort : IOutputPort<UpsertTodoGrpMstOutputData>
     {

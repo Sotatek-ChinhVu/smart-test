@@ -184,6 +184,7 @@
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
         public const string TrialAccounting = "TrialAccounting";
+        public const string CheckTrialAccounting = "CheckTrialAccounting";
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
 
@@ -192,6 +193,7 @@
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
         public const string UpsertUserConfList = "UpsertUserConfList";
+        public const string GetUserConfParam = "GetUserConfParam";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
