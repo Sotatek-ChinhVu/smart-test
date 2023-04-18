@@ -866,7 +866,7 @@ namespace Infrastructure.Repositories
             return karteInf != null ? karteInf.SeqNo : 0;
         }
 
-        private long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
         {
             var odrList = NoTrackingDataContext.OdrInfs
             .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
