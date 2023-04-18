@@ -106,6 +106,7 @@ using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
+using Interactor.MedicalExamination.HistoryCommon;
 using Interactor.MonshinInf;
 using Interactor.MstItem;
 using Interactor.NextOrder;
@@ -260,6 +261,7 @@ using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
@@ -430,6 +432,7 @@ using UseCase.User.UpsertList;
 using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
+using UseCase.UserConf.UserSettingParam;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.WeightedSetConfirmation.CheckOpen;
@@ -441,21 +444,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.GetRecePreviewList;
-using UseCase.Receipt.DoReceCmt;
-using UseCase.ReceSeikyu.SearchReceInf;
-using UseCase.Receipt.ReceiptEdit;
-using Interactor.MedicalExamination.HistoryCommon;
-using UseCase.MedicalExamination.GetDataPrintKarte2;
-using UseCase.Receipt.GetSinMeiInMonthList;
-using UseCase.Receipt.GetSinDateRaiinInfList;
-using UseCase.Receipt.GetReceByomeiChecking;
-using UseCase.Receipt.SaveReceiptEdit;
-using UseCase.WeightedSetConfirmation.CheckOpen;
-using Interactor.WeightedSetConfirmation;
-using UseCase.PatientInfor.SearchPatientInfoByPtNum;
-using Interactor.Family.ValidateFamilyList;
-using UseCase.Family.ValidateFamilyList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -916,6 +904,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SagakuInputData, SagakuInteractor>();
             busBuilder.RegisterUseCase<UpsertUserConfListInputData, UpsertUserConfListInteractor>();
             busBuilder.RegisterUseCase<GetListMedicalExaminationConfigInputData, GetListMedicalExaminationConfigInteractor>();
+            busBuilder.RegisterUseCase<GetUserConfigParamInputData, GetUserConfigParamInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();

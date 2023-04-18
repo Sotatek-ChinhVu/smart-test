@@ -13,6 +13,7 @@ using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
+using UseCase.UserConf.UserSettingParam;
 
 namespace EmrCloudApi.Controller;
 
@@ -110,5 +111,17 @@ public class UserConfController : AuthorizeControllerBase
             );
 
         return userConfModel;
+    }
+
+    [HttpGet(ApiPath.GetUserConfParam)]
+    public ActionResult<Response<GetUserConfigParamResponse>> GetUserConfParam([FromQuery] GetUserConfigParamRequest request)
+    {
+        var input = new GetUserConfigParamInputData(HpId, UserId, request.GrpCd, request.GrpItemCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetUserConfigParamPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetUserConfigParamResponse>>(presenter.Result);
     }
 }
