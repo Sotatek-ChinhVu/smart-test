@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.SwapHoken
         {
             Result.Data = new SaveSwapHokenResponse(outputData.Status , outputData.Message , outputData.Type, outputData.SeikyuYms);
             Result.Status = (int)outputData.Status;
-            Result.Message = outputData.Message ?? GetMessage(outputData.Status);
+            Result.Message = string.IsNullOrEmpty(outputData.Message) ? GetMessage(outputData.Status) : outputData.Message;
         }
 
         private string GetMessage(SaveSwapHokenStatus status) => status switch

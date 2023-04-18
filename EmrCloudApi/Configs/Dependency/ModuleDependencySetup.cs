@@ -454,6 +454,7 @@ using Interactor.WeightedSetConfirmation;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
+using UseCase.SwapHoken.Calculation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -681,6 +682,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPatientInfoBetweenTimesListInputData, GetPatientInfoBetweenTimesListInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoByPtNumInputData, SearchPatientInfoByPtNumInteractor>();
             busBuilder.RegisterUseCase<GetTokkiMstListInputData, GetTokkiMstListInteractor>();
+            busBuilder.RegisterUseCase<CalculationSwapHokenInputData, CalculationSwapHokenInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

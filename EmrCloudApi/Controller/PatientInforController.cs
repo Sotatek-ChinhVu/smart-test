@@ -928,7 +928,7 @@ namespace EmrCloudApi.Controller
                 HttpContext.Response.ContentType = "application/json";
                 HttpResponse response = HttpContext.Response;
 
-                var input = new CalculationSwapHokenInputData(1, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError);
+                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError);
                 var output = _bus.Handle(input);
                 if (output.Status == CalculationSwapHokenStatus.Successful)
                     UpdateCalculationSwapHokenStatus(new CalculationSwapHokenMessageStatus(string.Empty, 100, true, true));
