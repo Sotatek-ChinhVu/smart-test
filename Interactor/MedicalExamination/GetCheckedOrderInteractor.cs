@@ -260,10 +260,6 @@ namespace Interactor.MedicalExamination
 
                         maxRpNo++;
                     }
-                    foreach (var item in odrItems)
-                    {
-                        item.HokenPid = 20;
-                    }
 
                     var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                     var requestRaiinInf = new ReceptionItem(raiinInf);
