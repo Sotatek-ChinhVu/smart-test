@@ -141,6 +141,11 @@ namespace Interactor.SwapHoken
 
                 for (int i = 0; i < seikyuYms.Count; i++)
                 {
+                    isStopCalc = IsStopCalculate();
+                    if (isStopCalc)
+                    {
+                        break;
+                    }
                     if (inputData.IsReceCalculation)
                     {
                         errorText += GetErrorTextAfterCheck(inputData.HpId, seikyuYms[i], new List<long> { inputData.PtId });
