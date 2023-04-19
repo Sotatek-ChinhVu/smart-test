@@ -185,7 +185,7 @@ namespace Domain.Models.InsuranceInfor
 
         public string HokenName => GetHokenName();
 
-        public bool IsEmptyHoken => (HokenInf.HokenId == 0);
+        public bool IsEmptyHoken => (HokenInf == null || HokenInf.HokenId == 0);
 
         public bool IsEmptyKohi1 => (Kohi1 == null || Kohi1.HokenId == 0);
 
@@ -775,6 +775,42 @@ namespace Domain.Models.InsuranceInfor
         {
             return CIUtil.AgeChk(birthDay, sinDate, 70);
         }
+
+        public bool CheckPatternDuplicate(InsuranceModel pattern)
+        {
+            if (pattern.IsEmptyHoken != IsEmptyHoken)
+                return false;
+
+            if (!pattern.IsEmptyHoken && !IsEmptyHoken && pattern.HokenId != HokenId)
+                return false;
+
+            if (pattern.IsEmptyKohi1 != IsEmptyKohi1)
+                return false;
+
+            if (!pattern.IsEmptyKohi1 && !IsEmptyKohi1 && pattern.Kohi1Id != Kohi1Id)
+                return false;
+
+            if (pattern.IsEmptyKohi2 != IsEmptyKohi2)
+                return false;
+
+            if (!pattern.IsEmptyKohi2 && !IsEmptyKohi2 && pattern.Kohi2Id != Kohi2Id)
+                return false;
+
+            if (pattern.IsEmptyKohi3 != IsEmptyKohi3)
+                return false;
+
+            if (!pattern.IsEmptyKohi3 && !IsEmptyKohi3 && pattern.Kohi3Id != Kohi3Id)
+                return false;
+
+            if (pattern.IsEmptyKohi4 != IsEmptyKohi4)
+                return false;
+
+            if (!pattern.IsEmptyKohi4 && !IsEmptyKohi4 && pattern.Kohi4Id != Kohi4Id)
+                return false;
+
+            return true;
+        }
+
         #endregion
     }
 }

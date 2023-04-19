@@ -109,9 +109,6 @@
         //validate ValidHokenInf AllType
         public const string ValidHokenInfAllType = "ValidHokenInfAllType";
 
-        // Validate Insurance Other
-        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
-
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
         public const string GetSelectiveComment = "GetSelectiveComment";
