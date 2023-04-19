@@ -209,7 +209,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetTenMstOriginInfoCreateResponse>>(presenter.Result);
         }
 
-
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
         {
