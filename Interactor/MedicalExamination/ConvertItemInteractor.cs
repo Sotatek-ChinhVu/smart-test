@@ -238,7 +238,8 @@ namespace Interactor.MedicalExamination
                            r.IsDeleted,
                            r.UpdateDate,
                            r.CreateMachine,
-                           r.UpdateMachine
+                           r.UpdateMachine,
+                           r.UpdateName
                         )).ToList();
 
                 if (!saveHistory)
