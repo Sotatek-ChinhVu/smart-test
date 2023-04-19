@@ -444,6 +444,24 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.Receipt.GetRecePreviewList;
+using UseCase.Receipt.DoReceCmt;
+using UseCase.ReceSeikyu.SearchReceInf;
+using UseCase.Receipt.ReceiptEdit;
+using Interactor.MedicalExamination.HistoryCommon;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
+using UseCase.Receipt.GetSinMeiInMonthList;
+using UseCase.Receipt.GetSinDateRaiinInfList;
+using UseCase.Receipt.GetReceByomeiChecking;
+using UseCase.Receipt.SaveReceiptEdit;
+using UseCase.WeightedSetConfirmation.CheckOpen;
+using Interactor.WeightedSetConfirmation;
+using UseCase.PatientInfor.SearchPatientInfoByPtNum;
+using Interactor.Family.ValidateFamilyList;
+using UseCase.Family.ValidateFamilyList;
+using UseCase.User.GetUserConfModelList;
+using UseCase.SetKbnMst.Upsert;
+using Reporting.ReadRseReportFile.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -481,7 +499,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            // Reportting
+            // Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -499,6 +517,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
+            services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -729,6 +748,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
+            busBuilder.RegisterUseCase<UpsertSetKbnMstInputData, UpsertSetKbnMstInteractor>();
 
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
@@ -905,6 +925,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertUserConfListInputData, UpsertUserConfListInteractor>();
             busBuilder.RegisterUseCase<GetListMedicalExaminationConfigInputData, GetListMedicalExaminationConfigInteractor>();
             busBuilder.RegisterUseCase<GetUserConfigParamInputData, GetUserConfigParamInteractor>();
+            busBuilder.RegisterUseCase<GetUserConfModelListInputData, GetUserConfModelListInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();

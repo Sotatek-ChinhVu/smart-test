@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Reporting.OutDrug.Model;
+namespace Reporting.ReadRseReportFile.Model;
 
 public class CoCalculateRequestModel
 {
