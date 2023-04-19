@@ -27,6 +27,7 @@ public class UpsertUketukeSbtMstListPresenter : IUpsertUketukeSbtMstOutputPort
     {
         UpsertUketukeSbtMstStatus.Success => ResponseMessage.Success,
         UpsertUketukeSbtMstStatus.Failed => ResponseMessage.Failed,
+        UpsertUketukeSbtMstStatus.InvalidKbnId => ResponseMessage.InvalidKbnId,
         UpsertUketukeSbtMstStatus.InvalidKbnName => ResponseMessage.InvalidKbnName,
         UpsertUketukeSbtMstStatus.InputNoData => ResponseMessage.InputNoData,
         UpsertUketukeSbtMstStatus.InvalidSortNo => ResponseMessage.InvalidSortNo,
