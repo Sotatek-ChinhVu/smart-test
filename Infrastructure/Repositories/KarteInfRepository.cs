@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
         {
-            var karteInfEntity = NoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
+            var karteInfEntity = NoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.KarteKbn == 1 && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
 
             if (karteInfEntity == null)
             {

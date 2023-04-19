@@ -115,7 +115,10 @@ namespace Interactor.OrdInfs
                          o.CreateDate,
                          o.CreateId,
                          o.CreateName,
-                         o.IsDeleted
+                         o.IsDeleted,
+                         o.UpdateDate,
+                         o.CreateMachine,
+                         o.UpdateMachine
                         ))
                     .OrderBy(odr => odr.OdrKouiKbn)
                     .ThenBy(odr => odr.RpNo)

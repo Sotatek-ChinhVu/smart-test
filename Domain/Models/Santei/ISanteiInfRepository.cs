@@ -15,4 +15,8 @@ public interface ISanteiInfRepository : IRepositoryBase
     bool SaveSantei(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels);
 
     List<SanteiInfModel> GetCalculationInfo(int hpId, long ptId, int sinDate);
+
+    List<SanteiInfDetailModel> GetListAutoSanteiMst(int hpId);
+
+    bool SaveAutoSanteiMst(int hpId, int userId, List<SanteiInfDetailModel> santeiMst);
 }

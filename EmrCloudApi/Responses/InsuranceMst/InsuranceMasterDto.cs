@@ -12,6 +12,8 @@ namespace EmrCloudApi.Responses.InsuranceMst
             HokenNameCd = insuranceMst.HokenNameCd;
             HokenSbtKbn = insuranceMst.HokenSbtKbn;
             HokenSName = insuranceMst.HokenSName;
+            PrefNo = insuranceMst.PrefNo;
+            StartDate = insuranceMst.StartDate;
             Details = details;
         }
 
@@ -26,6 +28,10 @@ namespace EmrCloudApi.Responses.InsuranceMst
         public int HokenSbtKbn { get; private set; }
 
         public string HokenSName { get; private set; }
+
+        public int PrefNo { get; private set; }
+
+        public int StartDate { get; private set; }
 
         public IEnumerable<InsuranceDetailDto> Details { get; private set; }
     }

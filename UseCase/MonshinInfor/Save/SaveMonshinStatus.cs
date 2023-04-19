@@ -10,5 +10,6 @@
         InvalidHpId = 6,
         InvalidSinDate = 7,
         InValidRaiinNo = 8,
+        InValidKbn = 9,
     }
 }

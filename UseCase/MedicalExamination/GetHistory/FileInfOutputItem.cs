@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KarteInf;
+using System.Text.Json.Serialization;
 
 namespace UseCase.MedicalExamination.GetHistory;
 
@@ -11,9 +12,12 @@ public class FileInfOutputItem
         IsDeleted = model.IsDelete;
     }
 
+    [JsonPropertyName("seqNo")]
     public long SeqNo { get; private set; }
 
+    [JsonPropertyName("linkFile")]
     public string LinkFile { get; private set; }
 
+    [JsonPropertyName("isDeleted")]
     public bool IsDeleted { get; private set; }
 }

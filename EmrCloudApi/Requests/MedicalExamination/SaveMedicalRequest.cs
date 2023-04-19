@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Requests.Diseases;
+﻿using Domain.Models.MonshinInf;
+using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.SaveMedical;
@@ -46,4 +47,6 @@ public class SaveMedicalRequest
     public List<UpsertPtDiseaseListItem> DiseaseListItems { get; set; } = new();
 
     public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; set; } = new();
+
+    public MonshinInforModel Monshin { get; set; } = new();
 }

@@ -14,6 +14,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
+using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
@@ -3279,6 +3280,57 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
                                                                                  p.HokenId == hokenId);
         return syobyoKeika != null && !string.IsNullOrEmpty(syobyoKeika.Keika);
     }
+
+    public List<ReceInfForCheckErrSwapHokenModel> GetReceInforCheckErrForCalculateSwapHoken(int hpId, List<long> ptIds, int sinYM)
+    {
+        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None && ptIds.Contains(p.PtId));
+        var receInfs = NoTrackingDataContext.ReceInfs.Where(p => p.HpId == hpId && p.SeikyuYm == sinYM && (ptIds.Count > 0 ? ptIds.Contains(p.PtId) : true));
+
+        var query = from rc in receInfs
+                    join pt in ptInfs
+                    on rc.PtId equals pt.PtId
+                    select new
+                    {
+                        PtId = pt.PtId,
+                        PtNum = pt.PtNum,
+                        HokenId = rc.HokenId,
+                        SinYm = rc.SinYm
+                    };
+
+        return query.AsEnumerable().Select(x => new ReceInfForCheckErrSwapHokenModel(x.PtId, x.PtNum, x.SinYm, x.HokenId)).ToList();
+    }
+
+    public bool HasErrorCheck(int sinYm, long ptId, int hokenId)
+    {
+        return NoTrackingDataContext.ReceCheckErrs.Any(p => p.SinYm == sinYm && p.PtId == ptId && p.HokenId == hokenId);
+    }
+
+    public bool SaveReceStatusCalc(List<ReceStatusModel> newReceStatus, List<ReceStatusModel> updateList, int userId, int hpId)
+    {
+        foreach(var item in updateList)
+        {
+            var update = TrackingDataContext.ReceStatuses.FirstOrDefault(x => x.HpId == hpId && x.PtId == item.PtId
+                                                                            && x.SeikyuYm == item.SeikyuYm
+                                                                            && x.SinYm == item.SinYm
+                                                                            && x.HokenId == item.HokenId);
+            if (update != null)
+            {
+                update.StatusKbn = item.StatusKbn;
+            }
+        }
+
+        TrackingDataContext.ReceStatuses.AddRange(Mapper.Map<ReceStatusModel, ReceStatus>(newReceStatus, (src, dest) =>
+        {
+            dest.HpId = hpId;
+            dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+            dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+            dest.CreateId = userId;
+            return dest;
+        }));
+        return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    
 
     public void ReleaseResource()
     {

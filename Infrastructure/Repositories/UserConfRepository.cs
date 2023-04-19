@@ -1,7 +1,6 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
@@ -14,6 +13,18 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
     private readonly IMemoryCache _memoryCache;
+    private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
+    private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
+    private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    private List<int> summaryGrpCds = new List<int>() { 913, 901, 914, 924, 927 };
+    private List<int> listOtherButtonCode = new List<int> { 1, 13, 909, 929, 100001, 100002, 100004, 100005, 100006, 100011, 100012 };
+    private List<int> listOrderButtonCode = new List<int> { 202, 201, 203, 205, 204, 206, 207, 208 };
+    private List<int> headerGrpCds = new List<int>() { 910, 911, 912 };
+    private List<int> karteGrpCds = new List<int> { 99, 101, 104, 103, 908, 105 };
+    private const int claimSagakuGrpCd = 922;
+    private const int claimSagakuAtReceTimeGrpCd = 923;
+    private const int noteScreenDisplayGrpCd = 919;
+    private const int saveCheckGrpCd = 921;
 
     public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
@@ -36,6 +47,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         //}
         var result = ReloadCache(hpId, userId, grpCodes);
         return result!;
+    }
+
+    public List<UserConfModel> GetList(int hpId, int userId)
+    {
+        var entities = NoTrackingDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+        var result = entities.Select(e => new UserConfModel(e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo, e.Val, e.Param ?? string.Empty)).ToList();
+        return result;
     }
 
     public Dictionary<string, int> GetList(int userId)
@@ -103,6 +121,14 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         result.Add("IsInputCheckTrialCalc", isInputCheckTrialCalc);
         result.Add("IsInputCheckPrint", isInputCheckPrint);
 
+        string reportCheckSaveParam = NoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 4)?.Param ?? "10101";
+        var isReportCheckKeisanSave = reportCheckSaveParam[1].AsInteger();
+        var isReportCheckNormalSave = reportCheckSaveParam[0].AsInteger();
+        var isReportCheckTempSave = reportCheckSaveParam[2].AsInteger();
+        result.Add("IsReportCheckKeisanSave", isReportCheckKeisanSave);
+        result.Add("IsReportCheckNormalSave", isReportCheckNormalSave);
+        result.Add("IsReportCheckTempSave", isReportCheckTempSave);
+
         return result;
     }
 
@@ -111,6 +137,26 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
              p.HpId == hpId && p.GrpCd == groupCd && p.GrpItemCd == grpItemCd && p.UserId == userId);
         return userConf != null ? userConf.Param ?? string.Empty : defaultValue;
+    }
+
+    public List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "")
+    {
+        var result = new List<UserConfModel>();
+        foreach (var cd in groupCode)
+        {
+            var userConf = NoTrackingDataContext.UserConfs.FirstOrDefault(p =>
+             p.HpId == hpId && p.GrpCd == cd.Item1 && p.GrpItemCd == cd.Item2 && p.UserId == userId);
+
+            result.Add(new UserConfModel(
+                userId,
+                cd.Item1,
+                cd.Item2,
+                userConf != null ? userConf.GrpItemEdaNo : 0,
+                userConf != null ? userConf.Val : 0,
+                userConf != null ? userConf.Param ?? string.Empty : defaultValue));
+        }
+
+        return result;
     }
 
     private List<UserConfModel> ReloadCache(int hpId, int userId, List<int> grpCodes)

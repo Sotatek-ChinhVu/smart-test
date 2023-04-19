@@ -6,6 +6,8 @@ namespace Infrastructure.Repositories.SpecialNote
 {
     public class PatientInfoRepository : RepositoryBase, IPatientInfoRepository
     {
+        private const string WEIGHT_CD = "V0002";
+
         public PatientInfoRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
         }
@@ -198,6 +200,12 @@ namespace Infrastructure.Repositories.SpecialNote
             )).ToList();
 
             return result;
+        }
+
+        public KensaInfDetailModel GetPtWeight(long ptId, int sinDate)
+        {
+            var kensaInf = NoTrackingDataContext.KensaInfDetails.Where(k => k.PtId == ptId && k.IraiDate <= sinDate && k.KensaItemCd == WEIGHT_CD).OrderByDescending(p => p.IraiDate).FirstOrDefault();
+            return kensaInf == null ? new() : new KensaInfDetailModel(kensaInf.HpId, kensaInf.PtId, kensaInf.IraiCd, kensaInf.SeqNo, kensaInf.IraiDate, kensaInf.RaiinNo, kensaInf.KensaItemCd ?? string.Empty, kensaInf.ResultVal ?? string.Empty, kensaInf.ResultType ?? string.Empty, kensaInf.AbnormalKbn ?? string.Empty, kensaInf.IsDeleted, kensaInf.CmtCd1 ?? string.Empty, kensaInf.CmtCd2 ?? string.Empty, kensaInf.UpdateDate, string.Empty, string.Empty, 0);
         }
 
         public void ReleaseResource()

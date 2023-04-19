@@ -698,12 +698,22 @@ namespace Interactor.PatientInfor
                 // 同じ組合せの保険が既に登録されている場合は警告。
                 var PatternHokenOnly = insurances.Where(pattern => pattern.HokenKbn >= 1 && pattern.HokenKbn <= 4 && pattern.IsDeleted == 0);
 
-                var duplicateQuery = PatternHokenOnly.GroupBy(x => new { x.HokenId, x.Kohi1Id, x.Kohi2Id, x.Kohi3Id, x.Kohi4Id })
-                                            .Where(g => g.Count() > 1);
-                if (duplicateQuery != null && duplicateQuery.Count() > 0 && !reactFromUI.ConfirmRegisteredInsuranceCombination)
+                if(!reactFromUI.ConfirmRegisteredInsuranceCombination)
                 {
-                    message = string.Format(ErrorMessage.MessageType_mEnt00020, new string[] { "同じ組合せの保険・公１・公２・公３・公４を持つ組合せ" });
-                    resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningRegisteredInsuranceCombination, TypeMessage.TypeMessageWarning));
+                    foreach (var pattern in PatternHokenOnly)
+                    {
+                        var duplicatePattern = PatternHokenOnly.Where(item => item.CheckPatternDuplicate(pattern)).ToList();
+                        if (duplicatePattern.Count > 1)
+                        {
+                            var patternAddNew = duplicatePattern.FirstOrDefault(item => item.IsAddNew);
+                            if (patternAddNew != null)
+                            {
+                                message = string.Format(ErrorMessage.MessageType_mEnt00020, new string[] { "同じ組合せの保険・公１・公２・公３・公４を持つ組合せ" });
+                                resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.WarningRegisteredInsuranceCombination, TypeMessage.TypeMessageWarning));
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 

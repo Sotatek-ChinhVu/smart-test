@@ -4,7 +4,7 @@ namespace UseCase.SwapHoken.Save
 {
     public class SaveSwapHokenInputData : IInputData<SaveSwapHokenOutputData>
     {
-        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, string hokenBeforeName, int hokenIdAfter, string hokenAfterName, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, bool isHokenPatternUsed, bool confirmInvalidIsShowConversionCondition, bool confirmSwapHoken, int userId)
+        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, string hokenBeforeName, int hokenIdAfter, string hokenAfterName, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, bool isHokenPatternUsed, bool confirmInvalidIsShowConversionCondition, bool confirmSwapHoken, int userId, bool isReCalculation, bool isReceCalculation, bool isReceCheckError)
         {
             HpId = hpId;
             PtId = ptId;
@@ -20,6 +20,9 @@ namespace UseCase.SwapHoken.Save
             ConfirmInvalidIsShowConversionCondition = confirmInvalidIsShowConversionCondition;
             ConfirmSwapHoken = confirmSwapHoken;
             UserId = userId;
+            IsReCalculation = isReCalculation;
+            IsReceCalculation = isReceCalculation;
+            IsReceCheckError = isReceCheckError;
         }
 
         public int HpId { get; private set; }
@@ -51,5 +54,11 @@ namespace UseCase.SwapHoken.Save
         public int UserId { get; private set; }
 
         public void SetEndDate(int value) => this.EndDate = value;
+
+        public bool IsReCalculation { get; private set; }
+
+        public bool IsReceCalculation { get; private set; }
+
+        public bool IsReceCheckError { get; private set; }
     }
 }

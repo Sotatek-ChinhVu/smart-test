@@ -54,7 +54,7 @@ namespace Interactor.Insurance
         private void IsValidRodo(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
-            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
+            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
             if (rousaiReceder == 1)
             {
                 if (string.IsNullOrEmpty(rodoBango))
@@ -70,7 +70,9 @@ namespace Interactor.Insurance
                     validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRodoBangoLengthNotEquals14, message, TypeMessage.TypeMessageError));
                 }
             }
-            CommonCheckForRosai(ref validateDetails, hokenKbn, listRousaiTenkis, rousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
+
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
+            CommonCheckForRosai(ref validateDetails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
         }
 
         private void IsValidNenkin(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)

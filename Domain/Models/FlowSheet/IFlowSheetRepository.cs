@@ -16,5 +16,7 @@ namespace Domain.Models.FlowSheet
         void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId);
 
         void UpsertCmt(List<FlowSheetModel> inputDatas, int hpId, int userId);
+
+        List<(int date, string tooltip)> GetTooltip(int hpId, long ptId, int sinDate, int startDate, int endDate);
     }
 }

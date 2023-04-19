@@ -1,15 +1,9 @@
 ﻿using Domain.Models.Todo;
-using Domain.Models.UketukeSbtMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -39,7 +33,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if(todoGrpMsts != null)
+                    if (todoGrpMsts != null)
                     {
                         todoGrpMsts.TodoGrpName = input.TodoGrpName;
                         todoGrpMsts.GrpColor = input.GrpColor;

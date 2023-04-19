@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
+using UseCase.SpecialNote.GetPtWeight;
 using UseCase.SpecialNote.Save;
 
 namespace EmrCloudApi.Controller
@@ -67,6 +68,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<SaveSpecialNoteResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtWeight)]
+        public ActionResult<Response<GetPtWeightResponse>> Save([FromQuery] GetPtWeightRequest request)
+        {
+            var input = new GetPtWeightInputData(request.SinDate, request.PtId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetPtWeightPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetPtWeightResponse>>(presenter.Result);
         }
     }
 }
