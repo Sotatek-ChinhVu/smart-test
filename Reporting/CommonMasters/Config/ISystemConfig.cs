@@ -37,4 +37,8 @@ public interface ISystemConfig
     string AccountingTeikeibun1();
     string AccountingTeikeibun2();
     string AccountingTeikeibun3();
+    int AccountingFormType();
+    int AccountingDetailFormType();
+    int AccountingMonthFormType();
+    int AccountingDetailMonthFormType();
 }

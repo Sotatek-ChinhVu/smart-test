@@ -14,6 +14,8 @@ using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using System.Text;
 using System.Linq;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
 
 namespace Reporting.Accounting.Service;
 
@@ -24,14 +26,16 @@ public class AccountingCoReportService : IAccountingCoReportService
     private readonly ITenantProvider _tenantProvider;
     private readonly ISystemConfigProvider _systemConfigProvider;
     private readonly IEmrLogger _emrLogger;
+    private readonly IReadRseReportFileService _readRseReportFileService;
 
-    public AccountingCoReportService(ISystemConfig systemConfig, ICoAccountingFinder finder, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+    public AccountingCoReportService(ISystemConfig systemConfig, ICoAccountingFinder finder, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService)
     {
         _systemConfig = systemConfig;
         _finder = finder;
         _tenantProvider = tenantProvider;
         _systemConfigProvider = systemConfigProvider;
         _emrLogger = emrLogger;
+        _readRseReportFileService = readRseReportFileService;
     }
 
     List<(string Title, List<string> CdKbn)> totalCdKbnls =
@@ -323,6 +327,8 @@ public class AccountingCoReportService : IAccountingCoReportService
     public Dictionary<string, string> _singleFieldDataResult { get; set; }
     public List<ListTextModel> _listTextModelResult { get; set; }
     public Dictionary<string, string> _systemConfigList { get; set; }
+    public JavaOutputData _javaOutputData { get; set; }
+    private int CurrentPage = 1;
     #endregion
 
     /// <summary>
@@ -347,6 +353,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
             int hakkoDay = 0, string memo = "", int printType = 0, string formFileName = "")
     {
+        HpId = hpId;
         Mode = PrintMode.SinglePrint;
         PtId = ptId;
         StartDate = startDate;
@@ -378,6 +385,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOut()
     {
+        GetParamFromRseFile();
         if (Mode == PrintMode.SinglePrint)
         {
             PrintOutSingle();
@@ -392,37 +400,105 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    private void PrintOutSingle()
+    private void GetParamFromRseFile()
     {
-        #region sub method
-        void _addListProperty(ref List<(string field, int charCount, int rowCount)> listPropertys)
+        SetFormFilePath();
+        List<ObjectCalculate> fieldInputList = new();
+        for (int i = 1; i <= 4; i++)
         {
-            for (int i = 1; i <= 4; i++)
+            fieldInputList.Add(new ObjectCalculate($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}", (int)CalculateTypeEnum.GetFormatLendB));
+            fieldInputList.Add(new ObjectCalculate($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}", (int)CalculateTypeEnum.GetListRowCount));
+        }
+        fieldInputList.Add(new ObjectCalculate("KanNoList", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("lsPtNum_1", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("MessageList", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("MessageListF", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("MessageList", (int)CalculateTypeEnum.GetListFormatLendB));
+        fieldInputList.Add(new ObjectCalculate("MessageListF", (int)CalculateTypeEnum.GetListFormatLendB));
+
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Accounting, FormFileName, fieldInputList);
+        _javaOutputData = _readRseReportFileService.ReadFileRse(data);
+    }
+
+    #region Accounting Form
+    public const string ACCOUNTING_FORM_FILE_NAME = "fmAccounting_{0}.rse";
+    public const string ACCOUNTINGTERM_FORM_FILE_NAME = "fmTermAccounting_{0}.rse";
+    public const string ACCOUNTING_PAGE2_FORM_FILE_NAME = "fmAccounting_{0}_2.rse";
+    public const string ACCOUNTINGTERM_PAGE2_FORM_FILE_NAME = "fmTermAccounting_{0}.rse";
+    #endregion
+    private void SetFormFilePath()
+    {
+        if (string.IsNullOrEmpty(FormFileName))
+        {
+            if (PrintType == 0)
             {
-                if (CoRep.ObjectExists($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}"))
-                {
-                    listPropertys.Add(
-                        (
-                            CIUtil.ToStringIgnoreZero(i),
-                            CIUtil.LenB(CoRep.GetFormat($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")),
-                            CoRep.GetListRowCount($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")
-                        )
-                    );
-                }
+                // 領収証
+                FormFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
+            }
+            else if (PrintType == 1)
+            {
+                // 明細
+                FormFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
+            }
+            if (PrintType == 2)
+            {
+                // 月間領収証
+                FormFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
+            }
+            else if (PrintType == 3)
+            {
+                // 月間明細
+                FormFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
             }
         }
-        #endregion
+    }
 
+    private void _addListProperty(ref List<(string field, int charCount, int rowCount)> listPropertys, int page)
+    {
+        var objectList = _javaOutputData.objectNames;
+        var responses = _javaOutputData.responses;
+        for (int i = 1; i <= 4; i++)
+        {
+            var getFormatLendBPage1 = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetFormatLendB && item.listName == $"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")!.result;
+            var getListRowCountPage1 = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == $"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")!.result;
+            var getFormatLendBPage2 = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetFormatLendB && item.listName == $"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}" + "_page2")?.result ?? getFormatLendBPage1;
+            var getListRowCountPage2 = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == $"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}" + "_page2")?.result ?? getListRowCountPage1;
+
+            if (objectList.Contains($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}") && page == 1)
+            {
+                listPropertys.Add(
+                    (
+                        CIUtil.ToStringIgnoreZero(i),
+                        getFormatLendBPage1,
+                        getListRowCountPage1
+                    )
+                );
+            }
+            else if (objectList.Contains($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}") && page > 1)
+            {
+                listPropertys.Add(
+                    (
+                        CIUtil.ToStringIgnoreZero(i),
+                        getFormatLendBPage2,
+                        getListRowCountPage2
+                    )
+                );
+            }
+        }
+    }
+
+    private void PrintOutSingle()
+    {
         coModel = GetData(HpId, PtId, StartDate, EndDate);
 
         _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
         _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 
-        _addListProperty(ref _sinmeiListPropertysPage1);
+        _addListProperty(ref _sinmeiListPropertysPage1, 1);
 
-        if (CIUtil.IsFileExisting(GetPage2FormFilePath()))
+        if (_javaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
         {
-            _addListProperty(ref _sinmeiListPropertysPage2);
+            _addListProperty(ref _sinmeiListPropertysPage2, 2);
         }
         else
         {
@@ -438,21 +514,17 @@ public class AccountingCoReportService : IAccountingCoReportService
         UpdateDrawForm();
     }
 
-    /// <summary>
-    /// リスト印刷
-    /// </summary>
-    /// <param name="printerName"></param>
     private void PrintOutList()
     {
         coModelList = GetDataList(HpId, StartDate, EndDate, PtConditions, GrpConditions, Sort, MiseisanKbn, SaiKbn, MisyuKbn, SeikyuKbn, HokenKbn);
-
-        if (CoRep.ListExists("lsPtNum_1"))
+        var objectList = _javaOutputData.objectNames;
+        if (objectList.Contains("lsPtNum_1"))
         {
-            ListGridRowCount = CoRep.GetListRowCount("lsPtNum_1");
+            ListGridRowCount = GetListRowCount("lsPtNum_1");
         }
-        else if (CoRep.ListExists("KanNoList"))
+        else if (objectList.Contains("KanNoList"))
         {
-            ListGridRowCount = CoRep.GetListRowCount("KanNoList");
+            ListGridRowCount = GetListRowCount("KanNoList");
         }
 
         TotalPtCount = 0;
@@ -488,25 +560,6 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOutMulti()
     {
-        #region sub method
-        void _addListProperty(ref List<(string field, int charCount, int rowCount)> listPropertys)
-        {
-            for (int i = 1; i <= 4; i++)
-            {
-                if (CoRep.ObjectExists($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}"))
-                {
-                    listPropertys.Add(
-                        (
-                            CIUtil.ToStringIgnoreZero(i),
-                            CIUtil.LenB(CoRep.GetFormat($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")),
-                            CoRep.GetListRowCount($"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")
-                        )
-                    );
-                }
-            }
-        }
-        #endregion
-
         if (Params != null && Params.Any())
         {
             foreach (CoAccountingParamModel param in Params)
@@ -543,12 +596,12 @@ public class AccountingCoReportService : IAccountingCoReportService
                 _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
                 _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
 
-                _addListProperty(ref _sinmeiListPropertysPage1);
+                _addListProperty(ref _sinmeiListPropertysPage1, 1);
 
 
-                if (CIUtil.IsFileExisting(GetPage2FormFilePath()))
+                if (_javaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
                 {
-                    _addListProperty(ref _sinmeiListPropertysPage2);
+                    _addListProperty(ref _sinmeiListPropertysPage2, 2);
                 }
                 else
                 {
@@ -965,13 +1018,14 @@ public class AccountingCoReportService : IAccountingCoReportService
                 return ret;
             }
 
+
             // メッセージ（P/F）
             void _PrintMessageList(string field, int karteKbn)
             {
-                if (CoRep.ListExists(field))
+                if (_javaOutputData.objectNames.Contains(field))
                 {
-                    int charCount = CIUtil.LenB(CoRep.GetListFormat(field, 0, 0));
-                    int rowCount = CoRep.GetListRowCount(field);
+                    int charCount = GetListFormatLenB(field);
+                    int rowCount = GetListRowCount(field);
 
                     List<string> karteInfTexts = coModel.KarteInfStringList(karteKbn);
 
@@ -1897,7 +1951,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     }
                 }
 
-                foreach (string ObjectName in CoRep.ObjectNames.FindAll(p => p.StartsWith("dfJihiSbt_")))
+                foreach (string ObjectName in _javaOutputData.objectNames.FindAll(p => p.StartsWith("dfJihiSbt_")))
                 {
                     double kingaku = 0;
 
@@ -1906,12 +1960,9 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0)
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && jihiSbtls.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
                         {
-                            if (jihiSbtls.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
-                            {
-                                kingaku += jihiSbtls.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.kingaku);
-                            }
+                            kingaku += jihiSbtls.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.kingaku);
                         }
                     }
 
@@ -2578,11 +2629,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         // 本体
         void UpdateFormBody()
         {
-            if (sinmeiPrintDataModels == null || sinmeiPrintDataModels.Count == 0)
-            {
-                _hasNextPage = false;
-            }
-
             List<(string field, int charCount, int rowCount)> sinmeiListPropertys =
                 _sinmeiListPropertysPage1;
 
@@ -2594,19 +2640,9 @@ public class AccountingCoReportService : IAccountingCoReportService
                 sinmeiListPropertys = _sinmeiListPropertysPage2;
             }
 
-            if (sinmeiListPropertys.Any() == false || sinmeiListPropertys[0].rowCount <= 0)
+            if (!sinmeiListPropertys.Any() || sinmeiListPropertys[0].rowCount <= 0)
             {
-                if (CurrentPage == 1 && _sinmeiListPropertysPage2 != null && _sinmeiListPropertysPage2.Any() && sinmeiListPropertys[0].rowCount > 0)
-                {
-                    // 1ページ目で、2ページ目以降にリストが存在する場合は、_hasNextPageはtrueのままにする
-                    return -1;
-                }
-                else
-                {
-                    // リストのプロパティがない場合はreturn
-                    _hasNextPage = false;
-                    return -1;
-                }
+                return;
             }
 
             if (CurrentPage > 1)
@@ -2637,19 +2673,10 @@ public class AccountingCoReportService : IAccountingCoReportService
                     sinmeiListIndex++;
                     if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
                     {
-                        _hasNextPage = false;
                         break;
                     }
                 }
-
-                if (_hasNextPage == false)
-                {
-                    break;
-                }
             }
-
-            return sinmeiListIndex;
-            //return 1;
         }
         #endregion
     }
@@ -2881,7 +2908,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         // 本体
         void UpdateFormBody()
         {
-            List<int> jihiSbts = new List<int>();
+            List<int> jihiSbts = new();
 
             #region　print method
             // 患者番号
@@ -2972,7 +2999,6 @@ public class AccountingCoReportService : IAccountingCoReportService
                 }
             }
 
-
             // 請求額
             void _printSeikyuGaku(short row, int index)
             {
@@ -3006,12 +3032,10 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 SetListDataRep("lsPtFutan_", 1, 2, 0, row,
                     coModelList.KaikeiInfListModels[index].PtFutan +
-                    // coModelList.KaikeiInfListModels[index].AdjustFutan + 
                     coModelList.KaikeiInfListModels[index].AdjustRound);
                 // 下位互換
                 ListText("HoSeikyuList", 0, row,
                     coModelList.KaikeiInfListModels[index].PtFutan +
-                    // coModelList.KaikeiInfListModels[index].AdjustFutan +
                     coModelList.KaikeiInfListModels[index].AdjustRound);
             }
             // 自費負担額
@@ -3146,7 +3170,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printJihiSbtKingaku(short row, int index)
             {
                 // 自費種別別金額
-                foreach (string ListObjectName in CoRep.ObjectNames.FindAll(p => p.StartsWith("lsJihiSbt_")))
+                foreach (string ListObjectName in _javaOutputData.objectNames.FindAll(p => p.StartsWith("lsJihiSbt_")))
                 {
                     double kingaku = 0;
 
@@ -3155,12 +3179,9 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0)
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
                         {
-                            if (coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
-                            {
-                                kingaku += coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
-                            }
+                            kingaku += coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
                         }
                     }
 
@@ -3257,26 +3278,20 @@ public class AccountingCoReportService : IAccountingCoReportService
                 SetFieldsData("KanKei", TotalPtCount);
                 SetFieldsData("SinTenKei", TotalTensu);
                 SetFieldsData("SinTenAve", Math.Round((double)(TotalTensu / TotalPtCount), MidpointRounding.AwayFromZero));
-
-                foreach (string ListObjectName in CoRep.ObjectNames)
+                foreach (var ListObjectName in _javaOutputData.objectNames.Where(ListObjectName => ListObjectName.StartsWith("lsJihiSbt_")))
                 {
-                    if (ListObjectName.StartsWith("lsJihiSbt_"))
+                    double kingaku = 0;
+                    // 分割
+                    string[] jihiSbtCds = ListObjectName.Split('_');
+                    foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        double kingaku = 0;
-
-                        // 分割
-                        string[] jihiSbtCds = ListObjectName.Split('_');
-
-                        foreach (string jihiSbtCd in jihiSbtCds)
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && TotalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
                         {
-                            if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && TotalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
-                            {
-                                kingaku += TotalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
-                            }
+                            kingaku += TotalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
                         }
-
-                        ListText(ListObjectName, 0, row, kingaku.ToString());
                     }
+
+                    ListText(ListObjectName, 0, row, kingaku.ToString());
                 }
             }
             #endregion
@@ -3349,19 +3364,16 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
             #endregion
 
-            if (coModelList.KaikeiInfListModels == null || coModelList.KaikeiInfListModels.Any() == false)
+            if (coModelList.KaikeiInfListModels == null || !coModelList.KaikeiInfListModels.Any())
             {
-                _hasNextPage = false;
-                return -1;
+                return;
             }
 
-            int listIndex = (CurrentPage - 1) * ListGridRowCount;
+            int listIndex = 0;
 
             if (listIndex >= coModelList.KaikeiInfListModels.Count)
             {
                 _printGokei(0);
-                _hasNextPage = false;
-                return -1;
             }
             else if (ListGridRowCount <= 0)
             {
@@ -3373,8 +3385,6 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 // 合計出力
                 _printGokei(0);
-
-                _hasNextPage = false;
             }
             else
             {
@@ -3498,10 +3508,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                         {
                             // 合計出力
                             _printGokei((short)(i + 1));
-
-                            _hasNextPage = false;
                         }
-
                         break;
                     }
                 }
@@ -3510,10 +3517,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         #endregion
     }
 
-    /// <summary>
-    /// 印刷するデータを取得する
-    /// </summary>
-    /// <returns></returns>
     private CoAccountingModel GetData(int hpId, long ptId, int startDate, int endDate)
     {
         // 診療日
@@ -3615,10 +3618,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         return result;
     }
 
-    /// <summary>
-    /// 印刷するデータを取得する（リストタイプ）
-    /// </summary>
-    /// <returns></returns>
     private CoAccountingListModel GetDataList(
         int hpId, int startDate, int endDate,
         List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions,
@@ -3648,7 +3647,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         return result;
     }
 
-    void SetFieldsData(List<string> fieldList, object value)
+    private void SetFieldsData(List<string> fieldList, object value)
     {
         foreach (string field in fieldList)
         {
@@ -3656,7 +3655,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    void SetFieldsData(string field, object value)
+    private void SetFieldsData(string field, object value)
     {
         if (!_singleFieldDataResult.ContainsKey(field))
         {
@@ -3664,26 +3663,26 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    public void ListText(string listName, short col, short row, object data)
+    private void ListText(string listName, short col, short row, object data)
     {
         var item = new ListTextModel(listName, col, row, data.AsString());
         _listTextModelResult.Add(item);
     }
 
-    void SetFieldDataRep(string baseStr, int from, int to, object Value)
+    private void SetFieldDataRep(string baseStr, int from, int to, object Value)
     {
         SetFieldsData(MakeFieldNames(baseStr, from, to), Value);
     }
 
-    void SetFieldDataRepSW(string baseStr, int from, int to, int date)
+    private void SetFieldDataRepSW(string baseStr, int from, int to, int date)
     {
         // 西暦
         SetFieldsData(MakeFieldNames(baseStr + "S_", from, to), CIUtil.SDateToShowSDate(date));
         // 和暦
         SetFieldsData(MakeFieldNames(baseStr + "W_", from, to), CIUtil.SDateToShowWDate3(date).Ymd);
     }
-
-    List<string> MakeFieldNames(string baseStr, int from, int to)
+    
+    private List<string> MakeFieldNames(string baseStr, int from, int to)
     {
         List<string> results = new();
 
@@ -3701,22 +3700,13 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         return results;
     }
-    void SetListDataRep(string baseStr, int from, int to, short col, short row, object Value)
+   
+    private void SetListDataRep(string baseStr, int from, int to, short col, short row, object Value)
     {
         SetListsData(MakeFieldNames(baseStr, from, to), col, row, Value);
     }
 
-    /// <summary>
-    /// 西暦(baseStr+S)と和暦(baseStr+W)の印字
-    /// </summary>
-    /// <param name="baseStr">フィールド名の基礎になる文字列</param>
-    /// <param name="from">フィールド名の添え字開始</param>
-    /// <param name="to">フィールド名の添え字終了</param>
-    /// <param name="col">列</param>
-    /// <param name="row">行</param>
-    /// <param name="date">日付(yyyyMMdd)</param>
-
-    void SetListDataRepSW(string baseStr, int from, int to, short col, short row, int date)
+    private void SetListDataRepSW(string baseStr, int from, int to, short col, short row, int date)
     {
         // 西暦
         SetListsData(MakeFieldNames(baseStr + "S_", from, to), col, row, CIUtil.SDateToShowSDate(date));
@@ -3724,21 +3714,31 @@ public class AccountingCoReportService : IAccountingCoReportService
         SetListsData(MakeFieldNames(baseStr + "W_", from, to), col, row, CIUtil.SDateToShowWDate3(date).Ymd);
     }
 
-    void SetListsData(List<string> fieldList, short col, short row, object Value)
+    private void SetListsData(List<string> fieldList, short col, short row, object value)
     {
-        foreach (string Field in fieldList)
+        foreach (string field in fieldList)
         {
-            ListText(Field, col, row, Value);
+            ListText(field, col, row, value);
         }
     }
-    void SetListsData(string field, short col, short row, object Value)
+    private void SetListsData(string field, short col, short row, object value)
     {
-        ListText(field, col, row, Value);
+        ListText(field, col, row, value);
     }
 
-    bool betweenStartEnd(DateTime date)
+    private bool betweenStartEnd(DateTime date)
     {
         return (CIUtil.DateTimeToInt(date) >= StartDate &&
                 CIUtil.DateTimeToInt(date) <= EndDate);
+    }
+
+    private int GetListRowCount(string fileName)
+    {
+        return _javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == fileName)?.result ?? 0;
+    }
+
+    private int GetListFormatLenB(string fileName)
+    {
+        return _javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB && item.listName == fileName)?.result ?? 0;
     }
 }
