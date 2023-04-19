@@ -8,9 +8,9 @@ namespace Interactor.MstItem
     {
         private readonly IMstItemRepository _mstItemRepository;
 
-        public GetTenMstOriginInfoCreateInteractor(IMstItemRepository tenMstMaintenanceRepository)
+        public GetTenMstOriginInfoCreateInteractor(IMstItemRepository mstItemRepository)
         {
-            _mstItemRepository = tenMstMaintenanceRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public GetTenMstOriginInfoCreateOutputData Handle(GetTenMstOriginInfoCreateInputData inputData)

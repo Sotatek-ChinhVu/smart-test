@@ -245,6 +245,7 @@
             RenkeiCd2 = string.Empty;
             MasterSbt = string.Empty;
         }
+
         /// <summary>
         /// 点数マスタ
         /// </summary>

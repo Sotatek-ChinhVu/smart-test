@@ -461,7 +461,10 @@ using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.User.GetUserConfModelList;
 using UseCase.SetKbnMst.Upsert;
+
+
 using Reporting.ReadRseReportFile.Service;
+using UseCase.MstItem.GetSetDataTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1035,6 +1038,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

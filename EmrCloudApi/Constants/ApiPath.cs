@@ -288,5 +288,6 @@
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
         public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
+        public const string GetSetDataTenMst = "GetSetDataTenMst";
     }
 }
