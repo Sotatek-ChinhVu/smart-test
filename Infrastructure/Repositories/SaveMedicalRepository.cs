@@ -74,7 +74,7 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
                         return false;
                     }
 
-                    if (monshin.HpId == 0 && monshin.RaiinNo == 0 && monshin.PtId == 0 && monshin.SeqNo != 0)
+                    if (!(monshin.HpId == 0 && monshin.RaiinNo == 0 && monshin.PtId == 0 && monshin.SeqNo == 0))
                     {
                         var checkMoshin = _monshinInforRepository.SaveMonshinSheet(monshin);
                         if (!checkMoshin)
