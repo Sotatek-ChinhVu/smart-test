@@ -50,6 +50,7 @@
         public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
         public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
+        public static readonly string InvalidDocCd = "Invalid DocCd";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -390,6 +391,9 @@
         public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
         public static readonly string SaveSetOrderInfFailed = "Save SetOrderInf Failed.";
         public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SetKbnListInvalidSetKbn = "Invalid SetKbn";
+        public static readonly string SetKbnListInvalidSetKbnName = "Invalid SetKbnName";
+
         //Calculation Inf
 
 

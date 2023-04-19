@@ -20,6 +20,7 @@ namespace Domain.Models.MedicalExamination
             CheckingContent = string.Empty;
             ItemCd = string.Empty;
             ItemName = string.Empty;
+            CheckingType = 0;
         }
 
         public CheckingType CheckingType { get; private set; }

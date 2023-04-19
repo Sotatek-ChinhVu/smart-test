@@ -28,4 +28,6 @@ public interface IUserConfRepository : IRepositoryBase
 
     bool UpsertUserConfs(int hpId, int userId, List<UserConfModel> userConfs);
     List<UserConfModel> GetListSettingParam(int hpId, int userId, List<Tuple<int, int>> groupCode, string defaultValue = "");
+
+    List<UserConfModel> GetList(int hpId, int userId);
 }
