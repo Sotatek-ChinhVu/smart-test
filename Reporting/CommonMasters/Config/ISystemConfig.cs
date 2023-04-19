@@ -21,4 +21,13 @@ public interface ISystemConfig
     string WebIdQrCode();
     string MedicalInstitutionCode();
     string WebIdUrlForPc();
+    int SyohosenQRVersion();
+    int SyohosenChiikiHoukatu();
+    int SyohosenRinjiKisai();
+    int SyohosenTani();
+    int SyohosenHikae();
+    int SyohosenFutanRate();
+    string SyohosenRefillZero();
+    int SyohosenRefillStrikeLine();
+    int SyohosenQRKbn();
 }

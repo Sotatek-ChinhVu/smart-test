@@ -4,6 +4,8 @@ public class SanteiInfDto
 {
     public long Id { get; set; }
 
+    public long PtId { get; set; }
+
     public string ItemCd { get; set; } = string.Empty;
 
     public int AlertDays { get; set; }
@@ -11,6 +13,8 @@ public class SanteiInfDto
     public int AlertTerm { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public int SortNo { get; set; }
 
     public List<SanteiInfDetailDto> ListSanteInfDetails { get; set; } = new();
 }

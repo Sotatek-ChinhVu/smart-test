@@ -1,8 +1,12 @@
-﻿using Domain.Models.Diseases;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Domain.Models.Diseases;
 using Domain.Models.MedicalExamination;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
+using Domain.Models.TodayOdr;
+using Entity.Tenant;
 using Helper.Constants;
 using Interactor.CalculateService;
 using UseCase.MedicalExamination.GetCheckedOrder;
@@ -14,12 +18,16 @@ namespace Interactor.MedicalExamination
         private readonly IMedicalExaminationRepository _medicalExaminationRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly ICalculateService _calculateRepository;
+        private readonly ITodayOdrRepository _todayOdrRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository, IReceptionRepository receptionRepository, ICalculateService calculateRepository)
+        public GetCheckedOrderInteractor(IMedicalExaminationRepository medicalExaminationRepository, IReceptionRepository receptionRepository, ICalculateService calculateRepository, ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository)
         {
             _medicalExaminationRepository = medicalExaminationRepository;
             _receptionRepository = receptionRepository;
             _calculateRepository = calculateRepository;
+            _todayOdrRepository = todayOdrRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public GetCheckedOrderOutputData Handle(GetCheckedOrderInputData inputData)
@@ -66,10 +74,10 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidTantoId, new());
                 }
-                if (inputData.HokenPid <= 0)
-                {
-                    return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidHokenPid, new());
-                }
+                //if (inputData.HokenPid <= 0)
+                //{
+                //    return new GetCheckedOrderOutputData(GetCheckedOrderStatus.InvalidHokenPid, new());
+                //}
 
                 if (inputData.PrimaryDoctor < 0)
                 {
@@ -156,7 +164,9 @@ namespace Interactor.MedicalExamination
                         "",
                         DateTime.MinValue,
                         0,
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                     )).ToList();
 
                 var diseases = inputData.DiseaseItems.Select(i => new PtDiseaseModel(
@@ -190,10 +200,7 @@ namespace Interactor.MedicalExamination
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.YakkuZai(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, ordInfs));
                     checkedOrderModelList.AddRange(_medicalExaminationRepository.SiIkuji(inputData.HpId, inputData.SinDate, inputData.IBirthDay, allOdrInfDetail, isJouhou, inputData.SyosaisinKbn));
 
-                    var checkOrdInfModels = _medicalExaminationRepository.TrialCalculate(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.HokenPid, inputData.SinDate, checkedOrderModelList);
-
-                    var allOrdInf = checkOrdInfModels.Union(ordInfs);
-                    var odrItems = allOrdInf.Select(o => new OdrInfItem(
+                    var odrItems = ordInfs.Select(o => new OdrInfItem(
                             o.HpId,
                             o.PtId,
                             o.SinDate,
@@ -238,6 +245,22 @@ namespace Interactor.MedicalExamination
                                 ).ToList()
                         )).ToList();
 
+                    long maxRpNoOnDB = _todayOdrRepository.GetMaxRpNo(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+                    long maxRpNo = Math.Max(maxRpNoOnDB, 1);
+
+                    foreach (var itemCd in checkedOrderModelList.Select(c => c.ItemCd))
+                    {
+                        odrItems.Add(CreateIkaTodayOdrInfModel(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPid, itemCd, maxRpNo));
+
+                        // 追加した項目のDummyフラグをセット
+                        foreach (var detail in odrItems.Last().DetailInfoList)
+                        {
+                            detail.IsDummy = true;
+                        }
+
+                        maxRpNo++;
+                    }
+
                     var raiinInf = _receptionRepository.Get(inputData.RaiinNo);
                     var requestRaiinInf = new ReceptionItem(raiinInf);
                     var runTraialCalculateRequest = new RunTraialCalculateRequest(
@@ -271,6 +294,63 @@ namespace Interactor.MedicalExamination
             {
                 _medicalExaminationRepository.ReleaseResource();
             }
+        }
+
+        private OdrInfItem CreateIkaTodayOdrInfModel(int hpId, long ptId, int sinDate, long raiinNo, int hokenPid, string itemCd, long maxRpNo)
+        {
+            var tenMst = _mstItemRepository.FindTenMst(hpId, itemCd, sinDate);
+            List<OdrInfDetailItem> odrInfDetails = new List<OdrInfDetailItem>();
+
+            OdrInfDetailItem detail = new OdrInfDetailItem(
+                hpId,
+                ptId,
+                sinDate,
+                raiinNo,
+                maxRpNo + 1,
+                1,
+                1,
+                tenMst.SinKouiKbn,
+                itemCd,
+                0,
+                string.Empty,
+                0,
+                0,
+                0,
+                0,
+                String.Empty,
+                String.Empty,
+                0,
+                String.Empty,
+                String.Empty,
+                String.Empty,
+                String.Empty,
+                false
+            );
+
+            odrInfDetails.Add(detail);
+            
+
+            OdrInfItem odrInf = new OdrInfItem(
+                    hpId,
+                    ptId,
+                    sinDate,
+                    raiinNo,
+                    maxRpNo + 1,
+                    1,
+                    hokenPid,
+                    tenMst.SinKouiKbn,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    odrInfDetails
+                );
+       
+
+            return odrInf;
         }
     }
 }

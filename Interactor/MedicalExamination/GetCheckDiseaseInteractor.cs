@@ -113,6 +113,8 @@ namespace Interactor.MedicalExamination
                              string.Empty,
                              DateTime.MinValue,
                              0,
+                             string.Empty,
+                             string.Empty,
                              string.Empty
                           )
                         ).ToList()

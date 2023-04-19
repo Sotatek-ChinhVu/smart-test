@@ -1,4 +1,6 @@
-﻿namespace UseCase.MedicalExamination.GetHistory
+﻿using System.Text.Json.Serialization;
+
+namespace UseCase.MedicalExamination.GetHistory
 {
     public class KarteInfHistoryItem
     {
@@ -18,22 +20,49 @@
             CreateName = createName;
         }
 
+        [JsonPropertyName("hpId")]
         public int HpId { get; private set; }
+
+        [JsonPropertyName("raiinNo")]
         public long RaiinNo { get; private set; }
+
+        [JsonPropertyName("karteKbn")]
         public int KarteKbn { get; private set; }
+
+        [JsonPropertyName("seqNo")]
         public long SeqNo { get; private set; }
+
+        [JsonPropertyName("ptId")]
         public long PtId { get; private set; }
+
+        [JsonPropertyName("sinDate")]
         public int SinDate { get; private set; }
+
+        [JsonPropertyName("text")]
         public string Text { get; private set; }
+
+        [JsonPropertyName("richText")]
         public string RichText { get; private set; }
+
+        [JsonPropertyName("updateDate")]
         public DateTime UpdateDate { get; private set; }
+
+        [JsonPropertyName("createDate")]
         public DateTime CreateDate { get; private set; }
+
+        [JsonPropertyName("isDeleted")]
         public int IsDeleted { get; private set; }
+
+        [JsonPropertyName("createName")]
         public string CreateName { get; private set; }
+
+        [JsonPropertyName("updateDateDisplay")]
         public string UpdateDateDisplay
         {
             get => UpdateDate.ToString("yyyy/MM/dd hh:mm");
         }
+
+        [JsonPropertyName("createDateDisplay")]
         public string CreateDateDisplay
         {
             get => CreateDate.ToString("yyyy/MM/dd hh:mm");

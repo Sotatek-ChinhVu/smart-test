@@ -195,7 +195,6 @@
         public TenMstOriginModel()
         {
             ItemCd = string.Empty;
-            MasterSbt = string.Empty;
             Name = string.Empty;
             KanaName1 = string.Empty;
             KanaName2 = string.Empty;
@@ -214,6 +213,7 @@
             TyuSeq = string.Empty;
             MinAge = string.Empty;
             MaxAge = string.Empty;
+            TenKbnNo = string.Empty;
             AgekasanMin1 = string.Empty;
             AgekasanMax1 = string.Empty;
             AgekasanCd1 = string.Empty;
@@ -243,9 +243,8 @@
             KensaItemCd = string.Empty;
             RenkeiCd1 = string.Empty;
             RenkeiCd2 = string.Empty;
-            TenKbnNo = string.Empty;
+            MasterSbt = string.Empty;
         }
-
 
         /// <summary>
         /// 点数マスタ

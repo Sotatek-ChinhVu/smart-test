@@ -1,14 +1,11 @@
 ﻿using Helper.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace UseCase.MedicalExamination.GetHistory
 {
     public class GroupOdrGHistoryItem
     {
+        [JsonPropertyName("groupKouiCode")]
         public int GroupKouiCode
         {
             get
@@ -21,6 +18,8 @@ namespace UseCase.MedicalExamination.GetHistory
                 return 0;
             }
         }
+
+        [JsonPropertyName("groupName")]
         public string GroupName
         {
             get
@@ -33,8 +32,11 @@ namespace UseCase.MedicalExamination.GetHistory
                 return "";
             }
         }
+
+        [JsonPropertyName("hokenPid")]
         public int HokenPid { get; private set; }
 
+        [JsonPropertyName("inOutKbn")]
         public int InOutKbn
         {
             get
@@ -48,6 +50,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("inOutName")]
         public string InOutName
         {
             get
@@ -61,6 +64,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("kouiCode")]
         public int KouiCode
         {
             get
@@ -74,6 +78,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("santeiKbn")]
         public int SanteiKbn
         {
             get
@@ -87,6 +92,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("santeiName")]
         public string SanteiName
         {
             get
@@ -103,6 +109,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("sikyuKbn")]
         public int SikyuKbn
         {
             get
@@ -116,6 +123,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("sikyuName")]
         public string SikyuName
         {
             get
@@ -132,16 +140,19 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("isDrug")]
         public bool IsDrug
         {
             get => (KouiCode >= 20 && KouiCode <= 23) || KouiCode == 28 || KouiCode == 100 || KouiCode == 101;
         }
 
+        [JsonPropertyName("isKensa")]
         public bool IsKensa
         {
             get => (KouiCode >= 60 && KouiCode < 70);
         }
 
+        [JsonPropertyName("syohoSbt")]
         public int SyohoSbt
         {
             get
@@ -155,6 +166,7 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("tosekiKbn")]
         public int TosekiKbn
         {
             get
@@ -168,7 +180,10 @@ namespace UseCase.MedicalExamination.GetHistory
             }
         }
 
+        [JsonPropertyName("sinkyuName")]
         public string SinkyuName { get; private set; }
+
+        [JsonPropertyName("odrInfs")]
         public List<OdrInfHistoryItem> OdrInfs { get; private set; }
 
         public GroupOdrGHistoryItem(int hokenPid, string sinkyuName, List<OdrInfHistoryItem> odrInfs)

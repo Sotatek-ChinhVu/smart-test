@@ -24,7 +24,8 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             var listSanteiInf = _santeiInfRepository.GetListSanteiInf(input.HpId, input.PtId, input.SinDate);
 
             var result = ConvertToResult(input.SinDate, listSanteiInf, listByomeis);
-            return new GetListSanteiInfOutputData(GetListSanteiInfStatus.Successed, result.Item1, DicAlertTermCombobox(), DicKisanKbnCombobox(), result.Item2);
+            var santeiResultList = result.santeiResultList.OrderBy(item => item.SeqNo).ToList();
+            return new GetListSanteiInfOutputData(GetListSanteiInfStatus.Successed, santeiResultList, DicAlertTermCombobox(), DicKisanKbnCombobox(), result.byomeiList);
         }
         finally
         {
@@ -59,26 +60,26 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             };
     }
 
-    public Tuple<List<SanteiInfOutputItem>, List<string>> ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInfs, List<string> listByomeis)
+    public (List<SanteiInfOutputItem> santeiResultList, List<string> byomeiList) ConvertToResult(int sinDate, List<SanteiInfModel> listSanteiInfs, List<string> byomeiList)
     {
-        List<SanteiInfOutputItem> listSanteiInfResult = new();
+        List<SanteiInfOutputItem> santeiResultList = new();
         foreach (var santeiInf in listSanteiInfs)
         {
             int kisanDate = 0;
             int dayCount = 0;
 
             // kisanDate
-            var listSanteiInfDetails = santeiInf.ListSanteiInfDetails.Select(item => ConvertToSanteiInfDetailOutputItem(item))
-                                                                     .OrderBy(item => item.EndDate)
-                                                                     .ThenBy(item => item.Id)
-                                                                     .ToList();
+            var santeiInfDetailList = santeiInf.SanteiInfDetailList.Select(item => ConvertToSanteiInfDetailOutputItem(item))
+                                                                   .OrderBy(item => item.EndDate)
+                                                                   .ThenBy(item => item.Id)
+                                                                   .ToList();
 
-            foreach (var item in listSanteiInfDetails)
+            foreach (var item in santeiInfDetailList)
             {
                 // Add byomei to byomei List
-                if (listByomeis.FirstOrDefault(byomei => byomei.Equals(item.Byomei)) == null && !string.IsNullOrEmpty(item.Byomei))
+                if (byomeiList.FirstOrDefault(byomei => byomei.Equals(item.Byomei)) == null && !string.IsNullOrEmpty(item.Byomei))
                 {
-                    listByomeis.Add(item.Byomei);
+                    byomeiList.Add(item.Byomei);
                 }
 
                 if (sinDate > item.EndDate) continue;
@@ -91,40 +92,38 @@ public class GetListSanteiInfInteractor : IGetListSanteiInfInputPort
             // dayCount
             int targetDateInt = kisanDate != 0 ? kisanDate : santeiInf.LastOdrDate;
             dayCount = CIUtil.GetSanteInfDayCount(sinDate, targetDateInt, santeiInf.AlertTerm);
-            listSanteiInfResult.Add(
-                                    new SanteiInfOutputItem(
-                                        santeiInf.Id,
-                                        santeiInf.PtId,
-                                        santeiInf.ItemCd,
-                                        santeiInf.SeqNo,
-                                        santeiInf.AlertDays,
-                                        santeiInf.AlertTerm,
-                                        santeiInf.ItemName,
-                                        santeiInf.LastOdrDate,
-                                        kisanDate,
-                                        dayCount,
-                                        santeiInf.SanteiItemCount,
-                                        santeiInf.SanteiItemSum,
-                                        santeiInf.CurrentMonthSanteiItemCount,
-                                        santeiInf.CurrentMonthSanteiItemSum,
-                                        listSanteiInfDetails
-                                    ));
+            santeiResultList.Add(new SanteiInfOutputItem(
+                                     santeiInf.Id,
+                                     santeiInf.PtId,
+                                     santeiInf.ItemCd,
+                                     santeiInf.SeqNo,
+                                     santeiInf.AlertDays,
+                                     santeiInf.AlertTerm,
+                                     santeiInf.ItemName,
+                                     santeiInf.LastOdrDate,
+                                     kisanDate,
+                                     dayCount,
+                                     santeiInf.SanteiItemCount,
+                                     santeiInf.SanteiItemSum,
+                                     santeiInf.CurrentMonthSanteiItemCount,
+                                     santeiInf.CurrentMonthSanteiItemSum,
+                                     santeiInfDetailList
+                                ));
         }
-        return Tuple.Create(listSanteiInfResult, listByomeis);
+        return (santeiResultList, byomeiList);
     }
 
     private SanteiInfDetailOutputItem ConvertToSanteiInfDetailOutputItem(SanteiInfDetailModel modelDetail)
     {
         return new SanteiInfDetailOutputItem(
-                                                modelDetail.Id,
-                                                modelDetail.PtId,
-                                                modelDetail.ItemCd,
-                                                modelDetail.EndDate,
-                                                modelDetail.KisanSbt,
-                                                modelDetail.KisanDate,
-                                                modelDetail.Byomei,
-                                                modelDetail.HosokuComment,
-                                                modelDetail.Comment
-                                            );
+                   modelDetail.Id,
+                   modelDetail.PtId,
+                   modelDetail.ItemCd,
+                   modelDetail.EndDate,
+                   modelDetail.KisanSbt,
+                   modelDetail.KisanDate,
+                   modelDetail.Byomei,
+                   modelDetail.HosokuComment,
+                   modelDetail.Comment);
     }
 }

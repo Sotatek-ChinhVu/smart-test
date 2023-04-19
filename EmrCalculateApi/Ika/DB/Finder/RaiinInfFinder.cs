@@ -65,7 +65,7 @@ namespace EmrCalculateApi.Ika.DB.Finder
                     raiinInf.SinDate == sinDate &&
                     raiinInf.IsDeleted == DeleteTypes.None
                 orderby
-                    raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("000000" + raiinInf.SinStartTime ?? "").Substring((raiinInf.SinStartTime ?? "").Length, 6), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
+      raiinInf.HpId, raiinInf.PtId, raiinInf.SinDate, ("000000" + raiinInf.SinStartTime ?? "").Substring((raiinInf.SinStartTime ?? "").Length, 6), raiinInf.OyaRaiinNo, raiinInf.RaiinNo
                 select new
                 {
                     raiinInf,

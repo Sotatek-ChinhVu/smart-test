@@ -1,12 +1,15 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.MstItem;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
@@ -208,6 +211,22 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetTenMstOriginInfoCreateResponse>>(presenter.Result);
         }
+
+        /// <summary>
+        /// only pass ItemMst Is Modified;
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost(ApiPath.DeleteOrRecoverTenMst)]
+        public ActionResult<Response<DeleteOrRecoverTenMstResponse>> DeleteOrRecoverTenMst([FromBody] DeleteOrRecoverTenMstRequest request)
+        {
+            var input = new DeleteOrRecoverTenMstInputData(request.ItemCd, request.SelectedTenMstModelName, request.Mode, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenMsts), UserId, HpId, request.ConfirmDeleteIfModeIsDeleted);
+            var output = _bus.Handle(input);
+            var presenter = new DeleteOrRecoverTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
+        }
+
 
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)

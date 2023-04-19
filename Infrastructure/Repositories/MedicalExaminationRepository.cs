@@ -5,12 +5,13 @@ using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.SystemConf;
+using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using System.Text;
 using static Helper.Constants.OrderInfConst;
 
@@ -18,9 +19,11 @@ namespace Infrastructure.Repositories
 {
     public class MedicalExaminationRepository : RepositoryBase, IMedicalExaminationRepository
     {
-        
-        public MedicalExaminationRepository(ITenantProvider tenantProvider) : base(tenantProvider)
+        private readonly ISystemConfRepository _systemConf;
+
+        public MedicalExaminationRepository(ITenantProvider tenantProvider, ISystemConfRepository systemConf) : base(tenantProvider)
         {
+            _systemConf = systemConf;
         }
         public List<CheckedOrderModel> IgakuTokusitu(int hpId, int sinDate, int hokenId, int syosaisinKbn, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, bool isJouhou)
         {
@@ -699,7 +702,6 @@ namespace Infrastructure.Repositories
 
         public List<CheckedOrderModel> InitPriorityCheckDetail(List<CheckedOrderModel> checkedOrderModelList)
         {
-            var checkedOrderModels = new List<CheckedOrderModel>();
             bool igakuNanbyoChecked = checkedOrderModelList.Any(c => c.ItemCd == ItemCdConst.IgakuNanbyo && c.Santei);
             if (igakuNanbyoChecked)
             {
@@ -709,7 +711,7 @@ namespace Infrastructure.Repositories
                 c.ItemCd == ItemCdConst.SiHifuToku1);
                 foreach (var checkModel in uncheckedList)
                 {
-                    checkedOrderModels.Add(checkModel.ChangeSantei(false));
+                    checkModel.ChangeSantei(false);
                 }
             }
 
@@ -721,7 +723,7 @@ namespace Infrastructure.Repositories
                 c.ItemCd == ItemCdConst.SiHifuToku1);
                 foreach (var checkModel in uncheckedList)
                 {
-                    checkedOrderModels.Add(checkModel.ChangeSantei(false));
+                    checkModel.ChangeSantei(false);
                 }
             }
 
@@ -732,7 +734,7 @@ namespace Infrastructure.Repositories
                 c.ItemCd == ItemCdConst.SiHifuToku2);
                 foreach (var checkModel in uncheckedList)
                 {
-                    checkedOrderModels.Add(checkModel.ChangeSantei(false));
+                    checkModel.ChangeSantei(false);
                 }
             }
 
@@ -742,11 +744,11 @@ namespace Infrastructure.Repositories
                 var sihifuToku2 = checkedOrderModelList.FirstOrDefault(c => c.ItemCd == ItemCdConst.SiHifuToku2);
                 if (sihifuToku2 != null)
                 {
-                    checkedOrderModels.Add(sihifuToku2.ChangeSantei(false));
+                    sihifuToku2.ChangeSantei(false);
                 }
             }
 
-            return checkedOrderModels;
+            return checkedOrderModelList;
         }
 
         public List<CheckedOrderModel> TouyakuTokusyoSyoho(int hpId, int sinDate, int hokenId, List<PtDiseaseModel> ByomeiModelList, List<OrdInfDetailModel> allOdrInfDetail, List<OrdInfModel> allOdrInf)
@@ -795,8 +797,10 @@ namespace Infrastructure.Repositories
             }
 
             CheckedOrderModel? checkedOdr = null;
-            bool isCheckShuByomeiOnly = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 2)?.Val == 1;
-            bool isCheckTeikyoByomei = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 3)?.Val == 1;
+            bool isCheckShuByomeiOnly2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 2)?.Val == 1;
+            bool isCheckTeikyoByomei2 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 3)?.Val == 1;
+            bool isCheckShuByomeiOnly1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 0)?.Val == 1;
+            bool isCheckTeikyoByomei1 = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2002 && p.GrpEdaNo == 1)?.Val == 1;
 
             foreach (var odrInf in checkedOdrList)
             {
@@ -806,8 +810,8 @@ namespace Infrastructure.Repositories
                 {
                     foreach (var drug in drugItems)
                     {
-                        var checkedMoreThan28DaysOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd2, drug.ItemCd, inoutKbn, ByomeiModelList);
-                        if (checkedMoreThan28DaysOdr != null)
+                        var checkedMoreThan28DaysOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd2, drug.ItemCd, inoutKbn, ByomeiModelList);
+                        if (!(checkedMoreThan28DaysOdr.CheckingType == 0 && string.IsNullOrEmpty(checkedMoreThan28DaysOdr.ItemCd) && string.IsNullOrEmpty(checkedMoreThan28DaysOdr.ItemName) && string.IsNullOrEmpty(checkedMoreThan28DaysOdr.CheckingContent)))
                         {
                             // having item with usage day >= 28, just break
                             checkedOrderModelList.Add(checkedMoreThan28DaysOdr);
@@ -819,8 +823,8 @@ namespace Infrastructure.Repositories
                 if (checkedOdr != null) continue;
                 foreach (var drug in drugItems)
                 {
-                    checkedOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly, isCheckTeikyoByomei, itemTokusyoCd1, drug.ItemCd, inoutKbn, ByomeiModelList);
-                    if (checkedOdr != null)
+                    checkedOdr = CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly1, isCheckTeikyoByomei1, itemTokusyoCd1, drug.ItemCd, inoutKbn, ByomeiModelList);
+                    if (!(checkedOdr.CheckingType == 0 && string.IsNullOrEmpty(checkedOdr.ItemCd) && string.IsNullOrEmpty(checkedOdr.ItemName) && string.IsNullOrEmpty(checkedOdr.CheckingContent)))
                     {
                         break;
                     }
@@ -1508,63 +1512,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<OrdInfModel> TrialCalculate(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, List<CheckedOrderModel> checkingOrderModelList)
-        {
-            List<OrdInfModel> ordInfModels = new();
-
-            var itemCds = checkingOrderModelList.Select(c => c.ItemCd).Distinct().ToList();
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd)).ToList(); ;
-
-            foreach (var itemCd in checkingOrderModelList.Select(c => c.ItemCd))
-            {
-                var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == itemCd) ?? new();
-                ordInfModels.Add(CreateIkaTodayOdrInfModel(hpId, ptId, raiinNo, hokenPid, sinDate, itemCd, tenMst));
-
-                // 追加した項目のDummyフラグをセット
-                foreach (var detail in ordInfModels.Last().OrdInfDetails)
-                {
-                    detail.ChangeIsDummy(true);
-                }
-            }
-
-            return ordInfModels;
-            //var data = _ikaCalculateViewModel.RunTraialCalculate(todayOdrInfModels, IkaReceptionModel, false);
-
-            //return data.Item1.Select(d => d.ItemCd).Distinct().ToList();
-        }
-
-        private OrdInfModel CreateIkaTodayOdrInfModel(int hpId, long ptId, long raiinNo, int hokenPid, int sinDate, string itemCd, TenMst tenMst)
-        {
-            List<OrdInfDetailModel> odrInfDetails = new();
-            var odrInfDetail = new OrdInfDetailModel(
-                    hpId,
-                    ptId,
-                    sinDate,
-                    raiinNo,
-                    itemCd,
-                    tenMst?.Name ?? string.Empty,
-                    tenMst?.SinKouiKbn ?? 0,
-                    0,
-                    0,
-                    1
-                );
-            var odrInf = new OrdInfModel(
-                                hpId,
-                                ptId,
-                                sinDate,
-                                raiinNo,
-                                hokenPid,
-                                0,
-                                0,
-                                tenMst?.SinKouiKbn ?? 0,
-                                odrInfDetails
-                            );
-
-            odrInfDetails.Add(odrInfDetail);
-
-            return odrInf;
-        }
-
         public void ReleaseResource()
         {
             DisposeDataContext();
@@ -1579,6 +1526,133 @@ namespace Infrastructure.Repositories
                 return odrListQuery.Max(odr => odr.RpNo);
             }
             return 0;
+        }
+
+        public List<AuditTrailLogModel> GetKensaAuditTrailLogs(int hpId, string eventCd, long ptID, int sinDate, long raiinNo)
+        {
+            var trailLogs = NoTrackingDataContext.AuditTrailLogs.Where(x =>
+                                   x.HpId == hpId &&
+                                   x.EventCd == eventCd &&
+                                   x.PtId == ptID &&
+                                   x.SinDay == sinDate &&
+                                   x.RaiinNo == raiinNo);
+            var detailLogs = NoTrackingDataContext.AuditTrailLogDetails;
+            var query = from trailLog in trailLogs
+                        join detailLog in detailLogs on
+                        trailLog.LogId equals detailLog.LogId
+                        select new
+                        {
+                            TrailLog = trailLog,
+                            Hosuke = detailLog.Hosoku
+                        };
+            return query.AsEnumerable().Select(x => new AuditTrailLogModel(x.TrailLog.LogId, x.TrailLog.LogDate, x.TrailLog.HpId, x.TrailLog.UserId, x.TrailLog.EventCd ?? string.Empty, x.TrailLog.PtId, x.TrailLog.SinDay, x.TrailLog.RaiinNo, x.TrailLog.Machine ?? string.Empty, x.Hosuke)).ToList();
+        }
+
+        //Item1: InoutKbn
+        //Item2: OdrKouiKbn
+        //Item3: IsDeleted
+        //Item4: Details (Item1: Itemcd, Item2: MasterSbt) 
+        public List<KensaPrinterItemModel> GetContainerMstModels(int hpId, int sinDate, List<Tuple<int, int, int, List<Tuple<string, string>>>> orderInfs, bool defaultChecked)
+        {
+            var kensaLabelCheckInHospital = _systemConf.GetSettingValue(92009, 1, hpId);
+            bool checkInHospital(string itemCd)
+            {
+                var orderKensaLabels = orderInfs.Where(x => x.Item3 == 0 && x.Item4.Any(detail => !string.IsNullOrEmpty(itemCd) &&
+                                                                                                                   (detail.Item1.StartsWith("J") ||
+                                                                                                                   detail.Item1.StartsWith("Z") ||
+                                                                                                                   detail.Item2 == "S"))).ToList();
+                return (kensaLabelCheckInHospital == 0 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 0 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                       (kensaLabelCheckInHospital == 1 && !(orderKensaLabels.Where(o => o.Item3 == 0 && (o.Item1 == 1 && o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                       (!(orderKensaLabels.Where(o => o.Item3 == 0 && !(o.Item2 >= 60 && o.Item2 <= 69) && o.Item4.Any(detail => detail.Item1 == itemCd)).Count() == 0)) ||
+                       kensaLabelCheckInHospital == 2;
+            }
+            List<string> itemcds = new List<string>();
+            List<KensaPrinterItemModel> kensaItems = new List<KensaPrinterItemModel>();
+            foreach (var order in orderInfs)
+            {
+                if (order.Item3 != 0) continue;
+                var kensaItemCds = order.Item4.Where(x => !string.IsNullOrEmpty(x.Item1) &&
+                                                                       (x.Item1.StartsWith("J") || x.Item1.StartsWith("Z") || x.Item2 == "S"));
+
+                itemcds.AddRange(kensaItemCds.Select(x => x.Item1));
+            }
+            var tenmsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId &&
+                                                                                   x.StartDate <= sinDate &&
+                                                                                   x.EndDate >= sinDate &&
+                                                                                   x.KensaLabel > 0 &&
+                                                                                   x.IsDeleted == DeleteTypes.None);
+            var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId && x.IsDelete == 0);
+            var containerMsts = NoTrackingDataContext.ContainerMsts.Where(x => x.HpId == hpId);
+            List<KensaPrinterItemModel> allItems = new List<KensaPrinterItemModel>();
+
+
+
+            foreach (var itemcd in itemcds)
+            {
+
+                var query = (from tenmst in tenmsts
+                             where tenmst.ItemCd == itemcd
+                             join kensaMst in kensaMsts on
+                             new { tenmst.KensaItemCd, tenmst.KensaItemSeqNo } equals
+                             new { kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo } into tenMstKensas
+                             from tenMstKensa in tenMstKensas.DefaultIfEmpty()
+                             join containerMst in containerMsts on
+                             tenMstKensa.ContainerCd equals containerMst.ContainerCd into tenMstKensaContainers
+                             from tenMstKensaContainer in tenMstKensaContainers.DefaultIfEmpty()
+                             select new
+                             {
+                                 ItemCd = tenmst.ItemCd,
+                                 Name = tenMstKensaContainer == null ? tenmst.Name ?? string.Empty : tenMstKensaContainer.ContainerName,
+                                 ContainerName = tenMstKensaContainer == null ? "" : tenMstKensaContainer.ContainerName,
+                                 ContainerCd = tenMstKensaContainer == null ? 0 : tenMstKensaContainer.ContainerCd,
+                                 KensaLabel = tenmst.KensaLabel
+                             }).ToList();
+                allItems.AddRange(query.Select(x => new KensaPrinterItemModel(x.ItemCd, x.Name, x.ContainerName, x.KensaLabel, x.ContainerCd, defaultChecked)));
+            }
+            allItems = allItems.Where(mst => checkInHospital(mst.ItemCd)).ToList();
+            var groupKensaExistContainerCds = allItems.Where(x => x.ContainerCd != 0).GroupBy(x => new { x.ContainerCd });
+            foreach (var group in groupKensaExistContainerCds)
+            {
+                int maxKensaLabel = group.ToList().Max(x => x.KensaLabel);
+                var item = group.FirstOrDefault();
+                item?.ChangeKensaLabel(maxKensaLabel);
+                if (item != null)
+                {
+                    kensaItems.Add(item);
+                }
+            }
+
+            var groupKensaNotExistContainercds = allItems.Where(x => x.ContainerCd == 0).GroupBy(x => x.ItemCd);
+            foreach (var group in groupKensaNotExistContainercds)
+            {
+                var item = group.FirstOrDefault();
+                if (item != null)
+                {
+                    kensaItems.Add(item);
+                }
+            }
+            for (int i = 0; i < kensaItems.Count; i++)
+            {
+                if (i == 0)
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness(new Thickness(1, 0.5, 0, 0.5));
+                    kensaItems[i].ChangeComboboxBorderThickness(new Thickness(1, 0, 0, 0));
+                }
+                else if (kensaItems.Count == i + 1)
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness(new Thickness(1, 1, 0, 0));
+                    kensaItems[i].ChangeComboboxBorderThickness(new Thickness(1, 1, 0, 0));
+                }
+                else
+                {
+                    kensaItems[i].ChangeTextBoxBorderThickness(new Thickness(1, 1, 0, 0.5));
+                    kensaItems[i].ChangeTextBoxBorderThickness(new Thickness(1, 1, 0, 0));
+                }
+                var odrInf = orderInfs.FirstOrDefault(o => o.Item4.Any(d => d.Item1 == kensaItems[i].ItemCd));
+                if (odrInf == null) continue;
+                kensaItems[i].ChangeInoutKbnOdrKouiKbn(odrInf.Item1, odrInf.Item2);
+            }
+            return kensaItems;
         }
     }
 }
