@@ -51,4 +51,9 @@ public class UserConfModel
 
         return UserConfStatus.Valid;
     }
+    public UserConfModel ChangeParam(string param)
+    {
+        Param = param;
+        return this;
+    }
 }

@@ -55,7 +55,6 @@ using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
-using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
@@ -349,18 +348,6 @@ namespace EmrCloudApi.Controller
             var presenter = new GetDetailHokenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetDetailHokenMstResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.ValidateInsuranceOther)]
-        public ActionResult<Response<ValidInsuranceOtherResponse>> ValidateInsuranceOther([FromBody] ValidInsuranceOtherRequest request)
-        {
-            var input = new ValidInsuranceOtherInputData(request.ValidModel);
-            var output = _bus.Handle(input);
-
-            var presenter = new ValidInsuranceOtherPresenter();
-
-            presenter.Complete(output);
-            return new ActionResult<Response<ValidInsuranceOtherResponse>>(presenter.Result);
         }
 
         [HttpPost("ValidateMainInsurance")]

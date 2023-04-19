@@ -1,11 +1,13 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using Domain.Constant;
+using Domain.Enum;
 using Domain.Models.FlowSheet;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -1873,6 +1875,72 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool IsTenMstItemCdUsed(int hpId, string itemCd)
+        {
+            return NoTrackingDataContext.OdrInfDetails.Any(x => x.HpId == hpId && x.ItemCd == itemCd);
+        }
+
+
+        public bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds)
+        {
+            var tenMstDatabases = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
+            if (mode == DeleteOrRecoverTenMstMode.Delete)
+            {
+                tenMstDatabases.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    x.UpdateId = userId;
+                });
+            }
+            else
+            {
+                tenMstDatabases.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.None;
+                    x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    x.UpdateId = userId;
+                });
+            }
+
+            if (tenMstModifieds.Any()) //Have Changes
+            {
+                foreach(var item in tenMstModifieds)
+                {
+                    if(item.IsStartDateKeyUpdated) //After change StartDate => IsStartDateKeyUpdated will is true
+                    {
+                        // remove old entity
+                        var oldEntity = tenMstDatabases.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.HpId == item.HpId && x.StartDate == item.OriginStartDate); // case customer update key.
+                        if (oldEntity != null)
+                        {
+                            TrackingDataContext.TenMsts.Remove(oldEntity);
+                        }
+                        // Clone new entity with updated start date
+                        TrackingDataContext.TenMsts.Add(Mapper.Map(item, new TenMst(), (src, dest) =>
+                        {
+                            dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            dest.UpdateId = userId;
+                            dest.IsDeleted = mode == DeleteOrRecoverTenMstMode.Delete ? DeleteTypes.Deleted : DeleteTypes.None;
+                            dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            dest.CreateId = userId;
+                            return dest;
+                        }));
+                    }
+                    else
+                    {
+                        var update = tenMstDatabases.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.HpId == item.HpId && x.StartDate == item.StartDate);
+                        if(update != null)
+                            Mapper.Map(item, update , (src, dest) =>
+                            {
+                                dest.IsDeleted = mode == DeleteOrRecoverTenMstMode.Delete ? DeleteTypes.Deleted : DeleteTypes.None;
+                                return dest;
+                            });
+                    }
+                }
+            }
             return TrackingDataContext.SaveChanges() > 0;
         }
     }
