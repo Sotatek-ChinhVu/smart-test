@@ -143,47 +143,65 @@ namespace Interactor.MedicalExamination
                         0,
                         0);
                 }
-                _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId, inputDatas.Status);
+                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId, inputDatas.Status);
                 if (inputDatas.FileItem.IsUpdateFile)
                 {
-                    var listFileItems = inputDatas.FileItem.ListFileItems;
-                    if (!listFileItems.Any())
+                    if (check)
                     {
-                        listFileItems = new List<string> { string.Empty };
+                        var listFileItems = inputDatas.FileItem.ListFileItems;
+                        if (!listFileItems.Any())
+                        {
+                            listFileItems = new List<string> { string.Empty };
+                        }
+                        SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
                     }
-                    SaveFileKarte(hpId, ptId, raiinNo, listFileItems, true);
+                    else
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    }
                 }
 
-                Task.Run(() =>
-               _calculateService.RunCalculate(new RecaculationInputDto(
-                        hpId,
-                        ptId,
-                        sinDate,
-                        0,
-                        ""
-                    )));
+                if (check)
+                {
+                    Task.Run(() =>
+                   _calculateService.RunCalculate(new RecaculationInputDto(
+                            hpId,
+                            ptId,
+                            sinDate,
+                            0,
+                            ""
+                        )));
+                }
 
-                return new UpsertTodayOrdOutputData(
+                return check ?
+                    new UpsertTodayOrdOutputData(
                         UpsertTodayOrdStatus.Successed,
                         RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
                         new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
                         sinDate,
                         raiinNo,
+                        ptId)
+                    :
+                    new UpsertTodayOrdOutputData(
+                        UpsertTodayOrdStatus.Failed,
+                        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                        new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
+                        KarteValidationStatus.Valid,
+                        sinDate,
+                        raiinNo,
                         ptId);
             }
-            //catch
-            //{
-            //    SaveFileKarte(inputDatas.HpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
-
-            //    return new UpsertTodayOrdOutputData(
-            //        UpsertTodayOrdStatus.Failed,
-            //        RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
-            //        new Dictionary<string, KeyValuePair<string,
-            //        OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
-            //        0,
-            //        0,
-            //        0);
-            //}
+            catch
+            {
+                return new UpsertTodayOrdOutputData(
+                    UpsertTodayOrdStatus.Failed,
+                    RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid,
+                    new Dictionary<string, KeyValuePair<string,
+                    OrdInfValidationStatus>>(), KarteValidationStatus.Valid,
+                    0,
+                    0,
+                    0);
+            }
             finally
             {
                 _ordInfRepository.ReleaseResource();
@@ -496,7 +514,7 @@ namespace Interactor.MedicalExamination
                             var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                             if (!check)
                             {
-                                dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                dicValidation.Add(index.ToString(),  new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                 break;
                             }
                         }
