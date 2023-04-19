@@ -17,7 +17,7 @@ public class CheckedOrderTest : BaseUT
     /// Check IgakuItem if it exist then return null
     /// </summary>
     [Test]
-    public void IgakuTokusitu_Exist_IgakuItem()
+    public void IgakuTokusitu_001_Exist_IgakuItem()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 1;
@@ -56,7 +56,7 @@ public class CheckedOrderTest : BaseUT
     /// Check IsJouHou if it is true then check sinDate and tenMst, if it is false then only check tenMst
     /// </summary>
     [Test]
-    public void IgakuTokusitu_IsJouhou()
+    public void IgakuTokusitu_002_IsJouhou()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20221111, sinDate2 = 20210101, hokenId = 10, syosaisinKbn = 1;
@@ -96,7 +96,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuTokusitu_Syosai()
+    public void IgakuTokusitu_003_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20221111, sinDate2 = 20210101, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -138,7 +138,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Special
     /// </summary>
     [Test]
-    public void IgakuTokusitu_Special()
+    public void IgakuTokusitu_004_Disease_Special()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -179,7 +179,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Orther
     /// </summary>
     [Test]
-    public void IgakuTokusitu_Other()
+    public void IgakuTokusitu_005_Disease_Other()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -214,6 +214,120 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
         Assert.True(iagkutokusitu1.Count > 0);
+    }
+
+    /// <summary>
+    /// Check Not Special and Other
+    /// </summary>
+    [Test]
+    public void IgakuTokusitu_006_Disease_NoMainDisease()
+    {
+        // Arrange
+        int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
+        bool isJouhou = true;
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                9,
+                10,
+                0,
+                20221212,
+                1
+            ),
+             new PtDiseaseModel(
+                10,
+                0,
+                1,
+                20221010,
+                1
+            )
+        };
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "113001810131",
+                10
+            )
+        };
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 4);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 8001,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        // Act
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
+        Assert.True(iagkutokusitu1.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    /// <summary>
+    /// Check Not Special and Other
+    /// </summary>
+    [Test]
+    public void IgakuTokusitu_006_Disease_NoDisease()
+    {
+        // Arrange
+        int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
+        bool isJouhou = true;
+        var byomeiModelList = new List<PtDiseaseModel>();
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "113001810131",
+                10
+            )
+        };
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 4);
+        var temp = systemConf?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 8001,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        // Act
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
+        Assert.True(iagkutokusitu1.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        tenantTracking.SaveChanges();
     }
 
     /// <summary>
