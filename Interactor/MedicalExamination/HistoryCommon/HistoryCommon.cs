@@ -214,6 +214,7 @@ public class HistoryCommon : IHistoryCommon
     {
         try
         {
+            var patientInfo = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, 0);
             var historyList = _historyOrderRepository.GetList(inputData.HpId,
                                                               inputData.PtId,
                                                               inputData.SinDate,
@@ -223,7 +224,7 @@ public class HistoryCommon : IHistoryCommon
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
             FilterData(ref historyKarteOdrRaiinList, inputData);
-            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData);
+            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo);
         }
         finally
         {
@@ -378,7 +379,8 @@ public class HistoryCommon : IHistoryCommon
                                                         rpOdrInf.UpdateDate,
                                                         rpOdrInf.IsDeleted,
                                                         rpOdrInf.CreateMachine,
-                                                        rpOdrInf.UpdateMachine
+                                                        rpOdrInf.UpdateMachine,
+                                                        rpOdrInf.UpdateName
                                                      );
 
                     group.OdrInfs.Add(odrModel);
