@@ -32,7 +32,7 @@ public class UpsertUketukeSbtMstInteractor : IUpsertUketukeSbtMstInputPort
                 } 
             }
 
-            var checkInputKbnId = inputdata.UketukeSbtMsts.Where(x => x.KbnId > 0).Select(x => x.KbnId);
+            var checkInputKbnId = inputdata.UketukeSbtMsts.Where(x => x.KbnId >= 0).Select(x => x.KbnId);
             if(checkInputKbnId.Count() != checkInputKbnId.Distinct().Count())
             {
                 return new UpsertUketukeSbtMstOutputData(UpsertUketukeSbtMstStatus.InputDataDuplicateKbnId);

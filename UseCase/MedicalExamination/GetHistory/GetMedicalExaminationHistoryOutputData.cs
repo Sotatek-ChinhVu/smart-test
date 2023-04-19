@@ -12,6 +12,7 @@ namespace UseCase.MedicalExamination.GetHistory
             RaiinfList = raiinfList;
             Status = status;
             StartPage = startPage;
+            Karte2Input = new();
         }
 
         public GetMedicalExaminationHistoryOutputData(int total, List<HistoryKarteOdrRaiinItem> raiinfList, GetMedicalExaminationHistoryStatus status, int startPage, GetDataPrintKarte2InputData karte2Input)

@@ -1,12 +1,15 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.MstItem;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MstItem.DeleteOrRecoverTenMst;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
@@ -15,6 +18,7 @@ using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
+using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
@@ -206,6 +210,41 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTenMstOriginInfoCreatePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTenMstOriginInfoCreateResponse>>(presenter.Result);
+        }
+
+        /// <summary>
+        /// only pass ItemMst Is Modified;
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost(ApiPath.DeleteOrRecoverTenMst)]
+        public ActionResult<Response<DeleteOrRecoverTenMstResponse>> DeleteOrRecoverTenMst([FromBody] DeleteOrRecoverTenMstRequest request)
+        {
+            var input = new DeleteOrRecoverTenMstInputData(request.ItemCd, request.SelectedTenMstModelName, request.Mode, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenMsts), UserId, HpId, request.ConfirmDeleteIfModeIsDeleted);
+            var output = _bus.Handle(input);
+            var presenter = new DeleteOrRecoverTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
+        }
+
+
+        [HttpGet(ApiPath.GetSetDataTenMst)]
+        public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
+        {
+            var input = new GetSetDataTenMstInputData(HpId,
+                                                     request.SinDate,
+                                                     request.ItemCd,
+                                                     request.JiCd,
+                                                     request.IpnNameCd,
+                                                     request.SanteiItemCd,
+                                                     request.AgekasanCd1Note,
+                                                     request.AgekasanCd1Note,
+                                                     request.AgekasanCd1Note,
+                                                     request.AgekasanCd1Note);
+            var output = _bus.Handle(input);
+            var presenter = new GetSetDataTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetSetDataTenMstResponse>>(presenter.Result);
         }
     }
 }
