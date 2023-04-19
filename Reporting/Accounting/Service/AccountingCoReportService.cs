@@ -9,9 +9,11 @@ using Infrastructure.Interfaces;
 using Reporting.Accounting.Constants;
 using Reporting.Accounting.DB;
 using Reporting.Accounting.Model;
+using Reporting.Accounting.Model.Output;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using System.Text;
+using System.Linq;
 
 namespace Reporting.Accounting.Service;
 
@@ -319,7 +321,8 @@ public class AccountingCoReportService : IAccountingCoReportService
     private string FormFileName;
 
     public Dictionary<string, string> _singleFieldDataResult { get; set; }
-    public List<Dictionary<string, CellModel>> _tableFieldDataResult { get; set; }
+    public List<ListTextModel> _listTextModelResult { get; set; }
+    public Dictionary<string, string> _systemConfigList { get; set; }
     #endregion
 
     /// <summary>
@@ -338,7 +341,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// <param name="hakkoDay"></param>
     /// <param name="memo"></param>
     /// <param name="printType"></param>
-    public CommonReportingRequestModel GetNameLabelReportingData(
+    public AccountingOutputModel GetNameLabelReportingData(
             int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,
             int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
             bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
@@ -367,6 +370,10 @@ public class AccountingCoReportService : IAccountingCoReportService
         PrintType = printType;
         FormFileName = formFileName;
         PrintOut();
+        return new AccountingOutputModel(
+                   _singleFieldDataResult,
+                   _listTextModelResult,
+                   _systemConfigList);
     }
 
     private void PrintOut()
@@ -384,10 +391,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             PrintOutMulti();
         }
     }
-    /// <summary>
-    /// 単票印刷
-    /// </summary>
-    /// <param name="printerName"></param>
+
     private void PrintOutSingle()
     {
         #region sub method
@@ -928,14 +932,16 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawFormSingle()
     {
+        // 下位互換
+        bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
+
         UpdateFormHeader();
         UpdateFormBody();
 
+        #region SubMethod
+        // ヘッダー 
         void UpdateFormHeader()
         {
-            // 下位互換
-            bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
-
             #region sub method
             // 記号番号
             string _getKigoBango()
@@ -960,44 +966,47 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
 
             // メッセージ（P/F）
-            void PrintMessageList(string field, int karteKbn)
+            void _PrintMessageList(string field, int karteKbn)
             {
-                int charCount = CIUtil.LenB(CoRep.GetListFormat(field, 0, 0));
-                int rowCount = CoRep.GetListRowCount(field);
-
-                List<string> karteInfTexts = coModel.KarteInfStringList(karteKbn);
-
-                List<string> messageTexts = new ();
-
-                foreach (string karteInfText in karteInfTexts)
+                if (CoRep.ListExists(field))
                 {
-                    string line = karteInfText;
+                    int charCount = CIUtil.LenB(CoRep.GetListFormat(field, 0, 0));
+                    int rowCount = CoRep.GetListRowCount(field);
 
-                    while (line != string.Empty)
+                    List<string> karteInfTexts = coModel.KarteInfStringList(karteKbn);
+
+                    List<string> messageTexts = new List<string>();
+
+                    foreach (string karteInfText in karteInfTexts)
                     {
-                        string tmp = line;
-                        if (CIUtil.LenB(line) > charCount)
+                        string line = karteInfText;
+
+                        while (line != string.Empty)
                         {
-                            // 文字列が最大幅より広い場合、カット
-                            tmp = CIUtil.CiCopyStrWidth(line, 1, charCount);
+                            string tmp = line;
+                            if (CIUtil.LenB(line) > charCount)
+                            {
+                                // 文字列が最大幅より広い場合、カット
+                                tmp = CIUtil.CiCopyStrWidth(line, 1, charCount);
+                            }
+
+                            messageTexts.Add(tmp);
+
+                            // 今回出力分の文字列を削除
+                            line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
                         }
-
-                        messageTexts.Add(tmp);
-
-                        // 今回出力分の文字列を削除
-                        line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
                     }
-                }
 
-                short row = 0;
-                foreach (string messageText in messageTexts)
-                {
-                    ListText(field, messageText);
-                    row++;
-
-                    if (row >= rowCount)
+                    short row = 0;
+                    foreach (string messageText in messageTexts)
                     {
-                        break;
+                        ListText(field, 0, row, messageText);
+                        row++;
+
+                        if (row >= rowCount)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -1141,43 +1150,43 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printSyukeiDate()
             {
                 SetFieldDataRepSW("dfSyukeiFrom", 1, 2, StartDate);
-                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, (StartDate / 10000).AsString());
+                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, StartDate / 10000);
                 SetFieldDataRep("dfSyukeiFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Gengo + " " + CIUtil.SDateToShowWDate3(StartDate).Year);
-                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, (StartDate % 10000 / 100).AsString());
+                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, StartDate % 10000 / 100);
 
                 SetFieldDataRepSW("dfSyukeiTo", 1, 2, EndDate);
-                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, (EndDate / 10000).AsString());
+                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, EndDate / 10000);
                 SetFieldDataRep("dfSyukeiToYearW_", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Gengo + " " + CIUtil.SDateToShowWDate3(EndDate).Year);
-                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, (EndDate % 10000 / 100).AsString());
+                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, EndDate % 10000 / 100);
 
                 // 下位互換
                 if (backword)
                 {
                     SetFieldDataRep("SyukeiFrom", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Ymd);
-                    SetFieldDataRep("SyukeiFromYear", 1, 2, (StartDate / 10000).AsString());
-                    SetFieldDataRep("SyukeiFromMonth", 1, 2, (StartDate % 10000 / 100).AsString());
+                    SetFieldDataRep("SyukeiFromYear", 1, 2, StartDate / 10000);
+                    SetFieldDataRep("SyukeiFromMonth", 1, 2, StartDate % 10000 / 100);
                     SetFieldDataRep("SyukeiTo", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Ymd);
-                    SetFieldDataRep("SyukeiToYear", 1, 2, (EndDate / 10000).AsString());
-                    SetFieldDataRep("SyukeiToMonth", 1, 2, (EndDate % 10000 / 100).AsString());
+                    SetFieldDataRep("SyukeiToYear", 1, 2, EndDate / 10000);
+                    SetFieldDataRep("SyukeiToMonth", 1, 2, EndDate % 10000 / 100);
                 }
             }
             // 診療期間
             void _printSinDateTerm()
             {
                 SetFieldDataRepSW("dfSinDateFrom", 1, 2, SinStartDate);
-                SetFieldDataRep("dfSinDateFromYearS_", 1, 2, (SinStartDate / 10000).AsString());
+                SetFieldDataRep("dfSinDateFromYearS_", 1, 2, SinStartDate / 10000);
                 SetFieldDataRep("dfSinDateFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(SinStartDate).Gengo + " " + CIUtil.SDateToShowWDate3(SinStartDate).Year);
-                SetFieldDataRep("dfSinDateFromMonth_", 1, 2, (SinStartDate % 10000 / 100).AsString());
+                SetFieldDataRep("dfSinDateFromMonth_", 1, 2, SinStartDate % 10000 / 100);
 
                 SetFieldDataRepSW("dfSinDateTo", 1, 2, SinEndDate);
-                SetFieldDataRep("dfSinDateToYearS_", 1, 2, (SinEndDate / 10000).AsString());
+                SetFieldDataRep("dfSinDateToYearS_", 1, 2, SinEndDate / 10000);
                 SetFieldDataRep("dfSinDateToYearW_", 1, 2, CIUtil.SDateToShowWDate3(SinEndDate).Gengo + " " + CIUtil.SDateToShowWDate3(SinEndDate).Year);
-                SetFieldDataRep("dfSinDateToMonth_", 1, 2, (SinEndDate % 10000 / 100).AsString());
+                SetFieldDataRep("dfSinDateToMonth_", 1, 2, SinEndDate % 10000 / 100);
             }
             // 実日数
             void _printJituNissu()
             {
-                SetFieldDataRep("dfJituNissu_", 1, 2, JituNissu.AsString());
+                SetFieldDataRep("dfJituNissu_", 1, 2, JituNissu);
             }
             // 請求月
             void _printSeikyuYm()
@@ -1202,16 +1211,16 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printPtNum()
             {
                 long value = coModel.PtNum;
-                SetFieldDataRep("dfPtNum_", 1, 2, value.AsString());
-                SetFieldDataRep("bcPtNum_", 1, 2, value.AsString());
+                SetFieldDataRep("dfPtNum_", 1, 2, value);
+                SetFieldDataRep("bcPtNum_", 1, 2, value);
                 SetFieldsData("bcPtNum1_z9", $"{coModel.PtNum:D9}");
                 SetFieldsData("bcPtNum2_z9", $"{coModel.PtNum:D9}");
 
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KanID", 1, 2, coModel.PtNum.AsString());
-                    SetFieldDataRep("bcKanID", 1, 2, coModel.PtNum.AsString());
+                    SetFieldDataRep("KanID", 1, 2, coModel.PtNum);
+                    SetFieldDataRep("bcKanID", 1, 2, coModel.PtNum);
                     SetFieldsData("bcKanID1_z9", $"{coModel.PtNum:D9}");
                     SetFieldsData("bcKanID2_z9", $"{coModel.PtNum:D9}");
                 }
@@ -1255,7 +1264,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 int value = coModel.BirthDay;
                 SetFieldDataRepSW("dfBirthday", 1, 2, value);
                 // 年齢
-                SetFieldDataRep("dfAge_", 1, 2, CIUtil.SDateToAge(value, seikyudate).AsString());
+                SetFieldDataRep("dfAge_", 1, 2, CIUtil.SDateToAge(value, seikyudate));
             }
             // 患者住所
             void _printPtAddress()
@@ -1426,11 +1435,11 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printJihiFutan()
             {
                 int value = coModel.JihiFutan + coModel.JihiOuttax;
-                SetFieldDataRep("dfJihiFutanGaku_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanGaku_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("HoGai", 1, 2, value.AsString());
+                    SetFieldDataRep("HoGai", 1, 2, value);
                 }
             }
             // 自費診療の合計金額
@@ -1438,137 +1447,137 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 double value = coModel.JihiFutan - coModel.TotalJihiKingakuAll();
                 // 自費分患者負担額
-                SetFieldDataRep("dfJihiSinryoGaku_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiSinryoGaku_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("JiKanFutan", 1, 2, value.AsString());
+                    SetFieldDataRep("JiKanFutan", 1, 2, value);
                 }
             }
             // 自費項目の合計金額
             void _printJihiKoumoku()
             {
-                SetFieldDataRep("dfJihiKoumokuGaku_", 1, 2, coModel.TotalJihiKingakuAll().AsString());
+                SetFieldDataRep("dfJihiKoumokuGaku_", 1, 2, coModel.TotalJihiKingakuAll());
             }
             // 非課税対象金額
             void _printJihiFutanFree()
             {
                 double value = coModel.JihiFutanTaxFree;
-                SetFieldDataRep("dfJihiFutanFree_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanFree_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("HikazeiFutan", 1, 2, value.AsString());
+                    SetFieldDataRep("HikazeiFutan", 1, 2, value);
                 }
             }
             // 通常税率対象金額
             void _printJihiFutanOutTaxNr()
             {
                 double value = coModel.JihiFutanOutTaxNr;
-                SetFieldDataRep("dfJihiFutanZeiNr_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanZeiNr_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KazeiFutan", 1, 2, value.AsString());
+                    SetFieldDataRep("KazeiFutan", 1, 2, value);
                 }
             }
             // 軽減税率対象金額
             void _printJihiFutanOutTaxGen()
             {
                 double value = coModel.JihiFutanOutTaxGen;
-                SetFieldDataRep("dfJihiFutanZeiGen_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanZeiGen_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KeigenFutan", 1, 2, value.AsString());
+                    SetFieldDataRep("KeigenFutan", 1, 2, value);
                 }
             }
             // 通常税率内税対象金額
             void _printJihiFutanTaxNr()
             {
                 double value = coModel.JihiFutanTaxNr;
-                SetFieldDataRep("dfJihiFutanUchiNr_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanUchiNr_", 1, 2, value);
             }
             // 軽減税率内税対象金額
             void _printJihiFutanTaxGen()
             {
                 double value = coModel.JihiFutanTaxGen;
-                SetFieldDataRep("dfJihiFutanUchiGen_", 1, 2, value.AsString());
+                SetFieldDataRep("dfJihiFutanUchiGen_", 1, 2, value);
             }
             // 外税
             void _printOutTax()
             {
                 int value = coModel.JihiOuttax;
-                SetFieldDataRep("dfSotoZei_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSotoZei_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("Zei", 1, 2, value.AsString());
+                    SetFieldDataRep("Zei", 1, 2, value);
                 }
             }
             // 外税（通常税率分）
             void _printOutTaxNr()
             {
                 int value = coModel.JihiOuttaxNr;
-                SetFieldDataRep("dfSotoZeiNr_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSotoZeiNr_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KazeiZei", 1, 2, value.AsString());
+                    SetFieldDataRep("KazeiZei", 1, 2, value);
                 }
             }
             // 外税（軽減税率分）
             void _printOutTaxGen()
             {
                 int value = coModel.JihiOuttaxGen;
-                SetFieldDataRep("dfSotoZeiGen_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSotoZeiGen_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KeigenZei", 1, 2, value.AsString());
+                    SetFieldDataRep("KeigenZei", 1, 2, value);
                 }
             }
             // 内税
             void _printInTax()
             {
-                SetFieldDataRep("dfUchiZei_", 1, 2, coModel.JihiTax.AsString());
+                SetFieldDataRep("dfUchiZei_", 1, 2, coModel.JihiTax);
             }
 
             // 内税（通常税率分）                
             void _printInTaxNr()
             {
-                SetFieldDataRep("dfUchiZeiNr_", 1, 2, coModel.JihiTaxNr.AsString());
+                SetFieldDataRep("dfUchiZeiNr_", 1, 2, coModel.JihiTaxNr);
             }
             // 内税（軽減税率分）
             void _printInTaxGen()
             {
-                SetFieldDataRep("dfUchiZeiGen_", 1, 2, coModel.JihiTaxGen.AsString());
+                SetFieldDataRep("dfUchiZeiGen_", 1, 2, coModel.JihiTaxGen);
             }
             // 消費税
             void _printTax()
             {
-                SetFieldDataRep("dfZei_", 1, 2, (coModel.JihiOuttax + coModel.JihiTax).AsString());
+                SetFieldDataRep("dfZei_", 1, 2, coModel.JihiOuttax + coModel.JihiTax);
             }
             // 消費税（通常税率分）
             void _printTaxNr()
             {
-                SetFieldDataRep("dfZeiNr_", 1, 2, (coModel.JihiOuttaxNr + coModel.JihiTaxNr).AsString());
+                SetFieldDataRep("dfZeiNr_", 1, 2, coModel.JihiOuttaxNr + coModel.JihiTaxNr);
             }
             // 消費税（軽減税率分）
             void _printTaxGen()
             {
-                SetFieldDataRep("dfZeiGen_", 1, 2, (coModel.JihiOuttaxGen + coModel.JihiTaxGen).AsString());
+                SetFieldDataRep("dfZeiGen_", 1, 2, coModel.JihiOuttaxGen + coModel.JihiTaxGen);
             }
             // 税率別の消費税関連情報印字
             void _printTaxByRate()
             {
                 foreach (TaxSum taxsum in coModel.TaxSums)
                 {
-                    SetFieldDataRep($"dfJihiFutanZei{taxsum.Rate}_", 1, 2, taxsum.OuttaxFutan.AsString());
-                    SetFieldDataRep($"dfJihiFutanUchi{taxsum.Rate}_", 1, 2, taxsum.TaxFutan.AsString());
-                    SetFieldDataRep($"dfSotoZei{taxsum.Rate}_", 1, 2, taxsum.OuttaxZei.AsString());
-                    SetFieldDataRep($"dfUchiZei{taxsum.Rate}_", 1, 2, taxsum.TaxZei.AsString());
-                    SetFieldDataRep($"dfZei{taxsum.Rate}_", 1, 2, (taxsum.OuttaxZei + taxsum.TaxZei).AsString());
+                    SetFieldDataRep($"dfJihiFutanZei{taxsum.Rate}_", 1, 2, taxsum.OuttaxFutan);
+                    SetFieldDataRep($"dfJihiFutanUchi{taxsum.Rate}_", 1, 2, taxsum.TaxFutan);
+                    SetFieldDataRep($"dfSotoZei{taxsum.Rate}_", 1, 2, taxsum.OuttaxZei);
+                    SetFieldDataRep($"dfUchiZei{taxsum.Rate}_", 1, 2, taxsum.TaxZei);
+                    SetFieldDataRep($"dfZei{taxsum.Rate}_", 1, 2, taxsum.OuttaxZei + taxsum.TaxZei);
                 }
             }
             // 凡例
@@ -1586,13 +1595,14 @@ public class AccountingCoReportService : IAccountingCoReportService
                         for (int i = 0; i <= 1; i++)
                         {
                             string param = hanrei.GetParam(i);
+
                             if (!string.IsNullOrEmpty(param))
                             {
+
                                 if (hanreiString.Length > 0)
                                 {
                                     hanreiString.Append("、");
                                 }
-
                                 if (hanrei.GrpEdaNo == 2)
                                 {
                                     hanreiString.Append($"{param} は 非課税対象");
@@ -1606,7 +1616,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                         }
                     }
                 }
-                SetFieldDataRep("dfJihiHanrei_", 1, 2, hanreiString.ToString());
+                SetFieldDataRep("dfJihiHanrei_", 1, 2, hanreiString);
             }
             #endregion
 
@@ -1616,74 +1626,74 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printPtFutan()
             {
                 int value = coModel.PtFutan + coModel.AdjustRound;
-                SetFieldDataRep("dfPtFutan_", 1, 2, value.AsString());
+                SetFieldDataRep("dfPtFutan_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KanFutan", 1, 2, value.AsString());
-                    SetFieldDataRep("KanRoFutan", 1, 2, value.AsString());
+                    SetFieldDataRep("KanFutan", 1, 2, value);
+                    SetFieldDataRep("KanRoFutan", 1, 2, value);
                 }
             }
             // 調整額
             void _printAdjust()
             {
                 int value = coModel.AdjustFutan + coModel.TotalNyukinAjust;
-                SetFieldDataRep("dfAdjust_", 1, 2, value.AsString());
+                SetFieldDataRep("dfAdjust_", 1, 2, value);
             }
             // 請求額（調整前）
             void _printSeikyuGaku()
             {
                 int value = coModel.TotalPtFutan - coModel.AdjustFutan;
-                SetFieldDataRep("dfSeikyuGaku_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSeikyuGaku_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("Seikyu", 1, 2, value.AsString());
+                    SetFieldDataRep("Seikyu", 1, 2, value);
                 }
             }
             // 請求額（調整前／免除を含む）
             void _printSeikyuGakuIncludeMenjyo()
             {
                 int value = coModel.TotalPtFutanIncludeMenjyo - coModel.AdjustFutan;
-                SetFieldDataRep("dfSeikyuGakuIncludeMenjyo_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSeikyuGakuIncludeMenjyo_", 1, 2, value);
             }
             // 請求額（調整額を引いたもの）
             void _printSeikyuGakuAdjust()
             {
                 int value = coModel.TotalPtFutan - coModel.TotalNyukinAjust;
-                SetFieldDataRep("dfSeikyuGakuAdjust_", 1, 2, value.AsString());
+                SetFieldDataRep("dfSeikyuGakuAdjust_", 1, 2, value);
             }
             // 前回入金額
             void _printNyukinGakuZenkai()
             {
                 int value = coModel.ExceptLastNyukin;
-                SetFieldDataRep("dfNyukinGaku_Zenkai_", 1, 2, value.AsString());
+                SetFieldDataRep("dfNyukinGaku_Zenkai_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("ZenRyoSyu", 1, 2, value.AsString());
+                    SetFieldDataRep("ZenRyoSyu", 1, 2, value);
                 }
             }
             // 今回入金額
             void _printNyukinGakuKonkai()
             {
                 int value = coModel.LastNyukin;
-                SetFieldDataRep("dfNyukinGaku_Konkai_", 1, 2, value.AsString());
+                SetFieldDataRep("dfNyukinGaku_Konkai_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KonRyoSyu", 1, 2, value.AsString());
+                    SetFieldDataRep("KonRyoSyu", 1, 2, value);
                 }
             }
             // 合計入金額
             void _printNyukinGakuTotal()
             {
                 int value = coModel.TotalNyukin;
-                SetFieldDataRep("dfNyukinGaku_Total_", 1, 2, value.AsString());
+                SetFieldDataRep("dfNyukinGaku_Total_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("GouRyoSyu", 1, 2, value.AsString());
+                    SetFieldDataRep("GouRyoSyu", 1, 2, value);
                 }
             }
             void _printSiharaiHouhou()
@@ -1755,7 +1765,6 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 //今回領収額
                 buf = "0004";
-
                 if (coModel.LastNyukin < 0)
                 {
                     buf = "1004";
@@ -1769,33 +1778,33 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printMisyu()
             {
                 int value = coModel.Misyu;
-                SetFieldDataRep("dfMisyu_", 1, 2, value.AsString());
+                SetFieldDataRep("dfMisyu_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("Misyu", 1, 2, value.AsString());
+                    SetFieldDataRep("Misyu", 1, 2, value);
                 }
             }
             // 患者未収額
             void _printPtMisyu()
             {
                 int value = coModel.PtMisyu;
-                SetFieldDataRep("dfPtMisyu_", 1, 2, value.AsString());
+                SetFieldDataRep("dfPtMisyu_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("KanMisyu", 1, 2, value.AsString());
+                    SetFieldDataRep("KanMisyu", 1, 2, value);
                 }
             }
             // 返金額
             void _printHenkin()
             {
                 int value = coModel.Henkin;
-                SetFieldDataRep("dfHenkin_", 1, 2, value.AsString());
+                SetFieldDataRep("dfHenkin_", 1, 2, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("Henkin", 1, 2, value.AsString());
+                    SetFieldDataRep("Henkin", 1, 2, value);
                 }
             }
             // 行為別点数内訳と総点数
@@ -1850,11 +1859,11 @@ public class AccountingCoReportService : IAccountingCoReportService
                 }
 
                 // 総点数
-                SetFieldDataRep("dfSeikyuTensu_", 1, 2, allTatalTen.AsString());
+                SetFieldDataRep("dfSeikyuTensu_", 1, 2, allTatalTen);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("TenGokei", 1, 2, allTatalTen.AsString());
+                    SetFieldDataRep("TenGokei", 1, 2, allTatalTen);
                 }
             }
             //自費種別別金額内訳
@@ -1897,9 +1906,12 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && jihiSbtls.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0)
                         {
-                            kingaku += jihiSbtls.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.kingaku);
+                            if (jihiSbtls.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
+                            {
+                                kingaku += jihiSbtls.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.kingaku);
+                            }
                         }
                     }
 
@@ -1920,7 +1932,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 // 下位互換
                 if (backword)
                 {
-                    PrintMessageList("MessageList", 4);
+                    _PrintMessageList("MessageList", 4);
                     SetFieldsData("MessageList", message);
                 }
 
@@ -1935,7 +1947,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 // 下位互換
                 if (backword)
                 {
-                    PrintMessageList("MessageListF", 5);
+                    _PrintMessageList("MessageListF", 5);
                     SetFieldsData("MessageListF", message);
                 }
 
@@ -1947,6 +1959,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 病名リスト
             void _printPtByomei()
             {
+                short listRow = 0;
                 foreach (CoPtByomeiModel ptByomei in coModel.PtByomeiModels)
                 {
                     #region sub method
@@ -1967,31 +1980,33 @@ public class AccountingCoReportService : IAccountingCoReportService
                     int tenkiDate = ptByomei.TenkiDate;
 
                     // 病名
-                    SetListDataRep("lsByomei_", 1, 2, byomei);
+                    SetListDataRep("lsByomei_", 1, 2, 0, listRow, byomei);
                     // 病名開始日
-                    SetListDataRepSW("lsByomeiStartDate", 1, 2, startDate);
+                    SetListDataRepSW("lsByomeiStartDate", 1, 2, 0, listRow, startDate);
                     // 病名転帰区分
-                    SetListDataRep("lsByomeiTenkiKbn_", 1, 2, tenki);
+                    SetListDataRep("lsByomeiTenkiKbn_", 1, 2, 0, listRow, tenki);
                     // 病名転帰日
-                    SetListDataRepSW("lsByomeiTenkiDate", 1, 2, tenkiDate);
+                    SetListDataRepSW("lsByomeiTenkiDate", 1, 2, 0, listRow, tenkiDate);
 
                     // 下位互換
                     if (backword)
                     {
                         // 病名
-                        SetListDataRep("ByoMeiList", 0, 2, byomei);
+                        SetListDataRep("ByoMeiList", 0, 2, 0, listRow, byomei);
                         // 病名開始日
-                        SetListDataRep("ByoYmdList", 0, 2, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                        SetListDataRep("ByoYmdList", 0, 2, 0, listRow, CIUtil.SDateToShowWDate3(startDate).Ymd);
                         // 病名転帰区分
-                        SetListDataRep("ByoTenKubunList", 0, 2, tenki);
+                        SetListDataRep("ByoTenKubunList", 0, 2, 0, listRow, tenki);
                         // 病名転帰日
-                        SetListDataRep("ByoTenYmdList", 0, 2, CIUtil.SDateToShowWDate3(tenkiDate).Ymd);
+                        SetListDataRep("ByoTenYmdList", 0, 2, 0, listRow, CIUtil.SDateToShowWDate3(tenkiDate).Ymd);
                     }
+                    listRow++;
                 }
             }
             // 病名リスト（当日更新分）
             void _printPtByomeiToday()
             {
+                short listRow = 0;
                 foreach (CoPtByomeiModel ptByomei in coModel.PtByomeiModels.FindAll(p => betweenStartEnd(p.CreateDate) || betweenStartEnd(p.UpdateDate)))
                 {
                     string _getUpdateMark()
@@ -2010,26 +2025,27 @@ public class AccountingCoReportService : IAccountingCoReportService
                     int tenkiDate = ptByomei.TenkiDate;
 
                     // 病名
-                    SetListDataRep("lsByomeiToday_", 1, 2, byomei);
+                    SetListDataRep("lsByomeiToday_", 1, 2, 0, listRow, byomei);
                     // 病名開始日
-                    SetListDataRepSW("lsByomeiTodayStartDate", 1, 2, startDate);
+                    SetListDataRepSW("lsByomeiTodayStartDate", 1, 2, 0, listRow, startDate);
                     // 病名転帰区分
-                    SetListDataRep("lsByomeiTodayTenkiKbn_", 1, 2, tenki);
+                    SetListDataRep("lsByomeiTodayTenkiKbn_", 1, 2, 0, listRow, tenki);
                     // 病名転帰日
-                    SetListDataRepSW("lsByomeiTodayTenkiDate_", 1, 2, tenkiDate);
+                    SetListDataRepSW("lsByomeiTodayTenkiDate_", 1, 2, 0, listRow, tenkiDate);
 
                     // 下位互換
                     if (backword)
                     {
                         // 病名
-                        SetListDataRep("ByoMeiTodayList", 1, 2, byomei);
+                        SetListDataRep("ByoMeiTodayList", 1, 2, 0, listRow, byomei);
                         // 病名開始日
-                        SetListDataRep("ByoYmdTodayList", 1, 2, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                        SetListDataRep("ByoYmdTodayList", 1, 2, 0, listRow, CIUtil.SDateToShowWDate3(startDate).Ymd);
                         // 病名転帰区分
-                        SetListDataRep("ByoTenKubunTodayList", 1, 2, tenki);
+                        SetListDataRep("ByoTenKubunTodayList", 1, 2, 0, listRow, tenki);
                         // 病名転帰日
-                        SetListDataRep("ByoTenYmdTodayList", 1, 2, CIUtil.SDateToShowWDate3(tenkiDate).Ymd);
+                        SetListDataRep("ByoTenYmdTodayList", 1, 2, 0, listRow, CIUtil.SDateToShowWDate3(tenkiDate).Ymd);
                     }
+                    listRow++;
                 }
             }
             #endregion
@@ -2037,177 +2053,180 @@ public class AccountingCoReportService : IAccountingCoReportService
             // リスト
             #region print list
             // 請求日リスト
-            void _printSeikyuDateList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printSeikyuDateList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.SinDate;
-                SetListDataRepSW("lsSeikyuDate", 1, 2, value);
+                SetListDataRepSW("lsSeikyuDate", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("SinYmdList", 1, 2, CIUtil.SDateToShowWDate3(value).Ymd);
+                    SetListDataRep("SinYmdList", 1, 2, 0, listRow, CIUtil.SDateToShowWDate3(value).Ymd);
                 }
             }
             // 請求額リスト（調整前）
-            void _printSeikyuGakuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printSeikyuGakuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.SeikyuGaku - kaikeidaily.AdjustFutan;
-                SetListDataRep("lsSeikyuGaku_", 1, 2, value.AsString());
+                SetListDataRep("lsSeikyuGaku_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("SeikyuList", 1, 2, value.AsString());
+                    SetListDataRep("SeikyuList", 1, 2, 0, listRow, value);
                 }
             }
             // 請求額リスト（調整後）
-            void _printSeikyuGakuAdjustList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printSeikyuGakuAdjustList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.SeikyuGaku - kaikeidaily.TotalNyukinAdjust;
-                SetListDataRep("lsSeikyuGakuAdjust_", 1, 2, value.AsString());
+                SetListDataRep("lsSeikyuGakuAdjust_", 1, 2, 0, listRow, value);
             }
             // 今回入金額リスト
-            void _printKonkaiNyukinGakuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printKonkaiNyukinGakuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.NyukinKonkai;
-                SetListDataRep("lsNyukinGaku_Konkai_", 1, 2, value.AsString());
+                SetListDataRep("lsNyukinGaku_Konkai_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("KonRyoSyuList", 1, 2, value.AsString());
+                    SetListDataRep("KonRyoSyuList", 1, 2, 0, listRow, value);
                 }
             }
             // 前回入金額
-            void _printZenkaiNyukinGakuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printZenkaiNyukinGakuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.NyukinZenkai;
-                SetListDataRep("lsNyukinGaku_Zenkai_", 1, 2, value.AsString());
+                SetListDataRep("lsNyukinGaku_Zenkai_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("ZenRyoSyuList", 1, 2, value.AsString());
+                    SetListDataRep("ZenRyoSyuList", 1, 2, 0, listRow, value);
                 }
             }
             // 合計入金額
-            void _printTotalNyukinGakuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printTotalNyukinGakuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.NyukinZenkai + kaikeidaily.NyukinKonkai;
-                SetListDataRep("lsNyukinGaku_Total_", 1, 2, value.AsString());
+                SetListDataRep("lsNyukinGaku_Total_", 1, 2, 0, listRow, value);
             }
             // 患者負担額リスト
-            void _printPtFutanList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printPtFutanList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.PtFutan + kaikeidaily.AdjustRound;
-                SetListDataRep("lsPtFutan_", 1, 2, value.AsString());
+                SetListDataRep("lsPtFutan_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("KanFutanList", 1, 2, value.AsString());
+                    SetListDataRep("KanFutanList", 1, 2, 0, listRow, value);
                 }
             }
             // 調整額リスト
-            void _printAdjustList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printAdjustList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.AdjustFutan + kaikeidaily.TotalNyukinAdjust;
-                SetListDataRep("lsAdjust_", 1, 2, value.AsString());
+                SetListDataRep("lsAdjust_", 1, 2, 0, listRow, value);
             }
             // 自費負担リスト
-            void _printJihiFutanList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printJihiFutanList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.JihiFutan + kaikeidaily.JihiOuttax;
-                SetListDataRep("lsJihiFutan_", 1, 2, value.AsString());
+                SetListDataRep("lsJihiFutan_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("JihiSeikyuList", 1, 2, value.AsString());
+                    SetListDataRep("JihiSeikyuList", 1, 2, 0, listRow, value);
                 }
             }
             // 自費外税リスト
-            void _printJihiOuttaxList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printJihiOuttaxList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
-                SetListDataRep("lsSotoZei_", 1, 2, kaikeidaily.JihiOuttax.AsString());
+                SetListDataRep("lsSotoZei_", 1, 2, 0, listRow, kaikeidaily.JihiOuttax);
             }
             // 自費内税リスト
-            void _printJihiIntaxList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printJihiIntaxList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
-                SetListDataRep("lsUchiZei_", 1, 2, kaikeidaily.JihiTax.AsString());
+                SetListDataRep("lsUchiZei_", 1, 2, 0, listRow, kaikeidaily.JihiTax);
             }
             // 自費消費税リスト
-            void _printJihiTaxList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printJihiTaxList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
-                SetListDataRep("lsZei_", 1, 2, (kaikeidaily.JihiOuttax + kaikeidaily.JihiTax).AsString());
+                SetListDataRep("lsZei_", 1, 2, 0, listRow, kaikeidaily.JihiOuttax + kaikeidaily.JihiTax);
             }
             // 自費税率別リスト
-            void _printJihiListByRate(CoKaikeiInfDailyModel kaikeidaily)
+            void _printJihiListByRate(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
-                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, kaikeidaily.JihiFutanTaxFree.AsString());
+                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, 0, listRow, kaikeidaily.JihiFutanTaxFree);
 
                 foreach (TaxSum taxSum in kaikeidaily.TaxSums)
                 {
-                    SetListDataRep($"lsJihiFutanZei{taxSum.Rate}_", 1, 2, taxSum.OuttaxFutan.AsString());
-                    SetListDataRep($"lsJihiFutanUchi{taxSum.Rate}_", 1, 2, taxSum.TaxFutan.AsString());
-                    SetListDataRep($"lsJihiSotoZei{taxSum.Rate}_", 1, 2, taxSum.OuttaxZei.AsString());
-                    SetListDataRep($"lsJihiUchiZei{taxSum.Rate}_", 1, 2, taxSum.TaxZei.AsString());
-                    SetListDataRep($"lsJihiZei{taxSum.Rate}_", 1, 2, (taxSum.OuttaxZei + taxSum.TaxZei).AsString());
+                    SetListDataRep($"lsJihiFutanZei{taxSum.Rate}_", 1, 2, 0, listRow, taxSum.OuttaxFutan);
+                    SetListDataRep($"lsJihiFutanUchi{taxSum.Rate}_", 1, 2, 0, listRow, taxSum.TaxFutan);
+                    SetListDataRep($"lsJihiSotoZei{taxSum.Rate}_", 1, 2, 0, listRow, taxSum.OuttaxZei);
+                    SetListDataRep($"lsJihiUchiZei{taxSum.Rate}_", 1, 2, 0, listRow, taxSum.TaxZei);
+                    SetListDataRep($"lsJihiZei{taxSum.Rate}_", 1, 2, 0, listRow, taxSum.OuttaxZei + taxSum.TaxZei);
                 }
             }
             // 診療点数リスト
-            void _printTensuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printTensuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.Tensu;
-                SetListDataRep("lsTensu_", 1, 2, value.AsString());
+                SetListDataRep("lsTensu_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("TenGokeiList", 1, 2, value.AsString());
+                    SetListDataRep("TenGokeiList", 1, 2, 0, listRow, value);
                 }
             }
             // 未収金リスト
-            void _printMisyuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printMisyuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.Misyu;
-                SetListDataRep("lsMisyu_", 1, 2, value.AsString());
+                SetListDataRep("lsMisyu_", 1, 2, 0, listRow, value);
                 // 下位互換
                 if (backword)
                 {
-                    SetListDataRep("MisyuList", 1, 2, value.AsString());
+                    SetListDataRep("MisyuList", 1, 2, 0, listRow, value);
                 }
             }
-            void _printPtMisyuList(CoKaikeiInfDailyModel kaikeidaily)
+            void _printPtMisyuList(short listRow, CoKaikeiInfDailyModel kaikeidaily)
             {
                 int value = kaikeidaily.PtMisyu;
-                SetListDataRep("lsPtMisyu_", 1, 2, value.AsString());
+                SetListDataRep("lsPtMisyu_", 1, 2, 0, listRow, value);
             }
             //リスト
             void _printListData()
             {
+                short listRow = 0;
                 foreach (CoKaikeiInfDailyModel kaikeidaily in coModel.KaikeiInfDailyModels)
                 {
                     // 請求日リスト
-                    _printSeikyuDateList(kaikeidaily);
+                    _printSeikyuDateList(listRow, kaikeidaily);
                     // 請求額リスト
-                    _printSeikyuGakuList(kaikeidaily);
-                    _printSeikyuGakuAdjustList(kaikeidaily);
+                    _printSeikyuGakuList(listRow, kaikeidaily);
+                    _printSeikyuGakuAdjustList(listRow, kaikeidaily);
                     // 今回入金額リスト
-                    _printKonkaiNyukinGakuList(kaikeidaily);
+                    _printKonkaiNyukinGakuList(listRow, kaikeidaily);
                     // 前回入金額
-                    _printZenkaiNyukinGakuList(kaikeidaily);
+                    _printZenkaiNyukinGakuList(listRow, kaikeidaily);
                     // 合計入金額リスト
-                    _printTotalNyukinGakuList(kaikeidaily);
+                    _printTotalNyukinGakuList(listRow, kaikeidaily);
                     // 患者負担額リスト
-                    _printPtFutanList(kaikeidaily);
+                    _printPtFutanList(listRow, kaikeidaily);
                     // 調整額リスト
-                    _printAdjustList(kaikeidaily);
+                    _printAdjustList(listRow, kaikeidaily);
                     // 自費負担リスト
-                    _printJihiFutanList(kaikeidaily);
-                    _printJihiOuttaxList(kaikeidaily);
-                    _printJihiIntaxList(kaikeidaily);
-                    _printJihiTaxList(kaikeidaily);
-                    _printJihiListByRate(kaikeidaily);
+                    _printJihiFutanList(listRow, kaikeidaily);
+                    _printJihiOuttaxList(listRow, kaikeidaily);
+                    _printJihiIntaxList(listRow, kaikeidaily);
+                    _printJihiTaxList(listRow, kaikeidaily);
+                    _printJihiListByRate(listRow, kaikeidaily);
                     // 診療点数リスト
-                    _printTensuList(kaikeidaily);
+                    _printTensuList(listRow, kaikeidaily);
                     // 未収金リスト
-                    _printMisyuList(kaikeidaily);
+                    _printMisyuList(listRow, kaikeidaily);
                     // 患者未収金リスト
-                    _printPtMisyuList(kaikeidaily);
+                    _printPtMisyuList(listRow, kaikeidaily);
+
+                    listRow++;
                 }
             }
             #endregion
@@ -2217,17 +2236,17 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 foreach (CoKaikeiInfMonthlyModel monthly in coModel.KaikeiInfMonthlyModels)
                 {
-                    SetFieldsData($"dfMonthTen{monthly.SinYm % 100:D2}", monthly.Tensu.AsString());
-                    SetFieldsData($"dfMonthEn{monthly.SinYm % 100:D2}", (monthly.PtFutan + monthly.AdjustRound).AsString());
-                    SetFieldsData($"dfMonthAdjust{monthly.SinYm % 100:D2}", monthly.AdjustFutan.AsString());
-                    SetFieldsData($"dfMonthJihi{monthly.SinYm % 100:D2}", monthly.JihiFutan.AsString());
-                    SetFieldsData($"dfMonthTotalSeikyu{monthly.SinYm % 100:D2}", monthly.SeikyuGaku.AsString());
+                    SetFieldsData($"dfMonthTen{monthly.SinYm % 100:D2}", monthly.Tensu);
+                    SetFieldsData($"dfMonthEn{monthly.SinYm % 100:D2}", monthly.PtFutan + monthly.AdjustRound);
+                    SetFieldsData($"dfMonthAdjust{monthly.SinYm % 100:D2}", monthly.AdjustFutan);
+                    SetFieldsData($"dfMonthJihi{monthly.SinYm % 100:D2}", monthly.JihiFutan);
+                    SetFieldsData($"dfMonthTotalSeikyu{monthly.SinYm % 100:D2}", monthly.SeikyuGaku);
                 }
 
                 foreach (CoNyukinInfMonthlyModel monthly in coModel.NyukinInfMonthlyModels)
                 {
-                    SetFieldsData($"dfMonth{monthly.NyukinYm % 100:D2}", monthly.NyukinGaku.AsString());
-                    SetFieldsData($"dfMonthNyukinAdjust{monthly.NyukinYm % 100:D2}", monthly.TotalAdjust.AsString());
+                    SetFieldsData($"dfMonth{monthly.NyukinYm % 100:D2}", monthly.NyukinGaku);
+                    SetFieldsData($"dfMonthNyukinAdjust{monthly.NyukinYm % 100:D2}", monthly.TotalAdjust);
                 }
             }
             // メモ
@@ -2250,7 +2269,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 for (int i = 0; i < 5; i++)
                 {
-                    if (i >= splitPtMemos.Count)
+                    if (i >= splitPtMemos.Count())
                     {
                         break;
                     }
@@ -2293,14 +2312,14 @@ public class AccountingCoReportService : IAccountingCoReportService
                     string yoyakusyaName = raiinInf.YoyakusyaName;
                     string uketukeKbn = raiinInf.UketukeKbnName;
 
-                    SetListDataRep("lsYoyakuDateTimeS_", 1, 2, yoyakuDateTimeS);
-                    SetListDataRep("lsYoyakuDateTimeW_", 1, 2, yoyakuDateTimeW);
-                    SetListDataRep("lsYoyakuDateTimeSW_", 1, 2, yoyakuDateTimeSW);
-                    SetListDataRep("lsYoyakuDateTimeWW_", 1, 2, yoyakuDateTimeWW);
+                    SetListDataRep("lsYoyakuDateTimeS_", 1, 2, 0, row, yoyakuDateTimeS);
+                    SetListDataRep("lsYoyakuDateTimeW_", 1, 2, 0, row, yoyakuDateTimeW);
+                    SetListDataRep("lsYoyakuDateTimeSW_", 1, 2, 0, row, yoyakuDateTimeSW);
+                    SetListDataRep("lsYoyakuDateTimeWW_", 1, 2, 0, row, yoyakuDateTimeWW);
 
-                    SetListDataRep("lsYoyakuComment_", 1, 2, yoyakuComment);
-                    SetListDataRep("lsYoyakusyaName_", 1, 2, yoyakusyaName);
-                    SetListDataRep("lsUketukeKbn_", 1, 2, uketukeKbn);
+                    SetListDataRep("lsYoyakuComment_", 1, 2, 0, row, yoyakuComment);
+                    SetListDataRep("lsYoyakusyaName_", 1, 2, 0, row, yoyakusyaName);
+                    SetListDataRep("lsUketukeKbn_", 1, 2, 0, row, uketukeKbn);
 
                     if (backword)
                     {
@@ -2309,13 +2328,13 @@ public class AccountingCoReportService : IAccountingCoReportService
                         SetFieldsData($"RevCmt{row + 1}", yoyakuComment);
                         SetFieldsData($"RevDoc{row + 1}", yoyakusyaName);
                         SetFieldsData($"RevUke{row + 1}", uketukeKbn);
-                        SetListDataRep("RevList", 0, 3, yoyakuDateTimeW);
-                        SetListDataRep("RevListS", 0, 3, yoyakuDateTimeS);
-                        SetListDataRep("RevCmtList", 0, 3, yoyakuComment);
-                        SetListDataRep("RevDocList", 0, 3, yoyakusyaName);
-                        SetListDataRep("RevUkeList", 0, 3, uketukeKbn);
-                        SetListsData("RevList_w", yoyakuDateTimeWW);
-                        SetListsData("RevListS_w", yoyakuDateTimeSW);
+                        SetListDataRep("RevList", 0, 3, 0, row, yoyakuDateTimeW);
+                        SetListDataRep("RevListS", 0, 3, 0, row, yoyakuDateTimeS);
+                        SetListDataRep("RevCmtList", 0, 3, 0, row, yoyakuComment);
+                        SetListDataRep("RevDocList", 0, 3, 0, row, yoyakusyaName);
+                        SetListDataRep("RevUkeList", 0, 3, 0, row, uketukeKbn);
+                        SetListsData("RevList_w", 0, row, yoyakuDateTimeWW);
+                        SetListsData("RevListS_w", 0, row, yoyakuDateTimeSW);
                     }
 
                     row++;
@@ -2556,14 +2575,16 @@ public class AccountingCoReportService : IAccountingCoReportService
             _printTeikeibun();
         }
 
+        // 本体
         void UpdateFormBody()
         {
             if (sinmeiPrintDataModels == null || sinmeiPrintDataModels.Count == 0)
             {
-                return;
+                _hasNextPage = false;
             }
 
-            List<(string field, int charCount, int rowCount)> sinmeiListPropertys = _sinmeiListPropertysPage1;
+            List<(string field, int charCount, int rowCount)> sinmeiListPropertys =
+                _sinmeiListPropertysPage1;
 
             int sinmeiListIndex = 0;
 
@@ -2573,18 +2594,18 @@ public class AccountingCoReportService : IAccountingCoReportService
                 sinmeiListPropertys = _sinmeiListPropertysPage2;
             }
 
-            if (!sinmeiListPropertys.Any() || sinmeiListPropertys[0].rowCount <= 0)
+            if (sinmeiListPropertys.Any() == false || sinmeiListPropertys[0].rowCount <= 0)
             {
                 if (CurrentPage == 1 && _sinmeiListPropertysPage2 != null && _sinmeiListPropertysPage2.Any() && sinmeiListPropertys[0].rowCount > 0)
                 {
                     // 1ページ目で、2ページ目以降にリストが存在する場合は、_hasNextPageはtrueのままにする
-                    return;
+                    return -1;
                 }
                 else
                 {
                     // リストのプロパティがない場合はreturn
                     _hasNextPage = false;
-                    return;
+                    return -1;
                 }
             }
 
@@ -2597,36 +2618,47 @@ public class AccountingCoReportService : IAccountingCoReportService
 
             for (int listIndex = 0; listIndex < sinmeiListPropertys.Count; listIndex++)
             {
+
                 int sinmeiRowCount = sinmeiListPropertys[listIndex].rowCount;
                 string field = sinmeiListPropertys[listIndex].field;
 
                 for (short i = 0; i < sinmeiRowCount; i++)
                 {
-                    ListText("lsSinKoui_" + field, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
-                    ListText("lsSinMei_" + field, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
-                    ListText("lsSinSuuryo_" + field, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
-                    ListText("lsSinTani_" + field, sinmeiPrintDataModels[sinmeiListIndex].Tani);
-                    ListText("lsSinTensu_" + field, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
-                    ListText("lsSinTotalTen_" + field, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
-                    ListText("lsSinKaisu_" + field, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
-                    ListText("lsSinKaisuTani_" + field, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
-                    ListText("lsSinTensuKaisu_" + field, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
+                    ListText("lsSinKoui_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
+                    ListText("lsSinMei_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
+                    ListText("lsSinSuuryo_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
+                    ListText("lsSinTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tani);
+                    ListText("lsSinTensu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
+                    ListText("lsSinTotalTen_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
+                    ListText("lsSinKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
+                    ListText("lsSinKaisuTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
+                    ListText("lsSinTensuKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
 
                     sinmeiListIndex++;
                     if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
                     {
+                        _hasNextPage = false;
                         break;
                     }
                 }
+
+                if (_hasNextPage == false)
+                {
+                    break;
+                }
             }
+
+            return sinmeiListIndex;
+            //return 1;
         }
+        #endregion
     }
 
     private void UpdateDrawFormList()
     {
         UpdateFormHeader();
         UpdateFormBody();
-
+        #region SubMethod
         // ヘッダー 
         void UpdateFormHeader()
         {
@@ -2744,13 +2776,6 @@ public class AccountingCoReportService : IAccountingCoReportService
                     SetFieldDataRep("SeikyuYm", 1, 2, $"{StartDate / 10000}年{StartDate % 10000 / 100}月");
                 }
             }
-            // ページ
-            void _printPage()
-            {
-                SetFieldDataRep("dfPage_", 1, 2, CurrentPage);
-                // 下位互換
-                SetFieldsData("Page", CurrentPage);
-            }
             // グループ名
             void _printGrpName()
             {
@@ -2781,7 +2806,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     {
                         if (ptGrpNameMstModels.Any(p => p.GrpId == grpId))
                         {
-                            SetFieldDataRep($"dfGrpCondition{grpId}_", 1, 2, ptGrpNameMstModels.Find(p => p.GrpId == grpId).GrpName);
+                            SetFieldDataRep($"dfGrpCondition{grpId}_", 1, 2, ptGrpNameMstModels.Find(p => p.GrpId == grpId)?.GrpName ?? string.Empty);
                         }
                     }
                 }
@@ -2796,16 +2821,13 @@ public class AccountingCoReportService : IAccountingCoReportService
                         if (ptGrpItemModels.Any(p => p.GrpId == grpId && p.GrpCode == grpCd) && GrpConditions.Count(p => p.grpId == grpId) == 1)
                         {
                             // 同一グループで複数の値が指定されている場合は印字なし
-                            SetFieldDataRep($"dfGrpItemCondition{grpId}_", 1, 2, ptGrpItemModels.Find(p => p.GrpId == grpId && p.GrpCode == grpCd).GrpCodeName);
+                            SetFieldDataRep($"dfGrpItemCondition{grpId}_", 1, 2, ptGrpItemModels.Find(p => p.GrpId == grpId && p.GrpCode == grpCd)?.GrpCodeName ?? string.Empty);
                         }
                     }
                 }
             }
             #endregion
             #endregion
-
-            // ページ
-            _printPage();
 
             // 医療機関関連
             #region HpInf
@@ -2854,87 +2876,85 @@ public class AccountingCoReportService : IAccountingCoReportService
             _printGrpCondition();
             // グループ項目名
             _printGrpItemCondition();
-
-            return 1;
         }
 
         // 本体
         void UpdateFormBody()
         {
-            List<int> jihiSbts = new();
+            List<int> jihiSbts = new List<int>();
 
             #region　print method
             // 患者番号
-            void _printPtNum(int index)
+            void _printPtNum(short row, int index)
             {
-                SetListDataRep("lsPtNum_", 1, 2, coModelList.KaikeiInfListModels[index].PtNum);
+                SetListDataRep("lsPtNum_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].PtNum);
                 // 下位互換
-                ListText("KanNoList", coModelList.KaikeiInfListModels[index].PtNum);
+                ListText("KanNoList", 0, row, coModelList.KaikeiInfListModels[index].PtNum);
             }
             // 患者氏名
-            void _printPtName(int index)
+            void _printPtName(short row, int index)
             {
-                SetListDataRep("lsPtName_", 1, 2, coModelList.KaikeiInfListModels[index].PtName);
+                SetListDataRep("lsPtName_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].PtName);
                 // 下位互換
-                ListText("KanNameList", coModelList.KaikeiInfListModels[index].PtName);
+                ListText("KanNameList", 0, row, coModelList.KaikeiInfListModels[index].PtName);
             }
             // 性別
-            void _printSex(int index)
+            void _printSex(short row, int index)
             {
-                SetListDataRep("lsSex_", 1, 2, coModelList.KaikeiInfListModels[index].PtSex);
+                SetListDataRep("lsSex_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].PtSex);
                 // 下位互換
-                ListText("KanSexList", coModelList.KaikeiInfListModels[index].PtSex);
+                ListText("KanSexList", 0, row, coModelList.KaikeiInfListModels[index].PtSex);
             }
             // 生年月日
-            void _printBirthDay(int index)
+            void _printBirthDay(short row, int index)
             {
-                SetListDataRepSW("lsBirthDay", 1, 2, coModelList.KaikeiInfListModels[index].BirthDay);
+                SetListDataRepSW("lsBirthDay", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].BirthDay);
                 // 年齢
-                SetListDataRep("lsAge_", 1, 2, CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, HakkoDay));
+                SetListDataRep("lsAge_", 1, 2, 0, row, CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, HakkoDay));
 
                 // 下位互換
-                ListText("KanBirthdayList", CIUtil.SDateToShowWDate3(coModelList.KaikeiInfListModels[index].BirthDay).Ymd +
+                ListText("KanBirthdayList", 0, row, CIUtil.SDateToShowWDate3(coModelList.KaikeiInfListModels[index].BirthDay).Ymd +
                     "(" + CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, HakkoDay).ToString() + "歳)");
             }
             // 郵便番号
-            void _printPtPostCd(int index)
+            void _printPtPostCd(short row, int index)
             {
-                SetListDataRep("lsPtPostCd_", 1, 2, coModelList.KaikeiInfListModels[index].PostCdDsp);
+                SetListDataRep("lsPtPostCd_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].PostCdDsp);
                 // 下位互換
-                ListText("KanZipList", coModelList.KaikeiInfListModels[index].PostCdDsp);
+                ListText("KanZipList", 0, row, coModelList.KaikeiInfListModels[index].PostCdDsp);
             }
             // 住所
-            void _printPtAddress(int index)
+            void _printPtAddress(short row, int index)
             {
-                SetListDataRep("lsPtAddress_", 1, 2, coModelList.KaikeiInfListModels[index].Address);
+                SetListDataRep("lsPtAddress_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Address);
                 // 下位互換
-                ListText("KanAddressList", coModelList.KaikeiInfListModels[index].Address);
+                ListText("KanAddressList", 0, row, coModelList.KaikeiInfListModels[index].Address);
             }
             // 電話番号
-            void _printPtTel(int index)
+            void _printPtTel(short row, int index)
             {
-                SetListDataRep("lsPtTel_", 1, 2, coModelList.KaikeiInfListModels[index].Tel);
+                SetListDataRep("lsPtTel_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Tel);
                 // 下位互換
-                ListText("KanTelList", coModelList.KaikeiInfListModels[index].Tel);
+                ListText("KanTelList", 0, row, coModelList.KaikeiInfListModels[index].Tel);
             }
             // 電話番号１
-            void _printPtTel1(int index)
+            void _printPtTel1(short row, int index)
             {
-                SetListDataRep("lsPtTel1_", 1, 2, coModelList.KaikeiInfListModels[index].Tel1);
+                SetListDataRep("lsPtTel1_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Tel1);
                 // 下位互換
-                ListText("KanTelList1", coModelList.KaikeiInfListModels[index].Tel1);
+                ListText("KanTelList1", 0, row, coModelList.KaikeiInfListModels[index].Tel1);
             }
             // 電話番号２
-            void _printPtTel2(int index)
+            void _printPtTel2(short row, int index)
             {
-                SetListDataRep("lsPtTel2_", 1, 2, coModelList.KaikeiInfListModels[index].Tel2);
+                SetListDataRep("lsPtTel2_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Tel2);
                 // 下位互換
-                ListText("KanTelList2", coModelList.KaikeiInfListModels[index].Tel2);
+                ListText("KanTelList2", 0, row, coModelList.KaikeiInfListModels[index].Tel2);
             }
             // 患者メモ
-            void _printPtMemo(int index)
+            void _printPtMemo(short row, int index)
             {
-                SetListDataRep("lsPtMemo_", 1, 2, coModelList.KaikeiInfListModels[index].Memo);
+                SetListDataRep("lsPtMemo_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Memo);
 
                 string[] del = { "\r\n", "\r", "\n" };
                 string[] splitPtMemos = coModelList.KaikeiInfListModels[index].Memo.Split(del, StringSplitOptions.None);
@@ -2954,174 +2974,176 @@ public class AccountingCoReportService : IAccountingCoReportService
 
 
             // 請求額
-            void _printSeikyuGaku(int index)
+            void _printSeikyuGaku(short row, int index)
             {
-                SetListDataRep("lsSeikyuGaku_", 1, 2, coModelList.KaikeiInfListModels[index].SeikyuGaku);
+                SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].SeikyuGaku);
                 // 下位互換
-                ListText("SeikyuList", coModelList.KaikeiInfListModels[index].SeikyuGaku);
+                ListText("SeikyuList", 0, row, coModelList.KaikeiInfListModels[index].SeikyuGaku);
             }
             // 入金額リスト
-            void _printNyukinGaku(int index)
+            void _printNyukinGaku(short row, int index)
             {
-                SetListDataRep("lsNyukinGaku_", 1, 2, coModelList.KaikeiInfListModels[index].NyukinGaku);
+                SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].NyukinGaku);
                 // 下位互換
-                ListText("KanNyuList", coModelList.KaikeiInfListModels[index].NyukinGaku);
+                ListText("KanNyuList", 0, row, coModelList.KaikeiInfListModels[index].NyukinGaku);
             }
             // 未収金リスト
-            void _printMisyu(int index)
+            void _printMisyu(short row, int index)
             {
-                SetListDataRep("lsMisyu_", 1, 2, coModelList.KaikeiInfListModels[index].Misyu);
+                SetListDataRep("lsMisyu_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Misyu);
                 // 下位互換
-                ListText("MisyuList", coModelList.KaikeiInfListModels[index].Misyu);
+                ListText("MisyuList", 0, row, coModelList.KaikeiInfListModels[index].Misyu);
             }
             // 総医療費
-            void _printTotalIryohi(int index)
+            void _printTotalIryohi(short row, int index)
             {
-                SetListDataRep("lsTotalIryohi_", 1, 2, coModelList.KaikeiInfListModels[index].TotalIryohi);
+                SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].TotalIryohi);
                 // 下位互換
-                ListText("DataGokeiList", coModelList.KaikeiInfListModels[index].TotalIryohi);
+                ListText("DataGokeiList", 0, row, coModelList.KaikeiInfListModels[index].TotalIryohi);
             }
             // 患者負担額
-            void _printPtFutan(int index)
+            void _printPtFutan(short row, int index)
             {
-                SetListDataRep("lsPtFutan_", 1, 2, 
+                SetListDataRep("lsPtFutan_", 1, 2, 0, row,
                     coModelList.KaikeiInfListModels[index].PtFutan +
+                    // coModelList.KaikeiInfListModels[index].AdjustFutan + 
                     coModelList.KaikeiInfListModels[index].AdjustRound);
                 // 下位互換
-                ListText("HoSeikyuList", 
+                ListText("HoSeikyuList", 0, row,
                     coModelList.KaikeiInfListModels[index].PtFutan +
+                    // coModelList.KaikeiInfListModels[index].AdjustFutan +
                     coModelList.KaikeiInfListModels[index].AdjustRound);
             }
             // 自費負担額
-            void _printJihiFutan(int index)
+            void _printJihiFutan(short row, int index)
             {
-                SetListDataRep("lsJihiFutan_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
+                SetListDataRep("lsJihiFutan_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
                 // 下位互換
-                ListText("JihiSeikyuList", coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
+                ListText("JihiSeikyuList", 0, row, coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
             }
             // 自費項目金額リスト
-            void _printJihiKoumoku(int index)
+            void _printJihiKoumoku(short row, int index)
             {
-                SetListDataRep("lsJihiKoumoku_", 1, 2, coModelList.KaikeiInfListModels[index].JihiKoumoku);
+                SetListDataRep("lsJihiKoumoku_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiKoumoku);
                 // 下位互換
-                ListText("HoGaiList", coModelList.KaikeiInfListModels[index].JihiKoumoku);
+                ListText("HoGaiList", 0, row, coModelList.KaikeiInfListModels[index].JihiKoumoku);
             }
             // 自費診療リスト
-            void _printJihiSinryo(int index)
+            void _printJihiSinryo(short row, int index)
             {
-                SetListDataRep("lsJihiSinryo_", 1, 2, coModelList.KaikeiInfListModels[index].JihiSinryo);
+                SetListDataRep("lsJihiSinryo_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiSinryo);
                 // 下位互換
-                ListText("JihiList", coModelList.KaikeiInfListModels[index].JihiSinryo);
+                ListText("JihiList", 0, row, coModelList.KaikeiInfListModels[index].JihiSinryo);
             }
             // 自費項目明細リスト
-            void _printJihiKoumokuDtl(int jihiSbt, int index)
+            void _printJihiKoumokuDtl(int jihiSbt, short row, int index)
             {
-                SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, coModelList.KaikeiInfListModels[index].JihiKoumokuDtlKingaku(jihiSbt));
+                SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiKoumokuDtlKingaku(jihiSbt));
                 // 下位互換
                 if (jihiSbt >= 1 && jihiSbt <= 5)
                 {
-                    ListText($"JihiList{jihiSbt}", coModelList.KaikeiInfListModels[index].JihiKoumokuDtlKingaku(jihiSbt));
+                    ListText($"JihiList{jihiSbt}", 0, row, coModelList.KaikeiInfListModels[index].JihiKoumokuDtlKingaku(jihiSbt));
                 }
             }
             // 自費非課税対象額
-            void _printJihiFutanFree(int index)
+            void _printJihiFutanFree(short row, int index)
             {
-                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutanFree);
+                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutanFree);
             }
             // 自費通常税率外税対象額
-            void _printJihiFutanOuttaxNr(int index)
+            void _printJihiFutanOuttaxNr(short row, int index)
             {
-                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutanOuttaxNr);
+                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutanOuttaxNr);
             }
             // 自費軽減税率外税対象額
-            void _printJihiFutanOuttaxGen(int index)
+            void _printJihiFutanOuttaxGen(short row, int index)
             {
-                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutanOuttaxGen);
+                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutanOuttaxGen);
             }
             // 自費通常税率内税対象額
-            void _printJihiFutanTaxNr(int index)
+            void _printJihiFutanTaxNr(short row, int index)
             {
-                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutanTaxNr);
+                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutanTaxNr);
             }
             // 自費軽減税率内税対象額
-            void _printJihiFutanTaxGen(int index)
+            void _printJihiFutanTaxGen(short row, int index)
             {
-                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, coModelList.KaikeiInfListModels[index].JihiFutanTaxGen);
+                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiFutanTaxGen);
             }
             // 自費外税
-            void _printJihiSotoZei(int index)
+            void _printJihiSotoZei(short row, int index)
             {
-                SetListDataRep("lsJihiSotoZei_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttax);
+                SetListDataRep("lsJihiSotoZei_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttax);
             }
             // 自費外税（通常税率分）
-            void _printJihiSotoZeiNr(int index)
+            void _printJihiSotoZeiNr(short row, int index)
             {
-                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttaxNr);
+                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttaxNr);
             }
             // 自費外税（軽減税率分）
-            void _printJihiSotoZeiGen(int index)
+            void _printJihiSotoZeiGen(short row, int index)
             {
-                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttaxGen);
+                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttaxGen);
             }
             // 自費内税
-            void _printJihiUchiZei(int index)
+            void _printJihiUchiZei(short row, int index)
             {
-                SetListDataRep("lsJihiUchiZei_", 1, 2, coModelList.KaikeiInfListModels[index].JihiTax);
+                SetListDataRep("lsJihiUchiZei_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiTax);
             }
             // 自費内税（通常税率）
-            void _printJihiUchiZeiNr(int index)
+            void _printJihiUchiZeiNr(short row, int index)
             {
-                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, coModelList.KaikeiInfListModels[index].JihiTaxNr);
+                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiTaxNr);
             }
             // 自費内税（軽減税率）
-            void _printJihiUchiZeiGen(int index)
+            void _printJihiUchiZeiGen(short row, int index)
             {
-                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, coModelList.KaikeiInfListModels[index].JihiTaxGen);
+                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiTaxGen);
             }
             // 消費税
-            void _printJihiZei(int index)
+            void _printJihiZei(short row, int index)
             {
-                SetListDataRep("lsJihiZei_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttax + coModelList.KaikeiInfListModels[index].JihiTax);
+                SetListDataRep("lsJihiZei_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttax + coModelList.KaikeiInfListModels[index].JihiTax);
             }
             // 消費税（通常税率）
-            void _printJihiZeiNr(int index)
+            void _printJihiZeiNr(short row, int index)
             {
-                SetListDataRep("lsJihiZeiNr_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttaxNr + coModelList.KaikeiInfListModels[index].JihiTaxNr);
+                SetListDataRep("lsJihiZeiNr_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttaxNr + coModelList.KaikeiInfListModels[index].JihiTaxNr);
             }
             // 消費税（軽減税率）
-            void _printJihiZeiGen(int index)
+            void _printJihiZeiGen(short row, int index)
             {
-                SetListDataRep("lsJihiZeiGen_", 1, 2, coModelList.KaikeiInfListModels[index].JihiOuttaxGen + coModelList.KaikeiInfListModels[index].JihiTaxGen);
+                SetListDataRep("lsJihiZeiGen_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].JihiOuttaxGen + coModelList.KaikeiInfListModels[index].JihiTaxGen);
             }
             // 自費税率別
-            void _printJihiByRate(int index)
+            void _printJihiByRate(short row, int index)
             {
                 foreach (TaxSum taxSum in coModelList.KaikeiInfListModels[index].TaxSums)
                 {
-                    SetListDataRep($"lsJihiFutanZei{taxSum.Rate}_", 1, 2, taxSum.OuttaxFutan);
-                    SetListDataRep($"lsJihiFutanUchi{taxSum.Rate}_", 1, 2, taxSum.TaxFutan);
-                    SetListDataRep($"lsJihiSotoZei{taxSum.Rate}_", 1, 2, taxSum.OuttaxZei);
-                    SetListDataRep($"lsJihiUchiZei{taxSum.Rate}_", 1, 2, taxSum.TaxZei);
-                    SetListDataRep($"lsJihiZei{taxSum.Rate}_", 1, 2, taxSum.OuttaxZei + taxSum.TaxZei);
+                    SetListDataRep($"lsJihiFutanZei{taxSum.Rate}_", 1, 2, 0, row, taxSum.OuttaxFutan);
+                    SetListDataRep($"lsJihiFutanUchi{taxSum.Rate}_", 1, 2, 0, row, taxSum.TaxFutan);
+                    SetListDataRep($"lsJihiSotoZei{taxSum.Rate}_", 1, 2, 0, row, taxSum.OuttaxZei);
+                    SetListDataRep($"lsJihiUchiZei{taxSum.Rate}_", 1, 2, 0, row, taxSum.TaxZei);
+                    SetListDataRep($"lsJihiZei{taxSum.Rate}_", 1, 2, 0, row, taxSum.OuttaxZei + taxSum.TaxZei);
                 }
             }
             // 点数
-            void _printTensu(int index)
+            void _printTensu(short row, int index)
             {
-                SetListDataRep("lsTensu_", 1, 2, coModelList.KaikeiInfListModels[index].Tensu);
+                SetListDataRep("lsTensu_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].Tensu);
                 // 下位互換
-                ListText("JihiList", coModelList.KaikeiInfListModels[index].Tensu);
+                ListText("JihiList", 0, row, coModelList.KaikeiInfListModels[index].Tensu);
             }
             // 総医療費
-            void _printTotalSeikyu(int index)
+            void _printTotalSeikyu(short row, int index)
             {
-                SetListDataRep("lsTotalSeikyu_", 1, 2, coModelList.KaikeiInfListModels[index].TotalIryohi + coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
+                SetListDataRep("lsTotalSeikyu_", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].TotalIryohi + coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
                 // 下位互換
-                ListText("ALLDataGokeiList", coModelList.KaikeiInfListModels[index].TotalIryohi + coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
+                ListText("ALLDataGokeiList", 0, row, coModelList.KaikeiInfListModels[index].TotalIryohi + coModelList.KaikeiInfListModels[index].JihiFutan + coModelList.KaikeiInfListModels[index].JihiOuttax);
 
             }
             //自費種別別金額内訳
-            void _printJihiSbtKingaku(int index)
+            void _printJihiSbtKingaku(short row, int index)
             {
                 // 自費種別別金額
                 foreach (string ListObjectName in CoRep.ObjectNames.FindAll(p => p.StartsWith("lsJihiSbt_")))
@@ -3133,54 +3155,59 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                     foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0)
                         {
-                            kingaku += coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
+                            if (coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
+                            {
+                                kingaku += coModelList.KaikeiInfListModels[index].JihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
+                            }
                         }
                     }
-                    ListText(ListObjectName, kingaku);
+
+                    ListText(ListObjectName, 0, row, kingaku.ToString());
                 }
             }
             // 合計
-            void _printGokei()
+            void _printGokei(short row)
             {
-                SetListDataRep("lsPtNum_", 1, 2, "合　計");
-                SetListDataRep("lsPtName_", 1, 2, $"{TotalPtCount} 件");
-                SetListDataRep("lsSeikyuGaku_", 1, 2, TotalSeikyuGaku);
-                SetListDataRep("lsNyukinGaku_", 1, 2, TotalNyukinGaku);
-                SetListDataRep("lsMisyu_", 1, 2, TotalMisyu);
-                SetListDataRep("lsTotalIryohi_", 1, 2, TotalIryohi);
-                SetListDataRep("lsPtFutan_", 1, 2, TotalPtFutan);
-                SetListDataRep("lsJihiFutan_", 1, 2, TotalJihiFutan);
-                SetListDataRep("lsJihiKoumoku_", 1, 2, TotalJihiKoumoku);
-                SetListDataRep("lsJihiSinryo_", 1, 2, TotalJihiSinryo);
+                SetListDataRep("lsPtNum_", 1, 2, 0, row, "合　計");
+                SetListDataRep("lsPtName_", 1, 2, 0, row, $"{TotalPtCount} 件");
+                SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, TotalSeikyuGaku);
+                SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, TotalNyukinGaku);
+                SetListDataRep("lsMisyu_", 1, 2, 0, row, TotalMisyu);
+                SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, TotalIryohi);
+                SetListDataRep("lsPtFutan_", 1, 2, 0, row, TotalPtFutan);
+                SetListDataRep("lsJihiFutan_", 1, 2, 0, row, TotalJihiFutan);
+                SetListDataRep("lsJihiKoumoku_", 1, 2, 0, row, TotalJihiKoumoku);
+                SetListDataRep("lsJihiSinryo_", 1, 2, 0, row, TotalJihiSinryo);
 
                 // 自費負担額
-                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, TotalJihiFutanFree);
-                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, TotalJihiFutanOuttaxNr);
-                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, TotalJihiFutanOuttaxGen);
-                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, TotalJihiFutanTaxNr);
-                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, TotalJihiFutanTaxGen);
+                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, 0, row, TotalJihiFutanFree);
+                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, 0, row, TotalJihiFutanOuttaxNr);
+                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, 0, row, TotalJihiFutanOuttaxGen);
+                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, 0, row, TotalJihiFutanTaxNr);
+                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, 0, row, TotalJihiFutanTaxGen);
+
                 foreach (var jihiSbt in jihiSbts.Where(jihiSbt => TotalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
                     (int jihiSbt, double kingaku) totalJihiKoumokuDtl = TotalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
-                    SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, totalJihiKoumokuDtl.kingaku);
+                    SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, 0, row, totalJihiKoumokuDtl.kingaku);
                 }
 
                 // 外税
-                SetListDataRep("lsJihiSotoZei_", 1, 2, TotalSotoZei);
-                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, TotalSotoZeiNr);
-                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, TotalSotoZeiGen);
+                SetListDataRep("lsJihiSotoZei_", 1, 2, 0, row, TotalSotoZei);
+                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, 0, row, TotalSotoZeiNr);
+                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, 0, row, TotalSotoZeiGen);
 
                 // 内税
-                SetListDataRep("lsJihiUchiZei_", 1, 2, TotalUchiZei);
-                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, TotalUchiZeiNr);
-                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, TotalUchiZeiGen);
+                SetListDataRep("lsJihiUchiZei_", 1, 2, 0, row, TotalUchiZei);
+                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, 0, row, TotalUchiZeiNr);
+                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, 0, row, TotalUchiZeiGen);
 
                 // 消費税
-                SetListDataRep("lsJihiZei_", 1, 2, TotalZei);
-                SetListDataRep("lsJihiZeiNr_", 1, 2, TotalZeiNr);
-                SetListDataRep("lsJihiZeiGen_", 1, 2, TotalZeiGen);
+                SetListDataRep("lsJihiZei_", 1, 2, 0, row, TotalZei);
+                SetListDataRep("lsJihiZeiNr_", 1, 2, 0, row, TotalZeiNr);
+                SetListDataRep("lsJihiZeiGen_", 1, 2, 0, row, TotalZeiGen);
 
                 SetFieldDataRep("dfPtCount_", 1, 2, TotalPtCount);
                 SetFieldDataRep("dfTotalTensu_", 1, 2, TotalTensu);
@@ -3211,28 +3238,26 @@ public class AccountingCoReportService : IAccountingCoReportService
                 SetFieldDataRep("dfJihiFutanUchiGen_", 1, 2, TotalJihiFutanTaxGen);
 
                 // 下位互換
-                ListText("KanNoList", "合　計");
-                ListText("KanNameList", $"{TotalPtCount} 件");
-                ListText("SeikyuList", TotalSeikyuGaku);
-                ListText("KanNyuList", TotalNyukinGaku);
-                ListText("MisyuList", TotalMisyu);
-                ListText("DataGokeiList", TotalIryohi);
-                ListText("HoSeikyuList", TotalPtFutan);
-                ListText("JihiSeikyuList", TotalJihiFutan);
-                ListText("HoGaiList", TotalJihiKoumoku);
-                ListText("JihiList", TotalJihiSinryo);
-
+                ListText("KanNoList", 0, row, "合　計");
+                ListText("KanNameList", 0, row, $"{TotalPtCount} 件");
+                ListText("SeikyuList", 0, row, TotalSeikyuGaku);
+                ListText("KanNyuList", 0, row, TotalNyukinGaku);
+                ListText("MisyuList", 0, row, TotalMisyu);
+                ListText("DataGokeiList", 0, row, TotalIryohi);
+                ListText("HoSeikyuList", 0, row, TotalPtFutan);
+                ListText("JihiSeikyuList", 0, row, TotalJihiFutan);
+                ListText("HoGaiList", 0, row, TotalJihiKoumoku);
+                ListText("JihiList", 0, row, TotalJihiSinryo);
                 foreach (var jihiSbt in jihiSbts.Where(jihiSbt => TotalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
                     (int jihiSbt, double kingaku) totalJihiKoumokuDtl = TotalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
-                    ListText($"JihiList{jihiSbt}", totalJihiKoumokuDtl.kingaku);
+                    ListText($"JihiList{jihiSbt}", 0, row, totalJihiKoumokuDtl.kingaku);
                 }
 
                 SetFieldsData("KanKei", TotalPtCount);
                 SetFieldsData("SinTenKei", TotalTensu);
                 SetFieldsData("SinTenAve", Math.Round((double)(TotalTensu / TotalPtCount), MidpointRounding.AwayFromZero));
 
-                // 自費種別別金額
                 foreach (string ListObjectName in CoRep.ObjectNames)
                 {
                     if (ListObjectName.StartsWith("lsJihiSbt_"))
@@ -3244,16 +3269,13 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                         foreach (string jihiSbtCd in jihiSbtCds)
                         {
-                            if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0)
+                            if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && TotalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
                             {
-                                if (TotalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
-                                {
-                                    kingaku += TotalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
-                                }
+                                kingaku += TotalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
                             }
                         }
 
-                        ListText(ListObjectName, kingaku.ToString());
+                        ListText(ListObjectName, 0, row, kingaku.ToString());
                     }
                 }
             }
@@ -3327,16 +3349,19 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
             #endregion
 
-            if (coModelList.KaikeiInfListModels == null || !coModelList.KaikeiInfListModels.Any())
+            if (coModelList.KaikeiInfListModels == null || coModelList.KaikeiInfListModels.Any() == false)
             {
-                return;
+                _hasNextPage = false;
+                return -1;
             }
 
             int listIndex = (CurrentPage - 1) * ListGridRowCount;
 
             if (listIndex >= coModelList.KaikeiInfListModels.Count)
             {
-                _printGokei();
+                _printGokei(0);
+                _hasNextPage = false;
+                return -1;
             }
             else if (ListGridRowCount <= 0)
             {
@@ -3347,65 +3372,67 @@ public class AccountingCoReportService : IAccountingCoReportService
                 }
 
                 // 合計出力
-                _printGokei();
+                _printGokei(0);
+
+                _hasNextPage = false;
             }
             else
             {
                 for (short i = 0; i < ListGridRowCount; i++)
                 {
                     // 患者番号
-                    _printPtNum(listIndex);
+                    _printPtNum(i, listIndex);
 
                     // 患者氏名
-                    _printPtName(listIndex);
+                    _printPtName(i, listIndex);
 
                     // 性別
-                    _printSex(listIndex);
+                    _printSex(i, listIndex);
 
                     // 生年月日と年齢
-                    _printBirthDay(listIndex);
+                    _printBirthDay(i, listIndex);
 
                     // 郵便番号
-                    _printPtPostCd(listIndex);
+                    _printPtPostCd(i, listIndex);
 
                     // 住所
-                    _printPtAddress(listIndex);
+                    _printPtAddress(i, listIndex);
 
                     // 電話
-                    _printPtTel(listIndex);
+                    _printPtTel(i, listIndex);
 
                     // 電話１
-                    _printPtTel1(listIndex);
+                    _printPtTel1(i, listIndex);
 
                     // 電話２
-                    _printPtTel2(listIndex);
+                    _printPtTel2(i, listIndex);
 
                     // 患者メモ
-                    _printPtMemo(listIndex);
+                    _printPtMemo(i, listIndex);
 
                     // 請求金額リスト
-                    _printSeikyuGaku(listIndex);
+                    _printSeikyuGaku(i, listIndex);
 
                     // 入金額リスト
-                    _printNyukinGaku(listIndex);
+                    _printNyukinGaku(i, listIndex);
 
                     // 未収金リスト
-                    _printMisyu(listIndex);
+                    _printMisyu(i, listIndex);
 
                     // 総医療費リスト
-                    _printTotalIryohi(listIndex);
+                    _printTotalIryohi(i, listIndex);
 
                     // 患者負担額リスト
-                    _printPtFutan(listIndex);
+                    _printPtFutan(i, listIndex);
 
                     // 自費負担リスト
-                    _printJihiFutan(listIndex);
+                    _printJihiFutan(i, listIndex);
 
                     // 自費項目金額リスト
-                    _printJihiKoumoku(listIndex);
+                    _printJihiKoumoku(i, listIndex);
 
                     // 自費診療リスト
-                    _printJihiSinryo(listIndex);
+                    _printJihiSinryo(i, listIndex);
 
                     // 自費項目明細金額
                     jihiSbts = coModelList.GetJihiSbt();
@@ -3416,50 +3443,50 @@ public class AccountingCoReportService : IAccountingCoReportService
                     }
 
                     // 自費非課税対象額
-                    _printJihiFutanFree(listIndex);
+                    _printJihiFutanFree(i, listIndex);
 
                     // 自費通常税率外税対象額
-                    _printJihiFutanOuttaxNr(listIndex);
+                    _printJihiFutanOuttaxNr(i, listIndex);
 
                     // 自費軽減税率外税対象額
-                    _printJihiFutanOuttaxGen(listIndex);
+                    _printJihiFutanOuttaxGen(i, listIndex);
 
                     // 自費通常税率内税対象額
-                    _printJihiFutanTaxNr(listIndex);
+                    _printJihiFutanTaxNr(i, listIndex);
 
                     // 自費軽減税率内税対象額
-                    _printJihiFutanTaxGen(listIndex);
+                    _printJihiFutanTaxGen(i, listIndex);
 
                     // 自費外税
-                    _printJihiSotoZei(listIndex);
+                    _printJihiSotoZei(i, listIndex);
                     // 自費外税（通常税率）
-                    _printJihiSotoZeiNr(listIndex);
+                    _printJihiSotoZeiNr(i, listIndex);
                     // 自費外税（軽減税率）
-                    _printJihiSotoZeiGen(listIndex);
+                    _printJihiSotoZeiGen(i, listIndex);
 
                     // 自費内税
-                    _printJihiUchiZei(listIndex);
+                    _printJihiUchiZei(i, listIndex);
                     // 自費内税（通常税率）
-                    _printJihiUchiZeiNr(listIndex);
+                    _printJihiUchiZeiNr(i, listIndex);
                     // 自費内税（軽減税率）
-                    _printJihiUchiZeiGen(listIndex);
+                    _printJihiUchiZeiGen(i, listIndex);
 
                     // 自費消費税
-                    _printJihiZei(listIndex);
+                    _printJihiZei(i, listIndex);
                     // 自費消費税（通常税率）
-                    _printJihiZeiNr(listIndex);
+                    _printJihiZeiNr(i, listIndex);
                     // 自費消費税（軽減税率）
-                    _printJihiZeiGen(listIndex);
+                    _printJihiZeiGen(i, listIndex);
                     // 自費税率別
-                    _printJihiByRate(listIndex);
+                    _printJihiByRate(i, listIndex);
                     // 点数
-                    _printTensu(listIndex);
+                    _printTensu(i, listIndex);
 
                     //自費種別別金額内訳
-                    _printJihiSbtKingaku(listIndex);
+                    _printJihiSbtKingaku(i, listIndex);
 
                     // 総医療費＋総自費
-                    _printTotalSeikyu(listIndex);
+                    _printTotalSeikyu(i, listIndex);
 
                     // 合計の変数に足す
                     _addTotal(listIndex);
@@ -3471,12 +3498,16 @@ public class AccountingCoReportService : IAccountingCoReportService
                         {
                             // 合計出力
                             _printGokei((short)(i + 1));
+
+                            _hasNextPage = false;
                         }
+
                         break;
                     }
                 }
             }
         }
+        #endregion
     }
 
     /// <summary>
@@ -3617,19 +3648,6 @@ public class AccountingCoReportService : IAccountingCoReportService
         return result;
     }
 
-
-    /// <summary>
-    /// baseStrにfrom~toの数値を付与したフィールドにValueをセットする
-    /// </summary>
-    /// <param name="baseStr">フィールド名の基礎になる文字列</param>
-    /// <param name="from">フィールド名の添え字開始</param>
-    /// <param name="to">フィールド名の添え字終了</param>
-    /// <param name="value">出力する値</param>
-    void SetFieldDataRep(string baseStr, int from, int to, object value)
-    {
-        SetFieldsData(MakeFieldNames(baseStr, from, to), value);
-    }
-
     void SetFieldsData(List<string> fieldList, object value)
     {
         foreach (string field in fieldList)
@@ -3646,19 +3664,25 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
     }
 
-    public void ListText(string listName, object data)
+    public void ListText(string listName, short col, short row, object data)
     {
-        Dictionary<string, CellModel> dataCellModel = new();
-        dataCellModel.Add(listName, new CellModel(data.AsString()));
-        _tableFieldDataResult.Add(dataCellModel);
+        var item = new ListTextModel(listName, col, row, data.AsString());
+        _listTextModelResult.Add(item);
     }
 
-    /// <summary>
-    /// baseStrにfrom~toの数値を付与したフィールドのリストを生成する
-    /// </summary>
-    /// <param name="baseStr">フィールド名の基礎になる文字列</param>
-    /// <param name="from">フィールド名の添え字開始</param>
-    /// <param name="to">フィールド名の添え字終了</param>
+    void SetFieldDataRep(string baseStr, int from, int to, object Value)
+    {
+        SetFieldsData(MakeFieldNames(baseStr, from, to), Value);
+    }
+
+    void SetFieldDataRepSW(string baseStr, int from, int to, int date)
+    {
+        // 西暦
+        SetFieldsData(MakeFieldNames(baseStr + "S_", from, to), CIUtil.SDateToShowSDate(date));
+        // 和暦
+        SetFieldsData(MakeFieldNames(baseStr + "W_", from, to), CIUtil.SDateToShowWDate3(date).Ymd);
+    }
+
     List<string> MakeFieldNames(string baseStr, int from, int to)
     {
         List<string> results = new();
@@ -3674,7 +3698,12 @@ public class AccountingCoReportService : IAccountingCoReportService
                 results.Add($"{baseStr}{i}");
             }
         }
+
         return results;
+    }
+    void SetListDataRep(string baseStr, int from, int to, short col, short row, object Value)
+    {
+        SetListsData(MakeFieldNames(baseStr, from, to), col, row, Value);
     }
 
     /// <summary>
@@ -3683,72 +3712,33 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// <param name="baseStr">フィールド名の基礎になる文字列</param>
     /// <param name="from">フィールド名の添え字開始</param>
     /// <param name="to">フィールド名の添え字終了</param>
+    /// <param name="col">列</param>
+    /// <param name="row">行</param>
     /// <param name="date">日付(yyyyMMdd)</param>
-    void SetFieldDataRepSW(string baseStr, int from, int to, int date)
+
+    void SetListDataRepSW(string baseStr, int from, int to, short col, short row, int date)
     {
         // 西暦
-        SetFieldsData(MakeFieldNames(baseStr + "S_", from, to), CIUtil.SDateToShowSDate(date));
+        SetListsData(MakeFieldNames(baseStr + "S_", from, to), col, row, CIUtil.SDateToShowSDate(date));
         // 和暦
-        SetFieldsData(MakeFieldNames(baseStr + "W_", from, to), CIUtil.SDateToShowWDate3(date).Ymd);
+        SetListsData(MakeFieldNames(baseStr + "W_", from, to), col, row, CIUtil.SDateToShowWDate3(date).Ymd);
     }
 
-    /// <summary>
-    /// 指定のDateTimeが、StartDateとEndDateの期間内かどうか
-    /// </summary>
-    /// <param name="date">判断する日付</param>
-    /// <returns>ture-StartDateとEndDateの期間内</returns>
+    void SetListsData(List<string> fieldList, short col, short row, object Value)
+    {
+        foreach (string Field in fieldList)
+        {
+            ListText(Field, col, row, Value);
+        }
+    }
+    void SetListsData(string field, short col, short row, object Value)
+    {
+        ListText(field, col, row, Value);
+    }
+
     bool betweenStartEnd(DateTime date)
     {
         return (CIUtil.DateTimeToInt(date) >= StartDate &&
                 CIUtil.DateTimeToInt(date) <= EndDate);
-    }
-
-    /// <summary>
-    /// baseStrにfrom~toの数値を付与したリストフィールドのcol/rowにValueをセットする
-    /// </summary>
-    /// <param name="baseStr">フィールド名の基礎になる文字列</param>
-    /// <param name="from">フィールド名の添え字開始</param>
-    /// <param name="to">フィールド名の添え字終了</param>
-    /// <param name="value">出力する値</param>
-    void SetListDataRep(string baseStr, int from, int to, object value)
-    {
-        SetListsData(MakeFieldNames(baseStr, from, to), value.AsString());
-    }
-
-    /// <summary>
-    /// Fieldsリストで指定したすべてリストフィールドのcol/rowにValueをセットする
-    /// </summary>
-    /// <param name="fieldList">出力するリストフィールド名のリスト</param>
-    /// <param name="col">列</param>
-    /// <param name="row">行</param>
-    /// <param name="value">出力する値</param>
-    void SetListsData(List<string> fieldList, string value)
-    {
-        foreach (string field in fieldList)
-        {
-            ListText(field, value);
-        }
-    }
-    void SetListsData(string field, string value)
-    {
-        ListText(field, value);
-    }
-
-    /// <summary>
-    /// 西暦(baseStr+S)と和暦(baseStr+W)の印字
-    /// </summary>
-    /// <param name="baseStr">フィールド名の基礎になる文字列</param>
-    /// <param name="from">フィールド名の添え字開始</param>
-    /// <param name="to">フィールド名の添え字終了</param>
-    /// <param name="col">列</param>
-    /// <param name="row">行</param>
-    /// <param name="date">日付(yyyyMMdd)</param>
-
-    void SetListDataRepSW(string baseStr, int from, int to, int date)
-    {
-        // 西暦
-        SetListsData(MakeFieldNames(baseStr + "S_", from, to), CIUtil.SDateToShowSDate(date));
-        // 和暦
-        SetListsData(MakeFieldNames(baseStr + "W_", from, to), CIUtil.SDateToShowWDate3(date).Ymd);
     }
 }

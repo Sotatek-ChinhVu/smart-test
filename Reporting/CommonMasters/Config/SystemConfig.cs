@@ -686,15 +686,15 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 領収証定型文 1行目
     /// </summary>
-    public string AccountingTeikeibun1 => GetSettingParam(93004, 1);
+    public string AccountingTeikeibun1() { return GetSettingParam(93004, 1); }
     /// <summary>
     /// 領収証定型文 2行目
     /// </summary>
-    public string AccountingTeikeibun2 => GetSettingParam(93004, 2);
+    public string AccountingTeikeibun2() { return GetSettingParam(93004, 2); }
     /// <summary>
     /// 領収証定型文 3行目
     /// </summary>
-    public string AccountingTeikeibun3 => GetSettingParam(93004, 3);
+    public string AccountingTeikeibun3() { return GetSettingParam(93004, 3); }
     /// <summary>
     /// 光ディスク送付書備考欄
     ///     0:総件数を記載しない
@@ -873,7 +873,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// </summary>
     public int InnaishohosenConf => (int)GetSettingValue(92002);
     public int InnaishohosenCheckMachine => (int)GetSettingValue(92002, 2);
-    public string InnaishohosenCheckMachineParam => GetSettingParam(92002, 2, "KrtRenkei,TKImport");
+    public string InnaishohosenCheckMachineParam() { return GetSettingParam(92002, 2, "KrtRenkei,TKImport"); }
 
     /// <summary>
     /// お薬手帳シール 92006
@@ -915,7 +915,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル（内服／用紙小・プリンタ）
     /// </summary>
-    public string YakutaiNaifukuPaperSmallPrinter => GetSettingParam(92005, 11);
+    public string YakutaiNaifukuPaperSmallPrinter() { return GetSettingParam(92005, 11); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙中・最小服用量）
     /// </summary>
@@ -923,7 +923,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル（内服／用紙中・プリンタ）
     /// </summary>
-    public string YakutaiNaifukuPaperNormalPrinter => GetSettingParam(92005, 12);
+    public string YakutaiNaifukuPaperNormalPrinter() { return GetSettingParam(92005, 12); }
     /// <summary>
     /// 薬袋ラベル（内服／用紙大・最小服用量）
     /// </summary>
@@ -931,7 +931,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 薬袋ラベル（内服／用紙大・プリンタ）
     /// </summary>
-    public string YakutaiNaifukuPaperBigPrinter => GetSettingParam(92005, 13);
+    public string YakutaiNaifukuPaperBigPrinter() { return GetSettingParam(92005, 13); }
     /// <summary>
     /// （頓服／用紙小）
     /// </summary>
@@ -939,7 +939,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙小・プリンタ）
     /// </summary>
-    public string YakutaiTonpukuPaperSmallPrinter => GetSettingParam(92005, 21);
+    public string YakutaiTonpukuPaperSmallPrinter() { return GetSettingParam(92005, 21); }
     /// <summary>
     /// （頓服／用紙中・最小服用量）
     /// </summary>
@@ -947,7 +947,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙中・プリンタ）
     /// </summary>
-    public string YakutaiTonpukuPaperNormalPrinter => GetSettingParam(92005, 22);
+    public string YakutaiTonpukuPaperNormalPrinter() { return GetSettingParam(92005, 22); }
     /// <summary>
     /// （頓服／用紙大・最小服用量）
     /// </summary>
@@ -955,7 +955,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （頓服／用紙大・プリンタ）
     /// </summary>
-    public string YakutaiTonpukuPaperBigPrinter => GetSettingParam(92005, 23);
+    public string YakutaiTonpukuPaperBigPrinter() { return GetSettingParam(92005, 23); }
     /// <summary>
     /// （外用／用紙小）
     /// </summary>
@@ -963,7 +963,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙小・プリンタ）
     /// </summary>
-    public string YakutaiGaiyoPaperSmallPrinter => GetSettingParam(92005, 31);
+    public string YakutaiGaiyoPaperSmallPrinter() { return GetSettingParam(92005, 31); }
     /// <summary>
     /// （外用／用紙中・最小服用量）
     /// </summary>
@@ -971,7 +971,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙中・プリンタ）
     /// </summary>
-    public string YakutaiGaiyoPaperNormalPrinter => GetSettingParam(92005, 32);
+    public string YakutaiGaiyoPaperNormalPrinter() { return GetSettingParam(92005, 32); }
     /// <summary>
     /// （外用／用紙大・最小服用量）
     /// </summary>
@@ -979,7 +979,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// （外用／用紙大・プリンタ）
     /// </summary>
-    public string YakutaiGaiyoPaperBigPrinter => GetSettingParam(92005, 33);
+    public string YakutaiGaiyoPaperBigPrinter() { return GetSettingParam(92005, 33); }
     /// <summary>
     /// 薬袋ラベル用紙サイズ  
     /// </summary>
@@ -987,13 +987,13 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 服用時点別一包化指示項目
     /// </summary>
-    public string YakutaiFukuyojiIppokaItemCd => GetSettingParam(92005, 40);
+    public string YakutaiFukuyojiIppokaItemCd() { return GetSettingParam(92005, 40); }
     /// <summary>
     /// 薬情 92004
     /// </summary>
     public int Kusurijo => (int)GetSettingValue(92004);
     public int KusurijoCheckMachine => (int)GetSettingValue(92004, 16);
-    public string KusurijoCheckMachineParam => GetSettingParam(92004, 16, "KrtRenkei,TKImport");
+    public string KusurijoCheckMachineParam() { return GetSettingParam(92004, 16, "KrtRenkei,TKImport"); }
 
     /// <summary>
     /// 院外処方箋 92003
@@ -1001,7 +1001,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     public int IngaiShohosen => (int)GetSettingValue(92003);
 
     public int IngaiShohosenCheckMachine => (int)GetSettingValue(92003, 8);
-    public string IngaiShohosenCheckMachineParam => GetSettingParam(92003, 8, "KrtRenkei,TKImport");
+    public string IngaiShohosenCheckMachineParam() { return GetSettingParam(92003, 8, "KrtRenkei,TKImport"); }
 
     /// <summary>
     /// カルテ２号紙 92007
@@ -1025,7 +1025,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     public int OrderLabelEda1 => (int)GetSettingValue(92001, 1);
     public int OrderLabelCheckMachine => (int)GetSettingValue(92001, 9);
 
-    public string OrderLabelCheckMachineParam => GetSettingParam(92001, 9, "KrtRenkei,TKImport");
+    public string OrderLabelCheckMachineParam() { return GetSettingParam(92001, 9, "KrtRenkei,TKImport"); }
 
     /// <summary>
     /// 検査ラベル
@@ -1071,16 +1071,19 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ　名称
     /// </summary>
-    public string TeamKarteName => GetSettingParam(100021, 3);
+    public string TeamKarteName()
+    {
+        return GetSettingParam(100021, 3);
+    }
     /// <summary>
     /// チームカルテ　アップロード対象患者グループ
     /// グループID,グループコード
     /// </summary>
-    public string TeamKarteTargetGrpId => GetSettingParam(100021, 4);
+    public string TeamKarteTargetGrpId() { return GetSettingParam(100021, 4); }
     /// <summary>
     /// チームカルテ　ファイル保存先
     /// </summary>
-    public string TeamKarteFilePath => GetSettingParam(100021, 5);
+    public string TeamKarteFilePath() { return GetSettingParam(100021, 5); }
     /// <summary>
     /// チームカルテ　訪問施設グループID
     /// </summary>
@@ -1092,7 +1095,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ TK完了区分（来院区分　区分コード）
     /// </summary>
-    public string TeamKarteFinishRaiinKbnCd => GetSettingParam(100021, 7);
+    public string TeamKarteFinishRaiinKbnCd() { return GetSettingParam(100021, 7); }
     /// <summary>
     /// チームカルテ　検歴連携タイプ
     /// 0-Planet改, 1-Planet Next
@@ -1101,7 +1104,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ　検歴連携　最終連携日(yyyyMMdd)
     /// </summary>
-    public string TeamKarteKenrekiLastDate => GetSettingParam(100021, 9);
+    public string TeamKarteKenrekiLastDate()
+    {
+        return GetSettingParam(100021, 9);
+    }
     /// <summary>
     /// チームカルテ　検歴連携　連携時刻(HHmm)
     /// </summary>
@@ -1109,19 +1115,31 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ　FTPサーバー
     /// </summary>
-    public string TeamKarteFTPServer => GetSettingParam(100021, 10);
+    public string TeamKarteFTPServer()
+    {
+        return GetSettingParam(100021, 10);
+    }
     /// <summary>
     /// チームカルテ　FTPユーザー名
     /// </summary>
-    public string TeamKarteFTPUser => GetSettingParam(100021, 11);
+    public string TeamKarteFTPUser()
+    {
+        return GetSettingParam(100021, 11);
+    }
     /// <summary>
     /// チームカルテ　FTPパスワード
     /// </summary>
-    public string TeamKarteFTPPassword => GetSettingParam(100021, 12);
+    public string TeamKarteFTPPassword()
+    {
+        return GetSettingParam(100021, 12);
+    }
     /// <summary>
     /// チームカルテ　メールサーバー
     /// </summary>
-    public string TeamKarteMailServer => GetSettingParam(100021, 13);
+    public string TeamKarteMailServer()
+    {
+        return GetSettingParam(100021, 13);
+    }
     /// <summary>
     /// チームカルテ　メールサーバーポート
     /// </summary>
@@ -1129,35 +1147,59 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ　メールユーザー名
     /// </summary>
-    public string TeamKarteMailUser => GetSettingParam(100021, 14);
+    public string TeamKarteMailUser()
+    {
+        return GetSettingParam(100021, 14);
+    }
     /// <summary>
     /// チームカルテ　メールパスワード
     /// </summary>
-    public string TeamKarteMailPassword => GetSettingParam(100021, 15);
+    public string TeamKarteMailPassword()
+    {
+        return GetSettingParam(100021, 15);
+    }
     /// <summary>
     /// チームカルテ　検歴センターコード
     /// </summary>
-    public string TeamKarteKenrekiCenterCd => GetSettingParam(100021, 16);
+    public string TeamKarteKenrekiCenterCd()
+    {
+        return GetSettingParam(100021, 16);
+    }
     /// <summary>
     /// チームカルテ　検歴　院内検査項目付加文字列
     /// </summary>
-    public string TeamKarteKenrekiInnaiFuka => GetSettingParam(100021, 17);
+    public string TeamKarteKenrekiInnaiFuka()
+    {
+        return GetSettingParam(100021, 17);
+    }
     /// <summary>
     /// チームカルテ　検歴ホスト
     /// </summary>
-    public string TeamKarteKenrekiHost => GetSettingParam(100021, 18);
+    public string TeamKarteKenrekiHost()
+    {
+        return GetSettingParam(100021, 18);
+    }
     /// <summary>
     /// チームカルテ　検歴データベース
     /// </summary>
-    public string TeamKarteKenrekiDB => GetSettingParam(100021, 19);
+    public string TeamKarteKenrekiDB()
+    {
+        return GetSettingParam(100021, 19);
+    }
     /// <summary>
     /// チームカルテ　検歴ユーザー名
     /// </summary>
-    public string TeamKarteKenrekiUser => GetSettingParam(100021, 20);
+    public string TeamKarteKenrekiUser()
+    {
+        return GetSettingParam(100021, 20);
+    }
     /// <summary>
     /// チームカルテ　検歴パスワード
     /// </summary>
-    public string TeamKarteKenrekiPassword => GetSettingParam(100021, 21);
+    public string TeamKarteKenrekiPassword()
+    {
+        return GetSettingParam(100021, 21);
+    }
     /// <summary>
     /// チームカルテ　来院コメント追加オプション　0-しない　1-する
     /// </summary>
@@ -1169,7 +1211,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// チームカルテ　施設別コード（敬任会用）
     /// </summary>
-    public string TeamKarteSisetubetuCd => GetSettingParam(100021, 24);
+    public string TeamKarteSisetubetuCd()
+    {
+        return GetSettingParam(100021, 24);
+    }
     /// <summary>
     /// チームカルテ　カルテ削除連携　0-する、1-しない
     /// </summary>
@@ -1190,7 +1235,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 来院情報連携　保険チェック　<未登録時の来院区分設定値>,<期限切れのみ時の来院区分設定値>,<未確認時の来院区分設定値>
     /// </summary>
-    public string RaiinRenkeiHokenCheckParam => GetSettingParam(100020, 1);
+    public string RaiinRenkeiHokenCheckParam()
+    {
+        return GetSettingParam(100020, 1);
+    }
     /// <summary>
     /// 来院情報連携　新患登録時、自費レセ保険自動追加
     /// </summary>
@@ -1198,7 +1246,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 来院情報連携　受付種別変換設定　<適用開始時刻(HHmm),<適用終了時刻(HHmm),<受付区分コード>,<適用開始時刻(HHmm),<適用終了時刻(HHmm),<受付区分コード>･･･
     /// </summary>
-    public string RaiinRenkeiUketukeSbtConv => GetSettingParam(100020, 3);
+    public string RaiinRenkeiUketukeSbtConv()
+    {
+        return GetSettingParam(100020, 3);
+    }
     /// <summary>
     /// プチWeb連携　医療機関コード
     /// </summary>
@@ -1211,15 +1262,24 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// プチWeb利用可能期限連携　リハビリ設定　<リハ区分>,<コメント先頭文字列>,<リハ区分>,<コメント先頭文字列>,・・・
     /// </summary>
-    public string PutiWebLimitRiha => GetSettingParam(100027, 0);
+    public string PutiWebLimitRiha()
+    {
+        return GetSettingParam(100027, 0);
+    }
     /// <summary>
     /// プチWeb利用可能期限連携　汎用設定　<予約区分>=<診療行為コード>,<保険情報>,<診療行為コード>,<保険情報>,・・・[半角スペース]<予約区分>=<診療行為コード>,<保険情報>,<診療行為コード>,<保険情報>,・・・
     /// </summary>
-    public string PutiWebLimitGeneral => GetSettingParam(100027, 1);
+    public string PutiWebLimitGeneral()
+    {
+        return GetSettingParam(100027, 1);
+    }
     /// <summary>
     /// プチWeb利用可能期限連携　最終送信日時（yyyyMMddHHmmss)
     /// </summary>
-    public string PutiWebRenkeiLastUpdate => GetSettingParam(100027, 2, "", true);
+    public string PutiWebRenkeiLastUpdate()
+    {
+        return GetSettingParam(100027, 2, "", true);
+    }
 
     /// <summary>
     /// JunNavi連携ライセンス
@@ -1238,17 +1298,26 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　患者番号独自採番　最大番号
     /// </summary>
-    public string JunNaviPtNumMax => GetSettingParam(100012, 2);
+    public string JunNaviPtNumMax()
+    {
+        return GetSettingParam(100012, 2);
+    }
     /// <summary>
     /// JunNavi連携　診療科コード変換設定
     /// JunNavi.診療科目コード=KA_MST.KA_ID,JunNavi.診療科目コード=KA_MST.KA_ID・・・
     /// </summary>
-    public string JunNaviKaIdConvertConf => GetSettingParam(100012, 3);
+    public string JunNaviKaIdConvertConf()
+    {
+        return GetSettingParam(100012, 3);
+    }
     /// <summary>
     /// JunNavi連携　受付区分変換設定
     /// 0=受付区分,時間(HHMM)=受付区分,時間(HHMM)=受付区分・・・
     /// </summary>
-    public string JunNaviUketukeKbnConvertConf => GetSettingParam(100012, 4);
+    public string JunNaviUketukeKbnConvertConf()
+    {
+        return GetSettingParam(100012, 4);
+    }
     /// <summary>
     /// JunNavi連携　保留時来院区分
     /// </summary>
@@ -1256,7 +1325,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　保留時来院区分設定値
     /// </summary>
-    public string JunNaviHoldRaiinKbnCd => GetSettingParam(100012, 5);
+    public string JunNaviHoldRaiinKbnCd()
+    {
+        return GetSettingParam(100012, 5);
+    }
     /// <summary>
     /// JunNavi連携　表示順桁数
     ///   0. JunNaviからの送信データの表示順を3桁として扱う											
@@ -1271,7 +1343,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　受付時来院区分設定値
     /// </summary>
-    public string JunNaviUketukeRaiinKbnCd => GetSettingParam(100012, 7);
+    public string JunNaviUketukeRaiinKbnCd()
+    {
+        return GetSettingParam(100012, 7);
+    }
     /// <summary>
     /// JunNavi連携　保険確認時来院区分
     /// </summary>
@@ -1280,11 +1355,17 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// JunNavi連携　保険確認時来院区分設定値
     /// 1カラム目-保険なし、2カラム目-有効保険なし、3カラム目-確認保険なし
     /// </summary>
-    public string JunNaviHokenCheckRaiinKbnCd => GetSettingParam(100012, 8);
+    public string JunNaviHokenCheckRaiinKbnCd()
+    {
+        return GetSettingParam(100012, 8);
+    }
     /// <summary>
     /// JunNavi連携　来院コメントの前につける文字列
     /// </summary>
-    public string JunNaviPresetRaiinCmt => GetSettingParam(100012, 9);
+    public string JunNaviPresetRaiinCmt()
+    {
+        return GetSettingParam(100012, 9);
+    }
     /// <summary>
     /// JunNavi連携　JunNavi医療機関コード
     /// </summary>
@@ -1292,11 +1373,17 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　JunNaviサーバーIPアドレス
     /// </summary>
-    public string JunNaviIpAddress => GetSettingParam(100012, 10);
+    public string JunNaviIpAddress()
+    {
+        return GetSettingParam(100012, 10);
+    }
     /// <summary>
     /// JunNavi連携　JunNavi URL
     /// </summary>
-    public string JunNaviURL => GetSettingParam(100012, 11);
+    public string JunNaviURL()
+    {
+        return GetSettingParam(100012, 11);
+    }
     /// <summary>
     /// JunNavi連携　新患受付時来院区分
     /// </summary>
@@ -1304,7 +1391,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　新患受付時来院区分設定値
     /// </summary>
-    public string JunNaviNewPtRaiinKbnCd => GetSettingParam(100012, 12);
+    public string JunNaviNewPtRaiinKbnCd()
+    {
+        return GetSettingParam(100012, 12);
+    }
     /// <summary>
     /// JunNavi連携　患者情報送信連携
     /// 0-なし 1-あり
@@ -1381,7 +1471,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　診察科目名　JunNavi.診療科目コード=《名称》,(以下繰り返し)
     /// </summary>
-    public string JunNaviSinsatuName => GetSettingParam(100012, 28);
+    public string JunNaviSinsatuName()
+    {
+        return GetSettingParam(100012, 28);
+    }
     /// <summary>
     /// JunNavi連携　受付時刻　0-JunNaviの受付時間を使用する　1-チェックイン時間を使用する
     /// </summary>
@@ -1399,7 +1492,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// JunNavi連携　新患時保留取消受信オプション利用開始日(yyyyMMdd)
     /// </summary>
-    public string JunNaviNewPtSokuStart => GetSettingParam(100012, 31);
+    public string JunNaviNewPtSokuStart()
+    {
+        return GetSettingParam(100012, 31);
+    }
     /// <summary>
     /// プチWeb2 診察済み連携				
     /// 保存時連携
@@ -1443,12 +1539,18 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// オーダー時検査依頼連携対象期間
     /// </summary>
-    public string OdrKensaIraiTargetTerm => GetSettingParam(100019, 1);
+    public string OdrKensaIraiTargetTerm()
+    {
+        return GetSettingParam(100019, 1);
+    }
 
     /// <summary>
     /// オーダー時検査依頼連携センターコード
     /// </summary>
-    public string OdrKensaIraiCenterCd => GetSettingParam(100019, 2);
+    public string OdrKensaIraiCenterCd()
+    {
+        return GetSettingParam(100019, 2);
+    }
 
     /// <summary>
     /// 保存ボタン押下時に連携
@@ -1484,7 +1586,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// オーダー時検査依頼連携　科コード パラメータ
     /// <グループID>=<グループコード>,<グループID>=<グループコード>・・・
     /// </summary>
-    public string OdrkensaIraiKaCodeParam => GetSettingParam(100019, 8);
+    public string OdrkensaIraiKaCodeParam()
+    {
+        return GetSettingParam(100019, 8);
+    }
     /// <summary>
     /// Planet バイタル送信モード（テンプレート）
     /// 0: 検歴プログラム連携設定に従う
@@ -1509,63 +1614,108 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// Planete 送信先 ホスト
     /// </summary>
-    public string PlanetHostName => GetSettingParam(100022, 0);
+    public string PlanetHostName()
+    {
+        return GetSettingParam(100022, 0);
+    }
     /// <summary>
     /// Planet 送信先 データベース
     /// </summary>
-    public string PlanetDatabase => GetSettingParam(100022, 1);
+    public string PlanetDatabase()
+    {
+        return GetSettingParam(100022, 1);
+    }
     /// <summary>
     /// Planet 送信先 ユーザー名
     /// </summary>
-    public string PlanetUserName => GetSettingParam(100022, 2);
+    public string PlanetUserName()
+    {
+        return GetSettingParam(100022, 2);
+    }
     /// <summary>
     /// Planet 送信先 パスワード
     /// </summary>
-    public string PlanetPassword => GetSettingParam(100022, 3);
+    public string PlanetPassword()
+    {
+        return GetSettingParam(100022, 3);
+    }
     /// <summary>
     /// Planet センターコード
     /// </summary>
-    public string PlanetCenterCode => GetSettingParam(100022, 4);
+    public string PlanetCenterCode()
+    {
+        return GetSettingParam(100022, 4);
+    }
     /// <summary>
     /// Planet バイタル用送信先 ホスト（テンプレート）
     /// </summary>
-    public string PlanetVitalTemplateHostName => GetSettingParam(100036, 1);
+    public string PlanetVitalTemplateHostName()
+    {
+        return GetSettingParam(100036, 1);
+    }
     /// <summary>
     /// Planet バイタル用送信先 データベース（テンプレート）
     /// </summary>
-    public string PlanetVitalTemplateDatabase => GetSettingParam(100036, 2);
+    public string PlanetVitalTemplateDatabase()
+    {
+        return GetSettingParam(100036, 2);
+    }
     /// <summary>
     /// Planet バイタル用送信先 ユーザー名（テンプレート）
     /// </summary>
-    public string PlanetVitalTemplateUserName => GetSettingParam(100036, 3);
+    public string PlanetVitalTemplateUserName()
+    {
+        return GetSettingParam(100036, 3);
+    }
     /// <summary>
     /// Planet バイタル用送信先 パスワード（テンプレート）
     /// </summary>
-    public string PlanetVitalTemplatePassword => GetSettingParam(100036, 4);
+    public string PlanetVitalTemplatePassword()
+    {
+        return GetSettingParam(100036, 4);
+    }
     /// <summary>
     /// Planet バイタル用 センターコード（テンプレート）
     /// </summary>
-    public string PlanetVitalTemplateCenterCode => GetSettingParam(100036, 5);
+    public string PlanetVitalTemplateCenterCode()
+    {
+        return GetSettingParam(100036, 5);
+    }
     /// <summary>
     /// Planet バイタル用送信先 ホスト（身体情報）
     /// </summary>
-    public string PlanetVitalPhysicalHostName => GetSettingParam(100024, 1);
+    public string PlanetVitalPhysicalHostName()
+    {
+        return GetSettingParam(100024, 1);
+    }
     /// <summary>
     /// Planet バイタル用送信先 データベース（身体情報）
     /// </summary>
-    public string PlanetVitalPhysicalDatabase => GetSettingParam(100024, 2);
+    public string PlanetVitalPhysicalDatabase()
+    {
+        return GetSettingParam(100024, 2);
+    }
     /// <summary>
     /// Planet バイタル用送信先 ユーザー名（身体情報）
     /// </summary>
-    public string PlanetVitalPhysicalUserName => GetSettingParam(100024, 3);
+    public string PlanetVitalPhysicalUserName()
+    {
+        return GetSettingParam(100024, 3);
+    }
     /// <summary>
     /// Planet バイタル用送信先 パスワード（身体情報）
     /// </summary>
-    public string PlanetVitalPhysicalPassword => GetSettingParam(100024, 4);
+    public string PlanetVitalPhysicalPassword()
+    {
+        return GetSettingParam(100024, 4);
+    }
     /// <summary>
     /// Planet バイタル用 センターコード（身体情報）
     /// </summary>
-    public string PlanetVitalPhysicalCenterCode => GetSettingParam(100024, 5);
+    public string PlanetVitalPhysicalCenterCode()
+    {
+        return GetSettingParam(100024, 5);
+    }
     /// <summary>
     /// 労災ライセンス
     /// 0: なし
@@ -1588,7 +1738,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 労災レセプト電算開始年月
     /// </summary>
-    public string RousaiRecedenStartYm => GetSettingParam(100003, 0);
+    public string RousaiRecedenStartYm()
+    {
+        return GetSettingParam(100003, 0);
+    }
     /// <summary>
     /// アフターケアレセプト電算ライセンス
     /// 1 - 労災レセプト電算を使用する
@@ -1597,7 +1750,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// アフターケアレセプト電算開始年月
     /// </summary>
-    public string AfterCareRecedenStartYm => GetSettingParam(100003, 1);
+    public string AfterCareRecedenStartYm()
+    {
+        return GetSettingParam(100003, 1);
+    }
     /// <summary>
     /// 初診時の病名転帰日
     /// </summary>
@@ -1606,7 +1762,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 経過日数
     /// </summary>
-    public string NumDaysFromLastVisit => GetSettingParam(1012);
+    public string NumDaysFromLastVisit()
+    {
+        return GetSettingParam(1012);
+    }
 
     /// <summary>
     /// 受付時年齢チェック
@@ -1616,7 +1775,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 受付時年齢チェック・パラメーター
     /// </summary>
-    public string CheckAgeParam => GetSettingParam(1005);
+    public string CheckAgeParam()
+    {
+        return GetSettingParam(1005);
+    }
     /// <summary>
     /// 保険種の取り扱い（算定回数、背反等）
     /// 0 - 健保、労災、自賠を同一に考える
@@ -1643,7 +1805,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// プチ予約連携ライセンス
     /// </summary>
-    public string PetitReservationParam => GetSettingParam(100014);
+    public string PetitReservationParam()
+    {
+        return GetSettingParam(100014);
+    }
 
     public double CheckZaiganIsoPatient => GetSettingValue(2028);
     /// <summary>
@@ -1692,7 +1857,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     public int PrintDrgLabel => (int)GetSettingValue(92005, 0);
 
     public int PrintDrgLabelCheckMachine => (int)GetSettingValue(92005, 50);
-    public string PrintDrgLabelCheckMachineParam => GetSettingParam(92005, 50, "KrtRenkei,TKImport");
+    public string PrintDrgLabelCheckMachineParam()
+    {
+        return GetSettingParam(92005, 50, "KrtRenkei,TKImport");
+    }
 
     /// <summary>
     /// お薬手帳シール
@@ -1700,27 +1868,42 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     public int PrintDrgNote => (int)GetSettingValue(92006, 0);
 
     public int PrintDrgNoteCheckMachine => (int)GetSettingValue(92006, 1);
-    public string PrintDrgNoteCheckMachineParam => GetSettingParam(92006, 1, "KrtRenkei,TKImport");
+    public string PrintDrgNoteCheckMachineParam()
+    {
+        return GetSettingParam(92006, 1, "KrtRenkei,TKImport");
+    }
 
     /// <summary>
     /// コニカIP
     /// </summary>
-    public string KonikaIPSetting => GetSettingParam(100013, 1);
+    public string KonikaIPSetting()
+    {
+        return GetSettingParam(100013, 1);
+    }
 
     /// <summary>
     /// コニカUser
     /// </summary>
-    public string KonikaUserSetting => GetSettingParam(100013, 2);
+    public string KonikaUserSetting()
+    {
+        return GetSettingParam(100013, 2);
+    }
 
     /// <summary>
     /// コニカPassword
     /// </summary>
-    public string KonikaPasswordSetting => GetSettingParam(100013, 3);
+    public string KonikaPasswordSetting()
+    {
+        return GetSettingParam(100013, 3);
+    }
 
     /// <summary>
     /// コニカモダリティ
     /// </summary>
-    public string KonikaModality => GetSettingParam(100013, 4);
+    public string KonikaModality()
+    {
+        return GetSettingParam(100013, 4);
+    }
 
     /// 家族登録確認
     /// </summary>
@@ -1733,7 +1916,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int KensaKekkaValue => (int)GetSettingValue(8010, 0);
 
-    public string KensaKekkaParam => GetSettingParam(8010, 0);
+    public string KensaKekkaParam()
+    {
+        return GetSettingParam(8010, 0);
+    }
 
     public int ShohoRekiValue => (int)GetSettingValue(2009, 0);
 
@@ -1749,7 +1935,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int PtSearchModel => (int)GetSettingValue(5005, 0);
 
-    public string StandbyServerParam => GetSettingParam(8030, 0);
+    public string StandbyServerParam()
+    {
+        return GetSettingParam(8030, 0);
+    }
 
     /// <summary>
     /// カルテ作成時帳票印刷
@@ -1770,11 +1959,17 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int RenkeiYoyakuValue => (int)GetSettingValue(2004, 0);
 
-    public string RenkeiYoyakuParam => GetSettingParam(2004, 0);
+    public string RenkeiYoyakuParam()
+    {
+        return GetSettingParam(2004, 0);
+    }
 
     public int RenkeiTemplateValue => (int)GetSettingValue(2005, 0, fromLastestDb: false);
 
-    public string RenkeiTemplateParam => GetSettingParam(2005, 0);
+    public string RenkeiTemplateParam()
+    {
+        return GetSettingParam(2005, 0);
+    }
 
     public int IsEnableScanInBooking => (int)GetSettingValue(99001, 0);
 
@@ -1787,10 +1982,22 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// FtpTransferManager
     /// </summary>
     public string FtpFileLocation => @GetSettingParam(100021, 5);
-    public string FtpServerName => GetSettingParam(100021, 10, defaultParam: "karte.sakura.ne.jp");
-    public string FtpUserName => GetSettingParam(100021, 11, defaultParam: "ftptkr@karte.sakura.ne.jp");
-    public string FtpPasswords => GetSettingParam(100021, 12, defaultParam: "315f6ffffb");
-    public string FtpDestination => GetSettingParam(100021, 3);
+    public string FtpServerName()
+    {
+        return GetSettingParam(100021, 10, defaultParam: "karte.sakura.ne.jp");
+    }
+    public string FtpUserName()
+    {
+        return GetSettingParam(100021, 11, defaultParam: "ftptkr@karte.sakura.ne.jp");
+    }
+    public string FtpPasswords()
+    {
+        return GetSettingParam(100021, 12, defaultParam: "315f6ffffb");
+    }
+    public string FtpDestination()
+    {
+        return GetSettingParam(100021, 3);
+    }
     public int RousaiKufuValidate => (int)GetSettingValue(1006, 0);
 
     /// <summary>
@@ -1991,12 +2198,18 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// Ip cloud WebId
     /// </summary>
-    public string IpCloudWebId => GetSettingParam(100017, 18, "");
+    public string IpCloudWebId()
+    {
+        return GetSettingParam(100017, 18, "");
+    }
 
     /// <summary>
     /// UserId for WebId
     /// </summary>
-    public string UserIdForWebId => GetSettingParam(8031, 0, "");
+    public string UserIdForWebId()
+    {
+        return GetSettingParam(8031, 0, "");
+    }
 
     public int CloudId => (int)GetSettingValue(8031, 0);
 
@@ -2034,7 +2247,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 登美ヶ丘モール連携　総合受付ホスト
     /// </summary>
-    public string MallRenkeiSogoHost => GetSettingParam(100034, 1);
+    public string MallRenkeiSogoHost()
+    {
+        return GetSettingParam(100034, 1);
+    }
     /// <summary>
     /// 登美ヶ丘モール連携　受付モード
     /// 0:常に新規来院 1:予約優先
@@ -2056,7 +2272,10 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public bool VisibleBuiOrderCheck => (int)GetSettingValue(6003) == 1;
 
-    public string AccountingTelegramHost => GetSettingParam(100034, 2);
+    public string AccountingTelegramHost()
+    {
+        return GetSettingParam(100034, 2);
+    }
 
     public int AccountingTelegramPort => (int)GetSettingValue(100034, 2);
 
@@ -2064,13 +2283,19 @@ public class SystemConfig : RepositoryBase, ISystemConfig
 
     public int AutoOdrItemFromHistory => (int)GetSettingValue(100020, 4);
 
-    public string AutoOdrItemFromHistoryParam => GetSettingParam(100020, 4);
+    public string AutoOdrItemFromHistoryParam()
+    {
+        return GetSettingParam(100020, 4);
+    }
 
     public bool IsShowPregnancyInf => GetSettingValue(2003, 1) == 1;
     /// <summary>
     /// MWM連携　対象項目コード
     /// </summary>
-    public string MWMTargetItemCd => GetSettingParam(100038, 0);
+    public string MWMTargetItemCd()
+    {
+        return GetSettingParam(100038, 0);
+    }
 
     public int DrugInfReportType => (int)GetSettingValue(92004, 1); // 0,1 - 1 Pic; 2 - 2 Pics; 3- No Pic
 
