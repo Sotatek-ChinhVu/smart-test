@@ -14,6 +14,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
@@ -40,22 +41,43 @@ namespace Infrastructure.Repositories
             _systemConf = systemConf;
         }
 
-        public void Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
+        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
-            if (odrInfs.Count > 0)
-            {
-                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
-            }
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
-            SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
-            if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
-            {
-                UpsertKarteInfs(karteInfModel, userId);
-            }
+            return executionStrategy.Execute(
+                () =>
+                {
+                    using var transaction = TrackingDataContext.Database.BeginTransaction();
+                    try
+                    {
+                        if (odrInfs.Count > 0)
+                        {
+                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
+                        }
 
-            SaveRaiinListInf(odrInfs, userId);
+                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
+                        if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
+                        {
+                            UpsertKarteInfs(karteInfModel, userId);
+                        }
 
-            SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
+                        SaveRaiinListInf(odrInfs, userId);
+
+                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
+
+                        transaction.Commit();
+
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+
+                        return false;
+                    }
+                });
+
         }
 
         public List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
@@ -113,7 +135,7 @@ namespace Infrastructure.Repositories
             {
                 var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
                 raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
-                //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
+                    //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;
@@ -2955,7 +2977,7 @@ namespace Infrastructure.Repositories
                     result.Add(new(index, new(DeleteTypes.Deleted)));
                     result.Add(new(index, checkingOdr));
                 }
-
+          
                 odrInfIndex++;
             }
 
