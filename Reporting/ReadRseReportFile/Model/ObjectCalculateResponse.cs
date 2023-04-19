@@ -1,4 +1,4 @@
-﻿namespace Reporting.OutDrug.Model;
+﻿namespace Reporting.ReadRseReportFile.Model;
 
 public class ObjectCalculateResponse
 {

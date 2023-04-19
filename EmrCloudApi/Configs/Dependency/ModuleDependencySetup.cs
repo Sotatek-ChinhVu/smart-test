@@ -461,6 +461,9 @@ using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.User.GetUserConfModelList;
 using UseCase.SetKbnMst.Upsert;
+
+
+using Reporting.ReadRseReportFile.Service;
 using UseCase.MstItem.GetSetDataTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -499,7 +502,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            // Reportting
+            // Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -517,6 +520,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
+            services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
