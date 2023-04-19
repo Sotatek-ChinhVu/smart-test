@@ -1,8 +1,9 @@
-﻿using Domain.Models.SetGenerationMst;
-using Domain.Models.SetKbnMst;
+﻿using Domain.Models.SetKbnMst;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Infrastructure.Repositories
@@ -46,35 +47,54 @@ namespace Infrastructure.Repositories
             return setKbnMstList!.Where(s => s.HpId == hpId && s.SetKbn >= setKbnFrom && s.SetKbn <= setKbnTo && s.IsDeleted == 0).OrderBy(s => s.SetKbn).ToList();
         }
 
-
-        public List<SetKbnMstModel> GetListKbnMst(int hpId, List<int> grpCodes, int sinDate)
+        public bool Upsert(int hpId, int userId, int generationId, List<SetKbnMstModel> setKbnMstModels)
         {
-            if (!_memoryCache.TryGetValue(GetCacheKey(), out IEnumerable<SetKbnMstModel>? setKbnMstList))
+            int maxSetKbn = NoTrackingDataContext.SetKbnMsts.Where(s => s.GenerationId == s.GenerationId && s.HpId == hpId).Select(s => s.SetKbn).ToList().DefaultIfEmpty(0).Max();
+            foreach (var model in setKbnMstModels)
             {
-                setKbnMstList = ReloadCache();
-            }
-            List<SetKbnMstModel> result = new List<SetKbnMstModel>();
-            var lowerSetGenarationMsts = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId &&
-                                                                            x.IsDeleted == 0 &&
-                                                                            x.StartDate <= sinDate)
-                                                                          .OrderByDescending(x => x.StartDate)
-                                                                          .ToList();
-            var setGenarationMst = lowerSetGenarationMsts.FirstOrDefault();
-
-            if (setGenarationMst != null)
-            {
-                var setKbnMsts = NoTrackingDataContext.SetKbnMsts.Where(x => x.HpId == hpId &&
-                                                                               grpCodes.Contains(x.SetKbn) &&
-                                                                               x.IsDeleted == 0 &&
-                                                                               x.GenerationId == setGenarationMst.GenerationId)
-                                                               .OrderBy(x => x.SetKbn)
-                                                               .ToList();
-                foreach (var item in setKbnMsts)
+                maxSetKbn++;
+                var setKbnMst = TrackingDataContext.SetKbnMsts.FirstOrDefault(x => x.HpId == Session.HospitalID &&
+                                                                                     x.IsDeleted == 0 &&
+                                                                                     x.SetKbn == model.SetKbn &&
+                                                                                     x.GenerationId == generationId);
+                if (setKbnMst != null)
                 {
-                    result.Add(new SetKbnMstModel(item.HpId, item.SetKbn, item.SetKbnEdaNo, item.SetKbnName ?? string.Empty, item.KaCd, item.DocCd, item.IsDeleted, item.GenerationId));
+                    if (setKbnMst.IsDeleted == DeleteTypes.Deleted)
+                    {
+                        setKbnMst.SetKbn = DeleteTypes.Deleted;
+                        setKbnMst.UpdateId = Session.UserID;
+                        setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                    else
+                    {
+                        setKbnMst.SetKbnName = model.SetKbnName;
+                        setKbnMst.UpdateId = Session.UserID;
+                        setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+
+                }
+                else
+                {
+                    var newSetKbnMst = new SetKbnMst
+                    {
+                        HpId = model.HpId,
+                        IsDeleted = 0,
+                        SetKbnName = model.SetKbnName,
+                        GenerationId = generationId,
+                        KaCd = model.KaCd,
+                        DocCd = model.DocCd,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        SetKbnEdaNo = 0,
+                        SetKbn = maxSetKbn
+                    };
+                    TrackingDataContext.SetKbnMsts.Add(newSetKbnMst);
                 }
             }
-            return result;
+
+            return TrackingDataContext.SaveChanges() > 0;
         }
 
         public void ReleaseResource()

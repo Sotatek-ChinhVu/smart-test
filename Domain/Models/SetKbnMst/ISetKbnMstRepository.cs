@@ -6,6 +6,6 @@ namespace Domain.Models.SetKbnMst
     {
         IEnumerable<SetKbnMstModel> GetList(int hpId, int setKbnFrom, int setKbnTo);
 
-        List<SetKbnMstModel> GetListKbnMst(int hpId, List<int> grpCodes, int sinDate);
+        bool Upsert(int hpId, int userId, int generationId, List<SetKbnMstModel> setKbnMstModels);
     }
 }

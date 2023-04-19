@@ -457,6 +457,7 @@ using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using Interactor.Family.ValidateFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.User.GetUserConfModelList;
+using UseCase.SetKbnMst.Upsert;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -742,6 +743,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
+            busBuilder.RegisterUseCase<UpsertSetKbnMstInputData, UpsertSetKbnMstInteractor>();
 
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
