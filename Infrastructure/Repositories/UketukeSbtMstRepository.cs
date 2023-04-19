@@ -73,7 +73,7 @@ public class UketukeSbtMstRepository : RepositoryBase, IUketukeSbtMstRepository
         return new UketukeSbtMst
         {
             HpId = hpId,
-            KbnId = u.KbnId,
+            KbnId = 0,
             KbnName = u.KbnName,
             SortNo = u.SortNo,
             IsDeleted = u.IsDeleted,
