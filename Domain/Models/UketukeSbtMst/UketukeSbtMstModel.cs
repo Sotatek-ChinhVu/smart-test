@@ -26,6 +26,10 @@ public class UketukeSbtMstModel
 
     public ValidationStatus Validation()
     {
+        if(KbnId < -1)
+        {
+            return ValidationStatus.InvalidKbnId;
+        }
         if(KbnName.Length > 20)
         {
             return ValidationStatus.InvalidKbnName;
