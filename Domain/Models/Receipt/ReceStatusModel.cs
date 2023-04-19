@@ -39,4 +39,9 @@ public class ReceStatusModel
     public int StatusKbn { get; private set; }
 
     public bool IsPrechecked { get; private set; }
+
+    public void SetStatusKbn(int value)
+    {
+        StatusKbn = value;
+    }
 }

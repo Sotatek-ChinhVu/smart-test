@@ -138,6 +138,7 @@
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
         public const string ValidateSwapHoken = "ValidateSwapHoken";
+        public const string CalculationSwapHoken = "CalculationSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
