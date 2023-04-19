@@ -7,6 +7,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Text;
 
@@ -22,20 +23,44 @@ namespace Infrastructure.Repositories.SpecialNote
         public bool SaveSpecialNote(int hpId, long ptId, int sinDate, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
         {
             if (!IsInvalidInputId(hpId, ptId)) return false;
-            if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
-            {
-                SaveSummaryInf(summaryInfModel, userId);
-            }
-            if (importantNoteModel != null)
-            {
-                SaveImportantNote(hpId, ptId, importantNoteModel);
-            }
-            if (patientInfoModel != null)
-            {
-                SavePatientInfo(hpId, ptId, sinDate, patientInfoModel, userId);
-            }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+
+            var result = executionStrategy.Execute(
+                () =>
+                {
+                    // execute your logic here
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
+                            {
+                                SaveSummaryInf(summaryInfModel, userId);
+                                TrackingDataContext.SaveChanges();
+                            }
+                            if (importantNoteModel != null)
+                            {
+                                SaveImportantNote(hpId, ptId, importantNoteModel);
+                                TrackingDataContext.SaveChanges();
+                            }
+                            if (patientInfoModel != null)
+                            {
+                                SavePatientInfo(hpId, ptId, sinDate, patientInfoModel, userId);
+                                TrackingDataContext.SaveChanges();
+                            }
+                            TrackingDataContext.SaveChanges();
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+                    }
+                });
+            return result;
         }
         private bool IsInvalidInputId(int hpId, long ptId)
         {
