@@ -109,9 +109,6 @@
         //validate ValidHokenInf AllType
         public const string ValidHokenInfAllType = "ValidHokenInfAllType";
 
-        // Validate Insurance Other
-        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
-
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
         public const string GetSelectiveComment = "GetSelectiveComment";
@@ -141,6 +138,7 @@
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
         public const string ValidateSwapHoken = "ValidateSwapHoken";
+        public const string CalculationSwapHoken = "CalculationSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -290,5 +288,7 @@
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
+        public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
+        public const string GetSetDataTenMst = "GetSetDataTenMst";
     }
 }

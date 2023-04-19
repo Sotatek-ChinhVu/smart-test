@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Helper.Extension
@@ -249,6 +250,11 @@ namespace Helper.Extension
         public static double ToSize(this Int64 value, SizeUnits unit)
         {
             return (value / Math.Pow(1024, (Int64)unit));
+        }
+
+        public static T CreateInstance<T>()
+        {
+            return (T)FormatterServices.GetUninitializedObject(typeof(T));
         }
     }
 

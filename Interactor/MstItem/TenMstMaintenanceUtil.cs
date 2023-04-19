@@ -1,4 +1,5 @@
-﻿using Domain.Models.MstItem;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using Domain.Models.MstItem;
 using Helper.Enum;
 
 namespace Interactor.MstItem
@@ -61,77 +62,165 @@ namespace Interactor.MstItem
             return false;
         }
 
-        public static ItemTypeEnums GetItemType(TenMstOriginModel model)
+        public static ItemTypeEnums GetItemType(string itemCd)
         {
-            if (model.ItemCd.StartsWith("J"))
+            if (itemCd.StartsWith("J"))
             {
                 return ItemTypeEnums.JihiItem;
             }
-            else if (model.ItemCd.StartsWith("Z"))
+            else if (itemCd.StartsWith("Z"))
             {
                 return ItemTypeEnums.SpecificMedicalMeterialItem;
             }
-            else if (model.ItemCd.StartsWith("Y"))
+            else if (itemCd.StartsWith("Y"))
             {
                 return ItemTypeEnums.UsageItem;
             }
-            else if (model.ItemCd.StartsWith("W"))
+            else if (itemCd.StartsWith("W"))
             {
                 return ItemTypeEnums.SpecialMedicineCommentItem;
             }
-            else if (model.ItemCd.StartsWith("CO"))
+            else if (itemCd.StartsWith("CO"))
             {
                 return ItemTypeEnums.COCommentItem;
             }
-            else if (model.ItemCd.StartsWith("KONI"))
+            else if (itemCd.StartsWith("KONI"))
             {
                 return ItemTypeEnums.KonikaItem;
             }
-            else if (model.ItemCd.StartsWith("FCR"))
+            else if (itemCd.StartsWith("FCR"))
             {
                 return ItemTypeEnums.FCRItem;
             }
-            else if (model.ItemCd.StartsWith("KN"))
+            else if (itemCd.StartsWith("KN"))
             {
                 return ItemTypeEnums.KensaItem;
             }
-            else if (model.ItemCd.StartsWith("IGE"))
+            else if (itemCd.StartsWith("IGE"))
             {
                 return ItemTypeEnums.TokuiTeki;
             }
-            else if (model.ItemCd.StartsWith("SMZ"))
+            else if (itemCd.StartsWith("SMZ"))
             {
                 return ItemTypeEnums.Shimadzu;
             }
-            else if (model.ItemCd.StartsWith("S"))
+            else if (itemCd.StartsWith("S"))
             {
                 return ItemTypeEnums.Jibaiseki;
             }
-            else if (model.ItemCd.StartsWith("X"))
+            else if (itemCd.StartsWith("X"))
             {
                 return ItemTypeEnums.Dami;
             }
-            else if (model.ItemCd.StartsWith("1") && model.ItemCd.Length == 9)
+            else if (itemCd.StartsWith("1") && itemCd.Length == 9)
             {
                 return ItemTypeEnums.ShinryoKoi;
             }
-            else if (model.ItemCd.StartsWith("6") && model.ItemCd.Length == 9)
+            else if (itemCd.StartsWith("6") && itemCd.Length == 9)
             {
                 return ItemTypeEnums.Yakuzai;
             }
-            else if (model.ItemCd.StartsWith("7") && model.ItemCd.Length == 9)
+            else if (itemCd.StartsWith("7") && itemCd.Length == 9)
             {
                 return ItemTypeEnums.Tokuzai;
             }
-            else if (model.ItemCd.Length == 4)
+            else if (itemCd.Length == 4)
             {
                 return ItemTypeEnums.Bui;
             }
-            else if (model.ItemCd.StartsWith("8") && model.ItemCd.Length == 9)
+            else if (itemCd.StartsWith("8") && itemCd.Length == 9)
             {
                 return ItemTypeEnums.CommentItem;
             }
             return ItemTypeEnums.Other;
         }
+
+        public static List<CategoryItemModel> InitCategoryList()
+        {
+            return new List<CategoryItemModel>()
+            {
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "基本設定",
+                    CategoryItemEnums = CategoryItemEnums.BasicSetting,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "医事設定",
+                    CategoryItemEnums = CategoryItemEnums.IjiSetting,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "処方設定",
+                    CategoryItemEnums = CategoryItemEnums.PrecriptionSetting,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "用法設定",
+                    CategoryItemEnums = CategoryItemEnums.UsageSetting,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "特材設定",
+                    CategoryItemEnums = CategoryItemEnums.SpecialMaterialSetting,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "薬剤情報関連",
+                    CategoryItemEnums = CategoryItemEnums.DrugInfomation,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "適応病名",
+                    CategoryItemEnums = CategoryItemEnums.TeikyoByomei,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "算定回数",
+                    CategoryItemEnums = CategoryItemEnums.SanteiKaishu,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "背反",
+                    CategoryItemEnums = CategoryItemEnums.Haihan,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "包括",
+                    CategoryItemEnums = CategoryItemEnums.Houkatsu,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "併用禁忌",
+                    CategoryItemEnums = CategoryItemEnums.CombinedContraindication,
+                    Visibility = false
+                },
+                new CategoryItemModel()
+                {
+                    CategoryDisplayName = "連携設定",
+                    CategoryItemEnums = CategoryItemEnums.RenkeiSetting,
+                    Visibility = false
+                }
+            };
+        }
+    }
+
+    public class CategoryItemModel
+    {
+        public string CategoryDisplayName { get; set; } = string.Empty;
+
+        public CategoryItemEnums CategoryItemEnums { get; set; }
+
+        public bool Visibility { get; set; }
     }
 }

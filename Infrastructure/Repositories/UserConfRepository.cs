@@ -13,6 +13,18 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
     private const int ADOPTED_CONFIRM_CD = 100005;
     private static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
     private readonly IMemoryCache _memoryCache;
+    private List<int> listFunctionButtonCode = new List<int> { 10, 3, 902, 922, 923, 906, 907, 14, 919, 903, 9, 905, 15, 921, 928, 19 };
+    private List<int> listSuperSetButtonCode = new List<int> { 301, 302, 303, 304, 305, 306, 307, 308, 309, 310 };
+    private List<int> listSuperSetButtonCodeItem = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    private List<int> summaryGrpCds = new List<int>() { 913, 901, 914, 924, 927 };
+    private List<int> listOtherButtonCode = new List<int> { 1, 13, 909, 929, 100001, 100002, 100004, 100005, 100006, 100011, 100012 };
+    private List<int> listOrderButtonCode = new List<int> { 202, 201, 203, 205, 204, 206, 207, 208 };
+    private List<int> headerGrpCds = new List<int>() { 910, 911, 912 };
+    private List<int> karteGrpCds = new List<int> { 99, 101, 104, 103, 908, 105 };
+    private const int claimSagakuGrpCd = 922;
+    private const int claimSagakuAtReceTimeGrpCd = 923;
+    private const int noteScreenDisplayGrpCd = 919;
+    private const int saveCheckGrpCd = 921;
 
     public UserConfRepository(ITenantProvider tenantProvider, IMemoryCache memoryCache) : base(tenantProvider)
     {
@@ -35,6 +47,13 @@ public class UserConfRepository : RepositoryBase, IUserConfRepository
         //}
         var result = ReloadCache(hpId, userId, grpCodes);
         return result!;
+    }
+
+    public List<UserConfModel> GetList(int hpId, int userId)
+    {
+        var entities = NoTrackingDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+        var result = entities.Select(e => new UserConfModel(e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo, e.Val, e.Param ?? string.Empty)).ToList();
+        return result;
     }
 
     public Dictionary<string, int> GetList(int userId)

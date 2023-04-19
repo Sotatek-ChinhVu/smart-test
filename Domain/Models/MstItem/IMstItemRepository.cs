@@ -1,5 +1,8 @@
 ﻿using Domain.Common;
+using Domain.Enum;
 using Domain.Models.FlowSheet;
+using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 
 namespace Domain.Models.MstItem
 {
@@ -73,5 +76,47 @@ namespace Domain.Models.MstItem
         int GetMinJihiSbtMst(int hpId);
 
         bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
+
+        bool IsTenMstItemCdUsed(int hpId, string itemCd);
+
+        bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds);
+
+        List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
+
+        TenMstOriginModel GetTenMstOriginModel(int hpId,string itemCd, int sinDate);
+
+        string GetTenMstName(int hpId, string santeiItemCd);
+
+        List<M10DayLimitModel> GetM10DayLimitModels(string yjCdItem);
+
+        List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId, string IpnNameCd);
+
+        List<DrugDayLimitModel> GetDrugDayLimitModels(int hpId, string ItemCd);
+
+        DosageMstModel GetDosageMstModel(int hpId, string ItemCd);
+
+        IpnNameMstModel GetIpnNameMstModel(int hpId, string ipnNameCd, int sinDate);
+
+        string GetYohoInfMstPrefixByItemCd(string itemCd);
+
+        List<DrugInfModel> GetDrugInfByItemCd(int hpId, string itemCd);
+
+        PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType);
+
+        List<TeikyoByomeiModel> GetTeikyoByomeiModel(int hpId, string itemCd, bool isFromCheckingView = false);
+
+        TekiouByomeiMstExcludedModel GetTekiouByomeiMstExcludedModelByItemCd(int hpId, string itemCd);
+
+        List<DensiSanteiKaisuModel> GetDensiSanteiKaisuByItemCd(int hpId, string itemCd);
+
+        List<DensiHaihanModel> GetDensiHaihans(int hpId, string itemCd, int haihanKbn);
+
+        List<DensiHoukatuModel> GetListDensiHoukatuByItemCd(int hpId, string itemCd, int sinDate);
+
+        List<DensiHoukatuGrpModel> GetListDensiHoukatuGrpByItemCd(int hpId, string itemCd, int sinDate);
+
+        List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo);
+
+        List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
     }
 }

@@ -20,6 +20,7 @@ public class KaRepository : RepositoryBase, IKaRepository
     }
     public bool CheckKaId(List<int> kaIds)
     {
+        kaIds = kaIds.Distinct().ToList();
         var countKaMsts = NoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;
     }
