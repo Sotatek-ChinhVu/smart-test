@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Enum;
 using Domain.Models.FlowSheet;
 
 namespace Domain.Models.MstItem
@@ -73,5 +74,9 @@ namespace Domain.Models.MstItem
         int GetMinJihiSbtMst(int hpId);
 
         bool SaveKensaCenterMst(int userId, List<KensaCenterMstModel> kensaCenterMstModels);
+
+        bool IsTenMstItemCdUsed(int hpId, string itemCd);
+
+        bool SaveDeleteOrRecoverTenMstOrigin(DeleteOrRecoverTenMstMode mode, string itemCd, int userId, List<TenMstOriginModel> tenMstModifieds);
     }
 }
