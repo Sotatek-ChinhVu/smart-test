@@ -1,6 +1,5 @@
 ﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
-using Domain.Models.SetKbnMst;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -8,7 +7,6 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 
@@ -244,24 +242,30 @@ namespace Infrastructure.Repositories
                            .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
                 if (raiinListTag is null)
                 {
-                    TrackingDataContext.RaiinListTags.Add(new RaiinListTag
+                    if (inputData.TagNo != -1)
                     {
-                        HpId = hpId,
-                        PtId = inputData.PtId,
-                        SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RaiinNo,
-                        TagNo = inputData.TagNo,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId,
-                        CreateId = userId
-                    });
+                        TrackingDataContext.RaiinListTags.Add(new RaiinListTag
+                        {
+                            HpId = hpId,
+                            PtId = inputData.PtId,
+                            SinDate = inputData.SinDate,
+                            RaiinNo = inputData.RaiinNo,
+                            TagNo = inputData.TagNo,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            CreateId = userId
+                        });
+                    }
                 }
                 else
                 {
-                    raiinListTag.TagNo = inputData.TagNo;
-                    raiinListTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    raiinListTag.UpdateId = userId;
+                    if (raiinListTag.TagNo != inputData.TagNo)
+                    {
+                        raiinListTag.TagNo = inputData.TagNo;
+                        raiinListTag.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinListTag.UpdateId = userId;
+                    }
                 }
             }
             TrackingDataContext.SaveChanges();
@@ -276,25 +280,31 @@ namespace Infrastructure.Repositories
 
                 if (raiinListCmt is null)
                 {
-                    TrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
+                    if (!string.IsNullOrEmpty(inputData.Comment))
                     {
-                        HpId = hpId,
-                        PtId = inputData.PtId,
-                        SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RaiinNo,
-                        CmtKbn = cmtKbn,
-                        Text = inputData.Comment,
-                        CreateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId,
-                        CreateId = userId
-                    });
+                        TrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
+                        {
+                            HpId = hpId,
+                            PtId = inputData.PtId,
+                            SinDate = inputData.SinDate,
+                            RaiinNo = inputData.RaiinNo,
+                            CmtKbn = cmtKbn,
+                            Text = inputData.Comment,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            CreateId = userId
+                        });
+                    }
                 }
                 else
                 {
-                    raiinListCmt.Text = inputData.Comment;
-                    raiinListCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                    raiinListCmt.UpdateId = userId;
+                    if (raiinListCmt.Text != inputData.Comment)
+                    {
+                        raiinListCmt.Text = inputData.Comment;
+                        raiinListCmt.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        raiinListCmt.UpdateId = userId;
+                    }
                 }
             }
             TrackingDataContext.SaveChanges();

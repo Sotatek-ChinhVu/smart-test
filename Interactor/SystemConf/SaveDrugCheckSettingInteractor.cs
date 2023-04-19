@@ -107,7 +107,7 @@ public class SaveDrugCheckSettingInteractor : ISaveDrugCheckSettingInputPort
         result.Add(ConvertToSystemConfModel(2027, 2, input.DiseaseLevelSetting));
 
         //set data for KinkiLevelSetting
-        if (input.KinkiLevelSetting < 0 || input.KinkiLevelSetting > 3)
+        if (input.KinkiLevelSetting < 0 || input.KinkiLevelSetting > 4)
         {
             return (new(), SaveDrugCheckSettingStatus.InvalidKinkiLevelSetting);
         }

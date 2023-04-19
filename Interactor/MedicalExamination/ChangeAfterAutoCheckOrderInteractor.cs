@@ -214,7 +214,8 @@ namespace Interactor.MedicalExamination
                         o.odrInfModel.IsDeleted,
                         o.odrInfModel.UpdateDate,
                         o.odrInfModel.CreateMachine,
-                        o.odrInfModel.UpdateMachine
+                        o.odrInfModel.UpdateMachine,
+                        o.odrInfModel.UpdateName
                     ))).ToList()
                     );
             }
