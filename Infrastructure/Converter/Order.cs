@@ -139,7 +139,9 @@ namespace Infrastructure.Converter
                 createName,
                 odrInf.UpdateDate,
                 odrInf.UpdateId,
-                updateName
+                updateName,
+                odrInf.CreateMachine ?? string.Empty,
+                odrInf.UpdateMachine ?? string.Empty
                 );
 
             return ordInfModel;

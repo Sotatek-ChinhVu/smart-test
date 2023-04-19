@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetKbnMst.GetList;
+using UseCase.SetKbnMst.Upsert;
 
 namespace EmrCloudApi.Controller
 {
@@ -29,6 +30,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSetKbnMstListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Upsert)]
+        public ActionResult<Response<UpsertSetKbnMstResponse>> GetList([FromBody] UpsertSetKbnMstRequest request)
+        {
+            var input = new UpsertSetKbnMstInputData(request.SinDate, UserId, request.SetKbnMstItems);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpsertSetKbnMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpsertSetKbnMstResponse>>(presenter.Result);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Responses.Todo;
 using EmrCloudApi.Responses;
-using UseCase.Todo.TodoInf;
+using EmrCloudApi.Responses.Todo;
+using UseCase.Todo.UpsertTodoInf;
 
 namespace EmrCloudApi.Presenters.Todo
 {

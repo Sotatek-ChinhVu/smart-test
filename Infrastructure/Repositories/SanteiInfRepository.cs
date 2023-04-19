@@ -189,7 +189,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     {
         return NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
                                                                  && item.IsDeleted == 0
-                                                                 && item.PtId == ptId)
+                                                                 && (item.PtId == ptId || item.PtId == 0))
                                                      .Select(item => new SanteiInfDetailModel(
                                                                                             item.Id,
                                                                                             item.PtId,
@@ -206,8 +206,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
     public List<SanteiInfModel> GetOnlyListSanteiInf(int hpId, long ptId)
     {
         var listSanteiInfs = NoTrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId
-                                                                          && (item.PtId == ptId || item.PtId == 0))
-                                                              .ToList();
+                                                                            && (item.PtId == ptId || item.PtId == 0))
+                                                             .ToList();
         return listSanteiInfs.Select(item => ConvertToSanteiInfModel(item))
                              .ToList();
     }
@@ -485,7 +485,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                      currentMonthSanteiItemCount,
                                      currentMonthSanteiItemSum,
                                      0,
-                                     listSanteiInfDetails.Where(item => item.ItemCd == santeiInf.ItemCd).ToList()
+                                     listSanteiInfDetails.Where(item => item.ItemCd == santeiInf.ItemCd && item.PtId == santeiInf.PtId).ToList()
                                  );
     }
 
@@ -500,39 +500,17 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                                  );
     }
 
-    private Dictionary<long, int> GetLastSanteiInfSeqNoDic(int hpId, List<long> listPtIds)
-    {
-        Dictionary<long, int> result = new();
-        var listSanteiInfs = NoTrackingDataContext.SanteiInfs.Where(item => item.HpId == hpId && listPtIds.Contains(item.PtId)).Distinct().ToList();
-        if (listSanteiInfs.Any())
-        {
-            foreach (var ptId in listPtIds.Distinct())
-            {
-                var listSanteiInfByPtId = listSanteiInfs.Where(item => item.PtId == ptId).ToList();
-                int maxSeqNo = 0;
-                if (listSanteiInfByPtId.Any())
-                {
-                    maxSeqNo = listSanteiInfByPtId.Max(item => item.SeqNo);
-                }
-                result.Add(ptId, maxSeqNo);
-            }
-        }
-        return result;
-    }
-
     private bool SaveListSanteiInfAction(int hpId, int userId, List<SanteiInfModel> listSanteiInfModels)
     {
         var listSanteiInfId = listSanteiInfModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
         var listSanteiInfDb = TrackingDataContext.SanteiInfs.Where(item => listSanteiInfId.Contains(item.Id)).ToList();
-        var lastSeqNoDic = GetLastSanteiInfSeqNoDic(hpId, listSanteiInfModels.Select(item => item.PtId).ToList());
         List<SanteiInfDetailModel> listSanteiInfDetailUpdates = new();
         foreach (var model in listSanteiInfModels)
         {
-            listSanteiInfDetailUpdates.AddRange(model.ListSanteiInfDetails);
+            listSanteiInfDetailUpdates.AddRange(model.SanteiInfDetailList);
             if (model.Id <= 0 && !model.IsDeleted)
             {
-                int lastSeqNo = lastSeqNoDic.FirstOrDefault(item => item.Key == model.PtId).Value;
-                TrackingDataContext.SanteiInfs.Add(ConvertToNewSanteiInfEntity(hpId, userId, lastSeqNo, model));
+                TrackingDataContext.SanteiInfs.Add(ConvertToNewSanteiInfEntity(hpId, userId, model));
             }
             else if (model.Id > 0)
             {
@@ -541,11 +519,10 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                 {
                     if (model.IsDeleted)
                     {
-                        var listSantaiInfDetailDeletes = NoTrackingDataContext.SanteiInfDetails.Where(item =>
-                                                                                                            item.HpId == hpId
-                                                                                                         && item.IsDeleted == 0
-                                                                                                         && item.ItemCd == model.ItemCd
-                                                                                                         && item.PtId == santeiInf.PtId)
+                        var listSantaiInfDetailDeletes = NoTrackingDataContext.SanteiInfDetails.Where(item => item.HpId == hpId
+                                                                                                              && item.IsDeleted == 0
+                                                                                                              && item.ItemCd == model.ItemCd
+                                                                                                              && item.PtId == santeiInf.PtId)
                                                                                                .Select(item => new SanteiInfDetailModel(
                                                                                                                                     item.Id,
                                                                                                                                     item.PtId,
@@ -563,6 +540,8 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     }
                     else
                     {
+                        santeiInf.SeqNo = model.SeqNo;
+                        santeiInf.PtId = model.PtId;
                         santeiInf.AlertTerm = model.AlertTerm;
                         santeiInf.AlertDays = model.AlertDays;
                         santeiInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -576,8 +555,12 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
     public bool SaveListSanteiInfDetail(int hpId, int userId, List<SanteiInfDetailModel> listSanteiInfDetailModels)
     {
-        var listSanteiInfDetailId = listSanteiInfDetailModels.Where(item => item.Id > 0).Select(item => item.Id).ToList();
-        var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => listSanteiInfDetailId.Contains(item.Id)).ToList();
+        var listSanteiInfDetailItemCd = listSanteiInfDetailModels.Select(item => item.ItemCd).Distinct().ToList();
+        var listSanteiInfDetailDb = TrackingDataContext.SanteiInfDetails.Where(item => item.ItemCd != null
+                                                                                       && listSanteiInfDetailItemCd.Contains(item.ItemCd)
+                                                                                       && item.IsDeleted == 0)
+                                                                        .ToList();
+
         foreach (var model in listSanteiInfDetailModels)
         {
             if (model.Id <= 0 && !model.IsDeleted)
@@ -597,6 +580,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
                     }
                     else
                     {
+                        santeiInfDetail.PtId = model.PtId;
                         santeiInfDetail.KisanSbt = model.KisanSbt;
                         santeiInfDetail.KisanDate = model.KisanDate;
                         santeiInfDetail.Byomei = model.Byomei;
@@ -611,7 +595,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
         return true;
     }
 
-    private SanteiInf ConvertToNewSanteiInfEntity(int hpId, int userId, int lastSeqNo, SanteiInfModel model)
+    private SanteiInf ConvertToNewSanteiInfEntity(int hpId, int userId, SanteiInfModel model)
     {
         return new SanteiInf()
         {
@@ -619,7 +603,7 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             PtId = model.PtId,
             HpId = hpId,
             ItemCd = model.ItemCd,
-            SeqNo = lastSeqNo + 1,
+            SeqNo = model.SeqNo,
             AlertDays = model.AlertDays,
             AlertTerm = model.AlertTerm,
             CreateDate = CIUtil.GetJapanDateTimeNow(),

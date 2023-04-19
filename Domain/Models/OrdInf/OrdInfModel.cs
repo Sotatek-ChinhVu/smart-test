@@ -36,13 +36,17 @@ namespace Domain.Models.OrdInfs
 
         public string CreateName { get; private set; }
 
-        public DateTime UpdateDate { get; private set; }
-
         public int UpdateId { get; private set; }
+
+        public DateTime UpdateDate { get; private set; }
 
         public string UpdateName { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate, int updateId, string updateName)
+        public string CreateMachine { get; private set; }
+
+        public string UpdateMachine { get; private set; }
+
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate, int updateId, string updateName, string createMachine, string updateMachine)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -70,6 +74,8 @@ namespace Domain.Models.OrdInfs
             UpdateDate = updateDate;
             UpdateId = updateId;
             UpdateName = updateName;
+            UpdateMachine = updateMachine;
+            CreateMachine = createMachine;
         }
 
         public OrdInfModel()
@@ -98,8 +104,9 @@ namespace Domain.Models.OrdInfs
             CreateId = 0;
             CreateName = string.Empty;
             UpdateDate = DateTime.MinValue;
-            UpdateId = 0;
             UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
         }
 
         public OrdInfModel(int isDeleted)
@@ -112,6 +119,8 @@ namespace Domain.Models.OrdInfs
             CreateName = string.Empty;
             UpdateDate = DateTime.MinValue;
             UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
         }
 
         public OrdInfModel(int inoutKbn, int odrKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
@@ -140,8 +149,9 @@ namespace Domain.Models.OrdInfs
             CreateId = 0;
             CreateName = string.Empty;
             UpdateDate = DateTime.MinValue;
-            UpdateId = 0;
             UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
         }
         public OrdInfModel(int hpId, long ptId, int sinDate, long raiinNo, int hokenPid, long rpNo, long rpEdaNo, int sinKouiKbn, List<OrdInfDetailModel> ordInfDetailModels)
         {
@@ -160,6 +170,8 @@ namespace Domain.Models.OrdInfs
             CreateName = string.Empty;
             UpdateDate = DateTime.MinValue;
             UpdateName = string.Empty;
+            CreateMachine = string.Empty;
+            UpdateMachine = string.Empty;
         }
 
 

@@ -4,11 +4,11 @@ namespace EmrCloudApi.Responses.MonshinInfor
 {
     public class GetMonshinInforListResponse
     {
-        public GetMonshinInforListResponse(List<MonshinInforModel> monshinInforModels)
+        public GetMonshinInforListResponse(List<MonshinInforModel> monshinInfors)
         {
-            MonshinInforModels = monshinInforModels;
+            MonshinInfors = monshinInfors;
         }
-        
-        public List<MonshinInforModel> MonshinInforModels { get; private set; }
+
+        public List<MonshinInforModel> MonshinInfors { get; private set; }
     }
 }

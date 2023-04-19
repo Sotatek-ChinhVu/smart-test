@@ -1,13 +1,13 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.MonshinInf;
+using EmrCloudApi.Requests.MonshinInfor;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.MonshinInfor;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using EmrCloudApi.Responses.MonshinInfor;
-using EmrCloudApi.Requests.MonshinInfor;
 using UseCase.MonshinInfor.GetList;
-using EmrCloudApi.Presenters.MonshinInf;
 using UseCase.MonshinInfor.Save;
-using EmrCloudApi.Services;
 
 namespace EmrCloudApi.Controller
 {
@@ -22,17 +22,17 @@ namespace EmrCloudApi.Controller
             _userService = userService;
         }
 
-        [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMonshinInforListResponse>> GetList([FromQuery] GetMonshinInforListRequest request)
+        [HttpGet(ApiPath.GetMonshinInf)]
+        public ActionResult<Response<GetMonshinInforListResponse>> GetMonshinInf([FromQuery] GetMonshinInforListRequest request)
         {
-            var input = new GetMonshinInforListInputData(HpId, request.PtId, request.SinDate, request.IsDeleted);
+            var input = new GetMonshinInforListInputData(HpId, request.PtId, request.RaiinNo, request.IsDeleted, request.IsGetAll);
             var output = _bus.Handle(input);
             var presenter = new GetMonshinInforListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
-        [HttpPost(ApiPath.SaveList)]
+        [HttpPost(ApiPath.SaveMonshinInf)]
         public ActionResult<Response<SaveMonshinInforListResponse>> SaveList([FromBody] SaveMonshinInforListRequest request)
         {
             var input = new SaveMonshinInputData(request.Monshins, UserId);

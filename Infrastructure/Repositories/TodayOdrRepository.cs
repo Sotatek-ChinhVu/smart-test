@@ -14,6 +14,7 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
@@ -787,7 +788,7 @@ namespace Infrastructure.Repositories
 
             if (karte.IsDeleted == DeleteTypes.Deleted)
             {
-                var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                var karteMst = TrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1);
                 if (karteMst != null)
                 {
                     karteMst.IsDeleted = DeleteTypes.Deleted;
@@ -795,7 +796,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn && karte.IsDeleted == DeleteTypes.None);
+                var karteMst = TrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == 1 && karte.IsDeleted == DeleteTypes.None);
 
                 if (karteMst == null)
                 {
@@ -807,7 +808,7 @@ namespace Infrastructure.Repositories
                             PtId = karte.PtId,
                             SinDate = karte.SinDate,
                             RaiinNo = karte.RaiinNo,
-                            KarteKbn = karte.KarteKbn,
+                            KarteKbn = 1,
                             SeqNo = seqNo,
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
@@ -833,7 +834,7 @@ namespace Infrastructure.Repositories
                             PtId = karte.PtId,
                             SinDate = karte.SinDate,
                             RaiinNo = karte.RaiinNo,
-                            KarteKbn = karte.KarteKbn,
+                            KarteKbn = 1,
                             SeqNo = seqNo,
                             Text = karte.Text,
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
@@ -865,7 +866,7 @@ namespace Infrastructure.Repositories
             return karteInf != null ? karteInf.SeqNo : 0;
         }
 
-        private long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
         {
             var odrList = NoTrackingDataContext.OdrInfs
             .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
@@ -1561,7 +1562,9 @@ namespace Infrastructure.Repositories
                         "",
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
-                        ""
+                        "",
+                        ordInf.CreateMachine ?? string.Empty,
+                        ordInf.UpdateMachine ?? string.Empty
                    );
 
             ;
@@ -1672,6 +1675,7 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// 外来リハ初再診チェック
         /// </summary>
+        /// Item1: ItemCd, Item2: ItemName
         public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
         {
             var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
@@ -1738,7 +1742,7 @@ namespace Infrastructure.Repositories
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
                 {
-                    return new(3, string.Empty, 0, string.Empty);
+                    return new(3, string.Empty, 0, rihaItemName);
 
                 }
             }
@@ -2284,6 +2288,8 @@ namespace Infrastructure.Repositories
                    string.Empty,
                    DateTime.MinValue,
                    userId,
+                   string.Empty,
+                   string.Empty,
                    string.Empty
                );
                 ordInfModels.Add(newTodayOdrInfModel);
@@ -2361,7 +2367,7 @@ namespace Infrastructure.Repositories
                         );
                     odrInfDetails.Add(odrInfDetail);
                 }
-                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty);
+                OrdInfModel odrInf = new OrdInfModel(hpId, raiinNo, 0, 0, rsvkrtOdrInfModel.PtId, sinDate, rsvkrtOdrInfModel.HokenPid, rsvkrtOdrInfModel.OdrKouiKbn, rsvkrtOdrInfModel.RpName, rsvkrtOdrInfModel.InoutKbn, rsvkrtOdrInfModel.SikyuKbn, rsvkrtOdrInfModel.SyohoSbt, rsvkrtOdrInfModel.SanteiKbn, rsvkrtOdrInfModel.TosekiKbn, rsvkrtOdrInfModel.DaysCnt, rsvkrtOdrInfModel.SortNo, rsvkrtOdrInfModel.IsDeleted, 0, odrInfDetails, DateTime.MinValue, userId, string.Empty, DateTime.MinValue, userId, string.Empty, string.Empty, string.Empty);
                 ordInfs.Add(odrInf);
             }
             return ordInfs;
@@ -2946,6 +2952,8 @@ namespace Infrastructure.Repositories
                                     string.Empty,
                                     DateTime.MinValue,
                                     userId,
+                                    string.Empty,
+                                    string.Empty,
                                     string.Empty
                                 );
 
