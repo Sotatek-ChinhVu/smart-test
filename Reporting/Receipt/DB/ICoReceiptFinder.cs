@@ -1,5 +1,7 @@
 ﻿using EmrCalculateApi.Ika.Models;
 using EmrCalculateApi.Receipt.Models;
+using Entity.Tenant;
+using Reporting.Receipt.Models;
 
 namespace Reporting.Receipt.DB
 {
@@ -38,5 +40,27 @@ namespace Reporting.Receipt.DB
 
         List<SinRpInfModel> FindSinRpInfDataForRece(int hpId, int seikyuYm, List<long> ptId, int sinYm, int hokenId, int mode,
             bool includeTester, List<int> seikyuKbns, int tantoId, int kaId);
+
+        PtInfModel FindPtInf(int hpId, long ptId, int sinDate);
+
+        HokenDataModel FindHokenData(int hpId, long ptId, int hokenId);
+
+        List<KohiDataModel> FindKohiData(int hpId, long ptId, int sinDate);
+
+        List<SyobyoDataModel> FindSyobyoData(int hpId, long ptId, int sinYm, int hokenId, int outputYm);
+
+        List<CoKaikeiDetailModel> FindKaikeiDetail(int hpId, long ptId, int sinYm, int hokenId);
+
+        PtKyuseiModel FindPtKyusei(int hpId, long ptId, int lastDate);
+
+        PtRousaiTenki FindPtRousaiTenki(int hpId, long ptId, int sinYm, int hokenId);
+
+        SyobyoKeikaModel FindSyobyoKeika(int hpId, long ptId, int sinYm, int hokenId);
+
+        List<int> FindTuuinDays(int hpId, long ptId, int sinYm, int hokenId);
+
+        SyobyoKeikaModel FindSyobyoKeikaForAfter(int hpId, long ptId, int sinDate, int hokenId);
+
+        int ZenkaiKensaDate(int hpId, long ptId, int sinDate, int hokenId);
     }
 }

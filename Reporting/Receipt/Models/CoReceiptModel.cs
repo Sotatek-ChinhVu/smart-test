@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Futan.Models;
+﻿using EmrCalculateApi.Ika.Models;
 using EmrCalculateApi.Receipt.Models;
 using Entity.Tenant;
 using Helper.Common;

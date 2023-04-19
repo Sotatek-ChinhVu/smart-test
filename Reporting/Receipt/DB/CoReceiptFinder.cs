@@ -1,22 +1,27 @@
 ﻿using Domain.Constant;
 using Domain.Models.SystemConf;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Ika.Models;
+using EmrCalculateApi.Interface;
 using EmrCalculateApi.Receipt.Models;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Receipt.Constants;
+using Reporting.Receipt.Models;
 
 namespace Reporting.Receipt.DB
 {
     public class CoReceiptFinder : RepositoryBase, ICoReceiptFinder
     {
         private readonly ISystemConfRepository _systemConfRepository;
+        private readonly IEmrLogger _emrLogger;
 
-        public CoReceiptFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository) : base(tenantProvider)
+        public CoReceiptFinder(ITenantProvider tenantProvider, ISystemConfRepository systemConfRepository, IEmrLogger emrLogger) : base(tenantProvider)
         {
             _systemConfRepository = systemConfRepository;
+            _emrLogger = emrLogger;
         }
 
         public HpInfModel FindHpInf(int hpId, int sinDate)
@@ -1298,6 +1303,328 @@ namespace Reporting.Receipt.DB
             );
 
             return results;
+        }
+
+        public PtInfModel FindPtInf(int hpId, long ptId, int sinDate)
+        {
+            PtInf ptInf = NoTrackingDataContext.PtInfs.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.IsDelete == DeleteStatus.None
+            ).FirstOrDefault();
+
+            if (ptInf == null)
+            {
+                return null;
+            }
+            return new PtInfModel(ptInf, sinDate);
+        }
+
+        public HokenDataModel FindHokenData(int hpId, long ptId, int hokenId)
+        {
+            if (hokenId == 0)
+            {
+                return null;
+            }
+
+            var ptHokenInfs = NoTrackingDataContext.PtHokenInfs;
+
+            var joinQuery = (
+                from ptHokenInf in ptHokenInfs
+                where
+                    ptHokenInf.HpId == hpId &&
+                    ptHokenInf.PtId == ptId &&
+                    ptHokenInf.HokenId == hokenId &&
+                    ptHokenInf.IsDeleted == DeleteStatus.None
+                select new
+                {
+                    ptHokenInf,
+                }
+            );
+
+            var result = joinQuery.AsEnumerable().Select(
+                data =>
+                    new HokenDataModel(
+                        data.ptHokenInf
+                    )
+                )
+                .FirstOrDefault();
+
+            return result;
+        }
+
+        public List<KohiDataModel> FindKohiData(int hpId, long ptId, int sinDate)
+        {
+            var ptKohis = NoTrackingDataContext.PtKohis;
+            var hokenMsts =
+                NoTrackingDataContext.HokenMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate
+                    );
+
+            var joinQuery = (
+                from ptKohi in ptKohis
+                join hokenMst in hokenMsts on
+                    new { ptKohi.HpId, ptKohi.PrefNo, ptKohi.HokenNo, ptKohi.HokenEdaNo } equals
+                    new { hokenMst.HpId, hokenMst.PrefNo, hokenMst.HokenNo, hokenMst.HokenEdaNo } into hokenMstJoins
+                from hokenMstJoin in hokenMstJoins.DefaultIfEmpty()
+                where
+                    ptKohi.HpId == hpId &&
+                    ptKohi.PtId == ptId &&
+                    ptKohi.IsDeleted == DeleteStatus.None
+                select new
+                {
+                    ptKohi,
+                    hokenMstJoin
+                }
+            );
+
+            return joinQuery.AsEnumerable().Select(
+                data =>
+                    new KohiDataModel(
+                        data.ptKohi, data.hokenMstJoin
+                    )
+                )
+                .ToList();
+        }
+
+        public List<SyobyoDataModel> FindSyobyoData(int hpId, long ptId, int sinYm, int hokenId, int outputYm)
+        {
+            var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.StartDate <= sinYm * 100 + 31 &&
+                ((p.TenkiKbn == TenkiKbnConst.Continued && p.TenkiDate <= 0) || p.TenkiDate >= sinYm * 100 + 1) &&
+                (p.HokenPid == 0 || p.HokenPid == hokenId) &&
+                p.IsNodspRece == 0 &&
+                p.IsDeleted == DeleteStatus.None)
+                .OrderBy(p => p.StartDate)
+                .ThenBy(p => p.SortNo)
+                .ToList();
+
+            var results = new List<SyobyoDataModel>();
+
+            ptByomeis?.ForEach(ptByomei =>
+            {
+                results.Add(new SyobyoDataModel(ptByomei, sinYm, outputYm, _emrLogger));
+            }
+            );
+
+            return results;
+        }
+
+        public List<CoKaikeiDetailModel> FindKaikeiDetail(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var kaikeiDtl = NoTrackingDataContext.KaikeiDetails.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinDate >= sinYm * 100 + 1 &&
+                p.SinDate <= sinYm * 100 + 31 &&
+                p.HokenId == hokenId &&
+                p.Tensu > 0)
+                .OrderBy(p => p.SinDate)
+                .ThenBy(p => p.OyaRaiinNo)
+                .ThenBy(p => p.RaiinNo)
+                .ToList();
+
+            var results = new List<CoKaikeiDetailModel>();
+
+            kaikeiDtl.ForEach(p => results.Add(new CoKaikeiDetailModel(p)));
+
+            return results;
+        }
+
+        public PtKyuseiModel FindPtKyusei(int hpId, long ptId, int lastDate)
+        {
+            var entities =
+                NoTrackingDataContext.PtKyuseis.Where(p =>
+                    p.HpId == hpId &&
+                    p.PtId == ptId &&
+                    p.EndDate >= lastDate &&
+                    p.IsDeleted == DeleteStatus.None)
+                    .OrderByDescending(p => p.EndDate)
+                    .ToList();
+
+            PtKyuseiModel result = null;
+
+            if (entities != null && entities.Any())
+            {
+                result = new PtKyuseiModel(entities.First());
+            }
+
+            return result;
+        }
+
+        public PtRousaiTenki FindPtRousaiTenki(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var entities =
+                NoTrackingDataContext.PtRousaiTenkis.Where(p =>
+                    p.HpId == hpId &&
+                    p.PtId == ptId &&
+                    p.HokenId == hokenId &&
+                    p.EndDate >= sinYm &&
+                    p.IsDeleted == DeleteStatus.None)
+                    .OrderBy(p => p.EndDate)
+                    .ToList();
+
+            PtRousaiTenki result = null;
+
+            if (entities != null && entities.Any())
+            {
+                result = entities.First();
+            }
+
+            return result;
+        }
+
+        public SyobyoKeikaModel FindSyobyoKeika(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var entities =
+                NoTrackingDataContext.SyobyoKeikas.Where(p =>
+                    p.HpId == hpId &&
+                    p.PtId == ptId &&
+                    p.SinYm == sinYm &&
+                    p.HokenId == hokenId &&
+                    p.IsDeleted == DeleteStatus.None)
+                .OrderBy(p => p.SinYm)
+                .ThenBy(p => p.SinDay)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+
+            SyobyoKeikaModel result = null;
+
+            if (entities != null && entities.Any())
+            {
+                result = new SyobyoKeikaModel(entities.First());
+            }
+
+            return result;
+        }
+
+        public List<int> FindTuuinDays(int hpId, long ptId, int sinYm, int hokenId)
+        {
+            var kaikeiDtls = NoTrackingDataContext.KaikeiDetails.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinDate >= sinYm * 100 + 1 &&
+                p.SinDate <= sinYm * 100 + 31 &&
+                p.HokenId == hokenId &&
+                p.Jitunisu > 0);
+
+            var joinQuery = (
+                from kaikeiDtl in kaikeiDtls
+                where
+                    kaikeiDtl.HpId == HpId &&
+                    kaikeiDtl.PtId == ptId
+                group kaikeiDtl by kaikeiDtl.SinDate into A
+                orderby
+                    A.Key descending
+                select new
+                {
+                    SinDate = A.Key
+                }
+                );
+            var entities = joinQuery.AsEnumerable().Select(
+                data =>
+                    data.SinDate
+                )
+                .ToList();
+
+            List<int> results = new List<int>();
+
+            entities?.ForEach(entity =>
+            {
+                results.Add(entity);
+            });
+
+            return results;
+        }
+
+        public SyobyoKeikaModel FindSyobyoKeikaForAfter(int hpId, long ptId, int sinDate, int hokenId)
+        {
+            var entities =
+                NoTrackingDataContext.SyobyoKeikas.Where(p =>
+                    p.HpId == hpId &&
+                    p.PtId == ptId &&
+                    p.SinYm == sinDate / 100 &&
+                    p.SinDay == sinDate % 100 &&
+                    p.HokenId == hokenId &&
+                    p.IsDeleted == DeleteStatus.None)
+                .OrderBy(p => p.SinYm)
+                .ThenBy(p => p.SinDay)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+
+            SyobyoKeikaModel result = null;
+
+            if (entities != null && entities.Any())
+            {
+                result = new SyobyoKeikaModel(entities.First());
+            }
+
+            return result;
+        }
+
+        public int ZenkaiKensaDate(int hpId, long ptId, int sinDate, int hokenId)
+        {
+            var odrInfs = NoTrackingDataContext.OdrInfs.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinDate <= sinDate &&
+                o.OdrKouiKbn >= OdrKouiKbnConst.KensaMin &&
+                o.OdrKouiKbn <= OdrKouiKbnConst.GazoMax &&
+                o.IsDeleted == DeleteStatus.None);
+            var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(o =>
+                o.HpId == hpId &&
+                o.HokenId == hokenId);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r =>
+                r.HpId == hpId &&
+                r.PtId == ptId &&
+                r.SinDate <= sinDate &&
+                r.IsDeleted == DeleteStatus.None);
+
+            var joinQuery = (
+                from odrInf in odrInfs
+                join PtHokenPattern in ptHokenPatterns on
+                    new { odrInf.HpId, odrInf.PtId, HokenPid = odrInf.HokenPid } equals
+                    new { PtHokenPattern.HpId, PtHokenPattern.PtId, PtHokenPattern.HokenPid }
+                join RaiinInf in raiinInfs on
+                    new { odrInf.HpId, odrInf.PtId, odrInf.RaiinNo } equals
+                    new { RaiinInf.HpId, RaiinInf.PtId, RaiinInf.RaiinNo }
+                where
+                    odrInf.HpId == hpId &&
+                    odrInf.PtId == ptId &&
+                    odrInf.IsDeleted == DeleteStatus.None
+                group odrInf by odrInf.SinDate into A
+                orderby
+                    A.Key descending
+                select new
+                {
+                    SinDate = A.Key
+                }
+            );
+
+            var entities = joinQuery.AsEnumerable().Select(
+                data =>
+                    data.SinDate
+                )
+                .ToList();
+
+            List<int> results = new List<int>();
+
+            entities?.ForEach(entity =>
+            {
+                results.Add(entity);
+            });
+
+            int ret = 0;
+            if (results.Any())
+            {
+                ret = results.First();
+            }
+
+            return ret;
         }
     }
 }
