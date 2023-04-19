@@ -30,4 +30,11 @@ public interface ISystemConfig
     string SyohosenRefillZero();
     int SyohosenRefillStrikeLine();
     int SyohosenQRKbn();
+    int AccountingDetailIncludeComment();
+    int AccountingDetailIncludeOutDrug();
+    int AccountingUseBackwardFields();
+    int AccountingTeikeibunPrint();
+    string AccountingTeikeibun1();
+    string AccountingTeikeibun2();
+    string AccountingTeikeibun3();
 }

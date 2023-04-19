@@ -10,6 +10,7 @@
                 ReportType = GetReportType(),
                 SingleFieldData = GetSingleFieldData(),
                 TableFieldData = GetTableFieldData(),
+                SystemConfigList = GetSystemConfigList(),
                 ReportConfigModel = new ReportConfigModel()
                 {
                     VisibleFieldList = GetVisibleFieldData(),
@@ -48,6 +49,11 @@
         public virtual Dictionary<string, bool> GetWrapFieldData()
         {
             throw new NotImplementedException();
+        }
+
+        public virtual Dictionary<string, string> GetSystemConfigList()
+        {
+            return new();
         }
     }
 }
