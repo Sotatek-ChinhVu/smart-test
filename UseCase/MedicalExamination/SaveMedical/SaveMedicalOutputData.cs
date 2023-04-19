@@ -1,5 +1,7 @@
 ﻿using UseCase.Core.Sync.Core;
+using UseCase.Diseases.Upsert;
 using UseCase.Family;
+using UseCase.FlowSheet.Upsert;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.RaiinInfConst;
@@ -14,6 +16,8 @@ public class SaveMedicalOutputData : IOutputData
            Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOdrs,
            KarteValidationStatus validationKarte,
            ValidateFamilyListStatus validateFamily,
+           UpsertFlowSheetStatus validationFlowSheetStatus,
+           UpsertPtDiseaseListStatus validationPtDiseaseListStatus,
            int sinDate,
            long raiinNo,
            long ptId)
@@ -26,6 +30,8 @@ public class SaveMedicalOutputData : IOutputData
         SinDate = sinDate;
         RaiinNo = raiinNo;
         PtId = ptId;
+        ValidationFlowSheetStatus = validationFlowSheetStatus;
+        ValidationPtDiseaseListStatus = validationPtDiseaseListStatus;
     }
 
     public int SinDate { get; private set; }
@@ -43,4 +49,8 @@ public class SaveMedicalOutputData : IOutputData
     public KarteValidationStatus ValidationKarte { get; private set; }
 
     public ValidateFamilyListStatus ValidateFamily { get; private set; }
+
+    public UpsertFlowSheetStatus ValidationFlowSheetStatus { get; private set; }
+
+    public UpsertPtDiseaseListStatus ValidationPtDiseaseListStatus { get; private set; }
 }

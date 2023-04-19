@@ -15,7 +15,7 @@ namespace EmrCloudApi.Requests.SpecialNote
         public List<KensaInfDetailRequest> KensaInfDetailModels { get; set; } = new List<KensaInfDetailRequest>();
         public PatientInfoItem Map()
         {
-            return new PatientInfoItem(PregnancyItems.Select(p => p.Map()).ToList(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), KensaInfDetailModels.Select(k => k.Map()).ToList());
+            return new PatientInfoItem(PregnancyItems.Select(p => p.Map()).ToList(), PtCmtInfItems.Map(), SeikatureInfItems.Map(), KensaInfDetailModels.Select(k => new KensaInfDetailItem(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2)).ToList());
         }
     }
     public class PtPregnancyRequest

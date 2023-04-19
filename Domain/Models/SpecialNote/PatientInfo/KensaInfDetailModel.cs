@@ -1,9 +1,10 @@
-﻿using Helper.Constants;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models.SpecialNote.PatientInfo
 {
     public class KensaInfDetailModel
     {
+        [JsonConstructor]
         public KensaInfDetailModel(int hpId, long ptId, long iraiCd, long seqNo, int iraiDate, long raiinNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2, DateTime updateDate, string unit, string kensaName, int sortNo)
         {
             HpId = hpId;

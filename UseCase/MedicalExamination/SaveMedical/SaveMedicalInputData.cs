@@ -1,13 +1,16 @@
 ﻿using Domain.Models.MonshinInf;
 using UseCase.Core.Sync.Core;
+using UseCase.Diseases.Upsert;
 using UseCase.Family;
+using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.UpsertTodayOrd;
+using UseCase.NextOrder;
 
 namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, MonshinInforModel monshins)
+    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins)
     {
         HpId = hpId;
         PtId = ptId;
@@ -26,6 +29,10 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
         UserId = userId;
         FileItem = fileItem;
         FamilyList = listFamily;
+        NextOrderItems = nextOrderItems;
+        SpecialNoteItem = specialNoteItem;
+        UpsertPtDiseaseListInputItems = upsertPtDiseaseListInputItems;
+        FlowSheetItems = flowSheetItems;
         Monshins = monshins;
     }
 
@@ -61,8 +68,15 @@ public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 
     public FileItemInputItem FileItem { get; private set; }
 
-    // Family input data
     public List<FamilyItem> FamilyList { get; private set; }
+
+    public List<NextOrderItem> NextOrderItems { get; private set; }
+
+    public SpecialNoteItem SpecialNoteItem { get; private set; }
+
+    public List<UpsertPtDiseaseListInputItem> UpsertPtDiseaseListInputItems { get; private set; }
+
+    public List<UpsertFlowSheetItemInputData> FlowSheetItems { get; private set; }
 
     public MonshinInforModel Monshins { get; private set; }
 }

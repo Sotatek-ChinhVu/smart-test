@@ -16,6 +16,8 @@ namespace EmrCloudApi.Requests.FlowSheet
         [Required]
         public int SinDate { get; set; }
 
-        public string Value { get; set; } = string.Empty;
+        public string Cmt { get; set; } = string.Empty;
+
+        public int TagNo { get; set; }
     }
 }

@@ -18,6 +18,5 @@ namespace EmrCloudApi.Responses.MedicalExamination
         public string OrderInfDetailPosition { get; private set; }
         public string ValidationMessage { get; private set; }
         public string ValidationField { get; private set; }
-
     }
 }

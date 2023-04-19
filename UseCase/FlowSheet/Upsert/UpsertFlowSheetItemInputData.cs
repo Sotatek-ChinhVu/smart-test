@@ -2,22 +2,22 @@
 {
     public class UpsertFlowSheetItemInputData
     {
-        public UpsertFlowSheetItemInputData(long rainNo, long ptId, int sinDate, string value, bool flag)
+        public UpsertFlowSheetItemInputData(long rainNo, long ptId, int sinDate, int tagNo, string cmt)
         {
             RainNo = rainNo;
             PtId = ptId;
             SinDate = sinDate;
-            Flag = flag;
-            Value = value;
+            TagNo = tagNo;
+            Cmt = cmt;
         }
-        public bool Flag { get; private set; }
-
         public long RainNo { get; private set; }
 
         public long PtId { get; private set; }
 
         public int SinDate { get; private set; }
 
-        public string Value { get; private set; }
+        public int TagNo { get; private set; }
+
+        public string Cmt { get; private set; }
     }
 }
