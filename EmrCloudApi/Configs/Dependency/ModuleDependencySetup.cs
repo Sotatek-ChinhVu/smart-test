@@ -106,6 +106,7 @@ using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
+using Interactor.MedicalExamination.HistoryCommon;
 using Interactor.MonshinInf;
 using Interactor.MstItem;
 using Interactor.NextOrder;
@@ -260,6 +261,7 @@ using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
@@ -430,6 +432,7 @@ using UseCase.User.UpsertList;
 using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
+using UseCase.UserConf.UserSettingParam;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.WeightedSetConfirmation.CheckOpen;
@@ -919,6 +922,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SagakuInputData, SagakuInteractor>();
             busBuilder.RegisterUseCase<UpsertUserConfListInputData, UpsertUserConfListInteractor>();
             busBuilder.RegisterUseCase<GetListMedicalExaminationConfigInputData, GetListMedicalExaminationConfigInteractor>();
+            busBuilder.RegisterUseCase<GetUserConfigParamInputData, GetUserConfigParamInteractor>();
             busBuilder.RegisterUseCase<GetUserConfModelListInputData, GetUserConfModelListInteractor>();
 
             //SwapHoken
