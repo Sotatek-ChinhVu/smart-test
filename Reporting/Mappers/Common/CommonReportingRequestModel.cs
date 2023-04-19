@@ -15,6 +15,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("tableFieldData")]
         public List<Dictionary<string, CellModel>> TableFieldData { get; set; } = new List<Dictionary<string, CellModel>>();
+        
+        [JsonPropertyName("systemConfigList")]
+        public Dictionary<string, string> SystemConfigList { get; set; } = new();
     }
 
     public class CellModel
