@@ -142,7 +142,7 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var byomeiModelList = new List<PtDiseaseModel>()
         {
             new PtDiseaseModel(
@@ -171,8 +171,10 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count > 0);
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou2);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
     }
 
     /// <summary>
@@ -183,7 +185,7 @@ public class CheckedOrderTest : BaseUT
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var byomeiModelList = new List<PtDiseaseModel>()
         {
             new PtDiseaseModel(
@@ -212,8 +214,10 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count > 0);
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.IgakuTokusitu(hpId, sinDate, hokenId, syosaisinKbn, byomeiModelList, ordInfDetailModels, isJouhou2);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
     }
 
     /// <summary>
@@ -285,7 +289,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Not Special and Other
     /// </summary>
     [Test]
-    public void IgakuTokusitu_006_Disease_NoDisease()
+    public void IgakuTokusitu_007_Disease_NoDisease()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -334,7 +338,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Item Sihifu of Order Detail
     /// </summary>
     [Test]
-    public void SihifuToku1_ItemSihifu()
+    public void SihifuToku1_008_ItemSihifu()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -391,7 +395,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TenMst follow IsJouHou
     /// </summary>
     [Test]
-    public void SihifuToku1_TenMst()
+    public void SihifuToku1_009_TenMst()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20220331, ptId = 1, sinDate2 = 20220430, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1;
@@ -438,7 +442,7 @@ public class CheckedOrderTest : BaseUT
     /// Check MeiSkin
     /// </summary>
     [Test]
-    public void SihifuToku1_MeiSkin()
+    public void SihifuToku1_010_MeiSkin()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1;
@@ -524,7 +528,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void SihifuToku1_Syosai()
+    public void SihifuToku1_011_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -614,12 +618,12 @@ public class CheckedOrderTest : BaseUT
     /// True
     /// </summary>
     [Test]
-    public void SihifuToku1_True()
+    public void SihifuToku1_012_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220822, hokenId = 10, syosaisinKbn1 = 20;
         long ptId = 7318199999, raiinNo = 70096280111231, oyaRaiinNo = 1957703;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var raiinInfs = CheckedOrderData.ReadRainInf();
@@ -686,8 +690,11 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou);
+        var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou2);
         Assert.True(iagkutokusitu1.Count > 0);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -700,7 +707,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Item Sihifu of Order Detail
     /// </summary>
     [Test]
-    public void SihifuToku2_Sihifu()
+    public void SihifuToku2_013_Sihifu()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, ptId = 1, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1, iBirthDay = 30;
@@ -753,7 +760,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TenMst follow IsJouHou
     /// </summary>
     [Test]
-    public void SihifuToku2_TenMst()
+    public void SihifuToku2_014_TenMst()
     {
         // Arrange
         int hpId = 1, sinDate1 = 20220331, ptId = 1, sinDate2 = 20220430, hokenId = 10, syosaisinKbn = 15, raiinNo = 1, oyaRaiinNo = 1, iBirthDay = 30;
@@ -801,7 +808,7 @@ public class CheckedOrderTest : BaseUT
     /// Check MeiSkin
     /// </summary>
     [Test]
-    public void SihifuToku2_Hifuka()
+    public void SihifuToku2_015_Hifuka()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay = 30;
@@ -888,7 +895,7 @@ public class CheckedOrderTest : BaseUT
     /// Check SihifuToku1 Skin2 contain L20
     /// </summary>
     [Test]
-    public void SihifuToku2_Skin2_L20()
+    public void SihifuToku2_016_Skin2_L20()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
@@ -979,7 +986,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Skin2 doesn't no L20
     /// </summary>
     [Test]
-    public void SihifuToku2_Skin2_No_L20()
+    public void SihifuToku2_017_Skin2_No_L20()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
@@ -1070,7 +1077,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void SihifuToku2_Syosai()
+    public void SihifuToku2_018_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8, iBirthDay = 30;
@@ -1161,7 +1168,7 @@ public class CheckedOrderTest : BaseUT
     /// Check True
     /// </summary>
     [Test]
-    public void SihifuToku2_True()
+    public void SihifuToku2_019_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20, iBirthDay = 30;
@@ -1245,7 +1252,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void IgakuTenkan_Igaku()
+    public void IgakuTenkan_020_Igaku()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -1289,7 +1296,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuTenkan_Syosai()
+    public void IgakuTenkan_021_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -1378,11 +1385,11 @@ public class CheckedOrderTest : BaseUT
     /// Check meiEpi
     /// </summary>
     [Test]
-    public void IgakuTenkan_MeiEpi()
+    public void IgakuTenkan_022_MeiEpi()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var raiinInfs = CheckedOrderData.ReadRainInf();
@@ -1449,8 +1456,10 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count > 0);
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1463,11 +1472,11 @@ public class CheckedOrderTest : BaseUT
     /// Check other
     /// </summary>
     [Test]
-    public void IgakuTenkan_Orther()
+    public void IgakuTenkan_023_Orther()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var raiinInfs = CheckedOrderData.ReadRainInf();
@@ -1534,8 +1543,10 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count > 0);
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1548,7 +1559,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some itemCd is Nanbyo
     /// </summary>
     [Test]
-    public void IgakuNanbyo_IgakuNanByo()
+    public void IgakuNanbyo_024_IgakuNanByo()
     {
         // Arrange
         int hpId = 1, sinDate = 20221111, hokenId = 10, syosaisinKbn = 15;
@@ -1592,7 +1603,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosai
     /// </summary>
     [Test]
-    public void IgakuNanbyo_Syosai()
+    public void IgakuNanbyo_025_Syosai()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
@@ -1681,7 +1692,7 @@ public class CheckedOrderTest : BaseUT
     /// Check IsJouhou
     /// </summary>
     [Test]
-    public void IgakuNanbyo_IsJouhou()
+    public void IgakuNanbyo_026_IsJouhou()
     {
         // Arrange
         int hpId = 1, sinDate = 20220301, hokenId = 10, syosaisinKbn1 = 1;
@@ -1766,11 +1777,11 @@ public class CheckedOrderTest : BaseUT
     /// Check santeigai
     /// </summary>
     [Test]
-    public void IgakuNanbyo_SanteiGai()
+    public void IgakuNanbyo_027_SanteiGai()
     {
         // Arrange
         int hpId = 1, sinDate = 20221212, hokenId = 10, syosaisinKbn1 = 20;
-        bool isJouhou = true;
+        bool isJouhou1 = true, isJouhou2 = false;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
         var raiinInfs = CheckedOrderData.ReadRainInf();
@@ -1841,8 +1852,10 @@ public class CheckedOrderTest : BaseUT
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         // Act
-        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou);
-        Assert.True(iagkutokusitu1.Count > 0);
+        var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
+        var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1855,7 +1868,7 @@ public class CheckedOrderTest : BaseUT
     /// Check true
     /// </summary>
     [Test]
-    public void IgakuNanbyo_True()
+    public void IgakuNanbyo_028_True()
     {
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
@@ -1940,7 +1953,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are IgakuNanbyo
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_IgakuNanbyo()
+    public void InitPriorityCheckDetail_029_IgakuNanbyo()
     {
         // Arrange
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
@@ -2013,7 +2026,7 @@ public class CheckedOrderTest : BaseUT
     /// Check ItemCd are IakuTenkan
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_IgakuTenkan()
+    public void InitPriorityCheckDetail_030_IgakuTenkan()
     {
         // Arrange
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
@@ -2067,7 +2080,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are SihifuToku
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_SihifuToku1()
+    public void InitPriorityCheckDetail_031_SihifuToku1()
     {
         // Arrange
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
@@ -2112,7 +2125,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are IgakuTokusitu
     /// </summary>
     [Test]
-    public void InitPriorityCheckDetail_IgakuTokusitu()
+    public void InitPriorityCheckDetail_032_IgakuTokusitu()
     {
         // Arrange
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
@@ -2148,7 +2161,7 @@ public class CheckedOrderTest : BaseUT
     /// Check tikiHokatu
     /// </summary>
     [Test]
-    public void ChikiHokatu_TikiHokatu()
+    public void ChikiHokatu_033_TikiHokatu()
     {
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
@@ -2186,7 +2199,7 @@ public class CheckedOrderTest : BaseUT
     /// Check SyosaisinKbn
     /// </summary>
     [Test]
-    public void ChikiHokatu_SyosaisinKbn()
+    public void ChikiHokatu_034_SyosaisinKbn()
     {
         //Arrange
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 1;
@@ -2221,7 +2234,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void ChikiHokatu_TiikiSantei()
+    public void ChikiHokatu_035_TiikiSantei()
     {
         //Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -2265,7 +2278,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Primary doctor
     /// </summary>
     [Test]
-    public void ChikiHokatu_PrimaryDoctor()
+    public void ChikiHokatu_036_PrimaryDoctor()
     {
         //Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -2309,7 +2322,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TantoId
     /// </summary>
     [Test]
-    public void ChikiHokatu_TantoId()
+    public void ChikiHokatu_037_TantoId()
     {
         //Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -2344,7 +2357,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Oshin
     /// </summary>
     [Test]
-    public void ChikiHokatu_Oshin()
+    public void ChikiHokatu_038_Oshin()
     {
         //Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -2382,7 +2395,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void ChikiHokatu_JidoSantei()
+    public void ChikiHokatu_039_JidoSantei()
     {
         //Arrange
         var tenant = TenantProvider.GetNoTrackingDataContext();
@@ -2417,7 +2430,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are Yakkuzai
     /// </summary>
     [Test]
-    public void YakkuZai_Item()
+    public void YakkuZai_040_Item()
     {
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
@@ -2440,7 +2453,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void YakkuZai_IsDrug()
+    public void YakkuZai_041_IsDrug()
     {
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
@@ -2472,7 +2485,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Age
     /// </summary>
     [Test]
-    public void YakkuZai_Age()
+    public void YakkuZai_042_Age()
     {
         //Arrange
         int hpId = 1, birthDay = CIUtil.DateTimeToInt(DateTime.UtcNow.AddYears(-1)), sinDate = CIUtil.DateTimeToInt(DateTime.UtcNow);
@@ -2561,7 +2574,7 @@ public class CheckedOrderTest : BaseUT
     /// Check YakuzaiJoho
     /// </summary>
     [Test]
-    public void YakkuZai_YakuzaiJoho()
+    public void YakkuZai_043_YakuzaiJoho()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 999999999;
@@ -2649,7 +2662,7 @@ public class CheckedOrderTest : BaseUT
     /// Check YakuzaiJohoTeiyo
     /// </summary>
     [Test]
-    public void YakkuZai_YakuzaiJohoTeiyo()
+    public void YakkuZai_044_YakuzaiJohoTeiyo()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 999999999;
@@ -2737,7 +2750,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Exist message which are returned
     /// </summary>
     [Test]
-    public void YakkuZai_ExistMessage()
+    public void YakkuZai_045_ExistMessage()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -2825,7 +2838,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Some ItemCd are SiIkuji
     /// </summary>
     [Test]
-    public void SiIkuji_Item()
+    public void SiIkuji_046_Item()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -2855,7 +2868,7 @@ public class CheckedOrderTest : BaseUT
     /// Check isjouhou
     /// </summary>
     [Test]
-    public void SiIkuji_IsJouhou()
+    public void SiIkuji_047_IsJouhou()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate1 = 20220330, sinDate2 = 999999999;
@@ -2886,7 +2899,7 @@ public class CheckedOrderTest : BaseUT
     /// Check shonika
     /// </summary>
     [Test]
-    public void SiIkuji_Shonika()
+    public void SiIkuji_048_Shonika()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -2941,7 +2954,7 @@ public class CheckedOrderTest : BaseUT
     /// Check autosantei
     /// </summary>
     [Test]
-    public void SiIkuji_AutoSantei()
+    public void SiIkuji_049_AutoSantei()
     {
         //Arrange
         int hpId = 1, birthDay = 19900101, sinDate = 21000101;
@@ -3021,7 +3034,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Age
     /// </summary>
     [Test]
-    public void SiIkuji_Age()
+    public void SiIkuji_050_Age()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21100101;
@@ -3088,7 +3101,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Syosin
     /// </summary>
     [Test]
-    public void SiIkuji_Syosin()
+    public void SiIkuji_051_Syosin()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21000101;
@@ -3155,7 +3168,7 @@ public class CheckedOrderTest : BaseUT
     /// Check when messages are returned
     /// </summary>
     [Test]
-    public void SiIkuji_ExistMessage()
+    public void SiIkuji_052_ExistMessage()
     {
         //Arrange
         int hpId = 1, birthDay = 21000101, sinDate = 21000101;
@@ -3212,9 +3225,14 @@ public class CheckedOrderTest : BaseUT
         // Act
         var checkModel1s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 1);
         var checkModel2s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, true, 6);
+        var checkModel3s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 1);
+        var checkModel4s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 6);
 
         //Assert
-        Assert.True(checkModel1s.Count > 0 && checkModel2s.Count > 0);
+        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
         tenantTracking.SaveChanges();
@@ -3224,7 +3242,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are zanyaku
     /// </summary>
     [Test]
-    public void Zanyaku_Item()
+    public void Zanyaku_053_Item()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
@@ -3260,7 +3278,7 @@ public class CheckedOrderTest : BaseUT
     /// Check Zanyaku is drug
     /// </summary>
     [Test]
-    public void Zanyaku_Drug()
+    public void Zanyaku_054_Drug()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101;
@@ -3296,7 +3314,7 @@ public class CheckedOrderTest : BaseUT
     /// Check some ItemCd are TouyakutokusyoSyoho
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_Item()
+    public void TouyakuTokusyoSyoho_055_Item()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -3351,7 +3369,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TouyakuTokusyoSyoho is drug
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_Drug()
+    public void TouyakuTokusyoSyoho_056_Drug()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -3407,7 +3425,7 @@ public class CheckedOrderTest : BaseUT
     /// Check TouyakuTokusyoSyoho is true
     /// </summary>
     [Test]
-    public void TouyakuTokusyoSyoho_True()
+    public void TouyakuTokusyoSyoho_057_True()
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
@@ -3502,7 +3520,7 @@ public class CheckedOrderTest : BaseUT
     /// Check special
     /// </summary>
     [Test]
-    public void CheckByoMei_Special()
+    public void CheckByoMei_058_Special()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
@@ -3579,7 +3597,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void CheckByoMei_Other()
+    public void CheckByoMei_059_Other()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
@@ -3656,7 +3674,7 @@ public class CheckedOrderTest : BaseUT
     }
 
     [Test]
-    public void CheckByoMei_True()
+    public void CheckByoMei_060_True()
     {
         //Arrange
         int hpId = 1, sinDate = 21100101, hokenId = 10, inoutKbn = 0;
