@@ -5,6 +5,7 @@ using EmrCalculateApi.Receipt.Constants;
 using EmrCalculateApi.Receipt.Models;
 using EmrCalculateApi.Receipt.ViewModels;
 using Helper.Common;
+using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Receipt.Constants;
@@ -31,7 +32,8 @@ namespace Reporting.Receipt.Service
             _tenantProvider = tenantProvider;
         }
 
-        private EmrCalculateApi.ReceFutan.Models.ReceInfModel ReceInfModel { get; set; } = null;
+        private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels;
+        private EmrCalculateApi.ReceFutan.Models.ReceInfModel ReceInf;
 
         private int HpId;
         private int SeikyuYm;
@@ -49,27 +51,165 @@ namespace Reporting.Receipt.Service
         private int PaperKbn;
         private bool IncludeTester;
         private bool IncludeOutDrug;
+        private bool IsPtTest;
         private int Sort;
 
         SeikyuType SeikyuType;
 
-        private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = null;
+        private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
+        public List<CoReceiptModel> GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode, bool isNoCreatingReceData = false)
+        {
+            var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, seikyuYm, sinYm, hokenId);
 
-        public void InitParam(
+            // TODO message or somthing process here
+            if (receInf == null) return new();
+            int target = -1;
+            switch (receInf.HokenKbn)
+            {
+                case 0:
+                    target = TargetConst.Jihi;
+                    break;
+                case 1:
+                    target = TargetConst.Syaho;
+                    break;
+                case 2:
+                    target = TargetConst.Kokuho;
+                    break;
+                case 11:
+                    target = TargetConst.RousaiTanki;
+                    break;
+                case 12:
+                    target = TargetConst.RousaiNenkin;
+                    break;
+                case 13:
+                    target = TargetConst.RousaiAfter;
+                    break;
+                case 14:
+                    target = TargetConst.Jibai;
+                    break;
+                default:
+                    return new();
+            }
+
+            switch (mode)
+            {
+
+                case ReceiptPreviewModeEnum.Accounting:
+                case ReceiptPreviewModeEnum.ReceiptCheckMedicalDetailIn:
+                case ReceiptPreviewModeEnum.ReceiptCheckMedicalDetailOut:
+                case ReceiptPreviewModeEnum.ReceiptList:
+                    {
+                        SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
+
+                        if (isNoCreatingReceData)
+                        {
+                            InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
+                            return GetData();
+                        }
+                        else
+                        {
+                            InitParam(hpId, receInf.SeikyuYm
+                                        , receInf.PtId
+                                        , receInf.SinYm
+                                        , receInf.HokenId
+                                        , 0
+                                        , 0
+                                        , target
+                                        , ""
+                                        , 0
+                                        , 999999999
+                                        , seikyuType
+                                        , IsPtTest
+                                        , IncludeOutDrug
+                                        , sort: 0);
+                            return GetData();
+                        }
+                    }
+                case ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki:
+                    {
+                        InitParam(hpId, receInf.PtId, receInf.SeikyuYm, receInf.SinYm, receInf.HokenId);
+                        return GetData();
+                    }
+            }
+
+            return new();
+        }
+
+        public void InitParam(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+        {
+            HpId = hpId;
+            PtId.Add(ptId);
+            SeikyuYm = seikyuYm;
+            SinYm = sinYm;
+            HokenId = hokenId;
+        }
+
+        public void InitParam(int hpId,
+            EmrCalculateApi.ReceFutan.Models.ReceInfModel receInf, List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> receFutanKbnModels, bool includeOutDrug)
+        {
+            HpId = hpId;
+            SeikyuYm = receInf.SeikyuYm;
+            PtId = new List<long>();
+            PtId.Add(receInf.PtId);
+            SinYm = receInf.SinYm;
+            HokenId = receInf.HokenId;
+            KaId = 0;
+            TantoId = 0;
+
+            switch (receInf.HokenKbn)
+            {
+                case 0:
+                    Target = 99;
+                    break;
+                case 1:
+                    Target = 1;
+                    break;
+                case 2:
+                    Target = 2;
+                    break;
+                case 11:
+                    Target = 10;
+                    break;
+                case 12:
+                    Target = 11;
+                    break;
+                case 13:
+                    Target = 13;
+                    break;
+                case 14:
+                    Target = 20;
+                    break;
+            }
+            ReceSbt = "";
+            PrintNoFrom = 0;
+            PrintNoTo = 999999999;
+            PaperKbn = 0;
+            IncludeTester = true;
+            IncludeOutDrug = includeOutDrug;
+            Sort = 0;
+
+            GrpId = 0;
+
+            ReceInf = receInf;
+            ReceFutanKbns = receFutanKbnModels;
+        }
+
+        public void InitParam(int hpId,
             int seikyuYm, long ptId, int sinYm, int hokenId, int kaId, int tantoId,
             int target, string receSbt, int printNoFrom, int printNoTo,
             SeikyuType seikyuType, bool includeTester, bool includeOutDrug,
             int sort
         )
         {
+            HpId = hpId;
             PtId = new List<long>();
             if (ptId > 0)
             {
                 PtId.Add(ptId);
             }
 
-            InitParam(
+            InitParam(hpId: hpId,
                 seikyuYm: seikyuYm, ptId: PtId, sinYm: sinYm, hokenId: hokenId,
                 kaId: kaId, tantoId: tantoId, target: target, receSbt: receSbt,
                 printNoFrom: printNoFrom, printNoTo: printNoTo,
@@ -78,13 +218,14 @@ namespace Reporting.Receipt.Service
                 sort: sort);
         }
 
-        public void InitParam(
+        public void InitParam(int hpId,
             int seikyuYm, List<long> ptId, int sinYm, int hokenId, int kaId, int tantoId,
             int target, string receSbt, int printNoFrom, int printNoTo,
             SeikyuType seikyuType, bool includeTester, bool includeOutDrug,
             int sort
         )
         {
+            HpId = hpId;
             SeikyuType = seikyuType;
 
             SeikyuYm = seikyuYm;
@@ -185,7 +326,7 @@ namespace Reporting.Receipt.Service
 
             void _getReceData(List<long> AptId)
             {
-                if (ReceInfModel == null)
+                if (ReceInf == null)
                 {
                     List<long> targetPtIds = new List<long>();
 
@@ -220,7 +361,7 @@ namespace Reporting.Receipt.Service
                 }
                 else
                 {
-                    receInfModels.AddRange(_coReceiptFinder.FindReceInf(HpId, ReceInfModel));
+                    receInfModels.AddRange(_coReceiptFinder.FindReceInf(HpId, ReceInf));
 
                     int hokenId2 = 0;
                     if (receInfModels != null && receInfModels.Any())

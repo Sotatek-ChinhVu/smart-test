@@ -25,25 +25,6 @@ namespace EmrCalculateApi.Receipt.ViewModels
 
         private SanteiFinder _santeiFinder;
 
-        //private DBContextFactory _dbService;
-        //public DBContextFactory DbService
-        //{
-        //    get => _dbService;
-        //    set
-        //    {
-        //        if (_dbService != null)
-        //        {
-        //            __tenantDataContext.Dispose();
-        //        }
-
-        //        _dbService = value;
-        //        _ptFinder = new PtFinder(value);
-        //        _hokenFinder = new HokenFinder(value);
-        //        _receMasterFinder = new ReceMasterFinder(value);
-        //        _santeiFinder = new SanteiFinder(value);
-        //        _kaikeiFinder = new DB.Finder.KaikeiFinder(value);
-        //    }
-        //}
         private readonly ITenantProvider _tenantProvider;
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;

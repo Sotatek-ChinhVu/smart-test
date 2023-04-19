@@ -83,6 +83,7 @@
         public const string ExportNameLabel = "ExportNameLabel";
         public const string MedicalRecordWebId = "MedicalRecordWebId";
         public const string OutDrug = "OutDrug";
+        public const string ReceiptPreview = "ReceiptPreview";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

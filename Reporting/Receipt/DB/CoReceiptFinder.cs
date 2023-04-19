@@ -62,7 +62,6 @@ namespace Reporting.Receipt.DB
                 hokenKbn = new List<int> { 1, 2 };
             }
 
-
             List<int> isTester = null;
             if (includeTester)
             {
@@ -1515,7 +1514,7 @@ namespace Reporting.Receipt.DB
             var joinQuery = (
                 from kaikeiDtl in kaikeiDtls
                 where
-                    kaikeiDtl.HpId == HpId &&
+                    kaikeiDtl.HpId == hpId &&
                     kaikeiDtl.PtId == ptId
                 group kaikeiDtl by kaikeiDtl.SinDate into A
                 orderby
@@ -1625,6 +1624,14 @@ namespace Reporting.Receipt.DB
             }
 
             return ret;
+        }
+
+        public EmrCalculateApi.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+        {
+            var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(
+                x => x.HpId == hpId && x.PtId == ptId && x.SeikyuYm == seikyuYm && x.SinYm == sinYm && x.HokenId == hokenId);
+
+            return new EmrCalculateApi.ReceFutan.Models.ReceInfModel(receInf ?? new());
         }
     }
 }

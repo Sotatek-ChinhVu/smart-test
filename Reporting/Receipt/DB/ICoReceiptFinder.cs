@@ -62,5 +62,7 @@ namespace Reporting.Receipt.DB
         SyobyoKeikaModel FindSyobyoKeikaForAfter(int hpId, long ptId, int sinDate, int hokenId);
 
         int ZenkaiKensaDate(int hpId, long ptId, int sinDate, int hokenId);
+
+        EmrCalculateApi.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
     }
 }

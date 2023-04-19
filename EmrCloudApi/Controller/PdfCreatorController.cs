@@ -10,6 +10,7 @@ using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.OutDrug.Service;
+using Reporting.Receipt.Service;
 using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
@@ -27,13 +28,15 @@ public class PdfCreatorController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IOutDrugCoReportService _outDrugCoReportService;
     private readonly IHistoryCommon _historyCommon;
+    private readonly IReceiptCoReportService _receiptCoReportService;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService, IHistoryCommon historyCommon, IReceiptCoReportService receiptCoReportService)
     {
         _reportService = reportService;
         _configuration = configuration;
         _outDrugCoReportService = outDrugCoReportService;
         _historyCommon = historyCommon;
+        _receiptCoReportService = receiptCoReportService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
@@ -100,6 +103,13 @@ public class PdfCreatorController : ControllerBase
     {
         var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug);
+    }
+
+    [HttpGet(ApiPath.ReceiptPreview)]
+    public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
+    {
+        var data = _receiptCoReportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.Mode);
+        return await RenderPdf(data, ReportType.Common);
     }
 
     [HttpGet("ExportKarte2")]
