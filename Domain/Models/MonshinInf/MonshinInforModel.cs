@@ -7,7 +7,7 @@ namespace Domain.Models.MonshinInf
     public class MonshinInforModel
     {
         [JsonConstructor]
-        public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text, string rtext, int getKbn, int isDeleted)
+        public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text, string rtext, int getKbn, int isDeleted, long seqNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -17,6 +17,7 @@ namespace Domain.Models.MonshinInf
             Rtext = rtext;
             GetKbn = getKbn;
             IsDeleted = isDeleted;
+            SeqNo = seqNo;
         }
 
         public MonshinInforModel()
@@ -33,6 +34,7 @@ namespace Domain.Models.MonshinInf
         public string Rtext { get; private set; }
         public int GetKbn { get; private set; }
         public int IsDeleted { get; private set; }
+        public long SeqNo { get; private set; }
 
         public ValidationStatus Validation()
         {

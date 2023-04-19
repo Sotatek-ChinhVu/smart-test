@@ -5,13 +5,12 @@ using UseCase.Family;
 using UseCase.FlowSheet.Upsert;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.NextOrder;
-using UseCase.SpecialNote.Save;
 
 namespace UseCase.MedicalExamination.SaveMedical;
 
 public class SaveMedicalInputData : IInputData<SaveMedicalOutputData>
 {
-    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, , MonshinInforModel monshins)
+    public SaveMedicalInputData(int hpId, long ptId, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf, int userId, FileItemInputItem fileItem, List<FamilyItem> listFamily, List<NextOrderItem> nextOrderItems, SpecialNoteItem specialNoteItem, List<UpsertPtDiseaseListInputItem> upsertPtDiseaseListInputItems, List<UpsertFlowSheetItemInputData> flowSheetItems, MonshinInforModel monshins)
     {
         HpId = hpId;
         PtId = ptId;

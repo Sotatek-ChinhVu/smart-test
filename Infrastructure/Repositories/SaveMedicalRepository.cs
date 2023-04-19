@@ -3,6 +3,7 @@ using Domain.Models.Family;
 using Domain.Models.FlowSheet;
 using Domain.Models.KarteInfs;
 using Domain.Models.Medical;
+using Domain.Models.MonshinInf;
 using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using Domain.Models.SpecialNote;
@@ -24,8 +25,9 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
     private readonly ISpecialNoteRepository _specialNoteRepository;
     private readonly IPtDiseaseRepository _ptDiseaseRepository;
     private readonly IFlowSheetRepository _flowSheetRepository;
+    private readonly IMonshinInforRepository _monshinInforRepository;
 
-    public SaveMedicalRepository(ITenantProvider tenantProvider, IFamilyRepository familyRepository, ITodayOdrRepository todayOdrRepository, INextOrderRepository nextOrderRepository, ISpecialNoteRepository specialNoteRepository, IPtDiseaseRepository ptDiseaseRepository, IFlowSheetRepository flowSheetRepository) : base(tenantProvider)
+    public SaveMedicalRepository(ITenantProvider tenantProvider, IFamilyRepository familyRepository, ITodayOdrRepository todayOdrRepository, INextOrderRepository nextOrderRepository, ISpecialNoteRepository specialNoteRepository, IPtDiseaseRepository ptDiseaseRepository, IFlowSheetRepository flowSheetRepository, IMonshinInforRepository monshinInforRepository) : base(tenantProvider)
     {
         _familyRepository = familyRepository;
         _todayOdrRepository = todayOdrRepository;
@@ -33,9 +35,10 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
         _specialNoteRepository = specialNoteRepository;
         _ptDiseaseRepository = ptDiseaseRepository;
         _flowSheetRepository = flowSheetRepository;
+        _monshinInforRepository = monshinInforRepository;
     }
 
-    public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, List<FamilyModel> familyList, List<NextOrderModel> rsvkrtOrderInfModels, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, List<PtDiseaseModel> ptDiseaseModels, List<FlowSheetModel> dataTags, List<FlowSheetModel> dataCmts)
+    public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, byte status, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, List<FamilyModel> familyList, List<NextOrderModel> rsvkrtOrderInfModels, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, List<PtDiseaseModel> ptDiseaseModels, List<FlowSheetModel> flowSheetData, MonshinInforModel monshin)
     {
         var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
@@ -62,14 +65,26 @@ public class SaveMedicalRepository : RepositoryBase, ISaveMedicalRepository
 
                     _ptDiseaseRepository.Upsert(ptDiseaseModels, hpId, userId);
 
-                    _flowSheetRepository.UpsertTag(dataTags, hpId, userId);
-                    _flowSheetRepository.UpsertCmt(dataCmts, hpId, userId);
+                    _flowSheetRepository.UpsertTag(flowSheetData, hpId, userId);
+                    _flowSheetRepository.UpsertCmt(flowSheetData, hpId, userId);
 
                     if (!_familyRepository.SaveFamilyList(hpId, userId, familyList))
                     {
                         transaction.Rollback();
                         return false;
                     }
+
+                    if (monshin.HpId == 0 && monshin.RaiinNo == 0 && monshin.PtId == 0 && monshin.SeqNo != 0)
+                    {
+                        var checkMoshin = _monshinInforRepository.SaveMonshinSheet(monshin);
+                        if (!checkMoshin)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+                    }
+
+
                     transaction.Commit();
                     return true;
                 }

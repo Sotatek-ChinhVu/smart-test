@@ -7,7 +7,6 @@ using Domain.Models.Ka;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.Medical;
-using Domain.Models.MonshinInf;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -55,10 +54,9 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
     private readonly IValidateFamilyList _validateFamilyList;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly ICalculateService _calculateService;
-    private readonly IMonshinInforRepository _monshinInforRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList, IMonshinInforRepository monshinInforRepository)
+    public SaveMedicalInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ISaveMedicalRepository saveMedicalRepository, ITodayOdrRepository todayOdrRepository, IKarteInfRepository karteInfRepository, ICalculateService calculateService, IValidateFamilyList validateFamilyList)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
@@ -76,7 +74,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
         _karteInfRepository = karteInfRepository;
         _calculateService = calculateService;
         _validateFamilyList = validateFamilyList;
-        _monshinInforRepository = monshinInforRepository;
     }
 
     public SaveMedicalOutputData Handle(SaveMedicalInputData inputDatas)
@@ -248,13 +245,13 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
                     )).ToList(), inputDatas.SpecialNoteItem.PatientInfoTab.PtCmtInfItems, inputDatas.SpecialNoteItem.PatientInfoTab.SeikatureInfItems, new List<PhysicalInfoModel> { new PhysicalInfoModel(inputDatas.SpecialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k => new KensaInfDetailModel(k.HpId, k.PtId, k.IraiCd, k.SeqNo, k.IraiDate, k.RaiinNo, k.KensaItemCd, k.ResultVal, k.ResultType, k.AbnormalKbn, k.IsDeleted, k.CmtCd1, k.CmtCd2, DateTime.MinValue, string.Empty, string.Empty, 0)).ToList()) });
 
-            var dataTags = inputDatas.FlowSheetItems.Where(i => i.Flag).Select(i => new FlowSheetModel(
+            var flowSheetData = inputDatas.FlowSheetItems.Select(i => new FlowSheetModel(
                        i.SinDate,
-                       int.Parse(i.Value),
+                       i.TagNo,
                        "",
                        i.RainNo,
                        0,
-                       string.Empty,
+                       i.Cmt,
                        0,
                        true,
                        true,
@@ -262,22 +259,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                        i.PtId,
                        false
                    )).ToList() ?? new List<FlowSheetModel>();
-            var dataCmts = inputDatas.FlowSheetItems.Where(i => !i.Flag).Select(i => new FlowSheetModel(
-                   i.SinDate,
-                   0,
-                   "",
-                   i.RainNo,
-                   0,
-                   i.Value,
-                   0,
-                   true,
-                   true,
-                   new List<RaiinListInfModel>(),
-                   i.PtId,
-                   false
-               )).ToList() ?? new List<FlowSheetModel>();
 
-            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, dataTags, dataCmts);
+            var check = _saveMedicalRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, inputDatas.Status, allOdrInfs, karteModel, inputDatas.UserId, familyList, nextOrderModels, summaryInfModel, inputDatas.SpecialNoteItem.ImportantNoteTab, patientInfTab, ptDiseaseModels, flowSheetData, inputDatas.Monshins);
             if (inputDatas.FileItem.IsUpdateFile)
             {
                 if (check)
@@ -293,12 +276,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                 {
                     SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
                 }
-            }
-
-            // Save Monshin
-            if (inputDatas.Monshins != null)
-            {
-                _monshinInforRepository.SaveMonshinSheet(inputDatas.Monshins);
             }
 
             if (check)
@@ -354,7 +331,6 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             _todayOdrRepository.ReleaseResource();
             _karteInfRepository.ReleaseResource();
             _validateFamilyList.ReleaseResource();
-            _monshinInforRepository.ReleaseResource();
         }
     }
 
@@ -747,15 +723,11 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
 
     private UpsertFlowSheetStatus ValidateFlowSheet(List<UpsertFlowSheetItemInputData> flowSheets)
     {
-        if (flowSheets.Any(i => i.Flag))
+        foreach (var flowSheet in flowSheets)
         {
-            foreach (var flowSheet in flowSheets.Where(i => i.Flag))
+            if (flowSheet.TagNo < -1 || flowSheet.TagNo > 7)
             {
-                var check = int.TryParse(flowSheet.Value, out int tagNo);
-                if ((tagNo < 0 && tagNo > 7) || !check)
-                {
-                    return UpsertFlowSheetStatus.TagNoNoValid;
-                }
+                return UpsertFlowSheetStatus.TagNoNoValid;
             }
         }
         return UpsertFlowSheetStatus.Valid;
