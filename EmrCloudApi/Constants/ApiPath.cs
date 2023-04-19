@@ -192,6 +192,7 @@
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
         public const string UpsertUserConfList = "UpsertUserConfList";
+        public const string GetUserConfParam = "GetUserConfParam";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";

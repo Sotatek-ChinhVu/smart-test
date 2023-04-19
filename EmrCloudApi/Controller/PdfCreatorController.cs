@@ -11,6 +11,7 @@ using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
@@ -112,42 +113,46 @@ public class PdfCreatorController : ControllerBase
         var present = new GetDataPrintKarte2Presenter();
         present.Complete(outputData);
 
-        //var karte2Result = new ActionResult<Response<GetDataPrintKarte2Response>>(present.Result);
-        //GetDataPrintKarte2Response karte2Result = new GetDataPrintKarte2Response(outputData.RaiinfList, outputData.Karte2Input);
         var stringKarte2Result = JsonSerializer.Serialize(present.Result);
 
-        byte[] bytes = System.IO.File.ReadAllBytes(@"..\EmrCloudApi\Source\index.html");
-        using (var memoryStream = new MemoryStream())
+        string baseUrl = _configuration.GetSection("Karte2TemplateDefault").Value!;
+
+        using (var clientResponse = await _httpClient.GetAsync(baseUrl))
         {
-            string decoded = Encoding.UTF8.GetString(bytes);
+            byte[] bytes = await clientResponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
 
-            decoded = decoded.Replace("__DATA_KARTE2__", stringKarte2Result);
-
-            bytes = Encoding.UTF8.GetBytes(decoded);
-        }
-
-        MultipartFormDataContent form = new MultipartFormDataContent();
-
-        form.Add(new StringContent("0"), "marginTop");
-        form.Add(new StringContent("0".ToString()), "marginBottom");
-        form.Add(new StringContent("0".ToString()), "marginLeft");
-        form.Add(new StringContent("0".ToString()), "marginRight");
-        form.Add(new StringContent("8.27"), "paperWidth");
-        form.Add(new StringContent("11.7"), "paperHeight");
-        form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");
-        form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", "index.html");
-
-        string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
-
-        using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
-        {
-            response.EnsureSuccessStatusCode();
-
-            using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+            using (var memoryStream = new MemoryStream())
             {
-                var byteData = streamingData.ToArray();
+                string decoded = Encoding.UTF8.GetString(bytes);
 
-                return File(byteData, "application/pdf");
+                decoded = decoded.Replace("__DATA_KARTE2__", stringKarte2Result);
+
+                bytes = Encoding.UTF8.GetBytes(decoded);
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(new StringContent("0"), "marginTop");
+            form.Add(new StringContent("0".ToString()), "marginBottom");
+            form.Add(new StringContent("0".ToString()), "marginLeft");
+            form.Add(new StringContent("0".ToString()), "marginRight");
+            form.Add(new StringContent("8.27"), "paperWidth");
+            form.Add(new StringContent("11.7"), "paperHeight");
+            form.Add(new StringContent("window.status === 'ready'"), "waitForExpression");
+            form.Add(new ByteArrayContent(bytes, 0, bytes.Length), "files", "index.html");
+
+            string basePath = _configuration.GetSection("RenderKarte2ReportApi")["BasePath"]!;
+
+            using (HttpResponseMessage response = await _httpClient.PostAsync($"{basePath}", form))
+            {
+                response.EnsureSuccessStatusCode();
+
+                using (var streamingData = (MemoryStream)response.Content.ReadAsStream())
+                {
+                    var byteData = streamingData.ToArray();
+
+                    return File(byteData, "application/pdf");
+                }
             }
         }
     }
