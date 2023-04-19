@@ -214,16 +214,17 @@ public class HistoryCommon : IHistoryCommon
     {
         try
         {
+            var patientInfo = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, 0);
             var historyList = _historyOrderRepository.GetList(inputData.HpId,
-                                                              inputData.PtId,
-                                                              inputData.SinDate,
-                                                              inputData.StartDate,
-                                                              inputData.EndDate,
-                                                              1);
+                                              inputData.PtId,
+                                              inputData.SinDate,
+                                              inputData.StartDate,
+                                              inputData.EndDate,
+                                              1);
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
             FilterData(ref historyKarteOdrRaiinList, inputData);
-            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData);
+            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo);
         }
         finally
         {
