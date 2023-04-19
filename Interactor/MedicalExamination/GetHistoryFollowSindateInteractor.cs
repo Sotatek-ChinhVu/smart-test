@@ -265,7 +265,8 @@ namespace Interactor.MedicalExamination
                                                             rpOdrInf.UpdateDate,
                                                             rpOdrInf.IsDeleted,
                                                             rpOdrInf.CreateMachine,
-                                                            rpOdrInf.UpdateMachine
+                                                            rpOdrInf.UpdateMachine,
+                                                            rpOdrInf.UpdateName
                                                          );
 
                         group.OdrInfs.Add(odrModel);

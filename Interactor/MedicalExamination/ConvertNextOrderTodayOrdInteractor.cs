@@ -134,7 +134,8 @@ namespace Interactor.MedicalExamination
                          o.IsDeleted,
                          o.UpdateDate,
                          o.CreateMachine,
-                         o.UpdateMachine
+                         o.UpdateMachine,
+                         o.UpdateName
                         )).ToList());
             }
             finally

@@ -4,7 +4,7 @@ namespace UseCase.OrdInfs.GetListTrees
 {
     public class OdrInfItem
     {
-        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails, DateTime createDate, int createId, string createName, int isDeleted, DateTime updateDate, string createMachine, string updateMachine)
+        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails, DateTime createDate, int createId, string createName, int isDeleted, DateTime updateDate, string createMachine, string updateMachine, string updateName)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -32,6 +32,7 @@ namespace UseCase.OrdInfs.GetListTrees
             UpdateDate = updateDate;
             CreateMachine = createMachine;
             UpdateMachine = updateMachine;
+            UpdateName = updateName;
         }
 
         [JsonPropertyName("hpId")]
@@ -111,5 +112,8 @@ namespace UseCase.OrdInfs.GetListTrees
 
         [JsonPropertyName("updateMachine")]
         public string UpdateMachine { get; private set; }
+
+        [JsonPropertyName("updateName")]
+        public string UpdateName { get; private set; }
     }
 }

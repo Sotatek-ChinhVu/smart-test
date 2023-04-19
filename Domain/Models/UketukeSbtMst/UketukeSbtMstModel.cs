@@ -26,7 +26,7 @@ public class UketukeSbtMstModel
 
     public ValidationStatus Validation()
     {
-        if(KbnId < 0)
+        if(KbnId < -1)
         {
             return ValidationStatus.InvalidKbnId;
         }

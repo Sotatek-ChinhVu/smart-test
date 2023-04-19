@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.PtCmtInf
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.PtCmtInf
 {
     public class PtCmtInfModel
     {
+        [JsonConstructor]
         public PtCmtInfModel(int hpId, long ptId, int seqNo, string text, int isDeleted, long id)
         {
             HpId = hpId;
