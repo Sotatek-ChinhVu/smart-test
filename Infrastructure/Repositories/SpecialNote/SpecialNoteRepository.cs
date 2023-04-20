@@ -24,43 +24,21 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             if (!IsInvalidInputId(hpId, ptId)) return false;
 
-            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+            if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
+            {
+                SaveSummaryInf(summaryInfModel, userId);
+            }
+            if (importantNoteModel != null)
+            {
+                SaveImportantNote(hpId, ptId, importantNoteModel);
+            }
+            if (patientInfoModel != null)
+            {
+                SavePatientInfo(hpId, ptId, sinDate, patientInfoModel, userId);
+            }
 
-            var result = executionStrategy.Execute(
-                () =>
-                {
-                    // execute your logic here
-                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            if (summaryInfModel != null && summaryInfModel.HpId == hpId && summaryInfModel.PtId == ptId)
-                            {
-                                SaveSummaryInf(summaryInfModel, userId);
-                                TrackingDataContext.SaveChanges();
-                            }
-                            if (importantNoteModel != null)
-                            {
-                                SaveImportantNote(hpId, ptId, importantNoteModel);
-                                TrackingDataContext.SaveChanges();
-                            }
-                            if (patientInfoModel != null)
-                            {
-                                SavePatientInfo(hpId, ptId, sinDate, patientInfoModel, userId);
-                                TrackingDataContext.SaveChanges();
-                            }
-                            TrackingDataContext.SaveChanges();
-                            transaction.Commit();
-                            return true;
-                        }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                            return false;
-                        }
-                    }
-                });
-            return result;
+            TrackingDataContext.SaveChanges();
+            return true;
         }
         private bool IsInvalidInputId(int hpId, long ptId)
         {

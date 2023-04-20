@@ -4,17 +4,11 @@ namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class GetValidGairaiRihaResponse
     {
-        public GetValidGairaiRihaResponse(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)
+        public GetValidGairaiRihaResponse(List<GairaiRihaItem> gairaiRihaItems)
         {
-            Type = type;
-            ItemName = itemName;
-            LastDaySanteiRiha = lastDaySanteiRiha;
-            RihaItemName = rihaItemName;
+            GairaiRihaItems = gairaiRihaItems;
         }
 
-        public int Type { get; private set; }
-        public string ItemName { get; private set; }
-        public int LastDaySanteiRiha { get; private set; }
-        public string RihaItemName { get; private set; }
+        public List<GairaiRihaItem> GairaiRihaItems { get; private set; }
     }
 }
