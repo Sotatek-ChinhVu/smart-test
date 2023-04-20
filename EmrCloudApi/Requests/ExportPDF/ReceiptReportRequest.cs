@@ -2,6 +2,28 @@
 
 public class ReceiptReportRequest
 {
+    public ReceiptReportRequest(int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn, bool hokenSeikyu, bool jihiSeikyu, bool nyukinBase, int hakkoDay, string memo, int printType, string formFileName)
+    {
+        HpId = hpId;
+        PtId = ptId;
+        StartDate = startDate;
+        EndDate = endDate;
+        RaiinNos = raiinNos;
+        HokenId = hokenId;
+        MiseisanKbn = miseisanKbn;
+        SaiKbn = saiKbn;
+        MisyuKbn = misyuKbn;
+        SeikyuKbn = seikyuKbn;
+        HokenKbn = hokenKbn;
+        HokenSeikyu = hokenSeikyu;
+        JihiSeikyu = jihiSeikyu;
+        NyukinBase = nyukinBase;
+        HakkoDay = hakkoDay;
+        Memo = memo;
+        PrintType = printType;
+        FormFileName = formFileName;
+    }
+
     public int HpId { get; set; }
 
     public long PtId { get; set; }
