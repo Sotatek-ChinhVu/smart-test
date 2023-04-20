@@ -157,10 +157,18 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
             }
 
             // Validate family
-            var validateFamilyList = _validateFamilyList.ValidateData(hpId, ptId, inputDatas.FamilyList);
+            var validateFamilyList = ValidateFamilyListStatus.ValidateSuccess;
+            if (inputDatas.FamilyList.Count > 0)
+            {
+                validateFamilyList = _validateFamilyList.ValidateData(hpId, ptId, inputDatas.FamilyList);
+            }
 
+            var validateFlowsheet = UpsertFlowSheetStatus.Valid;
             // Validate flowsheet
-            var validateFlowsheet = ValidateFlowSheet(inputDatas.FlowSheetItems);
+            if (inputDatas.FlowSheetItems.Count > 0)
+            {
+                validateFlowsheet = ValidateFlowSheet(inputDatas.FlowSheetItems);
+            }
 
             // Validate disease
             var ptDiseaseModels = inputDatas.UpsertPtDiseaseListInputItems.Select(i => new PtDiseaseModel(
@@ -209,8 +217,12 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     );
             }
 
+            var familyList = new List<FamilyModel>();
             // Family list
-            var familyList = ConvertToFamilyList(inputDatas.FamilyList);
+            if (inputDatas.FamilyList.Any())
+            {
+                familyList = ConvertToFamilyList(inputDatas.FamilyList);
+            }
 
             // Next Order
             var ipnCds = new List<Tuple<string, string>>();
@@ -310,8 +322,8 @@ public class SaveMedicalInteractor : ISaveMedicalInputPort
                     new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(),
                     KarteValidationStatus.Valid,
                     ValidateFamilyListStatus.ValidateSuccess,
-                    UpsertFlowSheetStatus.Failed,
-                    UpsertPtDiseaseListStatus.Failed,
+                    UpsertFlowSheetStatus.Valid,
+                    UpsertPtDiseaseListStatus.Valid,
                     sinDate,
                     raiinNo,
                     ptId

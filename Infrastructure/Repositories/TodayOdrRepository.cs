@@ -43,41 +43,22 @@ namespace Infrastructure.Repositories
 
         public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId, byte status)
         {
-            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
+            if (odrInfs.Count > 0)
+            {
+                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
+            }
 
-            return executionStrategy.Execute(
-                () =>
-                {
-                    using var transaction = TrackingDataContext.Database.BeginTransaction();
-                    try
-                    {
-                        if (odrInfs.Count > 0)
-                        {
-                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
-                        }
+            SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
+            if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
+            {
+                UpsertKarteInfs(karteInfModel, userId);
+            }
 
-                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
-                        if (karteInfModel.PtId > 0 && karteInfModel.HpId > 0 && karteInfModel.RaiinNo > 0 && karteInfModel.SinDate > 0)
-                        {
-                            UpsertKarteInfs(karteInfModel, userId);
-                        }
+            SaveRaiinListInf(odrInfs, userId);
 
-                        SaveRaiinListInf(odrInfs, userId);
+            SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
 
-                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
-
-                        transaction.Commit();
-
-                        return true;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-
-                        return false;
-                    }
-                });
-
+            return true;
         }
 
         public List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
@@ -135,7 +116,7 @@ namespace Infrastructure.Repositories
             {
                 var preProcess = GetModeSaveDate(modeSaveData, raiinInf.Status, sinEndTime, sinStartTime, uketukeTime);
                 raiinInf.Status = modeSaveData == 0 ? RaiinState.TempSave : preProcess.status != 0 ? preProcess.status : raiinInf.Status;
-                    //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
+                //modeSaveData != 0 ? 7 : RaiinState.TempSave; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;
@@ -235,9 +216,9 @@ namespace Infrastructure.Repositories
         private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
         {
 
-            var oldHeaderInfModel = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
-            var oldoldSyosaiKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
-            var oldJikanKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
+            var oldHeaderInfModel = TrackingDataContext.OdrInfs.Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10).OrderByDescending(o => o.RpEdaNo).FirstOrDefault();
+            var oldoldSyosaiKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon && (oldHeaderInfModel != null && odr.RpEdaNo == oldHeaderInfModel.RpEdaNo) && (oldHeaderInfModel != null && odr.RpNo == oldHeaderInfModel.RpNo));
+            var oldJikanKihon = TrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon && (oldHeaderInfModel != null && odr.RpEdaNo == oldHeaderInfModel.RpEdaNo) && (oldHeaderInfModel != null && odr.RpNo == oldHeaderInfModel.RpNo));
 
             if (oldHeaderInfModel != null)
             {
@@ -2977,7 +2958,7 @@ namespace Infrastructure.Repositories
                     result.Add(new(index, new(DeleteTypes.Deleted)));
                     result.Add(new(index, checkingOdr));
                 }
-          
+
                 odrInfIndex++;
             }
 
