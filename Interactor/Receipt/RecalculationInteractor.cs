@@ -78,13 +78,20 @@ public class RecalculationInteractor : IRecalculationInputPort
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
+                //success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
+                _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+                {
+                    HpId = inputData.HpId,
+                    PtIds = inputData.PtIdList,
+                    SeikyuYm = inputData.SinYm
+                });
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                success = ReceFutanCalculateMain(receRecalculationList, allCheckCount);
+                _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIdList, inputData.SinYm));
+                //success = ReceFutanCalculateMain(receRecalculationList, allCheckCount);
             }
 
             // check error in month
