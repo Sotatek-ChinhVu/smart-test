@@ -67,6 +67,8 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
+using EmrCalculateApi.Implementation;
+using EmrCalculateApi.Interface;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
@@ -106,6 +108,7 @@ using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
+using Interactor.MedicalExamination.HistoryCommon;
 using Interactor.MonshinInf;
 using Interactor.MstItem;
 using Interactor.NextOrder;
@@ -155,6 +158,8 @@ using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Service;
+using Reporting.Receipt.DB;
+using Reporting.Receipt.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -259,6 +264,7 @@ using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
+using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.GetHistoryFollowSindate;
 using UseCase.MedicalExamination.GetHistoryIndex;
@@ -439,21 +445,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.Receipt.GetRecePreviewList;
-using UseCase.Receipt.DoReceCmt;
-using UseCase.ReceSeikyu.SearchReceInf;
-using UseCase.Receipt.ReceiptEdit;
-using Interactor.MedicalExamination.HistoryCommon;
-using UseCase.MedicalExamination.GetDataPrintKarte2;
-using UseCase.Receipt.GetSinMeiInMonthList;
-using UseCase.Receipt.GetSinDateRaiinInfList;
-using UseCase.Receipt.GetReceByomeiChecking;
-using UseCase.Receipt.SaveReceiptEdit;
-using UseCase.WeightedSetConfirmation.CheckOpen;
-using Interactor.WeightedSetConfirmation;
-using UseCase.PatientInfor.SearchPatientInfoByPtNum;
-using Interactor.Family.ValidateFamilyList;
-using UseCase.Family.ValidateFamilyList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -509,10 +500,14 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoMedicalRecordWebIdFinder, CoMedicalRecordWebIdFinder>();
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
+            services.AddTransient<IReceiptCoReportService, ReceiptCoReportService>();
+            services.AddTransient<ICoReceiptFinder, CoReceiptFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
+            services.AddTransient<IEmrLogger, EmrLogger>();
+            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
         }
 
         private void SetupRepositories(IServiceCollection services)

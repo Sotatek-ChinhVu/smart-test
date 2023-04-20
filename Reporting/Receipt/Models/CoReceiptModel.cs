@@ -1586,20 +1586,20 @@ namespace Reporting.Receipt.Models
             {
                 string ret = "";
 
-                if (_receInfModel != null &&
-                    _receInfModel.KogakuOverKbn > 0 &&
-                    new int[] { 4, 5 }.Contains(_receInfModel.KogakuKbn) &&
-                    HospitalInfo.Instance.PrefCD == 25)
-                {
-                    if (_receInfModel.KogakuKbn == 4)
-                    {
-                        ret = "低所得Ⅰ";
-                    }
-                    else if (_receInfModel.KogakuKbn == 5)
-                    {
-                        ret = "低所得Ⅱ";
-                    }
-                }
+                //if (_receInfModel != null &&
+                //    _receInfModel.KogakuOverKbn > 0 &&
+                //    new int[] { 4, 5 }.Contains(_receInfModel.KogakuKbn) &&
+                //    HospitalInfo.Instance.PrefCD == 25)
+                //{
+                //    if (_receInfModel.KogakuKbn == 4)
+                //    {
+                //        ret = "低所得Ⅰ";
+                //    }
+                //    else if (_receInfModel.KogakuKbn == 5)
+                //    {
+                //        ret = "低所得Ⅱ";
+                //    }
+                //}
 
                 return ret;
             }
