@@ -6,8 +6,7 @@ public class CoAccountingParamModel
         int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
         bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
         int hakkoDay = 0, string memo = "",
-        int printType = 0,
-        string formFileDirectory = "", string formFileName = "")
+        int printType = 0, string formFileName = "")
     {
         PtId = ptId;
         StartDate = startDate;
@@ -25,7 +24,6 @@ public class CoAccountingParamModel
         HakkoDate = hakkoDay;
         Memo = memo;
         PrintType = printType;
-        FormFileDirectory = formFileDirectory;
         FormFileName = formFileName;
     }
     public long PtId { get; set; } = 0;
@@ -44,6 +42,5 @@ public class CoAccountingParamModel
     public int HakkoDate { get; set; } = 0;
     public string Memo { get; set; }
     public int PrintType { get; set; } = 0;
-    public string FormFileDirectory { get; set; }
     public string FormFileName { get; set; }
 }

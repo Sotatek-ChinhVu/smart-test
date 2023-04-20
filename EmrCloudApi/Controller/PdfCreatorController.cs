@@ -26,14 +26,12 @@ public class PdfCreatorController : ControllerBase
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
-    private readonly IOutDrugCoReportService _outDrugCoReportService;
     private readonly IHistoryCommon _historyCommon;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon)
     {
         _reportService = reportService;
         _configuration = configuration;
-        _outDrugCoReportService = outDrugCoReportService;
         _historyCommon = historyCommon;
     }
 
@@ -99,9 +97,26 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
-        var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug);
     }
+
+    [HttpPost(ApiPath.ReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromBody] ReceiptReportRequest request)
+    {
+        var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.StartDate, request.EndDate, request.RaiinNos, request.HokenId,
+                                                             request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn,
+                                                             request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
+                                                             request.HakkoDay, request.Memo, request.PrintType, request.FormFileName);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
+
+    //[HttpGet(ApiPath.AccountingReport)]
+    //public async Task<IActionResult> GenerateAccountingReport([FromQuery] AccountingRequest request)
+    //{
+    //    var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+    //    return await RenderPdf(data, ReportType.OutDug);
+    //}
 
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
@@ -165,6 +180,8 @@ public class PdfCreatorController : ControllerBase
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
+        var json1 = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var json2 = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
@@ -173,6 +190,7 @@ public class PdfCreatorController : ControllerBase
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
             ReportType.OutDug => "reporting-out-drug",
+            ReportType.Accounting => "reporting-accounting",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
 
