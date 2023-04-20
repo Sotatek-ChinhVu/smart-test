@@ -27,11 +27,9 @@ public class AccountingCoReportService : IAccountingCoReportService
     private readonly ISystemConfigProvider _systemConfigProvider;
     private readonly IEmrLogger _emrLogger;
     private readonly IReadRseReportFileService _readRseReportFileService;
-
-
-    List<(string Title, List<string> CdKbn)> totalCdKbnls =
-            new List<(string, List<string>)>
-            {
+    private readonly List<(string Title, List<string> CdKbn)> totalCdKbnls =
+             new List<(string, List<string>)>
+             {
                 ("初・再診療", new List<string>{ "A" }),
                 ("入院料等", new List<string>{ "XXX" }),
                 ("医学管理等", new List<string>{ "B" }),
@@ -49,7 +47,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                 ("その他", new List<string>{ "JS" }),
                 ("病理診断", new List<string>{ "N" }),
                 ("労災（その他）", new List<string>{ "R" })
-            };
+             };
 
     #region Private properties
     /// <summary>
@@ -314,13 +312,12 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// フォームファイル名
     /// </summary>
     private string _formFileName;
+    private readonly List<AccountingOutputModel> accountingOutputModelList = new();
 
     public Dictionary<string, string> _singleFieldDataResult { get; set; }
     public List<ListTextModel> _listTextModelResult { get; set; }
     public Dictionary<string, string> _systemConfigList { get; set; }
     public JavaOutputData _javaOutputData { get; set; }
-    private int CurrentPage = 1;
-    private bool _hasNextPage = true;
 
     public AccountingCoReportService(ISystemConfig systemConfig, ICoAccountingFinder finder, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService)
     {
@@ -338,7 +335,7 @@ public class AccountingCoReportService : IAccountingCoReportService
     }
     #endregion
 
-    public AccountingOutputModel GetAccountingReportingData(
+    public AccountingResponse GetAccountingReportingData(
             int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,
             int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
             bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
@@ -368,16 +365,14 @@ public class AccountingCoReportService : IAccountingCoReportService
         PrintType = printType;
         _formFileName = formFileName;
         PrintOut();
-        return new AccountingOutputModel(
-                   _formFileName,
-                   _mode,
-                   _singleFieldDataResult,
-                   _listTextModelResult,
-                   sinmeiPrintDataModels,
-                   _systemConfigList);
+        return new AccountingResponse(
+                  _formFileName,
+                  _mode,
+                  _systemConfigList,
+                  accountingOutputModelList);
     }
 
-    public AccountingOutputModel GetAccountingReportingData(int hpId, int startDate, int endDate, List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions,
+    public AccountingResponse GetAccountingReportingData(int hpId, int startDate, int endDate, List<(long ptId, int hokenId)> ptConditions, List<(int grpId, string grpCd)> grpConditions,
             int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn,
             int hakkoDay, string memo, string formFileName)
     {
@@ -402,28 +397,24 @@ public class AccountingCoReportService : IAccountingCoReportService
         PrintType = 0;
         _formFileName = formFileName;
         PrintOut();
-        return new AccountingOutputModel(
-                   _formFileName,
-                   _mode,
-                   _singleFieldDataResult,
-                   _listTextModelResult,
-                   sinmeiPrintDataModels,
-                   _systemConfigList);
+        return new AccountingResponse(
+                  _formFileName,
+                  _mode,
+                  _systemConfigList,
+                  accountingOutputModelList);
     }
 
-    public AccountingOutputModel GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
+    public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
         HpId = hpId;
         _mode = PrintMode.MultiPrint;
         Params = coAccountingParamModels;
         PrintOut();
-        return new AccountingOutputModel(
-                   _formFileName,
-                   _mode,
-                   _singleFieldDataResult,
-                   _listTextModelResult,
-                   sinmeiPrintDataModels,
-                   _systemConfigList);
+        return new AccountingResponse(
+                  _formFileName,
+                  _mode,
+                  _systemConfigList,
+                  accountingOutputModelList);
     }
 
     private void PrintOut()
@@ -533,6 +524,10 @@ public class AccountingCoReportService : IAccountingCoReportService
     private void PrintOutSingle()
     {
         coModel = GetData(HpId, PtId, StartDate, EndDate);
+        if (coModel.PtId != PtId)
+        {
+            return;
+        }
 
         _sinmeiListPropertysPage1 = new List<(string field, int charCount, int rowCount)>();
         _sinmeiListPropertysPage2 = new List<(string field, int charCount, int rowCount)>();
@@ -669,7 +664,10 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
         else
         {
-            UpdateDrawFormList();
+            foreach (var item in Params)
+            {
+                UpdateDrawFormSingle();
+            }
         }
     }
 
@@ -1026,11 +1024,13 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawFormSingle()
     {
+        _singleFieldDataResult = new();
+        _listTextModelResult = new();
+        sinmeiPrintDataModels = new();
         // 下位互換
         bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
 
         UpdateFormHeader();
-        UpdateFormBody();
 
         #region SubMethod
         // ヘッダー 
@@ -2666,65 +2666,10 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 領収証定型文
             _printTeikeibun();
         }
-
-        // 本体
-        void UpdateFormBody()
-        {
-            List<(string field, int charCount, int rowCount)> sinmeiListPropertys =
-                _sinmeiListPropertysPage1;
-
-            int sinmeiListIndex = 0;
-
-            if (CurrentPage > 1)
-            {
-                // 2ページ目以降の場合
-                sinmeiListPropertys = _sinmeiListPropertysPage2;
-            }
-
-            if (!sinmeiListPropertys.Any() || sinmeiListPropertys[0].rowCount <= 0)
-            {
-                return;
-            }
-
-            if (CurrentPage > 1)
-            {
-                // 2ページ目以降の場合、1ページ目に出力した行数と、2ページ名以降に出力した行数を求める
-                sinmeiListIndex += _sinmeiListPropertysPage1.Sum(p => p.rowCount);
-                sinmeiListIndex += (CurrentPage - 2) * sinmeiListPropertys.Sum(p => p.rowCount);
-            }
-
-            for (int listIndex = 0; listIndex < sinmeiListPropertys.Count; listIndex++)
-            {
-
-                int sinmeiRowCount = sinmeiListPropertys[listIndex].rowCount;
-                string field = sinmeiListPropertys[listIndex].field;
-
-                for (short i = 0; i < sinmeiRowCount; i++)
-                {
-                    ListText("lsSinKoui_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KouiNm);
-                    ListText("lsSinMei_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].MeiData);
-                    ListText("lsSinSuuryo_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Suuryo);
-                    ListText("lsSinTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tani);
-                    ListText("lsSinTensu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Tensu);
-                    ListText("lsSinTotalTen_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TotalTensu);
-                    ListText("lsSinKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].Kaisu);
-                    ListText("lsSinKaisuTani_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].KaisuTani);
-                    ListText("lsSinTensuKaisu_" + field, 0, i, sinmeiPrintDataModels[sinmeiListIndex].TenKai);
-
-                    sinmeiListIndex++;
-                    if (sinmeiListIndex >= sinmeiPrintDataModels.Count)
-                    {
-                        _hasNextPage = false;
-                        break;
-                    }
-                }
-
-                if (_hasNextPage == false)
-                {
-                    break;
-                }
-            }
-        }
+        accountingOutputModelList.Add(new AccountingOutputModel(
+                                          _singleFieldDataResult,
+                                          _listTextModelResult,
+                                          sinmeiPrintDataModels));
         #endregion
     }
 

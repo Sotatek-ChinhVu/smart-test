@@ -9,6 +9,7 @@ using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.Accounting.Model;
 using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
 using System.Net;
@@ -101,8 +102,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.OutDug);
     }
 
-    [HttpPost(ApiPath.ReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] ReceiptReportRequest request)
+    [HttpGet(ApiPath.ReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromQuery] ReceiptReportRequest request)
     {
         var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.StartDate, request.EndDate, request.RaiinNos, request.HokenId,
                                                              request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn,
@@ -111,12 +112,19 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting);
     }
 
-    //[HttpGet(ApiPath.AccountingReport)]
-    //public async Task<IActionResult> GenerateAccountingReport([FromQuery] AccountingRequest request)
-    //{
-    //    var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
-    //    return await RenderPdf(data, ReportType.OutDug);
-    //}
+    [HttpGet(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
+    {
+        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
+                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
+                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
+                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
+                                                                                           request.HakkoDay, request.Memo,
+                                                                                           request.PrintType, request.FormFileName))
+                                                                       .ToList();
+        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
 
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
@@ -180,8 +188,7 @@ public class PdfCreatorController : ControllerBase
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        var json1 = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-        var json2 = JsonSerializer.Serialize(data);
+        //var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch
