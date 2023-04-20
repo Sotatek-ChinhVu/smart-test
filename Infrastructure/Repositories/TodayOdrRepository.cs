@@ -1657,14 +1657,15 @@ namespace Infrastructure.Repositories
         /// 外来リハ初再診チェック
         /// </summary>
         /// Item1: ItemCd, Item2: ItemName
-        public (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
+        public List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems)
         {
+            List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> result = new();
             var checkGairaiRiha = NoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
                   p.HpId == hpId && p.GrpCd == 2016 && p.GrpEdaNo == 0)?.Val ?? 0;
 
             if (checkGairaiRiha == 0)
             {
-                return new(0, string.Empty, 0, string.Empty);
+                result.Add(new(0, string.Empty, 0, string.Empty));
             }
 
             if (syosaiKbn != SyosaiConst.None && syosaiKbn != SyosaiConst.Jihi)
@@ -1683,7 +1684,7 @@ namespace Infrastructure.Repositories
                                            p.EndDate >= sinDate &&
                                            p.ItemCd == ItemCdConst.IgakuGairaiRiha1)?.Name ?? string.Empty;
 
-                        return new(1, itemName, lastDaySanteiRiha1, string.Empty);
+                        result.Add(new(1, itemName, lastDaySanteiRiha1, string.Empty));
                     }
                 }
 
@@ -1704,7 +1705,7 @@ namespace Infrastructure.Repositories
                                            p.StartDate <= sinDate &&
                                            p.EndDate >= sinDate &&
                                            p.ItemCd == ItemCdConst.IgakuGairaiRiha2)?.Name ?? string.Empty;
-                        return new(2, itemName, lastDaySanteiRiha2, string.Empty);
+                        result.Add(new(2, itemName, lastDaySanteiRiha2, string.Empty));
                     }
                 }
             }
@@ -1723,12 +1724,12 @@ namespace Infrastructure.Repositories
                 }
                 if (!string.IsNullOrEmpty(rihaItemName))
                 {
-                    return new(3, string.Empty, 0, rihaItemName);
+                    result.Add(new(3, string.Empty, 0, rihaItemName));
 
                 }
             }
 
-            return new(0, string.Empty, 0, string.Empty);
+            return result;
         }
 
         /// <summary>

@@ -4,19 +4,13 @@ namespace UseCase.MedicalExamination.GetValidGairaiRiha
 {
     public class GetValidGairaiRihaOutputData : IOutputData
     {
-        public GetValidGairaiRihaOutputData(int type, string itemName, int lastDaySanteiRiha, string rihaItemName, GetValidGairaiRihaStatus status)
+        public GetValidGairaiRihaOutputData(List<GairaiRihaItem> gairaiRihaItems, GetValidGairaiRihaStatus status)
         {
-            Type = type;
-            ItemName = itemName;
-            LastDaySanteiRiha = lastDaySanteiRiha;
-            RihaItemName = rihaItemName;
+            GairaiRihaItems = gairaiRihaItems;
             Status = status;
         }
 
-        public int Type { get; private set; }
-        public string ItemName { get; private set; }
-        public int LastDaySanteiRiha { get; private set; }
-        public string RihaItemName { get; private set; }
+        public List<GairaiRihaItem> GairaiRihaItems { get; private set; }
         public GetValidGairaiRihaStatus Status {get; private set; }
     }
 }
