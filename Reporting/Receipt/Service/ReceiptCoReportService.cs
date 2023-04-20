@@ -668,7 +668,7 @@ namespace Reporting.Receipt.Service
             CoReceiptModel coReceiptModel =
                 new CoReceiptModel(
                     receInf, ptInfModel, hokenDataModel, kohiDataModels, kohiDataModelsAll, syobyoDataModels, sinMeiViewModels.SinMei,
-                     ptKyuseiModel, rousaiReceiptModel, syobyoKeikaModel, hpInfModel, coReceiptTensuModel);
+                     ptKyuseiModel, rousaiReceiptModel ?? new(new(), new(), new(), new(), new(), 0), syobyoKeikaModel ?? new(new()), hpInfModel, coReceiptTensuModel);
 
             if (new int[] { TargetConst.Jibai }.Contains(target))
             {

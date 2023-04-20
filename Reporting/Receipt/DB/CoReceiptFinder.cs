@@ -960,7 +960,7 @@ namespace Reporting.Receipt.DB
                 t.EndDate >= lastDateOfMonth);
 
             var joinQuery = (
-                from sinDtl in sinDtls
+                from sinDtl in sinDtls.AsEnumerable()
                 join sinCount in sinCountMaxs on
                     new { sinDtl.HpId, sinDtl.PtId, sinDtl.RpNo, sinDtl.SeqNo } equals
                     new { sinCount.HpId, sinCount.PtId, sinCount.RpNo, sinCount.SeqNo } into sc

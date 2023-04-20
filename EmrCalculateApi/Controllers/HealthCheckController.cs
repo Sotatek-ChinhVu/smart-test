@@ -7,10 +7,10 @@ namespace EmrCalculateApi.Controllers
     [ApiController]
     public class HealthCheckController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult Get()
-        {
-            return Ok();
-        }
+        //[HttpGet]
+        //public ActionResult Get()
+        //{
+        //    return Ok();
+        //}
     }
 }
