@@ -110,9 +110,6 @@
         //validate ValidHokenInf AllType
         public const string ValidHokenInfAllType = "ValidHokenInfAllType";
 
-        // Validate Insurance Other
-        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
-
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
         public const string GetSelectiveComment = "GetSelectiveComment";
@@ -142,6 +139,7 @@
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
         public const string ValidateSwapHoken = "ValidateSwapHoken";
+        public const string CalculationSwapHoken = "CalculationSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -184,6 +182,7 @@
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
         public const string TrialAccounting = "TrialAccounting";
+        public const string CheckTrialAccounting = "CheckTrialAccounting";
         public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
         public const string GetContainerMst = "GetContainerMst";
 
@@ -192,6 +191,7 @@
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
         public const string UpsertUserConfList = "UpsertUserConfList";
+        public const string GetUserConfParam = "GetUserConfParam";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -289,5 +289,7 @@
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
+        public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
+        public const string GetSetDataTenMst = "GetSetDataTenMst";
     }
 }

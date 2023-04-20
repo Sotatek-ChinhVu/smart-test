@@ -11,6 +11,8 @@ using Reporting.OutDrug.Model;
 using System.Text;
 using System.Text.Json;
 using Reporting.OutDrug.Model.Output;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
 
 namespace Reporting.OutDrug.Service;
 
@@ -22,6 +24,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     private CoOutDrugModel _coModel;
     private readonly ISystemConfig _systemConfig;
     private readonly ITenantProvider _tenantProvider;
+    private readonly IReadRseReportFileService _readRseReportFileService;
     /// <summary>
     /// 印刷処理繰り返し回数
     /// </summary>
@@ -45,11 +48,12 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// </summary>
     private List<string> _bikoList { get; set; }
 
-    public OutDrugCoReportService(IConfiguration configuration, ISystemConfig systemConfig, ITenantProvider tenantProvider)
+    public OutDrugCoReportService(IConfiguration configuration, ISystemConfig systemConfig, ITenantProvider tenantProvider, IReadRseReportFileService readRseReportFileService)
     {
         _configuration = configuration;
         _systemConfig = systemConfig;
         _tenantProvider = tenantProvider;
+        _readRseReportFileService = readRseReportFileService;
         _bikoList = new();
         _dataList = new();
         _coModels = new();
@@ -1696,17 +1700,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.ListRowCount));
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
-        var jsonContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
-
-        using (HttpResponseMessage response = _httpClient.PostAsync($"{basePath}{"calculate-param"}", jsonContent).Result)
-        {
-            response.EnsureSuccessStatusCode();
-            var contentResult = response.Content.ReadAsStringAsync().Result;
-            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ObjectCalculateResponse>>(contentResult);
-            UpdateParamLocal(result ?? new());
-        }
+        var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+        UpdateParamLocal(javaOutputData.responses ?? new());
     }
 
     private void UpdateParamLocal(List<ObjectCalculateResponse> result)

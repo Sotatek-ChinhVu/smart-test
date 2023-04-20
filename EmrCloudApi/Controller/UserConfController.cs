@@ -8,11 +8,13 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
+using UseCase.User.GetUserConfModelList;
 using UseCase.User.Sagaku;
 using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertUserConfList;
 using UseCase.UserConf.GetListMedicalExaminationConfig;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
+using UseCase.UserConf.UserSettingParam;
 
 namespace EmrCloudApi.Controller;
 
@@ -98,6 +100,18 @@ public class UserConfController : AuthorizeControllerBase
         return new ActionResult<Response<UpsertUserConfListResponse>>(presenter.Result);
     }
 
+    [HttpGet(ApiPath.GetList + "ForModel")]
+    public ActionResult<Response<GetUserConfModelListResponse>> GetList()
+    {
+        var input = new GetUserConfModelListInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetUserConfModelListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetUserConfModelListResponse>>(presenter.Result);
+    }
+
     private static UserConfModel ConvertToModel(int userId, UserConfListItem userConfListItem)
     {
         var userConfModel = new UserConfModel(
@@ -110,5 +124,17 @@ public class UserConfController : AuthorizeControllerBase
             );
 
         return userConfModel;
+    }
+
+    [HttpPost(ApiPath.GetUserConfParam)]
+    public ActionResult<Response<GetUserConfigParamResponse>> GetUserConfParam([FromBody] GetUserConfigParamRequest request)
+    {
+        var input = new GetUserConfigParamInputData(HpId, UserId, request.GroupCodes.Select(a => new Tuple<int, int>(a.GrpCd, a.GrpItemCd)).ToList());
+        var output = _bus.Handle(input);
+
+        var presenter = new GetUserConfigParamPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetUserConfigParamResponse>>(presenter.Result);
     }
 }

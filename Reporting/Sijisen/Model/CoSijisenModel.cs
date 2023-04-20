@@ -40,6 +40,19 @@ namespace Reporting.Sijisen.Model
             RsvkrtOdrInfModels = new();
             RsvkrtOdrInfDetailModels = new();
         }
+        
+        public CoSijisenModel()
+        {
+            PtInfModel = new();
+            RaiinInfModel = new();
+            OdrInfModels = new();
+            OdrInfDetailModels = new();
+            RaiinKbnInfModels = new();
+            OtherRaiinInfModels = new();
+            LastSinDate = 0;
+            RsvkrtOdrInfModels = new();
+            RsvkrtOdrInfDetailModels = new();
+        }
 
         /// <summary>
         /// 患者番号

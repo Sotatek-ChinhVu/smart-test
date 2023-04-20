@@ -258,12 +258,20 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.Delete)]
-        public ActionResult<Response<DeleteReceptionResponse>> Delete([FromBody] DeleteReceptionRequest req)
+        public async Task<ActionResult<Response<DeleteReceptionResponse>>> Delete([FromBody] DeleteReceptionRequest req)
         {
             var input = new DeleteReceptionInputData(HpId, UserId, req.RaiinNos);
             var output = _bus.Handle(input);
+            var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
+            if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = deleteFirst.SinDate, RaiinNo = deleteFirst.RaiinNo, PtId = deleteFirst.PtId });
+            }
+
             var presenter = new DeleteReceptionPresenter();
             presenter.Complete(output);
+
             return Ok(presenter.Result);
         }
     }

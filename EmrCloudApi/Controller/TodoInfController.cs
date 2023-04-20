@@ -1,5 +1,4 @@
-﻿using Domain.Models.Todo;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
 using EmrCloudApi.Presenters.Todo;
 using EmrCloudApi.Requests.Todo;
@@ -9,7 +8,8 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
-using UseCase.Todo.TodoInf;
+using UseCase.Todo.GetTodoInfFinder;
+using UseCase.Todo.UpsertTodoInf;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -25,7 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpsertList)]
         public ActionResult<Response<UpsertTodoInfResponse>> Upsert([FromBody] UpsertTodoInfRequest request)
         {
-            var input = new UpsertTodoInfInputData(request.UpsertTodoInf.Select(x => new InsertTodoInfDto(
+            var input = new UpsertTodoInfInputData(request.UpsertTodoInf.Select(x => new TodoInfDto(
                                                         x.TodoNo,
                                                         x.TodoEdaNo,
                                                         x.PtId,
@@ -47,6 +47,17 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpsertTodoInfPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<UpsertTodoInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public ActionResult<Response<GetTodoInfFinderResponse>> GetList([FromQuery] GetTodoInfFinderRequest request)
+        {
+            var input = new GetTodoInfFinderInputData(HpId, request.TodoNo, request.TodoEdaNo, request.IncDone);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetTodoInfFinderPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTodoInfFinderResponse>>(presenter.Result);
         }
     }
 }

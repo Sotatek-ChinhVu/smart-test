@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Models.PatientInfor;
+using System.Text.Json.Serialization;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
 using UseCase.MedicalExamination.GetHistory;
 
@@ -6,10 +7,11 @@ namespace EmrCloudApi.Responses.MedicalExamination;
 
 public class GetDataPrintKarte2Response
 {
-    public GetDataPrintKarte2Response(List<HistoryKarteOdrRaiinItem> karteOrdRaiins, GetDataPrintKarte2InputData input)
+    public GetDataPrintKarte2Response(List<HistoryKarteOdrRaiinItem> karteOrdRaiins, GetDataPrintKarte2InputData input, PatientInforModel patientInfo)
     {
         KarteOrdRaiins = karteOrdRaiins;
         DisplaySetting = new DisplaySetting(input);
+        Karte2HeaderModel = new Karte2HeaderModel(patientInfo, input.StartDate, input.EndDate);
     }
 
     [JsonPropertyName("karteOrdRaiins")]
@@ -17,6 +19,9 @@ public class GetDataPrintKarte2Response
 
     [JsonPropertyName("displaySetting")]
     public DisplaySetting DisplaySetting { get; private set; }
+
+    [JsonPropertyName("karte2HeaderModel")]
+    public Karte2HeaderModel Karte2HeaderModel { get; private set; }
 }
 
 public class DisplaySetting

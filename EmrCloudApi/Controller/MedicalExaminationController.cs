@@ -12,9 +12,11 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CommonChecker;
 using UseCase.Core.Sync;
+using UseCase.Diseases.Upsert;
 using UseCase.Family;
 using UseCase.MedicalExamination.Calculate;
 using UseCase.MedicalExamination.CheckedAfter327Screen;
+using UseCase.MedicalExamination.CheckOpenTrialAccounting;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.GetContainerMst;
@@ -458,6 +460,32 @@ namespace EmrCloudApi.Controllers
                 UserId,
                 new FileItemInputItem(request.FileItem.IsUpdateFile, request.FileItem.ListFileItems),
                 familyList,
+                request.NextOrderItems,
+                request.SpecialNoteItem,
+                request.DiseaseListItems.Select(r => new UpsertPtDiseaseListInputItem(
+                                                    r.Id,
+                                                    r.PtId,
+                                                    r.SortNo,
+                                                    r.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                    r.SuffixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                    r.Byomei,
+                                                    r.StartDate,
+                                                    r.TenkiKbn,
+                                                    r.TenkiDate,
+                                                    r.SyubyoKbn,
+                                                    r.SikkanKbn,
+                                                    r.NanByoCd,
+                                                    r.HosokuCmt,
+                                                    r.HokenPid,
+                                                    r.IsNodspRece,
+                                                    r.IsNodspKarte,
+                                                    r.SeqNo,
+                                                    r.IsImportant,
+                                                    r.IsDeleted,
+                                                    r.ByomeiCd,
+                                                    HpId
+                                )).ToList(),
+                request.FlowSheetItems,
                 request.Monshin
             );
             var output = _bus.Handle(input);
@@ -543,6 +571,16 @@ namespace EmrCloudApi.Controllers
             var presenter = new GetTrialAccountingPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTrialAccountingResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckTrialAccounting)]
+        public ActionResult<Response<CheckOpenTrialAccountingResponse>> CheckTrialAccounting([FromBody] CheckOpenTrialAccountingRequest request)
+        {
+            var input = new CheckOpenTrialAccountingInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, request.SyosaiKbn, request.AllOdrInfItem.Select(a => new Tuple<string, string>(a.ItemCd, a.ItemName)).ToList(), request.OdrInfHokenPid);
+            var output = _bus.Handle(input);
+            var presenter = new CheckOpenTrialAccountingPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckOpenTrialAccountingResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetKensaAuditTrailLog)]

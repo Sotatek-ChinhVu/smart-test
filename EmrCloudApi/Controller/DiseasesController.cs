@@ -10,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.GetSetByomeiTree;
 using UseCase.Diseases.Upsert;
+using UseCase.Diseases.Validation;
 
 namespace EmrCloudApi.Controller
 {
@@ -80,6 +81,43 @@ namespace EmrCloudApi.Controller
             var presenter = new GetSetByomeiTreePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetSetByomeiTreeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Validate)]
+        public ActionResult<Response<ValidationPtDiseaseListResponse>> Validate([FromBody] UpsertPtDiseaseListRequest request)
+        {
+            var input = new ValidationPtDiseaseListInputData(request.PtDiseases.Select(r => new ValidationPtDiseaseListInputItem(
+                                                            r.Id,
+                                                            r.PtId,
+                                                            r.SortNo,
+                                                            r.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                            r.SuffixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                                                            r.Byomei,
+                                                            r.StartDate,
+                                                            r.TenkiKbn,
+                                                            r.TenkiDate,
+                                                            r.SyubyoKbn,
+                                                            r.SikkanKbn,
+                                                            r.NanByoCd,
+                                                            r.HosokuCmt,
+                                                            r.HokenPid,
+                                                            r.IsNodspRece,
+                                                            r.IsNodspKarte,
+                                                            r.SeqNo,
+                                                            r.IsImportant,
+                                                            r.IsDeleted,
+                                                            r.ByomeiCd,
+                                                            HpId
+                                                        )).ToList(),
+                                                        HpId,
+                                                        UserId
+                                                        );
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidationPtDiseaseListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidationPtDiseaseListResponse>>(presenter.Result);
         }
     }
 }
