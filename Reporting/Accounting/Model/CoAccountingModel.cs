@@ -21,9 +21,7 @@ public class CoAccountingModel
     CoHpInfModel HpInfModel { get; }
     List<CoKaikeiInfModel> KaikeiInfModels { get; }
     CoPtInfModel PtInfModel { get; }
-    public SinMeiViewModel SinMeiViewModel { get; }
     public List<SinMeiViewModel> SinMeiViewModels { get; }
-
     List<CoKarteInfModel> KarteInfModels { get; }
     public List<CoOdrInfModel> OdrInfModels { get; }
     public List<CoOdrInfDetailModel> OdrInfDetailModels { get; }
@@ -1008,9 +1006,6 @@ public class CoAccountingModel
     /// <returns></returns>
     public double TotalTen(List<string> CdKbns)
     {
-        //double ret = (SinMeiViewModel.SinKoui?.Where(p =>p.EntenKbn ==0 && CdKbns.Contains(p.CdKbn)).Sum(p => p.TotalTen) ?? 0) +
-        //             (SinMeiViewModel.SinKoui?.Where(p => p.EntenKbn == 1 && CdKbns.Contains(p.CdKbn)).Sum(p => p.TotalTen / 10) ?? 0);
-
         double ret = 0;
 
         foreach (SinMeiViewModel sinmeiView in SinMeiViewModels)
@@ -1038,7 +1033,6 @@ public class CoAccountingModel
     /// <returns></returns>
     public double TotalJihiKingaku(int JihiSbt)
     {
-        //double ret = SinMeiViewModel.SinKoui?.Where(p => p.JihiSbt == JihiSbt).Sum(p => p.TotalTen) ?? 0;
         double ret = 0;
 
         foreach (SinMeiViewModel sinmeiView in SinMeiViewModels)
@@ -1053,7 +1047,6 @@ public class CoAccountingModel
     /// <returns></returns>
     public double TotalJihiKingakuAll()
     {
-        //double ret = SinMeiViewModel.SinKoui?.Where(p => p.CdKbn == "JS").Sum(p => p.TotalTen) ?? 0;
         double ret = 0;
 
         foreach (SinMeiViewModel sinmeiView in SinMeiViewModels)

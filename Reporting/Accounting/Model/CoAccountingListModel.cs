@@ -1,11 +1,8 @@
-﻿using EmrCalculateApi.Receipt.ViewModels;
-
-namespace Reporting.Accounting.Model;
+﻿namespace Reporting.Accounting.Model;
 
 public class CoAccountingListModel
 {
     CoHpInfModel HpInfModel { get; } 
-    public List<SinMeiViewModel> SinMeiViewModels { get; } 
     public List<CoKaikeiInfListModel> KaikeiInfListModels { get; }
     public CoAccountingListModel(CoHpInfModel hpInfModel, List<CoKaikeiInfListModel> kaikeiInfListModels)
     {
