@@ -7,6 +7,5 @@ public enum ReportType
     DrugInfo,
     Karte2,
     Karte3,
-    OutDug,
-    Accounting
+    OutDug
 }
