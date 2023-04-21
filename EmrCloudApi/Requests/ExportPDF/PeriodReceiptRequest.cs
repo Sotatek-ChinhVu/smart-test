@@ -24,11 +24,11 @@ public class PeriodReceiptRequest
 
     public int HakkoDay { get; set; }
 
-    public string Memo { get; set; }
+    public string Memo { get; set; } = string.Empty;
 
     public int PrintType { get; set; }
 
-    public string FormFileName { get; set; }
+    public string FormFileName { get; set; } = string.Empty;
 
-    public List<PeriodReceiptRequestItem> PtInfList { get; set; }
+    public List<PeriodReceiptRequestItem> PtInfList { get; set; } = new();
 }
