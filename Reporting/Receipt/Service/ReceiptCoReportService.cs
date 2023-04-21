@@ -273,13 +273,6 @@ namespace Reporting.Receipt.Service
                 //    DbService.SaveChanged();
                 //}
             }, TaskCreationOptions.LongRunning);
-            printReceiptTask.ContinueWith((action) =>
-            {
-                printReceiptTask.Dispose();
-                IsPrinterRunning = false;
-                _ewh?.Set();
-                PrintExitCode = CoPrintExitCode.EndSuccess;
-            });
         }
 
         #region initParam
