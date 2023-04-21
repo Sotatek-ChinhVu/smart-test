@@ -72,31 +72,25 @@ public class RecalculationInteractor : IRecalculationInputPort
         try
         {
             bool success = true;
-            var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
-            int allCheckCount = receRecalculationList.Count;
-
+            var ptInfCount = inputData.PtIdList.Count;
             // run Recalculation
             if (!isStopCalc && inputData.IsRecalculationCheckBox)
             {
-                //success = RunCalculateMonth(inputData.HpId, receRecalculationList, allCheckCount);
-                _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
-                {
-                    HpId = inputData.HpId,
-                    PtIds = inputData.PtIdList,
-                    SeikyuYm = inputData.SinYm
-                });
+                success = RunCalculateMonth(inputData.HpId, inputData.SinYm, inputData.PtIdList, ptInfCount == 0 ? 1 : ptInfCount);
             }
 
             // run Receipt Aggregation
             if (success && !isStopCalc && inputData.IsReceiptAggregationCheckBox)
             {
-                _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(inputData.PtIdList, inputData.SinYm));
-                //success = ReceFutanCalculateMain(receRecalculationList, allCheckCount);
+                success = ReceFutanCalculateMain(inputData.SinYm, inputData.PtIdList, ptInfCount == 0 ? 1 : ptInfCount);
             }
 
             // check error in month
             if (success && !isStopCalc && inputData.IsCheckErrorCheckBox)
             {
+                var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, inputData.SinYm, inputData.PtIdList);
+                int allCheckCount = receRecalculationList.Count;
+
                 success = CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
             }
 
@@ -121,56 +115,79 @@ public class RecalculationInteractor : IRecalculationInputPort
         }
     }
 
-    private bool RunCalculateMonth(int hpId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    private bool RunCalculateMonth(int hpId, int seikyuYm, List<long> ptInfList, int allCheckCount)
     {
         SendMessager(new RecalculationStatus(false, 1, allCheckCount, 0, string.Empty));
         int successCount = 1;
-        foreach (var item in receRecalculationList)
+        var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        isStopCalc = statusCallBack.Result.Result;
+        if (isStopCalc)
         {
-            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = statusCallBack.Result.Result;
-            if (isStopCalc)
-            {
-                break;
-            }
-            _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
-            {
-                HpId = hpId,
-                PtIds = new List<long>() { item.PtId },
-                SeikyuYm = item.SeikyuYm
-            });
-            if (allCheckCount == successCount)
-            {
-                break;
-            }
-            SendMessager(new RecalculationStatus(false, 1, allCheckCount, successCount, string.Empty));
-            successCount++;
+            return false;
         }
+        _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+        {
+            HpId = hpId,
+            PtIds = ptInfList,
+            SeikyuYm = seikyuYm
+        });
         SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
+        //successCount++;
+        //foreach (var item in ptInfList)
+        //{
+        //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        //    isStopCalc = statusCallBack.Result.Result;
+        //    if (isStopCalc)
+        //    {
+        //        break;
+        //    }
+        //    _calculateRepository.RunCalculateMonth(new CalculateMonthRequest()
+        //    {
+        //        HpId = hpId,
+        //        PtIds = new List<long>() { item },
+        //        SeikyuYm = seikyuYm
+        //    });
+        //    if (allCheckCount == successCount)
+        //    {
+        //        break;
+        //    }
+        //    SendMessager(new RecalculationStatus(false, 1, allCheckCount, successCount, string.Empty));
+        //    successCount++;
+        //}
+        //SendMessager(new RecalculationStatus(true, 1, allCheckCount, successCount, string.Empty));
         return true;
     }
 
-    private bool ReceFutanCalculateMain(List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+    private bool ReceFutanCalculateMain(int seikyuYm, List<long> ptInfList, int allCheckCount)
     {
         SendMessager(new RecalculationStatus(false, 2, allCheckCount, 0, string.Empty));
         int successCount = 1;
-        foreach (var item in receRecalculationList)
+        var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        isStopCalc = statusCallBack.Result.Result;
+        if (isStopCalc)
         {
-            var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
-            isStopCalc = statusCallBack.Result.Result;
-            if (isStopCalc)
-            {
-                break;
-            }
-            _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { item.PtId }, item.SeikyuYm));
-            if (allCheckCount == successCount)
-            {
-                break;
-            }
-            SendMessager(new RecalculationStatus(false, 2, allCheckCount, successCount, string.Empty));
-            successCount++;
+            return false;
         }
+        _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(ptInfList, seikyuYm));
         SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
+        //int successCount = 1;
+        //foreach (var item in ptInfList)
+        //{
+        //    var statusCallBack = Messenger.Instance.SendAsync(new StopCalcStatus());
+        //    isStopCalc = statusCallBack.Result.Result;
+        //    if (isStopCalc)
+        //    {
+        //        break;
+        //    }
+        //    _calculateRepository.ReceFutanCalculateMain(new ReceCalculateRequest(new List<long>() { item }, seikyuYm));
+        //    if (allCheckCount == successCount)
+        //    {
+        //        break;
+        //    }
+        //    SendMessager(new RecalculationStatus(false, 2, allCheckCount, successCount, string.Empty));
+        //    successCount++;
+        //}
+        //SendMessager(new RecalculationStatus(true, 2, allCheckCount, successCount, string.Empty));
         return true;
     }
 
