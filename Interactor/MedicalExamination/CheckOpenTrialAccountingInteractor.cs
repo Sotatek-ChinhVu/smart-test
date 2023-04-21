@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Accounting;
 using Domain.Models.TodayOdr;
 using UseCase.MedicalExamination.CheckOpenTrialAccounting;
+using UseCase.MedicalExamination.GetValidGairaiRiha;
 
 namespace Interactor.MedicalExamination
 {
@@ -22,8 +23,7 @@ namespace Interactor.MedicalExamination
                 var isHokenPtSelect = CheckHokenPatternSelect(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.OdrInfHokenPid);
                 var checkJihiYobo = GetValidJihiYobo(inputData.HpId, inputData.SinDate, inputData.SyosaiKbn, inputData.AllOdrInfItem);
                 var checkGaiRaiRiha = GetValidGairaiRiha(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.SyosaiKbn, inputData.AllOdrInfItem);
-                return new CheckOpenTrialAccountingOutputData(isHokenPtSelect, checkGaiRaiRiha.type, checkGaiRaiRiha.itemName, checkGaiRaiRiha.lastDaySanteiRiha,
-                                                              checkGaiRaiRiha.rihaItemName, checkJihiYobo.systemSetting,
+                return new CheckOpenTrialAccountingOutputData(isHokenPtSelect, checkGaiRaiRiha.Select(c => new GairaiRihaItem(c.type, c.itemName, c.lastDaySanteiRiha, c.rihaItemName)).ToList(), checkJihiYobo.systemSetting,
                                                               checkJihiYobo.isExistYoboItemOnly, CheckOpenTrialAccountingStatus.Successed);
             }
             finally
@@ -43,10 +43,10 @@ namespace Interactor.MedicalExamination
             return true;
         }
 
-        private (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
+        private List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
         {
             var check = _todayOdrRepository.GetValidGairaiRiha(hpId, ptId, raiinNo, sinDate, syosaiKbn, allOdrInfItem);
-            return (check.type, check.itemName, check.lastDaySanteiRiha, check.rihaItemName);
+            return check;
         }
 
         private (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItem)
