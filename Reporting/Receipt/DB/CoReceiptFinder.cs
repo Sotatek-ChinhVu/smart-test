@@ -1633,5 +1633,49 @@ namespace Reporting.Receipt.DB
 
             return new EmrCalculateApi.ReceFutan.Models.ReceInfModel(receInf ?? new());
         }
+
+        public List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo)
+        {
+            var hokenMsts = NoTrackingDataContext.HokenMsts.Where(x => x.HpId == hpId);
+            //診療日基準で保険番号マスタのキー情報を取得
+            var hokenMstKeys = NoTrackingDataContext.HokenMsts.Where(
+                h => h.HpId == hpId && h.StartDate <= sinDate && h.HokenNo == hokenNo && h.HokenEdaNo == hokenEdaNo && h.PrefNo == prefNo
+
+            ).GroupBy(
+                x => new { x.HpId, x.PrefNo, x.HokenNo, x.HokenEdaNo }
+            ).Select(
+                x => new
+                {
+                    x.Key.HpId,
+                    x.Key.PrefNo,
+                    x.Key.HokenNo,
+                    x.Key.HokenEdaNo,
+                    StartDate = x.Max(d => d.StartDate)
+                }
+            );
+
+            var ptKohis = NoTrackingDataContext.PtKohis.Where(x => x.HpId == hpId);
+            //保険番号マスタの取得
+            var retHokenMsts = (
+                from hokenMst in hokenMsts
+                join hokenKey in hokenMstKeys on
+                    new { hokenMst.HpId, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.PrefNo, hokenMst.StartDate } equals
+                    new { hokenKey.HpId, hokenKey.HokenNo, hokenKey.HokenEdaNo, hokenKey.PrefNo, hokenKey.StartDate }
+                select new
+                {
+                    hokenMst
+                }
+            );
+
+            var result = retHokenMsts.AsEnumerable().Select(
+                data =>
+                    new CoHokenMstModel(
+                        data.hokenMst
+                )
+            )
+            .ToList();
+
+            return result;
+        }
     }
 }

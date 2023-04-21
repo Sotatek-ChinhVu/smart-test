@@ -64,5 +64,7 @@ namespace Reporting.Receipt.DB
         int ZenkaiKensaDate(int hpId, long ptId, int sinDate, int hokenId);
 
         EmrCalculateApi.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+
+        List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo);
     }
 }

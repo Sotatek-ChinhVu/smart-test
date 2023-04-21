@@ -1,4 +1,6 @@
-﻿using Domain.Models.SystemConf;
+﻿using Domain.Constant;
+using Domain.Models.SystemConf;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Ika.Models;
 using EmrCalculateApi.Interface;
 using EmrCalculateApi.Receipt.Constants;
@@ -8,8 +10,12 @@ using Helper.Common;
 using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Reporting.Mappers.Common;
+using Reporting.ReadRseReportFile.Model;
+using Reporting.ReadRseReportFile.Service;
 using Reporting.Receipt.Constants;
 using Reporting.Receipt.DB;
+using Reporting.Receipt.Mapper;
 using Reporting.Receipt.Models;
 using Reporting.Structs;
 
@@ -22,14 +28,16 @@ namespace Reporting.Receipt.Service
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
         private readonly ITenantProvider _tenantProvider;
+        private readonly IReadRseReportFileService _readRseReportFileService;
 
-        public ReceiptCoReportService(ITenantProvider tenantProvider, ICoReceiptFinder coReceiptFinder, ISystemConfRepository systemConfRepository, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger) : base(tenantProvider)
+        public ReceiptCoReportService(ITenantProvider tenantProvider, ICoReceiptFinder coReceiptFinder, ISystemConfRepository systemConfRepository, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService) : base(tenantProvider)
         {
             _coReceiptFinder = coReceiptFinder;
             _systemConfRepository = systemConfRepository;
             _systemConfigProvider = systemConfigProvider;
             _emrLogger = emrLogger;
             _tenantProvider = tenantProvider;
+            _readRseReportFileService = readRseReportFileService;
         }
 
         private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels;
@@ -53,12 +61,29 @@ namespace Reporting.Receipt.Service
         private bool IncludeOutDrug;
         private bool IsPtTest;
         private int Sort;
+        private int CurrentPage;
+
+        int _byomeiCharCount;
+        int _byomeiRowCount;
+        int _tekiyoCharCount;
+        int _tekiyoByoCharCount;
+        int _tekiyoRowCount;
+        int _tekiyoRowCount2;
+        int _tekiyoEnRowCount;
+        int _tekiyoEnCharCount;
+
+        List<CoReceiptByomeiModel> ByomeiModels;
+        List<CoReceiptTekiyoModel> TekiyoModels;
+        List<CoReceiptTekiyoModel> TekiyoEnModels;
+
+        private List<CoReceiptModel> CoModels;
+        private CoReceiptModel CoModel;
 
         SeikyuType SeikyuType;
 
         private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public List<CoReceiptModel> GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode, bool isNoCreatingReceData = false)
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode, bool isNoCreatingReceData = false)
         {
             var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, seikyuYm, sinYm, hokenId);
 
@@ -105,7 +130,7 @@ namespace Reporting.Receipt.Service
                         if (isNoCreatingReceData)
                         {
                             InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
-                            return GetData();
+                            return new ReceiptPreviewMapper().GetData();
                         }
                         else
                         {
@@ -123,19 +148,141 @@ namespace Reporting.Receipt.Service
                                         , IsPtTest
                                         , IncludeOutDrug
                                         , sort: 0);
-                            return GetData();
+                            CoModels = GetData();
+
+                            int i = 0;
+                            while (i < CoModels.Count())
+                            {
+                                CoModel = CoModels[i];
+                                if (TargetIsKenpo() ||
+                                        (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, hpId) == 0))
+                                {
+
+                                }
+                            }
+
+                            return;
                         }
                     }
                 case ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki:
                     {
                         InitParam(hpId, receInf.PtId, receInf.SeikyuYm, receInf.SinYm, receInf.HokenId);
-                        return GetData();
+                        return new GetData();
                     }
             }
 
             return new();
         }
 
+        private void _PrintOut()
+        {
+            CoModels = GetData();
+
+            Task printReceiptTask = Task.Factory.StartNew(() =>
+            {
+                int i = 0;
+                while (i < CoModels.Count())
+                {
+                    bool initResult = false;
+
+                    CoModel = CoModels[i];
+
+                    // フォームチェック
+                    if (TargetIsKenpo() ||
+                                (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 0))
+                    {
+                        GetFormParam("fmReceipt.rse");
+                        // 対象が社保国保または、自賠健保準拠
+                        _byomeiCharCount -= 3;
+                        _tekiyoCharCount -= 13;
+                        _tekiyoByoCharCount -= 26;
+
+                        if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1)
+                        {
+                            // 病名欄転帰日記載をする場合
+                            _tekiyoByoCharCount -= 4;
+                        }
+
+                        // 病名リスト
+                        MakeByoList();
+
+                        // 摘要欄リスト
+                        if (!(new int[]
+                            {
+                                        TargetConst.KanagawaRece2,
+                                        TargetConst.FukuokaRece2,
+                                        TargetConst.SagaRece2,
+                                        TargetConst.MiyazakiRece2
+                            }.Contains(Target)))
+                        {
+                            MakeTekiyoList();
+                        }
+
+                    }
+                    else if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter }.Contains(Target) ||
+                            (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 1, HpId) == 1))
+                    {
+                        // 労災（短期、年金、アフターケア）、自賠労災準拠
+                        _byomeiCharCount -= 3;
+                        _tekiyoCharCount -= 13;
+                        _tekiyoByoCharCount -= 26;
+                        if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1)
+                        {
+                            _tekiyoByoCharCount -= 4;
+                        }
+
+                        MakeByoList();
+                        if (Target != TargetConst.RousaiAfter)
+                        {
+                            MakeTekiyoEnListForRousai();
+                        }
+                        MakeTekiyoListForRousai();
+                    }
+
+                    bool isNextPageExits = true;
+                    CurrentPage = 1;
+
+                    if ( Target == TargetConst.RousaiAfter)
+                    {
+                        while (i + 1 < CoModels.Count() &&
+                            CoModel.PtId == CoModels[i + 1].PtId &&
+                            CoModel.SinYm == CoModels[i + 1].SinYm &&
+                            CoModel.HokenId == CoModels[i + 1].HokenId
+                            )
+                        {
+                            CoModel = null;
+                            CurrentPage = 1;
+                            i++;
+                            CoModel = CoModels[i];
+
+                            MakeByoList();
+                            if (Target != TargetConst.RousaiAfter)
+                            {
+                                MakeTekiyoEnListForRousai();
+                            }
+                            MakeTekiyoListForRousai();
+
+                        }
+                    }
+
+                }
+
+                //if (OutputMode == CoOutputMode.Print)
+                //{
+                //    // 印刷済み
+                //    DbService.SaveChanged();
+                //}
+            }, TaskCreationOptions.LongRunning);
+            printReceiptTask.ContinueWith((action) =>
+            {
+                printReceiptTask.Dispose();
+                IsPrinterRunning = false;
+                _ewh?.Set();
+                PrintExitCode = CoPrintExitCode.EndSuccess;
+            });
+        }
+
+        #region initParam
         public void InitParam(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
         {
             HpId = hpId;
@@ -259,7 +406,7 @@ namespace Reporting.Receipt.Service
                 PrintNoTo = printNoTo;
             }
         }
-
+        #endregion
         public List<CoReceiptModel> GetData()
         {
             #region mode変換
@@ -1032,5 +1179,1239 @@ namespace Reporting.Receipt.Service
             return rousaiReceiptModel;
         }
 
+        private void GetFormParam(string formfile)
+        {
+            List<ObjectCalculate> fieldInputList = new();
+
+            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.ListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsEnTekiyo", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsEnTekiyo", (int)CalculateTypeEnum.ListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.ListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo1", (int)CalculateTypeEnum.ListRowCount));
+
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Receipt, formfile, fieldInputList);
+
+            var javaOutputData = _readRseReportFileService.ReadFileRse(data);
+            UpdateParamLocal(javaOutputData.responses ?? new());
+        }
+
+        private void UpdateParamLocal(List<ObjectCalculateResponse> result)
+        {
+            foreach (var item in result)
+            {
+                switch (item.typeInt)
+                {
+                    case (int)CalculateTypeEnum.GetFormatLength:
+                        switch (item.listName)
+                        {
+                            case "lsByomei":
+                                _byomeiCharCount = item.result;
+                                break;
+                            case "lsTekiyo":
+                                _tekiyoCharCount = item.result;
+                                _tekiyoByoCharCount = item.result;
+                                break;
+                            case "lsEnTekiyo":
+                                _tekiyoEnCharCount = item.result;
+                                break;
+
+                        }
+                        break;
+                    case (int)CalculateTypeEnum.ListRowCount:
+                        switch (item.listName)
+                        {
+                            case "lsByomei":
+                                _byomeiRowCount = item.result;
+                                break;
+                            case "lsEnTekiyo":
+                                _tekiyoEnRowCount = item.result;
+                                break;
+                            case "lsTekiyo":
+                                _tekiyoRowCount = item.result;
+                                break;
+                            case "lsTekiyo1":
+                                _tekiyoRowCount2 = item.result;
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void MakeByoList()
+        {
+            string tmpByomeiStartDate = "";
+            string tmpByomeiTenki = "";
+            string tmpByomeiTenkiDate = "";
+            string line = "";
+
+            const string CON_BYOMEI_CONTINUE = "以下、摘要欄";
+
+            if (_byomeiCharCount <= 0 || _byomeiRowCount <= 0) return;
+
+            #region sub function
+            // 病名リストに追加
+            void _addByomeiList(string addByomei, string addStartDate, string addByomeiTenki, string addByomeiTenkiDate, ref int byomeiIndex)
+            {
+                bool firstLine = true;
+                string wkline = addByomei;
+
+                if (wkline != "")
+                {
+                    while (wkline != "")
+                    {
+                        CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                        string tmp = wkline;
+                        if (CIUtil.LenB(tmp) > _byomeiCharCount)
+                        {
+                            tmp = CIUtil.CiCopyStrWidth(tmp, 1, _byomeiCharCount);
+                        }
+
+                        if (firstLine)
+                        {
+                            addByomeiModel.Byomei = $"({byomeiIndex})" + tmp;
+                            firstLine = false;
+                        }
+                        else
+                        {
+                            addByomeiModel.Byomei = new string(' ', 3) + tmp;
+                        }
+
+                        ByomeiModels.Add(addByomeiModel);
+
+                        wkline = CIUtil.CiCopyStrWidth(wkline, CIUtil.LenB(tmp) + 1, CIUtil.LenB(wkline) - CIUtil.LenB(tmp));
+
+                    }
+
+                    ByomeiModels.Last().StartDate = $"({byomeiIndex})" + addStartDate;
+                    ByomeiModels.Last().Tenki = addByomeiTenki + CIUtil.Copy(addByomeiTenkiDate, 3, 9);
+
+                    byomeiIndex++;
+                }
+            }
+
+            //摘要欄に追加
+            void _addTekiyoList(string addByomei, string addStartDate, string addByomeiTenki, string addByomeiTenkiDate, ref int byomeiIndex)
+            {
+                bool firstLine = true;
+                string wkline = addByomei;
+
+                if (addByomei != "")
+                {
+                    while (wkline != "")
+                    {
+                        string tmp = wkline;
+                        if (CIUtil.LenB(tmp) > _tekiyoByoCharCount)
+                        {
+                            tmp = CIUtil.CiCopyStrWidth(wkline, 1, _tekiyoByoCharCount);
+                        }
+
+                        CoReceiptTekiyoModel addTekiyo = new CoReceiptTekiyoModel();
+
+                        if (firstLine)
+                        {
+                            addTekiyo.Tekiyo = $"({byomeiIndex})".PadRight(4, ' ') + tmp;
+                            firstLine = false;
+                        }
+                        else
+                        {
+                            addTekiyo.Tekiyo = new string(' ', 4) + tmp;
+                        }
+
+                        TekiyoModels.Add(addTekiyo);
+
+                        wkline = CIUtil.CiCopyStrWidth(wkline, CIUtil.LenB(tmp) + 1, CIUtil.LenB(wkline) - CIUtil.LenB(tmp));
+
+                    }
+
+                    if (TargetIsKenpo())
+                    {
+                        TekiyoModels.Last().Tekiyo = CIUtil.PadRightB(TekiyoModels.Last().Tekiyo, _tekiyoByoCharCount + 4) + "  " + addStartDate + addByomeiTenki + CIUtil.Copy(addByomeiTenkiDate, 9, 3);
+                    }
+
+                    byomeiIndex++;
+                }
+            }
+
+            //病名データ追加後の病名欄の行数を計算
+            int _ifAddRowCount(string addLine)
+            {
+                int lineCount = CIUtil.LenB(addLine) / _byomeiCharCount;
+                if (CIUtil.LenB(addLine) % _byomeiCharCount > 0)
+                {
+                    lineCount++;
+                }
+
+                return ByomeiModels.Count() + lineCount;
+            }
+
+            //病名転帰日、出力設定でない場合は空文字を返す
+            string _getTenkiDate(SyobyoDataModel syobyoData)
+            {
+                string ret = "";
+
+                if ((int)_systemConfRepository.GetSettingValue(94001, 1, HpId) == 1 && syobyoData.KamiReceTenkiKbn > ReceTenkiKbnConst.Continued)
+                {
+                    ret = syobyoData.WTenkiDate;
+                }
+                return ret;
+            }
+            #endregion
+
+            // 0-1行複数病名、1-1行1病名、2-1行複数病名(1行にできるだけまとめる）
+            int wordwrap = 0;
+            if (((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1) || !TargetIsKenpo())
+            {
+                wordwrap = 1;
+            }
+            else if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 2)
+            {
+                wordwrap = 2;
+            }
+
+
+            if (wordwrap == 0)
+            {
+                // 1行複数病名
+
+                // まず、_byomeiRowCount行以上必要か考えてみる
+                bool overByomeiListRowCount = false;
+                int byoIndex = 1;
+
+                for (int j = 0; j < CoModel.SyobyoData.Count(); j++)
+                {
+                    if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                       tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                       tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                    {
+                        string tmpLine = line;
+
+                        if (tmpLine != "") { tmpLine += ","; }
+                        tmpLine += CoModel.SyobyoData[j].ReceByomei;
+
+                        if (_ifAddRowCount(tmpLine) > _byomeiRowCount)
+                        {
+                            overByomeiListRowCount = true;
+                            break;
+                        }
+                        else
+                        {
+                            line = tmpLine;
+                        }
+                    }
+                    else
+                    {
+                        _addByomeiList(line, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                        line = CoModel.SyobyoData[j].ReceByomei;
+
+                        if (_ifAddRowCount(line) > _byomeiRowCount)
+                        {
+                            overByomeiListRowCount = true;
+                            break;
+                        }
+
+                        tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                        tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                        tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                    }
+                }
+
+                // 最後をチェック
+                if (overByomeiListRowCount == false && line != "")
+                {
+                    overByomeiListRowCount = _ifAddRowCount(line) > _byomeiRowCount;
+                }
+
+                int stopLine = _byomeiRowCount;
+                if (overByomeiListRowCount)
+                {
+                    stopLine--;
+                }
+
+                // 改めて追加
+                tmpByomeiStartDate = "";
+                tmpByomeiTenki = "";
+                tmpByomeiTenkiDate = "";
+
+                ByomeiModels.Clear();
+
+                byoIndex = 1;
+
+                line = "";
+
+                bool addTekiyo = false;
+
+                for (int j = 0; j < CoModel.SyobyoData.Count(); j++)
+                {
+                    if (ByomeiModels.Count() < _byomeiRowCount && addTekiyo == false)
+                    {
+                        if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                           tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                           tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                        {
+                            string tmpLine = line;
+
+                            if (tmpLine != "") { tmpLine += ","; }
+                            tmpLine += CoModel.SyobyoData[j].ReceByomei;
+
+                            if (_ifAddRowCount(tmpLine) > stopLine)
+                            {
+                                if (overByomeiListRowCount)
+                                {
+                                    CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                                    addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+
+                                    ByomeiModels.Add(addByomeiModel);
+                                }
+
+                                // 摘要欄に追加
+                                addTekiyo = true;
+                            }
+
+                            line = tmpLine;
+                        }
+                        else
+                        {
+
+                            if (line != "")
+                            {
+                                // 病名欄リストに追加
+                                _addByomeiList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                            }
+
+                            line = CoModel.SyobyoData[j].ReceByomei;
+
+                            if (_ifAddRowCount(line) > stopLine)
+                            {
+                                if (overByomeiListRowCount)
+                                {
+                                    // 病名欄の最終行に「以下、摘要欄」を追加
+                                    CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                                    addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+
+                                    ByomeiModels.Add(addByomeiModel);
+                                }
+
+                                // 摘要欄に追加
+                                addTekiyo = true;
+                            }
+
+                            tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                            tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                            tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                        }
+                    }
+                    else
+                    {
+                        if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                           tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                           tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                        {
+                            string tmpLine = line;
+
+                            if (tmpLine != "") { tmpLine += ","; }
+                            tmpLine += CoModel.SyobyoData[j].ReceByomei;
+
+                            line = tmpLine;
+                        }
+                        else
+                        {
+
+                            if (line != "")
+                            {
+                                // 摘要欄に追加
+                                _addTekiyoList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                            }
+
+                            line = CoModel.SyobyoData[j].ReceByomei;
+
+                            tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                            tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                            tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                        }
+                    }
+                }
+
+                // 病名欄に空き行がある場合、残りの病名を追加する
+                if (line != "")
+                {
+                    if (ByomeiModels.Count < _byomeiRowCount && addTekiyo == false)
+                    {
+                        _addByomeiList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                    }
+                    else
+                    {
+                        //摘要欄に追加
+                        _addTekiyoList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                    }
+                    line = "";
+                }
+            }
+            else if (wordwrap == 1)
+            {
+                // 1行1病名
+                int byoIndex = 1;
+                for (int j = 0; j < CoModel.SyobyoData.Count(); j++)
+                {
+                    if (ByomeiModels.Count() < _byomeiRowCount)
+                    {
+                        //string tmpLine = "";// = CoModel.SyobyoData[j].ReceByomei;
+                        //if (tmpLine != "") { tmpLine += ","; }
+                        string tmpLine = CoModel.SyobyoData[j].ReceByomei;
+                        int lineCount = _ifAddRowCount(tmpLine);
+
+                        if (lineCount > _byomeiRowCount || (lineCount == _byomeiRowCount && (CoModel.SyobyoData.Count - j - 1 > 0)))
+                        {
+                            for (int k = ByomeiModels.Count(); k < _byomeiRowCount - 1; k++)
+                            {
+                                ByomeiModels.Add(new CoReceiptByomeiModel());
+                            }
+
+                            CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+                            addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+                            ByomeiModels.Add(addByomeiModel);
+
+                            // 摘要欄に追加
+                            _addTekiyoList(tmpLine, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                        }
+                        else
+                        {
+                            _addByomeiList(tmpLine, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                        }
+                        tmpLine = "";
+                    }
+                    else
+                    {
+                        string tmpLine = CoModel.SyobyoData[j].ReceByomei;
+                        _addTekiyoList(tmpLine, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                        tmpLine = "";
+                    }
+                }
+            }
+            else if (wordwrap == 2)
+            {
+                // 1行複数病名（できるだけ行の途中で病名を分けない）
+
+                // まず、_byomeiRowCount行以上必要か考えてみる
+                bool overByomeiListRowCount = false;
+                int byoIndex = 1;
+
+                for (int j = 0; j < CoModel.SyobyoData.Count(); j++)
+                {
+                    if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                       tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                       tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                    {
+                        string tmpLine = line;
+
+                        if (tmpLine != "") { tmpLine += ","; }
+                        tmpLine += CoModel.SyobyoData[j].ReceByomei;
+
+                        if (CIUtil.LenB(tmpLine) <= _byomeiCharCount && string.IsNullOrEmpty(line) == false)
+                        {
+                            if (_ifAddRowCount(tmpLine) > _byomeiRowCount)
+                            {
+                                overByomeiListRowCount = true;
+                                break;
+                            }
+                            else
+                            {
+                                line = tmpLine;
+                            }
+                        }
+                        else
+                        {
+                            _addByomeiList(line, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                            line = CoModel.SyobyoData[j].ReceByomei;
+
+                            if (_ifAddRowCount(line) > _byomeiRowCount)
+                            {
+                                overByomeiListRowCount = true;
+                                break;
+                            }
+
+                            tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                            tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                            tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                        }
+                    }
+                    else
+                    {
+                        _addByomeiList(line, CoModel.SyobyoData[j].WStartDate, CoModel.SyobyoData[j].ReceTenki, _getTenkiDate(CoModel.SyobyoData[j]), ref byoIndex);
+                        line = CoModel.SyobyoData[j].ReceByomei;
+
+                        if (_ifAddRowCount(line) > _byomeiRowCount)
+                        {
+                            overByomeiListRowCount = true;
+                            break;
+                        }
+
+                        tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                        tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                        tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                    }
+                }
+
+                // 最後をチェック
+                if (overByomeiListRowCount == false && line != "")
+                {
+                    overByomeiListRowCount = _ifAddRowCount(line) > _byomeiRowCount;
+                }
+
+                int stopLine = _byomeiRowCount;
+                if (overByomeiListRowCount)
+                {
+                    stopLine--;
+                }
+
+                // 改めて追加
+                tmpByomeiStartDate = "";
+                tmpByomeiTenki = "";
+                tmpByomeiTenkiDate = "";
+
+                ByomeiModels.Clear();
+
+                byoIndex = 1;
+
+                line = "";
+
+                bool addTekiyo = false;
+
+                for (int j = 0; j < CoModel.SyobyoData.Count(); j++)
+                {
+                    if (ByomeiModels.Count() < _byomeiRowCount && addTekiyo == false)
+                    {
+                        if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                           tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                           tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                        {
+                            string tmpLine = line;
+
+                            if (tmpLine != "") { tmpLine += ","; }
+                            tmpLine += CoModel.SyobyoData[j].ReceByomei;
+                            if (CIUtil.LenB(tmpLine) <= _byomeiCharCount && string.IsNullOrEmpty(line) == false)
+                            {
+                                if (_ifAddRowCount(tmpLine) > stopLine)
+                                {
+                                    if (overByomeiListRowCount)
+                                    {
+                                        CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                                        addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+
+                                        ByomeiModels.Add(addByomeiModel);
+                                    }
+
+                                    // 摘要欄に追加
+                                    addTekiyo = true;
+                                }
+
+                                line = tmpLine;
+                            }
+                            else
+                            {
+                                if (line != "")
+                                {
+                                    // 病名欄リストに追加
+                                    _addByomeiList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                                }
+
+                                line = CoModel.SyobyoData[j].ReceByomei;
+
+                                if (_ifAddRowCount(line) > stopLine)
+                                {
+                                    if (overByomeiListRowCount)
+                                    {
+                                        // 病名欄の最終行に「以下、摘要欄」を追加
+                                        CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                                        addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+
+                                        ByomeiModels.Add(addByomeiModel);
+                                    }
+
+                                    // 摘要欄に追加
+                                    addTekiyo = true;
+                                }
+
+                                tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                                tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                                tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                            }
+                        }
+                        else
+                        {
+
+                            if (line != "")
+                            {
+                                // 病名欄リストに追加
+                                _addByomeiList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                            }
+
+                            line = CoModel.SyobyoData[j].ReceByomei;
+
+                            if (_ifAddRowCount(line) > stopLine)
+                            {
+                                if (overByomeiListRowCount)
+                                {
+                                    // 病名欄の最終行に「以下、摘要欄」を追加
+                                    CoReceiptByomeiModel addByomeiModel = new CoReceiptByomeiModel();
+
+                                    addByomeiModel.Byomei = CON_BYOMEI_CONTINUE;
+
+                                    ByomeiModels.Add(addByomeiModel);
+                                }
+
+                                // 摘要欄に追加
+                                addTekiyo = true;
+                            }
+
+                            tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                            tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                            tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                        }
+                    }
+                    else
+                    {
+                        if (tmpByomeiStartDate == CoModel.SyobyoData[j].WStartDate &&
+                           tmpByomeiTenki == CoModel.SyobyoData[j].ReceTenki &&
+                           tmpByomeiTenkiDate == _getTenkiDate(CoModel.SyobyoData[j]))
+                        {
+                            string tmpLine = line;
+
+                            if (tmpLine != "") { tmpLine += ","; }
+                            tmpLine += CoModel.SyobyoData[j].ReceByomei;
+
+                            if (CIUtil.LenB(tmpLine) <= _tekiyoByoCharCount && string.IsNullOrEmpty(line) == false)
+                            {
+                                line = tmpLine;
+                            }
+                            else
+                            {
+                                if (line != "")
+                                {
+                                    // 摘要欄に追加
+                                    _addTekiyoList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                                }
+
+                                line = CoModel.SyobyoData[j].ReceByomei;
+
+                                tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                                tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                                tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                            }
+                        }
+                        else
+                        {
+
+                            if (line != "")
+                            {
+                                // 摘要欄に追加
+                                _addTekiyoList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                            }
+
+                            line = CoModel.SyobyoData[j].ReceByomei;
+
+                            tmpByomeiStartDate = CoModel.SyobyoData[j].WStartDate;
+                            tmpByomeiTenki = CoModel.SyobyoData[j].ReceTenki;
+                            tmpByomeiTenkiDate = _getTenkiDate(CoModel.SyobyoData[j]);
+                        }
+                    }
+                }
+
+                // 病名欄に空き行がある場合、残りの病名を追加する
+                if (line != "")
+                {
+                    if (ByomeiModels.Count < _byomeiRowCount && addTekiyo == false)
+                    {
+                        _addByomeiList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                    }
+                    else
+                    {
+                        //摘要欄に追加
+                        _addTekiyoList(line, tmpByomeiStartDate, tmpByomeiTenki, tmpByomeiTenkiDate, ref byoIndex);
+                    }
+                    line = "";
+                }
+            }
+
+            if (TekiyoModels.Any())
+            {
+                // 摘要欄に病名を追加する場合、区切り線を付けておく
+                CoReceiptTekiyoModel addTekiyo = new CoReceiptTekiyoModel();
+                addTekiyo.Tekiyo = new string('-', _tekiyoCharCount + 13);
+                TekiyoModels.Add(addTekiyo);
+            }
+        }
+
+        private bool TargetIsKenpo()
+        {
+            return new int[]
+                {
+                    TargetConst.Syaho,
+                    TargetConst.Kokuho,
+                    TargetConst.Kenpo,
+                    TargetConst.Jihi,
+                    TargetConst.IwateRece2,
+                    TargetConst.KanagawaRece2,
+                    TargetConst.NaganoRece2,
+                    TargetConst.OsakaSyouni,
+                    TargetConst.FukuokaRece2,
+                    TargetConst.SagaRece2
+                }.Contains(Target);
+        }
+
+        private void MakeTekiyoList()
+        {
+            #region sub function
+            //摘要欄に追加
+            void _addTekiyoList(string addSinId, string addMark, string addTekiyo, string addTenCount, string addSuryo, string addUnit, int maxCharCount)
+            {
+                bool firstLine = true;
+
+                AddTekiyoList(TekiyoModels, addSinId, addMark, addTekiyo, addTenCount, addSuryo, addUnit, maxCharCount, 13);
+            }
+
+            // 単純に摘要欄に文字列追加する
+            void _addTekiyoLine(string sinId, string mark, string tekiyo, string tenCount)
+            {
+                AddTekiyoLine(TekiyoModels, sinId, mark, tekiyo, tenCount, _tekiyoCharCount, 13);
+            }
+            #endregion
+
+            // 公費３，４がある場合
+            List<(int receSbt, int kohiIndex, string kohiNo)> kohiCheck =
+                new List<(int receSbt, int kohiIndex, string kohiNo)>
+                {
+                    (4, 3, "３"),
+                    (5, 4, "４")
+                };
+
+            // 公費のみの場合
+            if (CoModel.GetReceiptSbt(2) == 2)
+            {
+                kohiCheck =
+                    new List<(int receSbt, int kohiIndex, string kohiNo)>
+                    {
+                        (3, 3, "３"),
+                        (4, 4, "４")
+                    };
+            }
+
+            bool addKohiInf = false;
+
+            for (int i = 0; i <= 1; i++)
+            {
+                if (CIUtil.StrToIntDef(CIUtil.Copy(CoModel.ReceiptSbt, 3, 1), 0) >= kohiCheck[i].receSbt)
+                {
+                    if (CoModel.KohiFutansyaNo(kohiCheck[i].kohiIndex) != "")
+                    {
+                        _addTekiyoLine("", "", $"第{kohiCheck[i].kohiNo}公費", "");
+                        _addTekiyoLine("", "", $"公{kohiCheck[i].kohiNo}（{CoModel.KohiFutansyaNo(kohiCheck[i].kohiIndex)}）", "");
+                        _addTekiyoLine("", "", $"受　（{CoModel.KohiJyukyusyaNo(kohiCheck[i].kohiIndex)}）", "");
+                        _addTekiyoLine("", "", $"実　（{CoModel.KohiNissu(kohiCheck[i].kohiIndex)}）", "");
+
+                        addKohiInf = true;
+                    }
+                }
+            }
+
+            if (addKohiInf)
+            {
+                _addTekiyoLine("", "", new string('-', _tekiyoCharCount + 13), "");
+            }
+
+            // 明細
+            int tmpSinId = 0;
+
+            List<SinMeiDataModel> sinmeiDatas =
+                CoModel.SinMeiData
+                .OrderBy(p => p.FutanSortKey)
+                .ThenBy(p => p.RpNo)
+                .ThenBy(p => p.SeqNo)
+                .ThenBy(p => p.RowNo).ToList();
+
+            int tmpFutanSortKey = 0;
+
+            HashSet<int> KohiIndex = new HashSet<int>();
+            List<string> futanKbns = CoModel.TenColFutanKbns;
+
+            if (futanKbns.Count() > 1)
+            {
+                // 負担区分が複数存在する
+                foreach (string futanKbn in futanKbns)
+                {
+                    foreach (int index in CoModel.FutanKbnToKohiIndex(futanKbn))
+                    {
+                        KohiIndex.Add(index);
+                    }
+                }
+            }
+
+            // 公費インデックスと公費名称を紐づけ
+            List<(int kohiIndex, string kohiName)> kohiNames = new List<(int kohiIndex, string kohiName)>();
+            List<(string futanKbn, string kohiName)> futanToKohiName = new List<(string futanKbn, string kohiName)>();
+
+            if (KohiIndex.Count() > 1)
+            {
+                for (int i = 1; i <= CoModel.KohiCount; i++)
+                {
+                    List<CoHokenMstModel> hokenMst =
+                        _coReceiptFinder.FindHokenMst(
+                            HpId,
+                            CoModel.SinYm * 100 + 1,
+                            CoModel.KohiHokenNo(i),
+                            CoModel.KohiHokenEdaNo(i),
+                            CoModel.KohiPrefNo(i));
+                    if (hokenMst.Any())
+                    {
+                        string kohiName = "";
+                        if (string.IsNullOrEmpty(hokenMst.First().HokenName))
+                        {
+                            // 公費の名称が取得できなかった場合
+                            kohiName = $"公費{i}";
+                        }
+                        else
+                        {
+                            kohiName = hokenMst.First().HokenName;
+                        }
+
+                        for (int j = 0; j < kohiNames.Count; j++)
+                        {
+                            if (kohiName == kohiNames[j].kohiName)
+                            {
+                                // 同じ名前の公費があった場合は、後ろに公費の番号を付ける
+                                kohiName = kohiName + $"(公費{i})";
+                                kohiNames[j] = (kohiNames[j].kohiIndex, kohiNames[j].kohiName + $"(公費{kohiNames[j].kohiIndex})");
+                                break;
+                            }
+                        }
+                        kohiNames.Add((i, kohiName));
+                    }
+                }
+
+                // 負担区分と公費名称を紐づけ
+                foreach (string futanKbn in sinmeiDatas.GroupBy(p => p.FutanKbn).Select(p => p.Key))
+                {
+                    string kohiName = "";
+
+                    // 負担区分から使用している公費を取得
+                    List<int> kohiIndexes = CoModel.FutanKbnToKohiIndex(futanKbn);
+                    for (int i = 0; i < kohiIndexes.Count(); i++)
+                    {
+                        if (kohiNames.Any(p => p.kohiIndex == kohiIndexes[i]))
+                        {
+                            if (kohiName != "") kohiName += ",";
+                            kohiName += kohiNames.Find(p => p.kohiIndex == kohiIndexes[i]).kohiName;
+                        }
+                    }
+                    futanToKohiName.Add((futanKbn, kohiName));
+                }
+            }
+
+            foreach (SinMeiDataModel sinmeiData in sinmeiDatas)
+            {
+                string mark = "";
+                string sinId = "";
+
+                if (tmpFutanSortKey != sinmeiData.FutanSortKey && !(new int[] { 1, 99 }.Contains(sinmeiData.SinId)))
+                {
+                    //ソートキーが変わった場合で、レセコメント以外
+
+                    //公費摘要のメッセージを作成
+                    string kohiName = "";
+
+                    if (futanToKohiName.Any(p => p.futanKbn == sinmeiData.FutanKbn))
+                    {
+                        kohiName = futanToKohiName.Find(p => p.futanKbn == sinmeiData.FutanKbn).kohiName;
+                    }
+
+                    if (kohiName != "")
+                    {
+                        // 印字すべき公費だった場合
+                        if (TekiyoModels.Count() % _tekiyoRowCount != 0)
+                        {
+                            _addTekiyoLine("", "", "", "");
+                        }
+                        int equalCount = (_tekiyoCharCount + 13 - CIUtil.LenB(kohiName) - 18);
+                        int leftCount = equalCount / 2;
+                        int rightCount = equalCount / 2;
+                        if (equalCount % 2 == 1)
+                        {
+                            rightCount++;
+                        }
+
+                        if (leftCount < 0)
+                        {
+                            leftCount = 0;
+                        }
+                        if (rightCount < 0)
+                        {
+                            rightCount = 0;
+                        }
+                        _addTekiyoLine("", "", (new string('=', leftCount)) + $"  以下、{kohiName}　適用分  " + (new string('=', rightCount)), "");
+                    }
+
+                    if (tmpSinId != 1)
+                    {
+                        tmpSinId = 0;
+                    }
+                }
+                tmpFutanSortKey = sinmeiData.FutanSortKey;
+
+                if (new int[] { 1 }.Contains(sinmeiData.SinId))
+                {
+                    //レセコメントヘッダー
+                    tmpSinId = sinmeiData.SinId;
+                }
+                else
+                {
+                    if (sinmeiData.RowNo == 1 && sinmeiData.SinId != 99)
+                    {
+                        mark = "*";
+                    }
+
+                    if (sinmeiData.SinId > 0 && sinmeiData.SinId != tmpSinId)
+                    {
+                        if (tmpSinId > 0)
+                        {
+                            _addTekiyoLine("", "", new string('-', _tekiyoCharCount + 13), "");
+                        }
+
+                        if (sinmeiData.SinId != 99)
+                        {
+                            // レセコメントの場合、診療区分を表示したくないので、99の場合は通さない。（1の場合は上の分岐で別れるので大丈夫）
+                            sinId = CIUtil.ToStringIgnoreZero(sinmeiData.SinId);
+                        }
+                        tmpSinId = sinmeiData.SinId;
+                    }
+                    else if (sinmeiData.SinIdOrg > 0 && sinmeiData.SinIdOrg != tmpSinId)
+                    {
+                        // 並び順の変更等で同一Rp番号内で別れた場合に備える
+                        if (tmpSinId > 0)
+                        {
+                            _addTekiyoLine("", "", new string('-', _tekiyoCharCount + 13), "");
+                        }
+
+                        if (sinmeiData.SinIdOrg != 99)
+                        {
+                            // レセコメントの場合、診療区分を表示したくないので、99の場合は通さない。（1の場合は上の分岐で別れるので大丈夫）
+                            sinId = CIUtil.ToStringIgnoreZero(sinmeiData.SinIdOrg);
+                        }
+                        tmpSinId = sinmeiData.SinIdOrg;
+                    }
+                }
+
+                if (new int[] { 1, 99 }.Contains(sinmeiData.SinId))
+                {
+                    //レセコメントの場合、幅が広い
+                    _addTekiyoList(sinId, "", sinmeiData.ItemName, "", "", "", _tekiyoCharCount + 13);
+                }
+                else
+                {
+                    //レセコメント以外の場合
+                    _addTekiyoList(sinId, mark, sinmeiData.ItemName, sinmeiData.TenKai, sinmeiData.SuryoDsp, sinmeiData.UnitName, _tekiyoCharCount);
+                }
+            }
+        }
+
+        void AddTekiyoList(List<CoReceiptTekiyoModel> targetTekiyols, string addSinId, string addMark, string addTekiyo, string addTenCount, string addSuryo, string addUnit, int maxCharCount, int tenkaiCount)
+        {
+            bool firstLine = true;
+            //string wkline = addTekiyo;
+
+            if (addMark != "" || addTekiyo != "")
+            {
+                string[] tmpLines = addTekiyo.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                foreach (string tmpline in tmpLines)
+                {
+                    string wkline = tmpline;
+                    while (wkline != "")
+                    {
+                        string tmp = wkline;
+                        if (CIUtil.LenB(tmp) > maxCharCount)
+                        {
+                            tmp = CIUtil.CiCopyStrWidth(wkline, 1, maxCharCount);
+                        }
+
+                        CoReceiptTekiyoModel addTekiyoModel = new CoReceiptTekiyoModel();
+
+                        if (firstLine)
+                        {
+                            addTekiyoModel.SinId = addSinId;
+                            addTekiyoModel.Mark = addMark;
+
+                            firstLine = false;
+                        }
+
+                        addTekiyoModel.Tekiyo = tmp;
+
+                        targetTekiyols.Add(addTekiyoModel);
+
+                        wkline = CIUtil.CiCopyStrWidth(wkline, CIUtil.LenB(tmp) + 1, CIUtil.LenB(wkline) - CIUtil.LenB(tmp));
+
+                    }
+
+                    if (string.IsNullOrEmpty(addSuryo))
+                    {
+                        // 数量なし
+                        targetTekiyols.Last().Tekiyo = CIUtil.PadRightB(targetTekiyols.Last().Tekiyo, maxCharCount) + CIUtil.PadLeftB(addTenCount, tenkaiCount);
+                    }
+                    else
+                    {
+                        if (CIUtil.LenB(targetTekiyols.Last().Tekiyo) <= maxCharCount - CIUtil.LenB(addSuryo + addUnit) - 1)
+                        {
+                            targetTekiyols.Last().Tekiyo = CIUtil.PadRightB(targetTekiyols.Last().Tekiyo, maxCharCount - CIUtil.LenB(addSuryo + addUnit) - 1) + " " + addSuryo + addUnit + CIUtil.PadLeftB(addTenCount, tenkaiCount);
+                        }
+                        else
+                        {
+                            CoReceiptTekiyoModel addTekiyoModel = new CoReceiptTekiyoModel();
+                            addTekiyoModel.Tekiyo = CIUtil.PadRightB("", maxCharCount - CIUtil.LenB(addSuryo + addUnit) - 1) + " " + addSuryo + addUnit + CIUtil.PadLeftB(addTenCount, tenkaiCount); ;
+                            targetTekiyols.Add(addTekiyoModel);
+                        }
+                    }
+                }
+            }
+        }
+        void AddEnTekiyoList(List<CoReceiptTekiyoModel> targetTekiyols, string addSinId, string addMark, string addTekiyo, string addTenCount, int maxCharCount, int tenkaiCount)
+        {
+            bool firstLine = true;
+            //string wkline = addTekiyo;
+
+            if (addMark != "" || addTekiyo != "")
+            {
+                string[] tmpLines = addTekiyo.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                foreach (string tmpline in tmpLines)
+                {
+                    string wkline = tmpline;
+                    while (wkline != "")
+                    {
+                        string tmp = wkline;
+                        if (CIUtil.LenB(tmp) > maxCharCount)
+                        {
+                            tmp = CIUtil.CiCopyStrWidth(wkline, 1, maxCharCount);
+                        }
+
+                        CoReceiptTekiyoModel addTekiyoModel = new CoReceiptTekiyoModel();
+
+                        if (firstLine)
+                        {
+                            addTekiyoModel.SinId = addSinId;
+                            addTekiyoModel.Mark = addMark;
+
+                            firstLine = false;
+                        }
+
+                        addTekiyoModel.Tekiyo = tmp;
+
+                        targetTekiyols.Add(addTekiyoModel);
+
+                        wkline = CIUtil.CiCopyStrWidth(wkline, CIUtil.LenB(tmp) + 1, CIUtil.LenB(wkline) - CIUtil.LenB(tmp));
+
+                    }
+
+                    targetTekiyols.Last().Tekiyo = CIUtil.PadRightB(targetTekiyols.Last().Tekiyo, maxCharCount) + CIUtil.PadLeftB(addTenCount, tenkaiCount);
+                }
+            }
+        }
+
+        void AddTekiyoLine(List<CoReceiptTekiyoModel> targetTekiyols, string sinId, string mark, string tekiyo, string tenCount, int maxCharCount, int tenkaiCount)
+        {
+            CoReceiptTekiyoModel addTekiyoModel = new CoReceiptTekiyoModel();
+
+            addTekiyoModel.SinId = sinId;
+            addTekiyoModel.Mark = mark;
+            addTekiyoModel.Tekiyo = CIUtil.PadRightB(tekiyo, maxCharCount) + CIUtil.PadLeftB(tenCount, tenkaiCount);
+
+            targetTekiyols.Add(addTekiyoModel);
+        }
+
+        private void MakeTekiyoEnListForRousai()
+        {
+            #region sub function
+            //摘要欄に追加
+            void _addEnTekiyoList(string addSinId, string addMark, string addTekiyo, string addTenCount, int maxCharCount)
+            {
+                AddEnTekiyoList(TekiyoEnModels, addSinId, addMark, addTekiyo, addTenCount, maxCharCount, 0);
+            }
+            void _addTekiyoList(string addSinId, string addMark, string addTekiyo, string addTenCount, int maxCharCount)
+            {
+                AddTekiyoList(TekiyoModels, addSinId, addMark, addTekiyo, addTenCount, "", "", maxCharCount, 13);
+            }
+            #endregion
+
+            // 明細
+            List<SinMeiDataModel> sinmeiDatas = CoModel.SinMeiData.Where(p => (rosaiTargetSyukeiSakils.Contains(p.SyukeiSaki) && p.SyukeiSaki != "A110" && p.SyukeiSaki != "A120")).OrderBy(p => p.ReceSortKey).ToList();
+
+            foreach (SinMeiDataModel sinmeiData in sinmeiDatas)
+            {
+                string mark = "";
+                string sinId = "";
+
+                if (sinmeiData.RowNo == 1)
+                {
+                    mark = "*";
+                }
+
+                string tenKai = "";
+                if (sinmeiData.TenKai != "")
+                {
+                    if (sinmeiData.EnTenKbn == 0)
+                    {
+                        // 点数項目
+                        tenKai = $"{sinmeiData.Ten,5}x{sinmeiData.Count,3}";
+                    }
+                    else
+                    {
+                        // 金額項目
+                        tenKai = $"{sinmeiData.Kingaku,5}円x{sinmeiData.Count,3}";
+                    }
+                }
+
+                if (_tekiyoEnRowCount > 0 && _tekiyoEnCharCount > 0 &&
+                    (TekiyoEnModels.Count() +
+                     GetNeedLineCountTekiyo(sinId, mark, sinmeiData.ItemName.Trim() + tenKai, "", _tekiyoEnCharCount, 0) <= _tekiyoEnRowCount))
+                {
+                    _addEnTekiyoList(sinId, mark, sinmeiData.ItemName.Trim() + tenKai, "", _tekiyoEnCharCount);
+                }
+                else
+                {
+                    // 長いときは摘要欄に印字する
+                    _addTekiyoList(sinId, mark, sinmeiData.ItemName.Trim(), sinmeiData.TenKai, _tekiyoCharCount);
+                }
+            }
+        }
+
+        private List<string> rosaiTargetSyukeiSakils =
+            new List<string>
+            {
+                    ReceSyukeisaki.EnSyosin,
+                    ReceSyukeisaki.EnSaisin,
+                    ReceSyukeisaki.EnSido,
+                    ReceSyukeisaki.EnKyukyu,
+                    ReceSyukeisaki.EnSonota,
+            };
+
+        int GetNeedLineCountTekiyo(string addSinId, string addMark, string addTekiyo, string addTenCount, int maxCharCount, int tenkaiCount)
+        {
+            List<CoReceiptTekiyoModel> targetTekiyols = new List<CoReceiptTekiyoModel>();
+            bool firstLine = true;
+            //string wkline = addTekiyo;
+
+            if (addMark != "" || addTekiyo != "")
+            {
+                string[] tmpLines = addTekiyo.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                foreach (string tmpline in tmpLines)
+                {
+                    string wkline = tmpline;
+                    while (wkline != "")
+                    {
+                        string tmp = wkline;
+                        if (CIUtil.LenB(tmp) > maxCharCount)
+                        {
+                            tmp = CIUtil.CiCopyStrWidth(wkline, 1, maxCharCount);
+                        }
+
+                        CoReceiptTekiyoModel addTekiyoModel = new CoReceiptTekiyoModel();
+
+                        if (firstLine)
+                        {
+                            addTekiyoModel.SinId = addSinId;
+                            addTekiyoModel.Mark = addMark;
+
+                            firstLine = false;
+                        }
+
+                        addTekiyoModel.Tekiyo = tmp;
+
+                        targetTekiyols.Add(addTekiyoModel);
+
+                        wkline = CIUtil.CiCopyStrWidth(wkline, CIUtil.LenB(tmp) + 1, CIUtil.LenB(wkline) - CIUtil.LenB(tmp));
+
+                    }
+                    targetTekiyols.Last().Tekiyo = CIUtil.PadRightB(targetTekiyols.Last().Tekiyo, maxCharCount) + CIUtil.PadLeftB(addTenCount, tenkaiCount);
+                }
+            }
+
+            return targetTekiyols.Count();
+        }
+
+        private void MakeTekiyoListForRousai()
+        {
+            #region sub function
+            //摘要欄に追加
+            void _addTekiyoList(string addSinId, string addMark, string addTekiyo, string addTenCount, string addSuryo, string addUnit, int maxCharCount)
+            {
+                AddTekiyoList(TekiyoModels, addSinId, addMark, addTekiyo, addTenCount, addSuryo, addUnit, maxCharCount, 13);
+            }
+
+            // 単純に摘要欄に文字列追加する
+            void _addTekiyoLine(string sinId, string mark, string tekiyo, string tenCount)
+            {
+                AddTekiyoLine(TekiyoModels, sinId, mark, tekiyo, tenCount, _tekiyoCharCount, 13);
+            }
+            #endregion
+
+            // 明細
+            int tmpSinId = 0;
+
+            List<SinMeiDataModel> sinmeiDatas = CoModel.SinMeiData.Where(p => !(rosaiTargetSyukeiSakils.Contains(p.SyukeiSaki))).OrderBy(p => p.ReceSortKey).ToList();
+
+            bool first = true;
+            foreach (SinMeiDataModel sinmeiData in sinmeiDatas)
+            {
+                string mark = "";
+                string sinId = "";
+
+                if (new int[] { 1 }.Contains(sinmeiData.SinId))
+                {
+                    //レセコメントヘッダー
+                    tmpSinId = sinmeiData.SinId;
+                }
+                else
+                {
+                    if (sinmeiData.RowNo == 1 && sinmeiData.SinId != 99)
+                    {
+                        mark = "*";
+                    }
+
+                    if (sinmeiData.SinId > 0 && sinmeiData.SinId != tmpSinId)
+                    {
+                        if (tmpSinId > 0)
+                        {
+                            _addTekiyoLine("", "", new string('-', _tekiyoCharCount + 13), "");
+                        }
+
+                        sinId = CIUtil.ToStringIgnoreZero(sinmeiData.SinId);
+                        tmpSinId = sinmeiData.SinId;
+                    }
+                }
+
+                if (new int[] { 1, 99 }.Contains(sinmeiData.SinId))
+                {
+                    //レセコメントの場合、幅が広い
+                    _addTekiyoList(sinId, "", sinmeiData.ItemName, "", "", "", _tekiyoCharCount + 13);
+                }
+                else
+                {
+                    if (first && string.IsNullOrEmpty(sinId))
+                    {
+                        sinId = CIUtil.ToStringIgnoreZero(sinmeiData.SinIdOrg);
+                    }
+                    //レセコメント以外の場合
+                    _addTekiyoList(sinId, mark, sinmeiData.ItemName, sinmeiData.TenKai, sinmeiData.SuryoDsp, sinmeiData.UnitName, _tekiyoCharCount);
+
+                    first = false;
+                }
+            }
+        }
     }
 }

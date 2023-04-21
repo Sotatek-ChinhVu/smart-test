@@ -1,4 +1,5 @@
-﻿using Reporting.Byomei.Service;
+﻿using Helper.Enum;
+using Reporting.Byomei.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Mapper;
@@ -8,6 +9,7 @@ using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
+using Reporting.Receipt.Service;
 using Reporting.Sijisen.Service;
 
 namespace Reporting.ReportServices;
@@ -21,8 +23,9 @@ public class ReportService : IReportService
     private readonly IKarte1Service _karte1Service;
     private readonly INameLabelService _nameLabelService;
     private readonly IMedicalRecordWebIdReportService _medicalRecordWebIdReportService;
+    private readonly IReceiptCoReportService _receiptCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCoReportService receiptCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -31,6 +34,7 @@ public class ReportService : IReportService
         _karte1Service = karte1Service;
         _nameLabelService = nameLabelService;
         _medicalRecordWebIdReportService = medicalRecordWebIdReportService;
+        _receiptCoReportService = receiptCoReportService;
     }
 
     //Byomei
@@ -73,5 +77,11 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate)
     {
         return _medicalRecordWebIdReportService.GetMedicalRecordWebIdReportingData(hpId, ptId, sinDate);
+    }
+
+    //Receipt Preview
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode)
+    {
+        return _receiptCoReportService.GetReceiptData(hpId, ptId, seikyuYm, sinYm, hokenId, mode);
     }
 }

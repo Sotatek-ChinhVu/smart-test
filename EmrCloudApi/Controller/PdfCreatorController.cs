@@ -1,22 +1,16 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
-using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.MedicalExamination;
-using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.OutDrug.Service;
 using Reporting.Receipt.Service;
 using Reporting.ReportServices;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using UseCase.MedicalExamination.GetHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -109,7 +103,8 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _receiptCoReportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.Mode);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId, request.Mode);
+        var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(data);
         return await RenderPdf(data, ReportType.Common);
     }
 
