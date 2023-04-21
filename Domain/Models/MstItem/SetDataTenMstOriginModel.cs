@@ -1,5 +1,4 @@
-﻿using Domain.Models.DrugInfor;
-using Domain.Models.OrdInf;
+﻿using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 
 namespace Domain.Models.MstItem

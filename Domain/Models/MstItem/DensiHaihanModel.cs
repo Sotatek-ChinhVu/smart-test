@@ -97,6 +97,14 @@ namespace Domain.Models.MstItem
             get => EndDate == 99999999 ? (CheckDefaultValue() ? "" : "9999/99/99") : CIUtil.SDateToShowSDate(EndDate);
         }
 
+        public void SetEndDate(int value)
+        {
+            if (value == 0)
+                EndDate = 99999999;
+            else
+                EndDate = value;
+        }
+
         /// <summary>
         /// 連番
         /// 

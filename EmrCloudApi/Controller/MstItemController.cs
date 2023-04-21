@@ -20,6 +20,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -27,6 +28,7 @@ using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {
@@ -227,11 +229,11 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
         }
 
-
+        [AllowAnonymous]
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
         {
-            var input = new GetSetDataTenMstInputData(HpId,
+            var input = new GetSetDataTenMstInputData(1,
                                                      request.SinDate,
                                                      request.ItemCd,
                                                      request.JiCd,
@@ -245,6 +247,18 @@ namespace EmrCloudApi.Controller
             var presenter = new GetSetDataTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetSetDataTenMstResponse>>(presenter.Result);
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost(ApiPath.SaveSetDataTenMst)]
+        public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
+        {
+            var input = new SaveSetDataTenMstInputData(1, 2, request.ItemCd, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins), request.SetData);
+            var output = _bus.Handle(input);
+            var presenter = new SaveSetDataTenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveSetDataTenMstResponse>>(presenter.Result);
         }
     }
 }

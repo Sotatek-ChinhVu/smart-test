@@ -3,6 +3,7 @@ using Domain.Enum;
 using Domain.Models.FlowSheet;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using Helper.Enum;
 
 namespace Domain.Models.MstItem
 {
@@ -118,5 +119,7 @@ namespace Domain.Models.MstItem
         List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo);
 
         List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
+
+        bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
     }
 }

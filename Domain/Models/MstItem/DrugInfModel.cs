@@ -2,7 +2,7 @@
 {
     public class DrugInfModel
     {
-        public DrugInfModel(int hpId, string itemCd, int infKbn, long seqNo, string drugInfo, int isDeleted, bool isModified)
+        public DrugInfModel(int hpId, string itemCd, int infKbn, long seqNo, string drugInfo, int isDeleted, bool isModified, string oldDrugInfo)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -11,6 +11,7 @@
             DrugInfo = drugInfo;
             IsDeleted = isDeleted;
             IsModified = isModified;
+            OldDrugInfo = oldDrugInfo;
         }
 
 
@@ -64,5 +65,11 @@
 
         
         public bool IsModified { get; private set; }
+
+        public string OldDrugInfo { get; private set; }
+
+        public void SetDrugInfo(string value) => DrugInfo = value;
+
+        public void SetIsDeleted(int value) => IsDeleted = value;
     }
 }

@@ -2,8 +2,9 @@
 {
     public class CombinedContraindicationModel
     {
-        public CombinedContraindicationModel(int hpId, string aCd, string bCd, int seqNo, bool isDeleted, string name, bool isAddNew, bool isUpdated, string originBCd)
+        public CombinedContraindicationModel(long id, int hpId, string aCd, string bCd, int seqNo, bool isDeleted, string name, bool isAddNew, bool isUpdated, string originBCd)
         {
+            Id = id;
             HpId = hpId;
             ACd = aCd;
             BCd = bCd;
@@ -15,7 +16,7 @@
             OriginBCd = originBCd;
         }
 
-
+        public long Id { get; private set; }
         /// <summary>
         /// 医療機関識別ID
         /// 
