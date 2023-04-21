@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <Reference Include="EmrCalculateApi">
-      <HintPath>..\EmrCalculateApi\obj\Debug\net6.0\ref\EmrCalculateApi.dll</HintPath>
+      <HintPath>EmrCalculateApi.dll</HintPath>
     </Reference>
   </ItemGroup>
 
