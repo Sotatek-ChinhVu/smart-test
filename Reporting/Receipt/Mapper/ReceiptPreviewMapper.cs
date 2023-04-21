@@ -24,7 +24,7 @@ namespace Reporting.Receipt.Mapper
         private int HpId;
         private int Target;
 
-        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, Dictionary<string, string> singleData, List<Dictionary<string, CellModel>> cellData, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder)
+        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder)
         {
             _coReceipt = coReceipt;
             ByomeiModels = byomeiModels;
@@ -33,8 +33,6 @@ namespace Reporting.Receipt.Mapper
             CurrentPage = currentPage;
             HpId = hpId;
             Target = target;
-            SingleData = singleData;
-            CellData = cellData;
             _systemConfRepository = systemConfRepository;
             _coReceiptFinder = coReceiptFinder;
         }
