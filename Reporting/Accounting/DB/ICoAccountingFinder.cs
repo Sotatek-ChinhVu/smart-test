@@ -131,7 +131,7 @@ public interface ICoAccountingFinder
 
     List<CoSystemGenerationConfModel> FindSystemGenerationConf(int hpId, int GrpCd);
 
-    List<long> getPtNums(int hpId, List<long> ptIds);
+    List<long> GetPtNums(int hpId, List<long> ptIds);
 
     long GetPtNum(int hpId, long ptId);
 }

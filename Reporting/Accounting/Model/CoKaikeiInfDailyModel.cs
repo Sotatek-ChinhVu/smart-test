@@ -77,7 +77,7 @@ public class CoKaikeiInfDailyModel
             TaxSum taxSum = new();
             if (TaxSums.Any(p => p.Rate == Arate))
             {
-                taxSum = TaxSums.Find(p => p.Rate == Arate);
+                taxSum = TaxSums.First(p => p.Rate == Arate);
                 SetTaxSumParam(ref taxSum, AouttaxFutan, AtaxFutan, AoutTaxZei, ATaxZei);
             }
             else

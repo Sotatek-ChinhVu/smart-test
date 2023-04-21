@@ -3272,13 +3272,13 @@ namespace Helper.Common
         /// <summary>
         /// 分割調剤の分割数量取得
         /// </summary>
-        public static string GetBunkatuStr(string Str, int KouiCd)
+        public static string GetBunkatuStr(string str, int kouiCd)
         {
             string ret = "";
-            string sTgt = Str;
+            string sTgt = str;
             string sTani;
 
-            if (KouiCd == 21)
+            if (kouiCd == 21)
             {
                 //内服
                 sTani = "日分";

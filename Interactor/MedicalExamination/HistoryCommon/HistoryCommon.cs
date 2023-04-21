@@ -224,7 +224,7 @@ public class HistoryCommon : IHistoryCommon
             var result = GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
             List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinList = result.RaiinfList;
             FilterData(ref historyKarteOdrRaiinList, inputData);
-            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo);
+            return new GetMedicalExaminationHistoryOutputData(result.Total, historyKarteOdrRaiinList, GetMedicalExaminationHistoryStatus.Successed, 0, inputData, patientInfo ?? new());
         }
         finally
         {

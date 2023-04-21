@@ -71,6 +71,9 @@ public class CoAccountingModel
         PtMemoModel = ptMemoModel;
         RaiinInfModels = raiinInfModels;
         SystemGenerationConfs = systemGenerationConfModels;
+        KaikeiInfDailyModels = new();
+        KaikeiInfMonthlyModels = new();
+        NyukinInfMonthlyModels = new();
 
         // 日別データを作成する
         MakeKaikeiInfDailyModels();
@@ -116,7 +119,7 @@ public class CoAccountingModel
             TaxSum taxSum = new TaxSum();
             if (TaxSums.Any(p => p.Rate == Arate))
             {
-                taxSum = TaxSums.Find(p => p.Rate == Arate);
+                taxSum = TaxSums.First(p => p.Rate == Arate);
                 SetTaxSumParam(ref taxSum, AouttaxFutan, AtaxFutan, AoutTaxZei, ATaxZei);
             }
             else
@@ -144,6 +147,10 @@ public class CoAccountingModel
         PtMemoModel = new();
         RaiinInfModels = new();
         SystemGenerationConfs = new();
+        KaikeiInfDailyModels = new();
+        KaikeiInfMonthlyModels = new();
+        NyukinInfMonthlyModels = new();
+        TaxSums = new();
     }
 
     private void MakeKaikeiInfDailyModels()
@@ -1311,7 +1318,7 @@ public class CoAccountingModel
         {
             int ret = 0;
 
-            if (KaikeiInfDailyModels != null || KaikeiInfDailyModels.Any())
+            if (KaikeiInfDailyModels != null || KaikeiInfDailyModels?.Any() == true)
             {
                 ret = KaikeiInfDailyModels.Max(p => p.SinDate);
             }
