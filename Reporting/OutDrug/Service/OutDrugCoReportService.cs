@@ -18,6 +18,8 @@ namespace Reporting.OutDrug.Service;
 
 public class OutDrugCoReportService : IOutDrugCoReportService
 {
+    private static HttpClient _httpClient = new();
+    private readonly IConfiguration _configuration;
     private List<CoOutDrugModel> _coModels { get; set; }
     private CoOutDrugModel _coModel;
     private readonly ISystemConfig _systemConfig;
@@ -46,8 +48,9 @@ public class OutDrugCoReportService : IOutDrugCoReportService
     /// </summary>
     private List<string> _bikoList { get; set; }
 
-    public OutDrugCoReportService(ISystemConfig systemConfig, ITenantProvider tenantProvider, IReadRseReportFileService readRseReportFileService)
+    public OutDrugCoReportService(IConfiguration configuration, ISystemConfig systemConfig, ITenantProvider tenantProvider, IReadRseReportFileService readRseReportFileService)
     {
+        _configuration = configuration;
         _systemConfig = systemConfig;
         _tenantProvider = tenantProvider;
         _readRseReportFileService = readRseReportFileService;
@@ -1690,11 +1693,11 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         fieldInputList.Add(new ObjectCalculate("lsUnitName", (int)CalculateTypeEnum.GetFormatLength));
         fieldInputList.Add(new ObjectCalculate("lsKaisu", (int)CalculateTypeEnum.GetFormatLength));
         fieldInputList.Add(new ObjectCalculate("lsYohoUnitName", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.ListRowCount));
         fieldInputList.Add(new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.ListRowCount));
         fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetListRowCount));
+        fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.ListRowCount));
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
 
@@ -1708,7 +1711,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
         {
             switch (item.typeInt)
             {
-                case (int)CalculateTypeEnum.GetListRowCount:
+                case (int)CalculateTypeEnum.ListRowCount:
                     switch (item.listName)
                     {
                         case "lsData":

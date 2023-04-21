@@ -14,11 +14,11 @@ namespace EmrCloudApi.Controller
             _configuration = configuration;
         }
 
-        //[HttpGet]
-        //public ActionResult Get()
-        //{
-        //    return Ok();
-        //}
+        [HttpGet]
+        public ActionResult Get()
+        {
+            return Ok();
+        }
 
         [HttpGet("GetEnviroment")]
         public ActionResult<string> GetEnviroment()
