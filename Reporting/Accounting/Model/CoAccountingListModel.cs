@@ -10,6 +10,12 @@ public class CoAccountingListModel
         KaikeiInfListModels = kaikeiInfListModels;
     }
 
+    public CoAccountingListModel()
+    {
+        HpInfModel = new CoHpInfModel();
+        KaikeiInfListModels = new List<CoKaikeiInfListModel>();
+    }
+
     /// <summary>
     /// 医療機関名
     /// </summary>

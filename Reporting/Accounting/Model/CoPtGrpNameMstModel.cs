@@ -4,7 +4,7 @@ namespace Reporting.Accounting.Model;
 
 public class CoPtGrpNameMstModel
 {
-    public PtGrpNameMst PtGrpNameMst { get; } = null;
+    public PtGrpNameMst PtGrpNameMst { get; } = new();
 
     public CoPtGrpNameMstModel(PtGrpNameMst ptGrpNameMst)
     {

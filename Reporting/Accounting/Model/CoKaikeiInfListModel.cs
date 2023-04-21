@@ -38,7 +38,7 @@ public class CoKaikeiInfListModel
         JihiOuttax = jihiOuttax;
         JihiTax = jihiTax;
         JihiKoumoku = jihiKoumokuDtls?.Where(p => p.jihiSbt > 0).Sum(p => p.kingaku) ?? 0;
-        JihiKoumokuDtls = jihiKoumokuDtls;
+        JihiKoumokuDtls = jihiKoumokuDtls ?? new();
         JihiSinryo = (int)(JihiFutan - JihiKoumoku);
         PtMemo = ptMemo;
         PtGroupInfModels = ptGrpInfModels;
@@ -263,15 +263,15 @@ public class CoKaikeiInfListModel
     /// <summary>
     /// グループコードを取得する
     /// </summary>
-    /// <param name="Index"></param>
+    /// <param name="index"></param>
     /// <returns></returns>
-    public string PtGroupInfCode(int Index)
+    public string PtGroupInfCode(int index)
     {
         string ret = "";
 
-        if (PtGroupInfModels != null && PtGroupInfModels.Any(p => p.GroupId == Index))
+        if (PtGroupInfModels != null && PtGroupInfModels.Any(p => p.GroupId == index))
         {
-            ret = PtGroupInfModels?.Find(p => p.GroupId == Index).GroupCode;
+            ret = PtGroupInfModels?.Find(p => p.GroupId == index)?.GroupCode ?? string.Empty;
         }
 
         return ret;
@@ -279,15 +279,15 @@ public class CoKaikeiInfListModel
     /// <summary>
     /// グループコード名称を取得する
     /// </summary>
-    /// <param name="Index"></param>
+    /// <param name="index"></param>
     /// <returns></returns>
-    public string PtGroupInfCodeName(int Index)
+    public string PtGroupInfCodeName(int index)
     {
         string ret = "";
 
-        if (PtGroupInfModels != null && PtGroupInfModels.Any(p => p.GroupId == Index))
+        if (PtGroupInfModels != null && PtGroupInfModels.Any(p => p.GroupId == index))
         {
-            ret = PtGroupInfModels?.Find(p => p.GroupId == Index).GrpCdName;
+            ret = PtGroupInfModels?.Find(p => p.GroupId == index)?.GrpCdName ?? string.Empty;
         }
 
         return ret;

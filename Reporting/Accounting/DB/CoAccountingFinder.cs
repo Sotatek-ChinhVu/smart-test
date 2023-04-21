@@ -1712,7 +1712,7 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
         return results;
     }
 
-    public List<long> getPtNums(int hpId, List<long> ptIds)
+    public List<long> GetPtNums(int hpId, List<long> ptIds)
     {
         var ptInfs = NoTrackingDataContext.PtInfs.Where(p =>
             p.HpId == hpId &&

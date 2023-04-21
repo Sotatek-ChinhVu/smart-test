@@ -85,207 +85,207 @@ public class AccountingCoReportService : IAccountingCoReportService
     /// <summary>
     /// リスト用フィールドの行数
     /// </summary>
-    int ListGridRowCount;
+    int listGridRowCount;
 
     /// <summary>
     /// 合計患者数
     /// </summary>
-    int TotalPtCount;
+    int totalPtCount;
     /// <summary>
     /// 合計点数
     /// </summary>
-    int TotalTensu;
+    int totalTensu;
     /// <summary>
     /// 合計請求額
     /// </summary>
-    int TotalSeikyuGaku;
+    int totalSeikyuGaku;
     /// <summary>
     /// 合計入金額
     /// </summary>
-    int TotalNyukinGaku;
+    int totalNyukinGaku;
     /// <summary>
     /// 合計未収額
     /// </summary>
-    int TotalMisyu;
+    int totalMisyu;
     /// <summary>
     /// 合計自費負担
     /// </summary>
-    int TotalJihiFutan;
+    int totalJihiFutan;
     /// <summary>
     /// 合計自費項目金額
     /// </summary>
-    double TotalJihiKoumoku;
+    double totalJihiKoumoku;
     /// <summary>
     /// 合計自費診療額
     /// </summary>
-    int TotalJihiSinryo;
+    int totalJihiSinryo;
     /// <summary>
     /// 合計自費種別別金額
     /// </summary>
-    List<(int jihiSbt, double kingaku)> TotalJihiKoumokuDtl;
+    List<(int jihiSbt, double kingaku)> totalJihiKoumokuDtl;
     /// <summary>
     /// 合計医療費
     /// </summary>
-    int TotalIryohi;
+    int totalIryohi;
     /// <summary>
     /// 合計非課税対象金額
     /// </summary>
-    int TotalJihiFutanFree;
+    int totalJihiFutanFree;
     /// <summary>
     /// 合計通常税率外税対象金額
     /// </summary>
-    int TotalJihiFutanOuttaxNr;
+    int totalJihiFutanOuttaxNr;
     /// <summary>
     /// 合計軽減税率外税対象金額
     /// </summary>
-    int TotalJihiFutanOuttaxGen;
+    int totalJihiFutanOuttaxGen;
     /// <summary>
     /// 合計通常税率内税対象金額
     /// </summary>
-    int TotalJihiFutanTaxNr;
+    int totalJihiFutanTaxNr;
     /// <summary>
     /// 合計軽減税率内税対象金額
     /// </summary>
-    int TotalJihiFutanTaxGen;
+    int totalJihiFutanTaxGen;
     /// <summary>
     /// 合計外税
     /// </summary>
-    int TotalSotoZei;
+    int totalSotoZei;
     /// <summary>
     /// 合計外税（通常税率分）
     /// </summary>
-    int TotalSotoZeiNr;
+    int totalSotoZeiNr;
     /// <summary>
     /// 合計外税（軽減税率分）
     /// </summary>
-    int TotalSotoZeiGen;
+    int totalSotoZeiGen;
     /// <summary>
     /// 合計内税
     /// </summary>
-    int TotalUchiZei;
+    int totalUchiZei;
     /// <summary>
     /// 合計内税（通常税率分）
     /// </summary>
-    int TotalUchiZeiNr;
+    int totalUchiZeiNr;
     /// <summary>
     /// 合計内税（軽減税率分）
     /// </summary>
-    int TotalUchiZeiGen;
+    int totalUchiZeiGen;
     /// <summary>
     /// 合計消費税
     /// </summary>
-    int TotalZei;
+    int totalZei;
     /// <summary>
     /// 合計消費税（通常税率分）
     /// </summary>
-    int TotalZeiNr;
+    int totalZeiNr;
     /// <summary>
     /// 合計消費税（軽減税率分）
     /// </summary>
-    int TotalZeiGen;
+    int totalZeiGen;
     /// <summary>
     /// 合計患者負担
     /// </summary>
-    int TotalPtFutan;
+    int totalPtFutan;
     /// <summary>
     /// 自費種別ごとの合計
     /// </summary>
-    List<CoJihiSbtKingakuModel> TotalJihiSbtKingakus;
+    List<CoJihiSbtKingakuModel> totalJihiSbtKingakus;
 
     DateTime _printoutDateTime;
     #endregion
 
     #region Init properties
-    int HpId;
+    int hpId;
 
     /// <summary>
     /// 領収証タイプ
     ///     0:１患者１帳票タイプ
     ///     1:リストタイプ
     /// </summary>
-    private int _mode;
+    private int mode;
     /// <summary>
     /// 患者ID
     /// </summary>
-    private long PtId;
+    private long ptId;
     /// <summary>
     /// 開始日
     /// </summary>
-    private int StartDate;
+    private int startDate;
     /// <summary>
     ///  終了日
     /// </summary>
-    private int EndDate;
+    private int endDate;
     /// <summary>
     /// 診療開始日
     /// </summary>
-    private int SinStartDate;
+    private int sinStartDate;
     /// <summary>
     /// 診療終了日
     /// </summary>
-    private int SinEndDate;
+    private int sinEndDate;
     /// <summary>
     /// 実日数
     /// </summary>
-    private int JituNissu;
+    private int jituNissu;
     /// <summary>
     /// 来院番号のリスト
     /// </summary>
-    private List<long> RaiinNos;
+    private List<long> raiinNos;
     /// <summary>
     /// 保険ID
     /// </summary>
-    private int HokenId;
+    private int hokenId;
     /// <summary>
     /// 未精算区分
     ///     0: 未精算分(RAIIN_INF.STATUS<9)は印刷しない
     ///     1: 未精算分(RAIIN_INF.STATUS<9)も印刷する
     /// </summary>
-    private int MiseisanKbn;
+    private int miseisanKbn;
     /// <summary>
     /// 差異区分
     ///     0: SYUNO_SEIKYU.SEIKYU_GAKU<>SYUNO_SEIKYU.NEW_SEIKYU_GAKUの分は印刷しない
     ///     1: SYUNO_SEIKYU.SEIKYU_GAKU<>SYUNO_SEIKYU.NEW_SEIKYU_GAKUの分も印刷する
     /// </summary>
-    private int SaiKbn;
+    private int saiKbn;
     /// <summary>
     /// 未収区分
     ///     0: 未収関係なく印刷
     ///     1: 未収分(SYUNO_SEIKYU.NYUKIN_KBN= 1)のみ印刷
     /// </summary>
-    private int MisyuKbn;
+    private int misyuKbn;
     /// <summary>
     /// 請求区分
     ///     0: SYUNO_SEIKYU.SEIKYU_GAKU=0は印刷しない
     ///     1: SYUNO_SEIKYU.SEIKYU_GAKUに関係なく印刷
     /// </summary>
-    private int SeikyuKbn;
+    private int seikyuKbn;
     /// <summary>
     /// 保険指定
     ///     0: 保険の指定があればその保険のみ印刷、指定がなければどんな保険でも対象
     ///     1: PT_HOKEN_INF.HOKEN_SBT_KBN = 1 を対象とする
     /// </summary>
-    private int HokenKbn;
+    private int hokenKbn;
     /// <summary>
     /// true: 保険請求ありのみ
     /// </summary>
-    private bool HokenSeikyu;
+    private bool hokenSeikyu;
     /// <summary>
     /// true: 自費請求アリのみ
     /// </summary>
-    private bool JihiSeikyu;
+    private bool jihiSeikyu;
     /// <summary>
     /// ture: 入金日ベースで取得する
     /// </summary>
-    private bool NyukinBase;
+    private bool nyukinBase;
     /// <summary>
     /// 発行日
     /// </summary>
-    private int HakkoDay;
+    private int hakkoDay;
     /// <summary>
     /// メモ
     /// </summary>
-    private string Memo;
+    private string memo;
     /// <summary>
     /// 印刷タイプ（フォームファイル名未指定時に使用）
     ///     0:領収証
@@ -293,31 +293,31 @@ public class AccountingCoReportService : IAccountingCoReportService
     ///     2:月間領収証
     ///     3:月間明細書
     /// </summary>
-    private int PrintType;
-    private int Sort;
+    private int printType;
+    private int sort;
 
     /// <summary>
     /// 患者条件
     /// </summary>
-    private List<(long ptId, int hokenId)> PtConditions;
+    private List<(long ptId, int hokenId)> ptConditions;
     /// <summary>
     /// グループ条件
     /// </summary>
-    private List<(int grpId, string grpCd)> GrpConditions;
+    private List<(int grpId, string grpCd)> grpConditions;
     /// <summary>
     /// Initパラメータ
     /// </summary>
-    private List<CoAccountingParamModel> Params;
+    private List<CoAccountingParamModel> @params;
     /// <summary>
     /// フォームファイル名
     /// </summary>
-    private string _formFileName;
+    private string formFileName;
     private readonly List<AccountingOutputModel> accountingOutputModelList = new();
 
-    public Dictionary<string, string> _singleFieldDataResult { get; set; }
-    public List<ListTextModel> _listTextModelResult { get; set; }
-    public Dictionary<string, string> _systemConfigList { get; set; }
-    public JavaOutputData _javaOutputData { get; set; }
+    public Dictionary<string, string> SingleFieldDataResult { get; set; }
+    public List<ListTextModel> ListTextModelResult { get; set; }
+    public Dictionary<string, string> SystemConfigList { get; set; }
+    public JavaOutputData JavaOutputData { get; set; }
 
     public AccountingCoReportService(ISystemConfig systemConfig, ICoAccountingFinder finder, ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger, IReadRseReportFileService readRseReportFileService)
     {
@@ -327,11 +327,28 @@ public class AccountingCoReportService : IAccountingCoReportService
         _systemConfigProvider = systemConfigProvider;
         _emrLogger = emrLogger;
         _readRseReportFileService = readRseReportFileService;
-        _singleFieldDataResult = new();
-        _listTextModelResult = new();
-        _systemConfigList = new();
-        _javaOutputData = new();
-        _systemConfigList.Add("accountingUseBackwardFields", _systemConfig.AccountingUseBackwardFields().ToString());
+        SingleFieldDataResult = new();
+        ListTextModelResult = new();
+        SystemConfigList = new();
+        JavaOutputData = new();
+        SystemConfigList.Add("accountingUseBackwardFields", _systemConfig.AccountingUseBackwardFields().ToString());
+        coModel = new();
+        coModelList = new();
+        jihiSbtMstModels = new();
+        ptGrpItemModels = new();
+        ptGrpNameMstModels = new();
+        sysGeneHanreis = new();
+        sinmeiPrintDataModels = new();
+        _sinmeiListPropertysPage1 = new();
+        _sinmeiListPropertysPage2 = new();
+        totalJihiKoumokuDtl = new();
+        totalJihiSbtKingakus = new();
+        raiinNos = new();
+        memo = string.Empty;
+        ptConditions = new();
+        grpConditions = new();
+        @params = new();
+        formFileName = string.Empty;
     }
     #endregion
 
@@ -341,34 +358,34 @@ public class AccountingCoReportService : IAccountingCoReportService
             bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
             int hakkoDay = 0, string memo = "", int printType = 0, string formFileName = "")
     {
-        HpId = hpId;
-        _mode = PrintMode.SinglePrint;
-        PtId = ptId;
-        StartDate = startDate;
-        EndDate = endDate;
-        RaiinNos = raiinNos;
-        if (RaiinNos == null)
+        this.hpId = hpId;
+        mode = PrintMode.SinglePrint;
+        this.ptId = ptId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.raiinNos = raiinNos;
+        if (this.raiinNos == null)
         {
-            RaiinNos = new();
+            this.raiinNos = new();
         }
-        HokenId = hokenId;
-        MiseisanKbn = miseisanKbn;
-        SaiKbn = saiKbn;
-        MisyuKbn = misyuKbn;
-        SeikyuKbn = seikyuKbn;
-        HokenKbn = hokenKbn;
-        HokenSeikyu = hokenSeikyu;
-        JihiSeikyu = jihiSeikyu;
-        NyukinBase = nyukinBase;
-        HakkoDay = hakkoDay;
-        Memo = memo;
-        PrintType = printType;
-        _formFileName = formFileName;
+        this.hokenId = hokenId;
+        this.miseisanKbn = miseisanKbn;
+        this.saiKbn = saiKbn;
+        this.misyuKbn = misyuKbn;
+        this.seikyuKbn = seikyuKbn;
+        this.hokenKbn = hokenKbn;
+        this.hokenSeikyu = hokenSeikyu;
+        this.jihiSeikyu = jihiSeikyu;
+        this.nyukinBase = nyukinBase;
+        this.hakkoDay = hakkoDay;
+        this.memo = memo;
+        this.printType = printType;
+        this.formFileName = formFileName;
         PrintOut();
         return new AccountingResponse(
-                  _formFileName,
-                  _mode,
-                  _systemConfigList,
+                  this.formFileName,
+                  mode,
+                  SystemConfigList,
                   accountingOutputModelList);
     }
 
@@ -376,59 +393,59 @@ public class AccountingCoReportService : IAccountingCoReportService
             int sort, int miseisanKbn, int saiKbn, int misyuKbn, int seikyuKbn, int hokenKbn,
             int hakkoDay, string memo, string formFileName)
     {
-        HpId = hpId;
-        _mode = PrintMode.ListPrint;
-        StartDate = startDate;
-        EndDate = endDate;
-        PtConditions = ptConditions;
-        GrpConditions = grpConditions;
-        if (GrpConditions.Any())
+        this.hpId = hpId;
+        mode = PrintMode.ListPrint;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.ptConditions = ptConditions;
+        this.grpConditions = grpConditions;
+        if (this.grpConditions.Any())
         {
-            PtConditions.AddRange(_finder.FindPtInf(hpId, grpConditions));
+            this.ptConditions.AddRange(_finder.FindPtInf(hpId, grpConditions));
         }
-        Sort = sort;
-        MiseisanKbn = miseisanKbn;
-        SaiKbn = saiKbn;
-        MisyuKbn = misyuKbn;
-        SeikyuKbn = seikyuKbn;
-        HokenKbn = hokenKbn;
-        HakkoDay = hakkoDay;
-        Memo = memo;
-        PrintType = 0;
-        _formFileName = formFileName;
+        this.sort = sort;
+        this.miseisanKbn = miseisanKbn;
+        this.saiKbn = saiKbn;
+        this.misyuKbn = misyuKbn;
+        this.seikyuKbn = seikyuKbn;
+        this.hokenKbn = hokenKbn;
+        this.hakkoDay = hakkoDay;
+        this.memo = memo;
+        printType = 0;
+        this.formFileName = formFileName;
         PrintOut();
         return new AccountingResponse(
-                  _formFileName,
-                  _mode,
-                  _systemConfigList,
+                  this.formFileName,
+                  mode,
+                  SystemConfigList,
                   accountingOutputModelList);
     }
 
     public AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels)
     {
-        HpId = hpId;
-        _mode = PrintMode.MultiPrint;
-        Params = coAccountingParamModels;
+        this.hpId = hpId;
+        mode = PrintMode.MultiPrint;
+        @params = coAccountingParamModels;
         PrintOut();
         return new AccountingResponse(
-                  _formFileName,
-                  _mode,
-                  _systemConfigList,
+                  formFileName,
+                  mode,
+                  SystemConfigList,
                   accountingOutputModelList);
     }
 
     private void PrintOut()
     {
         GetParamFromRseFile();
-        if (_mode == PrintMode.SinglePrint)
+        if (mode == PrintMode.SinglePrint)
         {
             PrintOutSingle();
         }
-        else if (_mode == PrintMode.ListPrint)
+        else if (mode == PrintMode.ListPrint)
         {
             PrintOutList();
         }
-        else if (_mode == PrintMode.MultiPrint)
+        else if (mode == PrintMode.MultiPrint)
         {
             PrintOutMulti();
         }
@@ -450,8 +467,8 @@ public class AccountingCoReportService : IAccountingCoReportService
         fieldInputList.Add(new ObjectCalculate("MessageList", (int)CalculateTypeEnum.GetListFormatLendB));
         fieldInputList.Add(new ObjectCalculate("MessageListF", (int)CalculateTypeEnum.GetListFormatLendB));
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Accounting, _formFileName, fieldInputList);
-        _javaOutputData = _readRseReportFileService.ReadFileRse(data);
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Accounting, formFileName, fieldInputList);
+        JavaOutputData = _readRseReportFileService.ReadFileRse(data);
     }
 
     #region Accounting Form
@@ -462,35 +479,35 @@ public class AccountingCoReportService : IAccountingCoReportService
     #endregion
     private void SetFormFilePath()
     {
-        if (string.IsNullOrEmpty(_formFileName))
+        if (string.IsNullOrEmpty(formFileName))
         {
-            if (PrintType == 0)
+            if (printType == 0)
             {
                 // 領収証
-                _formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
+                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingFormType());
             }
-            else if (PrintType == 1)
+            else if (printType == 1)
             {
                 // 明細
-                _formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
+                formFileName = string.Format(ACCOUNTING_FORM_FILE_NAME, _systemConfig.AccountingDetailFormType());
             }
-            if (PrintType == 2)
+            if (printType == 2)
             {
                 // 月間領収証
-                _formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
+                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingMonthFormType());
             }
-            else if (PrintType == 3)
+            else if (printType == 3)
             {
                 // 月間明細
-                _formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
+                formFileName = string.Format(ACCOUNTINGTERM_FORM_FILE_NAME, _systemConfig.AccountingDetailMonthFormType());
             }
         }
     }
 
     private void _addListProperty(ref List<(string field, int charCount, int rowCount)> listPropertys, int page)
     {
-        var objectList = _javaOutputData.objectNames;
-        var responses = _javaOutputData.responses;
+        var objectList = JavaOutputData.objectNames;
+        var responses = JavaOutputData.responses;
         for (int i = 1; i <= 4; i++)
         {
             var getFormatLendBPage1 = responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetFormatLendB && item.listName == $"lsSinMei_{CIUtil.ToStringIgnoreZero(i)}")!.result;
@@ -523,8 +540,8 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOutSingle()
     {
-        coModel = GetData(HpId, PtId, StartDate, EndDate);
-        if (coModel.PtId != PtId)
+        coModel = GetData(hpId, ptId, startDate, endDate);
+        if (coModel.PtId != ptId)
         {
             return;
         }
@@ -534,7 +551,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         _addListProperty(ref _sinmeiListPropertysPage1, 1);
 
-        if (_javaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
+        if (JavaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
         {
             _addListProperty(ref _sinmeiListPropertysPage2, 2);
         }
@@ -554,43 +571,43 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOutList()
     {
-        coModelList = GetDataList(HpId, StartDate, EndDate, PtConditions, GrpConditions, Sort, MiseisanKbn, SaiKbn, MisyuKbn, SeikyuKbn, HokenKbn);
-        var objectList = _javaOutputData.objectNames;
+        coModelList = GetDataList(hpId, startDate, endDate, ptConditions, grpConditions, sort, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn);
+        var objectList = JavaOutputData.objectNames;
         if (objectList.Contains("lsPtNum_1"))
         {
-            ListGridRowCount = GetListRowCount("lsPtNum_1");
+            listGridRowCount = GetListRowCount("lsPtNum_1");
         }
         else if (objectList.Contains("KanNoList"))
         {
-            ListGridRowCount = GetListRowCount("KanNoList");
+            listGridRowCount = GetListRowCount("KanNoList");
         }
 
-        TotalPtCount = 0;
-        TotalTensu = 0;
-        TotalSeikyuGaku = 0;
-        TotalNyukinGaku = 0;
-        TotalMisyu = 0;
-        TotalJihiFutan = 0;
-        TotalJihiKoumoku = 0;
-        TotalJihiSinryo = 0;
-        TotalJihiKoumokuDtl = new();
-        TotalJihiFutanFree = 0;
-        TotalJihiFutanOuttaxNr = 0;
-        TotalJihiFutanOuttaxGen = 0;
-        TotalJihiFutanTaxNr = 0;
-        TotalJihiFutanTaxGen = 0;
-        TotalSotoZei = 0;
-        TotalSotoZeiNr = 0;
-        TotalSotoZeiGen = 0;
-        TotalUchiZei = 0;
-        TotalUchiZeiNr = 0;
-        TotalUchiZeiGen = 0;
-        TotalZei = 0;
-        TotalZeiNr = 0;
-        TotalZeiGen = 0;
-        TotalIryohi = 0;
-        TotalPtFutan = 0;
-        TotalJihiSbtKingakus = new();
+        totalPtCount = 0;
+        totalTensu = 0;
+        totalSeikyuGaku = 0;
+        totalNyukinGaku = 0;
+        totalMisyu = 0;
+        totalJihiFutan = 0;
+        totalJihiKoumoku = 0;
+        totalJihiSinryo = 0;
+        totalJihiKoumokuDtl = new();
+        totalJihiFutanFree = 0;
+        totalJihiFutanOuttaxNr = 0;
+        totalJihiFutanOuttaxGen = 0;
+        totalJihiFutanTaxNr = 0;
+        totalJihiFutanTaxGen = 0;
+        totalSotoZei = 0;
+        totalSotoZeiNr = 0;
+        totalSotoZeiGen = 0;
+        totalUchiZei = 0;
+        totalUchiZeiNr = 0;
+        totalUchiZeiGen = 0;
+        totalZei = 0;
+        totalZeiNr = 0;
+        totalZeiGen = 0;
+        totalIryohi = 0;
+        totalPtFutan = 0;
+        totalJihiSbtKingakus = new();
 
         _printoutDateTime = DateTime.Now;
         UpdateDrawForm();
@@ -598,32 +615,32 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void PrintOutMulti()
     {
-        if (Params != null && Params.Any())
+        if (@params != null && @params.Any())
         {
-            foreach (CoAccountingParamModel param in Params)
+            foreach (CoAccountingParamModel param in @params)
             {
-                _mode = PrintMode.SinglePrint;
-                PtId = param.PtId;
-                StartDate = param.StartDate;
-                EndDate = param.EndDate;
-                RaiinNos = param.RaiinNos;
-                if (RaiinNos == null)
+                mode = PrintMode.SinglePrint;
+                ptId = param.PtId;
+                startDate = param.StartDate;
+                endDate = param.EndDate;
+                raiinNos = param.RaiinNos;
+                if (raiinNos == null)
                 {
-                    RaiinNos = new List<long>();
+                    raiinNos = new List<long>();
                 }
-                HokenId = param.HokenId;
-                MiseisanKbn = param.MiseisanKbn;
-                SaiKbn = param.SaiKbn;
-                MisyuKbn = param.MisyuKbn;
-                SeikyuKbn = param.SeikyuKbn;
-                HokenKbn = param.HokenKbn;
-                HokenSeikyu = param.HokenSeikyu;
-                JihiSeikyu = param.JihiSeikyu;
-                NyukinBase = param.NyukinBase;
-                HakkoDay = param.HakkoDate;
-                Memo = param.Memo;
-                PrintType = param.PrintType;
-                coModel = GetData(HpId, PtId, StartDate, EndDate);
+                hokenId = param.HokenId;
+                miseisanKbn = param.MiseisanKbn;
+                saiKbn = param.SaiKbn;
+                misyuKbn = param.MisyuKbn;
+                seikyuKbn = param.SeikyuKbn;
+                hokenKbn = param.HokenKbn;
+                hokenSeikyu = param.HokenSeikyu;
+                jihiSeikyu = param.JihiSeikyu;
+                nyukinBase = param.NyukinBase;
+                hakkoDay = param.HakkoDate;
+                memo = param.Memo;
+                printType = param.PrintType;
+                coModel = GetData(hpId, ptId, startDate, endDate);
 
                 if (coModel == null)
                 {
@@ -635,7 +652,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
                 _addListProperty(ref _sinmeiListPropertysPage1, 1);
 
-                if (_javaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
+                if (JavaOutputData.responses.FirstOrDefault(item => item.listName == "havePage2")!.result == 1)
                 {
                     _addListProperty(ref _sinmeiListPropertysPage2, 2);
                 }
@@ -657,13 +674,13 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawForm()
     {
-        if (_mode == PrintMode.SinglePrint)
+        if (mode == PrintMode.SinglePrint)
         {
             UpdateDrawFormSingle();
         }
         else
         {
-            foreach (var item in Params)
+            foreach (var item in @params)
             {
                 UpdateDrawFormSingle();
             }
@@ -861,7 +878,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             int curSinId = 0;
             long preRpNo = 0;
 
-            if (coModel.SinMeiViewModels.Count > 1 || NyukinBase || (!NyukinBase && StartDate / 100 != EndDate / 100))
+            if (coModel.SinMeiViewModels.Count > 1 || nyukinBase || (!nyukinBase && startDate / 100 != endDate / 100))
             {
                 // 下記いずれかの条件に当てはまる場合は、診療月のタイトルを印字
                 // 診療情報が2ヶ月分以上ある場合
@@ -903,9 +920,9 @@ public class AccountingCoReportService : IAccountingCoReportService
                 itemName.Append(sinmeiData.ItemName);
 
                 if (sinmeiData.SanteiKbn == 2 && !sinmeiData.IsComment && sysGeneHanreis.Any(p =>
-                         p.StartDate <= EndDate && EndDate <= p.EndDate && p.Val == sinmeiData.TaxRate && p.GrpEdaNo == sinmeiData.ZeiKigoEdaNo && p.Param != null))
+                         p.StartDate <= endDate && endDate <= p.EndDate && p.Val == sinmeiData.TaxRate && p.GrpEdaNo == sinmeiData.ZeiKigoEdaNo && p.Param != null))
                 {
-                    itemName.Append(sysGeneHanreis.FirstOrDefault(p => p.StartDate <= EndDate && EndDate <= p.EndDate && p.Val == sinmeiData.TaxRate && p.GrpEdaNo == sinmeiData.ZeiKigoEdaNo)?.GetParam(sinmeiData.ZeiInOut));
+                    itemName.Append(sysGeneHanreis.FirstOrDefault(p => p.StartDate <= endDate && endDate <= p.EndDate && p.Val == sinmeiData.TaxRate && p.GrpEdaNo == sinmeiData.ZeiKigoEdaNo)?.GetParam(sinmeiData.ZeiInOut));
                 }
 
                 sinmeiPrintDataModels.AddRange(_addList(itemName.ToString(), kouiName));
@@ -1023,8 +1040,8 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void UpdateDrawFormSingle()
     {
-        _singleFieldDataResult = new();
-        _listTextModelResult = new();
+        SingleFieldDataResult = new();
+        ListTextModelResult = new();
         sinmeiPrintDataModels = new();
         // 下位互換
         bool backword = _systemConfig.AccountingUseBackwardFields() == 1;
@@ -1062,7 +1079,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             // メッセージ（P/F）
             void _PrintMessageList(string field, int karteKbn)
             {
-                if (_javaOutputData.objectNames.Contains(field))
+                if (JavaOutputData.objectNames.Contains(field))
                 {
                     int charCount = GetListFormatLenB(field);
                     int rowCount = GetListRowCount(field);
@@ -1221,12 +1238,12 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 発行日（指定）
             void _printHakkoDate()
             {
-                SetFieldDataRepSW("dfHakkoDate", 1, 2, HakkoDay);
+                SetFieldDataRepSW("dfHakkoDate", 1, 2, hakkoDay);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("HakkoYmd", 1, 2, CIUtil.SDateToShowSDate(HakkoDay));
-                    SetFieldDataRep("PrintDay", 1, 2, CIUtil.SDateToShowWDate3(HakkoDay).Ymd);
+                    SetFieldDataRep("HakkoYmd", 1, 2, CIUtil.SDateToShowSDate(hakkoDay));
+                    SetFieldDataRep("PrintDay", 1, 2, CIUtil.SDateToShowWDate3(hakkoDay).Ymd);
                 }
             }
             // 診療日
@@ -1243,57 +1260,57 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 集計日
             void _printSyukeiDate()
             {
-                SetFieldDataRepSW("dfSyukeiFrom", 1, 2, StartDate);
-                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, StartDate / 10000);
-                SetFieldDataRep("dfSyukeiFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Gengo + " " + CIUtil.SDateToShowWDate3(StartDate).Year);
-                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, StartDate % 10000 / 100);
+                SetFieldDataRepSW("dfSyukeiFrom", 1, 2, startDate);
+                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, startDate / 10000);
+                SetFieldDataRep("dfSyukeiFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(startDate).Gengo + " " + CIUtil.SDateToShowWDate3(startDate).Year);
+                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, startDate % 10000 / 100);
 
-                SetFieldDataRepSW("dfSyukeiTo", 1, 2, EndDate);
-                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, EndDate / 10000);
-                SetFieldDataRep("dfSyukeiToYearW_", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Gengo + " " + CIUtil.SDateToShowWDate3(EndDate).Year);
-                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, EndDate % 10000 / 100);
+                SetFieldDataRepSW("dfSyukeiTo", 1, 2, endDate);
+                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, endDate / 10000);
+                SetFieldDataRep("dfSyukeiToYearW_", 1, 2, CIUtil.SDateToShowWDate3(endDate).Gengo + " " + CIUtil.SDateToShowWDate3(endDate).Year);
+                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, endDate % 10000 / 100);
 
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("SyukeiFrom", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Ymd);
-                    SetFieldDataRep("SyukeiFromYear", 1, 2, StartDate / 10000);
-                    SetFieldDataRep("SyukeiFromMonth", 1, 2, StartDate % 10000 / 100);
-                    SetFieldDataRep("SyukeiTo", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Ymd);
-                    SetFieldDataRep("SyukeiToYear", 1, 2, EndDate / 10000);
-                    SetFieldDataRep("SyukeiToMonth", 1, 2, EndDate % 10000 / 100);
+                    SetFieldDataRep("SyukeiFrom", 1, 2, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                    SetFieldDataRep("SyukeiFromYear", 1, 2, startDate / 10000);
+                    SetFieldDataRep("SyukeiFromMonth", 1, 2, startDate % 10000 / 100);
+                    SetFieldDataRep("SyukeiTo", 1, 2, CIUtil.SDateToShowWDate3(endDate).Ymd);
+                    SetFieldDataRep("SyukeiToYear", 1, 2, endDate / 10000);
+                    SetFieldDataRep("SyukeiToMonth", 1, 2, endDate % 10000 / 100);
                 }
             }
             // 診療期間
             void _printSinDateTerm()
             {
-                SetFieldDataRepSW("dfSinDateFrom", 1, 2, SinStartDate);
-                SetFieldDataRep("dfSinDateFromYearS_", 1, 2, SinStartDate / 10000);
-                SetFieldDataRep("dfSinDateFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(SinStartDate).Gengo + " " + CIUtil.SDateToShowWDate3(SinStartDate).Year);
-                SetFieldDataRep("dfSinDateFromMonth_", 1, 2, SinStartDate % 10000 / 100);
+                SetFieldDataRepSW("dfSinDateFrom", 1, 2, sinStartDate);
+                SetFieldDataRep("dfSinDateFromYearS_", 1, 2, sinStartDate / 10000);
+                SetFieldDataRep("dfSinDateFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(sinStartDate).Gengo + " " + CIUtil.SDateToShowWDate3(sinStartDate).Year);
+                SetFieldDataRep("dfSinDateFromMonth_", 1, 2, sinStartDate % 10000 / 100);
 
-                SetFieldDataRepSW("dfSinDateTo", 1, 2, SinEndDate);
-                SetFieldDataRep("dfSinDateToYearS_", 1, 2, SinEndDate / 10000);
-                SetFieldDataRep("dfSinDateToYearW_", 1, 2, CIUtil.SDateToShowWDate3(SinEndDate).Gengo + " " + CIUtil.SDateToShowWDate3(SinEndDate).Year);
-                SetFieldDataRep("dfSinDateToMonth_", 1, 2, SinEndDate % 10000 / 100);
+                SetFieldDataRepSW("dfSinDateTo", 1, 2, sinEndDate);
+                SetFieldDataRep("dfSinDateToYearS_", 1, 2, sinEndDate / 10000);
+                SetFieldDataRep("dfSinDateToYearW_", 1, 2, CIUtil.SDateToShowWDate3(sinEndDate).Gengo + " " + CIUtil.SDateToShowWDate3(sinEndDate).Year);
+                SetFieldDataRep("dfSinDateToMonth_", 1, 2, sinEndDate % 10000 / 100);
             }
             // 実日数
             void _printJituNissu()
             {
-                SetFieldDataRep("dfJituNissu_", 1, 2, JituNissu);
+                SetFieldDataRep("dfJituNissu_", 1, 2, jituNissu);
             }
             // 請求月
             void _printSeikyuYm()
             {
-                if (StartDate / 100 == EndDate / 100)
+                if (startDate / 100 == endDate / 100)
                 {
-                    SetFieldDataRep("dfSeikyuYmS_", 1, 2, $"{StartDate / 10000}年{StartDate % 10000 / 100}月");
-                    CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(StartDate);
+                    SetFieldDataRep("dfSeikyuYmS_", 1, 2, $"{startDate / 10000}年{startDate % 10000 / 100}月");
+                    CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(startDate);
                     SetFieldDataRep("dfSeikyuYmW_", 1, 2, $"{wareki.Gengo} {wareki.Year}年{wareki.Month}月");
                     // 下位互換
                     if (backword)
                     {
-                        SetFieldDataRep("SeikyuYm", 1, 2, $"{StartDate / 10000}年{StartDate % 10000 / 100}月");
+                        SetFieldDataRep("SeikyuYm", 1, 2, $"{startDate / 10000}年{startDate % 10000 / 100}月");
                     }
                 }
             }
@@ -1678,7 +1695,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printTaxHanrei()
             {
                 List<CoSystemGenerationConfModel> hanreis =
-                    sysGeneHanreis.FindAll(p => p.StartDate <= EndDate && EndDate <= p.EndDate && p.Param != null).OrderBy(p => p.Val).ThenBy(p => p.GrpEdaNo).ToList();
+                    sysGeneHanreis.FindAll(p => p.StartDate <= endDate && endDate <= p.EndDate && p.Param != null).OrderBy(p => p.Val).ThenBy(p => p.GrpEdaNo).ToList();
 
                 StringBuilder hanreiString = new();
 
@@ -1991,7 +2008,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     }
                 }
 
-                foreach (string ObjectName in _javaOutputData.objectNames.FindAll(p => p.StartsWith("dfJihiSbt_")))
+                foreach (string ObjectName in JavaOutputData.objectNames.FindAll(p => p.StartsWith("dfJihiSbt_")))
                 {
                     double kingaku = 0;
 
@@ -2343,11 +2360,11 @@ public class AccountingCoReportService : IAccountingCoReportService
             // メモ
             void _printMemo()
             {
-                SetFieldDataRep("txMemo_", 1, 2, Memo);
+                SetFieldDataRep("txMemo_", 1, 2, memo);
                 // 下位互換
                 if (backword)
                 {
-                    SetFieldDataRep("Memo_", 1, 2, Memo);
+                    SetFieldDataRep("Memo_", 1, 2, memo);
                 }
             }
             // 患者メモ
@@ -2378,11 +2395,11 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 string title = "期間";
 
-                if (CIUtil.MonthsAfter(StartDate, 12) > EndDate && CIUtil.MonthsAfter(StartDate, 11) < EndDate)
+                if (CIUtil.MonthsAfter(startDate, 12) > endDate && CIUtil.MonthsAfter(startDate, 11) < endDate)
                 {
                     title = "年間";
                 }
-                else if (CIUtil.MonthsAfter(StartDate, 1) > EndDate)
+                else if (CIUtil.MonthsAfter(startDate, 1) > endDate)
                 {
                     title = "月間";
                 }
@@ -2666,8 +2683,8 @@ public class AccountingCoReportService : IAccountingCoReportService
             _printTeikeibun();
         }
         accountingOutputModelList.Add(new AccountingOutputModel(
-                                          _singleFieldDataResult,
-                                          _listTextModelResult,
+                                          SingleFieldDataResult,
+                                          ListTextModelResult,
                                           sinmeiPrintDataModels));
         #endregion
     }
@@ -2755,43 +2772,43 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 発行日（指定）
             void _printHakkoDate()
             {
-                SetFieldDataRepSW("dfHakkoDate", 1, 2, HakkoDay);
+                SetFieldDataRepSW("dfHakkoDate", 1, 2, hakkoDay);
                 // 下位互換
-                SetFieldDataRep("HakkoYmd", 1, 2, CIUtil.SDateToShowSDate(HakkoDay));
-                SetFieldDataRep("PrintDay", 1, 2, CIUtil.SDateToShowWDate3(HakkoDay).Ymd);
+                SetFieldDataRep("HakkoYmd", 1, 2, CIUtil.SDateToShowSDate(hakkoDay));
+                SetFieldDataRep("PrintDay", 1, 2, CIUtil.SDateToShowWDate3(hakkoDay).Ymd);
             }
 
             // 集計日
             void _printSyukeiDate()
             {
-                SetFieldDataRepSW("dfSyukeiFrom", 1, 2, StartDate);
-                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, StartDate / 10000);
-                SetFieldDataRep("dfSyukeiFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Gengo + " " + CIUtil.SDateToShowWDate3(StartDate).Year);
-                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, StartDate % 10000 / 100);
+                SetFieldDataRepSW("dfSyukeiFrom", 1, 2, startDate);
+                SetFieldDataRep("dfSyukeiFromYearS_", 1, 2, startDate / 10000);
+                SetFieldDataRep("dfSyukeiFromYearW_", 1, 2, CIUtil.SDateToShowWDate3(startDate).Gengo + " " + CIUtil.SDateToShowWDate3(startDate).Year);
+                SetFieldDataRep("dfSyukeiFromMonth_", 1, 2, startDate % 10000 / 100);
 
-                SetFieldDataRepSW("dfSyukeiTo", 1, 2, EndDate);
-                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, EndDate / 10000);
-                SetFieldDataRep("dfSyukeiToYearW_", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Gengo + " " + CIUtil.SDateToShowWDate3(EndDate).Year);
-                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, EndDate % 10000 / 100);
+                SetFieldDataRepSW("dfSyukeiTo", 1, 2, endDate);
+                SetFieldDataRep("dfSyukeiToYearS_", 1, 2, endDate / 10000);
+                SetFieldDataRep("dfSyukeiToYearW_", 1, 2, CIUtil.SDateToShowWDate3(endDate).Gengo + " " + CIUtil.SDateToShowWDate3(endDate).Year);
+                SetFieldDataRep("dfSyukeiToMonth_", 1, 2, endDate % 10000 / 100);
 
                 // 下位互換
-                SetFieldDataRep("SyukeiFrom", 1, 2, CIUtil.SDateToShowWDate3(StartDate).Ymd);
-                SetFieldDataRep("SyukeiFromYear", 1, 2, StartDate / 10000);
-                SetFieldDataRep("SyukeiFromMonth", 1, 2, StartDate % 10000 / 100);
-                SetFieldDataRep("SyukeiTo", 1, 2, CIUtil.SDateToShowWDate3(EndDate).Ymd);
-                SetFieldDataRep("SyukeiToYear", 1, 2, EndDate / 10000);
-                SetFieldDataRep("SyukeiToMonth", 1, 2, EndDate % 10000 / 100);
+                SetFieldDataRep("SyukeiFrom", 1, 2, CIUtil.SDateToShowWDate3(startDate).Ymd);
+                SetFieldDataRep("SyukeiFromYear", 1, 2, startDate / 10000);
+                SetFieldDataRep("SyukeiFromMonth", 1, 2, startDate % 10000 / 100);
+                SetFieldDataRep("SyukeiTo", 1, 2, CIUtil.SDateToShowWDate3(endDate).Ymd);
+                SetFieldDataRep("SyukeiToYear", 1, 2, endDate / 10000);
+                SetFieldDataRep("SyukeiToMonth", 1, 2, endDate % 10000 / 100);
             }
             // 請求月
             void _printSeikyuYm()
             {
-                if (StartDate / 100 == EndDate / 100)
+                if (startDate / 100 == endDate / 100)
                 {
-                    SetFieldDataRep("dfSeikyuYmS_", 1, 2, $"{StartDate / 10000}年{StartDate % 10000 / 100}月");
-                    CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(StartDate);
+                    SetFieldDataRep("dfSeikyuYmS_", 1, 2, $"{startDate / 10000}年{startDate % 10000 / 100}月");
+                    CIUtil.WarekiYmd wareki = CIUtil.SDateToShowWDate3(startDate);
                     SetFieldDataRep("dfSeikyuYmW_", 1, 2, $"{wareki.Gengo} {wareki.Year}年{wareki.Month}月");
                     // 下位互換
-                    SetFieldDataRep("SeikyuYm", 1, 2, $"{StartDate / 10000}年{StartDate % 10000 / 100}月");
+                    SetFieldDataRep("SeikyuYm", 1, 2, $"{startDate / 10000}年{startDate % 10000 / 100}月");
                 }
             }
             // グループ名
@@ -2818,9 +2835,9 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 検索条件グループ名
             void _printGrpCondition()
             {
-                if (GrpConditions != null && GrpConditions.Any())
+                if (grpConditions != null && grpConditions.Any())
                 {
-                    foreach ((int grpId, string grpCd) in GrpConditions)
+                    foreach ((int grpId, string grpCd) in grpConditions)
                     {
                         if (ptGrpNameMstModels.Any(p => p.GrpId == grpId))
                         {
@@ -2832,11 +2849,11 @@ public class AccountingCoReportService : IAccountingCoReportService
             // 検索条件グループ項目
             void _printGrpItemCondition()
             {
-                if (GrpConditions != null && GrpConditions.Any())
+                if (grpConditions != null && grpConditions.Any())
                 {
-                    foreach ((int grpId, string grpCd) in GrpConditions)
+                    foreach ((int grpId, string grpCd) in grpConditions)
                     {
-                        if (ptGrpItemModels.Any(p => p.GrpId == grpId && p.GrpCode == grpCd) && GrpConditions.Count(p => p.grpId == grpId) == 1)
+                        if (ptGrpItemModels.Any(p => p.GrpId == grpId && p.GrpCode == grpCd) && grpConditions.Count(p => p.grpId == grpId) == 1)
                         {
                             // 同一グループで複数の値が指定されている場合は印字なし
                             SetFieldDataRep($"dfGrpItemCondition{grpId}_", 1, 2, ptGrpItemModels.Find(p => p.GrpId == grpId && p.GrpCode == grpCd)?.GrpCodeName ?? string.Empty);
@@ -2928,11 +2945,11 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 SetListDataRepSW("lsBirthDay", 1, 2, 0, row, coModelList.KaikeiInfListModels[index].BirthDay);
                 // 年齢
-                SetListDataRep("lsAge_", 1, 2, 0, row, CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, HakkoDay));
+                SetListDataRep("lsAge_", 1, 2, 0, row, CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, hakkoDay));
 
                 // 下位互換
                 ListText("KanBirthdayList", 0, row, CIUtil.SDateToShowWDate3(coModelList.KaikeiInfListModels[index].BirthDay).Ymd +
-                    "(" + CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, HakkoDay).ToString() + "歳)");
+                    "(" + CIUtil.SDateToAge(coModelList.KaikeiInfListModels[index].BirthDay, hakkoDay).ToString() + "歳)");
             }
             // 郵便番号
             void _printPtPostCd(short row, int index)
@@ -3161,7 +3178,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printJihiSbtKingaku(short row, int index)
             {
                 // 自費種別別金額
-                foreach (string ListObjectName in _javaOutputData.objectNames.FindAll(p => p.StartsWith("lsJihiSbt_")))
+                foreach (string ListObjectName in JavaOutputData.objectNames.FindAll(p => p.StartsWith("lsJihiSbt_")))
                 {
                     double kingaku = 0;
 
@@ -3183,102 +3200,102 @@ public class AccountingCoReportService : IAccountingCoReportService
             void _printGokei(short row)
             {
                 SetListDataRep("lsPtNum_", 1, 2, 0, row, "合　計");
-                SetListDataRep("lsPtName_", 1, 2, 0, row, $"{TotalPtCount} 件");
-                SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, TotalSeikyuGaku);
-                SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, TotalNyukinGaku);
-                SetListDataRep("lsMisyu_", 1, 2, 0, row, TotalMisyu);
-                SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, TotalIryohi);
-                SetListDataRep("lsPtFutan_", 1, 2, 0, row, TotalPtFutan);
-                SetListDataRep("lsJihiFutan_", 1, 2, 0, row, TotalJihiFutan);
-                SetListDataRep("lsJihiKoumoku_", 1, 2, 0, row, TotalJihiKoumoku);
-                SetListDataRep("lsJihiSinryo_", 1, 2, 0, row, TotalJihiSinryo);
+                SetListDataRep("lsPtName_", 1, 2, 0, row, $"{totalPtCount} 件");
+                SetListDataRep("lsSeikyuGaku_", 1, 2, 0, row, totalSeikyuGaku);
+                SetListDataRep("lsNyukinGaku_", 1, 2, 0, row, totalNyukinGaku);
+                SetListDataRep("lsMisyu_", 1, 2, 0, row, totalMisyu);
+                SetListDataRep("lsTotalIryohi_", 1, 2, 0, row, totalIryohi);
+                SetListDataRep("lsPtFutan_", 1, 2, 0, row, totalPtFutan);
+                SetListDataRep("lsJihiFutan_", 1, 2, 0, row, totalJihiFutan);
+                SetListDataRep("lsJihiKoumoku_", 1, 2, 0, row, totalJihiKoumoku);
+                SetListDataRep("lsJihiSinryo_", 1, 2, 0, row, totalJihiSinryo);
 
                 // 自費負担額
-                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, 0, row, TotalJihiFutanFree);
-                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, 0, row, TotalJihiFutanOuttaxNr);
-                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, 0, row, TotalJihiFutanOuttaxGen);
-                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, 0, row, TotalJihiFutanTaxNr);
-                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, 0, row, TotalJihiFutanTaxGen);
+                SetListDataRep("lsJihiFutanZeiFree_", 1, 2, 0, row, totalJihiFutanFree);
+                SetListDataRep("lsJihiFutanZeiNr_", 1, 2, 0, row, totalJihiFutanOuttaxNr);
+                SetListDataRep("lsJihiFutanZeiGen_", 1, 2, 0, row, totalJihiFutanOuttaxGen);
+                SetListDataRep("lsJihiFutanUchiNr_", 1, 2, 0, row, totalJihiFutanTaxNr);
+                SetListDataRep("lsJihiFutanUchiGen_", 1, 2, 0, row, totalJihiFutanTaxGen);
 
-                foreach (var jihiSbt in jihiSbts.Where(jihiSbt => TotalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
+                foreach (var jihiSbt in jihiSbts.Where(jihiSbt => totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
-                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = TotalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
                     SetListDataRep($"lsJihi{jihiSbt}_", 1, 2, 0, row, totalJihiKoumokuDtl.kingaku);
                 }
 
                 // 外税
-                SetListDataRep("lsJihiSotoZei_", 1, 2, 0, row, TotalSotoZei);
-                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, 0, row, TotalSotoZeiNr);
-                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, 0, row, TotalSotoZeiGen);
+                SetListDataRep("lsJihiSotoZei_", 1, 2, 0, row, totalSotoZei);
+                SetListDataRep("lsJihiSotoZeiNr_", 1, 2, 0, row, totalSotoZeiNr);
+                SetListDataRep("lsJihiSotoZeiGen_", 1, 2, 0, row, totalSotoZeiGen);
 
                 // 内税
-                SetListDataRep("lsJihiUchiZei_", 1, 2, 0, row, TotalUchiZei);
-                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, 0, row, TotalUchiZeiNr);
-                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, 0, row, TotalUchiZeiGen);
+                SetListDataRep("lsJihiUchiZei_", 1, 2, 0, row, totalUchiZei);
+                SetListDataRep("lsJihiUchiZeiNr_", 1, 2, 0, row, totalUchiZeiNr);
+                SetListDataRep("lsJihiUchiZeiGen_", 1, 2, 0, row, totalUchiZeiGen);
 
                 // 消費税
-                SetListDataRep("lsJihiZei_", 1, 2, 0, row, TotalZei);
-                SetListDataRep("lsJihiZeiNr_", 1, 2, 0, row, TotalZeiNr);
-                SetListDataRep("lsJihiZeiGen_", 1, 2, 0, row, TotalZeiGen);
+                SetListDataRep("lsJihiZei_", 1, 2, 0, row, totalZei);
+                SetListDataRep("lsJihiZeiNr_", 1, 2, 0, row, totalZeiNr);
+                SetListDataRep("lsJihiZeiGen_", 1, 2, 0, row, totalZeiGen);
 
-                SetFieldDataRep("dfPtCount_", 1, 2, TotalPtCount);
-                SetFieldDataRep("dfTotalTensu_", 1, 2, TotalTensu);
-                SetFieldDataRep("dfAveTensu_", 1, 2, Math.Round((double)(TotalTensu / TotalPtCount), MidpointRounding.AwayFromZero));
+                SetFieldDataRep("dfPtCount_", 1, 2, totalPtCount);
+                SetFieldDataRep("dfTotalTensu_", 1, 2, totalTensu);
+                SetFieldDataRep("dfAveTensu_", 1, 2, Math.Round((double)(totalTensu / totalPtCount), MidpointRounding.AwayFromZero));
 
                 // 請求額合計
-                SetFieldDataRep("dfTotalSeikyuGaku_", 1, 2, TotalSeikyuGaku);
+                SetFieldDataRep("dfTotalSeikyuGaku_", 1, 2, totalSeikyuGaku);
                 // 入金額の合計
-                SetFieldDataRep("dfNyukinGaku_", 1, 2, TotalNyukinGaku);
+                SetFieldDataRep("dfNyukinGaku_", 1, 2, totalNyukinGaku);
                 // 未収額の合計
-                SetFieldDataRep("dfMisyu_", 1, 2, TotalMisyu);
+                SetFieldDataRep("dfMisyu_", 1, 2, totalMisyu);
                 // 医療費の合計
-                SetFieldDataRep("dfTotalIryohi_", 1, 2, TotalIryohi);
+                SetFieldDataRep("dfTotalIryohi_", 1, 2, totalIryohi);
                 // 患者負担の合計
-                SetFieldDataRep("dfPtFutan_", 1, 2, TotalPtFutan);
+                SetFieldDataRep("dfPtFutan_", 1, 2, totalPtFutan);
                 // 自費負担の合計
-                SetFieldDataRep("dfJihiFutan_", 1, 2, TotalJihiFutan);
+                SetFieldDataRep("dfJihiFutan_", 1, 2, totalJihiFutan);
                 // 自費項目の合計
-                SetFieldDataRep("dfJihiKoumoku_", 1, 2, TotalJihiKoumoku);
+                SetFieldDataRep("dfJihiKoumoku_", 1, 2, totalJihiKoumoku);
                 // 自費診療の合計
-                SetFieldDataRep("dfJihiSinryo_", 1, 2, TotalJihiSinryo);
+                SetFieldDataRep("dfJihiSinryo_", 1, 2, totalJihiSinryo);
 
                 // 自費負担額
-                SetFieldDataRep("dfJihiFutanZeiFree_", 1, 2, TotalJihiFutanFree);
-                SetFieldDataRep("dfJihiFutanZeiNr_", 1, 2, TotalJihiFutanOuttaxNr);
-                SetFieldDataRep("dfJihiFutanZeiGen_", 1, 2, TotalJihiFutanOuttaxGen);
-                SetFieldDataRep("dfJihiFutanUchiNr_", 1, 2, TotalJihiFutanTaxNr);
-                SetFieldDataRep("dfJihiFutanUchiGen_", 1, 2, TotalJihiFutanTaxGen);
+                SetFieldDataRep("dfJihiFutanZeiFree_", 1, 2, totalJihiFutanFree);
+                SetFieldDataRep("dfJihiFutanZeiNr_", 1, 2, totalJihiFutanOuttaxNr);
+                SetFieldDataRep("dfJihiFutanZeiGen_", 1, 2, totalJihiFutanOuttaxGen);
+                SetFieldDataRep("dfJihiFutanUchiNr_", 1, 2, totalJihiFutanTaxNr);
+                SetFieldDataRep("dfJihiFutanUchiGen_", 1, 2, totalJihiFutanTaxGen);
 
                 // 下位互換
                 ListText("KanNoList", 0, row, "合　計");
-                ListText("KanNameList", 0, row, $"{TotalPtCount} 件");
-                ListText("SeikyuList", 0, row, TotalSeikyuGaku);
-                ListText("KanNyuList", 0, row, TotalNyukinGaku);
-                ListText("MisyuList", 0, row, TotalMisyu);
-                ListText("DataGokeiList", 0, row, TotalIryohi);
-                ListText("HoSeikyuList", 0, row, TotalPtFutan);
-                ListText("JihiSeikyuList", 0, row, TotalJihiFutan);
-                ListText("HoGaiList", 0, row, TotalJihiKoumoku);
-                ListText("JihiList", 0, row, TotalJihiSinryo);
-                foreach (var jihiSbt in jihiSbts.Where(jihiSbt => TotalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
+                ListText("KanNameList", 0, row, $"{totalPtCount} 件");
+                ListText("SeikyuList", 0, row, totalSeikyuGaku);
+                ListText("KanNyuList", 0, row, totalNyukinGaku);
+                ListText("MisyuList", 0, row, totalMisyu);
+                ListText("DataGokeiList", 0, row, totalIryohi);
+                ListText("HoSeikyuList", 0, row, totalPtFutan);
+                ListText("JihiSeikyuList", 0, row, totalJihiFutan);
+                ListText("HoGaiList", 0, row, totalJihiKoumoku);
+                ListText("JihiList", 0, row, totalJihiSinryo);
+                foreach (var jihiSbt in jihiSbts.Where(jihiSbt => totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt)).ToList())
                 {
-                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = TotalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                    (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
                     ListText($"JihiList{jihiSbt}", 0, row, totalJihiKoumokuDtl.kingaku);
                 }
 
-                SetFieldsData("KanKei", TotalPtCount);
-                SetFieldsData("SinTenKei", TotalTensu);
-                SetFieldsData("SinTenAve", Math.Round((double)(TotalTensu / TotalPtCount), MidpointRounding.AwayFromZero));
-                foreach (var ListObjectName in _javaOutputData.objectNames.Where(ListObjectName => ListObjectName.StartsWith("lsJihiSbt_")))
+                SetFieldsData("KanKei", totalPtCount);
+                SetFieldsData("SinTenKei", totalTensu);
+                SetFieldsData("SinTenAve", Math.Round((double)(totalTensu / totalPtCount), MidpointRounding.AwayFromZero));
+                foreach (var ListObjectName in JavaOutputData.objectNames.Where(ListObjectName => ListObjectName.StartsWith("lsJihiSbt_")))
                 {
                     double kingaku = 0;
                     // 分割
                     string[] jihiSbtCds = ListObjectName.Split('_');
                     foreach (string jihiSbtCd in jihiSbtCds)
                     {
-                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && TotalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
+                        if (CIUtil.StrToIntDef(jihiSbtCd, 0) > 0 && totalJihiSbtKingakus.Any(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)))
                         {
-                            kingaku += TotalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
+                            kingaku += totalJihiSbtKingakus.Where(p => p.JihiSbt == CIUtil.StrToIntDef(jihiSbtCd, 0)).Sum(p => p.Kingaku);
                         }
                     }
 
@@ -3292,63 +3309,63 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 #region gokei
                 // 合計の変数に足す
-                TotalPtCount++;
-                TotalTensu += coModelList.KaikeiInfListModels[idx].Tensu;
-                TotalSeikyuGaku += coModelList.KaikeiInfListModels[idx].SeikyuGaku;
-                TotalNyukinGaku += coModelList.KaikeiInfListModels[idx].NyukinGaku;
-                TotalMisyu += coModelList.KaikeiInfListModels[idx].Misyu;
-                TotalIryohi += coModelList.KaikeiInfListModels[idx].TotalIryohi;
-                TotalPtFutan += coModelList.KaikeiInfListModels[idx].PtFutan +
+                totalPtCount++;
+                totalTensu += coModelList.KaikeiInfListModels[idx].Tensu;
+                totalSeikyuGaku += coModelList.KaikeiInfListModels[idx].SeikyuGaku;
+                totalNyukinGaku += coModelList.KaikeiInfListModels[idx].NyukinGaku;
+                totalMisyu += coModelList.KaikeiInfListModels[idx].Misyu;
+                totalIryohi += coModelList.KaikeiInfListModels[idx].TotalIryohi;
+                totalPtFutan += coModelList.KaikeiInfListModels[idx].PtFutan +
                     coModelList.KaikeiInfListModels[idx].AdjustRound;
 
-                TotalJihiFutan += coModelList.KaikeiInfListModels[idx].JihiFutan + coModelList.KaikeiInfListModels[idx].JihiOuttax;
-                TotalJihiKoumoku += coModelList.KaikeiInfListModels[idx].JihiKoumoku;
-                TotalJihiSinryo += coModelList.KaikeiInfListModels[idx].JihiSinryo;
+                totalJihiFutan += coModelList.KaikeiInfListModels[idx].JihiFutan + coModelList.KaikeiInfListModels[idx].JihiOuttax;
+                totalJihiKoumoku += coModelList.KaikeiInfListModels[idx].JihiKoumoku;
+                totalJihiSinryo += coModelList.KaikeiInfListModels[idx].JihiSinryo;
 
                 // 自費分
-                TotalJihiFutanFree += coModelList.KaikeiInfListModels[idx].JihiFutanFree;
-                TotalJihiFutanOuttaxNr += coModelList.KaikeiInfListModels[idx].JihiFutanOuttaxNr;
-                TotalJihiFutanOuttaxGen += coModelList.KaikeiInfListModels[idx].JihiFutanOuttaxGen;
-                TotalJihiFutanTaxNr += coModelList.KaikeiInfListModels[idx].JihiFutanTaxNr;
-                TotalJihiFutanTaxGen += coModelList.KaikeiInfListModels[idx].JihiFutanTaxGen;
+                totalJihiFutanFree += coModelList.KaikeiInfListModels[idx].JihiFutanFree;
+                totalJihiFutanOuttaxNr += coModelList.KaikeiInfListModels[idx].JihiFutanOuttaxNr;
+                totalJihiFutanOuttaxGen += coModelList.KaikeiInfListModels[idx].JihiFutanOuttaxGen;
+                totalJihiFutanTaxNr += coModelList.KaikeiInfListModels[idx].JihiFutanTaxNr;
+                totalJihiFutanTaxGen += coModelList.KaikeiInfListModels[idx].JihiFutanTaxGen;
 
-                TotalJihiKoumokuDtl.Clear();
+                totalJihiKoumokuDtl.Clear();
                 foreach (int jihiSbt in jihiSbts)
                 {
-                    if (TotalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt))
+                    if (totalJihiKoumokuDtl.Any(p => p.jihiSbt == jihiSbt))
                     {
-                        (int jihiSbt, double kingaku) totalJihiKoumokuDtl = TotalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
+                        (int jihiSbt, double kingaku) totalJihiKoumokuDtl = this.totalJihiKoumokuDtl.First(p => p.jihiSbt == jihiSbt);
                         totalJihiKoumokuDtl.kingaku += coModelList.KaikeiInfListModels[idx].JihiKoumokuDtlKingaku(jihiSbt);
                     }
                     else
                     {
-                        TotalJihiKoumokuDtl.Add((jihiSbt, coModelList.KaikeiInfListModels[idx].JihiKoumokuDtlKingaku(jihiSbt)));
+                        totalJihiKoumokuDtl.Add((jihiSbt, coModelList.KaikeiInfListModels[idx].JihiKoumokuDtlKingaku(jihiSbt)));
                     }
                 }
                 // 外税
-                TotalSotoZei = coModelList.KaikeiInfListModels[idx].JihiOuttax;
-                TotalSotoZeiNr = coModelList.KaikeiInfListModels[idx].JihiOuttaxNr;
-                TotalSotoZeiGen = coModelList.KaikeiInfListModels[idx].JihiOuttaxGen;
+                totalSotoZei = coModelList.KaikeiInfListModels[idx].JihiOuttax;
+                totalSotoZeiNr = coModelList.KaikeiInfListModels[idx].JihiOuttaxNr;
+                totalSotoZeiGen = coModelList.KaikeiInfListModels[idx].JihiOuttaxGen;
 
                 // 内税
-                TotalUchiZei = coModelList.KaikeiInfListModels[idx].JihiTax;
-                TotalUchiZeiNr = coModelList.KaikeiInfListModels[idx].JihiTaxNr;
-                TotalUchiZeiGen = coModelList.KaikeiInfListModels[idx].JihiTaxGen;
+                totalUchiZei = coModelList.KaikeiInfListModels[idx].JihiTax;
+                totalUchiZeiNr = coModelList.KaikeiInfListModels[idx].JihiTaxNr;
+                totalUchiZeiGen = coModelList.KaikeiInfListModels[idx].JihiTaxGen;
 
                 // 消費税
-                TotalZei = coModelList.KaikeiInfListModels[idx].JihiOuttax + coModelList.KaikeiInfListModels[idx].JihiTax;
-                TotalZeiNr = coModelList.KaikeiInfListModels[idx].JihiOuttaxNr + coModelList.KaikeiInfListModels[idx].JihiTaxNr;
-                TotalZeiGen = coModelList.KaikeiInfListModels[idx].JihiOuttaxGen + coModelList.KaikeiInfListModels[idx].JihiTaxGen;
+                totalZei = coModelList.KaikeiInfListModels[idx].JihiOuttax + coModelList.KaikeiInfListModels[idx].JihiTax;
+                totalZeiNr = coModelList.KaikeiInfListModels[idx].JihiOuttaxNr + coModelList.KaikeiInfListModels[idx].JihiTaxNr;
+                totalZeiGen = coModelList.KaikeiInfListModels[idx].JihiOuttaxGen + coModelList.KaikeiInfListModels[idx].JihiTaxGen;
 
                 foreach (CoJihiSbtKingakuModel jihiSbtKingaku in coModelList.KaikeiInfListModels[idx].JihiSbtKingakus)
                 {
-                    if (TotalJihiSbtKingakus.Any(p => p.JihiSbt == jihiSbtKingaku.JihiSbt))
+                    if (totalJihiSbtKingakus.Any(p => p.JihiSbt == jihiSbtKingaku.JihiSbt))
                     {
-                        TotalJihiSbtKingakus.Find(p => p.JihiSbt == jihiSbtKingaku.JihiSbt).Kingaku += jihiSbtKingaku.Kingaku;
+                        totalJihiSbtKingakus.First(p => p.JihiSbt == jihiSbtKingaku.JihiSbt).Kingaku += jihiSbtKingaku.Kingaku;
                     }
                     else
                     {
-                        TotalJihiSbtKingakus.Add(new CoJihiSbtKingakuModel(jihiSbtKingaku.JihiSbt, jihiSbtKingaku.Kingaku));
+                        totalJihiSbtKingakus.Add(new CoJihiSbtKingakuModel(jihiSbtKingaku.JihiSbt, jihiSbtKingaku.Kingaku));
                     }
                 }
                 #endregion
@@ -3366,7 +3383,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             {
                 _printGokei(0);
             }
-            else if (ListGridRowCount <= 0)
+            else if (listGridRowCount <= 0)
             {
                 // リストがない場合、合計だけ出す
                 for (int i = 0; i < coModelList.KaikeiInfListModels.Count; i++)
@@ -3379,7 +3396,7 @@ public class AccountingCoReportService : IAccountingCoReportService
             }
             else
             {
-                for (short i = 0; i < ListGridRowCount; i++)
+                for (short i = 0; i < listGridRowCount; i++)
                 {
                     // 患者番号
                     _printPtNum(i, listIndex);
@@ -3495,7 +3512,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                     listIndex++;
                     if (listIndex >= coModelList.KaikeiInfListModels.Count)
                     {
-                        if (i < ListGridRowCount - 1)
+                        if (i < listGridRowCount - 1)
                         {
                             // 合計出力
                             _printGokei((short)(i + 1));
@@ -3518,13 +3535,13 @@ public class AccountingCoReportService : IAccountingCoReportService
         List<CoWarningMessage> warningMessages = new();
 
         List<CoKaikeiInfModel> kaikeiInfModels;
-        if (!NyukinBase)
+        if (!nyukinBase)
         {
-            kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, startDate, endDate, RaiinNos, HokenId, MiseisanKbn, SaiKbn, MisyuKbn, SeikyuKbn, HokenKbn, HokenSeikyu, JihiSeikyu, ref warningMessages);
+            kaikeiInfModels = _finder.FindKaikeiInf(hpId, ptId, startDate, endDate, raiinNos, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
         }
         else
         {
-            kaikeiInfModels = _finder.FindKaikeiInfNyukinBase(hpId, ptId, startDate, endDate, HokenId, MiseisanKbn, SaiKbn, MisyuKbn, SeikyuKbn, HokenKbn, HokenSeikyu, JihiSeikyu, ref warningMessages);
+            kaikeiInfModels = _finder.FindKaikeiInfNyukinBase(hpId, ptId, startDate, endDate, hokenId, miseisanKbn, saiKbn, misyuKbn, seikyuKbn, hokenKbn, hokenSeikyu, jihiSeikyu, ref warningMessages);
 
             if (kaikeiInfModels != null && kaikeiInfModels.Any())
             {
@@ -3535,8 +3552,8 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
 
         // 診療期間
-        SinStartDate = startDate;
-        SinEndDate = endDate;
+        sinStartDate = startDate;
+        sinEndDate = endDate;
 
         if (kaikeiInfModels == null || !kaikeiInfModels.Any())
         {
@@ -3544,7 +3561,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
 
         // 実日数
-        JituNissu = kaikeiInfModels
+        jituNissu = kaikeiInfModels
                     .GroupBy(p => p.SinDate)
                     .Select(p => new { JituNissu = p.Max(q => q.JituNissu) })
                     .Sum(p => p.JituNissu);
@@ -3552,7 +3569,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         List<int> sinYMs = kaikeiInfModels.GroupBy(p => p.SinDate / 100).Select(p => p.Key).OrderBy(p => p).ToList();
 
         // 来院番号リストを改める
-        RaiinNos = kaikeiInfModels.GroupBy(p => p.RaiinNo).Select(p => p.Key).ToList();
+        raiinNos = kaikeiInfModels.GroupBy(p => p.RaiinNo).Select(p => p.Key).ToList();
 
         // メモ
         CoPtMemoModel ptMemoModel = _finder.FindPtMemo(hpId, ptId);
@@ -3571,7 +3588,7 @@ public class AccountingCoReportService : IAccountingCoReportService
                                      hpId,
                                      ptId,
                                      sinYM * 100 + 1,
-                                     RaiinNos,
+                                     raiinNos,
                                      _tenantProvider,
                                      _systemConfigProvider,
                                      _emrLogger,
@@ -3580,11 +3597,11 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
 
         // 所見
-        List<CoKarteInfModel> karteInfModels = _finder.FindKarteInf(hpId, PtId, startDate, endDate, RaiinNos);
+        List<CoKarteInfModel> karteInfModels = _finder.FindKarteInf(hpId, this.ptId, startDate, endDate, raiinNos);
 
         // オーダー
-        List<CoOdrInfModel> odrInfModels = _finder.FindOdrInfData(hpId, PtId, startDate, endDate, RaiinNos);
-        List<CoOdrInfDetailModel> odrInfDetailModels = _finder.FindOdrInfDetailData(hpId, ptId, startDate, endDate, RaiinNos);
+        List<CoOdrInfModel> odrInfModels = _finder.FindOdrInfData(hpId, this.ptId, startDate, endDate, raiinNos);
+        List<CoOdrInfDetailModel> odrInfDetailModels = _finder.FindOdrInfDetailData(hpId, ptId, startDate, endDate, raiinNos);
 
         // 病名
         List<CoPtByomeiModel> ptByomeiModels = _finder.FindPtByomei(hpId, ptId, startDate, endDate);
@@ -3593,7 +3610,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
         // 予約
         // 予約情報
-        List<CoRaiinInfModel> raiinInfModels = _finder.FindYoyakuRaiinInf(hpId, PtId, endDate);
+        List<CoRaiinInfModel> raiinInfModels = _finder.FindYoyakuRaiinInf(hpId, this.ptId, endDate);
 
         // システム世代マスタ
         List<CoSystemGenerationConfModel> systemGenerationConfModels = _finder.FindSystemGenerationConf(hpId, 3001);
@@ -3648,16 +3665,16 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private void SetFieldsData(string field, object value)
     {
-        if (!_singleFieldDataResult.ContainsKey(field))
+        if (!SingleFieldDataResult.ContainsKey(field))
         {
-            _singleFieldDataResult.Add(field, value.AsString());
+            SingleFieldDataResult.Add(field, value.AsString());
         }
     }
 
     private void ListText(string listName, short col, short row, object data)
     {
         var item = new ListTextModel(listName, col, row, data.AsString());
-        _listTextModelResult.Add(item);
+        ListTextModelResult.Add(item);
     }
 
     private void SetFieldDataRep(string baseStr, int from, int to, object Value)
@@ -3719,17 +3736,17 @@ public class AccountingCoReportService : IAccountingCoReportService
 
     private bool betweenStartEnd(DateTime date)
     {
-        return (CIUtil.DateTimeToInt(date) >= StartDate &&
-                CIUtil.DateTimeToInt(date) <= EndDate);
+        return (CIUtil.DateTimeToInt(date) >= startDate &&
+                CIUtil.DateTimeToInt(date) <= endDate);
     }
 
     private int GetListRowCount(string fileName)
     {
-        return _javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == fileName)?.result ?? 0;
+        return JavaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount && item.listName == fileName)?.result ?? 0;
     }
 
     private int GetListFormatLenB(string fileName)
     {
-        return _javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB && item.listName == fileName)?.result ?? 0;
+        return JavaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListFormatLendB && item.listName == fileName)?.result ?? 0;
     }
 }
