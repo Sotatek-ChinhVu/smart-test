@@ -8,5 +8,5 @@ public class PeriodReceiptRequestItem
 
     public int HokenKbn { get; set; }
 
-    public List<long> RaiinNos { get; set; }
+    public List<long> RaiinNos { get; set; } = new();
 }
