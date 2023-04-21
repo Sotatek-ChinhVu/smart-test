@@ -1025,7 +1025,7 @@ namespace Infrastructure.Repositories
                         x.IsDeleted == 0
                         );
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
-                        x.HpId == hpId && x.IsDeleted == 0 &&
+                        x.HpId == hpId &&
                         x.PtId == ptId
                         );
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x =>
@@ -1081,7 +1081,8 @@ namespace Infrastructure.Repositories
                             x.PtHokenInf?.HokenKbn ?? 0,
                             x.PtHokenInf?.HokenId ?? 0,
                             x.RaiinInf.HokenPid,
-                            x.RaiinInf.RaiinNo))
+                            x.RaiinInf.RaiinNo,
+                            x.RaiinInf.IsDeleted == 1))
                             .OrderByDescending(x => x.SinDate)
                             .Skip((pageIndex - 1) * pageSize)
                             .Take(pageSize).ToList();
