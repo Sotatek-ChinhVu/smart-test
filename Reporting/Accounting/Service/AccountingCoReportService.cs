@@ -623,7 +623,6 @@ public class AccountingCoReportService : IAccountingCoReportService
                 HakkoDay = param.HakkoDate;
                 Memo = param.Memo;
                 PrintType = param.PrintType;
-                _formFileName = param.FormFileName;
                 coModel = GetData(HpId, PtId, StartDate, EndDate);
 
                 if (coModel == null)

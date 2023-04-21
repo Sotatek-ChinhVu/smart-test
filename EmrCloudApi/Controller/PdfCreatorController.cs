@@ -103,16 +103,6 @@ public class PdfCreatorController : ControllerBase
     }
 
     [HttpGet(ApiPath.ReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromQuery] ReceiptReportRequest request)
-    {
-        var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.StartDate, request.EndDate, request.RaiinNos, request.HokenId,
-                                                             request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, request.HokenKbn,
-                                                             request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-                                                             request.HakkoDay, request.Memo, request.PrintType, request.FormFileName);
-        return await RenderPdf(data, ReportType.Accounting);
-    }
-
-    [HttpGet(ApiPath.PeriodReceiptReport)]
     public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
     {
         List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
