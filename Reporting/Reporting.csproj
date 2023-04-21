@@ -29,4 +29,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ReceiptCheck\DB\" />
+  </ItemGroup>
+
 </Project>
