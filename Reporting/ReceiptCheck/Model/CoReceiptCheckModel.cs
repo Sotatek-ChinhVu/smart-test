@@ -30,6 +30,13 @@ public class CoReceiptCheckModel
         _receCheckErr = receCheckErr;
     }
 
+    public CoReceiptCheckModel()
+    {
+        _ptInf = new();
+        _receInf = new();
+        _receCheckErr = new();
+    }
+
     public int SeikyuYm
     {
         get => ReceInf != null ? ReceInf.SeikyuYm : 0;

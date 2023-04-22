@@ -102,6 +102,14 @@ public class PdfCreatorController : ControllerBase
         var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug);
     }
+    
+
+    [HttpGet(ApiPath.ReceiptCheck)]
+    public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
+    {
+        var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
+        return await RenderPdf(data, ReportType.OutDug);
+    }
 
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
