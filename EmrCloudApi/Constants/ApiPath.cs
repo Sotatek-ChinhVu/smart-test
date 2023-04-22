@@ -279,5 +279,10 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+
+        public const string AddLock = "AddLock";
+        public const string CheckLock = "CheckLock";
+        public const string RemoveLock = "RemoveLock";
+        public const string RemoveAllLock = "RemoveAllLock";
     }
 }

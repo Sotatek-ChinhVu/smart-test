@@ -39,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Lock\Check\" />
+    <Folder Include="Lock\Delete\" />
     <Folder Include="UserConfiguration\" />
   </ItemGroup>
 
