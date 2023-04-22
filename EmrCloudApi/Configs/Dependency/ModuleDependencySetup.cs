@@ -436,6 +436,7 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using Domain.Models.Lock;
 using UseCase.Lock.Add;
 using Interactor.Lock;
+using UseCase.Lock.Check;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -997,7 +998,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
 
+            //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
+            busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

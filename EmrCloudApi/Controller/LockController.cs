@@ -3,10 +3,10 @@ using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
 using EmrCloudApi.Services;
-using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
+using UseCase.Lock.Check;
 
 namespace EmrCloudApi.Controller
 {
@@ -40,11 +40,24 @@ namespace EmrCloudApi.Controller
             });
         }
 
-        [HttpGet("CheckLock")]
-        public IActionResult CheckLock([FromQuery] LockRequest request)
+        [HttpGet(ApiPath.CheckLock)]
+        public ActionResult<Response<LockResponse>> CheckLock([FromQuery] LockRequest request)
         {
+            var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var output = _bus.Handle(input);
 
-            return Ok();
+            string messsage = output.Status == CheckLockStatus.Locked ? "Locked" : "Not lock";
+            return new ActionResult<Response<LockResponse>>(new Response<LockResponse>()
+            {
+                Message = messsage,
+                Status = (int)output.Status,
+                Data = new LockResponse()
+                {
+                    LockLevel = output.LockInf.LockLevel,
+                    ScreenName = output.LockInf.FunctionName,
+                    UserName = output.LockInf.UserName
+                }
+            });
         }
     }
 

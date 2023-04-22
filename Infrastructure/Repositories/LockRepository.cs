@@ -119,8 +119,8 @@ namespace Infrastructure.Repositories
                     checkedResult.lockInf.UserId,
                     checkedResult.lockedUserInf?.Name ?? string.Empty,
                     checkedResult.lockInf.LockDate,
-                    checkedResult.lockInf.FunctionCd,
                     checkedResult.functionMst.FunctionName ?? string.Empty,
+                    checkedResult.lockInf.FunctionCd,
                     checkedResult.lockMst.LockLevel,
                     checkedResult.lockMst.LockRange));
             }

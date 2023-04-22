@@ -31,8 +31,10 @@
 
         public string FunctionCode { get; private set; }
 
-        public int LockLevel { get; private set; }
+        public int LockLevel { get; private set; } = -1;
 
-        public int LockRange { get; private set; }
+        public int LockRange { get; private set; } = -1;
+
+        public bool IsEmpty => LockLevel < 0 || LockRange < 0;
     }
 }
