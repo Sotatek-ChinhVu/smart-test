@@ -40,6 +40,11 @@ namespace Reporting.Receipt.Mapper
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
         List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
 
+        public override int GetReportType()
+        {
+            return (int)CoReportType.Receipt;
+        }
+
         public override Dictionary<string, string> GetSingleFieldData()
         {
             if (TargetIsKenpo())
@@ -74,15 +79,32 @@ namespace Reporting.Receipt.Mapper
             return SingleData;
         }
 
+        public override string GetRowCountFieldName()
+        {
+            return "lsByomei";
+        }
+
+        public override Dictionary<string, bool> GetVisibleFieldData()
+        {
+            return new Dictionary<string, bool>();
+        }
+
+        public override Dictionary<string, bool> GetWrapFieldData()
+        {
+            return new Dictionary<string, bool>();
+        }
+
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            var data = new Dictionary<string, CellModel>();
+            
             //病名欄
             foreach (var item in ByomeiModels)
             {
+                var data = new Dictionary<string, CellModel>();
                 data.Add("lsByomei", new CellModel(item.Byomei));
                 data.Add("lsByomeiStart", new CellModel(item.StartDate));
                 data.Add("lsByomeiTenki", new CellModel(item.Tenki));
+                CellData.Add(data);
             }
 
             //摘要欄印刷
@@ -90,9 +112,11 @@ namespace Reporting.Receipt.Mapper
             {
                 foreach (var item in TekiyoModels)
                 {
+                    var data = new Dictionary<string, CellModel>();
                     data.Add("lsSinId", new CellModel(item.SinId));
                     data.Add("lsTekiyoMark", new CellModel(item.Mark));
                     data.Add("lsTekiyo", new CellModel(item.Tekiyo));
+                    CellData.Add(data);
                 }
             }
 
@@ -102,11 +126,11 @@ namespace Reporting.Receipt.Mapper
 
                 foreach (var item in TekiyoEnModels)
                 {
+                    var data = new Dictionary<string, CellModel>();
                     data.Add("lsEnTekiyo", new CellModel(item.Tekiyo));
+                    CellData.Add(data);
                 }
             }
-
-            CellData.Add(data);
 
             return CellData;
         }
@@ -2631,6 +2655,5 @@ namespace Reporting.Receipt.Mapper
                 #endregion
             }
         }
-
     }
 }
