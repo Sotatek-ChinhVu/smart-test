@@ -1254,20 +1254,19 @@ namespace Infrastructure.Repositories
                                                                 x.Status > RaiinState.TempSave &&
                                                                 x.IsDeleted == DeleteTypes.None);
                 if (oyaRaiinNo == null) return new();
-                raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
-                                                                x.HpId == hpId &&
-                                                                x.PtId == ptId &&
-                                                                x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
-                                                                x.IsDeleted == DeleteTypes.None
-                                                                ).Select(x => x.RaiinNo).ToList();
+                return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+                                                                   x.HpId == hpId &&
+                                                                   x.PtId == ptId &&
+                                                                   x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo &&
+                                                                   x.IsDeleted == DeleteTypes.None
+                                                                   ).Select(x => x.RaiinNo).ToList();
             }
-            raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
+            return raiinNos = NoTrackingDataContext.RaiinInfs.Where(x =>
                                                                 x.HpId == hpId &&
                                                                 x.PtId == ptId &&
                                                                 x.IsDeleted == DeleteTypes.None
                                                                 ).Select(x => x.RaiinNo).ToList();
 
-            return raiinNos;
         }
         public List<JihiSbtMstModel> GetListJihiSbtMst(int hpId)
         {
