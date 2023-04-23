@@ -159,6 +159,8 @@ using Reporting.OutDrug.Service;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Service;
+using Reporting.ReceiptList.DB;
+using Reporting.ReceiptList.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -489,7 +491,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            // Reporting
+            //Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -510,6 +512,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
             services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
+            services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
+            services.AddTransient<ICoReceiptListFinder, CoReceiptListFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

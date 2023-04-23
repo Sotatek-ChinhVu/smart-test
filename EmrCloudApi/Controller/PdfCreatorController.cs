@@ -3,6 +3,7 @@ using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
+using EmrCloudApi.Requests.Receipt;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.PatientInformaiton;
@@ -10,6 +11,7 @@ using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.OutDrug.Service;
+using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Net;
 using System.Text;
@@ -102,13 +104,26 @@ public class PdfCreatorController : ControllerBase
         var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug);
     }
-    
+
 
     [HttpGet(ApiPath.ReceiptCheck)]
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
         var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
-        return await RenderPdf(data, ReportType.OutDug);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.ReceiptList)]
+    public async Task<IActionResult> GetReceiptListReport([FromQuery] GetReceiptListRequest request)
+    {
+        var receInputList = request.ReceiptListModels.Select(item => new ReceiptInputModel(
+                                                                         item.SinYm,
+                                                                         item.PtId,
+                                                                         item.HokenId))
+                                                    .ToList();
+
+        var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
+        return await RenderPdf(data, ReportType.Common);
     }
 
     [HttpGet("ExportKarte2")]

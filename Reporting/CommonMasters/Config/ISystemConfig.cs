@@ -30,4 +30,6 @@ public interface ISystemConfig
     string SyohosenRefillZero();
     int SyohosenRefillStrikeLine();
     int SyohosenQRKbn();
+    int RosaiReceden();
+    string RosaiRecedenTerm();
 }

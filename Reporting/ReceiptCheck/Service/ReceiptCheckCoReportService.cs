@@ -13,22 +13,22 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
     private const int MAX_LENG_MESSAGE = 90;
 
     private readonly ITenantProvider _tenantProvider;
-    private List<CoReceiptCheckModel> coModels;
-    private CoReceiptCheckModel coModel;
-    private string messageOld;
-    private readonly char[] arrCharNotEnd = new char[] { '(', '"', '\'', '{', '[', '’', '′', '“', '「', '【', '［', '『', '（', '’', '″', '‘', '`', '‘' };
+    private List<CoReceiptCheckModel> _coModels;
+    private CoReceiptCheckModel _coModel;
+    private string _messageOld;
+    private readonly char[] _arrCharNotEnd = new char[] { '(', '"', '\'', '{', '[', '’', '′', '“', '「', '【', '［', '『', '（', '’', '″', '‘', '`', '‘' };
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
-    private bool hasNextPage;
+    private bool _hasNextPage;
 
     public ReceiptCheckCoReportService(ITenantProvider tenantProvider)
     {
         _tenantProvider = tenantProvider;
         _tableFieldData = new();
         _singleFieldData = new();
-        messageOld = string.Empty;
-        coModel = new();
-        coModels = new();
+        _messageOld = string.Empty;
+        _coModel = new();
+        _coModels = new();
     }
 
     public CommonReportingRequestModel GetReceiptCheckCoReportingData(int hpId, List<long> ptIds, int seikyuYm)
@@ -38,9 +38,9 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
             var finder = new CoReceiptCheckFinder(_tenantProvider);
 
             // データ取得
-            coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
+            _coModels = finder.GetCoReceiptChecks(hpId, ptIds, seikyuYm);
             // レセプト印刷
-            while (hasNextPage)
+            while (_hasNextPage)
             {
                 UpdateDrawForm(seikyuYm);
             }
@@ -65,59 +65,59 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
         while (linePinted < 45)
         {
             string fieldMessage = "DT_ErrMsg" + (linePinted + 1);
-            if (!string.IsNullOrEmpty(messageOld))
+            if (!string.IsNullOrEmpty(_messageOld))
             {
-                string message = CIUtil.CiCopyStrWidth(messageOld, 1, MAX_LENG_MESSAGE);
+                string message = CIUtil.CiCopyStrWidth(_messageOld, 1, MAX_LENG_MESSAGE);
                 setFieldData(fieldMessage, message);
-                messageOld = messageOld.Remove(0, message.Length);
+                _messageOld = _messageOld.Remove(0, message.Length);
             }
             else
             {
-                var coModelItem = coModels.FirstOrDefault();
+                var coModelItem = _coModels.FirstOrDefault();
                 if (coModelItem == null)
                 {
-                    hasNextPage = false;
+                    _hasNextPage = false;
                     return;
                 }
 
-                if (coModel == null ||
-                    coModelItem.SinYm != coModel.SinYm ||
-                    coModelItem.PtId != coModel.PtId ||
-                    coModelItem.HokenId != coModel.HokenId)
+                if (_coModel == null ||
+                    coModelItem.SinYm != _coModel.SinYm ||
+                    coModelItem.PtId != _coModel.PtId ||
+                    coModelItem.HokenId != _coModel.HokenId)
                 {
                     if (linePinted > 43)
                     {
-                        hasNextPage = true;
+                        _hasNextPage = true;
                     }
 
                     string sinYm = coModelItem?.SinYm.AsString().Insert(4, "年") + "月";
                     var data = new Dictionary<string, CellModel>
                     {
                         { "DT_Ym", new CellModel(sinYm) },
-                        { "DT_KanID", new CellModel((coModelItem?.PtNum??0).ToString()) },
-                        { "DT_KanNM", new CellModel(coModelItem?.PtName??string.Empty) },
-                        { "DT_HoInf", new CellModel(coModelItem?.HokenName??string.Empty) }
+                        { "DT_KanID", new CellModel((coModelItem?.PtNum ?? 0).ToString()) },
+                        { "DT_KanNM", new CellModel(coModelItem?.PtName ?? string.Empty) },
+                        { "DT_HoInf", new CellModel(coModelItem?.HokenName ?? string.Empty) }
                     };
                     _tableFieldData.Add(data);
-                    coModel = coModelItem!;
+                    _coModel = coModelItem!;
                 }
 
                 var messagetemp = coModelItem?.ErrorMessage ?? string.Empty;
                 string message = CIUtil.CiCopyStrWidth(messagetemp, 1, MAX_LENG_MESSAGE);
-                if (arrCharNotEnd.Contains(message.LastOrDefault()))
+                if (_arrCharNotEnd.Contains(message.LastOrDefault()))
                 {
                     message = message.Remove(message.Length - 1, 1);
                 }
 
                 setFieldData(fieldMessage, message);
-                messageOld = messagetemp.Remove(0, message.Length);
+                _messageOld = messagetemp.Remove(0, message.Length);
 
-                coModels.RemoveAt(0);
+                _coModels.RemoveAt(0);
             }
 
             linePinted++;
         }
-        hasNextPage = !string.IsNullOrEmpty(messageOld) || coModels.Count > 0;
+        _hasNextPage = !string.IsNullOrEmpty(_messageOld) || _coModels.Count > 0;
     }
 
 

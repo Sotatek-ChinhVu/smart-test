@@ -84,6 +84,7 @@
         public const string MedicalRecordWebId = "MedicalRecordWebId";
         public const string OutDrug = "OutDrug";
         public const string ReceiptCheck = "ReceiptCheck";
+        public const string ReceiptList = "ReceiptList";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

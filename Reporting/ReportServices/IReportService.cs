@@ -2,6 +2,7 @@
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReportServices;
 
@@ -22,4 +23,6 @@ public interface IReportService
     CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate);
 
     CommonReportingRequestModel GetReceiptCheckCoReportService(int hpId, List<long> ptIds, int seikyuYm);
+
+    CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels);
 }
