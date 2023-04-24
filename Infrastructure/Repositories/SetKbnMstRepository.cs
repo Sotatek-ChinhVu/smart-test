@@ -93,8 +93,12 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SetKbnMsts.Add(newSetKbnMst);
                 }
             }
-
-            return TrackingDataContext.SaveChanges() > 0;
+            var check = TrackingDataContext.SaveChanges() > 0;
+            if (check)
+            {
+                _memoryCache.Remove(GetCacheKey());
+            }
+            return check;
         }
 
         public void ReleaseResource()
