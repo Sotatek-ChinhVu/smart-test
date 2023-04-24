@@ -457,6 +457,7 @@ using UseCase.Lock.Add;
 using Interactor.Lock;
 using UseCase.Lock.Check;
 using UseCase.Lock.Remove;
+using UseCase.Lock.ExtendTtl;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1040,6 +1041,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
+            busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

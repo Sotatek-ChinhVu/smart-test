@@ -290,6 +290,7 @@
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
         public const string RemoveAllLock = "RemoveAllLock";
+        public const string ExtendTtl = "ExtendTtl";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
