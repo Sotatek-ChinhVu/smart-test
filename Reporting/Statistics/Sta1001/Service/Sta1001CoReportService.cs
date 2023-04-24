@@ -146,7 +146,7 @@ namespace Reporting.Statistics.Sta1001.Service
             fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetFormatLength));
             fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.ListRowCount));
 
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, formfile, fieldInputList);
 
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             UpdateParamLocal(javaOutputData.responses ?? new());
@@ -154,52 +154,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
         private void UpdateParamLocal(List<ObjectCalculateResponse> result)
         {
-            foreach (var item in result)
-            {
-                switch (item.typeInt)
-                {
-                    case (int)CalculateTypeEnum.ListRowCount:
-                        switch (item.listName)
-                        {
-                            case "lsData":
-                                _dataRowCount = item.result;
-                                break;
-                            case "lsBikoShort":
-                                _bikoShortRowCount = item.result;
-                                break;
-                            case "lsBikoLong":
-                                _bikoLongRowCount = item.result;
-                                break;
-                        }
-                        break;
-                    case (int)CalculateTypeEnum.GetFormatLength:
-                        switch (item.listName)
-                        {
-                            case "lsData":
-                                _dataCharCount = item.result;
-                                break;
-                            case "lsSuryo":
-                                _suryoCharCount = item.result;
-                                break;
-                            case "lsUnitName":
-                                _unitCharCount = item.result;
-                                break;
-                            case "lsKaisu":
-                                _kaisuCharCount = item.result;
-                                break;
-                            case "lsYohoUnitName":
-                                _yohoUnitCharCount = item.result;
-                                break;
-                            case "lsBikoShort":
-                                _bikoShortCharCount = item.result;
-                                break;
-                            case "lsBikoLong":
-                                _bikoLongCharCount = item.result;
-                                break;
-                        }
-                        break;
-                }
-            }
+            result.listName;
         }
 
         private List<CoSta1001PrintData> GetData()
