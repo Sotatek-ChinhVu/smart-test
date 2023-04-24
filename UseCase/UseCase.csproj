@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Lock\Delete\**" />
     <Compile Remove="User\Delete\**" />
     <Compile Remove="User\Read\**" />
     <Compile Remove="User\Update\**" />
+    <EmbeddedResource Remove="Lock\Delete\**" />
     <EmbeddedResource Remove="User\Delete\**" />
     <EmbeddedResource Remove="User\Read\**" />
     <EmbeddedResource Remove="User\Update\**" />
+    <None Remove="Lock\Delete\**" />
     <None Remove="User\Delete\**" />
     <None Remove="User\Read\**" />
     <None Remove="User\Update\**" />
@@ -39,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Lock\Delete\" />
     <Folder Include="UserConfiguration\" />
   </ItemGroup>
 

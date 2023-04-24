@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Lock;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -128,7 +129,12 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void DeleteLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo)
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
+        public bool RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
         {
             long oyaRaiinNo = 0;
             if (raiinNo > 0)
@@ -139,17 +145,24 @@ namespace Infrastructure.Repositories
                     oyaRaiinNo = raiinInf.OyaRaiinNo;
                 }
             }
-            var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.OyaRaiinNo == oyaRaiinNo && r.SinDate == sinDate);
+            var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.OyaRaiinNo == oyaRaiinNo && r.SinDate == sinDate && r.UserId == userId);
             if (lockInf == null)
             {
-                return;
+                return true;
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
+            return true; 
         }
 
-        public void ReleaseResource()
+        public bool RemoveAllLock(int hpId, int userId)
         {
-            DisposeDataContext();
+            var lockInfList = TrackingDataContext.LockInfs.Where(r => r.HpId == hpId && r.UserId == userId).ToList();
+            if (!lockInfList.Any())
+            {
+                return true;
+            }
+            TrackingDataContext.LockInfs.RemoveRange(lockInfList);
+            return true;
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
 {
@@ -57,6 +58,34 @@ namespace EmrCloudApi.Controller
                     ScreenName = output.LockInf.FunctionName,
                     UserName = output.LockInf.UserName
                 }
+            });
+        }
+
+        [HttpGet(ApiPath.RemoveLock)]
+        public ActionResult<Response> RemoveLock([FromQuery] LockRequest request)
+        {
+            var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false);
+            var output = _bus.Handle(input);
+
+            string messsage = output.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
+            return new ActionResult<Response>(new Response()
+            {
+                Message = messsage,
+                Status = (int)output.Status
+            });
+        }
+
+        [HttpGet(ApiPath.RemoveAllLock)]
+        public ActionResult<Response> RemoveAllLock()
+        {
+            var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true);
+            var output = _bus.Handle(input);
+
+            string messsage = output.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
+            return new ActionResult<Response>(new Response()
+            {
+                Message = messsage,
+                Status = (int)output.Status
             });
         }
     }

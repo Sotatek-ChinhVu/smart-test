@@ -437,6 +437,7 @@ using Domain.Models.Lock;
 using UseCase.Lock.Add;
 using Interactor.Lock;
 using UseCase.Lock.Check;
+using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1001,6 +1002,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
+            busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

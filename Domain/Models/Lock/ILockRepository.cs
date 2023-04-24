@@ -10,6 +10,8 @@ namespace Domain.Models.Lock
 
         public List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
-        void DeleteLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo);
+        bool RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
+
+        bool RemoveAllLock(int hpId, int userId);
     }
 }
