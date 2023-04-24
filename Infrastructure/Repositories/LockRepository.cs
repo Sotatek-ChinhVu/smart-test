@@ -151,6 +151,7 @@ namespace Infrastructure.Repositories
                 return true;
             }
             TrackingDataContext.LockInfs.Remove(lockInf);
+            TrackingDataContext.SaveChanges();
             return true; 
         }
 
@@ -162,6 +163,28 @@ namespace Infrastructure.Repositories
                 return true;
             }
             TrackingDataContext.LockInfs.RemoveRange(lockInfList);
+            TrackingDataContext.SaveChanges();
+            return true;
+        }
+
+        public bool ExtendTtl(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId)
+        {
+            long oyaRaiinNo = 0;
+            if (raiinNo > 0)
+            {
+                var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+                if (raiinInf != null)
+                {
+                    oyaRaiinNo = raiinInf.OyaRaiinNo;
+                }
+            }
+            var lockInf = TrackingDataContext.LockInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.FunctionCd == functionCd && r.RaiinNo == raiinNo && r.OyaRaiinNo == oyaRaiinNo && r.SinDate == sinDate && r.UserId == userId);
+            if (lockInf == null)
+            {
+                return false;
+            }
+            lockInf.LockDate = CIUtil.GetJapanDateTimeNow();
+            TrackingDataContext.SaveChanges();
             return true;
         }
     }

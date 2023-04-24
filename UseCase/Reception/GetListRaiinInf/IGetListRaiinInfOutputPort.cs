@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Reception.GetListRaiinInfs;
+namespace UseCase.Reception.GetListRaiinInf;
 
 public interface IGetListRaiinInfOutputPort : IOutputPort<GetListRaiinInfOutputData>
 {

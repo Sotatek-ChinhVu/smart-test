@@ -372,7 +372,7 @@ using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
-using UseCase.Reception.GetListRaiinInfs;
+using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -459,6 +459,7 @@ using UseCase.Lock.Add;
 using Interactor.Lock;
 using UseCase.Lock.Check;
 using UseCase.Lock.Remove;
+using UseCase.Lock.ExtendTtl;
 using Reporting.Calculate.Implementation;
 using Reporting.Calculate.Interface;
 
@@ -1048,6 +1049,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
+            busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
