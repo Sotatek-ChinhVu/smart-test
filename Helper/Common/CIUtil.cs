@@ -8,6 +8,24 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static string TryCIToTimeZone(int time, string format = @"hh\:mm")
+        {
+            TimeSpan timeSpan = new TimeSpan();
+            if ((0 <= time) && (time <= 2400))
+            {
+                int iHour = time / 100;
+                int iMinute = time % 100;
+
+                if (((0 <= iHour) && (iHour <= 24)) &&
+                    ((0 <= iMinute) && (iMinute <= 59)))
+                {
+                    return iHour.AsString().PadLeft(2, '0') + ":" + iMinute.AsString().PadLeft(2, '0');
+                }
+            }
+
+            return timeSpan.ToString(format);
+        }
+
         public static string FormatIntToString(int input)
         {
             if (input == 0)
