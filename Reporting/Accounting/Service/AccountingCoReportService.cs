@@ -1,8 +1,4 @@
-﻿using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Constants;
-using EmrCalculateApi.Receipt.Models;
-using EmrCalculateApi.Receipt.ViewModels;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
@@ -13,9 +9,10 @@ using Reporting.Accounting.Model.Output;
 using Reporting.CommonMasters.Config;
 using Reporting.Mappers.Common;
 using System.Text;
-using System.Linq;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.Calculate.Receipt.ViewModels;
+using Domain.Models.CalculateModel;
 
 namespace Reporting.Accounting.Service;
 
