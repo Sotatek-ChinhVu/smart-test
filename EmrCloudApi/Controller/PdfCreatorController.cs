@@ -109,8 +109,8 @@ public class PdfCreatorController : ControllerBase
     //    return await RenderPdf(data, ReportType.Accounting);
     //}
 
-    [HttpPost(ApiPath.ReceiptReport)]
-    public async Task<IActionResult> GenerateReceiptReport([FromBody] ReceiptExportRequest request)
+    [HttpGet(ApiPath.ReceiptReport)]
+    public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
     {
         var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting);
