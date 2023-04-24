@@ -395,18 +395,17 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
 
         if (updatedGenModels.Any())
         {
+
             foreach (var model in updatedGenModels)
             {
-                TrackingDataContext.AutoSanteiMsts.Update(new AutoSanteiMst()
+                var santeis = TrackingDataContext.AutoSanteiMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == model.ItemCd && x.Id == model.Id);
+                
+                if (santeis != null)
                 {
-                    HpId = hpId,
-                    ItemCd = model.ItemCd,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                    Id = model.Id
-                });
+                    santeis.StartDate = model.StartDate;
+                    santeis.EndDate = model.EndDate;
+                    santeis.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                }
             }
         }
 

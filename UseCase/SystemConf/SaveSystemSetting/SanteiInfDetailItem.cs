@@ -4,12 +4,13 @@ namespace UseCase.SystemConf.SaveSystemSetting
 {
     public class SanteiInfDetailItem
     {
-        public SanteiInfDetailItem(long id, long ptId, string itemCd, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
+        public SanteiInfDetailItem(long id, long ptId, string itemCd, int startDate, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
         {
             Id = id;
             PtId = ptId;
             ItemCd = itemCd;
             EndDate = endDate;
+            StartDate = startDate;
             KisanSbt = kisanSbt;
             KisanDate = kisanDate;
             Byomei = byomei;
