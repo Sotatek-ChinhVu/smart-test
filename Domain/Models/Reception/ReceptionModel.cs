@@ -65,6 +65,8 @@ namespace Domain.Models.Reception
 
         public int HokenId { get; private set; }
 
+        public bool IsDeleted { get; private set; }
+
         [JsonConstructor]
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
         {
@@ -183,7 +185,7 @@ namespace Domain.Models.Reception
             HokensyaNo = string.Empty;
         }
 
-        public ReceptionModel(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo)
+        public ReceptionModel(int hpId, long ptId, int sinDate, int uketukeNo, int status, string kaSname, string sName, string houbetu, string hokensyaNo, int hokenKbn, int hokenId, int hokenPid, long raiinNo, bool isDeleted)
         {
             HpId = hpId;
             PtId = ptId;
@@ -198,6 +200,7 @@ namespace Domain.Models.Reception
             HokenId = hokenId;
             HokenPid = hokenPid;
             RaiinNo = raiinNo;
+            IsDeleted = isDeleted;
             Comment = string.Empty;
             YoyakuTime = string.Empty;
             UketukeTime = string.Empty;

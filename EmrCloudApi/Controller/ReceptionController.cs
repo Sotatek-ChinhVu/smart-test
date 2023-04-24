@@ -31,7 +31,7 @@ using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
-using UseCase.Reception.GetListRaiinInfs;
+using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
