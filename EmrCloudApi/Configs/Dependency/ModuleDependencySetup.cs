@@ -159,6 +159,7 @@ using Reporting.OutDrug.Service;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
+using Reporting.Statistics.DB;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -506,6 +507,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
