@@ -136,6 +136,7 @@ namespace Interactor.SystemConf
                     item.Id,
                     item.PtId,
                     item.ItemCd,
+                    item.StartDate,
                     item.EndDate,
                     item.KisanSbt,
                     item.KisanDate,
