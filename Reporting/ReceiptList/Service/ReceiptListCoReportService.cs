@@ -12,8 +12,8 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
 {
     private readonly ITenantProvider _tenantProvider;
     private readonly ISystemConfig _systemConfig;
-    private readonly Dictionary<string, string> _singleFieldData;
-    private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+    public Dictionary<string, string> _singleFieldData { get; set; }
+    public  List<Dictionary<string, CellModel>> _tableFieldData { get; set; }
     private List<ReceiptListModel> _receiptListModels;
     private DateTime _printoutDateTime = DateTime.Now;
 
@@ -108,7 +108,7 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
 
     private void setFieldData(string field, string value)
     {
-        if (string.IsNullOrEmpty(field) || _singleFieldData.ContainsKey(field))
+        if (string.IsNullOrEmpty(field) || !_singleFieldData.ContainsKey(field))
         {
             _singleFieldData.Add(field, value);
         }

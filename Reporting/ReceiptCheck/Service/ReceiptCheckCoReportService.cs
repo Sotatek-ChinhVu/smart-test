@@ -123,7 +123,7 @@ public class ReceiptCheckCoReportService : IReceiptCheckCoReportService
 
     private void setFieldData(string field, string value)
     {
-        if (string.IsNullOrEmpty(field) || _singleFieldData.ContainsKey(field))
+        if (string.IsNullOrEmpty(field) || !_singleFieldData.ContainsKey(field))
         {
             _singleFieldData.Add(field, value);
         }

@@ -9,62 +9,114 @@ namespace Reporting.ReceiptList.Model;
 public class ReceiptListModel
 {
     public ReceInf ReceInf { get; }
-    private readonly ISystemConfig _systemConfig;
 
-    public ReceiptListModel(ISystemConfig systemConfig, ReceInf receInf)
+    public ReceiptListModel(ReceInf receInf, int rosaiReceden, string rosaiRecedenTerm)
     {
         ReceInf = receInf;
-        _systemConfig = systemConfig;
-        RousaiKofuNo = string.Empty;
-        RousaiJigyosyoName = string.Empty;
-        RousaiPrefName = string.Empty;
-        RousaiCityName = string.Empty;
-        JibaiHokenName = string.Empty;
-        JibaiHokenTanto = string.Empty;
-        JibaiHokenTel = string.Empty;
-        ReceCheckCmt = string.Empty;
-        KanaName = string.Empty;
-        Name = string.Empty;
-        HokensyaNo = string.Empty;
-        ReceSeikyuCmt = string.Empty;
-        KaName = string.Empty;
-        SName = string.Empty;
-        FutansyaNoKohi1 = string.Empty;
-        FutansyaNoKohi2 = string.Empty;
-        FutansyaNoKohi3 = string.Empty;
-        FutansyaNoKohi4 = string.Empty;
+        ReceSbt = ReceInf.ReceSbt ?? string.Empty;
+        HokenId = ReceInf.HokenId;
+        HokenKbn = ReceInf.HokenKbn;
+        Tensu = ReceInf.Tensu;
+        HokenNissu = ReceInf.HokenNissu ?? 0;
+        PtId = ReceInf.PtId;
+        SeikyuYm = ReceInf.SeikyuYm;
+        SinYm = ReceInf.SinYm;
+        RosaiRecedenTerm = rosaiRecedenTerm;
+        RosaiReceden = rosaiReceden;
+        //RousaiKofuNo = string.Empty;
+        //RousaiJigyosyoName = string.Empty;
+        //RousaiPrefName = string.Empty;
+        //RousaiCityName = string.Empty;
+        //JibaiHokenName = string.Empty;
+        //JibaiHokenTanto = string.Empty;
+        //JibaiHokenTel = string.Empty;
+        //ReceCheckCmt = string.Empty;
+        //KanaName = string.Empty;
+        //Name = string.Empty;
+        //HokensyaNo = string.Empty;
+        //ReceSeikyuCmt = string.Empty;
+        //KaName = string.Empty;
+        //SName = string.Empty;
+        //FutansyaNoKohi1 = string.Empty;
+        //FutansyaNoKohi2 = string.Empty;
+        //FutansyaNoKohi3 = string.Empty;
+        //FutansyaNoKohi4 = string.Empty;
     }
+
+    public ReceiptListModel(long ptId, int seikyuYm, int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int hokenNissu, string receCheckCmt, int rosaiReceden, string rosaiRecedenTerm)
+    {
+        //RousaiKofuNo = string.Empty;
+        //RousaiJigyosyoName = string.Empty;
+        //RousaiPrefName = string.Empty;
+        //RousaiCityName = string.Empty;
+        //JibaiHokenName = string.Empty;
+        //JibaiHokenTanto = string.Empty;
+        //JibaiHokenTel = string.Empty;
+        //ReceCheckCmt = string.Empty;
+        //KanaName = string.Empty;
+        //Name = string.Empty;
+        //HokensyaNo = string.Empty;
+        //ReceSeikyuCmt = string.Empty;
+        //KaName = string.Empty;
+        //SName = string.Empty;
+        //FutansyaNoKohi1 = string.Empty;
+        //FutansyaNoKohi2 = string.Empty;
+        //FutansyaNoKohi3 = string.Empty;
+        //FutansyaNoKohi4 = string.Empty;
+        PtId = ptId;
+        SeikyuYm = seikyuYm;
+        SeikyuKbn = seikyuKbn;
+        SinYm = sinYm;
+        IsReceInfDetailExist = isReceInfDetailExist;
+        IsPaperRece = isPaperRece;
+        HokenId = hokenId;
+        HokenKbn = hokenKbn;
+        Output = output;
+        FusenKbn = fusenKbn;
+        StatusKbn = statusKbn;
+        PtNum = ptNum;
+        KanaName = kanaName;
+        Name = name;
+        Sex = sex;
+        Age = CIUtil.SDateToAge(birthDay, lastSinDateByHokenId);
+        BirthDay = birthDay;
+        ReceSbt = receSbt;
+        HokensyaNo = hokensyaNo;
+        Tensu = tensu;
+        IsSyoukiInfExist = isSyoukiInfExist;
+        IsReceCmtExist = isReceCmtExist;
+        IsSyobyoKeikaExist = isSyobyoKeikaExist;
+        ReceSeikyuCmt = receSeikyuCmt;
+        LastVisitDate = lastVisitDate;
+        KaName = kaName;
+        SName = sName;
+        IsPtKyuseiExist = isPtKyuseiExist;
+        FutansyaNoKohi1 = futansyaNoKohi1;
+        FutansyaNoKohi2 = futansyaNoKohi2;
+        FutansyaNoKohi3 = futansyaNoKohi3;
+        FutansyaNoKohi4 = futansyaNoKohi4;
+        IsPtTest = isPtTest;
+        HokenNissu = hokenNissu;
+        ReceCheckCmt = receCheckCmt;
+        RosaiRecedenTerm = rosaiRecedenTerm;
+        RosaiReceden = rosaiReceden;
+    }
+
 
     /// <summary>
     ///  請求年月
     /// </summary>
-    public int SeikyuYm
-    {
-        get => ReceInf.SeikyuYm;
-    }
+    public int SeikyuYm { get; set; }
 
     /// <summary>
     /// 患者ID
     /// </summary>
-    public long PtId
-    {
-        get => ReceInf.PtId;
-    }
+    public long PtId { get; set; }
 
     /// <summary>
     ///  請求区分
     /// </summary>
-    public int SeikyuKbn
-    {
-        get => ReceInf.SeikyuKbn;
-        set
-        {
-            if (ReceInf.SeikyuKbn != value)
-            {
-                ReceInf.SeikyuKbn = value;
-            }
-        }
-    }
+    public int SeikyuKbn { get; set; }
 
     public string SeikyuKbnisplay
     {
@@ -90,17 +142,7 @@ public class ReceiptListModel
     /// <summary>
     /// 診療年月
     /// </summary>
-    public int SinYm
-    {
-        get => ReceInf.SinYm;
-        set
-        {
-            if (ReceInf.SinYm != value)
-            {
-                ReceInf.SinYm = value;
-            }
-        }
-    }
+    public int SinYm { get; set; }
 
     public string SinYmDisplay
     {
@@ -120,6 +162,10 @@ public class ReceiptListModel
     {
         get => GetStringFromPropertyValue(IsReceInfDetailExist);
     }
+
+    public int RosaiReceden { get; set; }
+
+    public string RosaiRecedenTerm { get; set; }
 
     /// <summary>
     /// 紙
@@ -147,8 +193,8 @@ public class ReceiptListModel
             {
                 ret = 1;
             }
-            else if (((_systemConfig.RosaiReceden() != 1) ||
-                   (_systemConfig.RosaiReceden() == 1 && SeikyuYm < CIUtil.StrToIntDef(_systemConfig.RosaiRecedenTerm(), 0))) &&
+            else if (((RosaiReceden != 1) ||
+                   (RosaiReceden == 1 && SeikyuYm < CIUtil.StrToIntDef(RosaiRecedenTerm, 0))) &&
                    (HokenKbn == 11 || HokenKbn == 12))
             {
                 ret = 1;
@@ -321,40 +367,12 @@ public class ReceiptListModel
     /// <summary>
     /// レセプト種別
     /// </summary>
-    public string ReceSbt
-    {
-        get => ReceInf.ReceSbt;
-        set
-        {
-            if (ReceInf.ReceSbt != value)
-            {
-                ReceInf.ReceSbt = value;
-            }
-        }
-    }
+    public string ReceSbt { get; set; }
 
-    public int HokenKbn
-    {
-        get => ReceInf.HokenKbn;
-        set
-        {
-            if (ReceInf.HokenKbn != value)
-            {
-                ReceInf.HokenKbn = value;
-            }
-        }
-    }
-    public int HokenId
-    {
-        get => ReceInf.HokenId;
-        set
-        {
-            if (ReceInf.HokenId != value)
-            {
-                ReceInf.HokenId = value;
-            }
-        }
-    }
+    public int HokenKbn { get; set; }
+
+    public int HokenId { get; set; }
+
 
     public string ReceSbtDisplay
     {
@@ -419,17 +437,7 @@ public class ReceiptListModel
     /// <summary>
     /// 診療点数
     /// </summary>
-    public int Tensu
-    {
-        get => ReceInf.Tensu;
-        set
-        {
-            if (ReceInf.Tensu != value)
-            {
-                ReceInf.Tensu = value;
-            }
-        }
-    }
+    public int Tensu { get; set; }
 
     public string TensuDisplay
     {
@@ -446,17 +454,7 @@ public class ReceiptListModel
     /// <summary>
     /// 実日数
     /// </summary>
-    public int HokenNissu
-    {
-        get => ReceInf.HokenNissu.AsInteger();
-        set
-        {
-            if (ReceInf.HokenNissu != value)
-            {
-                ReceInf.HokenNissu = value;
-            }
-        }
-    }
+    public int HokenNissu { get; set; }
 
     public string HokenNissuDisplay
     {
@@ -476,7 +474,7 @@ public class ReceiptListModel
         {
             int ret = HokenNissu.AsInteger();
 
-            if (new int[] { 1, 2 }.Contains(ReceInf.HokenKbn) && ReceInf.ReceSbt.StartsWith("12"))
+            if (new int[] { 1, 2 }.Contains(HokenKbn) && ReceSbt.StartsWith("12"))
             {
                 ret = (ReceInf.Kohi1Nissu ?? 0).AsInteger();
             }

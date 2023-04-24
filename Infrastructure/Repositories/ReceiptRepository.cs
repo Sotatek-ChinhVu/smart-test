@@ -56,7 +56,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty().Min();
         var minDay = minSinYM * 100 + 1;
 
-
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId
                                                                         && item.SinDate >= minDay
                                                                         && item.SinDate <= toDay
