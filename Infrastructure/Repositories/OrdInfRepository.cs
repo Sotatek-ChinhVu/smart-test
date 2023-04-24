@@ -441,7 +441,9 @@ namespace Infrastructure.Repositories
                         createName,
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
-                        updateName
+                        updateName,
+                        ordInf.CreateMachine ?? string.Empty ,
+                        ordInf.UpdateMachine ?? string.Empty
                    );
         }
 

@@ -831,7 +831,8 @@ namespace Interactor.Insurance
                     return new ValidateInsuranceItem(false, message, ValidateInsuranceStatus.InvalidRodoBangoLengthNotEquals14);
                 }
             }
-            var checkCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, rousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
+            var checkCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
             if (!checkCommonCheckForRosai.Result)
             {
                 return checkCommonCheckForRosai;

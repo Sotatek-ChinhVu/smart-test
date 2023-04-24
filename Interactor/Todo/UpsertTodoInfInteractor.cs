@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Todo;
 using UseCase.Todo;
-using UseCase.Todo.TodoInf;
+using UseCase.Todo.UpsertTodoInf;
 
 namespace Interactor.Todo;
 
@@ -49,7 +49,7 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
         }
     }
 
-    private List<TodoInfModel> ConvertToInsertTodoInfDto(List<InsertTodoInfDto> insertTodoinfDtos)
+    private List<TodoInfModel> ConvertToInsertTodoInfDto(List<TodoInfDto> insertTodoinfDtos)
     {
         List<TodoInfModel> result = new();
         foreach (var todoInf in insertTodoinfDtos)
@@ -73,7 +73,7 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
         return result;
     }
 
-    private UpsertTodoInfStatus ValidateDataInput(List<InsertTodoInfDto> insertTodoInfDtos)
+    private UpsertTodoInfStatus ValidateDataInput(List<TodoInfDto> insertTodoInfDtos)
     {
         foreach (var insertTodoInf in insertTodoInfDtos)
         {

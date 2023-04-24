@@ -29,6 +29,9 @@ namespace UseCase.NextOrder.Get
             CreateId = rsvkrtOrderInfModel.CreateId;
             CreateName = rsvkrtOrderInfModel.CreateName;
             RsvKrtOrderInfDetailItems = rsvkrtOrderInfModel.OrdInfDetails.Select(od => new RsvKrtOrderInfDetailItem(od)).ToList();
+            UpdateDate = rsvkrtOrderInfModel.UpdateDate;
+            CreateMachine = rsvkrtOrderInfModel.CreateMachine;
+            UpdateMachine = rsvkrtOrderInfModel.UpdateMachine;
         }
 
         public int HpId { get; private set; }
@@ -76,5 +79,11 @@ namespace UseCase.NextOrder.Get
         public string CreateName { get; private set; }
 
         public List<RsvKrtOrderInfDetailItem> RsvKrtOrderInfDetailItems { get; private set; }
+
+        public DateTime UpdateDate { get; private set; }
+
+        public string CreateMachine { get; private set; }
+
+        public string UpdateMachine { get; private set; }
     }
 }

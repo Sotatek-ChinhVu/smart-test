@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.Santei;
+﻿using Helper.Constants;
+using System.Text.Json.Serialization;
+
+namespace Domain.Models.Santei;
 
 public class SanteiInfDetailModel
 {
@@ -30,7 +33,7 @@ public class SanteiInfDetailModel
         IsDeleted = isDeleted;
     }
 
-    public SanteiInfDetailModel(long id,  string itemCd, int startDate, int endDate)
+    public SanteiInfDetailModel(long id, string itemCd, int startDate, int endDate)
     {
         Id = id;
         ItemCd = itemCd;
@@ -39,6 +42,21 @@ public class SanteiInfDetailModel
         Byomei = string.Empty;
         HosokuComment = string.Empty;
         Comment = string.Empty;
+    }
+
+    public SanteiInfDetailModel(long id, long ptId, string itemCd, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
+    {
+        Id = id;
+        PtId = ptId;
+        ItemCd = itemCd;
+        EndDate = endDate;
+        KisanSbt = kisanSbt;
+        KisanDate = kisanDate;
+        Byomei = byomei;
+        HosokuComment = hosokuComment;
+        Comment = comment;
+        IsDeleted = isDeleted;
+        AutoSanteiMstModelStatus = autoSanteiMstModelStatus;
     }
 
     public long Id { get; private set; }
@@ -62,4 +80,11 @@ public class SanteiInfDetailModel
     public string Comment { get; private set; }
 
     public bool IsDeleted { get; private set; }
+
+    public ModelStatus AutoSanteiMstModelStatus { get; private set; }
+
+    public bool CheckDefaultValue()
+    {
+        return StartDate == 0 && EndDate == 99999999 && Id == 0;
+    }
 }

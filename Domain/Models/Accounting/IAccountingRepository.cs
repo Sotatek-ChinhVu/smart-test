@@ -27,5 +27,6 @@ namespace Domain.Models.Accounting
         byte CheckIsOpenAccounting(int hpId, long ptId, int sinDate, long raiinNo);
         bool CheckSyunoStatus(int hpId, long raiinNo, long ptId);
         ReceptionDto GetRaiinInfModel(int hpId, long ptId, int sinDate, long raiinNo, List<KaikeiInfModel> kaikeis);
+        List<HokenPatternModel> FindPtHokenPatternList(int hpId, long ptId, int sinDay, bool isGetDeleted = false);
     }
 }

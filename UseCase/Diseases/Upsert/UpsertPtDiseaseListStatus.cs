@@ -30,5 +30,7 @@
         PtInvalidSeqNo,
         PtInvalidIsImportant,
         PtInvalidIsDeleted,
+        Valid,
+        Failed
     }
 }

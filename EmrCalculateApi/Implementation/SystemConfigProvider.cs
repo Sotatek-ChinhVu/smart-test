@@ -165,8 +165,8 @@ namespace EmrCalculateApi.Implementation
         }
         private string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "")
         {
-            SystemConf systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
-            return systemConf != null ? systemConf.Param : defaultParam;
+            SystemConf systemConf = _systemConfigs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo) ?? new();
+            return systemConf != null ? systemConf.Param ?? string.Empty : defaultParam;
         }
     }
 }

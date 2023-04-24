@@ -446,9 +446,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue, [Optional] bool isGetFamily, int isDeleted = 2)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue, isGetFamily, isDeleted);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -534,11 +534,11 @@ namespace Infrastructure.Repositories
             return raininNos.Count == raiinInfCount;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue, bool isGetFamily, int isDeleted)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => (isDeleted == 2 || x.IsDeleted == isDeleted));
             var raiinCmtInfs = NoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
             var raiinKbnInfs = NoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
             var raiinKbnDetails = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
@@ -986,7 +986,17 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
         }
 
-        public bool Delete(int hpId, int userId, List<long> raiinNos)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hpId"></param>
+        /// <param name="userId"></param>
+        /// <param name="raiinNos"></param>
+        /// <returns></returns>
+        /// Item1: SinDate
+        /// Item2: RaiinNo
+        /// Item3: PtId
+        public List<Tuple<int, long, long>> Delete(int hpId, int userId, List<long> raiinNos)
         {
             raiinNos = raiinNos.Distinct().ToList();
             var raiinInfs = TrackingDataContext.RaiinInfs.Where(r => raiinNos.Contains(r.RaiinNo)).ToList();
@@ -997,7 +1007,9 @@ namespace Infrastructure.Repositories
                 raiinInf.UpdateId = userId;
             }
 
-            return TrackingDataContext.SaveChanges() > 0;
+            var result = raiinInfs.Select(r => new Tuple<int, long, long>(r.SinDate, r.RaiinNo, r.PtId)).ToList();
+            TrackingDataContext.SaveChanges();
+            return result;
         }
 
         public void ReleaseResource()
@@ -1013,8 +1025,7 @@ namespace Infrastructure.Repositories
                         x.IsDeleted == 0
                         );
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x =>
-                        x.HpId == hpId &&
-                        x.IsDeleted == 0 &&
+                        x.HpId == hpId && x.IsDeleted == 0 &&
                         x.PtId == ptId
                         );
             var kaMsts = NoTrackingDataContext.KaMsts.Where(x =>

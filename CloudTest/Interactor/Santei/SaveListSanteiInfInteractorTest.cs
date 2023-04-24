@@ -28,10 +28,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         1,
+                        1,
                         "itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -47,10 +49,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                         }),
                 new SanteiInfInputItem(
                         0,
+                        1,
                         "itemCdAddNew",
                         1,
                         2,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -266,10 +270,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         {
             new SanteiInfInputItem(
                     0,
+                    ptId,
                     "itemCdAddNew",
                     1,
                     2,
                     false,
+                    1,
                     new List<SanteiInfDetailInputItem>(){
                     })
         };
@@ -278,10 +284,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         {
             new SanteiInfInputItem(
                     0,
+                    ptId,
                     "itemCd",
                     1,
                     2,
                     false,
+                    1,
                     new List<SanteiInfDetailInputItem>(){})
         };
 
@@ -289,10 +297,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         {
             new SanteiInfInputItem(
                     1,
+                    1,
                     "itemCdError",
                     1,
                     2,
                     false,
+                    1,
                     new List<SanteiInfDetailInputItem>(){})
         };
 
@@ -393,10 +403,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         {
             new SanteiInfInputItem(
                     1,
+                    ptId,
                     "itemCd",
                     1,
                     7,
                     false,
+                    1,
                     new List<SanteiInfDetailInputItem>(){})
         };
 
@@ -404,10 +416,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
         {
             new SanteiInfInputItem(
                     1,
+                    ptId,
                     "itemCd",
                     1,
                     1,
                     false,
+                    1,
                     new List<SanteiInfDetailInputItem>(){})
         };
         var inputAlertTermGreaterThan6 = new SaveListSanteiInfInputData(hpId, userId, ptId, sinDate, hokenPid, listSanteiInfAlertTermGreaterThan6);
@@ -494,10 +508,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                                                             {
                                                                 new SanteiInfInputItem(
                                                                         1,
+                                                                        ptId,
                                                                         "itemCd",
                                                                         -1,
                                                                         4,
                                                                         false,
+                                                                        1,
                                                                         new List<SanteiInfDetailInputItem>(){})
                                                             };
         var input = new SaveListSanteiInfInputData(hpId, userId, ptId, sinDate, hokenPid, listSanteiInfAlertDaysLessThan0);
@@ -561,10 +577,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         0,
+                        ptId,
                         "KN_itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -584,10 +602,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         0,
+                        ptId,
                         "IGE_itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -1067,10 +1087,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         1,
+                        ptId,
                         "itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -1108,6 +1130,7 @@ public class SaveListSanteiInfInteractorTest : BaseUT
                             "itemCd",
                             1,
                             4,
+                            1,
                             new List<SanteiInfDetailModel>()
                             {
                                 new SanteiInfDetailModel(
@@ -1148,10 +1171,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         1,
+                        ptId,
                         "itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(
@@ -1242,10 +1267,12 @@ public class SaveListSanteiInfInteractorTest : BaseUT
             {
                 new SanteiInfInputItem(
                         1,
+                        ptId,
                         "itemCd",
                         1,
                         4,
                         false,
+                        1,
                         new List<SanteiInfDetailInputItem>()
                         {
                             new SanteiInfDetailInputItem(

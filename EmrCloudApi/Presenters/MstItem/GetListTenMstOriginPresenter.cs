@@ -1,6 +1,9 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.MstItem;
+using EmrCloudApi.Constants;
+using EmrCloudApi.Requests.MstItem;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
+using Helper.Mapping;
 using UseCase.MstItem.GetListTenMstOrigin;
 
 namespace EmrCloudApi.Presenters.MstItem
@@ -13,7 +16,7 @@ namespace EmrCloudApi.Presenters.MstItem
         {
             Result = new Response<GetListTenMstOriginResponse>()
             {
-                Data = new GetListTenMstOriginResponse(outputData.TenMsts, outputData.StartDateDisplay),
+                Data = new GetListTenMstOriginResponse(Mapper.Map<TenMstOriginModel,TenMstOriginModelDto>(outputData.TenMsts), outputData.StartDateDisplay),
                 Status = (int)outputData.Status
             };
             switch (outputData.Status)

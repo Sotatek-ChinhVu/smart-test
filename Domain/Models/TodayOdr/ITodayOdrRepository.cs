@@ -26,7 +26,7 @@ namespace Domain.Models.TodayOdr
 
         Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList);
 
-        (int type, string itemName, int lastDaySanteiRiha, string rihaItemName) GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems);
+        List<(int type, string itemName, int lastDaySanteiRiha, string rihaItemName)> GetValidGairaiRiha(int hpId, int ptId, long raiinNo, int sinDate, int syosaiKbn, List<Tuple<string, string>> allOdrInfItems);
 
         (double systemSetting, bool isExistYoboItemOnly) GetValidJihiYobo(int hpId, int syosaiKbn, int sinDate, List<string> itemCds);
 
@@ -47,5 +47,6 @@ namespace Domain.Models.TodayOdr
 
         List<(int position, OrdInfModel odrInfModel)> ChangeAfterAutoCheckOrder(int hpId, int sinDate, int userId, long raiinNo, long ptId, List<OrdInfModel> odrInfs, List<Tuple<int, string, int, int, TenItemModel, double>> targetItems);
 
+        long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }

@@ -79,7 +79,12 @@ namespace Interactor.MedicalExamination
                             history.HokenType,
                             new(),
                             new(),
-                            new()
+                            new(),
+                            0,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty
                         );
 
                     //Excute order
@@ -226,7 +231,10 @@ namespace Interactor.MedicalExamination
                                                             rpOdrInf.CreateId,
                                                             rpOdrInf.CreateName,
                                                             rpOdrInf.UpdateDate,
-                                                            rpOdrInf.IsDeleted
+                                                            rpOdrInf.IsDeleted,
+                                                            rpOdrInf.CreateMachine,
+                                                            rpOdrInf.UpdateMachine,
+                                                            rpOdrInf.UpdateName
                                                          );
 
                         group.OdrInfs.Add(odrModel);

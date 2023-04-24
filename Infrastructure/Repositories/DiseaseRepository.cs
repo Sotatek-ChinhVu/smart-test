@@ -7,7 +7,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 
 namespace Infrastructure.Repositories
 {
@@ -329,6 +328,7 @@ namespace Infrastructure.Repositories
             var preSuffixList = model.PrefixSuffixList;
             return new PtByomei
             {
+                Id = 0,
                 HpId = hpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,

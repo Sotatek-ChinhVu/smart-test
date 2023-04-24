@@ -50,6 +50,7 @@
         public static readonly string InvalidDayOfWeek = "Invalid DayOfWeek";
         public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
+        public static readonly string InvalidDocCd = "Invalid DocCd";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -390,6 +391,9 @@
         public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
         public static readonly string SaveSetOrderInfFailed = "Save SetOrderInf Failed.";
         public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SetKbnListInvalidSetKbn = "Invalid SetKbn";
+        public static readonly string SetKbnListInvalidSetKbnName = "Invalid SetKbnName";
+
         //Calculation Inf
 
 
@@ -925,18 +929,18 @@
         public static readonly string InvalidPrefNo = "PrefNo is in valid";
 
         // Family
-        public static readonly string InvalidPtIdOrFamilyPtId = "違法患者番号／患者の家族番号";
-        public static readonly string InvalidFamilyId = "違法家族番号";
-        public static readonly string InvalidZokugaraCd = "違法続柄Cd";
-        public static readonly string InvalidFamilyBirthday = "違法生年月日";
-        public static readonly string InvalidFamilyIsSeparated = "違法別居";
-        public static readonly string InvalidFamilyBiko = "違法備考";
-        public static readonly string InvalidFamilyRekiId = "違法家族歴番号";
-        public static readonly string InvalidByomeiCd = "違法病名Cd";
-        public static readonly string InvalidFamilyCmt = "違法コメント";
-        public static readonly string DuplicateFamily = "重複家族";
-        public static readonly string InvalidNameMaxLength = "違法氏名最大長";
-        public static readonly string InvalidKanaNameMaxLength = "違法カナ氏名最大長";
+        public static readonly string InvalidPtIdOrFamilyPtId = "予期しないエラーが発生しました。";
+        public static readonly string InvalidFamilyId = "予期しないエラーが発生しました。";
+        public static readonly string InvalidZokugaraCd = "既に登録されています";
+        public static readonly string InvalidFamilyBirthday = "予期しないエラーが発生しました。";
+        public static readonly string InvalidFamilyIsSeparated = "予期しないエラーが発生しました。";
+        public static readonly string InvalidFamilyBiko = "備考は120文字以内に入力してください。";
+        public static readonly string InvalidFamilyRekiId = "予期しないエラーが発生しました。";
+        public static readonly string InvalidByomeiCd = "検索対象が見つかりません。\n・あいまい検索する場合は、全角文字で入力してください。";
+        public static readonly string InvalidFamilyCmt = "病名の備考は100文字以内に入力してください。";
+        public static readonly string DuplicateFamily = "既に登録されています";
+        public static readonly string InvalidNameMaxLength = "氏名は100文字以内に入力してください。";
+        public static readonly string InvalidKanaNameMaxLength = "氏名は100文字以内に入力してください。";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";

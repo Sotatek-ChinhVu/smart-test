@@ -46,6 +46,7 @@
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
+        public const string GetPtWeight = "GetPtWeight";
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
@@ -81,6 +82,7 @@
         public const string ExportSijisen = "ExportSijisen";
         public const string ExportNameLabel = "ExportNameLabel";
         public const string MedicalRecordWebId = "MedicalRecordWebId";
+        public const string OutDrug = "OutDrug";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -106,9 +108,6 @@
 
         //validate ValidHokenInf AllType
         public const string ValidHokenInfAllType = "ValidHokenInfAllType";
-
-        // Validate Insurance Other
-        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
@@ -139,6 +138,7 @@
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
         public const string ValidateSwapHoken = "ValidateSwapHoken";
+        public const string CalculationSwapHoken = "CalculationSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -181,12 +181,16 @@
         public const string GetOrderSheetGroup = "GetOrderSheetGroup";
         public const string GetOrdersForOneOrderSheetGroup = "GetOrdersForOneOrderSheetGroup";
         public const string TrialAccounting = "TrialAccounting";
+        public const string CheckTrialAccounting = "CheckTrialAccounting";
+        public const string GetKensaAuditTrailLog = "GetKensaAuditTrailLog";
+        public const string GetContainerMst = "GetContainerMst";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
         public const string Sagaku = "Sagaku";
         public const string GetListMedicalExaminationConfig = "GetListMedicalExaminationConfig";
         public const string UpsertUserConfList = "UpsertUserConfList";
+        public const string GetUserConfParam = "GetUserConfParam";
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
@@ -264,6 +268,7 @@
         public const string GetDrugCheckSetting = "GetDrugCheckSetting";
         public const string SaveDrugCheckSetting = "SaveDrugCheckSetting";
         public const string GetSystemSetting = "GetSystemSetting";
+        public const string SaveSystemSetting = "SaveSystemSetting";
 
         //ReceSeikyus
         public const string GetListReceSeikyu = "GetListReceSeikyu";
@@ -280,9 +285,16 @@
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
 
+        //Lock
         public const string AddLock = "AddLock";
         public const string CheckLock = "CheckLock";
         public const string RemoveLock = "RemoveLock";
         public const string RemoveAllLock = "RemoveAllLock";
+
+        //Monshin
+        public const string GetMonshinInf = "GetMonshinInf";
+        public const string SaveMonshinInf = "SaveMonshinInf";
+        public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
+        public const string GetSetDataTenMst = "GetSetDataTenMst";
     }
 }

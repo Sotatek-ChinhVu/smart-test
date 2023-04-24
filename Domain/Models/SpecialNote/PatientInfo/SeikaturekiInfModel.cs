@@ -1,7 +1,10 @@
-﻿namespace Domain.Models.SpecialNote.PatientInfo
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.SpecialNote.PatientInfo
 {
     public class SeikaturekiInfModel
     {
+        [JsonConstructor]
         public SeikaturekiInfModel(long id, int hpId, long ptId, long seqNo, string text)
         {
             Id = id;

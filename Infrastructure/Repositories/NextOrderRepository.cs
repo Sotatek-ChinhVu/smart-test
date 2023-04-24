@@ -96,79 +96,64 @@ namespace Infrastructure.Repositories
 
         public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
-            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
             long rsvkrtNo = 0;
             long ptNum = GetPtNum(hpId, ptId);
-            return executionStrategy.Execute(
-                () =>
+            foreach (var nextOrderModel in nextOrderModels)
+            {
+                var maxRpNo = GetMaxRpNo(hpId, ptId);
+                var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
+                if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                 {
-                    using var transaction = TrackingDataContext.Database.BeginTransaction();
-                    try
+                    var rsvkrtMst = TrackingDataContext.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
+                    if (rsvkrtMst != null)
                     {
-                        foreach (var nextOrderModel in nextOrderModels)
+                        rsvkrtMst.IsDeleted = nextOrderModel.IsDeleted;
+                        foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
                         {
-                            var maxRpNo = GetMaxRpNo(hpId, ptId);
-                            var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
-                            if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
+                            var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
+                            if (orderInf != null)
                             {
-                                var rsvkrtMst = TrackingDataContext.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
-                                if (rsvkrtMst != null)
-                                {
-                                    rsvkrtMst.IsDeleted = nextOrderModel.IsDeleted;
-                                    foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
-                                    {
-                                        var orderInf = TrackingDataContext.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
-                                        if (orderInf != null)
-                                        {
-                                            orderInf.IsDeleted = item.IsDeleted;
-                                            orderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                            orderInf.UpdateId = userId;
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var oldNextOrder = TrackingDataContext.RsvkrtMsts.FirstOrDefault(m => m.HpId == nextOrderModel.HpId && m.PtId == nextOrderModel.PtId && m.RsvkrtNo == nextOrderModel.RsvkrtNo && m.IsDeleted == DeleteTypes.None);
-
-                                if (oldNextOrder != null)
-                                {
-                                    oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
-                                    oldNextOrder.RsvDate = nextOrderModel.RsvDate;
-                                    oldNextOrder.RsvName = nextOrderModel.RsvName;
-                                    oldNextOrder.SortNo = nextOrderModel.SortNo;
-                                    oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
-                                    oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
-                                    oldNextOrder.UpdateId = userId;
-                                    rsvkrtNo = oldNextOrder.RsvkrtNo;
-                                    UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                                    UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                                    UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
-                                }
-                                else
-                                {
-                                    var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
-                                    TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
-                                    TrackingDataContext.SaveChanges();
-                                    rsvkrtNo = nextOrderEntity.RsvkrtNo;
-                                    UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
-                                    UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
-                                    UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
-                                }
-                                SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
+                                orderInf.IsDeleted = item.IsDeleted;
+                                orderInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                orderInf.UpdateId = userId;
                             }
                         }
-                        TrackingDataContext.SaveChanges();
-                        transaction.Commit();
+                    }
+                }
+                else
+                {
+                    var oldNextOrder = TrackingDataContext.RsvkrtMsts.FirstOrDefault(m => m.HpId == nextOrderModel.HpId && m.PtId == nextOrderModel.PtId && m.RsvkrtNo == nextOrderModel.RsvkrtNo && m.IsDeleted == DeleteTypes.None);
 
-                        return rsvkrtNo;
-                    }
-                    catch
+                    if (oldNextOrder != null)
                     {
-                        transaction.Rollback();
-                        return rsvkrtNo;
+                        oldNextOrder.RsvkrtKbn = nextOrderModel.RsvkrtKbn;
+                        oldNextOrder.RsvDate = nextOrderModel.RsvDate;
+                        oldNextOrder.RsvName = nextOrderModel.RsvName;
+                        oldNextOrder.SortNo = nextOrderModel.SortNo;
+                        oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
+                        oldNextOrder.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        oldNextOrder.UpdateId = userId;
+                        rsvkrtNo = oldNextOrder.RsvkrtNo;
+                        UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                        UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
                     }
-                });
+                    else
+                    {
+                        var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
+                        TrackingDataContext.RsvkrtMsts.Add(nextOrderEntity);
+                        TrackingDataContext.SaveChanges();
+                        rsvkrtNo = nextOrderEntity.RsvkrtNo;
+                        UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
+                        UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                        UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
+                    }
+                    SaveFileNextOrder(hpId, ptId, ptNum, rsvkrtNo, nextOrderModel);
+                }
+            }
+            TrackingDataContext.SaveChanges();
+
+            return rsvkrtNo;
         }
 
         private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
@@ -472,7 +457,10 @@ namespace Infrastructure.Repositories
                     odrInf.CreateDate,
                     odrInf.CreateId,
                     createName,
-                    odrInfDetailModels
+                    odrInfDetailModels,
+                    odrInf.UpdateDate,
+                    odrInf.CreateMachine ?? string.Empty,
+                    odrInf.UpdateMachine ?? string.Empty
                 );
         }
 
@@ -500,7 +488,10 @@ namespace Infrastructure.Repositories
                     odrInf.CreateDate,
                     odrInf.CreateId,
                     string.Empty,
-                    new()
+                    new(),
+                    odrInf.UpdateDate,
+                    odrInf.CreateMachine ?? string.Empty,
+                    odrInf.UpdateMachine ?? string.Empty
                 );
         }
 
