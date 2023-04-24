@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
+using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
@@ -67,6 +68,18 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
 
             var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ExtendTtl)]
+        public ActionResult<Response> ExtendTtl([FromQuery] LockRequest request)
+        {
+            var input = new ExtendTtlLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+            var output = _bus.Handle(input);
+
+            var presenter = new ExtentTtlPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response>(presenter.Result);
