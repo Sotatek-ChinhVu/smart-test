@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Reception.GetListRaiinInfs;
+namespace UseCase.Reception.GetListRaiinInf;
 public class GetListRaiinInfInputData : IInputData<GetListRaiinInfOutputData>
 {
     public GetListRaiinInfInputData(int hpId, long ptId, int pageIndex, int pageSize)

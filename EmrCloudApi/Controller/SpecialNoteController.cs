@@ -25,7 +25,7 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.Get)]
         public ActionResult<Response<GetSpecialNoteResponse>> Get([FromQuery] SpecialNoteRequest request)
         {
-            var input = new GetSpecialNoteInputData(HpId, request.PtId);
+            var input = new GetSpecialNoteInputData(HpId, request.PtId, request.Sex);
             var output = _bus.Handle(input);
 
             var presenter = new GetSpecialNotePresenter();

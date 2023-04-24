@@ -1847,7 +1847,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var model in updatedModels)
                 {
-                    NoTrackingDataContext.KensaCenterMsts.Update(new KensaCenterMst()
+                    TrackingDataContext.KensaCenterMsts.Update(new KensaCenterMst()
                     {
                         HpId = model.HpId,
                         CenterCd = model.CenterCd,
@@ -1865,7 +1865,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var model in addedModels)
                 {
-                    NoTrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
+                    TrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
                     {
                         HpId = model.HpId,
                         CenterCd = model.CenterCd,

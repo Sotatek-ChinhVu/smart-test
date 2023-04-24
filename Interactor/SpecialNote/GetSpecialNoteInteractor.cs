@@ -54,7 +54,7 @@ namespace Interactor.SpecialNote
 
                 var taskSummaryTab = Task<SummaryInfModel>.Factory.StartNew(() => GetSummaryTab(inputData.HpId, inputData.PtId));
                 var taskImportantNoteTab = Task<ImportantNoteModel>.Factory.StartNew(() => GetImportantNoteTab(inputData.PtId));
-                var taskPatientInfoTab = Task<PatientInfoModel>.Factory.StartNew(() => GetPatientInfoTab(inputData.PtId, inputData.HpId));
+                var taskPatientInfoTab = Task<PatientInfoModel>.Factory.StartNew(() => GetPatientInfoTab(inputData.PtId, inputData.HpId, inputData.Sex));
                 Task.WaitAll(taskSummaryTab, taskImportantNoteTab, taskPatientInfoTab);
 
                 return new GetSpecialNoteOutputData(taskSummaryTab.Result, taskImportantNoteTab.Result, taskPatientInfoTab.Result, GetSpecialNoteStatus.Successed);
@@ -100,15 +100,16 @@ namespace Interactor.SpecialNote
             return new ImportantNoteModel(taskAlrgyFoodList.Result, taskAlrgyElseList.Result, taskAlrgyDrugList.Result, taskKioRekiList.Result, taskInfectionList.Result, taskOtherDrugList.Result, taskOctDrugList.Result, taskSuppleList.Result);
         }
 
-        private PatientInfoModel GetPatientInfoTab(long ptId, int hpId)
+        private PatientInfoModel GetPatientInfoTab(long ptId, int hpId, int sex)
         {
             var taskPregnancyItem = Task<List<PtPregnancyModel>>.Factory.StartNew(() => _patientInfoPregnancyRepository.GetPregnancyList(ptId, hpId) ?? new());
             var taskCmtInfItem = Task<PtCmtInfModel>.Factory.StartNew(() => _ptCmtInfRepository.GetList(ptId, hpId).FirstOrDefault() ?? new());
             var taskSeikaturekiInfItem = Task<SeikaturekiInfModel>.Factory.StartNew(() => _patientInfoSeikaturekiRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault() ?? new());
             var taskPhysicalItems = Task<List<PhysicalInfoModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetPhysicalList(hpId, ptId));
-            Task.WaitAll(taskPregnancyItem, taskCmtInfItem, taskSeikaturekiInfItem, taskPhysicalItems);
+            var taskGcStdMsts = Task<List<GcStdInfModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetStdPoint(hpId, sex));
+            Task.WaitAll(taskPregnancyItem, taskCmtInfItem, taskSeikaturekiInfItem, taskPhysicalItems, taskGcStdMsts);
 
-            return new PatientInfoModel(taskPregnancyItem.Result, taskCmtInfItem.Result, taskSeikaturekiInfItem.Result, taskPhysicalItems.Result);
+            return new PatientInfoModel(taskPregnancyItem.Result, taskCmtInfItem.Result, taskSeikaturekiInfItem.Result, taskPhysicalItems.Result, taskGcStdMsts.Result);
         }
         #endregion
     }

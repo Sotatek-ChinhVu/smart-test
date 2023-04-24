@@ -91,7 +91,7 @@ public class UserConfController : AuthorizeControllerBase
     [HttpPost(ApiPath.UpsertUserConfList)]
     public ActionResult<Response<UpsertUserConfListResponse>> UpsertUserConfList(UpsertUserConfListRequest request)
     {
-        var input = new UpsertUserConfListInputData(HpId, UserId, request.userConfs.Select(u => ConvertToModel(UserId, u)).ToList());
+        var input = new UpsertUserConfListInputData(UserId, HpId, request.userConfs.Select(u => ConvertToModel(UserId, u)).ToList());
         var output = _bus.Handle(input);
 
         var presenter = new UpsertUserConfListPresenter();

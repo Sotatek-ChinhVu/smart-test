@@ -287,6 +287,13 @@
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
 
+        //Lock
+        public const string AddLock = "AddLock";
+        public const string CheckLock = "CheckLock";
+        public const string RemoveLock = "RemoveLock";
+        public const string RemoveAllLock = "RemoveAllLock";
+        public const string ExtendTtl = "ExtendTtl";
+
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";

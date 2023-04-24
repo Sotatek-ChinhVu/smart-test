@@ -45,7 +45,7 @@ namespace Interactor.SetKbnMst
                     {
                         return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidSetKbn);
                     }
-                    if (setKbnMstItem.SetKbnEdaNo <= 0)
+                    if (setKbnMstItem.SetKbnEdaNo < 0)
                     {
                         return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidSetKbnEdaNo);
                     }
@@ -59,7 +59,7 @@ namespace Interactor.SetKbnMst
                     }
                     if (setKbnMstItem.DocCd < 0)
                     {
-                        return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidKaCd);
+                        return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidDocCd);
                     }
                     if (!(setKbnMstItem.IsDeleted >= 0 && setKbnMstItem.IsDeleted <= 2))
                     {
@@ -70,10 +70,10 @@ namespace Interactor.SetKbnMst
                         return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidGenerationId);
                     }
                 }
-                var kaIds = inputData.SetKbnMstItems.Select(s => s.KaCd).Distinct().ToList();
+                var kaIds = inputData.SetKbnMstItems.Where(s => s.KaCd > 0).Select(s => s.KaCd).Distinct().ToList();
                 bool checkkaId = _kaRepository.CheckKaId(kaIds);
-                var userIds = inputData.SetKbnMstItems.Select(s => s.DocCd).Distinct().ToList();
-                bool checkUserId = _userRepository.GetDoctorsList(userIds).Count() == inputData.SetKbnMstItems.Select(s => s.DocCd).Count();
+                var userIds = inputData.SetKbnMstItems.Where(s => s.DocCd > 0).Select(s => s.DocCd).Distinct().ToList();
+                bool checkUserId = _userRepository.GetDoctorsList(userIds).Count() == inputData.SetKbnMstItems.Where(s => s.DocCd > 0).Distinct().Select(s => s.DocCd).Count();
                 if (!checkkaId)
                 {
                     return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidKaCd);

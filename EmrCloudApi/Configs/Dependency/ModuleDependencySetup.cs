@@ -163,6 +163,7 @@ using Reporting.ReceiptList.DB;
 using Reporting.ReceiptList.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
+using Reporting.Statistics.DB;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -373,7 +374,7 @@ using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
-using UseCase.Reception.GetListRaiinInfs;
+using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -454,6 +455,13 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.SystemConf.SaveDrugCheckSetting;
+using Domain.Models.Lock;
+using UseCase.Lock.Add;
+using Interactor.Lock;
+using UseCase.Lock.Check;
+using UseCase.Lock.Remove;
+using UseCase.Lock.ExtendTtl;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -510,6 +518,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
             services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
             services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
             services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
@@ -603,6 +612,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ILockRepository, LockRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1034,6 +1044,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+
+            //Lock
+            busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
+            busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
+            busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
+            busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
