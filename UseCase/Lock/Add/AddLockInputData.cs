@@ -1,0 +1,29 @@
+﻿using UseCase.Core.Sync.Core;
+
+namespace UseCase.Lock.Add
+{
+    public class AddLockInputData : IInputData<AddLockOutputData>
+    {
+        public int HpId { get; private set; }
+
+        public long PtId { get; private set; }
+
+        public string FunctionCode { get; private set; }
+
+        public int SinDate { get; private set; }
+
+        public long RaiinNo { get; private set; }
+
+        public int UserId { get; private set; }
+
+        public AddLockInputData(int hpId, long ptId, string functionCode, int sinDate, long raiinNo, int userId)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            FunctionCode = functionCode;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
+            UserId = userId;
+        }
+    }
+}

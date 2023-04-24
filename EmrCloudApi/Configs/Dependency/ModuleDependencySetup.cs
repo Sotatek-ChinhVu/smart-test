@@ -451,6 +451,12 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.SystemConf.SaveDrugCheckSetting;
+using Domain.Models.Lock;
+using UseCase.Lock.Add;
+using Interactor.Lock;
+using UseCase.Lock.Check;
+using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -597,6 +603,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ILockRepository, LockRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1028,6 +1035,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+
+            //Lock
+            busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
+            busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
+            busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
