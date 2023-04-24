@@ -868,7 +868,7 @@ public class AccountingCoReportService : IAccountingCoReportService
         }
         #endregion
 
-        sinmeiPrintDataModels = new List<CoSinmeiPrintDataModel>();
+        sinmeiPrintDataModels = new();
 
         foreach (SinMeiViewModel sinmeiView in coModel.SinMeiViewModels)
         {
