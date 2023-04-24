@@ -1,7 +1,10 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Lock;
+using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
+using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -27,18 +30,10 @@ namespace EmrCloudApi.Controller
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
 
-            string messsage = output.Status == AddLockStatus.Successed ? "Successed" : "The lock is existed!!!";
-            return new ActionResult<Response<LockResponse>>(new Response<LockResponse>()
-            {
-                Message = messsage,
-                Status = (int)output.Status,
-                Data = new LockResponse()
-                {
-                    LockLevel = output.LockInf.LockLevel,
-                    ScreenName = output.LockInf.FunctionName,
-                    UserName = output.LockInf.UserName
-                }
-            });
+            var presenter = new AddLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.CheckLock)]
@@ -47,18 +42,10 @@ namespace EmrCloudApi.Controller
             var input = new CheckLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
 
-            string messsage = output.Status == CheckLockStatus.Locked ? "Locked" : "Not lock";
-            return new ActionResult<Response<LockResponse>>(new Response<LockResponse>()
-            {
-                Message = messsage,
-                Status = (int)output.Status,
-                Data = new LockResponse()
-                {
-                    LockLevel = output.LockInf.LockLevel,
-                    ScreenName = output.LockInf.FunctionName,
-                    UserName = output.LockInf.UserName
-                }
-            });
+            var presenter = new CheckLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<LockResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.RemoveLock)]
@@ -67,12 +54,10 @@ namespace EmrCloudApi.Controller
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false);
             var output = _bus.Handle(input);
 
-            string messsage = output.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
-            return new ActionResult<Response>(new Response()
-            {
-                Message = messsage,
-                Status = (int)output.Status
-            });
+            var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response>(presenter.Result);
         }
 
         [HttpGet(ApiPath.RemoveAllLock)]
@@ -81,12 +66,10 @@ namespace EmrCloudApi.Controller
             var input = new RemoveLockInputData(HpId, 0, "", 0, 0, UserId, true);
             var output = _bus.Handle(input);
 
-            string messsage = output.Status == RemoveLockStatus.Successed ? "Successed" : "Failed";
-            return new ActionResult<Response>(new Response()
-            {
-                Message = messsage,
-                Status = (int)output.Status
-            });
+            var presenter = new RemoveLockPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response>(presenter.Result);
         }
     }
 

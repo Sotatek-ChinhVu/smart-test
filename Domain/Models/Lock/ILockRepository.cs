@@ -8,7 +8,7 @@ namespace Domain.Models.Lock
 
         bool AddLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
-        public List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
+        List<LockModel> GetLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 
         bool RemoveLock(int hpId, string functionCd, long ptId, int sinDate, long raiinNo, int userId);
 

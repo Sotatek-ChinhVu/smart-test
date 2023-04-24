@@ -2,10 +2,17 @@
 {
     public class LockResponse
     {
-        public string UserName { get; set; } = string.Empty;
+        public LockResponse(string userName, int lockLevel, string screenName)
+        {
+            UserName = userName;
+            LockLevel = lockLevel;
+            ScreenName = screenName;
+        }
 
-        public int LockLevel { get; set; }
+        public string UserName { get; private set; }
 
-        public string ScreenName { get; set; } = string.Empty;
+        public int LockLevel { get; private set; }
+
+        public string ScreenName { get; private set; }
     }
 }
