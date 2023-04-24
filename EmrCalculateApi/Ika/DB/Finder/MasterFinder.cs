@@ -3,13 +3,13 @@ using EmrCalculateApi.Extensions;
 using Entity.Tenant;
 using PostgreDataContext;
 using Helper.Constants;
-using Reporting.Calculate.Ika.Models;
+using EmrCalculateApi.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 
-namespace Reporting.Calculate.Ika.DB.Finder
+namespace EmrCalculateApi.Ika.DB.Finder
 {
     public class MasterFinder 
     {
