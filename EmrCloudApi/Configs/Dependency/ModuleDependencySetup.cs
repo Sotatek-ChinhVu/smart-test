@@ -3,7 +3,7 @@ using CommonChecker.Services;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
-using Domain.Models.ApprovalInfo;
+using Domain.Models.ChartApproval;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.Document;
@@ -78,10 +78,10 @@ using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
 using Interactor.AccountDue;
 using Interactor.Accounting;
-using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculateService;
 using Interactor.CalculationInf;
+using Interactor.ChartApproval;
 using Interactor.ColumnSetting;
 using Interactor.CommonChecker;
 using Interactor.CommonChecker.CommonMedicalCheck;
@@ -172,9 +172,9 @@ using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
-using UseCase.ApprovalInfo.GetApprovalInfList;
-using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
+using UseCase.ChartApproval.GetApprovalInfList;
+using UseCase.ChartApproval.SaveApprovalInfList;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
@@ -612,7 +612,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
-            busBuilder.RegisterUseCase<UpdateApprovalInfListInputData, UpdateApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
