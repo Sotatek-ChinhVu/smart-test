@@ -1,6 +1,7 @@
 ﻿using Domain.Models.SpecialNote.PatientInfo;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
@@ -206,6 +207,13 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var kensaInf = NoTrackingDataContext.KensaInfDetails.Where(k => k.PtId == ptId && k.IraiDate <= sinDate && k.KensaItemCd == WEIGHT_CD).OrderByDescending(p => p.IraiDate).FirstOrDefault();
             return kensaInf == null ? new() : new KensaInfDetailModel(kensaInf.HpId, kensaInf.PtId, kensaInf.IraiCd, kensaInf.SeqNo, kensaInf.IraiDate, kensaInf.RaiinNo, kensaInf.KensaItemCd ?? string.Empty, kensaInf.ResultVal ?? string.Empty, kensaInf.ResultType ?? string.Empty, kensaInf.AbnormalKbn ?? string.Empty, kensaInf.IsDeleted, kensaInf.CmtCd1 ?? string.Empty, kensaInf.CmtCd2 ?? string.Empty, kensaInf.UpdateDate, string.Empty, string.Empty, 0);
+        }
+
+        public List<GcStdInfModel> GetStdPoint(int hpId, int sex)
+        {
+            var list = NoTrackingDataContext.GcStdMsts.Where(item => item.HpId == hpId && (sex == 0 || item.Sex == sex))
+                .Select(item => new GcStdInfModel(item.HpId, item.StdKbn, item.Sex, item.Point, item.SdM25, item.SdM20, item.SdM10, item.SdM20, item.SdM25, item.SdP20, item.SdP25, item.Per03, item.Per10, item.Per25, item.Per50, item.Per75, item.Per90, item.Per97)).ToList();
+            return list;
         }
 
         public void ReleaseResource()
