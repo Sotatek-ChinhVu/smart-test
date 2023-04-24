@@ -8,7 +8,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class OrderRealtimeCheckerRequest
     {
-        public OrderRealtimeCheckerRequest(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, PtDiseaseModel ptDiseaseModel)
+        public OrderRealtimeCheckerRequest(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
         {
             PtId = ptId;
             HpId = hpId;
@@ -16,8 +16,8 @@ namespace EmrCloudApi.Requests.MedicalExamination
             CurrentListOdr = currentListOdr;
             ListCheckingOrder = listCheckingOrder;
             SpecialNoteItem = specialNoteItem;
-            PtDiseaseModel = ptDiseaseModel;
-
+            PtDiseaseModels = ptDiseaseModels;
+            FamilyItems = familyItems;
         }
 
         public long PtId { get; set; }
@@ -29,7 +29,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
         public List<OrdInfoModel> CurrentListOdr { get; set; }
         public List<OrdInfoModel> ListCheckingOrder { get; set; }
         public SpecialNoteItem SpecialNoteItem { get; set; }
-        public PtDiseaseModel PtDiseaseModel { get; set; }
-        public List<FamilyItem> FamilyList { get; private set; }
+        public List<PtDiseaseModel> PtDiseaseModels { get; set; }
+        public List<FamilyItem> FamilyItems { get; private set; }
     }
 }

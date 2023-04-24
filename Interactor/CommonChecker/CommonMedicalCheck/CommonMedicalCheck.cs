@@ -5,8 +5,11 @@ using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
+using Domain.Models.Diseases;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using UseCase.Family;
+using UseCase.MedicalExamination.SaveMedical;
 
 namespace Interactor.CommonChecker.CommonMedicalCheck;
 
@@ -42,7 +45,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         unitChecker.Sinday = _sinday;
     }
 
-    public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder)
+    public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         _hpID = hpId;
         _ptID = ptId;
