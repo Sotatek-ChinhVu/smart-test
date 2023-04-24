@@ -16,4 +16,6 @@ public interface IAccountingCoReportService
             int hakkoDay, string memo, string formFileName);
 
     AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels);
+
+    AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 }

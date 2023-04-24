@@ -3,6 +3,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Reporting.Accounting.Model;
 
 namespace Reporting.Accounting.DB;
@@ -1870,5 +1871,20 @@ public class CoAccountingFinder : RepositoryBase, ICoAccountingFinder
         );
 
         return results;
+    }
+
+    public List<RaiinInfModel> GetOyaRaiinInfList(int hpId, List<long> raiinNoList, long ptId)
+    {
+        var oyaRaiinNoList = NoTrackingDataContext.RaiinInfs.Where(item =>
+                                                        item.HpId == hpId
+                                                        && item.PtId == ptId
+                                                        && raiinNoList.Contains(item.RaiinNo))
+                                                        .Select(item => item.OyaRaiinNo).ToList();
+        var raiinList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
+                                                                            && item.PtId == ptId
+                                                                            && item.Status == RaiinState.Settled
+                                                                            && oyaRaiinNoList.Contains(item.OyaRaiinNo))
+                                                    .Select(item => new RaiinInfModel(item)).ToList();
+        return raiinList;
     }
 }

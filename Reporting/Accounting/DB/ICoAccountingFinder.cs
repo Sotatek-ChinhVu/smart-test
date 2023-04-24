@@ -134,4 +134,6 @@ public interface ICoAccountingFinder
     List<long> GetPtNums(int hpId, List<long> ptIds);
 
     long GetPtNum(int hpId, long ptId);
+
+    List<RaiinInfModel> GetOyaRaiinInfList(int hpId, List<long> raiinNoList, long ptId);
 }

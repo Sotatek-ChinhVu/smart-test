@@ -4,12 +4,13 @@ using Reporting.Calculate.Receipt.DB.Finder;
 using Reporting.Calculate.Receipt.Models;
 using Reporting.Calculate.Receipt.Constants;
 using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Interface;
-using Infrastructure.Interfaces;
 using PostgreDataContext;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Ika.DB.Finder;
+using Reporting.Calculate.Ika.Constants;
+using Infrastructure.Interfaces;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Constants;
 
 namespace Reporting.Calculate.Receipt.ViewModels
 {

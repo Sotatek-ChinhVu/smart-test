@@ -8,7 +8,7 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Common;
 using Domain.Constant;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 
 namespace Reporting.Calculate.Receipt.Models
 {

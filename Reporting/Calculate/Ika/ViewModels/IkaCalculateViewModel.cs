@@ -1,19 +1,19 @@
 ﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Futan.ViewModels;
+using Reporting.Calculate.Futan.ViewModels;
 using Reporting.Calculate.Ika.Constants;
 using Reporting.Calculate.Ika.DB.CommandHandler;
 using Reporting.Calculate.Ika.DB.Finder;
 using Reporting.Calculate.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Models;
-using EmrCalculateApi.Receipt.ViewModels;
-using EmrCalculateApi.Requests;
+using Reporting.Calculate.Interface;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using Reporting.Calculate.Requests;
+using Reporting.Calculate.Receipt.Models;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Receipt.ViewModels;
 
 namespace Reporting.Calculate.Ika.ViewModels
 {
@@ -26,7 +26,6 @@ namespace Reporting.Calculate.Ika.ViewModels
         private OdrInfFinder _odrInfFinder;
         private RaiinInfFinder _raiinInfFinder;
         private MasterFinder _masterFinder;
-        //private CommonBase.CommonMasters.DbAccess.MasterFinder _commonMstFinder;
         private SanteiFinder _santeiFinder;
 
         private ClearIkaCalculateCommandHandler _clearIkaCalculateCommandHandler;

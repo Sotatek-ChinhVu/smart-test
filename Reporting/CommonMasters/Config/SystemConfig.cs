@@ -1824,22 +1824,31 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// <summary>
     /// 入金額0円領収証
     /// </summary>
-    public int PrintReceiptPay0Yen => (int)GetSettingValue(93001, 4);
+    public int PrintReceiptPay0Yen() { return (int)GetSettingValue(93001, 4); }
 
     /// <summary>
     /// 明細書
     /// </summary>
-    public int PrintDetail => (int)GetSettingValue(93002, 0);
+    public int PrintDetail()
+    {
+        return (int)GetSettingValue(93002, 0);
+    }
 
     /// <summary>
     /// 請求額0円明細書
     /// </summary>
-    public int PrintDetail0Yen => (int)GetSettingValue(93002, 3);
+    public int PrintDetail0Yen()
+    {
+        return (int)GetSettingValue(93002, 3);
+    }
 
     /// <summary>
     /// 入金額0円明細書
     /// </summary>
-    public int PrintDetailPay0Yen => (int)GetSettingValue(93002, 6);
+    public int PrintDetailPay0Yen()
+    {
+        return (int)GetSettingValue(93002, 6);
+    }
 
     /// <summary>
     /// 院外処方箋

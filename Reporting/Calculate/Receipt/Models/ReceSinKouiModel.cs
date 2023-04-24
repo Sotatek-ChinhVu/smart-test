@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EmrCalculateApi.Ika.Constants;
-using EmrCalculateApi.Ika.Models;
+using Reporting.Calculate.Ika.Constants;
+using Reporting.Calculate.Ika.Models;
 
 namespace Reporting.Calculate.Receipt.Models
 {

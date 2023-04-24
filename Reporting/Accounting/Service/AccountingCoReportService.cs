@@ -13,6 +13,10 @@ using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Calculate.Receipt.ViewModels;
 using Domain.Models.CalculateModel;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Constants;
+using Amazon.Runtime.Internal;
+using Reporting.Karte1.Mapper;
 
 namespace Reporting.Accounting.Service;
 
@@ -349,10 +353,41 @@ public class AccountingCoReportService : IAccountingCoReportService
     }
     #endregion
 
+    public AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false)
+    {
+        List<CoAccountingParamModel> coAccountingParamModels = new();
+        var raiinInfModelList = _finder.GetOyaRaiinInfList(hpId, raiinNoList, ptId);
+        var raiinInfModelPayList = _finder.GetOyaRaiinInfList(hpId, raiinNoPayList, ptId);
+
+        List<long> oyaRaiinList;
+        if (isCalculateProcess && ((printType == 0 && _systemConfig.PrintReceiptPay0Yen() == 0)
+                               || (printType == 1 && _systemConfig.PrintDetailPay0Yen() == 0)))
+        {
+            oyaRaiinList = raiinInfModelPayList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
+        }
+        else
+        {
+            oyaRaiinList = raiinInfModelList.GroupBy(item => item.OyaRaiinNo).Select(item => item.Key).ToList();
+        }
+        foreach (long oyaRaiinNo in oyaRaiinList)
+        {
+            var listRaiinNoPrint = raiinInfModelList.FindAll(item => item.OyaRaiinNo == oyaRaiinNo).OrderBy(item => item.SinDate).ToList();
+            int startDateInput = listRaiinNoPrint.First().SinDate;
+            int endDateInput = listRaiinNoPrint.Last().SinDate;
+            coAccountingParamModels.Add(
+            new CoAccountingParamModel(
+                ptId,
+                startDateInput,
+                endDateInput,
+                listRaiinNoPrint.Select(item => item.RaiinNo).ToList(),
+                printType: printTypeInput));
+        }
+        return GetAccountingReportingData(hpId, coAccountingParamModels);
+    }
     public AccountingResponse GetAccountingReportingData(
-            int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,
-            int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
-            bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
+    int hpId, long ptId, int startDate, int endDate, List<long> raiinNos, int hokenId = 0,
+    int miseisanKbn = 0, int saiKbn = 0, int misyuKbn = 0, int seikyuKbn = 1, int hokenKbn = 0,
+    bool hokenSeikyu = false, bool jihiSeikyu = false, bool nyukinBase = false,
             int hakkoDay = 0, string memo = "", int printType = 0, string formFileName = "")
     {
         this.hpId = hpId;
@@ -891,7 +926,7 @@ public class AccountingCoReportService : IAccountingCoReportService
 
             }
 
-            foreach (SinMeiDataModel sinmeiData in sinmeiView.SinMei)
+            foreach (var sinmeiData in sinmeiView.SinMei)
             {
                 if (preRpNo > 0 && sinmeiData.RpNo != preRpNo)
                 {

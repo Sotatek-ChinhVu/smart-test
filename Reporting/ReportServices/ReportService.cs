@@ -159,4 +159,19 @@ public class ReportService : IReportService
     {
         return _accountingCoReportService.GetAccountingReportingData(hpId, coAccountingParamModels);
     }
+
+    /// <summary>
+    /// GetAccountingReportingData
+    /// </summary>
+    /// <param name="hpId"></param>
+    /// <param name="ptId"></param>
+    /// <param name="printTypeInput"></param>
+    /// <param name="raiinNoList"></param>
+    /// <param name="raiinNoPayList"></param>
+    /// <param name="isCalculateProcess"></param>
+    /// <returns></returns>
+    public AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess)
+    {
+        return _accountingCoReportService.GetAccountingReportingData(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
+    }
 }

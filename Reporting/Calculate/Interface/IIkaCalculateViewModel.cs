@@ -1,6 +1,6 @@
 ﻿using Reporting.Calculate.Ika.Models;
-using EmrCalculateApi.Receipt.Models;
-using EmrCalculateApi.Requests;
+using Reporting.Calculate.Receipt.Models;
+using Reporting.Calculate.Requests;
 
 namespace Reporting.Calculate.Interface
 {

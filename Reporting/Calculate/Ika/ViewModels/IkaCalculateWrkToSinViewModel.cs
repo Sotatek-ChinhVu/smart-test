@@ -6,7 +6,7 @@ using Reporting.Calculate.Ika.Constants;
 using Helper.Constants;
 using Helper.Extension;
 using Domain.Constant;
-using EmrCalculateApi.Constants;
+using Reporting.Calculate.Constants;
 using Helper.Common;
 
 namespace Reporting.Calculate.Ika.ViewModels

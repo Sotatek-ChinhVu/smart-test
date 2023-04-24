@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EmrCalculateApi.Ika.Models;
+using Reporting.Calculate.Ika.Models;
 using Helper.Constants;
 
 namespace Reporting.Calculate.Receipt.Models

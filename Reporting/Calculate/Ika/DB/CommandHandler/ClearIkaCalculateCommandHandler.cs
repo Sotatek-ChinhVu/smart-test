@@ -1,9 +1,9 @@
 ﻿using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Ika.ViewModels;
 using PostgreDataContext;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 using Helper.Constants;
-using EmrCalculateApi.Extensions;
+using Reporting.Calculate.Extensions;
 
 namespace Reporting.Calculate.Ika.DB.CommandHandler
 {

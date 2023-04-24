@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Interface;
+﻿using Reporting.Calculate.Interface;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;

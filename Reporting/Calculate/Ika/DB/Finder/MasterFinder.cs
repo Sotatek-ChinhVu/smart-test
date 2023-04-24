@@ -1,5 +1,5 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Extensions;
+﻿using Reporting.Calculate.Constants;
+using Reporting.Calculate.Extensions;
 using Entity.Tenant;
 using PostgreDataContext;
 using Helper.Constants;

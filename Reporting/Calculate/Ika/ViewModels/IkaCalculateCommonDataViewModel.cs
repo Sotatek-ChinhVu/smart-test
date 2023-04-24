@@ -1,12 +1,12 @@
 ﻿using Domain.Constant;
-using EmrCalculateApi.Constants;
+using Reporting.Calculate.Constants;
 using Reporting.Calculate.Ika.Constants;
 using Reporting.Calculate.Ika.DB.CommandHandler;
 using Reporting.Calculate.Ika.DB.Finder;
 using Reporting.Calculate.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Requests;
-using EmrCalculateApi.Utils;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Requests;
+using Reporting.Calculate.Utils;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -364,7 +364,7 @@ namespace Reporting.Calculate.Ika.ViewModels
             DoSortOdrDtl(
                 _odrCommon.odrDtlls.FindAll(p =>
                     //(p.OdrKouiKbn >= OdrKouiKbnConst.SyotiMin && p.OdrKouiKbn <= OdrKouiKbnConst.SyotiMax) ||
-                    (p.OdrKouiKbn >= EmrCalculateApi.Constants.OdrKouiKbnConst.KensaMin && p.OdrKouiKbn <= OdrKouiKbnConst.KensaMax) //||
+                    (p.OdrKouiKbn >= Reporting.Calculate.Constants.OdrKouiKbnConst.KensaMin && p.OdrKouiKbn <= OdrKouiKbnConst.KensaMax) //||
                                                                                                                                      //(p.OdrKouiKbn >= OdrKouiKbnConst.SyujyutuMin && p.OdrKouiKbn <= OdrKouiKbnConst.SyujyutuMax) ||
                                                                                                                                      //(p.OdrKouiKbn >= OdrKouiKbnConst.SonotaMin && p.OdrKouiKbn <= OdrKouiKbnConst.SonotaMax)
                     ));

@@ -4,12 +4,12 @@ using Reporting.Calculate.Ika.DB.CommandHandler;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Ika.Constants;
 using Helper.Constants;
-using EmrCalculateApi.Utils;
+using Reporting.Calculate.Utils;
 using Infrastructure.Interfaces;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 using Domain.Constant;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Requests;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Requests;
 
 namespace Reporting.Calculate.Ika.ViewModels
 {

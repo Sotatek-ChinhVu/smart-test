@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Receipt.ViewModels;
+﻿using Reporting.Calculate.Receipt.ViewModels;
 
 namespace Reporting.Accounting.Model;
 

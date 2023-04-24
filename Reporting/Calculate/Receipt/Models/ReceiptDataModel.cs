@@ -1,8 +1,8 @@
-﻿using EmrCalculateApi.Ika.Models;
+﻿using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Receipt.Constants;
 using Helper.Constants;
 using Helper.Common;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 
 namespace Reporting.Calculate.Receipt.Models
 {

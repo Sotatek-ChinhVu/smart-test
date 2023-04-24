@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Futan.Models;
+﻿using Reporting.Calculate.Futan.Models;
 
 namespace Reporting.Calculate.Interface
 {

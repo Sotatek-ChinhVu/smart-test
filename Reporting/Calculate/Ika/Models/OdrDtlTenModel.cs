@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Constant;
-using EmrCalculateApi.Constants;
+using Reporting.Calculate.Constants;
 
 namespace Reporting.Calculate.Ika.Models
 {

@@ -1,15 +1,11 @@
-﻿using EmrCalculateApi.Extensions;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using PostgreDataContext;
-using Helper.Constants;
-using EmrCalculateApi.Ika.Models;
-using Helper.Common;
 using Domain.Constant;
-using EmrCalculateApi.Interface;
 using Reporting.Calculate.Receipt.Models;
-using EmrCalculateApi.Constants;
-using Infrastructure.Interfaces;
-using System.Runtime.CompilerServices;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Ika.Models;
+using Reporting.Calculate.Extensions;
+using Reporting.Calculate.Constants;
 
 namespace Reporting.Calculate.Receipt.DB.Finder
 {
@@ -1167,7 +1163,6 @@ namespace Reporting.Calculate.Receipt.DB.Finder
                     SinDate = A.Key
                 }
             );
-            //_emrLogger.WriteLogMsg( this, conFncName, joinQuery.AsString());
             var entities = joinQuery.AsEnumerable().Select(
                 data =>
                     data.SinDate

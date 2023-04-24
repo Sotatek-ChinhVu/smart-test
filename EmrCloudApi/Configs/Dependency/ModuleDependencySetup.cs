@@ -67,8 +67,6 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
-using EmrCalculateApi.Implementation;
-using EmrCalculateApi.Interface;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
@@ -461,6 +459,8 @@ using UseCase.Lock.Add;
 using Interactor.Lock;
 using UseCase.Lock.Check;
 using UseCase.Lock.Remove;
+using Reporting.Calculate.Implementation;
+using Reporting.Calculate.Interface;
 
 namespace EmrCloudApi.Configs.Dependency
 {

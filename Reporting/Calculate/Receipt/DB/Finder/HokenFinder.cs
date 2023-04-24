@@ -1,8 +1,8 @@
-﻿using EmrCalculateApi.Extensions;
+﻿using Reporting.Calculate.Extensions;
 using PostgreDataContext;
 using Domain.Constant;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Futan.DB.Finder;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Futan.DB.Finder;
 using Reporting.Calculate.Receipt.Models;
 
 namespace Reporting.Calculate.Receipt.DB.Finder

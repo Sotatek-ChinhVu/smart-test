@@ -1,12 +1,12 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Extensions;
+﻿using Reporting.Calculate.Constants;
+using Reporting.Calculate.Extensions;
 using Entity.Tenant;
 using PostgreDataContext;
 using Helper.Constants;
-using EmrCalculateApi.Ika.Models;
+using Reporting.Calculate.Ika.Models;
 using Helper.Common;
 using Domain.Constant;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 using EmrCalculateApi.Futan.DB;
 
 namespace Reporting.Calculate.Receipt.DB.Finder

@@ -1,5 +1,5 @@
 ﻿using Entity.Tenant;
-using EmrCalculateApi.Ika.Models;
+using Reporting.Calculate.Ika.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,10 +1,5 @@
 ﻿using Entity.Tenant;
 using Reporting.Calculate.Ika.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reporting.Calculate.Ika.Models
 {

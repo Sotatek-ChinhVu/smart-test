@@ -41,4 +41,6 @@ public interface ISystemConfig
     int AccountingDetailFormType();
     int AccountingMonthFormType();
     int AccountingDetailMonthFormType();
+    int PrintReceiptPay0Yen();
+    int PrintDetailPay0Yen();
 }

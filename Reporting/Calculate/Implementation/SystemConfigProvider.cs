@@ -1,5 +1,5 @@
 ﻿using Amazon.S3.Model.Internal.MarshallTransformations;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;

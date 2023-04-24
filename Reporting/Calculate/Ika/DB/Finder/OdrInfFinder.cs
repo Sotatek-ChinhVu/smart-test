@@ -1,13 +1,13 @@
-﻿using EmrCalculateApi.Extensions;
+﻿using Reporting.Calculate.Extensions;
 using Entity.Tenant;
 using PostgreDataContext;
 using Helper.Constants;
 using Reporting.Calculate.Ika.Models;
 using Helper.Common;
 using Reporting.Calculate.Ika.Constants;
-using EmrCalculateApi.Interface;
+using Reporting.Calculate.Interface;
 using Domain.Constant;
-using EmrCalculateApi.Constants;
+using Reporting.Calculate.Constants;
 using Infrastructure.Interfaces;
 
 namespace Reporting.Calculate.Ika.DB.Finder

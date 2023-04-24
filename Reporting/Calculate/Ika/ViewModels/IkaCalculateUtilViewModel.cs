@@ -4,7 +4,7 @@ using Reporting.Calculate.Ika.DB.CommandHandler;
 using Reporting.Calculate.Ika.Models;
 using Reporting.Calculate.Ika.Constants;
 using Helper.Constants;
-using EmrCalculateApi.Utils;
+using Reporting.Calculate.Utils;
 using Infrastructure.Interfaces;
 using Helper.Common;
 

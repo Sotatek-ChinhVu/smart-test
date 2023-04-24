@@ -1,22 +1,15 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
-using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.MedicalExamination;
-using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.Accounting.Model;
-using Reporting.OutDrug.Service;
 using Reporting.ReportServices;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using UseCase.MedicalExamination.GetHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -102,17 +95,24 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.OutDug);
     }
 
-    [HttpGet(ApiPath.ReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
+    //[HttpPost(ApiPath.ReceiptReport)]
+    //public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+    //{
+    //    List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
+    //                                                                                       item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
+    //                                                                                       request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
+    //                                                                                       request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
+    //                                                                                       request.HakkoDay, request.Memo,
+    //                                                                                       request.PrintType, request.FormFileName))
+    //                                                                   .ToList();
+    //    var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+    //    return await RenderPdf(data, ReportType.Accounting);
+    //}
+
+    [HttpPost(ApiPath.ReceiptReport)]
+    public async Task<IActionResult> GenerateReceiptReport([FromBody] ReceiptExportRequest request)
     {
-        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
-                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
-                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
-                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-                                                                                           request.HakkoDay, request.Memo,
-                                                                                           request.PrintType, request.FormFileName))
-                                                                       .ToList();
-        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting);
     }
 
