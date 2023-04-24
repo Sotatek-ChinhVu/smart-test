@@ -95,19 +95,19 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.OutDug);
     }
 
-    //[HttpPost(ApiPath.ReceiptReport)]
-    //public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
-    //{
-    //    List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
-    //                                                                                       item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
-    //                                                                                       request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
-    //                                                                                       request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
-    //                                                                                       request.HakkoDay, request.Memo,
-    //                                                                                       request.PrintType, request.FormFileName))
-    //                                                                   .ToList();
-    //    var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
-    //    return await RenderPdf(data, ReportType.Accounting);
-    //}
+    [HttpPost(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+    {
+        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
+                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
+                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
+                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
+                                                                                           request.HakkoDay, request.Memo,
+                                                                                           request.PrintType, request.FormFileName))
+                                                                       .ToList();
+        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
 
     [HttpGet(ApiPath.ReceiptReport)]
     public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
