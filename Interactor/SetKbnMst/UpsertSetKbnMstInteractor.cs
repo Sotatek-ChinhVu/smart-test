@@ -45,7 +45,7 @@ namespace Interactor.SetKbnMst
                     {
                         return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidSetKbn);
                     }
-                    if (setKbnMstItem.SetKbnEdaNo <= 0)
+                    if (setKbnMstItem.SetKbnEdaNo < 0)
                     {
                         return new UpsertSetKbnMstOutputData(UpsertSetKbnMstStatus.InvalidSetKbnEdaNo);
                     }

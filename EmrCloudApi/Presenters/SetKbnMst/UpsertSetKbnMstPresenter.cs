@@ -25,7 +25,7 @@ namespace EmrCloudApi.Presenters.SetKbnMst
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
                 case UpsertSetKbnMstStatus.InvalidSetKbn:
-                    Result.Message = ResponseMessage.GetSetKbnListInvalidSetKbn;
+                    Result.Message = ResponseMessage.SetKbnListInvalidSetKbn;
                     break;
                 case UpsertSetKbnMstStatus.InvalidSetKbnName:
                     Result.Message = ResponseMessage.SetKbnListInvalidSetKbnName;
@@ -37,7 +37,7 @@ namespace EmrCloudApi.Presenters.SetKbnMst
                     Result.Message = ResponseMessage.InputNoData;
                     break;
                 case UpsertSetKbnMstStatus.InvalidSetKbnEdaNo:
-                    Result.Message = ResponseMessage.InvalidSetKbnEdaNo;
+                    Result.Message = ResponseMessage.GetSetListInvalidSetKbnEdaNo;
                     break;
                 case UpsertSetKbnMstStatus.InvalidKaCd:
                     Result.Message = ResponseMessage.InvalidKaId;
