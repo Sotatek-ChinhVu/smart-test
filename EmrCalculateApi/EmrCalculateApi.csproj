@@ -34,6 +34,7 @@
     <Folder Include="Receipt\DB\" />
     <Folder Include="Receipt\Constants\" />
     <Folder Include="Receipt\Models\" />
+    <Folder Include="Receipt\ViewModels\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 
