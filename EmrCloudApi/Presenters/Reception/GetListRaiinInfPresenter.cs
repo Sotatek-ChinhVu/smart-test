@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
-using UseCase.Reception.GetListRaiinInfs;
+using UseCase.Reception.GetListRaiinInf;
 
 namespace EmrCloudApi.Tenant.Presenters.Reception;
 public class GetListRaiinInfPresenter : IGetListRaiinInfOutputPort

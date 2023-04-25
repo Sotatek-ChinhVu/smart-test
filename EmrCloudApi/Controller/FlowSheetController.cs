@@ -69,8 +69,8 @@ namespace EmrCloudApi.Controller
                                                         i.RainNo,
                                                         i.PtId,
                                                         i.SinDate,
-                                                        i.Value,
-                                                        i.Flag
+                                                        i.TagNo,
+                                                        i.Cmt
                                                     )).ToList(),
                                                     HpId,
                                                     UserId

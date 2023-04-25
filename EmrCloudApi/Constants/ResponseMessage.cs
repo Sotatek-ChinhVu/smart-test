@@ -987,5 +987,8 @@
         public static readonly string InvalidAgeLevelSetting = "Invalid AgeLevelSetting.";
 
         public static readonly string InvalidTypeItem = "Invalid type item";
+
+        //Chart Apporval
+        public static readonly string InvalidInputListApporoval = "List ApprovalInf input is invalid";
     }
 }

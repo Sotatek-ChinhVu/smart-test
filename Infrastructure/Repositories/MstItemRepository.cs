@@ -645,12 +645,12 @@ namespace Infrastructure.Repositories
             var ipnNameMstList = NoTrackingDataContext.IpnNameMsts.Where(i => ipnCdList.Contains(i.IpnNameCd)).ToList();
 
             var queryJoinWithKensaIpnName = from q in queryFinal
-                                     join k in kensaMstList
-                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
-                                     from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     join i  in ipnNameMstList
-                                     on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
-                                     from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
+                                            join k in kensaMstList
+                                            on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                            from kensaMst in kensaMsts.DefaultIfEmpty()
+                                            join i in ipnNameMstList
+                                            on q.TenMst.IpnNameCd equals i.IpnNameCd into ipnNameMsts
+                                            from ipnNameMst in ipnNameMsts.DefaultIfEmpty()
                                             select new { q.TenMst, q.tenKN, KensaMst = kensaMst, IpnName = ipnNameMst?.IpnName ?? string.Empty };
             var totalCount = queryJoinWithKensaIpnName.Count(item => item.TenMst != null);
 
@@ -1846,7 +1846,7 @@ namespace Infrastructure.Repositories
 
             if (deletedModels.Any())
             {
-                var modelsToDelete = TrackingDataContext.KensaCenterMsts.Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
+                var modelsToDelete = TrackingDataContext.KensaCenterMsts.AsEnumerable().Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
                 TrackingDataContext.KensaCenterMsts.RemoveRange(modelsToDelete);
             }
 
@@ -1854,17 +1854,18 @@ namespace Infrastructure.Repositories
             {
                 foreach (var model in updatedModels)
                 {
-                    NoTrackingDataContext.KensaCenterMsts.Update(new KensaCenterMst()
+                    var kensaTracking = TrackingDataContext.KensaCenterMsts
+                        .FirstOrDefault(x => x.HpId == model.HpId && x.Id == model.Id);
+
+                    if (kensaTracking != null)
                     {
-                        HpId = model.HpId,
-                        CenterCd = model.CenterCd,
-                        CenterName = model.CenterName,
-                        PrimaryKbn = model.PrimaryKbn,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        UpdateId = userId,
-                        Id = model.Id,
-                        SortNo = model.SortNo
-                    });
+                        kensaTracking.CenterCd = model.CenterCd;
+                        kensaTracking.CenterName = model.CenterName;
+                        kensaTracking.PrimaryKbn = model.PrimaryKbn;
+                        kensaTracking.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        kensaTracking.UpdateId = userId;
+                        kensaTracking.SortNo = model.SortNo;
+                    }
                 }
             }
 
@@ -1872,7 +1873,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var model in addedModels)
                 {
-                    NoTrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
+                    TrackingDataContext.KensaCenterMsts.Add(new KensaCenterMst()
                     {
                         HpId = model.HpId,
                         CenterCd = model.CenterCd,
@@ -1920,9 +1921,9 @@ namespace Infrastructure.Repositories
 
             if (tenMstModifieds.Any()) //Have Changes
             {
-                foreach(var item in tenMstModifieds)
+                foreach (var item in tenMstModifieds)
                 {
-                    if(item.IsStartDateKeyUpdated) //After change StartDate => IsStartDateKeyUpdated will is true
+                    if (item.IsStartDateKeyUpdated) //After change StartDate => IsStartDateKeyUpdated will is true
                     {
                         // remove old entity
                         var oldEntity = tenMstDatabases.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.HpId == item.HpId && x.StartDate == item.OriginStartDate); // case customer update key.
@@ -1944,8 +1945,8 @@ namespace Infrastructure.Repositories
                     else
                     {
                         var update = tenMstDatabases.FirstOrDefault(x => x.ItemCd == item.ItemCd && x.HpId == item.HpId && x.StartDate == item.StartDate);
-                        if(update != null)
-                            Mapper.Map(item, update , (src, dest) =>
+                        if (update != null)
+                            Mapper.Map(item, update, (src, dest) =>
                             {
                                 dest.IsDeleted = mode == DeleteOrRecoverTenMstMode.Delete ? DeleteTypes.Deleted : DeleteTypes.None;
                                 return dest;
@@ -1961,11 +1962,11 @@ namespace Infrastructure.Repositories
             return NoTrackingDataContext.CmtKbnMsts
                                         .Where(item => item.HpId == hpId && item.ItemCd == itemCd)
                                         .OrderByDescending(item => item.StartDate)
-                                        .Select(x=> new CmtKbnMstModel(x.Id, x.StartDate, x.EndDate, x.CmtKbn, x.ItemCd, false))
+                                        .Select(x => new CmtKbnMstModel(x.Id, x.StartDate, x.EndDate, x.CmtKbn, x.ItemCd, false))
                                         .ToList();
         }
 
-        public TenMstOriginModel GetTenMstOriginModel(int hpId ,string itemCd, int sinDate)
+        public TenMstOriginModel GetTenMstOriginModel(int hpId, string itemCd, int sinDate)
         {
             var model = NoTrackingDataContext.TenMsts.FirstOrDefault(
                 x => x.HpId == hpId &&
@@ -2165,16 +2166,16 @@ namespace Infrastructure.Repositories
         }
 
 
-        public string GetTenMstName(int hpId ,string santeiItemCd)
+        public string GetTenMstName(int hpId, string santeiItemCd)
         {
             var model = NoTrackingDataContext.TenMsts.Where(
                 x => x.HpId == hpId &&
                      x.ItemCd == santeiItemCd)
                 .OrderByDescending(item => item.StartDate)
                 .FirstOrDefault();
-            if (model == null) 
+            if (model == null)
                 return string.Empty;
-            else 
+            else
                 return model.Name ?? string.Empty;
         }
 
@@ -2182,8 +2183,8 @@ namespace Infrastructure.Repositories
         {
             return NoTrackingDataContext.M10DayLimit.Where(
                     x => x.YjCd == yjCdItem)
-                    .Select(x => new M10DayLimitModel(x.YjCd, 
-                                                      x.SeqNo, 
+                    .Select(x => new M10DayLimitModel(x.YjCd,
+                                                      x.SeqNo,
                                                       x.LimitDay,
                                                       x.StDate ?? string.Empty,
                                                       x.EdDate ?? string.Empty,
@@ -2192,7 +2193,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        public List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId ,string IpnNameCd)
+        public List<IpnMinYakkaMstModel> GetIpnMinYakkaMstModels(int hpId, string IpnNameCd)
         {
             return NoTrackingDataContext.IpnMinYakkaMsts.Where(
                     x => x.HpId == hpId &&
@@ -2214,7 +2215,7 @@ namespace Infrastructure.Repositories
                     .ToList();
         }
 
-        public DosageMstModel GetDosageMstModel(int hpId ,string ItemCd)
+        public DosageMstModel GetDosageMstModel(int hpId, string ItemCd)
         {
             var model = NoTrackingDataContext.DosageMsts.FirstOrDefault(x =>
                         x.HpId == hpId &&
@@ -2255,7 +2256,7 @@ namespace Infrastructure.Repositories
                 return model.YohoSuffix ?? string.Empty;
         }
 
-        public List<DrugInfModel> GetDrugInfByItemCd(int hpId ,string itemCd)
+        public List<DrugInfModel> GetDrugInfByItemCd(int hpId, string itemCd)
         {
             List<DrugInfModel> result = new List<DrugInfModel>();
             var listDrugInf = NoTrackingDataContext.DrugInfs.Where(u => u.HpId == hpId &&
@@ -2274,7 +2275,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        public PiImageModel GetImagePiByItemCd(int hpId ,string itemCd, int imageType)
+        public PiImageModel GetImagePiByItemCd(int hpId, string itemCd, int imageType)
         {
             var piImage = NoTrackingDataContext.PiImages.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == itemCd && u.ImageType == imageType);
             if (piImage != null)
@@ -2308,19 +2309,19 @@ namespace Infrastructure.Repositories
                         };
 
             result = query.AsEnumerable()
-                          .Select(x => new TeikyoByomeiModel(x.ByomeiMst.SikkanCd, 
-                                                             x.TeikyoByomei.HpId, 
-                                                             x.TeikyoByomei.ItemCd, 
+                          .Select(x => new TeikyoByomeiModel(x.ByomeiMst.SikkanCd,
+                                                             x.TeikyoByomei.HpId,
+                                                             x.TeikyoByomei.ItemCd,
                                                              x.TeikyoByomei.ByomeiCd,
                                                              x.TeikyoByomei.StartYM,
-                                                             x.TeikyoByomei.EndYM, 
-                                                             x.TeikyoByomei.IsInvalid, 
+                                                             x.TeikyoByomei.EndYM,
+                                                             x.TeikyoByomei.IsInvalid,
                                                              x.TeikyoByomei.IsInvalidTokusyo,
-                                                             x.TeikyoByomei.EditKbn, 
-                                                             x.TeikyoByomei.SystemData, 
-                                                             x.ByomeiMst.Byomei ?? string.Empty, 
-                                                             x.ByomeiMst.KanaName1 ?? string.Empty, 
-                                                             false, 
+                                                             x.TeikyoByomei.EditKbn,
+                                                             x.TeikyoByomei.SystemData,
+                                                             x.ByomeiMst.Byomei ?? string.Empty,
+                                                             x.ByomeiMst.KanaName1 ?? string.Empty,
+                                                             false,
                                                              false))
                           .OrderByDescending(x => x.SystemData)
                           .ThenBy(x => x.KanaName)
@@ -2346,22 +2347,22 @@ namespace Infrastructure.Repositories
                      x => x.HpId == hpId &&
                           x.ItemCd == itemCd
                     )
-                    .Select(x => new DensiSanteiKaisuModel(x.Id, 
-                                                           x.HpId, 
-                                                           x.ItemCd, 
+                    .Select(x => new DensiSanteiKaisuModel(x.Id,
+                                                           x.HpId,
+                                                           x.ItemCd,
                                                            x.UnitCd,
-                                                           x.MaxCount, 
+                                                           x.MaxCount,
                                                            x.SpJyoken,
                                                            x.StartDate,
                                                            x.EndDate,
                                                            x.SeqNo,
                                                            x.UserSetting,
-                                                           x.TargetKbn, 
-                                                           x.TermCount, 
-                                                           x.TermSbt, 
-                                                           x.IsInvalid, 
+                                                           x.TargetKbn,
+                                                           x.TermCount,
+                                                           x.TermSbt,
+                                                           x.IsInvalid,
                                                            x.ItemGrpCd,
-                                                           false, 
+                                                           false,
                                                            false))
                     .ToList();
         }
@@ -2432,7 +2433,7 @@ namespace Infrastructure.Repositories
                                     .Select(x => new DensiHaihanModel((int)HaiHanModelType.DENSI_HAIHAN_DAY,
                                                                     (int)HaiHanModelType.DENSI_HAIHAN_DAY,
                                                                     x.densiHaihanDayEntity.Id,
-                                                                    x.densiHaihanDayEntity.HpId, 
+                                                                    x.densiHaihanDayEntity.HpId,
                                                                     x.densiHaihanDayEntity.ItemCd1,
                                                                     x.densiHaihanDayEntity.ItemCd2 ?? string.Empty,
                                                                     x.densiHaihanDayEntity.ItemCd2 ?? string.Empty,
@@ -2592,7 +2593,7 @@ namespace Infrastructure.Repositories
                     .ToList();
         }
 
-        public List<DensiHoukatuModel> GetListDensiHoukatuByItemCd(int hpId ,string itemCd, int sinDate)
+        public List<DensiHoukatuModel> GetListDensiHoukatuByItemCd(int hpId, string itemCd, int sinDate)
         {
             List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
             var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&
@@ -2618,7 +2619,7 @@ namespace Infrastructure.Repositories
                             ItemName = tenMstItem.Name,
                         };
             result = query.AsEnumerable().Where(data => !string.IsNullOrEmpty(data.ItemName))
-                                        .Select(x => new DensiHoukatuModel(x.Hokatu.HpId, 
+                                        .Select(x => new DensiHoukatuModel(x.Hokatu.HpId,
                                                                            x.Hokatu.ItemCd,
                                                                            x.Hokatu.StartDate,
                                                                            x.Hokatu.EndDate,
@@ -2641,7 +2642,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<DensiHoukatuGrpModel> GetListDensiHoukatuGrpByItemCd(int hpId ,string itemCd, int sinDate)
+        public List<DensiHoukatuGrpModel> GetListDensiHoukatuGrpByItemCd(int hpId, string itemCd, int sinDate)
         {
             List<DensiHoukatuGrpModel> result = new List<DensiHoukatuGrpModel>();
             var listHoukatuGrp = NoTrackingDataContext.DensiHoukatuGrps.Where(u => u.HpId == hpId &&
@@ -2690,7 +2691,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId ,List<string> listGrpNo)
+        public List<DensiHoukatuModel> GetListDensiHoukatuMaster(int hpId, List<string> listGrpNo)
         {
             List<DensiHoukatuModel> result = new List<DensiHoukatuModel>();
             var listHoukatu = NoTrackingDataContext.DensiHoukatus.Where(u => u.HpId == hpId &&

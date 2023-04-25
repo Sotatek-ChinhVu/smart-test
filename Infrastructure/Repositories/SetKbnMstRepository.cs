@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
             foreach (var model in setKbnMstModels)
             {
                 maxSetKbn++;
-                var setKbnMst = TrackingDataContext.SetKbnMsts.FirstOrDefault(x => x.HpId == Session.HospitalID &&
+                var setKbnMst = TrackingDataContext.SetKbnMsts.FirstOrDefault(x => x.HpId == hpId &&
                                                                                      x.IsDeleted == 0 &&
                                                                                      x.SetKbn == model.SetKbn &&
                                                                                      x.GenerationId == generationId);
@@ -62,13 +62,13 @@ namespace Infrastructure.Repositories
                     if (setKbnMst.IsDeleted == DeleteTypes.Deleted)
                     {
                         setKbnMst.SetKbn = DeleteTypes.Deleted;
-                        setKbnMst.UpdateId = Session.UserID;
+                        setKbnMst.UpdateId = userId;
                         setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
                     else
                     {
                         setKbnMst.SetKbnName = model.SetKbnName;
-                        setKbnMst.UpdateId = Session.UserID;
+                        setKbnMst.UpdateId = userId;
                         setKbnMst.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
 
@@ -93,8 +93,12 @@ namespace Infrastructure.Repositories
                     TrackingDataContext.SetKbnMsts.Add(newSetKbnMst);
                 }
             }
-
-            return TrackingDataContext.SaveChanges() > 0;
+            var check = TrackingDataContext.SaveChanges() > 0;
+            if (check)
+            {
+                _memoryCache.Remove(GetCacheKey());
+            }
+            return check;
         }
 
         public void ReleaseResource()

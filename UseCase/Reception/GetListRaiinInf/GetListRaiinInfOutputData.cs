@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.Reception.GetListRaiinInf;
-using UseCase.Reception.GetListRaiinInfs;
+
+namespace UseCase.Reception.GetListRaiinInf;
 
 public class GetListRaiinInfOutputData : IOutputData
 {
@@ -10,6 +10,13 @@ public class GetListRaiinInfOutputData : IOutputData
         RaiinInfs = raiinInfs;
     }
 
+    public GetListRaiinInfOutputData(GetListRaiinInfStatus status)
+    {
+        Status = status;
+        RaiinInfs = new();
+    }
+
     public GetListRaiinInfStatus Status { get; private set; }
+
     public List<GetListRaiinInfOutputItem> RaiinInfs { get; private set; }
 }

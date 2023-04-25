@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
         {
             Result = new Response<GetValidGairaiRihaResponse>()
             {
-                Data = new GetValidGairaiRihaResponse(outputData.Type, outputData.ItemName, outputData.LastDaySanteiRiha, outputData.RihaItemName),
+                Data = new GetValidGairaiRihaResponse(outputData.GairaiRihaItems),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

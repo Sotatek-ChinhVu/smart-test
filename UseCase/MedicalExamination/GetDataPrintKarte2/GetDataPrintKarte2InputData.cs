@@ -6,6 +6,7 @@ namespace UseCase.MedicalExamination.GetDataPrintKarte2;
 
 public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHistoryOutputData>
 {
+    [JsonConstructor]
     public GetDataPrintKarte2InputData(long ptId, int hpId, int sinDate, int startDate, int endDate, bool isCheckedHoken, bool isCheckedJihi, bool isCheckedHokenJihi, bool isCheckedJihiRece, bool isCheckedHokenRousai, bool isCheckedHokenJibai, bool isCheckedDoctor, bool isCheckedStartTime, bool isCheckedVisitingTime, bool isCheckedEndTime, bool isUketsukeNameChecked, bool isCheckedSyosai, bool isIncludeTempSave, bool isCheckedApproved, bool isCheckedInputDate, bool isCheckedSetName, int deletedOdrVisibilitySetting, bool isIppanNameChecked, bool isCheckedHideOrder)
     {
         PtId = ptId;
@@ -32,6 +33,10 @@ public class GetDataPrintKarte2InputData : IInputData<GetMedicalExaminationHisto
         DeletedOdrVisibilitySetting = deletedOdrVisibilitySetting;
         IsIppanNameChecked = isIppanNameChecked;
         IsCheckedHideOrder = isCheckedHideOrder;
+    }
+
+    public GetDataPrintKarte2InputData()
+    {
     }
 
     [JsonPropertyName("ptId")]

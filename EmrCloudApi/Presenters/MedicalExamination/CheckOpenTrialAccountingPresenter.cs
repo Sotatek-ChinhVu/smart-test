@@ -12,7 +12,7 @@ namespace EmrCloudApi.Presenters.MedicalExamination
 
         public void Complete(CheckOpenTrialAccountingOutputData outputData)
         {
-            Result.Data = new CheckOpenTrialAccountingResponse(outputData.IsHokenPatternSelect, outputData.Type, outputData.ItemName, outputData.LastDaySanteiRiha, outputData.RihaItemName, outputData.SystemSetting, outputData.IsExistYoboItemOnly);
+            Result.Data = new CheckOpenTrialAccountingResponse(outputData.IsHokenPatternSelect, outputData.GairaiRihaItems, outputData.SystemSetting, outputData.IsExistYoboItemOnly);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

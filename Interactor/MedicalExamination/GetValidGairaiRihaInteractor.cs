@@ -18,23 +18,23 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidHpId);
+                    return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidPtId);
+                    return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.InvalidPtId);
                 }
                 if (inputData.RaiinNo <= 0)
                 {
-                    return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidRaiinNo);
+                    return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.InvalidRaiinNo);
                 }
                 if (inputData.SinDate <= 0)
                 {
-                    return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidSinDate);
+                    return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.InvalidSinDate);
                 }
                 if (inputData.SyosaiKbn < 0)
                 {
-                    return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.InvalidSyosaiKbn);
+                    return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.InvalidSyosaiKbn);
                 }
 
                 var check = _todayOdrRepository.GetValidGairaiRiha(
@@ -46,11 +46,11 @@ namespace Interactor.MedicalExamination
                         inputData.AllOdrInfItem
                         );
 
-                return new GetValidGairaiRihaOutputData(check.type, check.itemName, check.lastDaySanteiRiha, check.rihaItemName, GetValidGairaiRihaStatus.Successed);
+                return new GetValidGairaiRihaOutputData(check.Select(c => new GairaiRihaItem(c.type, c.itemName, c.lastDaySanteiRiha, c.rihaItemName)).ToList(), GetValidGairaiRihaStatus.Successed);
             }
             catch
             {
-                return new GetValidGairaiRihaOutputData(0, string.Empty, 0, string.Empty, GetValidGairaiRihaStatus.Failed);
+                return new GetValidGairaiRihaOutputData(new(), GetValidGairaiRihaStatus.Failed);
             }
             finally
             {

@@ -83,6 +83,10 @@
         public const string ExportNameLabel = "ExportNameLabel";
         public const string MedicalRecordWebId = "MedicalRecordWebId";
         public const string OutDrug = "OutDrug";
+        public const string ReceiptCheck = "ReceiptCheck";
+        public const string ReceiptList = "ReceiptList";
+        public const string ReceiptReport = "ReceiptReport";
+        public const string PeriodReceiptReport = "PeriodReceiptReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -138,6 +142,7 @@
         public const string SwapHoken = "SwapHoken";
         public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
         public const string ValidateSwapHoken = "ValidateSwapHoken";
+        public const string CalculationSwapHoken = "CalculationSwapHoken";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -286,6 +291,13 @@
         public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
         public const string GetSetDataTenMst = "GetSetDataTenMst";
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
+
+        //Lock
+        public const string AddLock = "AddLock";
+        public const string CheckLock = "CheckLock";
+        public const string RemoveLock = "RemoveLock";
+        public const string RemoveAllLock = "RemoveAllLock";
+        public const string ExtendTtl = "ExtendTtl";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

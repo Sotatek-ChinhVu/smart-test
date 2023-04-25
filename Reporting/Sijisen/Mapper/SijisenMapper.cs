@@ -349,12 +349,13 @@ namespace Reporting.Sijisen.Mapper
 
             foreach (var item in _printOutData)
             {
-                Dictionary<string, CellModel> data = new Dictionary<string, CellModel>();
-
-                data.Add("lsOdrKbn", new CellModel(item.Sikyu));
-                data.Add("lsOrder", new CellModel(item.Data, item.UnderLine));
-                data.Add("lsSuryo", new CellModel(item.Suuryo));
-                data.Add("lsTani", new CellModel(item.Tani));
+                Dictionary<string, CellModel> data = new Dictionary<string, CellModel>
+                {
+                    { "lsOdrKbn", new CellModel(item.Sikyu) },
+                    { "lsOrder", new CellModel(item.Data, item.UnderLine) },
+                    { "lsSuryo", new CellModel(item.Suuryo) },
+                    { "lsTani", new CellModel(item.Tani) }
+                };
 
                 result.Add(data);
             }

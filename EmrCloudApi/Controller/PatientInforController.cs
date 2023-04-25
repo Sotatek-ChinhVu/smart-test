@@ -92,6 +92,10 @@ using UseCase.PatientInfor.GetPatientInfoBetweenTimesList;
 using Newtonsoft.Json;
 using UseCase.PatientInfor.SearchPatientInfoByPtNum;
 using UseCase.PatientInfor.GetTokiMstList;
+using Helper.Messaging.Data;
+using System.Text;
+using Helper.Messaging;
+using UseCase.SwapHoken.Calculation;
 
 namespace EmrCloudApi.Controller
 {
@@ -100,6 +104,8 @@ namespace EmrCloudApi.Controller
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
+        private CancellationToken? _cancellationToken;
+
         public PatientInforController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
@@ -644,7 +650,10 @@ namespace EmrCloudApi.Controller
                                                    request.IsHokenPatternUsed,
                                                    request.ConfirmInvalidIsShowConversionCondition,
                                                    request.ConfirmSwapHoken,
-                                                   UserId);
+                                                   UserId,
+                                                   request.IsReCalculation,
+                                                   request.IsReceCalculation,
+                                                   request.IsReceCheckError);
             var output = _bus.Handle(input);
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
@@ -893,6 +902,62 @@ namespace EmrCloudApi.Controller
             var presenter = new GetTokkiMstListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetTokkiMstListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CalculationSwapHoken)]
+        public void CalculationSwapHoken([FromBody] CalculationSwapHokenRequest request , CancellationToken cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+            try
+            {
+                Messenger.Instance.Register<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                Messenger.Instance.Register<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+                HttpContext.Response.ContentType = "application/json";
+                HttpResponse response = HttpContext.Response;
+
+                var input = new CalculationSwapHokenInputData(HpId, UserId, request.SeikyuYms, request.PtId, request.IsReCalculation, request.IsReceCalculation, request.IsReceCheckError);
+                var output = _bus.Handle(input);
+                if (output.Status == CalculationSwapHokenStatus.Successful)
+                    UpdateCalculationSwapHokenStatus(new CalculationSwapHokenMessageStatus(string.Empty, 100, true, true));
+                else
+                    UpdateCalculationSwapHokenStatus(new CalculationSwapHokenMessageStatus(output.ErrorText, 100, true, false));
+
+            }
+            finally
+            {
+                Messenger.Instance.Deregister<CalculationSwapHokenMessageStatus>(this, UpdateCalculationSwapHokenStatus);
+                Messenger.Instance.Deregister<CalculationSwapHokenMessageStop>(this, StopCalculationCaculaleSwapHoken);
+            }
+        }
+
+
+        private void StopCalculationCaculaleSwapHoken(CalculationSwapHokenMessageStop stopCalcStatus)
+        {
+            if (!_cancellationToken.HasValue)
+            {
+                stopCalcStatus.CallFailCallback(false);
+            }
+            else
+            {
+                stopCalcStatus.CallSuccessCallback(_cancellationToken!.Value.IsCancellationRequested);
+            }
+        }
+
+        private void UpdateCalculationSwapHokenStatus(CalculationSwapHokenMessageStatus status)
+        {
+            StringBuilder titleProgressbar = new();
+            titleProgressbar.Append("\n{ displayText: \"");
+            titleProgressbar.Append(status.DisplayText);
+            titleProgressbar.Append("\", percent: ");
+            titleProgressbar.Append(status.Percent);
+            titleProgressbar.Append(", complete: ");
+            titleProgressbar.Append(status.Complete);
+            titleProgressbar.Append(", completeSuccess: ");
+            titleProgressbar.Append(status.CompleteSuccess);
+            titleProgressbar.Append(" }");
+            var resultForFrontEnd = Encoding.UTF8.GetBytes(titleProgressbar.ToString());
+            HttpContext.Response.Body.WriteAsync(resultForFrontEnd, 0, resultForFrontEnd.Length);
+            HttpContext.Response.Body.FlushAsync();
         }
     }
 }

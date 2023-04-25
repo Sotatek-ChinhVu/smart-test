@@ -32,6 +32,7 @@ namespace Domain.Constant
         public const string MessageType_mEnt01020 = "既に登録されているため、{0}は登録できません。";
         public const string MessageType_mDo00012 = "{0}" + "\r\n" + "{1}を実行しますか？";
         public const string MessageType_mDo00010 = "{0}を実行しますか？";
+        public const string MessageType_mDo00050 = "{0}ため、この処理には時間がかかる場合があります。" + "\r\n" + "実行しますか？";
     }
 
     public static class TypeMessage
