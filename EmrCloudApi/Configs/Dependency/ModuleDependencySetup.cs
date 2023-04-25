@@ -3,7 +3,7 @@ using CommonChecker.Services;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.Accounting;
-using Domain.Models.ApprovalInfo;
+using Domain.Models.ChartApproval;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.Document;
@@ -80,10 +80,10 @@ using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
 using Interactor.AccountDue;
 using Interactor.Accounting;
-using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculateService;
 using Interactor.CalculationInf;
+using Interactor.ChartApproval;
 using Interactor.ColumnSetting;
 using Interactor.CommonChecker;
 using Interactor.CommonChecker.CommonMedicalCheck;
@@ -144,6 +144,8 @@ using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Reporting.Accounting.DB;
+using Reporting.Accounting.Service;
 using Reporting.Byomei.Service;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
@@ -161,8 +163,13 @@ using Reporting.OutDrug.Service;
 using Reporting.Receipt.DB;
 using Reporting.Receipt.Service;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.ReceiptCheck.DB;
+using Reporting.ReceiptCheck.Service;
+using Reporting.ReceiptList.DB;
+using Reporting.ReceiptList.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
+using Reporting.Statistics.DB;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -176,9 +183,9 @@ using UseCase.Accounting.PaymentMethod;
 using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
-using UseCase.ApprovalInfo.GetApprovalInfList;
-using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.CalculationInf;
+using UseCase.ChartApproval.GetApprovalInfList;
+using UseCase.ChartApproval.SaveApprovalInfList;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.CommonChecker;
@@ -373,7 +380,7 @@ using UseCase.Reception.Delete;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
-using UseCase.Reception.GetListRaiinInfs;
+using UseCase.Reception.GetListRaiinInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -454,6 +461,15 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.SystemConf.SaveDrugCheckSetting;
+using Domain.Models.Lock;
+using UseCase.Lock.Add;
+using Interactor.Lock;
+using UseCase.Lock.Check;
+using UseCase.Lock.Remove;
+using UseCase.Lock.ExtendTtl;
+using Reporting.Calculate.Implementation;
+using Reporting.Calculate.Interface;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -491,7 +507,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            // Reporting
+            //Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -510,14 +526,21 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
+            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
+            services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
+            services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
+            services.AddTransient<ICoReceiptListFinder, CoReceiptListFinder>();
+            services.AddTransient<IAccountingCoReportService, AccountingCoReportService>();
+            services.AddTransient<ICoAccountingFinder, CoAccountingFinder>();
+            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
+            services.AddTransient<IEmrLogger, EmrLogger>();
             services.AddTransient<IReceiptCoReportService, ReceiptCoReportService>();
             services.AddTransient<ICoReceiptFinder, CoReceiptFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
             services.AddTransient<ICalcultateCustomerService, CalcultateCustomerService>();
-            services.AddTransient<IEmrLogger, EmrLogger>();
-            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -603,6 +626,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ILockRepository, LockRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -620,7 +644,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
-            busBuilder.RegisterUseCase<UpdateApprovalInfListInputData, UpdateApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -1034,6 +1058,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+
+            //Lock
+            busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
+            busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
+            busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
+            busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

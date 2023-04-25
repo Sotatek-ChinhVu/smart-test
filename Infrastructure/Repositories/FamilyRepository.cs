@@ -62,18 +62,19 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                 ListPtFamilyRekiInfo = listPtFamilyRekiInfo
             }
         );
+        var temp1 = query.ToList();
         return query.AsEnumerable().Select(data => new FamilyModel(
                 data.PtFamily.FamilyId,
                 data.PtFamily.PtId,
                 data.PtFamily.SeqNo,
                 data.PtFamily.ZokugaraCd ?? string.Empty,
                 data.PtFamily.FamilyId,
-                data.PtInf.PtNum,
+                data.PtInf?.PtNum ?? 0,
                 data.PtFamily.Name ?? string.Empty,
                 data.PtFamily.KanaName ?? string.Empty,
                 data.PtFamily.Sex,
                 data.PtFamily.Birthday,
-                CIUtil.SDateToAge(data.PtInf.Birthday, sinDate),
+                CIUtil.SDateToAge(data.PtInf?.Birthday ?? 0, sinDate),
                 data.PtFamily.IsDead,
                 data.PtFamily.IsSeparated,
                 data.PtFamily.Biko ?? string.Empty,

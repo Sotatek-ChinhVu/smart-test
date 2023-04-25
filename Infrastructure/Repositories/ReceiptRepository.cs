@@ -1,7 +1,5 @@
 ﻿using Domain.Constant;
 using Domain.Models.Accounting;
-using Domain.Models.HpInf;
-using Domain.Models.Medical;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.Receipt;
@@ -17,10 +15,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -60,7 +55,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         var listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
         var minSinYM = receInfs.Select(item => item.SinYm).DefaultIfEmpty().Min();
         var minDay = minSinYM * 100 + 1;
-
 
         var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where(item => item.HpId == hpId
                                                                         && item.SinDate >= minDay

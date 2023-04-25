@@ -1,4 +1,4 @@
-﻿namespace UseCase.Reception.GetListRaiinInfs;
+﻿namespace UseCase.Reception.GetListRaiinInf;
 public enum GetListRaiinInfStatus
 {
     Success,

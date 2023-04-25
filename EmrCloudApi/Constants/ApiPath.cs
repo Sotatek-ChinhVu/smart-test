@@ -84,6 +84,10 @@
         public const string MedicalRecordWebId = "MedicalRecordWebId";
         public const string OutDrug = "OutDrug";
         public const string ReceiptPreview = "ReceiptPreview";
+        public const string ReceiptCheck = "ReceiptCheck";
+        public const string ReceiptList = "ReceiptList";
+        public const string ReceiptReport = "ReceiptReport";
+        public const string PeriodReceiptReport = "PeriodReceiptReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -285,6 +289,13 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+
+        //Lock
+        public const string AddLock = "AddLock";
+        public const string CheckLock = "CheckLock";
+        public const string RemoveLock = "RemoveLock";
+        public const string RemoveAllLock = "RemoveAllLock";
+        public const string ExtendTtl = "ExtendTtl";
 
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";

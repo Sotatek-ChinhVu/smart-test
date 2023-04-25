@@ -3357,5 +3357,118 @@ namespace Helper.Common
 
             return ret;
         }
+
+        /// <summary>
+        /// 分割調剤の分割数量取得
+        /// </summary>
+        public static string GetBunkatuStr(string str, int kouiCd)
+        {
+            string ret = "";
+            string sTgt = str;
+            string sTani;
+
+            if (kouiCd == 21)
+            {
+                //内服
+                sTani = "日分";
+            }
+            else
+            {
+                sTani = "回分";
+            }
+
+            string[] bunkatuKaisus = sTgt.Split('+');
+
+            foreach (string bunkatuKaisu in bunkatuKaisus)
+            {
+                if (ret != "")
+                {
+                    ret += "、";
+                }
+
+                ret = bunkatuKaisu + sTani;
+            }
+
+            if (ret != "")
+            {
+                ret = $"({ret})";
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// JANコード（標準13桁）のチェックデジット計算
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static string CalcChkDgtJAN13(string code)
+        {
+            int iEven;
+            int iOdd;
+
+            string ret = "0";
+
+            if ((code.Length != 12) || (CIUtil.StrToIntDef(code, -1) == -1)) return "";
+
+            iEven = 0;
+            iOdd = 0;
+
+            int i = 12;
+            while (i >= 1)
+            {
+
+                if (i % 2 == 0)
+                {
+                    iEven = iEven + StrToIntDef(Copy(code, i, 1), 0);
+                }
+                else
+                {
+                    iOdd = iOdd + StrToIntDef(Copy(code, i, 1), 0);
+                }
+
+                i--;
+            }
+
+            i = (iEven * 3) + iOdd;
+            i = StrToIntDef(Copy(i.ToString(), i.ToString().Length, 1), 0);
+
+            if (i > 0)
+            {
+                ret = (10 - i).ToString();
+            }
+
+            return ret;
+        }
+
+        public static string JapanDayOfWeek(DateTime dateTime)
+        {
+            string result = string.Empty;
+            switch (dateTime.DayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    result = "日";
+                    break;
+                case System.DayOfWeek.Monday:
+                    result = "月";
+                    break;
+                case System.DayOfWeek.Tuesday:
+                    result = "火";
+                    break;
+                case System.DayOfWeek.Wednesday:
+                    result = "水";
+                    break;
+                case System.DayOfWeek.Thursday:
+                    result = "木";
+                    break;
+                case System.DayOfWeek.Friday:
+                    result = "金";
+                    break;
+                case System.DayOfWeek.Saturday:
+                    result = "土";
+                    break;
+            }
+            return result;
+        }
     }
 }
