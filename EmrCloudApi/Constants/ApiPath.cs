@@ -85,6 +85,8 @@
         public const string OutDrug = "OutDrug";
         public const string ReceiptCheck = "ReceiptCheck";
         public const string ReceiptList = "ReceiptList";
+        public const string ReceiptReport = "ReceiptReport";
+        public const string PeriodReceiptReport = "PeriodReceiptReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

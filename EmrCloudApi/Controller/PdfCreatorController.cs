@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
-using EmrCloudApi.Presenters.PatientInformation;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Requests.Receipt;
@@ -12,12 +11,11 @@ using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.OutDrug.Service;
 using Reporting.ReceiptList.Model;
+using Reporting.Accounting.Model;
 using Reporting.ReportServices;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using UseCase.MedicalExamination.GetDataPrintKarte2;
-using UseCase.MedicalExamination.GetHistory;
 
 namespace EmrCloudApi.Controller;
 
@@ -28,14 +26,12 @@ public class PdfCreatorController : ControllerBase
     private static HttpClient _httpClient = new HttpClient();
     private readonly IReportService _reportService;
     private readonly IConfiguration _configuration;
-    private readonly IOutDrugCoReportService _outDrugCoReportService;
     private readonly IHistoryCommon _historyCommon;
 
-    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IOutDrugCoReportService outDrugCoReportService, IHistoryCommon historyCommon)
+    public PdfCreatorController(IReportService reportService, IConfiguration configuration, IHistoryCommon historyCommon)
     {
         _reportService = reportService;
         _configuration = configuration;
-        _outDrugCoReportService = outDrugCoReportService;
         _historyCommon = historyCommon;
     }
 
@@ -101,7 +97,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.OutDrug)]
     public async Task<IActionResult> GenerateOutDrugWebIdReport([FromQuery] OutDrugRequest request)
     {
-        var data = _outDrugCoReportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+        var data = _reportService.GetOutDrugReportingData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
         return await RenderPdf(data, ReportType.OutDug);
     }
 
@@ -113,8 +109,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
-    [HttpGet(ApiPath.ReceiptList)]
-    public async Task<IActionResult> GetReceiptListReport([FromQuery] GetReceiptListRequest request)
+    [HttpPost(ApiPath.ReceiptList)]
+    public async Task<IActionResult> GetReceiptListReport([FromBody] GetReceiptListRequest request)
     {
         var receInputList = request.ReceiptListModels.Select(item => new ReceiptInputModel(
                                                                          item.SinYm,
@@ -124,6 +120,27 @@ public class PdfCreatorController : ControllerBase
 
         var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
         return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
+    {
+        List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
+                                                                                           item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
+                                                                                           request.MiseisanKbn, request.SaiKbn, request.MisyuKbn, request.SeikyuKbn, item.HokenKbn,
+                                                                                           request.HokenSeikyu, request.JihiSeikyu, request.NyukinBase,
+                                                                                           request.HakkoDay, request.Memo,
+                                                                                           request.PrintType, request.FormFileName))
+                                                                       .ToList();
+        var data = _reportService.GetAccountingReportingData(request.HpId, requestConvert);
+        return await RenderPdf(data, ReportType.Accounting);
+    }
+
+    [HttpGet(ApiPath.ReceiptReport)]
+    public async Task<IActionResult> GenerateReceiptReport([FromQuery] ReceiptExportRequest request)
+    {
+        var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
+        return await RenderPdf(data, ReportType.Accounting);
     }
 
     [HttpGet("ExportKarte2")]
@@ -197,6 +214,7 @@ public class PdfCreatorController : ControllerBase
             ReportType.DrugInfo => "reporting-fm-drugInfo",
             ReportType.Common => "common-reporting",
             ReportType.OutDug => "reporting-out-drug",
+            ReportType.Accounting => "reporting-accounting",
             _ => throw new NotImplementedException($"The reportType is incorrect: {reportType}")
         } ?? string.Empty;
 
