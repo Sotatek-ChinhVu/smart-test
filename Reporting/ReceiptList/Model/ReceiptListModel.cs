@@ -2,67 +2,47 @@
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using Reporting.CommonMasters.Config;
 
 namespace Reporting.ReceiptList.Model;
 
 public class ReceiptListModel
 {
-    public ReceInf ReceInf { get; }
-
     public ReceiptListModel(ReceInf receInf, int rosaiReceden, string rosaiRecedenTerm)
     {
-        ReceInf = receInf;
-        ReceSbt = ReceInf.ReceSbt ?? string.Empty;
-        HokenId = ReceInf.HokenId;
-        HokenKbn = ReceInf.HokenKbn;
-        Tensu = ReceInf.Tensu;
-        HokenNissu = ReceInf.HokenNissu ?? 0;
-        PtId = ReceInf.PtId;
-        SeikyuYm = ReceInf.SeikyuYm;
-        SinYm = ReceInf.SinYm;
+        ReceSbt = receInf.ReceSbt ?? string.Empty;
+        HokenId = receInf.HokenId;
+        HokenKbn = receInf.HokenKbn;
+        Tensu = receInf.Tensu;
+        HokenNissu = receInf.HokenNissu ?? 0;
+        PtId = receInf.PtId;
+        SeikyuYm = receInf.SeikyuYm;
+        SinYm = receInf.SinYm;
         RosaiRecedenTerm = rosaiRecedenTerm;
         RosaiReceden = rosaiReceden;
-        //RousaiKofuNo = string.Empty;
-        //RousaiJigyosyoName = string.Empty;
-        //RousaiPrefName = string.Empty;
-        //RousaiCityName = string.Empty;
-        //JibaiHokenName = string.Empty;
-        //JibaiHokenTanto = string.Empty;
-        //JibaiHokenTel = string.Empty;
-        //ReceCheckCmt = string.Empty;
-        //KanaName = string.Empty;
-        //Name = string.Empty;
-        //HokensyaNo = string.Empty;
-        //ReceSeikyuCmt = string.Empty;
-        //KaName = string.Empty;
-        //SName = string.Empty;
-        //FutansyaNoKohi1 = string.Empty;
-        //FutansyaNoKohi2 = string.Empty;
-        //FutansyaNoKohi3 = string.Empty;
-        //FutansyaNoKohi4 = string.Empty;
+        ExpectedPayment = receInf.TotalIryohi - receInf.PtFutan;
+        Kohi1Nissu = receInf.Kohi1Nissu ?? 0;
+        RousaiKofuNo = string.Empty;
+        RousaiJigyosyoName = string.Empty;
+        RousaiPrefName = string.Empty;
+        RousaiCityName = string.Empty;
+        JibaiHokenName = string.Empty;
+        JibaiHokenTanto = string.Empty;
+        JibaiHokenTel = string.Empty;
+        ReceCheckCmt = string.Empty;
+        KanaName = string.Empty;
+        Name = string.Empty;
+        HokensyaNo = string.Empty;
+        ReceSeikyuCmt = string.Empty;
+        KaName = string.Empty;
+        SName = string.Empty;
+        FutansyaNoKohi1 = string.Empty;
+        FutansyaNoKohi2 = string.Empty;
+        FutansyaNoKohi3 = string.Empty;
+        FutansyaNoKohi4 = string.Empty;
     }
 
-    public ReceiptListModel(long ptId, int seikyuYm, int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int hokenNissu, string receCheckCmt, int rosaiReceden, string rosaiRecedenTerm)
+    public ReceiptListModel(long ptId, int seikyuYm, int seikyuKbn, int sinYm, int isReceInfDetailExist, int isPaperRece, int hokenId, int hokenKbn, int output, int fusenKbn, int statusKbn, long ptNum, string kanaName, string name, int sex, int lastSinDateByHokenId, int birthDay, string receSbt, string hokensyaNo, int tensu, int isSyoukiInfExist, int isReceCmtExist, int isSyobyoKeikaExist, string receSeikyuCmt, int lastVisitDate, string kaName, string sName, int isPtKyuseiExist, string futansyaNoKohi1, string futansyaNoKohi2, string futansyaNoKohi3, string futansyaNoKohi4, bool isPtTest, int hokenNissu, string receCheckCmt, string rousaiKofuNo, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int rosaiReceden, string rosaiRecedenTerm)
     {
-        //RousaiKofuNo = string.Empty;
-        //RousaiJigyosyoName = string.Empty;
-        //RousaiPrefName = string.Empty;
-        //RousaiCityName = string.Empty;
-        //JibaiHokenName = string.Empty;
-        //JibaiHokenTanto = string.Empty;
-        //JibaiHokenTel = string.Empty;
-        //ReceCheckCmt = string.Empty;
-        //KanaName = string.Empty;
-        //Name = string.Empty;
-        //HokensyaNo = string.Empty;
-        //ReceSeikyuCmt = string.Empty;
-        //KaName = string.Empty;
-        //SName = string.Empty;
-        //FutansyaNoKohi1 = string.Empty;
-        //FutansyaNoKohi2 = string.Empty;
-        //FutansyaNoKohi3 = string.Empty;
-        //FutansyaNoKohi4 = string.Empty;
         PtId = ptId;
         SeikyuYm = seikyuYm;
         SeikyuKbn = seikyuKbn;
@@ -98,6 +78,13 @@ public class ReceiptListModel
         IsPtTest = isPtTest;
         HokenNissu = hokenNissu;
         ReceCheckCmt = receCheckCmt;
+        RousaiKofuNo = rousaiKofuNo;
+        RousaiJigyosyoName = rousaiJigyosyoName;
+        RousaiPrefName = rousaiPrefName;
+        RousaiCityName = rousaiCityName;
+        JibaiHokenName = jibaiHokenName;
+        JibaiHokenTanto = jibaiHokenTanto;
+        JibaiHokenTel = jibaiHokenTel;
         RosaiRecedenTerm = rosaiRecedenTerm;
         RosaiReceden = rosaiReceden;
     }
@@ -468,6 +455,8 @@ public class ReceiptListModel
         }
     }
 
+    public int Kohi1Nissu { get; set; }
+
     public int Nissu
     {
         get
@@ -476,7 +465,7 @@ public class ReceiptListModel
 
             if (new int[] { 1, 2 }.Contains(HokenKbn) && ReceSbt.StartsWith("12"))
             {
-                ret = (ReceInf.Kohi1Nissu ?? 0).AsInteger();
+                ret = Kohi1Nissu;
             }
             return ret;
         }
@@ -608,13 +597,8 @@ public class ReceiptListModel
         }
     }
 
-    public int ExpectedPayment
-    {
-        get
-        {
-            return ReceInf.TotalIryohi - ReceInf.PtFutan;
-        }
-    }
+    public int ExpectedPayment { get; set; }
+
 
     /// <summary>
     /// 労災交付番号

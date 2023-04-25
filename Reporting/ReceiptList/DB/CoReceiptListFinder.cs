@@ -503,7 +503,14 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                         receInf.Kohi3ReceKisai,
                         receInf.Kohi4ReceKisai,
                         receInf.Tokki,
-                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0
+                        LastSinDateByHokenId = kaikeiInf?.SinDate ?? 0,
+                        ptHokenInf.RousaiKofuNo,
+                        ptHokenInf.RousaiJigyosyoName,
+                        ptHokenInf.RousaiPrefName,
+                        ptHokenInf.RousaiCityName,
+                        ptHokenInf.JibaiHokenName,
+                        ptHokenInf.JibaiHokenTanto,
+                        ptHokenInf.JibaiHokenTel
                     };
         #endregion
 
@@ -547,7 +554,14 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
                     data.FutansyaNoKohi4,
                     data.IsTester == 1,
                     data.HokenNissu ?? 0,
-                    data.ReceCheckCmt,
+                    data.ReceCheckCmt, 
+                    data.RousaiKofuNo,
+                    data.RousaiJigyosyoName,
+                    data.RousaiPrefName,
+                    data.RousaiCityName,
+                    data.JibaiHokenName,
+                    data.JibaiHokenTanto,
+                    data.JibaiHokenTel,
                     rosaiReceden,
                     rosaiRecedenTerm
         ))
@@ -599,6 +613,13 @@ public class CoReceiptListFinder : RepositoryBase, ICoReceiptListFinder
             receiptReport.FutansyaNoKohi4 = receiptInf.FutansyaNoKohi4;
             receiptReport.IsPtTest = receiptInf.IsPtTest;
             receiptReport.Age = receiptInf.Age;
+            receiptReport.RousaiKofuNo = receiptInf.RousaiKofuNo;
+            receiptReport.RousaiJigyosyoName = receiptInf.RousaiJigyosyoName;
+            receiptReport.RousaiPrefName = receiptInf.RousaiPrefName;
+            receiptReport.RousaiCityName = receiptInf.RousaiCityName;
+            receiptReport.JibaiHokenName = receiptInf.JibaiHokenName;
+            receiptReport.JibaiHokenTanto = receiptInf.JibaiHokenTanto;
+            receiptReport.JibaiHokenTel = receiptInf.JibaiHokenTel;
             receiptReport.RousaiKofuNo = receiptInf.RousaiKofuNo;
             receiptReport.RousaiJigyosyoName = receiptInf.RousaiJigyosyoName;
             receiptReport.RousaiPrefName = receiptInf.RousaiPrefName;

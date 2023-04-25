@@ -12,8 +12,8 @@ public class ReceiptListCoReportService : IReceiptListCoReportService
 {
     private readonly ITenantProvider _tenantProvider;
     private readonly ISystemConfig _systemConfig;
-    public Dictionary<string, string> _singleFieldData { get; set; }
-    public  List<Dictionary<string, CellModel>> _tableFieldData { get; set; }
+    private readonly Dictionary<string, string> _singleFieldData;
+    private readonly List<Dictionary<string, CellModel>> _tableFieldData;
     private List<ReceiptListModel> _receiptListModels;
     private DateTime _printoutDateTime = DateTime.Now;
 
