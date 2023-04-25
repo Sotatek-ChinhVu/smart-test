@@ -8,16 +8,19 @@ namespace Reporting.Mappers.Common
         public int ReportType { get; set; }
 
         [JsonPropertyName("reportConfigModel")]
-        public ReportConfigModel ReportConfigModel { get; set; } = new ReportConfigModel();
+        public ReportConfigModel ReportConfigModel { get; set; } = new();
 
         [JsonPropertyName("singleFieldList")]
-        public Dictionary<string, string> SingleFieldData { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> SingleFieldData { get; set; } = new();
 
         [JsonPropertyName("tableFieldData")]
-        public List<Dictionary<string, CellModel>> TableFieldData { get; set; } = new List<Dictionary<string, CellModel>>();
+        public List<Dictionary<string, CellModel>> TableFieldData { get; set; } = new();
         
         [JsonPropertyName("systemConfigList")]
         public Dictionary<string, string> SystemConfigList { get; set; } = new();
+
+        [JsonPropertyName("extralData")]
+        public Dictionary<string, string> ExtralData { get; set; } = new();
     }
 
     public class CellModel

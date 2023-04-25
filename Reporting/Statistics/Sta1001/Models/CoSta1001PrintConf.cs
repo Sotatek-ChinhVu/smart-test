@@ -1,16 +1,10 @@
-﻿namespace Reporting.Statistics.Sta1002.Models;
+﻿namespace Reporting.Statistics.Sta1001.Models;
 
-public class CoSta1002PrintConf
+public class CoSta1001PrintConf
 {
-    public CoSta1002PrintConf(int menuId)
+    public CoSta1001PrintConf(int menuId)
     {
         MenuId = menuId;
-        StartNyukinTime = -1;
-        EndNyukinTime = -1;
-    }
-    
-    public CoSta1002PrintConf()
-    {
         StartNyukinTime = -1;
         EndNyukinTime = -1;
     }
@@ -80,6 +74,42 @@ public class CoSta1002PrintConf
     ///     1:受付種別 2:診療科 3:担当医
     /// </summary>
     public int PageBreak3 { get; set; }
+
+    /// <summary>
+    /// ソート順１
+    ///     1:氏名 2:患者番号 3:来院時間 4:精算時間
+    /// </summary>
+    public int SortOrder1 { get; set; }
+
+    /// <summary>
+    /// ソート順１オプション
+    ///     0:昇順 1:降順
+    /// </summary>
+    public int SortOpt1 { get; set; }
+
+    /// <summary>
+    /// ソート順２
+    ///     1:氏名 2:患者番号 3:来院時間 4:精算時間
+    /// </summary>
+    public int SortOrder2 { get; set; }
+
+    /// <summary>
+    /// ソート順２オプション
+    ///     0:昇順 1:降順
+    /// </summary>
+    public int SortOpt2 { get; set; }
+
+    /// <summary>
+    /// ソート順３
+    ///     1:氏名 2:患者番号 3:来院時間 4:精算時間
+    /// </summary>
+    public int SortOrder3 { get; set; }
+
+    /// <summary>
+    /// ソート順３オプション
+    ///     0:昇順 1:降順
+    /// </summary>
+    public int SortOpt3 { get; set; }
 
     /// <summary>
     /// 受付種別ID

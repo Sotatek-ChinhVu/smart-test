@@ -466,6 +466,8 @@ using UseCase.Lock.Remove;
 using UseCase.Lock.ExtendTtl;
 using Reporting.Calculate.Implementation;
 using Reporting.Calculate.Interface;
+using Reporting.Statistics.Sta1002.Service;
+using Reporting.Statistics.Sta1002.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -531,6 +533,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoAccountingFinder, CoAccountingFinder>();
             services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
             services.AddTransient<IEmrLogger, EmrLogger>();
+            services.AddTransient<ISta1002CoReportService, Sta1002CoReportService>();
+            services.AddTransient<ICoSta1002Finder, CoSta1002Finder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
