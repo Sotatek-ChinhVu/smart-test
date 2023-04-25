@@ -11,6 +11,9 @@ using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
+using Reporting.ReceiptCheck.Service;
+using Reporting.ReceiptList.Model;
+using Reporting.ReceiptList.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
 using Reporting.Sijisen.Service;
@@ -26,10 +29,12 @@ public class ReportService : IReportService
     private readonly IKarte1Service _karte1Service;
     private readonly INameLabelService _nameLabelService;
     private readonly IMedicalRecordWebIdReportService _medicalRecordWebIdReportService;
+    private readonly IReceiptCheckCoReportService _receiptCheckCoReportService;
+    private readonly IReceiptListCoReportService _receiptListCoReportService;
     private readonly IOutDrugCoReportService _outDrugCoReportService;
     private readonly IAccountingCoReportService _accountingCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -38,9 +43,13 @@ public class ReportService : IReportService
         _karte1Service = karte1Service;
         _nameLabelService = nameLabelService;
         _medicalRecordWebIdReportService = medicalRecordWebIdReportService;
+        _receiptCheckCoReportService = receiptCheckCoReportService;
+        _receiptListCoReportService = receiptListCoReportService;
         _outDrugCoReportService = outDrugCoReportService;
         _accountingCoReportService = accountingCoReportService;
     }
+
+
 
     //Byomei
     public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
@@ -82,6 +91,18 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate)
     {
         return _medicalRecordWebIdReportService.GetMedicalRecordWebIdReportingData(hpId, ptId, sinDate);
+    }
+
+    //ReceiptCheckCoReport
+    public CommonReportingRequestModel GetReceiptCheckCoReportService(int hpId, List<long> ptIds, int seikyuYm)
+    {
+        return _receiptCheckCoReportService.GetReceiptCheckCoReportingData(hpId, ptIds, seikyuYm);
+    }
+
+    //ReceiptListCoReport
+    public CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels)
+    {
+        return _receiptListCoReportService.GetReceiptListReportingData(hpId, seikyuYm, receiptListModels);
     }
 
     /// <summary>

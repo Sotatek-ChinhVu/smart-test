@@ -159,6 +159,10 @@ using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Service;
 using Reporting.ReadRseReportFile.Service;
+using Reporting.ReceiptCheck.DB;
+using Reporting.ReceiptCheck.Service;
+using Reporting.ReceiptList.DB;
+using Reporting.ReceiptList.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using Reporting.Statistics.DB;
@@ -499,7 +503,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            // Reporting
+            //Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -519,6 +523,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
+            services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
+            services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
+            services.AddTransient<ICoReceiptListFinder, CoReceiptListFinder>();
             services.AddTransient<IAccountingCoReportService, AccountingCoReportService>();
             services.AddTransient<ICoAccountingFinder, CoAccountingFinder>();
             services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
