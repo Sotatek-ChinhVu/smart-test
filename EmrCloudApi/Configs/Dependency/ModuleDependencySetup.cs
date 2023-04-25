@@ -142,6 +142,8 @@ using Interactor.VisitingList;
 using Interactor.WeightedSetConfirmation;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Reporting.Accounting.DB;
+using Reporting.Accounting.Service;
 using Reporting.Byomei.Service;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
@@ -458,6 +460,8 @@ using Interactor.Lock;
 using UseCase.Lock.Check;
 using UseCase.Lock.Remove;
 using UseCase.Lock.ExtendTtl;
+using Reporting.Calculate.Implementation;
+using Reporting.Calculate.Interface;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -515,6 +519,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
             services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IAccountingCoReportService, AccountingCoReportService>();
+            services.AddTransient<ICoAccountingFinder, CoAccountingFinder>();
+            services.AddTransient<ISystemConfigProvider, SystemConfigProvider>();
+            services.AddTransient<IEmrLogger, EmrLogger>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
