@@ -1839,7 +1839,7 @@ namespace Infrastructure.Repositories
 
             if (deletedModels.Any())
             {
-                var modelsToDelete = TrackingDataContext.KensaCenterMsts.Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
+                var modelsToDelete = TrackingDataContext.KensaCenterMsts.AsEnumerable().Where(u => deletedModels.Any(d => d.HpId == u.HpId && d.Id == u.Id));
                 TrackingDataContext.KensaCenterMsts.RemoveRange(modelsToDelete);
             }
 
