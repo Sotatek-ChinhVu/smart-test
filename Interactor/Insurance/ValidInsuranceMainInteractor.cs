@@ -298,7 +298,7 @@ namespace Interactor.Insurance
             string checkMessageIsValidConfirmDateAgeCheck = IsValidConfirmDateAgeCheck(selectedHokenInfIsAddNew, selectedHokenInfisExpirated, selectedHokenInfisShahoOrKokuho, hokenSyaNo, selectedHokenInfconfirmDate, ptBirthday, sinDate, hpId);
             if (!string.IsNullOrEmpty(checkMessageIsValidConfirmDateAgeCheck))
             {
-                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidConfirmDateAgeCheck, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidConfirmDateAgeCheck, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageWarning));
             }
 
             string checkMessageIsValidConfirmDateHoken = IsValidConfirmDateHoken(sinDate,
@@ -568,11 +568,11 @@ namespace Interactor.Insurance
             {
                 return message;
             }
-            var configCheckAge = _systemConfRepository.GetSettingValue(hpId, 1005, hpId);
+            var configCheckAge = _systemConfRepository.GetSettingValue(1005, 0, hpId);
             if (configCheckAge == 1)
             {
                 int invalidAgeCheck = 0;
-                string checkParam = _systemConfRepository.GetSettingParams(hpId, 1005, hpId);
+                string checkParam = _systemConfRepository.GetSettingParams(1005, 0, hpId);
                 var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var param in splittedParam)
                 {
@@ -596,8 +596,8 @@ namespace Interactor.Insurance
                     {
                         cardName = "保険証";
                     }
-                    var paramsMessage = new string[] { $"{invalidAgeCheck}歳となりました。", cardName, "無視する", "戻る" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
+                    var paramsMessage = new string[] { $"{invalidAgeCheck}歳となりました。", cardName};
+                    message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
                     return message;
                 }
             }
