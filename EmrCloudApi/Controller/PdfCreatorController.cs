@@ -142,7 +142,6 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
-        var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(data);
         return await RenderPdf(data, ReportType.Common);
     }
 

@@ -1,6 +1,5 @@
 ﻿using Domain.Models.SystemConf;
 using Helper.Common;
-using Helper.Extension;
 using Reporting.Calculate.Constants;
 using Reporting.Calculate.Receipt.Constants;
 using Reporting.Calculate.Receipt.Models;
@@ -25,8 +24,9 @@ namespace Reporting.Receipt.Mapper
         private int Target;
         private int _tekiyoRowCount;
         private int _tekiyoEnRowCount;
+        private int _tekiyoRowCount2;
 
-        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder, int tekiyoRowCount, int tekiyoEnRowCount)
+        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder, int tekiyoRowCount, int tekiyoEnRowCount, int tekiyoRowCount2)
         {
             _coReceipt = coReceipt;
             ByomeiModels = byomeiModels;
@@ -39,6 +39,8 @@ namespace Reporting.Receipt.Mapper
             _coReceiptFinder = coReceiptFinder;
             _tekiyoRowCount = tekiyoRowCount;
             _tekiyoEnRowCount = tekiyoEnRowCount;
+            _tekiyoRowCount2 = tekiyoRowCount2;
+            UpdateDrawForm();
         }
 
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
@@ -58,6 +60,35 @@ namespace Reporting.Receipt.Mapper
 
         public override Dictionary<string, string> GetSingleFieldData()
         {
+            return SingleData;
+        }
+
+        public override string GetRowCountFieldName()
+        {
+            return "lsTekiyo";
+        }
+
+        public override Dictionary<string, bool> GetVisibleFieldData()
+        {
+            return new Dictionary<string, bool>();
+        }
+
+        public override Dictionary<string, bool> GetWrapFieldData()
+        {
+            return new Dictionary<string, bool>();
+        }
+
+        public override List<Dictionary<string, CellModel>> GetTableFieldData()
+        {
+            return CellData;
+        }
+
+        public void UpdateDrawForm()
+        {
+            #region SubMethod
+
+            // ヘッダーの印刷処理
+
             if (TargetIsKenpo())
             {
                 // 健保
@@ -87,50 +118,44 @@ namespace Reporting.Receipt.Mapper
                 }
             }
 
-            return SingleData;
-        }
 
-        public override string GetRowCountFieldName()
-        {
-            return "lsByomei";
-        }
+            // 本体部分印刷処理
 
-        public override Dictionary<string, bool> GetVisibleFieldData()
-        {
-            return new Dictionary<string, bool>();
-        }
 
-        public override Dictionary<string, bool> GetWrapFieldData()
-        {
-            return new Dictionary<string, bool>();
-        }
+             if (_tekiyoRowCount <= 0) return;
+            if ((TekiyoModels?.Count() ?? 0) <= 0 && (CurrentPage > 1 || (TekiyoEnModels?.Count() ?? 0) <= 0)) return ;
 
-        public override List<Dictionary<string, CellModel>> GetTableFieldData()
-        {
-            bool _hasNextPage = true;
-            //病名欄
-            foreach (var item in ByomeiModels)
-            {
-                var data = new Dictionary<string, CellModel>();
-                data.Add("lsByomei", new CellModel(item.Byomei));
-                data.Add("lsByomeiStart", new CellModel(item.StartDate));
-                data.Add("lsByomeiTenki", new CellModel(item.Tenki));
-                CellData.Add(data);
-            }
-
-            //摘要欄印刷
             int tekiyoIndex = (CurrentPage - 1) * _tekiyoRowCount;
 
-            if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter, TargetConst.Jibai }.Contains(Target))
+            //摘要欄印刷
+            if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter, TargetConst.Jibai }.Contains(Target) && CurrentPage > 1)
             {
-                foreach (var item in TekiyoModels)
+                // 労災続紙
+                tekiyoIndex = _tekiyoRowCount + (CurrentPage - 2) * (_tekiyoRowCount2 * 2);
+
+                for (int i = 1; i <= 2; i++)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsSinId", new CellModel(item.SinId));
-                    data.Add("lsTekiyoMark", new CellModel(item.Mark));
-                    data.Add("lsTekiyo", new CellModel(item.Tekiyo));
-                    CellData.Add(data);
+                    for (short j = 0; j < _tekiyoRowCount2; j++)
+                    {
+                        if (tekiyoIndex < TekiyoModels.Count())
+                        {
+                            var data = new Dictionary<string, CellModel>();
+
+                            data.Add($"lsSinId{i}", new CellModel(TekiyoModels[tekiyoIndex].SinId));
+                            data.Add($"lsTekiyoMark{i}", new CellModel(TekiyoModels[tekiyoIndex].Mark));
+                            data.Add($"lsTekiyo{i}", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
+
+                            CellData.Add(data);
+
+                            tekiyoIndex++;
+                            if (tekiyoIndex >= TekiyoModels.Count())
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
+
             }
             else
             {
@@ -141,10 +166,13 @@ namespace Reporting.Receipt.Mapper
                         if (tekiyoIndex < TekiyoModels.Count())
                         {
                             var data = new Dictionary<string, CellModel>();
+
                             data.Add("lsSinId", new CellModel(TekiyoModels[tekiyoIndex].SinId));
                             data.Add("lsTekiyoMark", new CellModel(TekiyoModels[tekiyoIndex].Mark));
                             data.Add("lsTekiyo", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
+
                             CellData.Add(data);
+
                             tekiyoIndex++;
                             if (tekiyoIndex >= TekiyoModels.Count())
                             {
@@ -160,16 +188,19 @@ namespace Reporting.Receipt.Mapper
                 }
             }
 
-            if ((new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin }.Contains(Target) || (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 1)))
+            if ((new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin }.Contains(Target) || (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 1)) && CurrentPage == 1)
             {
                 // 労災 円項目用　本紙のみ
                 int tekiyoEnIndex = (CurrentPage - 1) * _tekiyoEnRowCount;
+
                 if (tekiyoEnIndex < TekiyoEnModels.Count())
                 {
                     for (short i = 0; i < _tekiyoEnRowCount; i++)
                     {
                         var data = new Dictionary<string, CellModel>();
                         data.Add("lsEnTekiyo", new CellModel(TekiyoEnModels[tekiyoEnIndex].Tekiyo));
+
+                        CellData.Add(data);
 
                         tekiyoEnIndex++;
                         if (tekiyoEnIndex >= TekiyoEnModels.Count())
@@ -179,16 +210,20 @@ namespace Reporting.Receipt.Mapper
                         }
                     }
                 }
-
-                if (new int[] {
-                    TargetConst.NaganoRece2,
-                    TargetConst.FukuokaRece2 }.Contains(Target))
-                {
-                    tekiyoIndex = -1;
-                }
             }
 
-            return CellData;
+            // 長野県福岡県レセプト2枚目の場合、2ページ目以降は印字しない
+            if (new int[] {
+                    TargetConst.NaganoRece2,
+                    TargetConst.FukuokaRece2 }.Contains(Target))
+            {
+                tekiyoIndex = -1;
+            }
+
+
+
+            #endregion
+
         }
 
         private bool TargetIsKenpo()
@@ -211,7 +246,7 @@ namespace Reporting.Receipt.Mapper
         private void PrintReceiptHeaderForKenpo()
         {
             // 公費マスタを取得しておく（各種特殊処理で使用）
-            var kohiDatas = _coReceiptFinder.FindKohiData(HpId, _coReceipt.PtId, _coReceipt.SinYm * 100 + 1);
+            List<KohiDataModel> kohiDatas = _coReceiptFinder.FindKohiData(HpId, _coReceipt.PtId, _coReceipt.SinYm * 100 + 1);
 
             #region Sub Function
             // 患者番号+法別番号
@@ -1199,10 +1234,10 @@ namespace Reporting.Receipt.Mapper
                             {
                                 if (tokusyuNo != "")
                                 {
-                                    SingleData.Add("dfFutanNoFukusi", CIUtil.Copy(tokusyuNo, 1, 8).PadRight(8, ' '));
+                                    SingleData.Add("dfFutanNoFukusi", Copy(tokusyuNo, 1, 8).PadRight(8, ' '));
                                     if (tokusyuNo.Length > 8)
                                     {
-                                        SingleData.Add("dfJyukyuNoFukusi", CIUtil.Copy(tokusyuNo, 9, 7).PadRight(7, ' '));
+                                        SingleData.Add("dfJyukyuNoFukusi", Copy(tokusyuNo, 9, 7).PadRight(7, ' '));
                                     }
                                 }
                             }
@@ -1484,6 +1519,16 @@ namespace Reporting.Receipt.Mapper
                 //医療機関電話番号
                 SingleData.Add("dfHpTel", _coReceipt.HpTel);
 
+                //病名欄
+                foreach (var item in ByomeiModels)
+                {
+                    var data = new Dictionary<string, CellModel>();
+                    data.Add("lsByomei", new CellModel(item.Byomei));
+                    data.Add("lsByomeiStart", new CellModel(item.StartDate));
+                    data.Add("lsByomeiTenki", new CellModel(item.Tenki));
+                    CellData.Add(data);
+                }
+
                 // 実日数
                 _printoutJituNissu();
 
@@ -1616,19 +1661,19 @@ namespace Reporting.Receipt.Mapper
                 // 患者番号
                 SingleData.Add("dfPtNo", _coReceipt.PtNum.ToString());
                 // 請求回数
-                SingleData.Add("dfReceCount", _coReceipt.RousaiReceCount.AsString());
+                SingleData.Add("dfReceCount", _coReceipt.RousaiReceCount.ToString());
                 //新継再別
-                SingleData.Add("dfSinkei", _coReceipt.RousaiSinkei.AsString());
+                SingleData.Add("dfSinkei", _coReceipt.RousaiSinkei.ToString());
 
                 //転帰
-                SingleData.Add("dfTenki", _coReceipt.RousaiTenki.AsString());
+                SingleData.Add("dfTenki", _coReceipt.RousaiTenki.ToString());
 
                 //労災交付番号
                 SingleData.Add("dfRousaiKofuNo", _coReceipt.RousaiKofu);
 
                 //生年月日
                 int rousaiBirthDay = CIUtil.SDateToWDateForRousai(_coReceipt.BirthDay);
-                SingleData.Add("dfBirthDay", rousaiBirthDay.AsString());
+                SingleData.Add("dfBirthDay", rousaiBirthDay.ToString());
 
                 string gengo = "";
 
@@ -1645,9 +1690,9 @@ namespace Reporting.Receipt.Mapper
 
                     SingleData.Add("dfBirthGengo" + gengo, "〇");
 
-                    SingleData.Add("dfBirthY", (rousaiBirthDay / 10000 % 100).AsString());
-                    SingleData.Add("dfBirthM", (rousaiBirthDay / 100 % 100).AsString());
-                    SingleData.Add("dfBirthD", (rousaiBirthDay % 100).AsString());
+                    SingleData.Add("dfBirthY", (rousaiBirthDay / 10000 % 100).ToString());
+                    SingleData.Add("dfBirthM", (rousaiBirthDay / 100 % 100).ToString());
+                    SingleData.Add("dfBirthD", (rousaiBirthDay % 100).ToString());
                 }
 
                 //傷病開始日
@@ -1677,11 +1722,20 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("txSyobyoKeika", _coReceipt.SyobyoKeika);
 
                 //小計
-                SingleData.Add("dfSyokei", _coReceipt.RousaiSyokei.AsString());
+                SingleData.Add("dfSyokei", _coReceipt.RousaiSyokei.ToString());
                 //イ
-                SingleData.Add("dfTenTotal", _coReceipt.RousaiSyokeiGaku_I.AsString());
+                SingleData.Add("dfTenTotal", _coReceipt.RousaiSyokeiGaku_I.ToString());
                 //ロ
-                SingleData.Add("dfEnTotal", _coReceipt.RousaiSyokeiGaku_RO.AsString());
+                SingleData.Add("dfEnTotal", _coReceipt.RousaiSyokeiGaku_RO.ToString());
+                //病名欄
+                short i = 0;
+                foreach (CoReceiptByomeiModel byomei in ByomeiModels)
+                {
+                    var data = new Dictionary<string, CellModel>();
+                    data.Add("lsByomei", new CellModel(byomei.Byomei));
+                    CellData.Add(data);
+                    i++;
+                }
 
                 //点数欄
                 // 点数
@@ -1851,24 +1905,6 @@ namespace Reporting.Receipt.Mapper
             }
         }
 
-        private string getPrintNo()
-        {
-            string ret = _coReceipt.ReceiptNo.ToString();
-            if (_coReceipt.Output == 1)
-            {
-                // 印刷済み
-                ret = "R" + ret;
-            }
-
-            if (_coReceipt.SeikyuKbn == SeikyuKbnConst.Henrei)
-            {
-                // 返戻
-                ret += "(H)";
-            }
-
-            return ret;
-        }
-
         private void PrintReceiptHeaderForAfter()
         {
             #region Sub Function
@@ -1898,12 +1934,12 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfPtNo", _coReceipt.PtNum.ToString());
 
                 // 診療年月日
-                SingleData.Add("dfSinDate", CIUtil.SDateToWDateForRousai(_coReceipt.SinDate).AsString());
+                SingleData.Add("dfSinDate", CIUtil.SDateToWDateForRousai(_coReceipt.SinDate).ToString());
 
                 // 検査日
                 if (_coReceipt.KensaDate > 0)
                 {
-                    SingleData.Add("dfKensaDate", CIUtil.SDateToWDateForRousai(_coReceipt.KensaDate).AsString());
+                    SingleData.Add("dfKensaDate", CIUtil.SDateToWDateForRousai(_coReceipt.KensaDate).ToString());
                 }
                 // 傷病名コード
                 SingleData.Add("dfSyobyoCd", _coReceipt.SyobyoCd);
@@ -1914,8 +1950,8 @@ namespace Reporting.Receipt.Mapper
                     WarekiYmd wareki = CIUtil.SDateToShowWDate3(_coReceipt.ZenkaiKensaDate);
 
                     SingleData.Add("dfZenkaiKensaYear", wareki.Gengo + wareki.Year);
-                    SingleData.Add("dfZenkaiKensaMonth", wareki.Month.AsString());
-                    SingleData.Add("dfZenkaiKensaDay", wareki.Day.AsString());
+                    SingleData.Add("dfZenkaiKensaMonth", wareki.Month.ToString());
+                    SingleData.Add("dfZenkaiKensaDay", wareki.Day.ToString());
                 }
 
                 //傷病の経過
@@ -1923,11 +1959,11 @@ namespace Reporting.Receipt.Mapper
                 //合計金額
                 SingleData.Add("dfTotal", $"{_coReceipt.AfterTotal.ToString(),7}");
                 //小計
-                SingleData.Add("dfSyokei", _coReceipt.AfterSyokei.AsString());
+                SingleData.Add("dfSyokei", _coReceipt.AfterSyokei.ToString());
                 //イ
-                SingleData.Add("dfTenTotal", _coReceipt.AfterSyokeiGaku_I.AsString());
+                SingleData.Add("dfTenTotal", _coReceipt.AfterSyokeiGaku_I.ToString());
                 //ロ
-                SingleData.Add("dfEnTotal", _coReceipt.AfterSyokeiGaku_RO.AsString());
+                SingleData.Add("dfEnTotal", _coReceipt.AfterSyokeiGaku_RO.ToString());
 
                 //点数欄
                 // 点数
@@ -2049,8 +2085,8 @@ namespace Reporting.Receipt.Mapper
                     WarekiYmd wareki = CIUtil.SDateToShowWDate3(_coReceipt.SinDate);
 
                     SingleData.Add("dfSyosinYear", wareki.Gengo + wareki.Year);
-                    SingleData.Add("dfSyosinMonth", wareki.Month.AsString());
-                    SingleData.Add("dfSyosinDay", wareki.Day.AsString());
+                    SingleData.Add("dfSyosinMonth", wareki.Month.ToString());
+                    SingleData.Add("dfSyosinDay", wareki.Day.ToString());
                 }
 
                 //再診
@@ -2072,8 +2108,8 @@ namespace Reporting.Receipt.Mapper
                     WarekiYmd wareki = CIUtil.SDateToShowWDate3(_coReceipt.SinDate);
 
                     SingleData.Add("dfSaisinYear", wareki.Gengo + wareki.Year);
-                    SingleData.Add("dfSaisinMonth", wareki.Month.AsString());
-                    SingleData.Add("dfSaisinDay", wareki.Day.AsString());
+                    SingleData.Add("dfSaisinMonth", wareki.Month.ToString());
+                    SingleData.Add("dfSaisinDay", wareki.Day.ToString());
                 }
                 #endregion
             }
@@ -2084,6 +2120,7 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfHpNo", CIUtil.FormatHpCd(_coReceipt.RousaiHpCd, 0));
                 #endregion
             }
+
         }
 
         private void PrintReceiptHeaderForJibaiKenpo()
@@ -2138,9 +2175,9 @@ namespace Reporting.Receipt.Mapper
                 if (wareki.Ymd != "")
                 {
                     if (gengo) SingleData.Add($"{field}Gengo", wareki.Gengo);
-                    if (year) SingleData.Add($"{field}Year", wareki.Year.AsString());
-                    if (month) SingleData.Add($"{field}Month", wareki.Month.AsString());
-                    if (day) SingleData.Add($"{field}Day", wareki.Day.AsString());
+                    if (year) SingleData.Add($"{field}Year", wareki.Year.ToString());
+                    if (month) SingleData.Add($"{field}Month", wareki.Month.ToString());
+                    if (day) SingleData.Add($"{field}Day", wareki.Day.ToString());
                 }
             }
             #endregion
@@ -2203,7 +2240,7 @@ namespace Reporting.Receipt.Mapper
                 // 初診
                 SingleData.Add("dfSyosin", _getSyosin());
                 // 円点レート
-                SingleData.Add("dfEnTen", _coReceipt.EnTen.AsString());
+                SingleData.Add("dfEnTen", _coReceipt.EnTen.ToString());
 
                 //ニ（その他）
                 SingleData.Add("dfTotal_NI", CIUtil.ToStringIgnoreZero(_coReceipt.JibaiNiFutan));
@@ -2218,26 +2255,26 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfMeisaiCount", CIUtil.ToStringIgnoreZero(_coReceipt.JibaiHeMeisaiCount));
 
                 //合計D
-                SingleData.Add("dfTotal_D", _coReceipt.JibaiDFutan.AsString());
+                SingleData.Add("dfTotal_D", _coReceipt.JibaiDFutan.ToString());
 
                 //点数合計
                 //SingleData.Add("dfTotal_Ten", _coReceipt.HokenReceTensu);
-                SingleData.Add("dfTotal_Ten", _coReceipt.JibaiKenpoTensu.AsString());
+                SingleData.Add("dfTotal_Ten", _coReceipt.JibaiKenpoTensu.ToString());
                 //点数x円点レート
-                SingleData.Add("dfTotal_EN", _coReceipt.JibaiKenpoFutan.AsString());
+                SingleData.Add("dfTotal_EN", _coReceipt.JibaiKenpoFutan.ToString());
 
                 //総合計
-                SingleData.Add("dfTotal_ABCD1", (_coReceipt.JibaiKenpoFutan + _coReceipt.JibaiDFutan).AsString());
-                SingleData.Add("dfTotal_ABCD2", (_coReceipt.JibaiKenpoFutan + _coReceipt.JibaiDFutan).AsString());
+                SingleData.Add("dfTotal_ABCD1", (_coReceipt.JibaiKenpoFutan + _coReceipt.JibaiDFutan).ToString());
+                SingleData.Add("dfTotal_ABCD2", (_coReceipt.JibaiKenpoFutan + _coReceipt.JibaiDFutan).ToString());
 
                 //通院月
-                SingleData.Add("dfTuinMonth", (_coReceipt.SinYm % 100).AsString());
+                SingleData.Add("dfTuinMonth", (_coReceipt.SinYm % 100).ToString());
                 //通院日
                 foreach (int tuuinDay in _coReceipt.TuuinDays)
                 {
                     SingleData.Add($"dfDay{tuuinDay % 100}", "〇");
                 }
-                SingleData.Add("dfDayTotal", (_coReceipt.TuuinDays.Count()).AsString());
+                SingleData.Add("dfDayTotal", _coReceipt.TuuinDays.Count().ToString());
 
                 //保険会社名
                 SingleData.Add("dfHokenName", _coReceipt.JibaiHokenName);
@@ -2250,6 +2287,15 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfKaisetuName", _coReceipt.KaisetuName);
                 //医療機関電話番号
                 SingleData.Add("dfHpTel", _coReceipt.HpTel);
+
+                //病名欄
+
+                foreach (CoReceiptByomeiModel byomei in ByomeiModels)
+                {
+                    var data = new Dictionary<string, CellModel>();
+                    data.Add("lsByomei", new CellModel(byomei.Byomei));
+                    CellData.Add(data);
+                }
 
                 //点数欄
                 // 点数
@@ -2400,6 +2446,9 @@ namespace Reporting.Receipt.Mapper
             }
         }
 
+        /// <summary>
+        /// 自賠責（労災準拠）用ヘッダー印字処理
+        /// </summary>
         private void PrintReceiptHeaderForJibaiRousai()
         {
             #region Sub Function
@@ -2453,9 +2502,9 @@ namespace Reporting.Receipt.Mapper
                 if (wareki.Ymd != "")
                 {
                     if (gengo) SingleData.Add($"{field}Gengo", wareki.Gengo);
-                    if (year) SingleData.Add($"{field}Year", wareki.Year.AsString());
-                    if (month) SingleData.Add($"{field}Month", wareki.Month.AsString());
-                    if (day) SingleData.Add($"{field}Day", wareki.Day.AsString());
+                    if (year) SingleData.Add($"{field}Year", wareki.Year.ToString());
+                    if (month) SingleData.Add($"{field}Month", wareki.Month.ToString());
+                    if (day) SingleData.Add($"{field}Day", wareki.Day.ToString());
                 }
             }
             #endregion
@@ -2534,27 +2583,27 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfMeisaiCount", CIUtil.ToStringIgnoreZero(_coReceipt.JibaiHeMeisaiCount));
 
                 //加算率
-                SingleData.Add("dfRateA", _systemConfRepository.GetSettingValue(3001, 1, HpId).AsString());
-                SingleData.Add("dfRateC", _systemConfRepository.GetSettingValue(3001, 1, HpId).AsString());
+                SingleData.Add("dfRateA", _systemConfRepository.GetSettingValue(3001, 1, HpId).ToString());
+                SingleData.Add("dfRateC", _systemConfRepository.GetSettingValue(3001, 1, HpId).ToString());
                 //合計A
-                SingleData.Add("dfTotal_A", _coReceipt.JibaiAFutan.AsString());
+                SingleData.Add("dfTotal_A", _coReceipt.JibaiAFutan.ToString());
                 //合計B
-                SingleData.Add("dfTotal_B", _coReceipt.JibaiBFutan.AsString());
+                SingleData.Add("dfTotal_B", _coReceipt.JibaiBFutan.ToString());
                 //合計C
-                SingleData.Add("dfTotal_C", _coReceipt.JibaiCFutan.AsString());
+                SingleData.Add("dfTotal_C", _coReceipt.JibaiCFutan.ToString());
                 //合計D
-                SingleData.Add("dfTotal_D", _coReceipt.JibaiDFutan.AsString());
+                SingleData.Add("dfTotal_D", _coReceipt.JibaiDFutan.ToString());
                 //合計ABCD
-                SingleData.Add("dfTotal_ABCD1", _coReceipt.JibaiABCDFutan.AsString());
-                SingleData.Add("dfTotal_ABCD2", _coReceipt.JibaiABCDFutan.AsString());
+                SingleData.Add("dfTotal_ABCD1", _coReceipt.JibaiABCDFutan.ToString());
+                SingleData.Add("dfTotal_ABCD2", _coReceipt.JibaiABCDFutan.ToString());
                 //通院月
-                SingleData.Add("dfTuinMonth", (_coReceipt.SinYm % 100).AsString());
+                SingleData.Add("dfTuinMonth", (_coReceipt.SinYm % 100).ToString());
                 //通院日
                 foreach (int tuuinDay in _coReceipt.TuuinDays)
                 {
                     SingleData.Add($"dfDay{tuuinDay % 100}", "〇");
                 }
-                SingleData.Add("dfDayTotal", (_coReceipt.TuuinDays.Count()).AsString());
+                SingleData.Add("dfDayTotal", _coReceipt.TuuinDays.Count().ToString());
                 //保険会社名
                 SingleData.Add("dfHokenName", _coReceipt.JibaiHokenName);
 
@@ -2566,6 +2615,15 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("dfKaisetuName", _coReceipt.KaisetuName);
                 //医療機関電話番号
                 SingleData.Add("dfHpTel", _coReceipt.HpTel);
+
+                //病名欄
+                foreach (CoReceiptByomeiModel byomei in ByomeiModels)
+                {
+                    var data = new Dictionary<string, CellModel>();
+                    data.Add("lsByomei", new CellModel(byomei.Byomei));
+
+                    CellData.Add(data);
+                }
 
                 //点数欄
                 // 点数
@@ -2710,6 +2768,24 @@ namespace Reporting.Receipt.Mapper
                 }
                 #endregion
             }
+        }
+
+        private string getPrintNo()
+        {
+            string ret = _coReceipt.ReceiptNo.ToString();
+            if (_coReceipt.Output == 1)
+            {
+                // 印刷済み
+                ret = "R" + ret;
+            }
+
+            if (_coReceipt.SeikyuKbn == SeikyuKbnConst.Henrei)
+            {
+                // 返戻
+                ret += "(H)";
+            }
+
+            return ret;
         }
     }
 }

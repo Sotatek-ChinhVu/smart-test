@@ -122,7 +122,7 @@ namespace Reporting.Receipt.Service
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
                 _PrintOut();
-                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount).GetData();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount,_tekiyoRowCount2).GetData();
             }
             else
             {
@@ -142,7 +142,7 @@ namespace Reporting.Receipt.Service
                             , sort: 0);
                 _PrintOut();
 
-                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount).GetData();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount, _tekiyoRowCount2).GetData();
             }
         }
 
