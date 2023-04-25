@@ -6,10 +6,14 @@ using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services;
 using Domain.Models.Diseases;
+using Domain.Models.Family;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using UseCase.Family;
 using UseCase.MedicalExamination.SaveMedical;
+using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
 namespace Interactor.CommonChecker.CommonMedicalCheck;
 
@@ -67,7 +71,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             tempCurrentListOdr.Add(order);
         });
 
-        var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
+        var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder, specialNoteItem, ptDiseaseModels, familyItems);
 
         foreach (var checkListOrderResult in checkListOrderResultList)
         {
@@ -105,7 +109,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listUnitCheckErrorInfo;
     }
 
-    public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> listCheckingOrder, RealTimeCheckerCondition checkerCondition)
+    public List<UnitCheckInfoModel> CheckListOrder(int hpId, long ptId, int sinday, List<OrdInfoModel> listCheckingOrder, RealTimeCheckerCondition checkerCondition, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         _hpID = hpId;
         _ptID = ptId;
@@ -128,7 +132,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             tempCurrentListOdr.Add(order);
         });
 
-        var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder);
+        var checkListOrderResultList = GetErrorFromListOrder(listCheckingOrder, specialNoteItem, ptDiseaseModels, familyItems);
 
         foreach (var checkListOrderResult in checkListOrderResultList)
         {
@@ -196,19 +200,19 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return listError;
     }
 
-    private List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList)
+    private List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> GetErrorFromListOrder(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>> listError = new List<UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel>>();
 
         if (CheckerCondition.IsCheckingAllergy)
         {
-            var foodAllergyCheckResult = CheckFoodAllergy(checkingOrderList);
+            var foodAllergyCheckResult = CheckFoodAllergy(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (foodAllergyCheckResult.IsError)
             {
                 listError.Add(foodAllergyCheckResult);
             }
 
-            var drugAllergyCheckResult = CheckDrugAllergy(checkingOrderList);
+            var drugAllergyCheckResult = CheckDrugAllergy(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (drugAllergyCheckResult.IsError)
             {
                 listError.Add(drugAllergyCheckResult);
@@ -217,7 +221,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         if (CheckerCondition.IsCheckingAge)
         {
-            var ageCheckResult = CheckAge(checkingOrderList);
+            var ageCheckResult = CheckAge(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (ageCheckResult.IsError)
             {
                 listError.Add(ageCheckResult);
@@ -226,7 +230,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         if (CheckerCondition.IsCheckingDisease)
         {
-            var diseaseCheckResult = CheckDisease(checkingOrderList);
+            var diseaseCheckResult = CheckDisease(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (diseaseCheckResult.IsError)
             {
                 listError.Add(diseaseCheckResult);
@@ -235,19 +239,19 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         if (CheckerCondition.IsCheckingKinki)
         {
-            var kinkiTainCheckResult = CheckKinkiTain(checkingOrderList);
+            var kinkiTainCheckResult = CheckKinkiTain(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (kinkiTainCheckResult.IsError)
             {
                 listError.Add(kinkiTainCheckResult);
             }
 
-            var kinkiOTCCheckResult = CheckKinkiOTC(checkingOrderList);
+            var kinkiOTCCheckResult = CheckKinkiOTC(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (kinkiOTCCheckResult.IsError)
             {
                 listError.Add(kinkiOTCCheckResult);
             }
 
-            var kinkiSuppleCheckResult = CheckKinkiSupple(checkingOrderList);
+            var kinkiSuppleCheckResult = CheckKinkiSupple(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (kinkiSuppleCheckResult.IsError)
             {
                 listError.Add(kinkiSuppleCheckResult);
@@ -256,7 +260,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         if (CheckerCondition.IsCheckingDays)
         {
-            var dayLimitCheckResult = CheckDayLimit(checkingOrderList);
+            var dayLimitCheckResult = CheckDayLimit(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (dayLimitCheckResult.IsError)
             {
                 listError.Add(dayLimitCheckResult);
@@ -265,7 +269,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
 
         if (CheckerCondition.IsCheckingDosage)
         {
-            var dayLimitCheckResult = CheckDosage(checkingOrderList);
+            var dayLimitCheckResult = CheckDosage(checkingOrderList, specialNoteItem, ptDiseaseModels, familyItems);
             if (dayLimitCheckResult.IsError)
             {
                 listError.Add(dayLimitCheckResult);
@@ -276,7 +280,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
     }
 
     #region Check
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckFoodAllergy(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckFoodAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> foodAllergyChecker =
             new FoodAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -285,11 +289,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
             })
         {
             InitUnitCheck(foodAllergyChecker);
-            return foodAllergyChecker.CheckOrderList(checkingOrderList);
+            return foodAllergyChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDrugAllergy(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDrugAllergy(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> drugAllergyChecker =
             new DrugAllergyChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -299,11 +303,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(drugAllergyChecker);
 
-            return drugAllergyChecker.CheckOrderList(checkingOrderList);
+            return drugAllergyChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckAge(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> ageChecker =
            new AgeChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -313,11 +317,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(ageChecker);
 
-            return ageChecker.CheckOrderList(checkingOrderList);
+            return ageChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList)
+    public UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDayLimit(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dayLimitChecker =
             new DayLimitChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -327,11 +331,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(dayLimitChecker);
 
-            return dayLimitChecker.CheckOrderList(checkingOrderList);
+            return dayLimitChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDosage(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDosage(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> dosageChecker =
            new DosageChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -344,11 +348,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(dosageChecker);
 
-            return dosageChecker.CheckOrderList(checkingOrderList);
+            return dosageChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckDisease(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> diseaseChecker =
             new DiseaseChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -358,11 +362,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(diseaseChecker);
 
-            return diseaseChecker.CheckOrderList(checkingOrderList);
+            return diseaseChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiOTC(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiOTC(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiOTCChecker =
             new KinkiOTCChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -372,11 +376,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(kinkiOTCChecker);
 
-            return kinkiOTCChecker.CheckOrderList(checkingOrderList);
+            return kinkiOTCChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiTain(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiTain(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiTainChecker =
             new KinkiTainChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -386,11 +390,11 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(kinkiTainChecker);
 
-            return kinkiTainChecker.CheckOrderList(checkingOrderList);
+            return kinkiTainChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
-    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiSupple(List<OrdInfoModel> checkingOrderList)
+    private UnitCheckerForOrderListResult<OrdInfoModel, OrdInfoDetailModel> CheckKinkiSupple(List<OrdInfoModel> checkingOrderList, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
     {
         using (UnitChecker<OrdInfoModel, OrdInfoDetailModel> kinkiSuppleChecker =
             new KinkiSuppleChecker<OrdInfoModel, OrdInfoDetailModel>()
@@ -400,7 +404,7 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         {
             InitUnitCheck(kinkiSuppleChecker);
 
-            return kinkiSuppleChecker.CheckOrderList(checkingOrderList);
+            return kinkiSuppleChecker.CheckOrderList(checkingOrderList, ConvertToSpecialNoteModel(specialNoteItem), ptDiseaseModels, familyItems.Select(f => ConvertToFamilyModel(f)).ToList());
         }
     }
 
@@ -1269,6 +1273,112 @@ public class CommonMedicalCheck : ICommonMedicalCheck
         return subResult;
     }
     #endregion
+
+    private SpecialNoteFull ConvertToSpecialNoteModel(SpecialNoteItem specialNoteItem)
+    {
+        var summaryInfModel = new SummaryInfModel(
+                specialNoteItem.SummaryTab.Id,
+                specialNoteItem.SummaryTab.HpId,
+                specialNoteItem.SummaryTab.PtId,
+                specialNoteItem.SummaryTab.SeqNo,
+                specialNoteItem.SummaryTab.Text,
+                specialNoteItem.SummaryTab.Rtext,
+                DateTime.MinValue,
+                DateTime.MinValue
+            );
+
+        var pregnancies = specialNoteItem.PatientInfoTab.PregnancyItems.Select(p =>
+            new PtPregnancyModel(
+                    p.Id,
+                    p.HpId,
+                    p.PtId,
+                    p.SeqNo,
+                    p.StartDate,
+                    p.EndDate,
+                    p.PeriodDate,
+                    p.PeriodDueDate,
+                    p.OvulationDate,
+                    p.OvulationDueDate,
+                    p.IsDeleted,
+                    DateTime.MinValue,
+                    0,
+                    string.Empty,
+                    p.SinDate
+                )
+            ).ToList();
+
+        var kensaDetailInfs = specialNoteItem.PatientInfoTab.KensaInfDetailItems.Select(k =>
+          new KensaInfDetailModel(
+                k.HpId,
+                k.PtId,
+                k.IraiCd,
+                k.SeqNo,
+                k.IraiDate,
+                k.RaiinNo,
+                k.KensaItemCd,
+                k.ResultVal,
+                k.ResultType,
+                k.AbnormalKbn,
+                k.IsDeleted,
+                k.CmtCd1,
+                k.CmtCd2,
+                DateTime.MinValue,
+                string.Empty,
+                string.Empty,
+                0
+              )
+          ).ToList();
+
+        var physicalModel = new PhysicalInfoModel(kensaDetailInfs);
+
+        var patientInfModel = new PatientInfoModel(
+                pregnancies,
+                specialNoteItem.PatientInfoTab.PtCmtInfItems,
+                specialNoteItem.PatientInfoTab.SeikatureInfItems,
+                new List<PhysicalInfoModel> { physicalModel },
+                new()
+            );
+
+        var specialNoteModel = new SpecialNoteFull(
+            specialNoteItem.ImportantNoteTab,
+            patientInfModel,
+            summaryInfModel
+            );
+
+        return specialNoteModel;
+    }
+
+    private FamilyModel ConvertToFamilyModel(FamilyItem familyItem)
+    {
+        return new FamilyModel(
+                familyItem.FamilyId,
+                familyItem.PtId,
+                0,
+                familyItem.ZokugaraCd,
+                familyItem.FamilyPtId,
+                familyItem.FamilyPtNum,
+                familyItem.Name,
+                familyItem.KanaName,
+                familyItem.Sex,
+                familyItem.Birthday,
+                familyItem.Age,
+                familyItem.IsDead,
+                familyItem.IsSeparated,
+                familyItem.Biko,
+                familyItem.SortNo,
+                familyItem.PtFamilyRekiList.Select(
+                        p => new PtFamilyRekiModel(
+                                p.Id,
+                                p.ByomeiCd,
+                                p.Byomei,
+                                p.Cmt,
+                                p.SortNo,
+                                p.IsDeleted
+                            )
+                    ).ToList(),
+                string.Empty
+            );
+    }
 
     public void ReleaseResource()
     {

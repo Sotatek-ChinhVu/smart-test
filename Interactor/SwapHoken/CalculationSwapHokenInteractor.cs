@@ -1864,7 +1864,7 @@ namespace Interactor.SwapHoken
                                                                          ))
                                  .ToList()));
 
-            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition);
+            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition, new(), new(), new());
             foreach (var errorInfo in checkedResult)
             {
                 var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;
