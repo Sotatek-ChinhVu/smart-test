@@ -399,12 +399,13 @@ public class SanteiInfRepository : RepositoryBase, ISanteiInfRepository
             foreach (var model in updatedGenModels)
             {
                 var santeis = TrackingDataContext.AutoSanteiMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd == model.ItemCd && x.Id == model.Id);
-                
+
                 if (santeis != null)
                 {
                     santeis.StartDate = model.StartDate;
                     santeis.EndDate = model.EndDate;
                     santeis.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    santeis.UpdateId = userId;
                 }
             }
         }

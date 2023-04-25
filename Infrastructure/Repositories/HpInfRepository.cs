@@ -86,25 +86,24 @@ namespace Infrastructure.Repositories
             {
                 foreach (var model in updatedModels)
                 {
-                    TrackingDataContext.HpInfs.Update(new HpInf()
+                    var hpInfUpdate = TrackingDataContext.HpInfs.FirstOrDefault(x => x.HpId == model.HpId && x.StartDate == model.StartDate);
+                    if (hpInfUpdate != null)
                     {
-                        HpId = model.HpId,
-                        StartDate = model.StartDate,
-                        HpCd = model.HpCd,
-                        RousaiHpCd = model.RousaiHpCd,
-                        HpName = model.HpName,
-                        ReceHpName = model.ReceHpName,
-                        KaisetuName = model.KaisetuName,
-                        PostCd = model.PostCd,
-                        PrefNo = model.PrefNo,
-                        Address1 = model.Address1,
-                        Address2 = model.Address2,
-                        Tel = model.Tel,
-                        UpdateId = userId,
-                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                        FaxNo = model.FaxNo,
-                        OtherContacts = model.OtherContacts
-                    });
+                        hpInfUpdate.HpCd = model.HpCd;
+                        hpInfUpdate.RousaiHpCd = model.RousaiHpCd;
+                        hpInfUpdate.HpName = model.HpName;
+                        hpInfUpdate.ReceHpName = model.ReceHpName;
+                        hpInfUpdate.KaisetuName = model.KaisetuName;
+                        hpInfUpdate.PostCd = model.PostCd;
+                        hpInfUpdate.PrefNo = model.PrefNo;
+                        hpInfUpdate.Address1 = model.Address1;
+                        hpInfUpdate.Address2 = model.Address2;
+                        hpInfUpdate.Tel = model.Tel;
+                        hpInfUpdate.UpdateId = userId;
+                        hpInfUpdate.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        hpInfUpdate.FaxNo = model.FaxNo;
+                        hpInfUpdate.OtherContacts = model.OtherContacts;
+                    }
                 }
             }
 
@@ -128,6 +127,8 @@ namespace Infrastructure.Repositories
                         Tel = model.Tel,
                         CreateDate = CIUtil.GetJapanDateTimeNow(),
                         CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
                         FaxNo = model.FaxNo,
                         OtherContacts = model.OtherContacts
                     });

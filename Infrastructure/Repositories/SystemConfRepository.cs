@@ -380,20 +380,23 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         {
             foreach (var model in updatedGenModels)
             {
-                TrackingDataContext.SystemGenerationConfs.Update(new SystemGenerationConf()
+                var geneTracking = TrackingDataContext.SystemGenerationConfs
+                    .FirstOrDefault(x =>
+                                        x.HpId == model.HpId &&
+                                        x.GrpCd == model.GrpCd &&
+                                        x.GrpEdaNo == model.GrpEdaNo &&
+                                        x.Id == model.Id);
+
+                if (geneTracking != null)
                 {
-                    HpId = model.HpId,
-                    GrpCd = model.GrpCd,
-                    GrpEdaNo = model.GrpEdaNo,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    Val = model.Val,
-                    Param = model.Param,
-                    Biko = model.Biko,
-                    UpdateId = userId,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    Id = model.Id
-                });
+                    geneTracking.StartDate = model.StartDate;
+                    geneTracking.EndDate = model.EndDate;
+                    geneTracking.Val = model.Val;
+                    geneTracking.Param = model.Param;
+                    geneTracking.Biko = model.Biko;
+                    geneTracking.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    geneTracking.UpdateId = userId;
+                }
             }
         }
 
@@ -410,7 +413,9 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
                 Param = model.Param,
                 Biko = model.Biko,
                 CreateId = userId,
-                CreateDate = CIUtil.GetJapanDateTimeNow()
+                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                UpdateId = userId
             });
         }
 
@@ -430,17 +435,19 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         {
             foreach (var model in updatedSettingModels)
             {
-                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                var settingTracking = TrackingDataContext.SystemConfs
+                    .FirstOrDefault(x =>
+                                        x.HpId == model.HpId &&
+                                        x.GrpCd == model.GrpCd &&
+                                        x.GrpEdaNo == model.GrpEdaNo);
+                if (settingTracking != null)
                 {
-                    HpId = hpId,
-                    GrpCd = model.GrpCd,
-                    GrpEdaNo = model.GrpEdaNo,
-                    Val = model.Val,
-                    Param = model.Param,
-                    Biko = model.Biko,
-                    UpdateDate = CIUtil.GetJapanDateTimeNow(),
-                    UpdateId = userId,
-                });
+                    settingTracking.Val = model.Val;
+                    settingTracking.Param = model.Param;
+                    settingTracking.Biko = model.Biko;
+                    settingTracking.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    settingTracking.UpdateId = userId;
+                }
 
                 if (model.GrpCd == 93002 &&
                     model.GrpEdaNo == 0 &&
