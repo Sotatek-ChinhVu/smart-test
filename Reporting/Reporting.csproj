@@ -24,12 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="EmrCalculateApi">
-      <HintPath>..\EmrCalculateApi\obj\Debug\net6.0\ref\EmrCalculateApi.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="ReceiptCheck\DB\" />
   </ItemGroup>
 
