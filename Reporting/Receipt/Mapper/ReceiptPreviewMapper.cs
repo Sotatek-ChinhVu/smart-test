@@ -118,12 +118,10 @@ namespace Reporting.Receipt.Mapper
                 }
             }
 
-
             // 本体部分印刷処理
 
-
-             if (_tekiyoRowCount <= 0) return;
-            if ((TekiyoModels?.Count() ?? 0) <= 0 && (CurrentPage > 1 || (TekiyoEnModels?.Count() ?? 0) <= 0)) return ;
+            if (_tekiyoRowCount <= 0) return;
+            if ((TekiyoModels?.Count() ?? 0) <= 0 && (CurrentPage > 1 || (TekiyoEnModels?.Count() ?? 0) <= 0)) return;
 
             int tekiyoIndex = (CurrentPage - 1) * _tekiyoRowCount;
 
@@ -137,7 +135,7 @@ namespace Reporting.Receipt.Mapper
                 {
                     for (short j = 0; j < _tekiyoRowCount2; j++)
                     {
-                        if (tekiyoIndex < TekiyoModels.Count())
+                        if (TekiyoModels != null && tekiyoIndex < TekiyoModels.Count())
                         {
                             var data = new Dictionary<string, CellModel>();
 
@@ -159,7 +157,7 @@ namespace Reporting.Receipt.Mapper
             }
             else
             {
-                if (TekiyoModels.Any())
+                if (TekiyoModels != null && TekiyoModels.Any())
                 {
                     for (short i = 0; i < _tekiyoRowCount; i++)
                     {
@@ -188,7 +186,7 @@ namespace Reporting.Receipt.Mapper
                 // 労災 円項目用　本紙のみ
                 int tekiyoEnIndex = (CurrentPage - 1) * _tekiyoEnRowCount;
 
-                if (tekiyoEnIndex < TekiyoEnModels.Count())
+                if (TekiyoEnModels != null && tekiyoEnIndex < TekiyoEnModels.Count())
                 {
                     for (short i = 0; i < _tekiyoEnRowCount; i++)
                     {
@@ -585,7 +583,7 @@ namespace Reporting.Receipt.Mapper
                 //医療機関コード
                 string hpCd = _coReceipt.HpCd.PadLeft(7, '0');
                 //請求点数
-                string tensu = _coReceipt.HokenReceTensu.ToString().PadLeft(7, '0');
+                string tensu = _coReceipt.HokenReceTensu?.ToString().PadLeft(7, '0') ?? string.Empty;
                 //チェック1
                 string chk1 = _getCheck(tensu);
                 //生月日
@@ -593,13 +591,13 @@ namespace Reporting.Receipt.Mapper
                 //チェック2
                 string chk2 = _getCheck(birthDay);
                 //一部負担金
-                string futan = _coReceipt.HokenReceFutan.ToString().PadLeft(5, '0');
+                string futan = _coReceipt.HokenReceFutan?.ToString().PadLeft(5, '0') ?? string.Empty;
                 //チェック3
                 string chk3 = _getCheck(futan);
                 //チェック4
                 string chk4 = _getCheck(hokensyaNo + hpCd + tensu + chk1 + birthDay + chk2 + futan + chk3);
                 //実日数
-                string nissu = _coReceipt.HokenNissu.ToString().PadLeft(2, '0');
+                string nissu = _coReceipt.HokenNissu?.ToString().PadLeft(2, '0') ?? string.Empty;
                 //診療年月
                 string sinYm = (CIUtil.SDateToWDate(_coReceipt.SinYm * 100 + 1) % 1000000 / 100).ToString().PadLeft(4, '0');
                 //チェック5
@@ -663,9 +661,9 @@ namespace Reporting.Receipt.Mapper
                     //チェック3
                     string chk3 = _getCheck(k1FutanNo + k1JyukyuNo);
                     //公１実日数
-                    string k1Nissu = _coReceipt.KohiNissu(1).ToString().PadLeft(2, '0');
+                    string k1Nissu = _coReceipt.KohiNissu(1)?.ToString().PadLeft(2, '0') ?? string.Empty;
                     //公１請求点数
-                    string k1Tensu = _coReceipt.KohiReceTensu(1).ToString().PadLeft(7, '0');
+                    string k1Tensu = _coReceipt.KohiReceTensu(1)?.ToString().PadLeft(7, '0') ?? string.Empty;
                     //チェック4
                     string chk4 = _getCheck(k1Nissu + k1Tensu);
                     //公１薬剤一部負担金
@@ -673,7 +671,7 @@ namespace Reporting.Receipt.Mapper
                     //チェック5
                     string chk5 = "0";
                     //公１患者負担額
-                    string k1Futan = _coReceipt.KohiReceFutan(1).ToString().PadLeft(5, '0');
+                    string k1Futan = _coReceipt.KohiReceFutan(1)?.ToString().PadLeft(5, '0') ?? string.Empty;
                     //チェック6
                     string chk6 = _getCheck(k1Futan);
                     //チェック7
@@ -702,9 +700,9 @@ namespace Reporting.Receipt.Mapper
                     //チェック1
                     string chk1 = _getCheck(k2FutanNo + k2JyukyuNo);
                     //公２実日数
-                    string k2Nissu = _coReceipt.KohiNissu(2).ToString().PadLeft(2, '0');
+                    string k2Nissu = _coReceipt.KohiNissu(2)?.ToString().PadLeft(2, '0') ?? string.Empty;
                     //公２請求点数
-                    string k2Tensu = _coReceipt.KohiReceTensu(2).ToString().PadLeft(7, '0');
+                    string k2Tensu = _coReceipt.KohiReceTensu(2)?.ToString().PadLeft(7, '0') ?? string.Empty;
                     //チェック2
                     string chk2 = _getCheck(k2Nissu + k2Tensu);
                     //公２薬剤一部負担金
@@ -1717,11 +1715,11 @@ namespace Reporting.Receipt.Mapper
                 SingleData.Add("txSyobyoKeika", _coReceipt.SyobyoKeika);
 
                 //小計
-                SingleData.Add("dfSyokei", _coReceipt.RousaiSyokei.ToString());
+                SingleData.Add("dfSyokei", _coReceipt.RousaiSyokei?.ToString() ?? string.Empty);
                 //イ
-                SingleData.Add("dfTenTotal", _coReceipt.RousaiSyokeiGaku_I.ToString());
+                SingleData.Add("dfTenTotal", _coReceipt.RousaiSyokeiGaku_I?.ToString() ?? string.Empty);
                 //ロ
-                SingleData.Add("dfEnTotal", _coReceipt.RousaiSyokeiGaku_RO.ToString());
+                SingleData.Add("dfEnTotal", _coReceipt.RousaiSyokeiGaku_RO?.ToString() ?? string.Empty);
                 //病名欄
                 short i = 0;
                 foreach (CoReceiptByomeiModel byomei in ByomeiModels)
