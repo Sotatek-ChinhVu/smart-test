@@ -28,9 +28,9 @@ namespace Interactor.ChartApproval
                 else
                     return new SaveApprovalInfListOutputData(SaveApprovalInfStatus.Failed);
             }
-            catch
+            finally
             {
-                return new SaveApprovalInfListOutputData(SaveApprovalInfStatus.Failed);
+                _approvalInfRepository.ReleaseResource();
             }
         }
     }
