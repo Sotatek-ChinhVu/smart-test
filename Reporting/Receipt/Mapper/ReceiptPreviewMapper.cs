@@ -176,15 +176,10 @@ namespace Reporting.Receipt.Mapper
                             tekiyoIndex++;
                             if (tekiyoIndex >= TekiyoModels.Count())
                             {
-                                _hasNextPage = false;
                                 break;
                             }
                         }
                     }
-                }
-                else
-                {
-                    _hasNextPage = false;
                 }
             }
 
