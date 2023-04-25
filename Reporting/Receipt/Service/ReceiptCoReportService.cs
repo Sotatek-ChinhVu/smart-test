@@ -864,7 +864,7 @@ namespace Reporting.Receipt.Service
         {
             List<SyobyoDataModel> syobyoDataModels = _coReceiptFinder.FindSyobyoData(HpId, ptId, sinYm, receInf.HokenId, outputYm);
 
-            if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 1) //ReceiptByomeiWordWrap
+            if ((int)_systemConfRepository.GetSettingValue(94001, 0, HpId) == 0) //ReceiptByomeiWordWrap
             {
                 syobyoDataModels = syobyoDataModels.OrderBy(p => p.StartDate).ThenBy(p => p.TenkiDate).ThenBy(p => p.KamiReceTenkiKbn).ThenByDescending(p => p.SyubyoKbn).ThenBy(p => p.SortNo).ToList();
             }
