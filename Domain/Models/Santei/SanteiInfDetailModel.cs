@@ -1,5 +1,4 @@
 ﻿using Helper.Constants;
-using System.Text.Json.Serialization;
 
 namespace Domain.Models.Santei;
 
@@ -44,11 +43,12 @@ public class SanteiInfDetailModel
         Comment = string.Empty;
     }
 
-    public SanteiInfDetailModel(long id, long ptId, string itemCd, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
+    public SanteiInfDetailModel(long id, long ptId, string itemCd, int startDate, int endDate, int kisanSbt, int kisanDate, string byomei, string hosokuComment, string comment, bool isDeleted, ModelStatus autoSanteiMstModelStatus)
     {
         Id = id;
         PtId = ptId;
         ItemCd = itemCd;
+        StartDate = startDate;
         EndDate = endDate;
         KisanSbt = kisanSbt;
         KisanDate = kisanDate;
