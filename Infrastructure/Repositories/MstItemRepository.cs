@@ -371,7 +371,7 @@ namespace Infrastructure.Repositories
 
             var count = queryResult.Count();
 
-            if (!string.IsNullOrEmpty(masterSBT))
+            if (masterSBT.ToLower() != "all")
             {
                 queryResult = queryResult.Where(t => t.MasterSbt == masterSBT);
             }
