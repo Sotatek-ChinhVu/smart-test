@@ -1,5 +1,4 @@
-﻿using Helper.Enum;
-using Reporting.DrugInfo.Model;
+﻿using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
@@ -22,5 +21,5 @@ public interface IReportService
 
     CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate);
 
-    CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode);
+    CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 }

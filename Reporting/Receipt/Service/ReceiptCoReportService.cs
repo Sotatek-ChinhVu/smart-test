@@ -7,7 +7,6 @@ using EmrCalculateApi.Receipt.Constants;
 using EmrCalculateApi.Receipt.Models;
 using EmrCalculateApi.Receipt.ViewModels;
 using Helper.Common;
-using Helper.Enum;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Reporting.Mappers.Common;
@@ -83,13 +82,13 @@ namespace Reporting.Receipt.Service
 
         private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode, bool isNoCreatingReceData = false)
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, bool isNoCreatingReceData = false)
         {
             var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, seikyuYm, sinYm, hokenId);
 
             // TODO message or somthing process here
             if (receInf == null) return new();
-            int target = -1;
+            var target = -1;
             switch (receInf.HokenKbn)
             {
                 case 0:
@@ -117,52 +116,34 @@ namespace Reporting.Receipt.Service
                     return new();
             }
 
-            switch (mode)
+            SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
+
+            if (isNoCreatingReceData)
             {
-                case ReceiptPreviewModeEnum.Accounting:
-                case ReceiptPreviewModeEnum.ReceiptCheckMedicalDetailIn:
-                case ReceiptPreviewModeEnum.ReceiptCheckMedicalDetailOut:
-                case ReceiptPreviewModeEnum.ReceiptList:
-                    {
-                        SeikyuType seikyuType = new SeikyuType(true, true, true, true, true);
-
-                        if (isNoCreatingReceData)
-                        {
-                            InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
-                            _PrintOut();
-                            return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
-                        }
-                        else
-                        {
-                            InitParam(hpId, receInf.SeikyuYm
-                                        , receInf.PtId
-                                        , receInf.SinYm
-                                        , receInf.HokenId
-                                        , 0
-                                        , 0
-                                        , target
-                                        , ""
-                                        , 0
-                                        , 999999999
-                                        , seikyuType
-                                        , IsPtTest
-                                        , IncludeOutDrug
-                                        , sort: 0);
-                            _PrintOut();
-
-                            return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
-                        }
-                    }
-                case ReceiptPreviewModeEnum.ReceiptCheckInputSyoujoSyouki:
-                    {
-                        InitParam(hpId, receInf.PtId, receInf.SeikyuYm, receInf.SinYm, receInf.HokenId);
-                        _PrintOut();
-
-                        return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
-                    }
+                InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
+                _PrintOut();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
             }
+            else
+            {
+                InitParam(hpId, receInf.SeikyuYm
+                            , receInf.PtId
+                            , receInf.SinYm
+                            , receInf.HokenId
+                            , 0
+                            , 0
+                            , target
+                            , ""
+                            , 0
+                            , 999999999
+                            , seikyuType
+                            , IsPtTest
+                            , IncludeOutDrug
+                            , sort: 0);
+                _PrintOut();
 
-            return new();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
+            }
         }
 
         private void _PrintOut()
@@ -172,8 +153,6 @@ namespace Reporting.Receipt.Service
             int i = 0;
             while (i < CoModels.Count())
             {
-                bool initResult = false;
-
                 CoModel = CoModels[i];
 
                 // フォームチェック
@@ -228,7 +207,6 @@ namespace Reporting.Receipt.Service
                     MakeTekiyoListForRousai();
                 }
 
-                bool isNextPageExits = true;
                 CurrentPage = 1;
 
                 if (Target == TargetConst.RousaiAfter)

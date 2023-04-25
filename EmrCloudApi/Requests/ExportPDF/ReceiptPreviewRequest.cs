@@ -1,6 +1,4 @@
-﻿using Helper.Enum;
-
-namespace EmrCloudApi.Requests.ExportPDF
+﻿namespace EmrCloudApi.Requests.ExportPDF
 {
     public class ReceiptPreviewRequest
     {
@@ -13,7 +11,5 @@ namespace EmrCloudApi.Requests.ExportPDF
         public int SinYm { get; set; }
 
         public int HokenId { get; set; }
-
-        public ReceiptPreviewModeEnum Mode { get; set; }
     }
 }

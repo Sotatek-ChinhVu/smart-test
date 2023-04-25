@@ -80,8 +80,8 @@ public class ReportService : IReportService
     }
 
     //Receipt Preview
-    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, ReceiptPreviewModeEnum mode)
+    public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
     {
-        return _receiptCoReportService.GetReceiptData(hpId, ptId, seikyuYm, sinYm, hokenId, mode);
+        return _receiptCoReportService.GetReceiptData(hpId, ptId, seikyuYm, sinYm, hokenId);
     }
 }
