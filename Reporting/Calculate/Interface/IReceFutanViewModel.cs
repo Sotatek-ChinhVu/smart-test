@@ -1,5 +1,5 @@
 using Reporting.Calculate.Futan.Models;
-using EmrCalculateApi.ReceFutan.Models;
+using Reporting.Calculate.ReceFutan.Models;
 
 namespace Reporting.Calculate.Interface
 {

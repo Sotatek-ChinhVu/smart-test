@@ -1,5 +1,4 @@
-﻿using EmrCalculateApi.Ika.Models;
-using Entity.Tenant;
+﻿using Reporting.Calculate.Ika.Models;
 
 namespace Reporting.Calculate.Requests
 {

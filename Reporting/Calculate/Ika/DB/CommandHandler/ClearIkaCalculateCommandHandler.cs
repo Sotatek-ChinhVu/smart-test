@@ -1,6 +1,4 @@
-﻿using Reporting.Calculate.Ika.Models;
-using Reporting.Calculate.Ika.ViewModels;
-using PostgreDataContext;
+﻿using PostgreDataContext;
 using Reporting.Calculate.Interface;
 using Helper.Constants;
 using Reporting.Calculate.Extensions;

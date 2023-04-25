@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EmrCalculateApi.Ika.Constants;
-using Reporting.Calculate.Ika.Constants;
+﻿using Reporting.Calculate.Ika.Constants;
 using Reporting.Calculate.Ika.Models;
 
 namespace Reporting.Calculate.Receipt.Models
