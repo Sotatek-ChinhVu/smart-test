@@ -2,17 +2,11 @@
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
-using EmrCloudApi.Requests.Receipt;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.MedicalExamination;
-using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
-using Reporting.OutDrug.Service;
-using Reporting.Receipt.Service;
-using Reporting.ReceiptList.Model;
 using Reporting.Accounting.Model;
+using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
@@ -34,7 +28,6 @@ public class PdfCreatorController : ControllerBase
         _reportService = reportService;
         _configuration = configuration;
         _historyCommon = historyCommon;
-        _receiptCoReportService = receiptCoReportService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]

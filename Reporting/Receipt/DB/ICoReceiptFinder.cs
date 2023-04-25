@@ -1,6 +1,6 @@
-﻿using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Receipt.Models;
-using Entity.Tenant;
+﻿using Entity.Tenant;
+using Reporting.Calculate.Ika.Models;
+using Reporting.Calculate.Receipt.Models;
 using Reporting.Receipt.Models;
 
 namespace Reporting.Receipt.DB
@@ -14,7 +14,7 @@ namespace Reporting.Receipt.DB
             string receSbt, bool includeTester, bool paperOnly, List<int> seikyuKbns, int tantoId, int kaId, int grpId);
 
         List<ReceInfModel> FindReceInf(int hpId,
-            EmrCalculateApi.ReceFutan.Models.ReceInfModel receInf);
+            Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf);
 
         List<ReceInfModel> FindReceInfFukuoka(
            int hpId, int mode, int target, int seikyuYm, List<long> ptId, int sinYm, int hokenId,
@@ -63,7 +63,7 @@ namespace Reporting.Receipt.DB
 
         int ZenkaiKensaDate(int hpId, long ptId, int sinDate, int hokenId);
 
-        EmrCalculateApi.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+        Reporting.Calculate.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 
         List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo);
     }

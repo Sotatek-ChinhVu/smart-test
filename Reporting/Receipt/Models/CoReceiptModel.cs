@@ -1,7 +1,7 @@
-﻿using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Receipt.Models;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Common;
+using Reporting.Calculate.Ika.Models;
+using Reporting.Calculate.Receipt.Models;
 
 namespace Reporting.Receipt.Models
 {

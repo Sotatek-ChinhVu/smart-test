@@ -8,7 +8,8 @@
             CommonReportingRequestModel result = new CommonReportingRequestModel()
             {
                 ReportType = GetReportType(),
-                SingleFieldData = GetSingleFieldData(),
+                FileNamePageMap = GetFileNamePageMap(),
+                SingleFieldList = GetSingleFieldData(),
                 TableFieldData = GetTableFieldData(),
                 SystemConfigList = GetSystemConfigList(),
                 ReportConfigModel = new ReportConfigModel()
@@ -54,6 +55,11 @@
         public virtual Dictionary<string, string> GetSystemConfigList()
         {
             return new();
+        }
+
+        public virtual Dictionary<string, string> GetFileNamePageMap()
+        {
+            throw new NotImplementedException();
         }
     }
 }

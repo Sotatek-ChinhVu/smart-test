@@ -1,9 +1,9 @@
 ﻿using Domain.Models.SystemConf;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Receipt.Constants;
-using EmrCalculateApi.Receipt.Models;
 using Helper.Common;
 using Helper.Extension;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.Models;
 using Reporting.Mappers.Common;
 using Reporting.Receipt.Constants;
 using Reporting.Receipt.DB;
@@ -23,8 +23,10 @@ namespace Reporting.Receipt.Mapper
         protected int CurrentPage = 1;
         private int HpId;
         private int Target;
+        private int _tekiyoRowCount;
+        private int _tekiyoEnRowCount;
 
-        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder)
+        public ReceiptPreviewMapper(CoReceiptModel coReceipt, List<CoReceiptByomeiModel> byomeiModels, List<CoReceiptTekiyoModel> tekiyoModels, List<CoReceiptTekiyoModel> tekiyoEnModels, int currentPage, int hpId, int target, ISystemConfRepository systemConfRepository, ICoReceiptFinder coReceiptFinder, int tekiyoRowCount, int tekiyoEnRowCount)
         {
             _coReceipt = coReceipt;
             ByomeiModels = byomeiModels;
@@ -35,10 +37,19 @@ namespace Reporting.Receipt.Mapper
             Target = target;
             _systemConfRepository = systemConfRepository;
             _coReceiptFinder = coReceiptFinder;
+            _tekiyoRowCount = tekiyoRowCount;
+            _tekiyoEnRowCount = tekiyoEnRowCount;
         }
 
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
         List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
+
+        public override Dictionary<string, string> GetFileNamePageMap()
+        {
+            var fileName = new Dictionary<string, string>();
+            fileName.Add("1", "fmReceipt.rse");
+            return fileName;
+        }
 
         public override int GetReportType()
         {
@@ -96,7 +107,7 @@ namespace Reporting.Receipt.Mapper
 
         public override List<Dictionary<string, CellModel>> GetTableFieldData()
         {
-            
+            bool _hasNextPage = true;
             //病名欄
             foreach (var item in ByomeiModels)
             {
@@ -108,6 +119,8 @@ namespace Reporting.Receipt.Mapper
             }
 
             //摘要欄印刷
+            int tekiyoIndex = (CurrentPage - 1) * _tekiyoRowCount;
+
             if (new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin, TargetConst.RousaiAfter, TargetConst.Jibai }.Contains(Target))
             {
                 foreach (var item in TekiyoModels)
@@ -119,16 +132,59 @@ namespace Reporting.Receipt.Mapper
                     CellData.Add(data);
                 }
             }
+            else
+            {
+                if (TekiyoModels.Any())
+                {
+                    for (short i = 0; i < _tekiyoRowCount; i++)
+                    {
+                        if (tekiyoIndex < TekiyoModels.Count())
+                        {
+                            var data = new Dictionary<string, CellModel>();
+                            data.Add("lsSinId", new CellModel(TekiyoModels[tekiyoIndex].SinId));
+                            data.Add("lsTekiyoMark", new CellModel(TekiyoModels[tekiyoIndex].Mark));
+                            data.Add("lsTekiyo", new CellModel(TekiyoModels[tekiyoIndex].Tekiyo));
+                            CellData.Add(data);
+                            tekiyoIndex++;
+                            if (tekiyoIndex >= TekiyoModels.Count())
+                            {
+                                _hasNextPage = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    _hasNextPage = false;
+                }
+            }
 
             if ((new int[] { TargetConst.RousaiTanki, TargetConst.RousaiNenkin }.Contains(Target) || (Target == TargetConst.Jibai && (int)_systemConfRepository.GetSettingValue(3001, 0, HpId) == 1)))
             {
                 // 労災 円項目用　本紙のみ
-
-                foreach (var item in TekiyoEnModels)
+                int tekiyoEnIndex = (CurrentPage - 1) * _tekiyoEnRowCount;
+                if (tekiyoEnIndex < TekiyoEnModels.Count())
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    data.Add("lsEnTekiyo", new CellModel(item.Tekiyo));
-                    CellData.Add(data);
+                    for (short i = 0; i < _tekiyoEnRowCount; i++)
+                    {
+                        var data = new Dictionary<string, CellModel>();
+                        data.Add("lsEnTekiyo", new CellModel(TekiyoEnModels[tekiyoEnIndex].Tekiyo));
+
+                        tekiyoEnIndex++;
+                        if (tekiyoEnIndex >= TekiyoEnModels.Count())
+                        {
+                            //_hasNextPage = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (new int[] {
+                    TargetConst.NaganoRece2,
+                    TargetConst.FukuokaRece2 }.Contains(Target))
+                {
+                    tekiyoIndex = -1;
                 }
             }
 

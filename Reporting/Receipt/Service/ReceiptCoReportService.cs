@@ -1,14 +1,14 @@
 ﻿using Domain.Constant;
 using Domain.Models.SystemConf;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Constants;
-using EmrCalculateApi.Receipt.Models;
-using EmrCalculateApi.Receipt.ViewModels;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Ika.Models;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Constants;
+using Reporting.Calculate.Receipt.Models;
+using Reporting.Calculate.Receipt.ViewModels;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
@@ -39,8 +39,8 @@ namespace Reporting.Receipt.Service
             _readRseReportFileService = readRseReportFileService;
         }
 
-        private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels;
-        private EmrCalculateApi.ReceFutan.Models.ReceInfModel ReceInf;
+        private List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels;
+        private Reporting.Calculate.ReceFutan.Models.ReceInfModel ReceInf;
 
         private int HpId;
         private int SeikyuYm;
@@ -80,7 +80,7 @@ namespace Reporting.Receipt.Service
 
         SeikyuType SeikyuType;
 
-        private List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
+        private List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
         public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, bool isNoCreatingReceData = false)
         {
@@ -122,7 +122,7 @@ namespace Reporting.Receipt.Service
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
                 _PrintOut();
-                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount).GetData();
             }
             else
             {
@@ -142,7 +142,7 @@ namespace Reporting.Receipt.Service
                             , sort: 0);
                 _PrintOut();
 
-                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder).GetData();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount).GetData();
             }
         }
 
@@ -248,7 +248,7 @@ namespace Reporting.Receipt.Service
         }
 
         public void InitParam(int hpId,
-            EmrCalculateApi.ReceFutan.Models.ReceInfModel receInf, List<EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel> receFutanKbnModels, bool includeOutDrug)
+            Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf, List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> receFutanKbnModels, bool includeOutDrug)
         {
             HpId = hpId;
             SeikyuYm = receInf.SeikyuYm;
@@ -697,7 +697,7 @@ namespace Reporting.Receipt.Service
             if (ReceFutanKbns != null)
             {
                 receFutanKbnModels = new List<ReceFutanKbnModel>();
-                foreach (EmrCalculateApi.ReceFutan.Models.ReceFutanKbnModel receFutanKbnModel in ReceFutanKbns)
+                foreach (Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel receFutanKbnModel in ReceFutanKbns)
                 {
                     receFutanKbnModels.Add(new ReceFutanKbnModel(receFutanKbnModel.ReceFutanKbn));
                 }
@@ -1139,12 +1139,12 @@ namespace Reporting.Receipt.Service
             List<ObjectCalculate> fieldInputList = new();
 
             fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.GetFormatLength));
-            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.ListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsByomei", (int)CalculateTypeEnum.GetListRowCount));
             fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.GetFormatLength));
             fieldInputList.Add(new ObjectCalculate("lsEnTekiyo", (int)CalculateTypeEnum.GetFormatLength));
-            fieldInputList.Add(new ObjectCalculate("lsEnTekiyo", (int)CalculateTypeEnum.ListRowCount));
-            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.ListRowCount));
-            fieldInputList.Add(new ObjectCalculate("lsTekiyo1", (int)CalculateTypeEnum.ListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsEnTekiyo", (int)CalculateTypeEnum.GetListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo", (int)CalculateTypeEnum.GetListRowCount));
+            fieldInputList.Add(new ObjectCalculate("lsTekiyo1", (int)CalculateTypeEnum.GetListRowCount));
 
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Receipt, formfile, fieldInputList);
             var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(data);
@@ -1175,7 +1175,7 @@ namespace Reporting.Receipt.Service
 
                         }
                         break;
-                    case (int)CalculateTypeEnum.ListRowCount:
+                    case (int)CalculateTypeEnum.GetListRowCount:
                         switch (item.listName)
                         {
                             case "lsByomei":

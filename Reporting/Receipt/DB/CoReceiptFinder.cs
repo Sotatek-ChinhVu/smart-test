@@ -1,13 +1,13 @@
 ﻿using Domain.Constant;
 using Domain.Models.SystemConf;
-using EmrCalculateApi.Constants;
-using EmrCalculateApi.Ika.Models;
-using EmrCalculateApi.Interface;
-using EmrCalculateApi.Receipt.Models;
 using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Ika.Models;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.Receipt.Models;
 using Reporting.Receipt.Constants;
 using Reporting.Receipt.Models;
 
@@ -541,7 +541,7 @@ namespace Reporting.Receipt.DB
         }
 
         public List<ReceInfModel> FindReceInf(int hpId,
-            EmrCalculateApi.ReceFutan.Models.ReceInfModel receInf)
+            Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf)
         {
             var ptInfs =
                 NoTrackingDataContext.PtInfs.Where(p =>
@@ -1626,12 +1626,12 @@ namespace Reporting.Receipt.DB
             return ret;
         }
 
-        public EmrCalculateApi.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
+        public Reporting.Calculate.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
         {
             var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(
                 x => x.HpId == hpId && x.PtId == ptId && x.SeikyuYm == seikyuYm && x.SinYm == sinYm && x.HokenId == hokenId);
 
-            return new EmrCalculateApi.ReceFutan.Models.ReceInfModel(receInf ?? new());
+            return new Reporting.Calculate.ReceFutan.Models.ReceInfModel(receInf ?? new());
         }
 
         public List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo)

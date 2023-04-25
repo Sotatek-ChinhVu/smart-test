@@ -1,5 +1,5 @@
-﻿using EmrCalculateApi.Constants;
-using EmrCalculateApi.Receipt.ViewModels;
+﻿using Reporting.Calculate.Constants;
+using Reporting.Calculate.Receipt.ViewModels;
 
 namespace Reporting.Receipt.Models
 {
