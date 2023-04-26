@@ -4,6 +4,7 @@ using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
+using Reporting.ReceiptList.Model;
 using Reporting.OutDrug.Model.Output;
 
 namespace Reporting.ReportServices;
@@ -23,6 +24,10 @@ public interface IReportService
     CommonReportingRequestModel GetOrderLabelReportingData(int mode, int hpId, long ptId, int sinDate, long raiinNo, List<(int from, int to)> odrKouiKbns, List<RsvkrtOdrInfModel> rsvKrtOdrInfModels);
 
     CommonReportingRequestModel GetMedicalRecordWebIdReportingData(int hpId, long ptId, int sinDate);
+
+    CommonReportingRequestModel GetReceiptCheckCoReportService(int hpId, List<long> ptIds, int seikyuYm);
+
+    CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels);
 
     CoOutDrugReportingOutputData GetOutDrugReportingData(int hpId, long ptId, int sinDate, long raiinNo);
 

@@ -2,9 +2,15 @@
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
+using EmrCloudApi.Requests.Receipt;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.MedicalExamination;
+using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
+using Reporting.OutDrug.Service;
+using Reporting.ReceiptList.Model;
 using Reporting.Accounting.Model;
 using Reporting.ReportServices;
 using System.Text;
@@ -95,8 +101,29 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.OutDug);
     }
 
-    [HttpPost(ApiPath.PeriodReceiptReport)]
-    public async Task<IActionResult> GenerateAccountingReport([FromBody] PeriodReceiptRequest request)
+
+    [HttpGet(ApiPath.ReceiptCheck)]
+    public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
+    {
+        var data = _reportService.GetReceiptCheckCoReportService(request.HpId, request.PtIds, request.SeikyuYm);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpPost(ApiPath.ReceiptList)]
+    public async Task<IActionResult> GetReceiptListReport([FromBody] GetReceiptListRequest request)
+    {
+        var receInputList = request.ReceiptListModels.Select(item => new ReceiptInputModel(
+                                                                         item.SinYm,
+                                                                         item.PtId,
+                                                                         item.HokenId))
+                                                    .ToList();
+
+        var data = _reportService.GetReceiptListReportingData(request.HpId, request.SeikyuYm, receInputList);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.PeriodReceiptReport)]
+    public async Task<IActionResult> GenerateAccountingReport([FromQuery] PeriodReceiptRequest request)
     {
         List<CoAccountingParamModel> requestConvert = request.PtInfList.Select(item => new CoAccountingParamModel(
                                                                                            item.PtId, request.StartDate, request.EndDate, item.RaiinNos, item.HokenId,
@@ -178,7 +205,7 @@ public class PdfCreatorController : ControllerBase
           ? new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json") :
           new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        //var json = JsonSerializer.Serialize(data);
+        var json = JsonSerializer.Serialize(data);
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;
 
         string functionName = reportType switch

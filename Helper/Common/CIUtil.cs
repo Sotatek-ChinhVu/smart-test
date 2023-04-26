@@ -3351,5 +3351,35 @@ namespace Helper.Common
 
             return ret;
         }
+
+        public static string JapanDayOfWeek(DateTime dateTime)
+        {
+            string result = string.Empty;
+            switch (dateTime.DayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    result = "日";
+                    break;
+                case System.DayOfWeek.Monday:
+                    result = "月";
+                    break;
+                case System.DayOfWeek.Tuesday:
+                    result = "火";
+                    break;
+                case System.DayOfWeek.Wednesday:
+                    result = "水";
+                    break;
+                case System.DayOfWeek.Thursday:
+                    result = "木";
+                    break;
+                case System.DayOfWeek.Friday:
+                    result = "金";
+                    break;
+                case System.DayOfWeek.Saturday:
+                    result = "土";
+                    break;
+            }
+            return result;
+        }
     }
 }
