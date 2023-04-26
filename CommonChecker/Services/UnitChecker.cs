@@ -50,10 +50,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return unitCheckResult;
         }
 
-        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> CheckOrderList(List<TOdrInf> checkingOrderList, SpecialNoteFull specialNoteModel, List<PtDiseaseModel> ptDiseaseModels, List<FamilyModel> familyModels)
+        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> CheckOrderList(List<TOdrInf> checkingOrderList, SpecialNoteFull specialNoteModel, List<PtDiseaseModel> ptDiseaseModels, List<FamilyModel> familyModels, bool isDataOfDb)
         {
 
-            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(CheckType, checkingOrderList, Sinday, PtID, specialNoteModel, ptDiseaseModels, familyModels);
+            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(CheckType, checkingOrderList, Sinday, PtID, specialNoteModel, ptDiseaseModels, familyModels, isDataOfDb);
             unitCheckForOrderListResult = HandleCheckOrderList(unitCheckForOrderListResult);
             return unitCheckForOrderListResult;
         }

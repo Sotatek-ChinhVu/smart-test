@@ -4,12 +4,12 @@ using Domain.Models.Diseases;
 using Domain.Models.Family;
 using Domain.Models.SpecialNote.PatientInfo;
 using Entity.Tenant;
-using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
+using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
-using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
+using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
 
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
@@ -18,15 +18,15 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
     {
         Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<ItemCodeModel> itemCdList, int sinDate);
 
-        List<PtAlrgyFoodModel> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels);
+        List<PtAlrgyFoodModel> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels, bool isDataOfDb);
 
-        List<PtAlrgyDrugModel> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyDrugModelStandard> ptAlrgyDrugModels);
+        List<PtAlrgyDrugModel> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyDrugModelStandard> ptAlrgyDrugModels, bool isDataOfDb);
 
         PtInf GetPatientInfo(int hpId, long ptId);
 
         KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode);
 
-        List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, int level, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels);
+        List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, int level, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels, bool isDataOfDb);
 
         List<DrugAllergyResultModel> CheckDuplicatedComponent(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<string> listComparedItemCode);
 
@@ -44,25 +44,26 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         List<DrugAllergyResultModel> CheckDuplicatedClassForDuplication(int hpID, long ptID, int sinDate, List<ItemCodeModel> listItemCode, List<ItemCodeModel> listComparedItemCode, int haigouSetting);
 
-        List<AgeResultModel> CheckAge(int hpID, long ptId, int sinday, int level, int ageTypeCheckSetting, List<ItemCodeModel> listItemCode, List<KensaInfDetailModel> kensaInfDetailModels);
+        List<AgeResultModel> CheckAge(int hpID, long ptId, int sinday, int level, int ageTypeCheckSetting, List<ItemCodeModel> listItemCode, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb);
 
-        List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCode, List<PtDiseaseModel> ptDiseaseModels);
 
-        List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode, List<PtKioRekiModelStandard> ptKioRekiModels);
+        List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCode, List<PtDiseaseModel> ptDiseaseModels, bool isDataOfDb);
 
-        List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode, List<FamilyModel> familyModels);
+        List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode, List<PtKioRekiModelStandard> ptKioRekiModels, bool isDataOfDb);
+
+        List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> listItemCode, List<FamilyModel> familyModels, bool isDataOfDb);
 
         List<KinkiResultModel> CheckKinki(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode);
 
         List<KinkiResultModel> CheckKinkiUser(int hpID, int level, int sinday, List<ItemCodeModel> listCurrentOrderCode, List<ItemCodeModel> listAddedOrderCode);
 
-        List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtherDrugModelStandard> ptOtherDrugModels);
+        List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtherDrugModelStandard> ptOtherDrugModels, bool isDataOfDb);
 
-        List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtcDrugModelStandard> ptOtcDrugModels);
+        List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtcDrugModelStandard> ptOtcDrugModels, bool isDataOfDb);
 
-        List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtSuppleModelStandard> ptSuppleModels);
+        List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtSuppleModelStandard> ptSuppleModels, bool isDataOfDb);
 
-        List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels);
+        List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb);
 
         List<DayLimitResultModel> CheckDayLimit(int hpID, int sinday, List<ItemCodeModel> listAddedOrderCode, double usingDay);
     }

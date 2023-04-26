@@ -32,7 +32,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
             int ageTypeCheckSetting = SystemConfig!.AgeTypeCheckSetting;
 
-            List<AgeResultModel> checkedResult = Finder!.CheckAge(HpID, PtID, Sinday, settingLevel, ageTypeCheckSetting, listItemCode, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new());
+            List<AgeResultModel> checkedResult = Finder!.CheckAge(HpID, PtID, Sinday, settingLevel, ageTypeCheckSetting, listItemCode, unitCheckerForOrderListResult.SpecialNoteModel.PatientInfoModel.PhysicalInfItems.FirstOrDefault()?.KensaInfDetailModels.ToList() ?? new(), unitCheckerForOrderListResult.IsDataOfDb);
 
             if (checkedResult != null && checkedResult.Count > 0)
             {

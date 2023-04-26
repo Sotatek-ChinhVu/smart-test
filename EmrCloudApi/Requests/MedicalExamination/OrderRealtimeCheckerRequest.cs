@@ -1,14 +1,13 @@
 ﻿using CommonChecker.Models.OrdInf;
 using Domain.Models.Diseases;
 using UseCase.Family;
-using UseCase.MedicalExamination.GetCheckedOrder;
 using UseCase.MedicalExamination.SaveMedical;
 
 namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class OrderRealtimeCheckerRequest
     {
-        public OrderRealtimeCheckerRequest(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
+        public OrderRealtimeCheckerRequest(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
         {
             PtId = ptId;
             HpId = hpId;
@@ -18,6 +17,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
             SpecialNoteItem = specialNoteItem;
             PtDiseaseModels = ptDiseaseModels;
             FamilyItems = familyItems;
+            IsDataOfDb = isDataOfDb;
         }
 
         public long PtId { get; set; }
@@ -31,5 +31,7 @@ namespace EmrCloudApi.Requests.MedicalExamination
         public SpecialNoteItem SpecialNoteItem { get; set; }
         public List<PtDiseaseModel> PtDiseaseModels { get; set; }
         public List<FamilyItem> FamilyItems { get; private set; }
+
+        public bool IsDataOfDb { get; set; }
     }
 }

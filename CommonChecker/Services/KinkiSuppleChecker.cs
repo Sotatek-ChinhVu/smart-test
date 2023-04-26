@@ -32,7 +32,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<ItemCodeModel> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
 
-            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode, unitCheckerForOrderListResult.SpecialNoteModel.ImportantNoteModel.SuppleItems);
+            List<KinkiResultModel> checkedResult = Finder!.CheckKinkiSupple(HpID, PtID, Sinday, settingLevel, listItemCode, unitCheckerForOrderListResult.SpecialNoteModel.ImportantNoteModel.SuppleItems, unitCheckerForOrderListResult.IsDataOfDb);
 
             if (checkedResult != null && checkedResult.Count > 0)
             {

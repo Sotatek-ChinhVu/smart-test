@@ -8,12 +8,12 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
 using PostgreDataContext;
-using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtAlrgyDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyDrugModel;
 using PtAlrgyFoodModelStandard = Domain.Models.SpecialNote.ImportantNote.PtAlrgyFoodModel;
+using PtKioRekiModelStandard = Domain.Models.SpecialNote.ImportantNote.PtKioRekiModel;
 using PtOtcDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtcDrugModel;
-using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
 using PtOtherDrugModelStandard = Domain.Models.SpecialNote.ImportantNote.PtOtherDrugModel;
+using PtSuppleModelStandard = Domain.Models.SpecialNote.ImportantNote.PtSuppleModel;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
@@ -34,18 +34,24 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToDictionary(t => t.ItemCd ?? string.Empty, t => t.YjCd ?? string.Empty);
         }
 
-        public List<PtAlrgyFoodModel> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels)
+        public List<PtAlrgyFoodModel> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels, bool isDataOfDb)
         {
-            //var listPtAlrgyFood =
-            //    NoTrackingDataContext.PtAlrgyFoods
-            //    .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
-            //    .AsEnumerable()
-            //    .Select(p => new PtAlrgyFoodModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.AlrgyKbn ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted, string.Empty))
-            //    .ToList();
-
-            var listPtAlrgyFood = ptAlrgyFoodModels.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1).AsEnumerable()
-                .Select(p => new PtAlrgyFoodModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.AlrgyKbn ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted, string.Empty))
-                .ToList();
+            var listPtAlrgyFood = new List<PtAlrgyFoodModelStandard>();
+            if (isDataOfDb)
+            {
+                listPtAlrgyFood =
+                    NoTrackingDataContext.PtAlrgyFoods
+                    .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
+                    .AsEnumerable()
+                    .Select(p => new PtAlrgyFoodModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.AlrgyKbn ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted, string.Empty))
+                    .ToList();
+            }
+            else
+            {
+                listPtAlrgyFood = ptAlrgyFoodModels.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1).AsEnumerable()
+                    .Select(p => new PtAlrgyFoodModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.AlrgyKbn ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted, string.Empty))
+                    .ToList();
+            }
 
             var listFilteredBySinData = listPtAlrgyFood
                 .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinDate && sinDate <= CIUtil.FullEndDate(p.EndDate))
@@ -54,18 +60,25 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return listFilteredBySinData;
         }
 
-        public List<PtAlrgyDrugModel> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyDrugModelStandard> ptAlrgyDrugModels)
+        public List<PtAlrgyDrugModel> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate, List<PtAlrgyDrugModelStandard> ptAlrgyDrugModels, bool isDataOfDb)
         {
-            //var listPtAlrgyDrug = NoTrackingDataContext.PtAlrgyDrugs
-            //    .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
-            //    .AsEnumerable()
-            //    .Select(p => new PtAlrgyDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-            //    .ToList();
-
-            var listPtAlrgyDrug = ptAlrgyDrugModels.Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
-                .AsEnumerable()
-                .Select(p => new PtAlrgyDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                .ToList();
+            var listPtAlrgyDrug = new List<PtAlrgyDrugModelStandard>();
+            if (isDataOfDb)
+            {
+                listPtAlrgyDrug = NoTrackingDataContext.PtAlrgyDrugs
+                    .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
+                    .AsEnumerable()
+                    .Select(p => new PtAlrgyDrugModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                    .ToList();
+            }
+            else
+            {
+                listPtAlrgyDrug = ptAlrgyDrugModels
+                    .Where(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
+                    .AsEnumerable()
+                    .Select(p => new PtAlrgyDrugModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                    .ToList();
+            }
 
             var listFilteredBySinData = listPtAlrgyDrug
                 .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinDate && sinDate <= CIUtil.FullEndDate(p.EndDate))
@@ -849,10 +862,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         }
         #endregion
 
-        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> itemCodeModelList, int level, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels)
+        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<ItemCodeModel> itemCodeModelList, int level, List<PtAlrgyFoodModelStandard> ptAlrgyFoodModels, bool isDataOfDb)
         {
             List<FoodAllergyResultModel> result = new List<FoodAllergyResultModel>();
-            var allergyFoodAsPatient = GetFoodAllergyByPtId(hpID, ptID, sinDate, ptAlrgyFoodModels);
+            var allergyFoodAsPatient = GetFoodAllergyByPtId(hpID, ptID, sinDate, ptAlrgyFoodModels, isDataOfDb);
 
             List<string> listAlrgyKbn = allergyFoodAsPatient.Where(a => a.AlrgyKbn != null).Select(a => a.AlrgyKbn).ToList();
             List<string> itemCodeList = itemCodeModelList.Select(x => x.ItemCd).ToList();
@@ -899,7 +912,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<AgeResultModel> CheckAge(int hpID, long ptID, int sinday, int level, int ageTypeCheckSetting, List<ItemCodeModel> listItemCode, List<KensaInfDetailModel> kensaInfDetails)
+        public List<AgeResultModel> CheckAge(int hpID, long ptID, int sinday, int level, int ageTypeCheckSetting, List<ItemCodeModel> listItemCode, List<KensaInfDetailModel> kensaInfDetails, bool isDataOfDb)
         {
             //99: 収集又は作成中
             //00: 禁忌等の情報なし
@@ -947,14 +960,22 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             string sex = patientInfo.Sex.AsString();
             double weight = -1;
 
-            var weightInfo = kensaInfDetails.Where(k => k.HpId == hpID && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V0002" && !string.IsNullOrEmpty(k.ResultVal))
-            .OrderByDescending(k => k.IraiDate).FirstOrDefault();
-
-            //GetBodyInfo(hpID, ptID, sinday, "V0002") : weightInfo;
-
-            if (weightInfo != null)
+            if (isDataOfDb)
             {
-                weight = weightInfo.ResultVal?.AsDouble() ?? 0;
+                var weightInfo = GetBodyInfo(hpID, ptID, sinday, "V0002");
+                if (!(weightInfo.HpId == 0 && weightInfo.PtId == 0 && weightInfo.SeqNo == 0 && weightInfo.IraiCd == 0))
+                {
+                    weight = weightInfo.ResultVal?.AsDouble() ?? 0;
+                }
+            }
+            else
+            {
+                var weightInfo = kensaInfDetails.Where(k => k.HpId == hpID && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V0002" && !string.IsNullOrEmpty(k.ResultVal))
+                .OrderByDescending(k => k.IraiDate).FirstOrDefault();
+                if (weightInfo != null)
+                {
+                    weight = weightInfo.ResultVal?.AsDouble() ?? 0;
+                }
             }
 
             List<string> listSettingLevel = GetLevelRange();
@@ -1021,22 +1042,28 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCodeModel, List<PtDiseaseModel> ptDiseaseModels)
+        public List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, long ptID, int level, int sinDate, List<ItemCodeModel> listItemCodeModel, List<PtDiseaseModel> ptDiseaseModels, bool isDataOfDb)
         {
-            //var listDiseaseCode = NoTrackingDataContext.PtByomeis
-            //    .Where(p => p.HpId == hpID &&
-            //                p.PtId == ptID &&
-            //                p.IsDeleted != 1 &&
-            //                p.StartDate <= sinDate && (p.TenkiKbn == TenkiKbnConst.Continued || sinDate <= p.TenkiDate))
-            //    .GroupBy(d => d.ByomeiCd)
-            //    .Select(d => d.Key).ToList();
-
-            var listDiseaseCode = ptDiseaseModels.Where(p => p.HpId == hpID &&
-                            p.PtId == ptID &&
-                            p.IsDeleted != 1 &&
-                            p.StartDate <= sinDate && (p.TenkiKbn == TenkiKbnConst.Continued || sinDate <= p.TenkiDate))
-                .GroupBy(d => d.ByomeiCd)
-                .Select(d => d.Key).ToList();
+            var listDiseaseCode = new List<string>();
+            if (isDataOfDb)
+            {
+                listDiseaseCode = NoTrackingDataContext.PtByomeis
+                    .Where(p => p.HpId == hpID &&
+                                p.PtId == ptID &&
+                                p.IsDeleted != 1 &&
+                                p.StartDate <= sinDate && (p.TenkiKbn == TenkiKbnConst.Continued || sinDate <= p.TenkiDate))
+                    .GroupBy(d => d.ByomeiCd)
+                    .Select(d => d.Key ?? string.Empty).ToList();
+            }
+            else
+            {
+                listDiseaseCode = ptDiseaseModels.Where(p => p.HpId == hpID &&
+                                       p.PtId == ptID &&
+                                       p.IsDeleted != 1 &&
+                                       p.StartDate <= sinDate && (p.TenkiKbn == TenkiKbnConst.Continued || sinDate <= p.TenkiDate))
+                           .GroupBy(d => d.ByomeiCd)
+                           .Select(d => d.Key).ToList();
+            }
 
             List<string> listBYCode =
                 NoTrackingDataContext.M42ContraindiDisCon
@@ -1076,31 +1103,37 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> itemCodeModelList, List<PtKioRekiModelStandard> ptKioRekiModels)
+        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> itemCodeModelList, List<PtKioRekiModelStandard> ptKioRekiModels, bool isDataOfDb)
         {
-            //List<string> listByomeiCd = NoTrackingDataContext.PtKioRekis
-            //        .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && !string.IsNullOrEmpty(p.ByomeiCd))
-            //        .AsEnumerable()
-            //        .Select(p =>
-            //        new PtKioRekiModel(
-            //            p.HpId, p.PtId, p.SeqNo, p.SortNo,
-            //            p.ByomeiCd ?? string.Empty, p.ByotaiCd ?? string.Empty,
-            //            p.Byomei ?? string.Empty, p.StartDate, p.Cmt ?? string.Empty, p.IsDeleted))
-            //        .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday)
-            //        .Select(p => p.ByomeiCd)
-            //        .ToList();
-            List<string> listByomeiCd = ptKioRekiModels
-                    .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && !string.IsNullOrEmpty(p.ByomeiCd))
-                    .AsEnumerable()
-                    .Select(p =>
-                    new PtKioRekiModel(
-                        p.HpId, p.PtId, p.SeqNo, p.SortNo,
-                        p.ByomeiCd ?? string.Empty, p.ByotaiCd ?? string.Empty,
-                        p.Byomei ?? string.Empty, p.StartDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                    .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday)
-                    .Select(p => p.ByomeiCd)
-                    .ToList();
-
+            List<string> listByomeiCd = new();
+            if (isDataOfDb)
+            {
+                listByomeiCd = NoTrackingDataContext.PtKioRekis
+                        .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && !string.IsNullOrEmpty(p.ByomeiCd))
+                        .AsEnumerable()
+                        .Select(p =>
+                        new PtKioRekiModel(
+                            p.HpId, p.PtId, p.SeqNo, p.SortNo,
+                            p.ByomeiCd ?? string.Empty, p.ByotaiCd ?? string.Empty,
+                            p.Byomei ?? string.Empty, p.StartDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                        .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday)
+                        .Select(p => p.ByomeiCd)
+                        .ToList();
+            }
+            else
+            {
+                listByomeiCd = ptKioRekiModels
+                .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && !string.IsNullOrEmpty(p.ByomeiCd))
+                .AsEnumerable()
+                .Select(p =>
+                new PtKioRekiModel(
+                    p.HpId, p.PtId, p.SeqNo, p.SortNo,
+                    p.ByomeiCd ?? string.Empty, p.ByotaiCd ?? string.Empty,
+                    p.Byomei ?? string.Empty, p.StartDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday)
+                .Select(p => p.ByomeiCd)
+                .ToList();
+            }
             var itemCodeList = itemCodeModelList.Select(i => i.ItemCd).ToList();
             var tenMstList = NoTrackingDataContext.TenMsts.
                 Where(i => itemCodeList.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
@@ -1140,7 +1173,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> itemCodeModelList, List<FamilyModel> familyModels)
+        public List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<ItemCodeModel> itemCodeModelList, List<FamilyModel> familyModels, bool isDataOfDb)
         {
             var itemCodeList = itemCodeModelList.Select(i => i.ItemCd).ToList();
             var tenMstList = NoTrackingDataContext.TenMsts
@@ -1159,27 +1192,34 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
             var receCdList = contraindiDisConList.Select(r => r.ReceCd).ToList();
 
-            //var ptFamilyRekisList = NoTrackingDataContext.PtFamilyRekis
-            //    .Where(p => p.HpId == hpID && p.IsDeleted == 0 && receCdList.Contains(p.ByomeiCd))
-            //    .Select(p => new { p.FamilyId, p.ByomeiCd })
-            //    .ToList();
-            //var familyIdList = ptFamilyRekisList.Select(f => f.FamilyId).ToList();
-            //var ptFamilyList = NoTrackingDataContext.PtFamilys
-            //    .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && p.ZokugaraCd != "OT" && familyIdList.Contains(p.FamilyId))
-            //    .Select(p => new { p.FamilyId })
-            //    .ToList();
-
-            var ptFamilyList = familyModels.Where(f => f.ListPtFamilyRekis.Any(r => receCdList.Contains(r.ByomeiCd)) && f.PtId == ptID && f.ZokugaraCd != "OT").Select(p => new { p.FamilyId }).ToList();
-            var ptFamilyRekisModelList = new List<(long familyId, PtFamilyRekiModel ptFamilyReki)>();
-            foreach (var familyModel in familyModels)
+            var ptFamilyRekisList = new List<Tuple<long, string>>();
+            var ptFamilyList = new List<long>();
+            if (isDataOfDb)
             {
-                var ptFamilyRekis = familyModel.ListPtFamilyRekis.Where(r => receCdList.Contains(r.ByomeiCd));
-                foreach (var ptFamilyReki in ptFamilyRekis)
-                {
-                    ptFamilyRekisModelList.Add(new(familyModel.FamilyId, ptFamilyReki));
-                }
+                ptFamilyRekisList = NoTrackingDataContext.PtFamilyRekis
+                    .Where(p => p.HpId == hpID && p.IsDeleted == 0 && receCdList.Contains(p.ByomeiCd))
+                    .Select(p => new Tuple<long, string>(p.FamilyId, p.ByomeiCd ?? string.Empty))
+                    .ToList();
+                var familyIdList = ptFamilyRekisList.Select(f => f.Item1).ToList();
+                ptFamilyList = NoTrackingDataContext.PtFamilys
+                    .Where(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && p.ZokugaraCd != "OT" && familyIdList.Contains(p.FamilyId))
+                    .Select(p => p.FamilyId)
+                    .ToList();
             }
-            var ptFamilyRekisList = ptFamilyRekisModelList.Select(p => new { p.familyId, p.ptFamilyReki.ByomeiCd }).ToList();
+            else
+            {
+                ptFamilyList = familyModels.Where(f => f.ListPtFamilyRekis.Any(r => receCdList.Contains(r.ByomeiCd)) && f.PtId == ptID && f.ZokugaraCd != "OT").Select(p => p.FamilyId).ToList();
+                var ptFamilyRekisModelList = new List<(long familyId, PtFamilyRekiModel ptFamilyReki)>();
+                foreach (var familyModel in familyModels)
+                {
+                    var ptFamilyRekis = familyModel.ListPtFamilyRekis.Where(r => receCdList.Contains(r.ByomeiCd));
+                    foreach (var ptFamilyReki in ptFamilyRekis)
+                    {
+                        ptFamilyRekisModelList.Add(new(familyModel.FamilyId, ptFamilyReki));
+                    }
+                }
+                ptFamilyRekisList = ptFamilyRekisModelList.Select(p => new Tuple<long, string>(p.familyId, p.ptFamilyReki.ByomeiCd)).ToList();
+            }
 
             List<DiseaseResultModel> checkedResult =
                 (from itemMst in tenMstList
@@ -1188,9 +1228,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  join contraindiDisCon in contraindiDisConList
                  on contraindication.ByotaiCd equals contraindiDisCon.ByotaiCd
                  join historyDisease in ptFamilyRekisList
-                 on contraindiDisCon.ReceCd equals historyDisease.ByomeiCd
+                 on contraindiDisCon.ReceCd equals historyDisease.Item2
                  join familyInfo in ptFamilyList
-                 on historyDisease.familyId equals familyInfo.FamilyId
+                 on historyDisease.Item1 equals familyInfo
                  join listItemCodes in itemCodeModelList
                  on itemMst.ItemCd equals listItemCodes.ItemCd
                  select new DiseaseResultModel()
@@ -1444,19 +1484,26 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtherDrugModelStandard> ptOtherDrugModels)
+        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtherDrugModelStandard> ptOtherDrugModels, bool isDataOfDb)
         {
-            //var listPtOtherDrugModel = NoTrackingDataContext.PtOtherDrug
-            //        .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-            //        .AsEnumerable()
-            //        .Select(p => new PtOtherDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-            //        .ToList();
+            var listPtOtherDrugModel = new List<PtOtherDrugModelStandard>();
+            if (isDataOfDb)
+            {
+                listPtOtherDrugModel = NoTrackingDataContext.PtOtherDrug
+                                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                                     .AsEnumerable()
+                                     .Select(p => new PtOtherDrugModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                                     .ToList();
+            }
+            else
+            {
 
-            var listPtOtherDrugModel = ptOtherDrugModels
-                    .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-                    .AsEnumerable()
-                    .Select(p => new PtOtherDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                    .ToList();
+                listPtOtherDrugModel = ptOtherDrugModels
+                        .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                        .AsEnumerable()
+                        .Select(p => new PtOtherDrugModelStandard(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                        .ToList();
+            }
 
             var listTainCode = listPtOtherDrugModel
                 .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
@@ -1584,23 +1631,29 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtcDrugModelStandard> ptOtcDrugModels)
+        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtOtcDrugModelStandard> ptOtcDrugModels, bool isDataOfDb)
         {
-            //List<int> listSerialNum = NoTrackingDataContext.PtOtcDrug
-            //        .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-            //        .AsEnumerable()
-            //        .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-            //        .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
-            //        .Select(p => p.SerialNum)
-            //        .ToList();
-
-            List<int> listSerialNum = ptOtcDrugModels
-             .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-             .AsEnumerable()
-             .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-             .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
-             .Select(p => p.SerialNum)
-             .ToList();
+            List<int> listSerialNum = new();
+            if (isDataOfDb)
+            {
+                listSerialNum = NoTrackingDataContext.PtOtcDrug
+                                .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                                .AsEnumerable()
+                                .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                                .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
+                                .Select(p => p.SerialNum)
+                                .ToList();
+            }
+            else
+            {
+                listSerialNum = ptOtcDrugModels
+                                 .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                                 .AsEnumerable()
+                                 .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                                 .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
+                                 .Select(p => p.SerialNum)
+                                 .ToList();
+            }
 
             var listSubOTCCode = NoTrackingDataContext.M38Ingredients
                 .Where(m => listSerialNum.Contains(m.SerialNum))
@@ -1716,22 +1769,29 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtSuppleModelStandard> ptSuppleModels)
+        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<ItemCodeModel> addedOrderItemCodeList, List<PtSuppleModelStandard> ptSuppleModels, bool isDataOfDb)
         {
-            //List<string> listIndexWord = NoTrackingDataContext.PtSupples
-            //        .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-            //        .AsEnumerable()
-            //        .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-            //        .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
-            //        .Select(p => p.IndexWord)
-            //        .ToList();
-
-            List<string> listIndexWord = ptSuppleModels.Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
-                    .AsEnumerable()
-                    .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                    .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
-                    .Select(p => p.IndexWord)
-                    .ToList();
+            List<string> listIndexWord = new();
+            if (isDataOfDb)
+            {
+                listIndexWord = NoTrackingDataContext.PtSupples
+                                .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                                .AsEnumerable()
+                                .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                                .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
+                                .Select(p => p.IndexWord)
+                                .ToList();
+            }
+            else
+            {
+                listIndexWord = ptSuppleModels
+                                .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
+                                .AsEnumerable()
+                                .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
+                                .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
+                                .Select(p => p.IndexWord)
+                                .ToList();
+            }
 
             List<SeibunInfo> listSeibunInfo =
                     (
@@ -1826,7 +1886,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels)
+        public List<DosageResultModel> CheckDosage(int hpId, long ptId, int sinday, List<DrugInfo> listItem, bool minCheck, double ratioSetting, double currentHeight, double currentWeight, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
             PtInf patientInfo = GetPatientInfo(hpId, ptId);
             if (patientInfo == null)
@@ -1848,7 +1908,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             else if (currentWeight == 0)
             {
                 // Can't get newData from SpecialNote
-                weight = GetPatientWeight(hpId, ptId, patientInfo.Birthday, sinday, sex, kensaInfDetailModels);
+                weight = GetPatientWeight(hpId, ptId, patientInfo.Birthday, sinday, sex, kensaInfDetailModels, isDataOfDb);
             }
             else
             {
@@ -2720,24 +2780,29 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return height;
         }
 
-        private double GetPatientWeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels)
+        private double GetPatientWeight(int hpId, long ptID, int birdthDay, int sinday, int sex, List<KensaInfDetailModel> kensaInfDetailModels, bool isDataOfDb)
         {
-            var weightInfo = kensaInfDetailModels
-                .Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
-                .OrderByDescending(k => k.IraiDate).FirstOrDefault();
-
-            if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+            if (isDataOfDb)
             {
-                return weightInfo?.ResultVal?.AsDouble() ?? 0;
+                //Get data in db
+                KensaInfDetail weightInfo = GetBodyInfo(hpId, ptID, sinday, "V0002");
+
+                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                {
+                    return weightInfo?.ResultVal?.AsDouble() ?? 0;
+                }
             }
+            else
+            {
+                var weightInfo = kensaInfDetailModels
+                          .Where(k => k.HpId == hpId && k.PtId == ptID && k.IraiDate <= sinday && k.KensaItemCd == "V002" && !string.IsNullOrEmpty(k.ResultVal))
+                          .OrderByDescending(k => k.IraiDate).FirstOrDefault();
 
-            //Get data in db
-            //KensaInfDetail weightInfo = GetBodyInfo(hpId, ptID, sinday, "V0002");
-
-            //if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
-            //{
-            //    return weightInfo?.ResultVal?.AsDouble() ?? 0;
-            //}
+                if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
+                {
+                    return weightInfo?.ResultVal?.AsDouble() ?? 0;
+                }
+            }
 
             return GetCommonWeight(hpId, ptID, birdthDay, sinday, sex);
         }

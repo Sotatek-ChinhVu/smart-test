@@ -1,29 +1,29 @@
-﻿using Domain.Models.SwapHoken;
-using EventProcessor.Interfaces;
-using Helper.Messaging.Data;
-using Helper.Messaging;
-using Interactor.CalculateService;
-using UseCase.SwapHoken.Calculation;
-using Domain.Models.InsuranceMst;
-using Domain.Models.Receipt.Recalculation;
-using Domain.Models.Receipt;
-using System.Text;
-using Domain.Models.SystemConf;
-using Domain.Models.MstItem;
-using Helper.Constants;
-using Helper.Common;
-using Helper.Extension;
-using Domain.Models.Diseases;
-using Domain.Models.OrdInfs;
-using Domain.Models.OrdInfDetails;
-using Domain.Models.TodayOdr;
-using CommonChecker.Models.OrdInf;
+﻿using CommonChecker.Models.OrdInf;
 using CommonChecker.Models.OrdInfDetailModel;
 using CommonCheckers.OrderRealtimeChecker.Models;
-using Interactor.CommonChecker.CommonMedicalCheck;
+using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
+using Domain.Models.InsuranceMst;
+using Domain.Models.MstItem;
+using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
+using Domain.Models.Receipt;
+using Domain.Models.Receipt.Recalculation;
 using Domain.Models.ReceSeikyu;
+using Domain.Models.SwapHoken;
+using Domain.Models.SystemConf;
+using Domain.Models.TodayOdr;
+using EventProcessor.Interfaces;
+using Helper.Common;
+using Helper.Constants;
 using Helper.Enum;
+using Helper.Extension;
+using Helper.Messaging;
+using Helper.Messaging.Data;
+using Interactor.CalculateService;
+using Interactor.CommonChecker.CommonMedicalCheck;
+using System.Text;
+using UseCase.SwapHoken.Calculation;
 
 namespace Interactor.SwapHoken
 {
@@ -160,7 +160,7 @@ namespace Interactor.SwapHoken
                     }
                 }
 
-                if(string.IsNullOrEmpty(errorText))
+                if (string.IsNullOrEmpty(errorText))
                     return new CalculationSwapHokenOutputData(CalculationSwapHokenStatus.Successful, errorText);
                 else
                     return new CalculationSwapHokenOutputData(CalculationSwapHokenStatus.Failed, errorText);
@@ -183,7 +183,7 @@ namespace Interactor.SwapHoken
 
         private bool IsStopCalculate() => Messenger.Instance.SendAsync(new CalculationSwapHokenMessageStop()).Result.Result;
 
-        private bool CheckErrorInMonth(int hpId , int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+        private bool CheckErrorInMonth(int hpId, int sinYm, int userId, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
         {
             List<ReceCheckErrModel> newReceCheckErrList = new();
             var receCheckOptList = GetReceCheckOptModelList(hpId);
@@ -1864,7 +1864,7 @@ namespace Interactor.SwapHoken
                                                                          ))
                                  .ToList()));
 
-            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition, new(), new(), new());
+            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition, new(), new(), new(), false);
             foreach (var errorInfo in checkedResult)
             {
                 var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;
@@ -2178,7 +2178,7 @@ namespace Interactor.SwapHoken
             List<ReceStatusModel> updateReceStatus = new List<ReceStatusModel>();
             foreach (var receInfModel in receInfModels)
             {
-                var receStatus = _receiptRepository.GetReceStatus(hpId , ptId, seikyuYm, receInfModel.SinYm, receInfModel.HokenId);
+                var receStatus = _receiptRepository.GetReceStatus(hpId, ptId, seikyuYm, receInfModel.SinYm, receInfModel.HokenId);
                 bool hasError = _receiptRepository.HasErrorCheck(receInfModel.SinYm, receInfModel.PtId, receInfModel.HokenId);
                 if (receStatus == null || receStatus.PtId == 0)
                 {

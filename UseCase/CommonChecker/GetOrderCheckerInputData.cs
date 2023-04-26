@@ -9,7 +9,7 @@ namespace UseCase.CommonChecker
 {
     public class GetOrderCheckerInputData : IInputData<GetOrderCheckerOutputData>
     {
-        public GetOrderCheckerInputData(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems)
+        public GetOrderCheckerInputData(long ptId, int hpId, int sinDay, List<OrdInfoModel> currentListOdr, List<OrdInfoModel> listCheckingOrder, SpecialNoteItem specialNoteItem, List<PtDiseaseModel> ptDiseaseModels, List<FamilyItem> familyItems, bool isDataOfDb)
         {
             PtId = ptId;
             HpId = hpId;
@@ -19,6 +19,7 @@ namespace UseCase.CommonChecker
             SpecialNoteItem = specialNoteItem;
             PtDiseaseModels = ptDiseaseModels;
             FamilyItems = familyItems;
+            IsDataOfDb = isDataOfDb;
         }
 
         public long PtId { get; private set; }
@@ -32,5 +33,7 @@ namespace UseCase.CommonChecker
         public SpecialNoteItem SpecialNoteItem { get; set; }
         public List<PtDiseaseModel> PtDiseaseModels { get; set; }
         public List<FamilyItem> FamilyItems { get; private set; }
+
+        public bool IsDataOfDb { get; private set; }
     }
 }
