@@ -39,5 +39,7 @@
         public byte SearchFollowUsage { get; set; }
 
         public List<int> KouiKbns { get; set; } = new();
+
+        public string MasterSBT { get; set; } = string.Empty;
     }
 }

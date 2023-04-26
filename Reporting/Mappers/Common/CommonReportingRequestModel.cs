@@ -11,7 +11,7 @@ namespace Reporting.Mappers.Common
         public Dictionary<string, string> FileNamePageMap { get; set; } = new Dictionary<string, string>();
 
         [JsonPropertyName("reportConfigModel")]
-        public ReportConfigModel ReportConfigModel { get; set; } = new ReportConfigModel();
+        public ReportConfigModel ReportConfigModel { get; set; } = new();
 
         [JsonPropertyName("singleFieldList")]
         public Dictionary<string, string> SingleFieldList { get; set; } = new Dictionary<string, string>();
@@ -21,6 +21,9 @@ namespace Reporting.Mappers.Common
 
         [JsonPropertyName("systemConfigList")]
         public Dictionary<string, string> SystemConfigList { get; set; } = new();
+
+        [JsonPropertyName("extralData")]
+        public Dictionary<string, string> ExtralData { get; set; } = new();
     }
 
     public class CellModel

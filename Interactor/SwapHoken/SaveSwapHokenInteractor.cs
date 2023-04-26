@@ -79,7 +79,7 @@ namespace Interactor.SwapHoken
                     long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
                     if (count == 0)
                     {
-                        message = string.Format("変換元の保険は{0}に一度も使用されていないため、選択できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
+                        message = string.Format("変換元の保険は{0}に一度も使用されていないため、実行できません。", CIUtil.SDateToShowSDate(inputData.StartDate) + " ～ " + CIUtil.SDateToShowSDate(inputData.EndDate));
                         return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate, message , TypeMessage.TypeMessageError, new List<int>());
                     }
                 }
