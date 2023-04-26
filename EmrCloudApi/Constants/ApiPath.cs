@@ -88,6 +88,7 @@
         public const string ReceiptList = "ReceiptList";
         public const string ReceiptReport = "ReceiptReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
+        public const string StaticReport = "StaticReport";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

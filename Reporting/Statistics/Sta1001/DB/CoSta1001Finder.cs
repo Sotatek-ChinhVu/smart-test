@@ -52,7 +52,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                     JihiTax = k.Sum(x => x.JihiTax + x.JihiOuttax),
                     AdjustFutan = k.Sum(x => x.AdjustFutan),
                 });
-        var kaikeiHokens = NoTrackingDataContext.KaikeiInfs
+        var kaikeiHokens = NoTrackingDataContext.KaikeiInfs.AsEnumerable()
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k => k.OrderByDescending(x => x.HokenSbtCd).Take(1)).SelectMany(k => k);
         //来院情報
@@ -102,7 +102,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         //保険パターン
 
         var preNyukins = (
-            from n in syunoNyukins
+            from n in syunoNyukins.AsEnumerable()
             join s in syunoNyukins on
                 new { n.HpId, n.RaiinNo } equals
                 new { s.HpId, s.RaiinNo } into sJoin
@@ -132,8 +132,54 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             }
         ).ToList();
 
+        var check = (from syunoNyukin in syunoNyukins.AsEnumerable()
+                     join payMst in payMsts on
+                         new { syunoNyukin.HpId, syunoNyukin.PaymentMethodCd } equals
+                         new { payMst.HpId, payMst.PaymentMethodCd } into payMstJoin
+                     from payMstj in payMstJoin.DefaultIfEmpty()
+                     join syunoSeikyu in syunoSeikyus on
+                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+                         new { syunoSeikyu.HpId, syunoSeikyu.RaiinNo }
+                     join raiinInf in raiinInfs on
+                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+                         new { raiinInf.HpId, raiinInf.RaiinNo }
+                     join firstRaiin in firstRaiins on
+                         new { syunoNyukin.HpId, syunoNyukin.PtId } equals
+                         new { firstRaiin.HpId, firstRaiin.PtId }
+                     join kaikeiFutan in kaikeiFutans on
+                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
+                         new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
+                     from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
+                     join ptInf in ptInfs on
+                         new { syunoNyukin.HpId, syunoNyukin.PtId } equals
+                         new { ptInf.HpId, ptInf.PtId }
+                     join uketukeSbtMst in uketukeSbtMsts on
+                         new { syunoNyukin.HpId, syunoNyukin.UketukeSbt } equals
+                         new { uketukeSbtMst.HpId, UketukeSbt = uketukeSbtMst.KbnId } into uketukeSbtMstJoin
+                     from uketukeSbtMstj in uketukeSbtMstJoin.DefaultIfEmpty()
+                     join userMst in userMsts on
+                         new { syunoNyukin.HpId, syunoNyukin.UpdateId } equals
+                         new { userMst.HpId, UpdateId = userMst.UserId } into nyukinUserMstJoin
+                     from nyukinUserMst in nyukinUserMstJoin.DefaultIfEmpty()
+                     join kaMst in kaMsts on
+                         new { raiinInf.HpId, raiinInf.KaId } equals
+                         new { kaMst.HpId, kaMst.KaId } into kaMstJoin
+                     from kaMstj in kaMstJoin.DefaultIfEmpty()
+                     join userMst in userMsts on
+                         new { raiinInf.HpId, raiinInf.TantoId } equals
+                         new { userMst.HpId, TantoId = userMst.UserId } into userMstJoin
+                     from tantoMst in userMstJoin.DefaultIfEmpty()
+                     join userMst in userMsts on
+                         new { raiinInf.HpId, raiinInf.UketukeId } equals
+                         new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
+                     from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
+                     join kaikeiHoken in kaikeiHokens on
+                         new { raiinInf.HpId, raiinInf.RaiinNo } equals
+                         new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
+                     select new {}).ToList();
+
         var joinQuery = (
-            from syunoNyukin in syunoNyukins
+            from syunoNyukin in syunoNyukins.AsEnumerable()
             join payMst in payMsts on
                 new { syunoNyukin.HpId, syunoNyukin.PaymentMethodCd } equals
                 new { payMst.HpId, payMst.PaymentMethodCd } into payMstJoin
@@ -203,7 +249,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 firstRaiin.FirstRaiinDate
             }
         );
-
         if (printConf.UketukeSbtIds?.Count >= 1)
         {
             //受付種別の条件指定
@@ -214,8 +259,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             //支払区分の条件指定
             joinQuery = joinQuery.Where(n => printConf.PaymentMethodCds.Contains(n.syunoNyukin.PaymentMethodCd));
         }
-
-        var result = joinQuery.AsEnumerable().Select(
+        var result = joinQuery.Select(
             data =>
                 new CoSyunoInfModel(
                     data.syunoNyukin,
@@ -285,10 +329,10 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                                 s.SinDate >= printConf.StartNyukinDate &&
                                 s.SinDate <= printConf.EndNyukinDate &&
                                 (s.NyukinKbn == 0 || (s.NyukinKbn >= 1 && !theDayNyukins.Contains(s.RaiinNo)))
-                        );
+                        ).ToList();
 
             var joinSeikyu = (
-                from unSeikyu in unSeikyus
+                from unSeikyu in unSeikyus.AsEnumerable()
                 join syunoNyukin in syunoNyukins on
                     new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
                     new { syunoNyukin.HpId, syunoNyukin.RaiinNo } into syunoNyukinJoin
