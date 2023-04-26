@@ -17,5 +17,7 @@ namespace Reporting.Mappers
         string GetRowCountFieldName();
 
         int GetReportType();
+
+        Dictionary<string, string> GetFileNamePageMap();
     }
 }

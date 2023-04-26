@@ -17,6 +17,7 @@ public class ReadRseReportFileService : IReadRseReportFileService
 
     public JavaOutputData ReadFileRse(CoCalculateRequestModel inputModel)
     {
+       var s = JsonSerializer.Serialize(inputModel);
         var jsonContent = new StringContent(JsonSerializer.Serialize(inputModel), Encoding.UTF8, "application/json");
 
         string basePath = _configuration.GetSection("RenderPdf")["BasePath"]!;

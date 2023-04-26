@@ -13,13 +13,25 @@ public class CommonReportingRequest : ICommonReportingRequest
             ExtralData = GetExtralData(),
             ReportConfigModel = new ReportConfigModel()
             {
-                VisibleFieldList = GetVisibleFieldData(),
-                WrapFieldList = GetWrapFieldData(),
-                RowCountFieldName = GetRowCountFieldName(),
-            }
-        };
-        return result;
-    }
+                ReportType = GetReportType(),
+                FileNamePageMap = GetFileNamePageMap(),
+                SingleFieldList = GetSingleFieldData(),
+                TableFieldData = GetTableFieldData(),
+                SystemConfigList = GetSystemConfigList(),
+                ReportConfigModel = new ReportConfigModel()
+                {
+                    VisibleFieldList = GetVisibleFieldData(),
+                    WrapFieldList = GetWrapFieldData(),
+                    RowCountFieldName = GetRowCountFieldName(),
+                }
+            };
+            return result;
+        }
+
+        public virtual int GetReportType()
+        {
+            throw new NotImplementedException();
+        }
 
     public virtual int GetReportType()
     {
@@ -46,6 +58,16 @@ public class CommonReportingRequest : ICommonReportingRequest
         throw new NotImplementedException();
     }
 
+        public virtual Dictionary<string, string> GetSystemConfigList()
+        {
+            return new();
+        }
+
+        public virtual Dictionary<string, string> GetFileNamePageMap()
+        {
+            throw new NotImplementedException();
+        }
+        
     public virtual Dictionary<string, bool> GetWrapFieldData()
     {
         throw new NotImplementedException();
