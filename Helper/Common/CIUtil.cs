@@ -2042,7 +2042,7 @@ namespace Helper.Common
         {
             int ret;
 
-            if (int.TryParse(str, out ret) == false)
+            if (!int.TryParse(str, out ret))
             {
                 ret = defaultVal;
             }
@@ -2358,7 +2358,6 @@ namespace Helper.Common
                 int iWidth = 0;
                 if (Index > 1)
                 {
-                    //for (int i = 1; i < sSrcStr.Length; i++)
                     for (int i = 0; i < sSrcStr.Length; i++)
                     {
                         //１文字ずつ取得
@@ -2634,14 +2633,6 @@ namespace Helper.Common
                     strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
 
                 }
-
-                //文字列にUnicodeでしか使用されていない文字の存在チェック
-                //.NET string is all UTF-16 string, therefore, no need to check
-                // whether string contains both ASCII and UTF characters
-
-                //end else if IsUnicodeOnly(sIn[1]) = true then begin
-                //strErrStr:= strErrStr + Copy(sIn, 1, 1);
-                //Delete(sIn, 1, 1);
 
                 else
                 {
@@ -3380,6 +3371,24 @@ namespace Helper.Common
                     break;
             }
             return result;
+        }
+
+        public static string TryCIToTimeZone(int time, string format = @"hh\:mm")
+        {
+            TimeSpan timeSpan = new TimeSpan();
+            if ((0 <= time) && (time <= 2400))
+            {
+                int iHour = time / 100;
+                int iMinute = time % 100;
+
+                if (((0 <= iHour) && (iHour <= 24)) &&
+                    ((0 <= iMinute) && (iMinute <= 59)))
+                {
+                    return iHour.AsString().PadLeft(2, '0') + ":" + iMinute.AsString().PadLeft(2, '0');
+                }
+            }
+
+            return timeSpan.ToString(format);
         }
     }
 }
