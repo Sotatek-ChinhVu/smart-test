@@ -138,6 +138,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Accounting);
     }
 
+    [HttpGet(ApiPath.StaticReport)]
+    public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
+    {
+        var data = _reportService.GetStatisticReportingData(request.HpId, request.MenuId, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
