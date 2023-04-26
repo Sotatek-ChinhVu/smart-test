@@ -87,7 +87,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private List<string> _objectRseList;
     private bool _hasNextPage;
 
-    public CommonReportingRequestModel GetReceiptListReportingData(CoSta1002PrintConf printConf, int hpId)
+    public CommonReportingRequestModel GetSta1002ReportingData(CoSta1002PrintConf printConf, int hpId)
     {
         _printConf = printConf;
         // get data to print

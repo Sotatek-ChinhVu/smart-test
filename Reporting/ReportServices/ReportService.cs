@@ -17,6 +17,7 @@ using Reporting.ReceiptList.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
 using Reporting.Sijisen.Service;
+using Reporting.DailyStatic.Service;
 
 namespace Reporting.ReportServices;
 
@@ -33,8 +34,9 @@ public class ReportService : IReportService
     private readonly IReceiptListCoReportService _receiptListCoReportService;
     private readonly IOutDrugCoReportService _outDrugCoReportService;
     private readonly IAccountingCoReportService _accountingCoReportService;
+    private readonly IStatisticService _statisticService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -47,9 +49,8 @@ public class ReportService : IReportService
         _receiptListCoReportService = receiptListCoReportService;
         _outDrugCoReportService = outDrugCoReportService;
         _accountingCoReportService = accountingCoReportService;
+        _statisticService = statisticService;
     }
-
-
 
     //Byomei
     public CommonReportingRequestModel GetByomeiReportingData(long ptId, int fromDay, int toDay, bool tenkiIn, List<int> hokenIds)
@@ -194,5 +195,10 @@ public class ReportService : IReportService
     public AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess)
     {
         return _accountingCoReportService.GetAccountingReportingData(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
+    }
+    
+    public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo)
+    {
+        return _statisticService.PrintExecute(hpId, menuId, dateFrom, dateTo, timeFrom, timeTo);
     }
 }

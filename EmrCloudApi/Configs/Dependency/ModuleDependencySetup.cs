@@ -469,6 +469,8 @@ using Reporting.Calculate.Interface;
 using Reporting.Statistics.Sta1002.Service;
 using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1001.DB;
+using Reporting.DailyStatic.Service;
+using Reporting.DailyStatic.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -537,6 +539,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta1002CoReportService, Sta1002CoReportService>();
             services.AddTransient<ICoSta1002Finder, CoSta1002Finder>();
             services.AddTransient<ICoSta1001Finder, CoSta1001Finder>();
+            services.AddTransient<IStatisticService, StatisticService>();
+            services.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
