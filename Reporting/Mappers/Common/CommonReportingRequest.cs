@@ -7,31 +7,20 @@ public class CommonReportingRequest : ICommonReportingRequest
         CommonReportingRequestModel result = new CommonReportingRequestModel()
         {
             ReportType = GetReportType(),
-            SingleFieldData = GetSingleFieldData(),
+            FileNamePageMap = GetFileNamePageMap(),
+            SingleFieldList = GetSingleFieldData(),
             TableFieldData = GetTableFieldData(),
             SystemConfigList = GetSystemConfigList(),
             ExtralData = GetExtralData(),
             ReportConfigModel = new ReportConfigModel()
             {
-                ReportType = GetReportType(),
-                FileNamePageMap = GetFileNamePageMap(),
-                SingleFieldList = GetSingleFieldData(),
-                TableFieldData = GetTableFieldData(),
-                SystemConfigList = GetSystemConfigList(),
-                ReportConfigModel = new ReportConfigModel()
-                {
-                    VisibleFieldList = GetVisibleFieldData(),
-                    WrapFieldList = GetWrapFieldData(),
-                    RowCountFieldName = GetRowCountFieldName(),
-                }
-            };
-            return result;
-        }
-
-        public virtual int GetReportType()
-        {
-            throw new NotImplementedException();
-        }
+                VisibleFieldList = GetVisibleFieldData(),
+                WrapFieldList = GetWrapFieldData(),
+                RowCountFieldName = GetRowCountFieldName(),
+            }
+        };
+        return result;
+    }
 
     public virtual int GetReportType()
     {
@@ -58,24 +47,19 @@ public class CommonReportingRequest : ICommonReportingRequest
         throw new NotImplementedException();
     }
 
-        public virtual Dictionary<string, string> GetSystemConfigList()
-        {
-            return new();
-        }
+    public virtual Dictionary<string, string> GetSystemConfigList()
+    {
+        return new();
+    }
 
-        public virtual Dictionary<string, string> GetFileNamePageMap()
-        {
-            throw new NotImplementedException();
-        }
-        
-    public virtual Dictionary<string, bool> GetWrapFieldData()
+    public virtual Dictionary<string, string> GetFileNamePageMap()
     {
         throw new NotImplementedException();
     }
 
-    public virtual Dictionary<string, string> GetSystemConfigList()
+    public virtual Dictionary<string, bool> GetWrapFieldData()
     {
-        return new();
+        throw new NotImplementedException();
     }
 
     public virtual Dictionary<string, string> GetExtralData()
