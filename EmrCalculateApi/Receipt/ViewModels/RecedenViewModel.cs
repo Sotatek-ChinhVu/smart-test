@@ -13,7 +13,7 @@ using EmrCalculateApi.Constants;
 
 namespace EmrCalculateApi.Receipt.ViewModels
 {
-    public class RecedenViewModel: IDisposable
+    public class RecedenViewModel : IDisposable
     {
         private const string ModuleName = ModuleNameConst.EmrCalculateReceipt;
 
@@ -93,14 +93,14 @@ namespace EmrCalculateApi.Receipt.ViewModels
         public List<string> GetRecedenData(int mode, int sort, int hpId, int seikyuYM, int outputYM, int seikyuKbnMode, int kaId, int tantoId, bool includeTester, bool includeOutDrug)
         {
             const string conFncName = nameof(GetRecedenData);
-            _emrLogger.WriteLogStart(this, conFncName, 
+            _emrLogger.WriteLogStart(this, conFncName,
                 $"mode:{mode} sort:{sort} hpId:{hpId} seikyuYM:{seikyuYM} outputYM:{outputYM} seikyuKbnMode:{seikyuKbnMode} kaId:{kaId} tantoId:{tantoId} IncludeTester{includeTester} IncludeOutDrug:{includeOutDrug}");
 
             string ret = "";
             List<string> retls = new List<string>();
-            
+
             int repeatCount = 0;
-            if(mode == 2)
+            if (mode == 2)
             {
                 repeatCount = 1;
             }
@@ -130,7 +130,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                     int totalTen = 0;
                     int multiVolume = 0;
 
-                    if(mode >= 3)
+                    if (mode >= 3)
                     {
                         getMode = mode + 1;
                     }
@@ -139,7 +139,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                         // 労災レセ電で、ループ2回目の場合は2回目以降分を取得する
                         getMode = 3;
                     }
-                    List<ReceInfModel> receInfModels = 
+                    List<ReceInfModel> receInfModels =
                         _ptFinder.FindReceInf(getMode, hpId, seikyuYM, kaId, tantoId, includeTester, 1, seikyuKbns[seikyuKbnMode])
                         //.OrderBy(p => p.SinYm)
                         //.ThenBy(p => p.PtId)
@@ -163,8 +163,8 @@ namespace EmrCalculateApi.Receipt.ViewModels
                             case 0:
                                 receInfModels =
                                     receInfModels
-                                    .OrderBy(p=>p.RoudoukyokuCd)
-                                    .ThenBy(p=>p.KantokusyoCd)
+                                    .OrderBy(p => p.RoudoukyokuCd)
+                                    .ThenBy(p => p.KantokusyoCd)
                                     .ThenBy(p => p.SinYm)
                                     .ThenBy(p => p.PtNum)
                                     .ThenBy(p => p.PtId)
@@ -254,7 +254,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                     }
 
                     // ループ
-                    
+
                     if (mode != 3)
                     {
                         ReceiptDataModel retRecedenView;
@@ -326,7 +326,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                             int _getSeikyuYm()
                             {
                                 int result = outputYM;
-                                if(outputYM < 202005)
+                                if (outputYM < 202005)
                                 {
                                     result = CIUtil.SDateToWDate(outputYM * 100 + 1) / 100;
                                 }
@@ -362,7 +362,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                             retls.Add(ret);
                             ret = "";
                         }
-                        else if(mode == 2)
+                        else if (mode == 2)
                         {
                             // 労災
 
@@ -397,7 +397,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                                     }
 
                                     int maxSinYm = CIUtil.SDateToWDate(outputYM * 100 + 1) / 100;
-                                    if(i == 0)
+                                    if (i == 0)
                                     {
                                         if (_recedenViewModels.Any(p => p.RoudouCd == receData.RoudouCd))
                                         {
@@ -411,12 +411,12 @@ namespace EmrCalculateApi.Receipt.ViewModels
                                             maxSinYm = _recedenViewModels.Max(p => p.SinYm);
                                         }
                                     }
-                                    
+
                                     if (outputYM < 202005)
                                     {
                                         maxSinYm = CIUtil.SDateToWDate(maxSinYm * 100 + 1) / 100;
                                     }
-                                    
+
                                     // IRレコード
                                     ret += string.Format("IR,,{0:D2},1,{1:D7},,{2},{3},{4:D2},{5}",
                                         hpInf.PrefNo,
@@ -528,7 +528,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 _emrLogger.WriteLogError(this, conFncName, e);
             }
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
 
             return retls;
 
@@ -643,7 +643,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             long ptId = receInf.PtId;
             int sinYm = receInf.SinYm;
 
-            _emrLogger.WriteLogStart( this, conFncName, $"ptid:{ptId} sinYm:{sinYm}");
+            _emrLogger.WriteLogStart(this, conFncName, $"ptid:{ptId} sinYm:{sinYm}");
 
             // 基本情報
             //_emrLogger.WriteLogMsg( this, conFncName, "ptInf");
@@ -663,7 +663,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             //_emrLogger.WriteLogMsg( this, conFncName, "hokenData");
 
             HokenDataModel hokenDataModel = null;
-            if(receInf.PtHokenInf != null)
+            if (receInf.PtHokenInf != null)
             {
                 hokenDataModel = new HokenDataModel(receInf.PtHokenInf);
             }
@@ -672,7 +672,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 hokenDataModel = _hokenFinder.FindHokenData(hpId, ptId, receInf.HokenId);
             }
 
-            if(hokenDataModel != null)
+            if (hokenDataModel != null)
             {
                 hokenDataModel.JituNissu = receInf.HokenNissu;
                 hokenDataModel.TotalTen = receInf.HokenReceTensu;
@@ -752,7 +752,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             //_emrLogger.WriteLogMsg( this, conFncName, "henrei");
             RecedenRirekiInfModel recedenRirekiInfModel = null;
 
-            if(receInf.SeikyuKbn == SeikyuKbnConst.OnlineHenrei)
+            if (receInf.SeikyuKbn == SeikyuKbnConst.OnlineHenrei)
             {
                 // オンライン返戻
                 //_emrLogger.WriteLogMsg( this, conFncName, "online");
@@ -761,7 +761,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
 
             // 資格情報
             SikakuJyohoDataModel sikakuJyohoDataModel = null;
-            if(receInf.SinYm >= 202109)
+            if (receInf.SinYm >= 202109)
             {
                 // 2021/09から
 
@@ -771,7 +771,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                     {
                         EdaNo = hokenDataModel.EdaNo
                     };
-                    
+
                 }
             }
 
@@ -789,7 +789,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             {
                 // 2021/09から
                 madoguchiFutanDataModel = new MadoguchiFutanDataModel();
-                if(receInf.KogakuFutan == 0)
+                if (receInf.KogakuFutan == 0)
                 {
                     madoguchiFutanDataModel.MadoguchiFutanKbn = 0;
                     //京都府福祉 特殊処理
@@ -810,9 +810,9 @@ namespace EmrCalculateApi.Receipt.ViewModels
                         }
                     }
                 }
-                else if(receInf.KogakuFutan >= 1)
+                else if (receInf.KogakuFutan >= 1)
                 {
-                    if(receInf.IsTasukai == 0)
+                    if (receInf.IsTasukai == 0)
                     {
                         madoguchiFutanDataModel.MadoguchiFutanKbn = 1;
                     }
@@ -832,9 +832,9 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 // 労災レセプト情報
                 //_emrLogger.WriteLogMsg( this, conFncName, "rosai");
                 rousaiReceiptModel =
-                    new RousaiReceiptModel(hokenDataModel.PtHokenInf, _ptFinder.FindPtRousaiTenki(hpId, ptId, sinYm, receInf.HokenId), ptInfModel.PtInf, (ptKyuseiModel != null ? ptKyuseiModel.PtKyusei: null), receInf.RousaiCount, outputYm);
+                    new RousaiReceiptModel(hokenDataModel.PtHokenInf, _ptFinder.FindPtRousaiTenki(hpId, ptId, sinYm, receInf.HokenId), ptInfModel.PtInf, (ptKyuseiModel != null ? ptKyuseiModel.PtKyusei : null), receInf.RousaiCount, outputYm);
 
-                if(rousaiReceiptModel != null)
+                if (rousaiReceiptModel != null)
                 {
                     rousaiReceiptModel.JituNissu = receInf.HokenNissu;
                     rousaiReceiptModel.Syokei = receInf.RousaiIFutan / receInf.HokenMst.EnTen;
@@ -843,14 +843,14 @@ namespace EmrCalculateApi.Receipt.ViewModels
 
                     int ryoyoStartDate = hokenDataModel.PtHokenInf.RyoyoStartDate;
 
-                    if(ryoyoStartDate > 0)
+                    if (ryoyoStartDate > 0)
                     {
-                        if(ryoyoStartDate / 100 < sinYm)
+                        if (ryoyoStartDate / 100 < sinYm)
                         {
                             // 療養開始日が診療月以前の場合は、診療月1日
                             ryoyoStartDate = sinYm * 100 + 1;
                         }
-                        else if(ryoyoStartDate / 100 > sinYm)
+                        else if (ryoyoStartDate / 100 > sinYm)
                         {
                             ryoyoStartDate = sinMeiDataModels.FirstSyosinDate;
                         }
@@ -860,21 +860,21 @@ namespace EmrCalculateApi.Receipt.ViewModels
                         // 未設定の場合、初診算定日
                         ryoyoStartDate = sinMeiDataModels.FirstSyosinDate;
                     }
-                    
-                    if(ryoyoStartDate == 0)
+
+                    if (ryoyoStartDate == 0)
                     {
                         // 上の処理で取得できないときは診療月1日
                         ryoyoStartDate = sinYm * 100 + 1;
                     }
 
                     rousaiReceiptModel.RyoyoStartDate = ryoyoStartDate;
-                                        
+
                     int ryoyoEndDate = hokenDataModel.PtHokenInf.RyoyoEndDate;
 
                     if (rousaiReceiptModel.Tenki == 3)
                     {
                         // 転帰が継続の場合
-                        if(ryoyoEndDate / 100 != sinYm)
+                        if (ryoyoEndDate / 100 != sinYm)
                         {
                             // 療養終了日が診療月ではない、または、設定なし(0)なら、診療月末日を設定
                             ryoyoEndDate = CIUtil.GetLastDateOfMonth(sinYm * 100 + 1);
@@ -890,8 +890,8 @@ namespace EmrCalculateApi.Receipt.ViewModels
                         //}
                         //else if(ryoyoEndDate / 100 < sinYm)
                         //{
-                            //// 療養終了日が診療前月以前の場合、最終診療日を設定
-                            ryoyoEndDate = sinMeiDataModels.LastSinDate;
+                        //// 療養終了日が診療前月以前の場合、最終診療日を設定
+                        ryoyoEndDate = sinMeiDataModels.LastSinDate;
                         //}
                     }
 
@@ -900,7 +900,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
                         // 上記で設定できないケースの場合、診療月末を設定
                         ryoyoEndDate = CIUtil.GetLastDateOfMonth(sinYm * 100 + 1);
                     }
-                    else if(ryoyoEndDate > hokenDataModel.PtHokenInf.RyoyoEndDate && hokenDataModel.PtHokenInf.RyoyoEndDate > 0)
+                    else if (ryoyoEndDate > hokenDataModel.PtHokenInf.RyoyoEndDate && hokenDataModel.PtHokenInf.RyoyoEndDate > 0)
                     {
                         ryoyoEndDate = hokenDataModel.PtHokenInf.RyoyoEndDate;
                     }
@@ -912,17 +912,17 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 // 傷病の経過
                 //_emrLogger.WriteLogMsg( this, conFncName, "syobyo");
                 syobyoKeikaModel = _ptFinder.FindSyobyoKeika(hpId, ptId, sinYm, receInf.HokenId);
-                                
+
             }
 
             //_emrLogger.WriteLogMsg( this, conFncName, "recedenViewModel");
-            ReceiptDataModel recedenViewModel = 
+            ReceiptDataModel recedenViewModel =
                 new ReceiptDataModel(
                     receInf, ptInfModel, hokenDataModel, kohiDataModels, syobyoDataModels, sinMeiDataModels.SinMei,
                     syojyoSyokiModels, ptKyuseiModel, rousaiReceiptModel, syobyoKeikaModel, recedenRirekiInfModel, outputYm, afterCareReceiptModel,
                     sikakuJyohoDataModel, jyusinbiDataModels, madoguchiFutanDataModel, _emrLogger);
 
-            _emrLogger.WriteLogEnd( this, conFncName, "");
+            _emrLogger.WriteLogEnd(this, conFncName, "");
 
             return recedenViewModel;
         }
@@ -955,7 +955,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             int sinYm = receInf.SinYm;
             List<ReceiptDataModel> results = new List<ReceiptDataModel>();
 
-            _emrLogger.WriteLogStart( this, conFncName, $"ptId:{ptId} sinYm:{sinYm}");
+            _emrLogger.WriteLogStart(this, conFncName, $"ptId:{ptId} sinYm:{sinYm}");
 
             // 基本情報
             //_emrLogger.WriteLogMsg( this, conFncName, "ptInf");
@@ -1032,7 +1032,7 @@ namespace EmrCalculateApi.Receipt.ViewModels
             {
                 // 診療明細情報
                 SinMeiViewModel sinMeiDataModels = null;
-                
+
                 //_emrLogger.WriteLogMsg( this, conFncName, "sinMei");
                 if (sinRpInfs != null)
                 {
@@ -1052,9 +1052,9 @@ namespace EmrCalculateApi.Receipt.ViewModels
                 SyobyoKeikaModel syobyoKeikaModel = null;
 
                 // 労災レセプト情報
-                afterCareReceiptModel = 
+                afterCareReceiptModel =
                     new AfterCareReceiptModel(hokenDataModel.PtHokenInf, _ptFinder.FindPtRousaiTenki(hpId, ptId, sinYm, receInf.HokenId), ptInfModel.PtInf, receInf.RousaiCount, outputYm);
-                syobyoKeikaModel = 
+                syobyoKeikaModel =
                     _ptFinder.FindSyobyoKeikaForAfterCare(hpId, ptId, kaikeiDayInf.sinDate, receInf.HokenId);
 
                 // 症状詳記情報
