@@ -85,6 +85,7 @@ namespace Reporting.Receipt.Mapper
 
         public void UpdateDrawForm()
         {
+            if (_coReceipt == null) return;
             #region SubMethod
 
             // ヘッダーの印刷処理

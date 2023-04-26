@@ -87,7 +87,6 @@ namespace Reporting.Receipt.Service
             var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, seikyuYm, sinYm, hokenId);
 
             // TODO message or somthing process here
-            if (receInf == null) return new();
             var target = -1;
             switch (receInf.HokenKbn)
             {
