@@ -145,8 +145,8 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
-    [HttpGet(ApiPath.ReceiptPreview)]
-    public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
+    [HttpGet(ApiPath.Sta1001)]
+    public async Task<IActionResult> Sta1001([FromQuery] ReceiptPreviewRequest request)
     {
         var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
         return await RenderPdf(data, ReportType.Common);
