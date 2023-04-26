@@ -132,52 +132,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             }
         ).ToList();
 
-        var check = (from syunoNyukin in syunoNyukins.AsEnumerable()
-                     join payMst in payMsts on
-                         new { syunoNyukin.HpId, syunoNyukin.PaymentMethodCd } equals
-                         new { payMst.HpId, payMst.PaymentMethodCd } into payMstJoin
-                     from payMstj in payMstJoin.DefaultIfEmpty()
-                     join syunoSeikyu in syunoSeikyus on
-                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                         new { syunoSeikyu.HpId, syunoSeikyu.RaiinNo }
-                     join raiinInf in raiinInfs on
-                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                         new { raiinInf.HpId, raiinInf.RaiinNo }
-                     join firstRaiin in firstRaiins on
-                         new { syunoNyukin.HpId, syunoNyukin.PtId } equals
-                         new { firstRaiin.HpId, firstRaiin.PtId }
-                     join kaikeiFutan in kaikeiFutans on
-                         new { syunoNyukin.HpId, syunoNyukin.RaiinNo } equals
-                         new { kaikeiFutan.HpId, kaikeiFutan.RaiinNo } into kaikeiFutanJoin
-                     from kaikeiFutanj in kaikeiFutanJoin.DefaultIfEmpty()
-                     join ptInf in ptInfs on
-                         new { syunoNyukin.HpId, syunoNyukin.PtId } equals
-                         new { ptInf.HpId, ptInf.PtId }
-                     join uketukeSbtMst in uketukeSbtMsts on
-                         new { syunoNyukin.HpId, syunoNyukin.UketukeSbt } equals
-                         new { uketukeSbtMst.HpId, UketukeSbt = uketukeSbtMst.KbnId } into uketukeSbtMstJoin
-                     from uketukeSbtMstj in uketukeSbtMstJoin.DefaultIfEmpty()
-                     join userMst in userMsts on
-                         new { syunoNyukin.HpId, syunoNyukin.UpdateId } equals
-                         new { userMst.HpId, UpdateId = userMst.UserId } into nyukinUserMstJoin
-                     from nyukinUserMst in nyukinUserMstJoin.DefaultIfEmpty()
-                     join kaMst in kaMsts on
-                         new { raiinInf.HpId, raiinInf.KaId } equals
-                         new { kaMst.HpId, kaMst.KaId } into kaMstJoin
-                     from kaMstj in kaMstJoin.DefaultIfEmpty()
-                     join userMst in userMsts on
-                         new { raiinInf.HpId, raiinInf.TantoId } equals
-                         new { userMst.HpId, TantoId = userMst.UserId } into userMstJoin
-                     from tantoMst in userMstJoin.DefaultIfEmpty()
-                     join userMst in userMsts on
-                         new { raiinInf.HpId, raiinInf.UketukeId } equals
-                         new { userMst.HpId, UketukeId = userMst.UserId } into uketukeUserMstJoin
-                     from uketukeUserMst in uketukeUserMstJoin.DefaultIfEmpty()
-                     join kaikeiHoken in kaikeiHokens on
-                         new { raiinInf.HpId, raiinInf.RaiinNo } equals
-                         new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
-                     select new {}).ToList();
-
         var joinQuery = (
             from syunoNyukin in syunoNyukins.AsEnumerable()
             join payMst in payMsts on

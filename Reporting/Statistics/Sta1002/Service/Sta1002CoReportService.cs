@@ -92,8 +92,8 @@ public class Sta1002CoReportService : ISta1002CoReportService
         _printConf = printConf;
         // get data to print
         GetFieldNameList();
-        GetData(hpId);
         GetRowCount();
+        GetData(hpId);
         _hasNextPage = true;
 
         _currentPage = 1;
@@ -640,7 +640,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
     private void GetFieldNameList()
     {
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, new());
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1002, string.Empty, new());
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         _objectRseList = javaOutputData.objectNames;
     }
@@ -653,7 +653,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
             new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
         };
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, fieldInputList);
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1002, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
