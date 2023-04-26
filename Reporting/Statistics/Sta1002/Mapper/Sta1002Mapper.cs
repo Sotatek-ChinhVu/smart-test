@@ -19,7 +19,7 @@ public class Sta1002Mapper : CommonReportingRequest
 
     public override int GetReportType()
     {
-        return (int)CoReportType.ReceiptList;
+        return (int)CoReportType.Sta1002;
     }
 
     public override string GetRowCountFieldName()

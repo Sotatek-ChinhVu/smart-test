@@ -502,7 +502,11 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
     private void UpdateDrawForm()
     {
-        Dictionary<string, CellModel> data = new();
+        if (_printDatas.Count == 0)
+        {
+            _hasNextPage = false;
+            return;
+        }
 
         #region Header
         void UpdateFormHeader()
@@ -548,6 +552,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
+                Dictionary<string, CellModel> data = new();
                 var printData = _printDatas[hokIndex];
                 string baseListName = string.Empty;
 
@@ -567,9 +572,9 @@ public class Sta1002CoReportService : ISta1002CoReportService
                     var value = typeof(CoSta1002PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
 
-                    if (!data.ContainsKey(colName) && valueInput != null)
+                    if (!data.ContainsKey(colName))
                     {
-                        data.Add(colName, new CellModel(valueInput));
+                        AddListData(ref data, colName, valueInput);
                     }
 
                     if (baseListName == string.Empty && _objectRseList.Contains(colName))
@@ -586,20 +591,22 @@ public class Sta1002CoReportService : ISta1002CoReportService
                     }
 
                     var jihiSbtMst = _jihiSbtMsts[i];
-                    data.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
+                    AddListData(ref data, string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), printData.JihiSbtFutans[i]);
                 }
 
                 //区切り線を引く
                 if (new int[] { 14, 37, 38, 43 }.Contains(rowNo))
                 {
-                    if (_extralData.ContainsKey("headerLine"))
+                    if (!_extralData.ContainsKey("headerLine"))
                     {
                         _extralData.Add("headerLine", "true");
                     }
-                    _extralData.Add("baseListName_" + _currentPage, baseListName);
-                    _extralData.Add("rowNo_" + _currentPage, rowNo.ToString());
+                    string rowNoKey = rowNo + "_" + _currentPage;
+                    _extralData.Add("baseListName_" + rowNoKey, baseListName);
+                    _extralData.Add("rowNo_" + rowNoKey, rowNo.ToString());
                 }
 
+                _tableFieldData.Add(data);
                 hokIndex++;
                 if (hokIndex >= _printDatas.Count)
                 {
@@ -607,6 +614,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
                     break;
                 }
             }
+           
         }
         #endregion
 
@@ -616,9 +624,17 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
     private void SetFieldData(string field, string value)
     {
-        if (string.IsNullOrEmpty(field) || !_singleFieldData.ContainsKey(field))
+        if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
         {
             _singleFieldData.Add(field, value);
+        }
+    }
+
+    private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
+    {
+        if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
+        {
+            dictionary.Add(field, new CellModel(value));
         }
     }
 
