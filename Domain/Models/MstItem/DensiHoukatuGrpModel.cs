@@ -23,6 +23,13 @@ namespace Domain.Models.MstItem
             IsDeleted = isDeleted;
         }
 
+        public DensiHoukatuGrpModel()
+        {
+            ItemCd = string.Empty;
+            HoukatuGrpNo = string.Empty;
+            HoukatuItemCd = string.Empty;
+            Name = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID

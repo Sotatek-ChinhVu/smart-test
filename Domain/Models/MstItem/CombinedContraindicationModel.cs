@@ -16,6 +16,14 @@
             OriginBCd = originBCd;
         }
 
+        public CombinedContraindicationModel()
+        {
+            ACd = string.Empty;
+            BCd = string.Empty;
+            Name = string.Empty;
+            OriginBCd = string.Empty;
+        }
+
         public long Id { get; private set; }
         /// <summary>
         /// 医療機関識別ID

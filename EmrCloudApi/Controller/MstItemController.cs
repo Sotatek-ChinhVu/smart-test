@@ -28,7 +28,9 @@ using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
-using Microsoft.AspNetCore.Authorization;
+using Helper.Extension;
+using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 
 namespace EmrCloudApi.Controller
 {
@@ -229,11 +231,10 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<DeleteOrRecoverTenMstResponse>>(presenter.Result);
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetSetDataTenMst)]
         public ActionResult<Response<GetSetDataTenMstResponse>> GetSetDataTenMstOrigin([FromQuery] GetSetDataTenMstRequest request)
         {
-            var input = new GetSetDataTenMstInputData(1,
+            var input = new GetSetDataTenMstInputData(HpId,
                                                      request.SinDate,
                                                      request.ItemCd,
                                                      request.JiCd,
@@ -250,11 +251,45 @@ namespace EmrCloudApi.Controller
         }
 
 
-        [AllowAnonymous]
         [HttpPost(ApiPath.SaveSetDataTenMst)]
         public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
         {
-            var input = new SaveSetDataTenMstInputData(1, 2, request.ItemCd, Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins), request.SetData);
+            List<TenMstOriginModel> tenOrigins = Mapper.Map<TenMstOriginModelDto, TenMstOriginModel>(request.TenOrigins);
+
+            BasicSettingTabModel basicSettingTab = new BasicSettingTabModel(Mapper.Map<CmtKbnMstModelDto, CmtKbnMstModel>(request.CmtKbnMstModels));
+
+            IjiSettingTabModel ijiSettingTab = ObjectExtension.CreateInstance<IjiSettingTabModel>();
+
+            PrecriptionSettingTabModel precriptionSettingTab = new PrecriptionSettingTabModel(Mapper.Map<M10DayLimitModelDto, M10DayLimitModel>(request.M10DayLimitModels),
+                                                                                              Mapper.Map<IpnMinYakkaMstModelDto, IpnMinYakkaMstModel>(request.IpnMinYakkaMsts),
+                                                                                              Mapper.Map<DrugDayLimitModelDto, DrugDayLimitModel>(request.DrugDayLimits),
+                                                                                              Mapper.Map(request.DosageMst, new DosageMstModel()),
+                                                                                              Mapper.Map(request.IpnNameMst, new IpnNameMstModel()));
+
+            UsageSettingTabModel usageSettingTab = ObjectExtension.CreateInstance<UsageSettingTabModel>();
+
+            DrugInfomationTabModel drugInfomationTab = new DrugInfomationTabModel(Mapper.Map<DrugInfModelDto, DrugInfModel>(request.DrugInfs),
+                                                                                  Mapper.Map(request.ZaiImage, new PiImageModel()),
+                                                                                  Mapper.Map(request.HouImage, new PiImageModel()));
+
+            TeikyoByomeiTabModel teikyoByomeiTab = new TeikyoByomeiTabModel(Mapper.Map<TeikyoByomeiModelDto, TeikyoByomeiModel>(request.TeikyoByomeis),
+                                                                            Mapper.Map(request.TekiouByomeiMstExcluded, new TekiouByomeiMstExcludedModel()));
+
+            SanteiKaishuTabModel santeiKaishuTab = new SanteiKaishuTabModel(Mapper.Map<DensiSanteiKaisuModelDto, DensiSanteiKaisuModel>(request.DensiSanteiKaisus));
+
+            HaihanTabModel haihanTab = new HaihanTabModel(Mapper.Map<DensiHaihanModelDto, DensiHaihanModel>(request.DensiHaihanModel1s),
+                                                          Mapper.Map<DensiHaihanModelDto, DensiHaihanModel>(request.DensiHaihanModel2s),
+                                                          Mapper.Map<DensiHaihanModelDto, DensiHaihanModel>(request.DensiHaihanModel3s));
+
+            HoukatsuTabModel houkatsuTab = new HoukatsuTabModel(Mapper.Map<DensiHoukatuModelDto, DensiHoukatuModel>(request.ListDensiHoukatuModels),
+                                                                Mapper.Map<DensiHoukatuGrpModelDto, DensiHoukatuGrpModel>(request.ListDensiHoukatuGrpModels),
+                                                                Mapper.Map<DensiHoukatuModelDto, DensiHoukatuModel>(request.ListDensiHoukatuMaster));
+
+            CombinedContraindicationTabModel combinedContraindicationTab = new CombinedContraindicationTabModel(Mapper.Map<CombinedContraindicationModelDto, CombinedContraindicationModel>(request.CombinedContraindications));
+
+            SetDataTenMstOriginModel setData = new SetDataTenMstOriginModel(basicSettingTab, ijiSettingTab, precriptionSettingTab, usageSettingTab, drugInfomationTab, teikyoByomeiTab, santeiKaishuTab, haihanTab, houkatsuTab, combinedContraindicationTab);
+
+            var input = new SaveSetDataTenMstInputData(HpId, UserId, request.ItemCd, tenOrigins, setData);
             var output = _bus.Handle(input);
             var presenter = new SaveSetDataTenMstPresenter();
             presenter.Complete(output);

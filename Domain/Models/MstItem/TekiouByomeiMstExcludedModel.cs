@@ -10,6 +10,10 @@
             IsDeleted = isDeleted;
         }
 
+        public TekiouByomeiMstExcludedModel()
+        {
+            ItemCd = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID

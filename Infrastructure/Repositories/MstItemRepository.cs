@@ -2966,7 +2966,7 @@ namespace Infrastructure.Repositories
                 #endregion
 
                 #region UpdateIpnNameMstModel
-                IpnNameMstModel ipnModel = setDataTen.PrecriptionSettingTab.ipnNameMst;
+                IpnNameMstModel ipnModel = setDataTen.PrecriptionSettingTab.IpnNameMst;
                 if (ipnModel.ModelModified)
                 {
                     if (string.IsNullOrEmpty(ipnModel.IpnNameCd))
@@ -3048,7 +3048,7 @@ namespace Infrastructure.Repositories
 
                 #region UpdateDrugDayLimitModels
                 List<DrugDayLimitModel> srcDrugDays = setDataTen.PrecriptionSettingTab.DrugDayLimits;
-                var dbDrugLimitList = TrackingDataContext.DrugDayLimits.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.ItemCd == itemCd);
+                var dbDrugLimitList = TrackingDataContext.DrugDayLimits.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.ItemCd == itemCd).ToList();
                 srcDrugDays.ForEach(x =>
                 {
                     if (!x.CheckDefaultValue() && x.ModelModified)

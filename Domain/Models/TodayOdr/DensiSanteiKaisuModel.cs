@@ -42,6 +42,11 @@
             ItemGrpCd = itemGrpCd;
         }
 
+        public DensiSanteiKaisuModel()
+        {
+            ItemCd = string.Empty;
+        }
+
         public int Id { get; private set; }
 
         public int HpId { get; private set; }

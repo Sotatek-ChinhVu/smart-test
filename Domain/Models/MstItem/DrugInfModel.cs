@@ -14,6 +14,12 @@
             OldDrugInfo = oldDrugInfo;
         }
 
+        public DrugInfModel()
+        {
+            ItemCd = string.Empty;
+            DrugInfo = string.Empty;
+            OldDrugInfo = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID

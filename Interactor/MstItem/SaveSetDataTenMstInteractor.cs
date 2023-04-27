@@ -5,11 +5,11 @@ using UseCase.MstItem.SaveSetDataTenMst;
 
 namespace Interactor.MstItem
 {
-    public class SaveSetDataTenMstInteractorcs : ISaveSetDataTenMstInputPort
+    public class SaveSetDataTenMstInteractor : ISaveSetDataTenMstInputPort
     {
         private readonly IMstItemRepository _mstItemRepository;
 
-        public SaveSetDataTenMstInteractorcs(IMstItemRepository mstItemRepository)
+        public SaveSetDataTenMstInteractor(IMstItemRepository mstItemRepository)
         {
             _mstItemRepository = mstItemRepository;
         }

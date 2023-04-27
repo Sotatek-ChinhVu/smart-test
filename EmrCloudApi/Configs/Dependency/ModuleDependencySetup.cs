@@ -457,7 +457,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.SystemConf.SaveDrugCheckSetting;
 using Domain.Models.Lock;
 using UseCase.Lock.Add;
 using Interactor.Lock;
@@ -466,6 +465,7 @@ using UseCase.Lock.Remove;
 using UseCase.Lock.ExtendTtl;
 using Reporting.Calculate.Implementation;
 using Reporting.Calculate.Interface;
+using UseCase.MstItem.SaveSetDataTenMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1052,6 +1052,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

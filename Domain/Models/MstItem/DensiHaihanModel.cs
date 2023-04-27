@@ -31,6 +31,16 @@ namespace Domain.Models.MstItem
             IsDeleted = isDeleted;
         }
 
+        public DensiHaihanModel()
+        {
+            ItemCd1 = string.Empty;
+            ItemCd2 = string.Empty;
+            OriginItemCd2 = string.Empty;
+            PrevItemCd2 = string.Empty;
+            Name = string.Empty;
+        }
+
+
         public int InitModelType { get; private set; }
 
         public int Id { get; private set; }
