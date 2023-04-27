@@ -31,15 +31,23 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
     public List<CoSyunoInfModel> GetSyunoInfs(int hpId, CoSta1001PrintConf printConf, int staMonthType)
     {
         //入金情報
-        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.IsDeleted == DeleteStatus.None);
+        var syunoNyukins = NoTrackingDataContext.SyunoNyukin.Where(s => s.HpId == hpId &&
+                                                                        s.NyukinDate >= printConf.StartNyukinDate &&
+                                                                        s.NyukinDate <= printConf.EndNyukinDate &&
+                                                                        s.IsDeleted == DeleteStatus.None);
 
+        var minSinDate = syunoNyukins.Select(x => x.SinDate).Min();
+        var maxSinDate = syunoNyukins.Select(x => x.SinDate).Max();
         //支払方法
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
-        var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.NyukinKbn != 0);  //0:未精算を除く
+        var syunoSeikyus = NoTrackingDataContext.SyunoSeikyus.Where(s => s.HpId == hpId &&
+                                                                        s.SinDate >= minSinDate &&
+                                                                        s.SinDate <= maxSinDate &&
+                                                                        s.NyukinKbn != 0);  //0:未精算を除く
                                                                                              //会計情報
                                                                                              //var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where();
-        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs
+        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.Where( x=> x.HpId == hpId && x.SinDate >= minSinDate && x.SinDate <= maxSinDate)
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
                 new
@@ -56,7 +64,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k => k.OrderByDescending(x => x.HokenSbtCd).Take(1)).SelectMany(k => k);
         //来院情報
-        IEnumerable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs;
+        IEnumerable<RaiinInf> raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.SinDate >= minSinDate && x.SinDate <= maxSinDate);
         if (printConf.KaIds?.Count >= 1)
         {
             //診療科の条件指定
@@ -179,13 +187,9 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                 new { kaikeiHoken.HpId, kaikeiHoken.RaiinNo } into kaikeiHokenJoin
             from kaikeiHokenj in kaikeiHokenJoin.DefaultIfEmpty()
             where
-                syunoNyukin.HpId == hpId &&
-                (
-                    printConf.StartNyukinDate == printConf.EndNyukinDate ?
-                        (syunoNyukin.NyukinDate == printConf.StartNyukinDate) :
-                        (syunoNyukin.NyukinDate >= printConf.StartNyukinDate && syunoNyukin.NyukinDate <= printConf.EndNyukinDate)
-                ) &&
-                syunoNyukin.IsDeleted == DeleteStatus.None
+                    syunoNyukin.NyukinDate >= printConf.StartNyukinDate &&
+                    syunoNyukin.NyukinDate <= printConf.EndNyukinDate &&
+                    syunoNyukin.IsDeleted == DeleteStatus.None
             select new
             {
                 RaiinNo = syunoNyukin.RaiinNo,
@@ -234,7 +238,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         if (printConf.UketukeSbtIds?.Count >= 1)
         {
             //受付種別の条件指定
-            joinQuery = joinQuery.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt));
+           joinQuery = joinQuery.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt));
         }
         if (printConf.PaymentMethodCds?.Count >= 1)
         {

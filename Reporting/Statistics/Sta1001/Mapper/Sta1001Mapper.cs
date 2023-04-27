@@ -7,12 +7,14 @@ namespace Reporting.Statistics.Sta1001.Mapper
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
         List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
+        private string _rowCountFieldName;
 
-        public Sta1001Mapper(Dictionary<string, string> extralData, Dictionary<string, string> singleData, List<Dictionary<string, CellModel>> cellData)
+        public Sta1001Mapper(Dictionary<string, string> extralData, Dictionary<string, string> singleData, List<Dictionary<string, CellModel>> cellData, string rowCountFieldName)
         {
             _extralData = extralData;
             SingleData = singleData;
             CellData = cellData;
+            _rowCountFieldName = rowCountFieldName;
         }
 
         public override int GetReportType()
@@ -49,7 +51,7 @@ namespace Reporting.Statistics.Sta1001.Mapper
 
         public override string GetRowCountFieldName()
         {
-            return "lsTekiyo";
+            return _rowCountFieldName;
         }
 
         public override Dictionary<string, string> GetExtralData()

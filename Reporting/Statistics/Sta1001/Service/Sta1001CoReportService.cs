@@ -36,9 +36,6 @@ namespace Reporting.Statistics.Sta1001.Service
         private string _rowCountFieldName = string.Empty;
         private bool _hasNextPage;
 
-        private CoSta1001PrintConf printConf;
-        private int CurrentPage = 1;
-
         Dictionary<string, string> _extralData = new Dictionary<string, string>();
         Dictionary<string, string> SingleData = new Dictionary<string, string>();
         List<Dictionary<string, CellModel>> CellData = new List<Dictionary<string, CellModel>>();
@@ -218,7 +215,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 _currentPage++;
             }
 
-            return new Sta1001Mapper(_extralData, SingleData, CellData).GetData();
+            return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
         }
 
         private CoSta1001PrintConf CreateCoSta1001PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -262,7 +259,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
         private void GetFieldNameList()
         {
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, new());
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, "sta1001a.rse", new());
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _objectRseList = javaOutputData.objectNames;
         }
@@ -275,7 +272,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
             };
 
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, fieldInputList);
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, "sta1001a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
         }
@@ -622,6 +619,14 @@ namespace Reporting.Statistics.Sta1001.Service
             return printDatas.Count > 0;
         }
 
+        private void SetFieldData(string field, string value)
+        {
+            if (!string.IsNullOrEmpty(field) && !SingleData.ContainsKey(field))
+            {
+                SingleData.Add(field, value);
+            }
+        }
+
         #region Update Draw Form
         public void UpdateDrawForm()
         {
@@ -633,7 +638,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
             var celldata = new Dictionary<string, CellModel>();
             //タイトル
-            SingleData.Add("Title", printConf.ReportName);
+            SetFieldData("Title", _printConf.ReportName);
             //医療機関名
             _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
             //作成日時
@@ -642,18 +647,18 @@ namespace Reporting.Statistics.Sta1001.Service
             ) + DateTime.Now.ToString(" HH:mm") + "作成");
             //ページ数
             int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
-            _extralData.Add("HeaderR_0_2_" + _currentPage, CurrentPage + " / " + totalPage);
+            _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
             //入金日
-            _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= CurrentPage ? headerL1[CurrentPage - 1] : "");
+            _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
             //改ページ条件
-            _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= CurrentPage ? headerL2[CurrentPage - 1] : "");
+            _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
 
             //期間
-            SingleData.Add("Range",
+            SetFieldData("Range",
                 string.Format(
                     "期間: {0} ～ {1}",
-                    CIUtil.SDateToShowSWDate(printConf.StartNyukinDate, 0, 1),
-                    CIUtil.SDateToShowSWDate(printConf.EndNyukinDate, 0, 1)
+                    CIUtil.SDateToShowSWDate(_printConf.StartNyukinDate, 0, 1),
+                    CIUtil.SDateToShowSWDate(_printConf.EndNyukinDate, 0, 1)
                 )
             );
 
@@ -662,7 +667,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
             #region Body
 
-            int ptIndex = (CurrentPage - 1) * maxRow;
+            int ptIndex = (_currentPage - 1) * maxRow;
             int lineCount = 0;
 
             //存在しているフィールドに絞り込み
@@ -676,7 +681,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 //保険外金額（内訳）タイトル
                 foreach (var jihiSbtMst in jihiSbtMsts)
                 {
-                    SingleData.Add(string.Format("tJihiFutanSbt{0}", jihiSbtMst.JihiSbt), jihiSbtMst.Name);
+                    SetFieldData(string.Format("tJihiFutanSbt{0}", jihiSbtMst.JihiSbt), jihiSbtMst.Name);
                 }
 
                 //明細データ出力
@@ -710,8 +715,8 @@ namespace Reporting.Statistics.Sta1001.Service
                 CellData.Add(celldata);
                 celldata.Clear();
 
-                //5行毎に区切り線を引く
-                lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
+                ////5行毎に区切り線を引く
+                //lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
 
                 //if (lineCount == 5)
                 //{
@@ -721,6 +726,22 @@ namespace Reporting.Statistics.Sta1001.Service
 
                 //    CoRep.DrawLine(startX1, endY2, endX1, endY2, 10, Hos.CnDraw.Constants.ConLineStyle.Dash);
                 //}
+
+                //5行毎に区切り線を引く
+                lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
+                string rowNoKey = rowNo + "_" + _currentPage;
+                _extralData.Add("lineCount" + rowNoKey, lineCount.ToString());
+
+                if (lineCount == 5)
+                {
+                    lineCount = 0;
+                    if (!_extralData.ContainsKey("headerLine"))
+                    {
+                        _extralData.Add("headerLine", "true");
+                    }
+                    _extralData.Add("baseListName" + rowNoKey, baseListName);
+                    _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
+                }
 
                 ptIndex++;
                 if (ptIndex >= printDatas.Count)

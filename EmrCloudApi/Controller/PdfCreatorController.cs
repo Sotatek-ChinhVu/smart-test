@@ -156,7 +156,7 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> Sta1001([FromQuery] Sta1001Request request)
     {
         var data = _reportService.GetSta1001ReportingData(request.HpId, request.MenuId, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo);
-        var oMycustomclassname = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var oMycustomclassname = JsonSerializer.Serialize(data);
         return await RenderPdf(data, ReportType.Common);
     }
 
