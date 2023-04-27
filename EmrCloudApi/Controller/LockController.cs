@@ -73,17 +73,17 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response>(presenter.Result);
         }
 
-        [HttpGet(ApiPath.ExtendTtl)]
-        public ActionResult<Response> ExtendTtl([FromQuery] LockRequest request)
-        {
-            var input = new ExtendTtlLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
-            var output = _bus.Handle(input);
+        //[HttpGet(ApiPath.ExtendTtl)]
+        //public ActionResult<Response> ExtendTtl([FromQuery] LockRequest request)
+        //{
+        //    var input = new ExtendTtlLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
+        //    var output = _bus.Handle(input);
 
-            var presenter = new ExtentTtlPresenter();
-            presenter.Complete(output);
+        //    var presenter = new ExtentTtlPresenter();
+        //    presenter.Complete(output);
 
-            return new ActionResult<Response>(presenter.Result);
-        }
+        //    return new ActionResult<Response>(presenter.Result);
+        //}
     }
 
     public class Locker
