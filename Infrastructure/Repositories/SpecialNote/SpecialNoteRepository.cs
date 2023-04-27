@@ -120,10 +120,12 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SaveAlrgyFoodItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
+
             var alrgyFoodItems = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
-            var alrgyFoodList = importantNoteModel.AlrgyFoodItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var alrgyFoodFilters = importantNoteModel.AlrgyFoodItems.Where(a => (a.StartDate > 0 || a.EndDate > 0) && !string.IsNullOrEmpty(a.AlrgyKbn));
+            var alrgyFoodList = alrgyFoodFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtAlrgyFood()
                                     {
                                         HpId = x.HpId,
@@ -154,7 +156,9 @@ namespace Infrastructure.Repositories.SpecialNote
                 .Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
-            var alrgyElseList = importantNoteModel.AlrgyElseItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+
+            var alrgyElseFilters = importantNoteModel.AlrgyElseItems.Where(a => (a.StartDate > 0 || a.EndDate > 0) && !string.IsNullOrEmpty(a.AlrgyName));
+            var alrgyElseList = alrgyElseFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtAlrgyElse()
                                     {
                                         HpId = x.HpId,
@@ -184,6 +188,7 @@ namespace Infrastructure.Repositories.SpecialNote
             var alrgyDrugItems = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
+            var alrgyDrugFilters = importantNoteModel.AlrgyDrugItems.Where(a => !string.IsNullOrEmpty(a.ItemCd) && (a.StartDate > 0 || a.EndDate > 0) && !string.IsNullOrEmpty(a.DrugName));
             var alrgyDrugList = importantNoteModel.AlrgyDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtAlrgyDrug()
                                     {
@@ -214,7 +219,8 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var kioRekiItems = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
-            var kioRekiList = importantNoteModel.KioRekiItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var kioRekiFilters = importantNoteModel.KioRekiItems.Where(k => !string.IsNullOrEmpty(k.ByomeiCd) && !string.IsNullOrEmpty(k.Byomei));
+            var kioRekiList = kioRekiFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtKioReki()
                                     {
                                         HpId = x.HpId,
@@ -244,7 +250,8 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var infectionItems = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
-            var infectionList = importantNoteModel.InfectionsItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var infectionFilters = importantNoteModel.InfectionsItems.Where(i => !string.IsNullOrEmpty(i.ByomeiCd) && !string.IsNullOrEmpty(i.Byomei));
+            var infectionList = infectionFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtInfection()
                                     {
                                         HpId = x.HpId,
@@ -274,7 +281,8 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var otherDrugItems = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
-            var otherDrugList = importantNoteModel.OtherDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var otherDrugFilters = importantNoteModel.OtherDrugItems.Where(o => (o.StartDate > 0 || o.EndDate > 0) && !string.IsNullOrEmpty(o.ItemCd) && !string.IsNullOrEmpty(o.DrugName));
+            var otherDrugList = otherDrugFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtOtherDrug()
                                     {
                                         HpId = x.HpId,
@@ -304,7 +312,8 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var otcDrugItems = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
-            var otcDrugList = importantNoteModel.OtcDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var otcDrugFilters = importantNoteModel.OtcDrugItems.Where(o => (o.StartDate > 0 || o.EndDate > 0) && !string.IsNullOrEmpty(o.TradeName));
+            var otcDrugList = otcDrugFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtOtcDrug()
                                     {
                                         HpId = x.HpId,
@@ -334,7 +343,8 @@ namespace Infrastructure.Repositories.SpecialNote
         {
             var suppleItems = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
-            var suppleList = importantNoteModel.SuppleItems.Where(x => x.HpId == hpId && x.PtId == ptId)
+            var suppleFilters = importantNoteModel.SuppleItems.Where(s => (s.StartDate > 0 || s.EndDate > 0) && !string.IsNullOrEmpty(s.IndexCd) && !string.IsNullOrEmpty(s.IndexWord));
+            var suppleList = suppleFilters.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtSupple()
                                     {
                                         HpId = x.HpId,
