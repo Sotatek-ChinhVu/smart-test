@@ -1,4 +1,5 @@
-﻿using Helper.Common;
+﻿using Amazon.Runtime.Internal.Transform;
+using Helper.Common;
 using Helper.Extension;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Model;
@@ -10,6 +11,7 @@ using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Mapper;
 using Reporting.Statistics.Sta1001.Models;
+using Reporting.Statistics.Sta1002.Models;
 using System.Globalization;
 
 namespace Reporting.Statistics.Sta1001.Service
@@ -25,9 +27,9 @@ namespace Reporting.Statistics.Sta1001.Service
         private CoHpInfModel hpInf;
         private CoSta1001PrintConf _printConf;
         private List<PutColumn> putCurColumns = new List<PutColumn>();
-        private countData grandTotal = new countData();
-        private countData total = new countData();
-        private countData subTotal = new countData();
+        private CountData grandTotal = new CountData();
+        private CountData total = new CountData();
+        private CountData subTotal = new CountData();
 
         private int maxRow = 43;
         private int HpId;
@@ -103,7 +105,7 @@ namespace Reporting.Statistics.Sta1001.Service
             new PutColumn("PtFutanElse", "負担金額(その他)")
         };
         #endregion
-        private struct countData
+        private struct CountData
         {
             public int Count;
             public List<string> PtCount;
@@ -205,8 +207,8 @@ namespace Reporting.Statistics.Sta1001.Service
 
             HpId = hpId;
             GetFieldNameList();
-            GetData();
             GetRowCount();
+            GetData();
             _hasNextPage = true;
             _currentPage = 1;
             while (_hasNextPage)
@@ -404,6 +406,8 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.Seq = recNo.ToString();
                     }
 
+                    // todo quan.to
+                    //if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak || outputFileType == CoFileType.Csv)
                     if (syunoInf.RaiinNo != prePrintData.RaiinNo || pageBreak)
                     {
                         printData.PtNum = syunoInf.PtNum.ToString();
@@ -412,7 +416,9 @@ namespace Reporting.Statistics.Sta1001.Service
                         printData.Syosaisin = syunoInf.Syosaisin;
                         printData.HokenSbt = syunoInf.HokenSbt;
 
-                        bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo;
+                        // todo quan.to
+                        //bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
+                        bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo ;
                         printData.Tensu = csvOmit ? "0" : syunoInf.Tensu.ToString("#,0");
                         printData.NewTensu = csvOmit ? "0" : syunoInf.NewTensu.ToString("#,0");
                         printData.PtFutan = csvOmit ? "0" : syunoInf.PtFutan.ToString("#,0");
@@ -564,11 +570,10 @@ namespace Reporting.Statistics.Sta1001.Service
                     //総合計
                     AddTotalRecord("◆総合計", ref grandTotal);
                 }
-
             }
 
             //合計レコードの追加
-            void AddTotalRecord(string title, ref countData totalData)
+            void AddTotalRecord(string title, ref CountData totalData)
             {
                 printDatas.Add(
                     new CoSta1001PrintData(RowType.Total)
@@ -636,7 +641,6 @@ namespace Reporting.Statistics.Sta1001.Service
 
             #region Header
 
-            var celldata = new Dictionary<string, CellModel>();
             //タイトル
             SetFieldData("Title", _printConf.ReportName);
             //医療機関名
@@ -675,6 +679,8 @@ namespace Reporting.Statistics.Sta1001.Service
 
             for (short rowNo = 0; rowNo < maxRow; rowNo++)
             {
+                var celldata = new Dictionary<string, CellModel>();
+
                 var printData = printDatas[ptIndex];
                 string baseListName = "";
 
@@ -687,10 +693,9 @@ namespace Reporting.Statistics.Sta1001.Service
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var data = new Dictionary<string, CellModel>();
-                    var value = typeof(CoSta1001PrintData).GetProperty(colName).GetValue(printData);
-                    data.Add("colName", new CellModel(value == null ? "" : value.ToString()));
-                    CellData.Add(data);
+                    var value = typeof(CoSta1002PrintData).GetProperty(colName).GetValue(printData);
+                    string valueInput = value?.ToString() ?? string.Empty;
+                    celldata.Add(colName, new CellModel(valueInput));
                     if (baseListName == "" && _objectRseList.Contains(colName))
                     {
                         baseListName = colName;
@@ -700,20 +705,14 @@ namespace Reporting.Statistics.Sta1001.Service
                 for (int i = 0; i <= jihiSbtMsts.Count - 1; i++)
                 {
                     if (printData.JihiSbtFutans == null) break;
-                    var data = new Dictionary<string, CellModel>();
                     var jihiSbtMst = jihiSbtMsts[i];
-                    data.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
-
-                    CellData.Add(data);
+                    celldata.Add(string.Format("JihiFutanSbt{0}", jihiSbtMst.JihiSbt), new CellModel(printData.JihiSbtFutans[i]));
                 }
 
                 //合計行キャプションと件数
                 celldata.Add("TotalCaption", new CellModel(printData.TotalCaption));
                 celldata.Add("TotalCount", new CellModel(printData.TotalCount));
                 celldata.Add("TotalPtCount", new CellModel(printData.TotalPtCount));
-
-                CellData.Add(celldata);
-                celldata.Clear();
 
                 ////5行毎に区切り線を引く
                 //lineCount = printData.RowType != RowType.Brank ? lineCount + 1 : lineCount;
@@ -742,6 +741,8 @@ namespace Reporting.Statistics.Sta1001.Service
                     _extralData.Add("baseListName" + rowNoKey, baseListName);
                     _extralData.Add("rowNo" + rowNoKey, rowNo.ToString());
                 }
+
+                CellData.Add(celldata);
 
                 ptIndex++;
                 if (ptIndex >= printDatas.Count)

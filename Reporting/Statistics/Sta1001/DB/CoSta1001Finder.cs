@@ -344,7 +344,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                         ).ToList();
 
             var joinSeikyu = (
-                from unSeikyu in unSeikyus.AsEnumerable()
+                from unSeikyu in unSeikyus
                 join syunoNyukin in syunoNyukins on
                     new { unSeikyu.HpId, unSeikyu.RaiinNo } equals
                     new { syunoNyukin.HpId, syunoNyukin.RaiinNo } into syunoNyukinJoin
