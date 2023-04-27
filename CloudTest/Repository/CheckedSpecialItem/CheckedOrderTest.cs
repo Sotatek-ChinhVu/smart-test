@@ -3500,13 +3500,56 @@ public class CheckedOrderTest : BaseUT
         var byomeiModelList = new List<PtDiseaseModel>()
         {
             new PtDiseaseModel(
-                1,
+                5,
                 10,
-                1,
+                0,
                 1,
                 1
             )
         };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
 
         // Act
         var checkModel1s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf1s);
@@ -3514,6 +3557,9 @@ public class CheckedOrderTest : BaseUT
 
         //Assert
         Assert.True(checkModel1s.Count > 0 && checkModel2s.Count > 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
     }
 
     /// <summary>
@@ -4070,7 +4116,7 @@ public class CheckedOrderTest : BaseUT
                 10,
                 0,
                 1,
-                1
+                0
             )
         };
 
@@ -4211,7 +4257,8 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）"); if (systemConf != null) systemConf.Val = temp;
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
         tenantTracking.SaveChanges();
     }
@@ -4733,7 +4780,7 @@ public class CheckedOrderTest : BaseUT
                 10,
                 0,
                 1,
-                1
+                0
             )
         };
 
@@ -5395,7 +5442,7 @@ public class CheckedOrderTest : BaseUT
                 10,
                 0,
                 1,
-                1
+                0
             )
         };
 
@@ -5738,8 +5785,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
         var ordInfs = new List<OrdInfModel>() {
@@ -5754,11 +5806,13 @@ public class CheckedOrderTest : BaseUT
         var byomeiModelList = new List<PtDiseaseModel>()
         {
             new PtDiseaseModel(
-                9,
+                8,
                 10,
                 1,
+                0,
                 1,
-                1
+                1,
+                "8846347"
             )
         };
 
@@ -5809,7 +5863,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().CheckingContent == "特定疾患処方管理加算１（処方せん料）" && !checkModels.First().Santei);
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
         tenantTracking.SaveChanges();
@@ -5825,9 +5879,14 @@ public class CheckedOrderTest : BaseUT
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
+             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
             new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -5852,7 +5911,7 @@ public class CheckedOrderTest : BaseUT
             new PtDiseaseModel(
                 8,
                 10,
-                1,
+                0,
                 1,
                 1
             )
@@ -5905,7 +5964,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().CheckingContent == "特定疾患処方管理加算１（処方せん料）" && !checkModels.First().Santei);
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
         tenantTracking.SaveChanges();
@@ -5922,8 +5981,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -5948,7 +6012,7 @@ public class CheckedOrderTest : BaseUT
             new PtDiseaseModel(
                 8,
                 10,
-                1,
+                0,
                 1,
                 1
             )
@@ -6001,7 +6065,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().CheckingContent == "特定疾患処方管理加算１（処方料）" && !checkModels.First().Santei);
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）" && !checkModels.First().Santei);
 
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
@@ -6019,8 +6083,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -6038,9 +6107,9 @@ public class CheckedOrderTest : BaseUT
             new PtDiseaseModel(
                 8,
                 10,
+                0,
                 1,
-                1,
-                1
+                0
             )
         };
 
@@ -6108,8 +6177,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -6129,7 +6203,9 @@ public class CheckedOrderTest : BaseUT
                 10,
                 1,
                 1,
-                1
+                22000101,
+                1,
+                "8846347"
             )
         };
 
@@ -6180,7 +6256,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().CheckingContent == "特定疾患処方管理加算１（処方せん料）" && !checkModels.First().Santei);
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
         tenantTracking.SaveChanges();
@@ -6197,8 +6273,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -6208,7 +6289,6 @@ public class CheckedOrderTest : BaseUT
                 21,
                 ordInfDetailModels
                 ),
-
         };
 
         var byomeiModelList = new List<PtDiseaseModel>()
@@ -6216,7 +6296,7 @@ public class CheckedOrderTest : BaseUT
             new PtDiseaseModel(
                 8,
                 10,
-                1,
+                0,
                 1,
                 1
             )
@@ -6286,8 +6366,13 @@ public class CheckedOrderTest : BaseUT
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
+                "610432049",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
                 21,
-                21
+                30
             )
         };
 
@@ -6297,7 +6382,6 @@ public class CheckedOrderTest : BaseUT
                 21,
                 ordInfDetailModels
                 ),
-
         };
 
         var byomeiModelList = new List<PtDiseaseModel>()
@@ -6306,8 +6390,10 @@ public class CheckedOrderTest : BaseUT
                 8,
                 10,
                 1,
+                0,
+                22000101,
                 1,
-                1
+                "8846347"
             )
         };
 
@@ -6358,7 +6444,7 @@ public class CheckedOrderTest : BaseUT
         var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
 
         //Assert
-        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().CheckingContent == "特定疾患処方管理加算１（処方せん料）" && !checkModels.First().Santei);
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
         tenantTracking.SaveChanges();
