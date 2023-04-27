@@ -30,12 +30,7 @@ namespace Infrastructure.Repositories
 
             if (lockInf != null)
             {
-                if (lockInf.LockDate.AddMinutes(LockConst.LockTtl) > CIUtil.GetJapanDateTimeNow())
-                {
-                    return false;
-                }
-                TrackingDataContext.LockInfs.Remove(lockInf);
-                TrackingDataContext.SaveChanges();
+                return false;
             }
 
             string lockDate = CIUtil.GetJapanDateTimeNow().ToString("yyyy-MM-dd HH:mm:ss.fff");
