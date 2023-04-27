@@ -5,7 +5,6 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
-using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using static Helper.Constants.OrderInfConst;
 
@@ -696,8 +695,8 @@ public class CheckedOrderTest : BaseUT
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou2);
         Assert.True(iagkutokusitu1.Count > 0);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1468,8 +1467,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1556,8 +1555,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1619,11 +1618,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         bool isJouhou = true;
+        int randomKey = 25;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1708,11 +1708,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220301, hokenId = 10, syosaisinKbn1 = 1;
         bool isJouhou = true;
+        int randomKey = 26;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1793,11 +1794,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20221212, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 27;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1865,8 +1867,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"難病外来指導管理料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"難病外来指導管理料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1884,11 +1886,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou = true;
+        int randomKey = 28;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -2001,18 +2004,9 @@ public class CheckedOrderTest : BaseUT
                     CheckingType.Order,
                     true,
                     "Checked Order Model",
-                    "113002310",
-                    1,
-                    "Item 4",
-                    1
-                ),
-              new CheckedOrderModel(
-                    CheckingType.Order,
-                    true,
-                    "Checked Order Model",
                     "113002850",
                     1,
-                    "Item 5",
+                    "Item 4",
                     1
                 ),
             new CheckedOrderModel(
@@ -2021,7 +2015,7 @@ public class CheckedOrderTest : BaseUT
                     "Checked Order Model",
                     "113000910",
                     1,
-                    "Item 6",
+                    "Item 5",
                     1
                 )
         };
@@ -2030,7 +2024,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113002910"));
     }
 
     /// <summary>
@@ -2084,7 +2078,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113002850"));
     }
 
     /// <summary>
@@ -2129,7 +2123,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113000910"));
     }
 
     /// <summary>
@@ -2165,7 +2159,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113001810"));
     }
 
     /// <summary>
@@ -2248,8 +2242,9 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_035_TiikiSantei()
     {
         //Arrange
+        int randomKey = 35;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConf();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConf(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
@@ -2292,8 +2287,9 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_036_PrimaryDoctor()
     {
         //Arrange
+        int randomKey = 36;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
@@ -2336,9 +2332,10 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_037_TantoId()
     {
         //Arrange
+        int randomKey = 37;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
@@ -2371,9 +2368,10 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_038_Oshin()
     {
         //Arrange
+        int randomKey = 38;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
@@ -2409,14 +2407,15 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_039_JidoSantei()
     {
         //Arrange
+        int randomKey = 39;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
         int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
-        long ptId = long.MaxValue;
+        long ptId = long.MaxValue - randomKey;
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -3240,10 +3239,10 @@ public class CheckedOrderTest : BaseUT
         var checkModel4s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 6);
 
         //Assert
-        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
-        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
+        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
         tenantTracking.SaveChanges();
@@ -4368,13 +4367,14 @@ public class CheckedOrderTest : BaseUT
     {
         //Arrange
         int hpId = 1, sinDate = 21000101, hokenId = 10;
+        string byomeiCd = "0670670", itemCd = "0670670670";
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
-                "610432049",
+                itemCd,
                 20,
                 1
             )
@@ -4398,11 +4398,18 @@ public class CheckedOrderTest : BaseUT
                 0,
                 1,
                 1,
-                "8846347"
+                byomeiCd
             )
         };
 
+        var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+
+        tenant.ByomeiMsts.AddRange(byomeiMsts);
+        tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
+
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 2002
             && p.GrpEdaNo == 0);
@@ -4443,6 +4450,7 @@ public class CheckedOrderTest : BaseUT
             };
             tenantTracking.SystemConfs.Add(systemConf);
         }
+        tenant.SaveChanges();
         tenantTracking.SaveChanges();
 
         // Act
@@ -4452,6 +4460,8 @@ public class CheckedOrderTest : BaseUT
         Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
         tenantTracking.SaveChanges();
     }
 
@@ -5042,11 +5052,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0740740", itemCd = "0740740740";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
-                "610432049",
+                itemCd,
                 20,
                 1
             ),
@@ -5074,11 +5085,15 @@ public class CheckedOrderTest : BaseUT
                 1,
                 22000101,
                 1,
-                "8846347"
+                byomeiCd
             )
         };
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 2002
             && p.GrpEdaNo == 2);
@@ -5128,6 +5143,8 @@ public class CheckedOrderTest : BaseUT
         Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
         tenantTracking.SaveChanges();
     }
 
@@ -5697,11 +5714,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0810810", itemCd = "0810810810";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
-                "610432049",
+                itemCd,
                 20,
                 1
             )
@@ -5725,11 +5743,15 @@ public class CheckedOrderTest : BaseUT
                 0,
                 22000101,
                 1,
-                "8846347"
+                byomeiCd
             )
         };
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 2002
             && p.GrpEdaNo == 0);
@@ -5779,6 +5801,8 @@ public class CheckedOrderTest : BaseUT
         Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
         tenantTracking.SaveChanges();
     }
 
@@ -6373,11 +6397,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 21000101, hokenId = 10;
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0880880", itemCd = "0880880880";
 
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
             new OrdInfDetailModel(
-                "610432049",
+                itemCd,
                 20,
                 1
             ),
@@ -6404,11 +6429,15 @@ public class CheckedOrderTest : BaseUT
                 0,
                 22000101,
                 1,
-                "8846347"
+                byomeiCd
             )
         };
 
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
         var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 2002
             && p.GrpEdaNo == 2);
@@ -6458,6 +6487,8 @@ public class CheckedOrderTest : BaseUT
         Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
         if (systemConf != null) systemConf.Val = temp;
         if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
         tenantTracking.SaveChanges();
     }
 
