@@ -8,7 +8,7 @@ namespace CloudUnitTest.SampleData
     public static class CheckedOrderData
     {
         //Create COM Objects. Create a COM object for everything that is referenced
-        public static List<RaiinInf> ReadRainInf()
+        public static List<RaiinInf> ReadRainInf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -48,8 +48,7 @@ namespace CloudUnitTest.SampleData
                                     raiinInf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    raiinInf.RaiinNo = raiinNo;
+                                    raiinInf.RaiinNo = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
@@ -139,7 +138,7 @@ namespace CloudUnitTest.SampleData
             return raiinInfs;
         }
 
-        public static List<OdrInf> ReadOdrInf()
+        public static List<OdrInf> ReadOdrInf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -177,8 +176,7 @@ namespace CloudUnitTest.SampleData
                                     odrInf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    odrInf.RaiinNo = raiinNo;
+                                    odrInf.RaiinNo = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int rpNo);
@@ -216,7 +214,7 @@ namespace CloudUnitTest.SampleData
             return odrInfs;
         }
 
-        public static List<OdrInfDetail> ReadOdrInfDetail()
+        public static List<OdrInfDetail> ReadOdrInfDetail(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -250,7 +248,7 @@ namespace CloudUnitTest.SampleData
                                     odrInfDetail.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture); odrInfDetail.RaiinNo = raiinNo;
+                                    odrInfDetail.RaiinNo = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int rpNo);
@@ -294,7 +292,7 @@ namespace CloudUnitTest.SampleData
             return odrDetails;
         }
 
-        public static List<PtSanteiConf> ReadPtSanteiConf()
+        public static List<PtSanteiConf> ReadPtSanteiConf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -333,8 +331,7 @@ namespace CloudUnitTest.SampleData
                                     ptSanteiConf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    ptSanteiConf.PtId = long.MaxValue;
+                                    ptSanteiConf.PtId = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int kbnNo);
@@ -364,7 +361,7 @@ namespace CloudUnitTest.SampleData
             return ptSanteiConfs;
         }
 
-        public static List<PtSanteiConf> ReadPtSanteiConfToNoCheckSantei()
+        public static List<PtSanteiConf> ReadPtSanteiConfToNoCheckSantei(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -403,8 +400,7 @@ namespace CloudUnitTest.SampleData
                                     ptSanteiConf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    ptSanteiConf.PtId = long.MaxValue;
+                                    ptSanteiConf.PtId = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int kbnNo);
@@ -434,7 +430,7 @@ namespace CloudUnitTest.SampleData
             return ptSanteiConfs;
         }
 
-        public static List<UserMst> ReadUserMst()
+        public static List<UserMst> ReadUserMst(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -473,7 +469,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "B":
                                     int.TryParse(text, out int id);
-                                    ptInf.Id = id;
+                                    ptInf.Id = id - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int userId);

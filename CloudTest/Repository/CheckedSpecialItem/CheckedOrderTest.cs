@@ -448,11 +448,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 10;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -534,11 +535,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 11;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -624,11 +626,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220822, hokenId = 10, syosaisinKbn1 = 20;
         long ptId = 7318199999, raiinNo = 70096280111231, oyaRaiinNo = 1957703;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 12;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -814,11 +817,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 15;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -901,11 +905,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 16;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -992,11 +997,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 17;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1083,11 +1089,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 18;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1174,11 +1181,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 19;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1301,11 +1309,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         bool isJouhou = true;
+        int randomKey = 21;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1390,11 +1399,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 22;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1477,11 +1487,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 23;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
