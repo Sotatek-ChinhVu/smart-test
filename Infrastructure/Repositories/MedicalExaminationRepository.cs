@@ -830,7 +830,7 @@ namespace Infrastructure.Repositories
                     }
                 }
             }
-            if (checkedOdr != null)
+            if (checkedOdr != null && checkedOdr.CheckingType != 0 && !string.IsNullOrEmpty(checkedOdr.CheckingContent))
             {
                 checkedOrderModelList.Add(checkedOdr);
                 return checkedOrderModelList;
