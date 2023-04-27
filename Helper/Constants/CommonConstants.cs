@@ -12,4 +12,8 @@ public static class CommonConstants
     public const string Reference = "reference";
     public const string Files = "files";
     public const string InsuranceScan = "InsuranceCard";
+    public const string Image = "image";
+    public const string DrugPhoto = "drug_photo";
+    public const string HouSou = "housou";
+    public const string ZaiKei = "zaikei";
 }

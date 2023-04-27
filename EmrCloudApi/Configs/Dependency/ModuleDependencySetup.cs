@@ -481,6 +481,7 @@ using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.DailyStatic.Service;
 using Reporting.DailyStatic.DB;
+using UseCase.MstItem.GetListDrugImage;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1074,6 +1075,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
