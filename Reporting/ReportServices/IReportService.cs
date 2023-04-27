@@ -44,4 +44,8 @@ public interface IReportService
     AccountingResponse GetAccountingReportingData(int hpId, List<CoAccountingParamModel> coAccountingParamModels);
 
     AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
+
+    CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo);
+
+    CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 }

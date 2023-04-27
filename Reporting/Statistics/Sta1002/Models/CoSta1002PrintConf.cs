@@ -8,6 +8,12 @@ public class CoSta1002PrintConf
         StartNyukinTime = -1;
         EndNyukinTime = -1;
     }
+    
+    public CoSta1002PrintConf()
+    {
+        StartNyukinTime = -1;
+        EndNyukinTime = -1;
+    }
 
     /// <summary>
     /// STA_MENU.MENU_ID

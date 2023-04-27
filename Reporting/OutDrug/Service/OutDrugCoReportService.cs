@@ -527,7 +527,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                                             {
                                                 if (filteredPtKohis[k].HokenId == odrKohiId)
                                                 {
-                                                    if (new int[] { HokenSbtKbn.Seiho, HokenSbtKbn.Bunten, HokenSbtKbn.Ippan }.Contains(filteredPtKohis[k].HokenMst.HokenSbtKbn))
+                                                    if (new int[] { Helper.Constants.HokenSbtKbn.Seiho, Helper.Constants.HokenSbtKbn.Bunten, Helper.Constants.HokenSbtKbn.Ippan }.Contains(filteredPtKohis[k].HokenMst.HokenSbtKbn))
                                                     {
                                                         // 分点公費の場合は2を設定
                                                         kohis[k] = 2;
@@ -703,7 +703,7 @@ public class OutDrugCoReportService : IOutDrugCoReportService
                             #endregion
 
                             #region 高齢者
-                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, sinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == HokenSbtKbn.Hoken)
+                            if (i == 0 && (CIUtil.AgeChk(ptInf.Birthday, sinDate, 70) || ptHoken.IsKouki) && ptHoken.HokenSbtKbn == Helper.Constants.HokenSbtKbn.Hoken)
                             {
                                 int hokenRate = printData.GetHokenRate(ptHoken.Rate, ptHoken.HokenSbtKbn, ptHoken.KogakuKbn, ptHoken.Houbetu);
 
@@ -1683,18 +1683,19 @@ public class OutDrugCoReportService : IOutDrugCoReportService
 
     private void GetFormParam(string formfile)
     {
-        List<ObjectCalculate> fieldInputList = new();
-
-        fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsSuryo", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsUnitName", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsKaisu", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsYohoUnitName", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListRowCount));
-        fieldInputList.Add(new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetListRowCount));
-        fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetFormatLength));
-        fieldInputList.Add(new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetListRowCount));
+        List<ObjectCalculate> fieldInputList = new()
+        {
+            new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsSuryo", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsUnitName", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsKaisu", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsYohoUnitName", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsData", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsBikoShort", (int)CalculateTypeEnum.GetListRowCount),
+            new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetFormatLength),
+            new ObjectCalculate("lsBikoLong", (int)CalculateTypeEnum.GetListRowCount)
+        };
 
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.OutDrug, formfile, fieldInputList);
 

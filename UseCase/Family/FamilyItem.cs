@@ -1,9 +1,11 @@
 ﻿using Domain.Models.Family;
+using System.Text.Json.Serialization;
 
 namespace UseCase.Family;
 
 public class FamilyItem
 {
+    [JsonConstructor]
     public FamilyItem(long familyId, long ptId, string zokugaraCd, long familyPtId, string name, string kanaName, int sex, int birthday, int isDead, int isSeparated, string biko, int sortNo, bool isDeleted, List<FamilyRekiItem> ptFamilyRekiList)
     {
         FamilyId = familyId;

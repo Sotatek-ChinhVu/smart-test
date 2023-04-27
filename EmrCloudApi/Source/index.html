@@ -18,6 +18,7 @@
         const DATA_KARTE2 = __DATA_KARTE2__;
         window.dataPrintKarte2 = DATA_KARTE2.data.karteOrdRaiins;
         window.displaySetting = DATA_KARTE2.data.displaySetting;
+        window.header = DATA_KARTE2.data.karte2HeaderModel;
     </script>
     <style>
                 /* http://meyerweb.com/eric/tools/css/reset/
@@ -180,6 +181,7 @@
 
           @font-face {
               font-family: 'MS Gothic';
+              src: url('https://smartkarte.sotatek.works/MSGOTHIC.TTC') format('truetype');
               font-weight: normal;
               font-style: normal;
           }
@@ -321,806 +323,844 @@
           .receptionTextColor {
               color: #a81b51;
           }
+
+          .deleteItem {
+              text-decoration: line-through;
+          }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 
-    <script crossorigin
-            src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin
-            src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script type="module">
+        import {
+            createEffect,
+            onMount,
+            onCleanup,
+        } from 'https://cdn.skypack.dev/solid-js';
+        import { render } from 'https://cdn.skypack.dev/solid-js/web';
+        import html from 'https://cdn.skypack.dev/solid-js/html';
 
-    <script type="text/babel">
-      const { useState, useEffect } = React;
+        window.styles = {};
+        const HistoryKarte = {
+            Latest: 0,
+            LatestAndDeleting: 1,
+            All: 2,
+        };
+        const EMPTY_DATA = '---';
+        const LINE_HEIGHT = 21;
+        const HEIGHT_CONTENT_PAGE = LINE_HEIGHT * 45;
+        const MAX_HEIGHT_IMG = LINE_HEIGHT * 5;
 
-      window.styles = {};
-      const HistoryKarte = {
-        Latest: 0,
-        LatestAndDeleting: 1,
-        All: 2,
-      };
-      const EMPTY_DATA = '---';
-      const LINE_HEIGHT = 21;
-      const HEIGHT_CONTENT_PAGE = LINE_HEIGHT * 45;
-      const MAX_HEIGHT_IMG = LINE_HEIGHT * 5;
+        const htmlDateCreateDeleted = (createDate, createName) => {
+            return html`<del
+              ><div style="color: rgb(236,129,236)">
+                ​${createDate}&nbsp;${createName ?? ''}
+              </div></del
+            >`;
+        };
 
-      const htmlDateCreateDeleted = (createDate, createName) => {
-        return `<del><div style='color: rgb(236,129,236)'>​${createDate} ${
-          createName ?? ''
-        }​</div></del>`;
-      };
+        const htmlDateUpdate = (updateDate, createName) => {
+            return html`<div style="color: rgb(236,129,236)">
+              ​${updateDate}&nbsp;${createName ?? ''}
+            </div>`;
+        };
 
-      const htmlDateUpdate = (updateDate, createName) => {
-        return `<div style='color: rgb(236,129,236)'>​${updateDate} ${
-          createName ?? ''
-        }​</div>`;
-      };
+        const htmlDateNew = (date, createName) => {
+            return html`<div style="color: rgb(164,42,42)">
+              ​${date}&nbsp;${createName ?? ''}
+            </div>`;
+        };
 
-      const htmlDateNew = (date, createName) => {
-        return `<div style='color: rgb(164,42,42)'>​${date} ${
-          createName ?? ''
-        }​</div>`;
-      };
+        function PrintKarte2Final() {
+            let ref, contentRef;
 
-      function PrintKarte2Final() {
-        const ref = React.useRef(null);
-        const [, setReady] = React.useState(false);
-
-        // useEffect(() => {
-        //   setReady(false);
-
-        //   setTimeout(() => {
-        //     setReady(true);
-        //   }, 1000);
-        // }, [dataPrintKarte2]);
-
-        return (
-          <div className="karte">
-            {/* Box: Render */}
-            <div
-              ref={(r) => {
-                ref.current = r;
-                setTimeout(() => {
-                  setReady(true);
-                  window.status = 'ready';
-                }, 1000);
-              }}
-              className="style" // fix
-            >
-              {dataPrintKarte2.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    dangerouslySetInnerHTML={{
-                      __html: generateOrderHistoryItem(item, displaySetting),
-                    }}
-                  ></div>
-                );
-              })}
-            </div>
-            {/* <hr /> */}
-            <div
-              style={{
-                wordBreak: 'break-all',
-              }}
-            >
-              {ref.current && getElementByRow(ref.current, HEIGHT_CONTENT_PAGE)}
-            </div>
-          </div>
-        );
-      }
-
-      function getElementByRow(el, height) {
-        const length = Math.ceil(el.offsetHeight / height);
-        // const lineHeight = getLineHeight(el);
-        const result = [];
-
-        // Create container (base clone)
-        const container = document.createElement('div');
-        // container.style.visibility = 'hidden'; // fix
-        container.style.lineHeight = LINE_HEIGHT + 'px';
-
-        // JSX to DOM
-        const doc = new DOMParser().parseFromString(el.outerHTML, 'text/html');
-        container.appendChild(doc.documentElement);
-        document.body.appendChild(container);
-
-        //
-        const objPositionImg = {};
-        let startPrint = 0;
-
-        for (let index = 0; index < length; index++) {
-          startPrint += index === 0 ? 0 : height;
-
-          const endPage_line_break = startPrint + HEIGHT_CONTENT_PAGE;
-          const imgs = container.querySelectorAll('img');
-
-          container.querySelectorAll('img').forEach((v, i) => {
-            // console.log(index, v.offsetTop, end);
-
-            const startImage = v.offsetTop;
-            const endImage = v.offsetTop + MAX_HEIGHT_IMG;
-
-            if (
-              startImage < endPage_line_break &&
-              endImage > endPage_line_break
-            ) {
-              // fix
-              objPositionImg[`${startImage}_${endImage}`] = true;
-            }
-
-            console.log(
-              `thứ tự img: ${
-                i + 1
-              } Vị trí: ${startImage} ${endImage}; page: ${index}`,
-              v
-            );
-          });
-          // console.log('image:', index + 1, objPositionImg, endPage_line_break);
-          console.log(
-            `>>>>>>>>>: ${index} Vị trí: ${JSON.stringify(
-              objPositionImg
-            )}; pageEnd: ${endPage_line_break}`
-          );
-
-          let bufferForImage = 0;
-
-          const clone = el.cloneNode(true);
-          const clone3 = document.createElement('div');
-          clone3.style.visibility = 'hidden';
-          clone3.style.lineHeight = LINE_HEIGHT + 'px';
-          clone3.style.position = 'fixed';
-          clone3.style.top = '0';
-          clone3.style.zIndex = '-999999';
-          document.body.appendChild(clone3);
-          clone3.appendChild(clone);
-
-          Object.keys(objPositionImg).forEach((v) => {
-            const [s, e] = v.split('_');
-            if (
-              Number(s) < endPage_line_break &&
-              Number(e) > endPage_line_break
-            ) {
-              clone.querySelectorAll('img, div, p').forEach((elementAfter) => {
-                if (
-                  elementAfter.offsetTop < endPage_line_break &&
-                  elementAfter.offsetTop + MAX_HEIGHT_IMG > endPage_line_break
-                ) {
-                  elementAfter.remove();
+            function loadPrintPages() {
+                if (!ref || !contentRef) {
+                    return;
                 }
-              });
-              bufferForImage = Number(s) - endPage_line_break;
-            }
-          });
-          const html = clone.innerHTML;
-          document.body.removeChild(clone3);
 
-          result[index] = (
-            <div className="page-break">
-              {/* <h1>--Start: page {index + 1}--</h1> */}
-              <PrintKarte2Background
-                information={{
-                  kanID: '1015',
-                  kanKana: 'ｶﾝｼﾞｬ 1015',
-                  kanNm: '患者 1015',
-                  kanBirth: '昭和 53年10月14日 (女)',
-                  prtDate: '2023/01/03 16:37',
-                  prtStartDate: '2022/10/10(月)',
-                  prtEndDate: '',
-                }}
-                key={index}
-                page={index + 1}
-                className="content"
-              />
+                contentRef.innerHTML = getElementByRow(ref, HEIGHT_CONTENT_PAGE);
+                window.status = 'ready'; // For Server Go => print
+            }
+
+            onMount(() => {
+                window.addEventListener('load', loadPrintPages);
+            });
+
+            onCleanup(() => {
+                window.removeEventListener('load', loadPrintPages);
+            });
+
+            return html`<div class="karte">
               <div
-                style={{
-                  height: '1120px',
+                ref=${(r) => {
+                    ref = r;
                 }}
+                class="style"
               >
-                <div className="text">
-                  <div
-                    style={{
-                      marginTop: -startPrint + 'px',
-                      height: startPrint + height + 'px',
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html: html,
-                    }}
-                  ></div>
-                </div>
+                ${() =>
+                    dataPrintKarte2.map((item, index) => {
+                        return html`<div>
+                      ${() => generateOrderHistoryItem(item, displaySetting)}
+                    </div>`;
+                    })}
               </div>
-              {/* <h1>--End: page {index + 1}--</h1> */}
-            </div>
-          );
-
-          if (bufferForImage !== 0) {
-            startPrint += bufferForImage;
-          }
+              <div
+                ref=${(r) => (contentRef = r)}
+                style="word-break:break-all;"
+              ></div>
+            </div>`;
         }
 
-        document.body.removeChild(container);
+        function getElementByRow(el, height) {
+            const length = Math.ceil(el.offsetHeight / height);
+            // const lineHeight = getLineHeight(el);
+            const result = [];
 
-        return result;
-      }
+            // Create container (base clone)
+            const container = document.createElement('div');
+            // container.style.visibility = 'hidden'; // fix
+            container.style.lineHeight = LINE_HEIGHT + 'px';
 
-      const PrintKarte2Background = ({ page, information, ...props }) => {
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            version="1.1"
-            width="595.32pt"
-            height="841.92007pt"
-            viewBox="0 0 595.32 841.92007"
-            {...props}
-          >
-            <g enableBackground="new">
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 398.56 99.2 L 398.56 1081.44 "
-              />
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 24.16 121.92 L 767.04 121.92 "
-              />
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 24.16 99.2 L 767.68 99.2 "
-              />
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan
-                  y="117.6"
-                  x="100 114.7206 129.4412 144.01459 158.73519 173.45578 188.02918 202.74977 217.47037 232.04376 246.76436 261.48497 276.05836 290.77897 305.49958"
-                >
-                  既往歴・原因・主要症状・経過等
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="117.28" x="492.64 507.36064">
-                  処方
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="117.28" x="536.64">
-                  ・
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="117.28" x="566.08 580.6534">
-                  手術
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="117.28" x="610.08">
-                  ・
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="117.28" x="639.36 653.93338 668.65396">
-                  処置等
-                </tspan>
-              </text>
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 23.68 99.2 L 24.32 1081.44 "
-              />
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 767.68 99.2 L 767.68 1081.44 "
-              />
-              <path
-                transform="matrix(.75,0,0,.75,0,0)"
-                strokeWidth=".96"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-                stroke="#000000"
-                d="M 24.16 1081.6 L 767.68 1081.6 "
-              />
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="71.2" x="24.96 67.20812">
-                  氏名
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="71.2" x="93.44">
-                  {information?.kanNm || EMPTY_DATA}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="1097.6" x="365.28 372.6403 379.85337 387.21366">
-                  Page
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="1097.92" x="414.88">
-                  {page}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="12.0005"
-                fontFamily="F1"
-              >
-                <tspan y="53.76" x="93.44 99.56026 105.440509">
-                  {information?.kanKana || EMPTY_DATA}
-                </tspan>
-              </text>
+            // JSX to DOM
+            const doc = new DOMParser().parseFromString(el.outerHTML, 'text/html');
+            container.appendChild(doc.documentElement);
+            document.body.appendChild(container);
 
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="93.92" x="24.48 39.053396 53.773996 68.4946">
-                  生年月日
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="93.92" x="93.372409">
-                  {information?.kanBirth || EMPTY_DATA}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="37.28" x="25.44 40.013395 54.733995 69.45459">
-                  患者番号
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="38.4" x="94.08 101.4403 108.65339 116.01369">
-                  {information?.kanID || EMPTY_DATA}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan
-                  y={40}
-                  x="628.64 636.0003 643.3606 650.7209 658.0812 665.29428 672.65457 680.01486 687.3751 694.7354 702.0957 709.3088 716.66909 724.02938 731.38967 738.74996"
-                >
-                  {information?.prtDate || EMPTY_DATA}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="39.04" x="560 574.7206 589.29397 604.0145">
-                  発行日時
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="61.92" x="561.28 575.8534 590.574 605.29458">
-                  印刷開始
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="85.12" x="561.12 575.8406 590.56118 605.1345">
-                  印刷終了
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan
-                  y="61.92"
-                  x="629.44 636.8003 644.1606 651.5209 658.88119 666.24148 673.4545 680.8148 688.1751 695.5354 702.8957 710.256 724.82937"
-                >
-                  {information?.prtStartDate || EMPTY_DATA}
-                </tspan>
-              </text>
-              <text
-                xmlSpace="preserve"
-                transform="matrix(.75 0 0 .75 0 0)"
-                fontSize="14.7206"
-                fontFamily="F1"
-              >
-                <tspan y="84.32" x="629.92 637.2803 644.49337">
-                  {information?.prtEndDate || EMPTY_DATA}
-                </tspan>
-              </text>
-            </g>
-          </svg>
-        );
-      };
+            //
+            const objPositionImg = {};
+            let startPrint = 0;
 
-      const ItemCdConst = {
-        TouyakuChozaiNaiTon: '120000710',
-        TouyakuChozaiGai: '120001010',
-        comment820Pattern: '820',
-        comment830Pattern: '830',
-        comment831Pattern: '831',
-        comment840Pattern: '840',
-        comment842Pattern: '842',
-        comment850Pattern: '850',
-        comment851Pattern: '851',
-        comment852Pattern: '852',
-        comment853Pattern: '853',
-        comment880Pattern: '880',
-        gazoDensibaitaiHozon: '840000100',
-        con_TouyakuOrSiBunkatu: '@BUNKATU',
-        con_Refill: '@REFILL',
-        itemJihi: 'J',
-        zanGigi: '@ZANGIGI',
-        zanTeiKyo: '@ZANTEIKYO',
-        touyakuTokuSyo1Syoho: '120002270',
-        touyakuTokuSyo2Syoho: '120003170',
-        touyakuTokuSyo1Syohosen: '120002570',
-        touyakuTokuSyo2Syohosen: '120003270',
-        OnlineSinryo: '112023210',
-        IgakuNanbyo: '113002910',
-        IgakuTokusitu: '113001810',
-        SiHifuToku2: '113002310',
-        IgakuTenkan: '113002850',
-        SiHifuToku1: '113000910',
-        yakuzaiJoho: '120002370',
-        yakuzaiJohoTeiyo: '113701310',
-        syosaiKihon: '@SHIN',
-        jikanKihon: '@JIKAN',
-        chusyaJikocyu: '@30024',
-      };
+            for (let index = 0; index < length; index++) {
+                startPrint += index === 0 ? 0 : height;
 
-      const generateOrderHistoryItem = (data, displaySetting) => {
-        const getRichTextArr = () => {
-          const histories = data?.karteHistories[0]?.karteData ?? [];
-          if (histories.length >= 1) {
-            return data?.karteHistories[0]?.karteData?.map(
-              ({
-                richText,
-                isDeleted,
-                createDateDisplay,
-                updateDateDisplay,
-                createName,
-              }) => {
-                if (isDeleted !== HistoryKarte.Latest) {
-                  return (
-                    htmlDateCreateDeleted(createDateDisplay, createName) +
-                    htmlDateUpdate(updateDateDisplay, createName) +
-                    `<del>${richText}</del>`
-                  );
+                const endPage_line_break = startPrint + HEIGHT_CONTENT_PAGE;
+                const imgs = container.querySelectorAll('img');
+
+                container.querySelectorAll('img').forEach((v, i) => {
+                    // console.log(index, v.offsetTop, end);
+
+                    const startImage = v.offsetTop;
+                    const endImage = v.offsetTop + MAX_HEIGHT_IMG;
+
+                    if (
+                        startImage < endPage_line_break &&
+                        endImage > endPage_line_break
+                    ) {
+                        // fix
+                        objPositionImg[`${startImage}_${endImage}`] = true;
+                    }
+
+                    console.log(
+                        `thứ tự img: ${i + 1
+                        } Vị trí: ${startImage} ${endImage}; page: ${index}`,
+                        v
+                    );
+                });
+                // console.log('image:', index + 1, objPositionImg, endPage_line_break);
+                console.log(
+                    `>>>>>>>>>: ${index} Vị trí: ${JSON.stringify(
+                        objPositionImg
+                    )}; pageEnd: ${endPage_line_break}`
+                );
+
+                let bufferForImage = 0;
+
+                const clone = el.cloneNode(true);
+                const clone3 = document.createElement('div');
+                clone3.style.visibility = 'hidden';
+                clone3.style.lineHeight = LINE_HEIGHT + 'px';
+                clone3.style.position = 'fixed';
+                clone3.style.top = '0';
+                clone3.style.zIndex = '-999999';
+                document.body.appendChild(clone3);
+                clone3.appendChild(clone);
+
+                Object.keys(objPositionImg).forEach((v) => {
+                    const [s, e] = v.split('_');
+                    if (
+                        Number(s) < endPage_line_break &&
+                        Number(e) > endPage_line_break
+                    ) {
+                        clone.querySelectorAll('img, div, p').forEach((elementAfter) => {
+                            if (
+                                elementAfter.offsetTop < endPage_line_break &&
+                                elementAfter.offsetTop + MAX_HEIGHT_IMG > endPage_line_break
+                            ) {
+                                elementAfter.remove();
+                            }
+                        });
+                        bufferForImage = Number(s) - endPage_line_break;
+                    }
+                });
+
+                const html = clone.innerHTML;
+                document.body.removeChild(clone3);
+
+                result[index] = `<div class="page-break">
+                ${PrintKarte2Background({
+                    information: {
+                        kanID: header.ptId,
+                        kanKana: header.kanaName,
+                        kanNm: header.name,
+                        kanBirth: header.birthday,
+                        prtDate: header.currentTime,
+                        prtStartDate: header.startDate,
+                        prtEndDate: header.endDate,
+                    },
+                    page: index + 1,
+                })}
+                <div style="height: 1120px">
+                  <div class="text">
+                    <div
+                      style="${`margin-top: ${-startPrint + 'px'};height: ${startPrint + height + 'px'
+                    }`}"
+                    >
+                      ${html}
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+
+                if (bufferForImage !== 0) {
+                    startPrint += bufferForImage;
                 }
-                return `${
-                  richText ? htmlDateNew(updateDateDisplay, createName) : ''
-                }${richText}`;
-              }
-            );
-          } else {
-            return histories[0]?.richText;
-          }
-        };
-        const richTextArr = getRichTextArr();
-
-        const richText = Array.isArray(richTextArr)
-          ? richTextArr?.join?.('')
-          : richTextArr;
-
-        const arrImage = data.listKarteFiles
-          .map(
-            (item) => `<img src=${item.linkFile} height="${MAX_HEIGHT_IMG}"/>`
-          )
-          .join('');
-
-        // Print order section
-        const is820Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment820Pattern);
-
-        const is830Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment830Pattern);
-
-        const is831Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment831Pattern);
-
-        const is850Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment850Pattern);
-
-        const is851Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment851Pattern);
-
-        const is852Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment852Pattern);
-
-        const is853Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment853Pattern);
-
-        const is840Cmt = (itemCd) =>
-          itemCd !== null &&
-          !!itemCd.startsWith(ItemCdConst.comment840Pattern) &&
-          itemCd !== ItemCdConst.gazoDensibaitaiHozon;
-
-        const is842Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment842Pattern);
-
-        const is880Cmt = (itemCd) =>
-          !!itemCd?.startsWith(ItemCdConst.comment880Pattern);
-
-        function getBunkatu(kouiKbn, bunkatu) {
-          let result = '';
-          if (!bunkatu) return result;
-
-          let sTani = '';
-          if (kouiKbn === 21) {
-            // 内服
-            sTani = '日分';
-          } else {
-            sTani = '回分';
-          }
-
-          let sKatu = bunkatu.split('+').filter((item) => !!item);
-          for (let katu of sKatu) {
-            if (result) {
-              result += '，';
             }
-            result += Number(katu) + sTani;
-          }
 
-          if (result) {
-            result = '（' + result + '）';
-          }
+            document.body.removeChild(container);
 
-          return result;
+            return result.join('');
         }
 
-        function getOrderDetailTitle(data) {
-          if (data.itemCd === ItemCdConst.con_TouyakuOrSiBunkatu) {
-            return data.itemName + getBunkatu(data.bunkatuKoui, data.bunkatu);
-          }
+        const PrintKarte2Background = ({ page, information, ...props }) => {
+            return `<svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              width="595.32pt"
+              height="841.92007pt"
+              viewBox="0 0 595.32 841.92007"
+              class="content"
+            >
+              <g enableBackground="new">
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 398.56 99.2 L 398.56 1081.44 "
+                />
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 24.16 121.92 L 767.04 121.92 "
+                />
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 24.16 99.2 L 767.68 99.2 "
+                />
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan
+                    y="117.6"
+                    x="100 114.7206 129.4412 144.01459 158.73519 173.45578 188.02918 202.74977 217.47037 232.04376 246.76436 261.48497 276.05836 290.77897 305.49958"
+                  >
+                    既往歴・原因・主要症状・経過等
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="117.28" x="492.64 507.36064">処方</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="117.28" x="536.64">・</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="117.28" x="566.08 580.6534">手術</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="117.28" x="610.08">・</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="117.28" x="639.36 653.93338 668.65396">処置等</tspan>
+                </text>
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 23.68 99.2 L 24.32 1081.44 "
+                />
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 767.68 99.2 L 767.68 1081.44 "
+                />
+                <path
+                  transform="matrix(.75,0,0,.75,0,0)"
+                  stroke-width=".96"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  fill="none"
+                  stroke="#000000"
+                  d="M 24.16 1081.6 L 767.68 1081.6 "
+                />
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="71.2" x="24.96 67.20812">氏名</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="71.2" x="93.44">
+                    ${information?.kanNm || EMPTY_DATA}
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="1097.6" x="365.28 372.6403 379.85337 387.21366">
+                    Page
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="1097.92" x="414.88">${page}</tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="12.0005"
+                  font-family="F1"
+                >
+                  <tspan y="53.76" x="93.44 99.56026 105.440509">
+                    ${information?.kanKana || EMPTY_DATA}
+                  </tspan>
+                </text>
 
-          if (
-            is840Cmt(data.itemCd) ||
-            is842Cmt(data.itemCd) ||
-            is830Cmt(data.itemCd) ||
-            is831Cmt(data.itemCd) ||
-            is850Cmt(data.itemCd) ||
-            is851Cmt(data.itemCd) ||
-            is852Cmt(data.itemCd) ||
-            is853Cmt(data.itemCd) ||
-            is880Cmt(data.itemCd)
-          ) {
-            return data.itemName;
-          }
-
-          if (
-            !data.itemCd &&
-            data.sinKouiKbn !== 100 &&
-            data.sinKouiKbn !== 101
-          ) {
-            return data.itemName;
-          }
-
-          return data.itemName;
-        }
-
-        const getOrderRpElement = (orders) => {
-          return orders
-            .map((item) => {
-              const title = `${dayjs(item.createDate).format(
-                'YYYY/MM/DD HH:mm'
-              )} ${item.createName}`;
-              const detailText = item.odrDetails
-                .map((detail) => {
-                  return `<div>${getOrderDetailTitle(detail)}</div>`;
-                })
-                .join('');
-
-              return `<li>
-                        <div class='receptionTextColor'>${title}</div>
-                       ${detailText}
-                      </li>`;
-            })
-            .join('');
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="93.92" x="24.48 39.053396 53.773996 68.4946">
+                    生年月日
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="93.92" x="93.372409">
+                    ${information?.kanBirth || EMPTY_DATA}
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="37.28" x="25.44 40.013395 54.733995 69.45459">
+                    患者番号
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="38.4" x="94.08 101.4403 108.65339 116.01369">
+                    ${information?.kanID || EMPTY_DATA}
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan
+                    y="40"
+                    x="628.64 636.0003 643.3606 650.7209 658.0812 665.29428 672.65457 680.01486 687.3751 694.7354 702.0957 709.3088 716.66909 724.02938 731.38967 738.74996"
+                  >
+                    ${information?.prtDate || EMPTY_DATA}
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="39.04" x="560 574.7206 589.29397 604.0145">
+                    発行日時
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="61.92" x="561.28 575.8534 590.574 605.29458">
+                    印刷開始
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="85.12" x="561.12 575.8406 590.56118 605.1345">
+                    印刷終了
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan
+                    y="61.92"
+                    x="629.44 636.8003 644.1606 651.5209 658.88119 666.24148 673.4545 680.8148 688.1751 695.5354 702.8957 710.256 724.82937"
+                  >
+                    ${information?.prtStartDate || EMPTY_DATA}
+                  </tspan>
+                </text>
+                <text
+                  xml-space="preserve"
+                  transform="matrix(.75 0 0 .75 0 0)"
+                  font-size="14.7206"
+                  font-family="F1"
+                >
+                  <tspan y="84.32" x="629.92 637.2803 644.49337">
+                    ${information?.prtEndDate || EMPTY_DATA}
+                  </tspan>
+                </text>
+              </g>
+            </svg>`;
         };
 
-        const getOrderGroupElement = (item) => {
-          const allGroup = data.hokenGroups.flatMap((hoken) => {
-            return hoken.groupOdrItems;
-          });
-
-          return allGroup
-            .map((group) => {
-              const orderText = getOrderRpElement(group.odrInfs);
-
-              return `<div class='orderItem'>
-                    <span class='orderItemTitle'>${group.groupName}</span>
-                    <ul class='orderItemList'>
-                      ${orderText}
-                    </ul>
-
-                  </div>`;
-            })
-            .join('');
+        const ItemCdConst = {
+            TouyakuChozaiNaiTon: '120000710',
+            TouyakuChozaiGai: '120001010',
+            comment820Pattern: '820',
+            comment830Pattern: '830',
+            comment831Pattern: '831',
+            comment840Pattern: '840',
+            comment842Pattern: '842',
+            comment850Pattern: '850',
+            comment851Pattern: '851',
+            comment852Pattern: '852',
+            comment853Pattern: '853',
+            comment880Pattern: '880',
+            gazoDensibaitaiHozon: '840000100',
+            con_TouyakuOrSiBunkatu: '@BUNKATU',
+            con_Refill: '@REFILL',
+            itemJihi: 'J',
+            zanGigi: '@ZANGIGI',
+            zanTeiKyo: '@ZANTEIKYO',
+            touyakuTokuSyo1Syoho: '120002270',
+            touyakuTokuSyo2Syoho: '120003170',
+            touyakuTokuSyo1Syohosen: '120002570',
+            touyakuTokuSyo2Syohosen: '120003270',
+            OnlineSinryo: '112023210',
+            IgakuNanbyo: '113002910',
+            IgakuTokusitu: '113001810',
+            SiHifuToku2: '113002310',
+            IgakuTenkan: '113002850',
+            SiHifuToku1: '113000910',
+            yakuzaiJoho: '120002370',
+            yakuzaiJohoTeiyo: '113701310',
+            syosaiKihon: '@SHIN',
+            jikanKihon: '@JIKAN',
+            chusyaJikocyu: '@30024',
         };
 
-        const getOrderTitle = () => {
-          let result = '';
+        const OrderDetailUtilities = {
+            is820Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment820Pattern),
+            is830Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment830Pattern),
+            is831Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment831Pattern),
+            is850Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment850Pattern),
+            is851Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment851Pattern),
+            is852Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment852Pattern),
+            is853Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment853Pattern),
+            is840Cmt: (itemCd) =>
+                itemCd !== null &&
+                !!itemCd.startsWith(ItemCdConst.comment840Pattern) &&
+                itemCd !== ItemCdConst.gazoDensibaitaiHozon,
+            is842Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment842Pattern),
+            is880Cmt: (itemCd) =>
+                !!itemCd?.startsWith(ItemCdConst.comment880Pattern),
+            isDrug: (info) => {
+                return info.odrKouiKbn >= 21 && info.odrKouiKbn <= 23;
+            },
+            getBunkatu: (kouiKbn, bunkatu) => {
+                let result = '';
+                if (!bunkatu) return result;
 
-          if (displaySetting.isCheckedVisitingTime) {
-            result += data.uketukeTime
-              ? `受付:${data.uketukeTime}`
-              : `受付:  :  `;
-          }
+                let sTani = '';
+                if (kouiKbn === 21) {
+                    // 内服
+                    sTani = '日分';
+                } else {
+                    sTani = '回分';
+                }
 
-          if (displaySetting.isUketsukeNameChecked && data.uketsukeName) {
-            result += ` ${data.uketsukeName}`;
-          }
+                let sKatu = bunkatu.split('+').filter((item) => !!item);
+                for (let katu of sKatu) {
+                    if (result) {
+                        result += '，';
+                    }
+                    result += Number(katu) + sTani;
+                }
 
-          if (displaySetting.isCheckedStartTime) {
-            result += ` 診察:${data.sinStartTime}`;
-          }
+                if (result) {
+                    result = '（' + result + '）';
+                }
 
-          if (
-            displaySetting.isCheckedStartTime &&
-            displaySetting.isCheckedEndTime
-          ) {
-            result += data.sinEndTime ? `-${data.sinEndTime}` : '-  :  ';
-          }
+                return result;
+            },
+            getDetailQuantity: (data) => {
+                if (!data.unitName) {
+                    return '';
+                }
 
-          if (
-            !displaySetting.isCheckedStartTime &&
-            displaySetting.isCheckedEndTime
-          ) {
-            result += data.sinEndTime
-              ? ` 診察:-${data.sinEndTime}`
-              : ' 診察:-  :  ';
-          }
-
-          if (displaySetting.isCheckedDoctor) {
-            result += ' ' + data.tantoName;
-          }
-
-          if (displaySetting.isCheckedApproved) {
-            result += ' ' + data.sinryoTitle;
-          }
-
-          return result || '＊';
+                return Number(data.suryo) !== 0 &&
+                    data.itemCd !== ItemCdConst.con_TouyakuOrSiBunkatu
+                    ? String(data.suryo)
+                    : '';
+            },
         };
 
-        return `
-              <div class='orderHistory'>
-              <div class='orderHistoryInfor'>
-                <span class='orderHistoryInforTitle'>${dayjs(
-                  data.sinDate.toString()
-                ).format('YYYY/MM/DD')}</span>
-                <div class='lineThrough'></div>
-                <div class='receptionDate receptionTextColor'>
-                  <span>&nbsp${getOrderTitle()}</span>
+        const generateOrderHistoryItem = (data, displaySetting) => {
+            const getRichTextArr = () => {
+                const histories = data?.karteHistories[0]?.karteData ?? [];
+                if (histories.length >= 1) {
+                    return data?.karteHistories[0]?.karteData?.map(
+                        ({
+                            richText,
+                            isDeleted,
+                            createDateDisplay,
+                            updateDateDisplay,
+                            createName,
+                        }) => {
+                            if (isDeleted !== HistoryKarte.Latest) {
+                                return html`${htmlDateCreateDeleted(
+                                    createDateDisplay,
+                                    createName
+                                )}
+                        ${htmlDateUpdate(updateDateDisplay, createName)}
+                        <del innerHTML=${() => richText}></del> `;
+                            }
+
+                            return html`${() =>
+                                richText ? htmlDateNew(updateDateDisplay, createName) : ''}
+                      <div innerHTML=${richText}></div>`;
+                        }
+                    );
+                } else {
+                    return html`<span>${histories[0]?.richText}</span>`;
+                }
+            };
+            const richText = getRichTextArr();
+
+            const arrImage = data.listKarteFiles.map(
+                (item) =>
+                    html`<img src=${item.linkFile} height="${MAX_HEIGHT_IMG}" />`
+            );
+
+            // Print order section
+            function getDetailDisplayName(detail) {
+                if (detail.itemCd === ItemCdConst.con_TouyakuOrSiBunkatu) {
+                    return (
+                        detail.itemName +
+                        OrderDetailUtilities.getBunkatu(
+                            detail.bunkatuKoui,
+                            detail.bunkatu
+                        )
+                    );
+                }
+
+                if (
+                    OrderDetailUtilities.is840Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is842Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is830Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is831Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is850Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is851Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is852Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is853Cmt(detail.itemCd) ||
+                    OrderDetailUtilities.is880Cmt(detail.itemCd)
+                ) {
+                    return detail.itemName;
+                }
+
+                if (
+                    !detail.itemCd &&
+                    detail.sinKouiKbn !== 100 &&
+                    detail.sinKouiKbn !== 101
+                ) {
+                    return detail.itemName;
+                }
+
+                return detail.itemName;
+            }
+
+            // Draw order detail Title
+            function getOrderDetailTitle(detail, orderInfo, index) {
+                let detailName = '';
+                const isExistIpnName =
+                    !!detail.ipnName &&
+                    detail.syohoKbn == 3 &&
+                    OrderDetailUtilities.isDrug(orderInfo);
+
+                if (
+                    isExistIpnName &&
+                    !displaySetting.isIppanNameChecked &&
+                    orderInfo.inoutKbn != 0
+                ) {
+                    detailName += '般）';
+                }
+
+                detailName +=
+                    getDetailDisplayName(detail) +
+                    ' ' +
+                    OrderDetailUtilities.getDetailQuantity(detail) +
+                    detail.unitName;
+
+                if (
+                    index === 0 &&
+                    !displaySetting.isCheckedInputDate &&
+                    (!order.rpName || !displaySetting.isCheckedSetName)
+                ) {
+                    detailName = '＊' + detailName;
+                }
+
+                detailName = html`<div
+                  class="${orderInfo.isDeleted === 0 ? '' : 'deleteItem'}"
+                >
+                  ${detailName}
+                </div>
+                ${isExistIpnName && displaySetting.isIppanNameChecked
+                        ? `<div class='${orderInfo.isDeleted === 0 ? '' : 'deleteItem'
+                        }'>（${detail.ipnName}）</div>`
+                        : ''}`;
+
+                return detailName;
+            }
+
+            // Draw Order RP title
+            const getOrderRpTitle = (order) => {
+                if (!displaySetting.isCheckedInputDate) {
+                    return '';
+                }
+
+                let title = `${order.createDateDisplay} ${order.createName}`;
+
+                // If order is deleted add line through to create title
+                if (order.isDeleted !== 0) {
+                    const updateTitle = `<span>${order.updateDateDisplay} ${order.updateName}</span>`;
+
+                    title = html`<span class="deleteItem">${title}</span>
+                  ${updateTitle}`;
+                }
+
+                return html`<div class="receptionTextColor">${title}</div>`;
+            };
+
+            // Draw setName
+            const getSetName = (order) => {
+                if (!displaySetting.isCheckedSetName || !order.rpName) {
+                    return '';
+                }
+
+                let setName = `【${order.rpName?.trim()}】`;
+
+                if (!displaySetting.isCheckedInputDate) {
+                    setName = '＊' + setName;
+                }
+
+                return html`<div class="${order.isDeleted === 0 ? '' : 'deleteItem'}">
+                ${setName}
+              </div>`;
+            };
+
+            // Draw order RP
+            const getOrderRpElement = (orders) => {
+                return orders.map((order) => {
+                    const detailText = order.odrDetails.map((detail, index) => {
+                        return getOrderDetailTitle(detail, order, index);
+                    });
+
+                    return html`<li>
+                  ${getOrderRpTitle(order)} ${getSetName(order)} ${detailText}
+                </li>`;
+                });
+            };
+
+            const getOrderGroupElement = (item) => {
+                const allGroup = data.hokenGroups.flatMap((hoken) => {
+                    return hoken.groupOdrItems;
+                });
+
+                return html`<div>
+                ${() =>
+                        allGroup.map((group) => {
+                            const orderText = getOrderRpElement(group.odrInfs);
+
+                            return html`<div class="orderItem">
+                      <span class="orderItemTitle">${group.groupName}</span>
+                      <ul class="orderItemList">
+                        ${orderText}
+                      </ul>
+                    </div>`;
+                        })}
+              </div>`;
+            };
+
+            // Get Today Order Title
+            const getOrderTitle = () => {
+                let result = '';
+
+                if (displaySetting.isCheckedVisitingTime) {
+                    result += data.uketukeTime
+                        ? `受付:${data.uketukeTime}`
+                        : `受付:  :  `;
+                }
+
+                if (displaySetting.isUketsukeNameChecked && data.uketsukeName) {
+                    result += ` ${data.uketsukeName}`;
+                }
+
+                if (displaySetting.isCheckedStartTime) {
+                    result += ` 診察:${data.sinStartTime}`;
+                }
+
+                if (
+                    displaySetting.isCheckedStartTime &&
+                    displaySetting.isCheckedEndTime
+                ) {
+                    result += data.sinEndTime ? `-${data.sinEndTime}` : '-  :  ';
+                }
+
+                if (
+                    !displaySetting.isCheckedStartTime &&
+                    displaySetting.isCheckedEndTime
+                ) {
+                    result += data.sinEndTime
+                        ? ` 診察:-${data.sinEndTime}`
+                        : ' 診察:-  :  ';
+                }
+
+                if (displaySetting.isCheckedDoctor) {
+                    result += ' ' + data.tantoName;
+                }
+
+                if (displaySetting.isCheckedApproved) {
+                    result += ' ' + data.sinryoTitle;
+                }
+
+                return result || '＊';
+            };
+
+            return html`
+              <div class="orderHistory">
+                <div class="orderHistoryInfor">
+                  <span class="orderHistoryInforTitle"
+                    >${dayjs(data.sinDate.toString()).format('YYYY/MM/DD')}</span
+                  >
+                  <div class="lineThrough"></div>
+                  <div class="receptionDate receptionTextColor">
+                    <span>&nbsp${getOrderTitle()}</span>
+                  </div>
+                </div>
+                <div class="orderHistoryContent">
+                  <div class="richText">${richText || ''} ${arrImage || ''}</div>
+                  <div class="orderDetail">${getOrderGroupElement(data)}</div>
                 </div>
               </div>
-              <div class='orderHistoryContent'>
-                <div class='richText'>
-                    ${richText || ''}
-                    ${arrImage || ''}
-                </div>
-                <div class='orderDetail'>
-                  ${getOrderGroupElement(data)}
-                </div>
-              </div>
-            </div>
+            `;
+        };
 
-              `;
-      };
-    </script>
-    <script type="text/babel">
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(
-          // <React.StrictMode>
-          <>
-            <PrintKarte2Final />
-          </>
-          // </React.StrictMode>
-        );
+        const root = document.getElementById('root');
+        render(PrintKarte2Final, root);
     </script>
 </body>
 </html>

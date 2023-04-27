@@ -5,6 +5,11 @@ public class CoHpInfModel
 {
     public HpInf HpInf { get; private set; }
 
+    public CoHpInfModel()
+    {
+        HpInf = new();
+    }
+
     public CoHpInfModel(HpInf hpInf)
     {
         HpInf = hpInf;
