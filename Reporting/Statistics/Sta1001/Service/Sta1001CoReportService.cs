@@ -208,6 +208,11 @@ namespace Reporting.Statistics.Sta1001.Service
             HpId = hpId;
             GetFieldNameList();
             GetRowCount();
+            putCurColumns.AddRange(putColumns);
+            if (_objectRseList.Contains(putOptColumns.First().ColName))
+            {
+                putCurColumns.AddRange(putOptColumns);
+            }
             GetData();
             _hasNextPage = true;
             _currentPage = 1;
@@ -418,7 +423,7 @@ namespace Reporting.Statistics.Sta1001.Service
 
                         // todo quan.to
                         //bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo && outputFileType == CoFileType.Csv;
-                        bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo ;
+                        bool csvOmit = syunoInf.RaiinNo == prePrintData.RaiinNo;
                         printData.Tensu = csvOmit ? "0" : syunoInf.Tensu.ToString("#,0");
                         printData.NewTensu = csvOmit ? "0" : syunoInf.NewTensu.ToString("#,0");
                         printData.PtFutan = csvOmit ? "0" : syunoInf.PtFutan.ToString("#,0");
@@ -693,7 +698,7 @@ namespace Reporting.Statistics.Sta1001.Service
                 //明細データ出力
                 foreach (var colName in existsCols)
                 {
-                    var value = typeof(CoSta1002PrintData).GetProperty(colName).GetValue(printData);
+                    var value = typeof(CoSta1001PrintData).GetProperty(colName).GetValue(printData);
                     string valueInput = value?.ToString() ?? string.Empty;
                     celldata.Add(colName, new CellModel(valueInput));
                     if (baseListName == "" && _objectRseList.Contains(colName))
