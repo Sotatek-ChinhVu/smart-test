@@ -54,7 +54,7 @@ public class CommonReportingRequest : ICommonReportingRequest
 
     public virtual Dictionary<string, string> GetFileNamePageMap()
     {
-        throw new NotImplementedException();
+        return new();
     }
 
     public virtual Dictionary<string, bool> GetWrapFieldData()

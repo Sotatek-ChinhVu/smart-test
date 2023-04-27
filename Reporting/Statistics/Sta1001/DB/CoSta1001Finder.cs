@@ -132,8 +132,6 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             }
         ).ToList();
 
-        
-
         var joinQuery = (
             from syunoNyukin in syunoNyukins.AsEnumerable()
             join payMst in payMsts on

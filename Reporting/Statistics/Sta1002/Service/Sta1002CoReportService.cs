@@ -1,10 +1,10 @@
-﻿using Helper.Common;
+﻿using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Newtonsoft.Json;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
-using Reporting.ReceiptList.Model;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
@@ -26,7 +26,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private List<CoSta1002PrintData> _printDatas;
     private List<string> _headerL1;
     private List<string> _headerL2;
-    private List<CoSyunoInfModel> _syunoInfs;
+    private List<CoSyunoInfModel>? _syunoInfs;
     private List<CoJihiSbtMstModel> _jihiSbtMsts;
     private List<CoJihiSbtFutan> _jihiSbtFutans;
     private CoHpInfModel _hpInf;
@@ -45,7 +45,6 @@ public class Sta1002CoReportService : ISta1002CoReportService
         _jihiSbtFutans = new();
         _hpInf = new();
         _extralData = new();
-        _hasNextPage = true;
         _objectRseList = new();
         _printConf = new();
     }
@@ -87,13 +86,14 @@ public class Sta1002CoReportService : ISta1002CoReportService
     private List<string> _objectRseList;
     private bool _hasNextPage;
 
+
     public CommonReportingRequestModel GetSta1002ReportingData(CoSta1002PrintConf printConf, int hpId)
     {
         _printConf = printConf;
         // get data to print
         GetFieldNameList();
-        GetData(hpId);
         GetRowCount();
+        GetData(hpId);
         _hasNextPage = true;
 
         _currentPage = 1;
@@ -112,9 +112,9 @@ public class Sta1002CoReportService : ISta1002CoReportService
     {
         void MakePrintData()
         {
-            _printDatas = new List<CoSta1002PrintData>();
-            _headerL1 = new List<string>();
-            _headerL2 = new List<string>();
+            _printDatas = new();
+            _headerL1 = new();
+            _headerL2 = new();
 
             //改ページ条件
             bool pbUketukeSbt = new int[] { _printConf.PageBreak1, _printConf.PageBreak2, _printConf.PageBreak3 }.Contains(1);
@@ -145,212 +145,210 @@ public class Sta1002CoReportService : ISta1002CoReportService
                             //明細
                             for (int rowNo = 0; rowNo <= maxRow - 1; rowNo++)
                             {
-                                CoSta1002PrintData printData = new CoSta1002PrintData();
+                                CoSta1002PrintData printData = new();
 
-                                List<CoSyunoInfModel> wrkDatas = new();
+                                List<CoSyunoInfModel>? wrkDatas = null;
                                 switch (rowNo)
                                 {
                                     //社保単独
                                     case 0:
                                         printData.HokenSbtName = "社保単独(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrMine).ToList();
                                         break;
                                     case 1:
                                         printData.HokenSbtName = "社保単独(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrPreSchool).ToList();
                                         break;
                                     case 2:
                                         printData.HokenSbtName = "社保単独(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrFamily).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrFamily).ToList();
                                         break;
                                     case 3:
                                         printData.HokenSbtName = "社保単独(高齢)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrElder).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsNrElder).ToList();
                                         break;
                                     //社保併用
                                     case 4:
                                         printData.HokenSbtName = "社保併用(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrMine).ToList();
                                         break;
                                     case 5:
                                         printData.HokenSbtName = "社保併用(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrPreSchool).ToList();
                                         break;
                                     case 6:
                                         printData.HokenSbtName = "社保併用(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrFamily).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrFamily).ToList();
                                         break;
                                     case 7:
                                         printData.HokenSbtName = "社保併用(高齢)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrElder).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsNrElder).ToList();
                                         break;
                                     //社保計
                                     case 8:
                                         printData.HokenSbtName = "≪社保計≫";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsNrAll)?.ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsNrAll).ToList();
                                         break;
 
                                     //公費
                                     case 10:
                                         printData.HokenSbtName = "公費単独";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsKohiOnly).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && !s.IsHeiyo && s.IsKohiOnly).ToList();
                                         break;
                                     case 11:
                                         printData.HokenSbtName = "公費併用";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsKohiOnly).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsHeiyo && s.IsKohiOnly).ToList();
                                         break;
                                     //公費計
                                     case 12:
                                         printData.HokenSbtName = "≪公費計≫";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsKohiOnly).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho && s.IsKohiOnly).ToList();
                                         break;
 
                                     //社保合計
                                     case 14:
                                         printData.HokenSbtName = "◆社保合計";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho).ToList();
                                         break;
 
                                     //国保単独
                                     case 15:
                                         printData.HokenSbtName = "国保単独(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrMine).ToList();
                                         break;
                                     case 16:
                                         printData.HokenSbtName = "国保単独(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrPreSchool).ToList();
                                         break;
                                     case 17:
                                         printData.HokenSbtName = "国保単独(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrFamily).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrFamily).ToList();
                                         break;
                                     case 18:
                                         printData.HokenSbtName = "国保単独(高齢)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrElder).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsNrElder).ToList();
                                         break;
                                     //国保併用
                                     case 19:
                                         printData.HokenSbtName = "国保併用(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrMine).ToList();
                                         break;
                                     case 20:
                                         printData.HokenSbtName = "国保併用(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrPreSchool).ToList();
                                         break;
                                     case 21:
                                         printData.HokenSbtName = "国保併用(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrFamily).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrFamily).ToList();
                                         break;
                                     case 22:
                                         printData.HokenSbtName = "国保併用(高齢)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrElder).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsNrElder).ToList();
                                         break;
                                     //国保計
                                     case 23:
                                         printData.HokenSbtName = "≪国保計≫";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsNrAll).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsNrAll).ToList();
                                         break;
 
                                     //退職単独
                                     case 25:
                                         printData.HokenSbtName = "退職単独(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetMine).ToList();
                                         break;
                                     case 26:
                                         printData.HokenSbtName = "退職単独(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetPreSchool).ToList();
                                         break;
                                     case 27:
                                         printData.HokenSbtName = "退職単独(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetFamily).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsRetFamily).ToList();
                                         break;
                                     //退職併用
                                     case 28:
                                         printData.HokenSbtName = "退職併用(本人)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetMine).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetMine).ToList();
                                         break;
                                     case 29:
                                         printData.HokenSbtName = "退職併用(６未)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetPreSchool).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetPreSchool).ToList();
                                         break;
                                     case 30:
                                         printData.HokenSbtName = "退職併用(家族)";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetFamily).ToList() ?? new();
-                                        break;
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsRetFamily).ToList(); break;
                                     //退職計
                                     case 31:
                                         printData.HokenSbtName = "≪退職計≫";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsRetAll).ToList() ?? new();
-                                        break;
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsRetAll).ToList(); break;
 
                                     //後期
                                     case 33:
                                         printData.HokenSbtName = "後期単独";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsKouki).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && !s.IsHeiyo && s.IsKouki).ToList();
                                         break;
                                     case 34:
                                         printData.HokenSbtName = "後期併用";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsKouki).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsHeiyo && s.IsKouki).ToList();
                                         break;
                                     //後期計
                                     case 35:
                                         printData.HokenSbtName = "≪後期計≫";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsKouki).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho && s.IsKouki).ToList();
                                         break;
 
                                     //国保合計
                                     case 37:
                                         printData.HokenSbtName = "◆国保合計";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Kokho).ToList();
                                         break;
 
                                     //保険計
                                     case 38:
                                         printData.HokenSbtName = "◆保険合計";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho || s.HokenKbn == HokenKbn.Kokho).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Syaho || s.HokenKbn == HokenKbn.Kokho).ToList();
                                         break;
 
                                     //保険外
                                     case 39:
                                         printData.HokenSbtName = "自費";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jihi && s.IsJihiNoRece).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jihi && s.IsJihiNoRece).ToList();
                                         break;
                                     case 40:
                                         printData.HokenSbtName = "自費レセ";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jihi && s.IsJihiRece).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jihi && s.IsJihiRece).ToList();
                                         break;
                                     case 41:
                                         printData.HokenSbtName = "労災";
-                                        wrkDatas = curDatas?.Where(s => s.IsRousai).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.IsRousai).ToList();
                                         break;
                                     case 42:
                                         printData.HokenSbtName = "自賠責";
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jibai).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn == HokenKbn.Jibai).ToList();
                                         break;
                                     //保険外計
                                     case 43:
                                         printData.HokenSbtName = "◆保険外計";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.Where(s => s.HokenKbn != HokenKbn.Syaho && s.HokenKbn != HokenKbn.Kokho).ToList() ?? new();
+                                        wrkDatas = curDatas?.Where(s => s.HokenKbn != HokenKbn.Syaho && s.HokenKbn != HokenKbn.Kokho).ToList();
                                         break;
 
                                     //総合計
                                     case 45:
                                         printData.HokenSbtName = "◆総合計";
                                         printData.RowType = RowType.Total;
-                                        wrkDatas = curDatas?.ToList() ?? new();
+                                        wrkDatas = curDatas?.ToList();
                                         break;
                                 }
 
-                                if (wrkDatas == null || wrkDatas.Count > 0)
+                                if (wrkDatas == null)
                                 {
                                     //空行を追加
                                     _printDatas.Add(new CoSta1002PrintData(RowType.Brank));
@@ -451,31 +449,18 @@ public class Sta1002CoReportService : ISta1002CoReportService
                                         wrkNyukinDate +=
                                             string.Format(
                                                 " {0}～{1}",
-                                                _printConf.StartNyukinTime == -1 ? string.Empty : CIUtil.TryCIToTimeZone(_printConf.StartNyukinTime),
-                                                _printConf.EndNyukinTime == -1 ? string.Empty : CIUtil.TryCIToTimeZone(_printConf.EndNyukinTime)
+                                                _printConf.StartNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.StartNyukinTime),
+                                                _printConf.EndNyukinTime == -1 ? "" : CIUtil.TryCIToTimeZone(_printConf.EndNyukinTime)
                                             );
                                     }
                                     _headerL1.Add(wrkNyukinDate);
-
                                     //改ページ条件
                                     List<string> wrkHeaders = new();
-                                    if (pbUketukeSbt)
-                                    {
-                                        wrkHeaders.Add(curDatas?.FirstOrDefault()?.UketukeSbtName ?? string.Empty);
-                                    }
-                                    if (pbKaId)
-                                    {
-                                        wrkHeaders.Add(curDatas?.FirstOrDefault()?.KaSname ?? string.Empty);
-                                    }
-                                    if (pbTantoId)
-                                    {
-                                        wrkHeaders.Add(curDatas?.FirstOrDefault()?.TantoSname ?? string.Empty);
-                                    }
+                                    if (pbUketukeSbt) wrkHeaders.Add(curDatas?.FirstOrDefault()?.UketukeSbtName ?? string.Empty);
+                                    if (pbKaId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.KaSname ?? string.Empty);
+                                    if (pbTantoId) wrkHeaders.Add(curDatas?.FirstOrDefault()?.TantoSname ?? string.Empty);
 
-                                    if (wrkHeaders.Count >= 1)
-                                    {
-                                        _headerL2.Add(string.Join("／", wrkHeaders));
-                                    }
+                                    if (wrkHeaders.Count >= 1) _headerL2.Add(string.Join("／", wrkHeaders));
                                 }
                             }
                         }
@@ -614,7 +599,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
                     break;
                 }
             }
-           
+
         }
         #endregion
 
@@ -640,7 +625,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
 
     private void GetFieldNameList()
     {
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, new());
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1002, string.Empty, new());
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         _objectRseList = javaOutputData.objectNames;
     }
@@ -653,7 +638,7 @@ public class Sta1002CoReportService : ISta1002CoReportService
             new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
         };
 
-        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1001, string.Empty, fieldInputList);
+        CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta1002, string.Empty, fieldInputList);
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
     }
