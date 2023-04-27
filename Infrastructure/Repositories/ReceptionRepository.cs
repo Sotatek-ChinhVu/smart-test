@@ -719,7 +719,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd ?? string.Empty)).ToList(),
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd?.Length > 0 ? "#" + d.ColorCd : string.Empty)).ToList(),
                 sinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
