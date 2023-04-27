@@ -30,7 +30,7 @@ namespace Interactor.Lock
                     return new CheckLockOutputData(CheckLockStatus.NotLock, new LockModel());
                 }
 
-                var lockInf = LockUtil.GetLockInf(lockInfList);
+                var lockInf = lockInfList.FirstOrDefault();
 
                 if (lockInf == null || lockInf.IsEmpty)
                 {
