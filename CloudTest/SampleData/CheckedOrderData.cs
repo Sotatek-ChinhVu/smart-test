@@ -8,12 +8,13 @@ namespace CloudUnitTest.SampleData
     public static class CheckedOrderData
     {
         //Create COM Objects. Create a COM object for everything that is referenced
-        public static List<RaiinInf> ReadRainInf()
+        public static List<RaiinInf> ReadRainInf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
             //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
 
+            int count = 1;
             string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
             var raiinInfs = new List<RaiinInf>();
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
@@ -48,8 +49,7 @@ namespace CloudUnitTest.SampleData
                                     raiinInf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    raiinInf.RaiinNo = raiinNo;
+                                    raiinInf.RaiinNo = long.MaxValue - randomKey - count;
                                     break;
                                 case "C":
                                     var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
@@ -132,6 +132,7 @@ namespace CloudUnitTest.SampleData
                             }
                         }
                         raiinInfs.Add(raiinInf);
+                        count++;
                     }
                 }
             }
@@ -139,7 +140,7 @@ namespace CloudUnitTest.SampleData
             return raiinInfs;
         }
 
-        public static List<OdrInf> ReadOdrInf()
+        public static List<OdrInf> ReadOdrInf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -177,8 +178,7 @@ namespace CloudUnitTest.SampleData
                                     odrInf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    odrInf.RaiinNo = raiinNo;
+                                    odrInf.RaiinNo = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int rpNo);
@@ -216,7 +216,7 @@ namespace CloudUnitTest.SampleData
             return odrInfs;
         }
 
-        public static List<OdrInfDetail> ReadOdrInfDetail()
+        public static List<OdrInfDetail> ReadOdrInfDetail(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -250,7 +250,7 @@ namespace CloudUnitTest.SampleData
                                     odrInfDetail.HpId = hpId;
                                     break;
                                 case "B":
-                                    var raiinNo = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture); odrInfDetail.RaiinNo = raiinNo;
+                                    odrInfDetail.RaiinNo = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int rpNo);
@@ -294,7 +294,7 @@ namespace CloudUnitTest.SampleData
             return odrDetails;
         }
 
-        public static List<PtSanteiConf> ReadPtSanteiConf()
+        public static List<PtSanteiConf> ReadPtSanteiConf(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -333,8 +333,7 @@ namespace CloudUnitTest.SampleData
                                     ptSanteiConf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    ptSanteiConf.PtId = long.MaxValue;
+                                    ptSanteiConf.PtId = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int kbnNo);
@@ -364,7 +363,7 @@ namespace CloudUnitTest.SampleData
             return ptSanteiConfs;
         }
 
-        public static List<PtSanteiConf> ReadPtSanteiConfToNoCheckSantei()
+        public static List<PtSanteiConf> ReadPtSanteiConfToNoCheckSantei(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -403,8 +402,7 @@ namespace CloudUnitTest.SampleData
                                     ptSanteiConf.HpId = hpId;
                                     break;
                                 case "B":
-                                    var ptId = long.Parse(text, System.Globalization.CultureInfo.InvariantCulture);
-                                    ptSanteiConf.PtId = long.MaxValue;
+                                    ptSanteiConf.PtId = long.MaxValue - randomKey;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int kbnNo);
@@ -434,7 +432,7 @@ namespace CloudUnitTest.SampleData
             return ptSanteiConfs;
         }
 
-        public static List<UserMst> ReadUserMst()
+        public static List<UserMst> ReadUserMst(int randomKey)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -473,7 +471,7 @@ namespace CloudUnitTest.SampleData
                                     break;
                                 case "B":
                                     int.TryParse(text, out int id);
-                                    ptInf.Id = id;
+                                    ptInf.Id = 0;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int userId);
@@ -526,6 +524,205 @@ namespace CloudUnitTest.SampleData
             return ptInfs;
         }
 
+
+        public static List<ByomeiMst> ReadByomeiMst(string byomeiCd)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var byomeiMsts = new List<ByomeiMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "BYOMEI_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var byomeiMst = new ByomeiMst();
+                        byomeiMst.CreateId = 1;
+                        byomeiMst.CreateDate = DateTime.UtcNow;
+                        byomeiMst.UpdateId = 1;
+                        byomeiMst.UpdateDate = DateTime.UtcNow;
+
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    byomeiMst.HpId = hpId;
+                                    break;
+                                case "B":
+                                    byomeiMst.ByomeiCd = byomeiCd;
+                                    break;
+                                case "C":
+                                    byomeiMst.Byomei = text;
+                                    break;
+                                case "D":
+                                    byomeiMst.Sbyomei = text;
+                                    break;
+                                case "H":
+                                    byomeiMst.KanaName1 = text;
+                                    break;
+                                case "M":
+                                    int.TryParse(text, out int sikkanCd);
+                                    byomeiMst.SikkanCd = sikkanCd;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int tandokuKinsi);
+                                    byomeiMst.TandokuKinsi = tandokuKinsi;
+                                    break;
+                                case "O":
+                                    int.TryParse(text, out int hokenGai);
+                                    byomeiMst.HokenGai = hokenGai;
+                                    break;
+                                case "P":
+                                    byomeiMst.ByomeiKanri = text;
+                                    break;
+                                case "Q":
+                                    byomeiMst.SaitakuKbn = text;
+                                    break;
+                                case "R":
+                                    byomeiMst.KoukanCd = text;
+                                    break;
+                                case "S":
+                                    int.TryParse(text, out int syusaiDate);
+                                    byomeiMst.SyusaiDate = syusaiDate;
+                                    break;
+                                case "T":
+                                    int.TryParse(text, out int updDate);
+                                    byomeiMst.UpdDate = updDate;
+                                    break;
+                                case "U":
+                                    int.TryParse(text, out int delDate);
+                                    byomeiMst.DelDate = delDate;
+                                    break;
+                                case "V":
+                                    int.TryParse(text, out int nanbyoCd);
+                                    byomeiMst.NanbyoCd = nanbyoCd;
+                                    break;
+                                case "W":
+                                    byomeiMst.Icd101 = text;
+                                    break;
+                                case "X":
+                                    byomeiMst.Icd102 = text;
+                                    break;
+                                case "Y":
+                                    byomeiMst.Icd1012013 = text;
+                                    break;
+                                case "Z":
+                                    byomeiMst.Icd1022013 = text;
+                                    break;
+                                case "AA":
+                                    int.TryParse(text, out int isAdopted);
+                                    byomeiMst.IsAdopted = isAdopted;
+                                    break;
+                                case "AB":
+                                    byomeiMst.SyusyokuKbn = text;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        byomeiMsts.Add(byomeiMst);
+                    }
+                }
+            }
+
+            return byomeiMsts;
+        }
+
+
+        public static List<TekiouByomeiMst> ReadTekiouByomeiMst(string byomeiCd, string itemCd)
+        {
+            var rootPath = Environment.CurrentDirectory;
+            rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
+            //string path = Path.Combine(Environment.CurrentDirectory, @"Data\", fileName);
+
+            string fileName = Path.Combine(rootPath, "SampleData", "CheckedOrderDataSample.xlsx");
+            var tekiouByomeiMsts = new List<TekiouByomeiMst>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(fileName, false))
+            {
+                var workbookPart = spreadsheetDocument.WorkbookPart;
+                var sheetData = GetworksheetBySheetName(spreadsheetDocument, "TEKIOU_BYOMEI_MST").WorksheetPart?.Worksheet.Elements<SheetData>().First();
+                string text;
+                if (sheetData != null)
+                {
+                    foreach (var r in sheetData.Elements<Row>().Skip(1))
+                    {
+                        var tekiouByomeiMst = new TekiouByomeiMst();
+                        tekiouByomeiMst.CreateId = 1;
+                        tekiouByomeiMst.CreateDate = DateTime.UtcNow;
+                        tekiouByomeiMst.UpdateId = 1;
+                        tekiouByomeiMst.UpdateDate = DateTime.UtcNow;
+
+                        foreach (var c in r.Elements<Cell>())
+                        {
+                            text = c.CellValue?.Text ?? string.Empty;
+                            if (c.DataType != null && c.DataType == CellValues.SharedString)
+                            {
+                                var stringId = Convert.ToInt32(c.InnerText);
+                                text = workbookPart?.SharedStringTablePart?.SharedStringTable.Elements<SharedStringItem>().ElementAt(stringId).InnerText ?? string.Empty;
+                            }
+                            var columnName = GetColumnName(c.CellReference?.ToString() ?? string.Empty);
+                            switch (columnName)
+                            {
+                                case "A":
+                                    int.TryParse(text, out int hpId);
+                                    tekiouByomeiMst.HpId = hpId;
+                                    break;
+                                case "B":
+                                    tekiouByomeiMst.ItemCd = itemCd;
+                                    break;
+                                case "C":
+                                    tekiouByomeiMst.ByomeiCd = byomeiCd;
+                                    break;
+                                case "D":
+                                    int.TryParse(text, out int isInvalid);
+                                    tekiouByomeiMst.IsInvalid = isInvalid;
+                                    break;
+                                case "E":
+                                    int.TryParse(text, out int isInvalidTokusyo);
+                                    tekiouByomeiMst.IsInvalidTokusyo = isInvalidTokusyo;
+                                    break;
+                                case "F":
+                                    int.TryParse(text, out int editKbn);
+                                    tekiouByomeiMst.EditKbn = editKbn;
+                                    break;
+                                case "G":
+                                    int.TryParse(text, out int systemData);
+                                    tekiouByomeiMst.SystemData = systemData;
+                                    break;
+                                case "N":
+                                    int.TryParse(text, out int startYM);
+                                    tekiouByomeiMst.StartYM = startYM;
+                                    break;
+                                case "O":
+                                    int.TryParse(text, out int endYM);
+                                    tekiouByomeiMst.EndYM = endYM;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        tekiouByomeiMsts.Add(tekiouByomeiMst);
+                    }
+                }
+            }
+
+            return tekiouByomeiMsts;
+        }
 
         private static Worksheet GetworksheetBySheetName(SpreadsheetDocument spreadsheetDocument, string sheetName)
         {
