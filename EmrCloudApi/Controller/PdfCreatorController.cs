@@ -2,16 +2,11 @@
 using EmrCloudApi.Presenters.MedicalExamination;
 using EmrCloudApi.Requests.ExportPDF;
 using EmrCloudApi.Requests.MedicalExamination;
-using EmrCloudApi.Requests.Receipt;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Responses.MedicalExamination;
-using EmrCloudApi.Responses.PatientInformaiton;
 using Helper.Enum;
 using Interactor.MedicalExamination.HistoryCommon;
 using Microsoft.AspNetCore.Mvc;
-using Reporting.OutDrug.Service;
-using Reporting.ReceiptList.Model;
 using Reporting.Accounting.Model;
+using Reporting.ReceiptList.Model;
 using Reporting.ReportServices;
 using System.Text;
 using System.Text.Json;
@@ -141,6 +136,20 @@ public class PdfCreatorController : ControllerBase
     {
         var data = _reportService.GetAccountingReportingData(request.HpId, request.PtId, request.PrintType, request.RaiinNoList, request.RaiinNoPayList, request.IsCalculateProcess);
         return await RenderPdf(data, ReportType.Accounting);
+    }
+
+    [HttpGet(ApiPath.StaticReport)]
+    public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
+    {
+        var data = _reportService.GetStatisticReportingData(request.HpId, request.MenuId, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.ReceiptPreview)]
+    public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
+    {
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        return await RenderPdf(data, ReportType.Common);
     }
 
     [HttpGet("ExportKarte2")]
