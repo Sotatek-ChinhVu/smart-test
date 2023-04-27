@@ -8,6 +8,95 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static string PadLeftB(string str, int len, char paddingChar = ' ')
+        {
+            string ret = str.TrimStart();
+
+            if (len <= LenB(ret)) return ret;
+
+            return (new string(paddingChar, len - CIUtil.LenB(ret))) + ret;
+        }
+
+        public static string PadRightB(string str, int len, char paddingChar = ' ')
+        {
+            string ret = str.TrimEnd();
+
+            if (len <= LenB(ret)) return ret;
+
+            return ret + (new string(paddingChar, len - CIUtil.LenB(ret)));
+        }
+
+        public static int SDateToWDateForRousai(int ymd)
+        {
+            int ret = 0;
+            string retDate = SDateToShowWDate(ymd);
+
+            if (retDate.Length == 10)
+            {
+                ret = ObjectExtension.StrToIntDef
+                        (_GengoId(retDate.Substring(0, 1)) +
+                         retDate.Substring(2, 2) +
+                         retDate.Substring(5, 2) +
+                         retDate.Substring(8, 2), 0);
+            }
+
+            return ret;
+
+            #region Local Method
+            string _GengoId(string gengo)
+            {
+                string gengoId = "";
+
+                switch (gengo)
+                {
+                    case "明":
+                        gengoId = "1";
+                        break;
+                    case "大":
+                        gengoId = "3";
+                        break;
+                    case "昭":
+                        gengoId = "5";
+                        break;
+                    case "平":
+                        gengoId = "7";
+                        break;
+                    default:
+                        gengoId = "9";
+                        break;
+                }
+
+                return gengoId;
+            }
+            #endregion
+        }
+
+        public static string FormatHpCd(string hpCd, int prefNo)
+        {
+            string wrkCd = hpCd == null ? new string(' ', 7) : string.Format("{0:D7}", hpCd.AsInteger());
+
+            if (new int[] { 2, 12, 13, 17, 18, 25, 32, 35, 41, 43, 44, 46 }.Contains(prefNo))
+            {
+                //xx,xxxx,xx タイプ
+                return string.Format("{0},{1},{2}", wrkCd.Substring(0, 2), wrkCd.Substring(2, 4), wrkCd.Substring(6, 1));
+            }
+            else if (new int[] { 3 }.Contains(prefNo))
+            {
+                //フォーマットなし
+                return wrkCd;
+            }
+            else if (new int[] { 34 }.Contains(prefNo))
+            {
+                //xx-x,xxx,x タイプ
+                return string.Format("{0}-{1},{2},{3}", wrkCd.Substring(0, 2), wrkCd.Substring(2, 1), wrkCd.Substring(3, 3), wrkCd.Substring(6, 1));
+            }
+            else
+            {
+                //xxx,xxx,x タイプ
+                return string.Format("{0},{1},{2}", wrkCd.Substring(0, 3), wrkCd.Substring(3, 3), wrkCd.Substring(6, 1));
+            }
+        }
+
         public static string FormatIntToString(int input)
         {
             if (input == 0)
@@ -2042,7 +2131,7 @@ namespace Helper.Common
         {
             int ret;
 
-            if (int.TryParse(str, out ret) == false)
+            if (!int.TryParse(str, out ret))
             {
                 ret = defaultVal;
             }
@@ -2358,7 +2447,6 @@ namespace Helper.Common
                 int iWidth = 0;
                 if (Index > 1)
                 {
-                    //for (int i = 1; i < sSrcStr.Length; i++)
                     for (int i = 0; i < sSrcStr.Length; i++)
                     {
                         //１文字ずつ取得
@@ -2634,14 +2722,6 @@ namespace Helper.Common
                     strErr = strErr + CIUtil.Copy(sIn, textEnum.ElementIndex + 1, textEnum.GetTextElement().Length);
 
                 }
-
-                //文字列にUnicodeでしか使用されていない文字の存在チェック
-                //.NET string is all UTF-16 string, therefore, no need to check
-                // whether string contains both ASCII and UTF characters
-
-                //end else if IsUnicodeOnly(sIn[1]) = true then begin
-                //strErrStr:= strErrStr + Copy(sIn, 1, 1);
-                //Delete(sIn, 1, 1);
 
                 else
                 {
@@ -3380,6 +3460,24 @@ namespace Helper.Common
                     break;
             }
             return result;
+        }
+
+        public static string TryCIToTimeZone(int time, string format = @"hh\:mm")
+        {
+            TimeSpan timeSpan = new TimeSpan();
+            if ((0 <= time) && (time <= 2400))
+            {
+                int iHour = time / 100;
+                int iMinute = time % 100;
+
+                if (((0 <= iHour) && (iHour <= 24)) &&
+                    ((0 <= iMinute) && (iMinute <= 59)))
+                {
+                    return iHour.AsString().PadLeft(2, '0') + ":" + iMinute.AsString().PadLeft(2, '0');
+                }
+            }
+
+            return timeSpan.ToString(format);
         }
     }
 }

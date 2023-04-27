@@ -21,8 +21,9 @@ namespace Interactor.SpecialNote
         private readonly IPatientInfoRepository _patientInfoPregnancyRepository;
         private readonly IPatientInfoRepository _patientInfoSeikaturekiRepository;
         private readonly IPatientInfoRepository _patientInfoPhysicalRepository;
+        private readonly IPatientInfoRepository _patientInfoGetStdRepository;
 
-        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, IImportantNoteRepository importantNoteAlrgyElseRepository, IImportantNoteRepository importantAlrgyFoodRepository, IImportantNoteRepository importantAlrgyDrugRepository, IImportantNoteRepository importantOtherDrugRepository, IImportantNoteRepository importantOtcDrugRepository, IImportantNoteRepository importantSuppleRepository, IImportantNoteRepository importantKioRekiRepository, IImportantNoteRepository importantInfectionRepository, IPatientInfoRepository patientInfoPregnancyRepository, IPatientInfoRepository patientInfoSeikaturekiRepository, IPatientInfoRepository patientInfoPhysicalRepository)
+        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, IImportantNoteRepository importantNoteAlrgyElseRepository, IImportantNoteRepository importantAlrgyFoodRepository, IImportantNoteRepository importantAlrgyDrugRepository, IImportantNoteRepository importantOtherDrugRepository, IImportantNoteRepository importantOtcDrugRepository, IImportantNoteRepository importantSuppleRepository, IImportantNoteRepository importantKioRekiRepository, IImportantNoteRepository importantInfectionRepository, IPatientInfoRepository patientInfoPregnancyRepository, IPatientInfoRepository patientInfoSeikaturekiRepository, IPatientInfoRepository patientInfoPhysicalRepository, IPatientInfoRepository patientInfoGetStdRepository)
         {
             _ptCmtInfRepository = ptCmtInfRepository;
             _summaryInfRepository = summaryInfRepository;
@@ -37,6 +38,7 @@ namespace Interactor.SpecialNote
             _importantInfectionRepository = importantInfectionRepository;
             _patientInfoSeikaturekiRepository = patientInfoSeikaturekiRepository;
             _patientInfoPhysicalRepository = patientInfoPhysicalRepository;
+            _patientInfoGetStdRepository = patientInfoGetStdRepository;
         }
 
         public GetSpecialNoteOutputData Handle(GetSpecialNoteInputData inputData)
@@ -74,6 +76,7 @@ namespace Interactor.SpecialNote
                 _patientInfoSeikaturekiRepository.ReleaseResource();
                 _ptCmtInfRepository.ReleaseResource();
                 _summaryInfRepository.ReleaseResource();
+                _patientInfoGetStdRepository.ReleaseResource();
             }
         }
 
@@ -106,7 +109,7 @@ namespace Interactor.SpecialNote
             var taskCmtInfItem = Task<PtCmtInfModel>.Factory.StartNew(() => _ptCmtInfRepository.GetList(ptId, hpId).FirstOrDefault() ?? new());
             var taskSeikaturekiInfItem = Task<SeikaturekiInfModel>.Factory.StartNew(() => _patientInfoSeikaturekiRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault() ?? new());
             var taskPhysicalItems = Task<List<PhysicalInfoModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetPhysicalList(hpId, ptId));
-            var taskGcStdMsts = Task<List<GcStdInfModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetStdPoint(hpId, sex));
+            var taskGcStdMsts = Task<List<GcStdInfModel>>.Factory.StartNew(() => _patientInfoGetStdRepository.GetStdPoint(hpId, sex));
             Task.WaitAll(taskPregnancyItem, taskCmtInfItem, taskSeikaturekiInfItem, taskPhysicalItems, taskGcStdMsts);
 
             return new PatientInfoModel(taskPregnancyItem.Result, taskCmtInfItem.Result, taskSeikaturekiInfItem.Result, taskPhysicalItems.Result, taskGcStdMsts.Result);
