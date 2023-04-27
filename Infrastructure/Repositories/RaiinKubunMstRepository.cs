@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
                             r.KbnCd,
                             r.SortNo,
                             r.KbnName ?? string.Empty,
-                            r.ColorCd ?? string.Empty,
+                            r.ColorCd?.Length > 0 ? "#" + r.ColorCd : string.Empty,
                             r.IsConfirmed == 1,
                             r.IsAuto,
                             r.IsAutoDelete,

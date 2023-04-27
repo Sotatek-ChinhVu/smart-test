@@ -467,20 +467,13 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.SystemConf.SaveDrugCheckSetting;
-using Domain.Models.Lock;
-using UseCase.Lock.Add;
-using Interactor.Lock;
-using UseCase.Lock.Check;
-using UseCase.Lock.Remove;
-using UseCase.Lock.ExtendTtl;
-using Reporting.Calculate.Implementation;
-using Reporting.Calculate.Interface;
 using Reporting.Statistics.Sta1002.Service;
 using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.DailyStatic.Service;
 using Reporting.DailyStatic.DB;
+using Reporting.Statistics.Sta1010.Service;
+using Reporting.Statistics.Sta1010.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -553,6 +546,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta1001Finder, CoSta1001Finder>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
+            services.AddTransient<ISta1010CoReportService, Sta1010CoReportService>();
+            services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

@@ -5,7 +5,6 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
-using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using static Helper.Constants.OrderInfConst;
 
@@ -264,8 +263,8 @@ public class CheckedOrderTest : BaseUT
             systemConf = new SystemConf
             {
                 HpId = 1,
-                GrpCd = 8001,
-                GrpEdaNo = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 4,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 1,
@@ -313,8 +312,8 @@ public class CheckedOrderTest : BaseUT
             systemConf = new SystemConf
             {
                 HpId = 1,
-                GrpCd = 8001,
-                GrpEdaNo = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 4,
                 CreateDate = DateTime.UtcNow,
                 UpdateDate = DateTime.UtcNow,
                 CreateId = 1,
@@ -448,11 +447,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 10;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -534,11 +534,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 11;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -624,11 +625,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220822, hokenId = 10, syosaisinKbn1 = 20;
         long ptId = 7318199999, raiinNo = 70096280111231, oyaRaiinNo = 1957703;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 12;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -693,8 +695,8 @@ public class CheckedOrderTest : BaseUT
         var iagkutokusitu1 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.SihifuToku1(hpId, ptId, sinDate, hokenId, syosaisinKbn1, raiinNo, oyaRaiinNo, byomeiModelList, ordInfDetailModels, isJouhou2);
         Assert.True(iagkutokusitu1.Count > 0);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"皮膚科特定疾患指導管理料（１）\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -814,11 +816,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 15;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -901,11 +904,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 16;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -992,11 +996,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, iBirthDay1 = 30, iBirthDay2 = 15;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 17;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1083,11 +1088,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 18;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1174,11 +1180,12 @@ public class CheckedOrderTest : BaseUT
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20, iBirthDay = 30;
         long ptId = 7318199999, raiinNo = 70096280111231300, oyaRaiinNo = 1;
         bool isJouhou = true;
+        int randomKey = 19;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1301,11 +1308,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         bool isJouhou = true;
+        int randomKey = 21;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1390,11 +1398,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 22;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1458,8 +1467,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1477,11 +1486,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 23;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1545,8 +1555,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuTenkan(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"てんかん指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"てんかん指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1608,11 +1618,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 1, syosaisinKbn2 = 6, syosaisinKbn3 = 2, syosaisinKbn4 = 4, syosaisinKbn5 = 8;
         bool isJouhou = true;
+        int randomKey = 25;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1697,11 +1708,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220301, hokenId = 10, syosaisinKbn1 = 1;
         bool isJouhou = true;
+        int randomKey = 26;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1782,11 +1794,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20221212, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou1 = true, isJouhou2 = false;
+        int randomKey = 27;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1854,8 +1867,8 @@ public class CheckedOrderTest : BaseUT
         // Act
         var iagkutokusitu1 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou1);
         var iagkutokusitu2 = medicalExaminationRepository.IgakuNanbyo(hpId, sinDate, hokenId, syosaisinKbn1, byomeiModelList, ordInfDetailModels, isJouhou2);
-        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu1.Count == 1 && iagkutokusitu1.Any(i => i.CheckingContent == "\"難病外来指導管理料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(iagkutokusitu2.Count == 1 && iagkutokusitu2.Any(i => i.CheckingContent == "\"難病外来指導管理料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         tenant.RaiinInfs.RemoveRange(raiinInfs);
         tenant.OdrInfs.RemoveRange(odrInfs);
@@ -1873,11 +1886,12 @@ public class CheckedOrderTest : BaseUT
         // Arrange
         int hpId = 1, sinDate = 20220501, hokenId = 10, syosaisinKbn1 = 20;
         bool isJouhou = true;
+        int randomKey = 28;
         var tenant = TenantProvider.GetNoTrackingDataContext();
         var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
-        var raiinInfs = CheckedOrderData.ReadRainInf();
-        var odrInfs = CheckedOrderData.ReadOdrInf();
-        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail();
+        var raiinInfs = CheckedOrderData.ReadRainInf(randomKey);
+        var odrInfs = CheckedOrderData.ReadOdrInf(randomKey);
+        var odrInfDetails = CheckedOrderData.ReadOdrInfDetail(randomKey);
         var systemGenerationConf = tenantTracking.SystemGenerationConfs.FirstOrDefault(p => p.HpId == 1
             && p.GrpCd == 8001
             && p.GrpEdaNo == 1
@@ -1990,18 +2004,9 @@ public class CheckedOrderTest : BaseUT
                     CheckingType.Order,
                     true,
                     "Checked Order Model",
-                    "113002310",
-                    1,
-                    "Item 4",
-                    1
-                ),
-              new CheckedOrderModel(
-                    CheckingType.Order,
-                    true,
-                    "Checked Order Model",
                     "113002850",
                     1,
-                    "Item 5",
+                    "Item 4",
                     1
                 ),
             new CheckedOrderModel(
@@ -2010,7 +2015,7 @@ public class CheckedOrderTest : BaseUT
                     "Checked Order Model",
                     "113000910",
                     1,
-                    "Item 6",
+                    "Item 5",
                     1
                 )
         };
@@ -2019,7 +2024,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113002910"));
     }
 
     /// <summary>
@@ -2073,7 +2078,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113002850"));
     }
 
     /// <summary>
@@ -2118,7 +2123,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113000910"));
     }
 
     /// <summary>
@@ -2154,7 +2159,7 @@ public class CheckedOrderTest : BaseUT
         checkOrders = medicalExaminationRepository.InitPriorityCheckDetail(checkOrders);
 
         //Assert
-        Assert.False(checkOrders.Any(c => c.Santei == true));
+        Assert.False(checkOrders.Any(c => c.Santei == true && c.ItemCd != "113001810"));
     }
 
     /// <summary>
@@ -2237,8 +2242,9 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_035_TiikiSantei()
     {
         //Arrange
+        int randomKey = 35;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConf();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConf(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
@@ -2281,8 +2287,9 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_036_PrimaryDoctor()
     {
         //Arrange
+        int randomKey = 36;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.SaveChanges();
         int hpId = 1, userId = 1, sinDate = 20220101, primaryDoctor = 0, tantoId = 1, syosaisinKbn = 3;
@@ -2325,9 +2332,10 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_037_TantoId()
     {
         //Arrange
+        int randomKey = 37;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
@@ -2360,9 +2368,10 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_038_Oshin()
     {
         //Arrange
+        int randomKey = 38;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
@@ -2398,14 +2407,15 @@ public class CheckedOrderTest : BaseUT
     public void ChikiHokatu_039_JidoSantei()
     {
         //Arrange
+        int randomKey = 39;
         var tenant = TenantProvider.GetNoTrackingDataContext();
-        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei();
-        var users = CheckedOrderData.ReadUserMst();
+        var ptSanteiConfs = CheckedOrderData.ReadPtSanteiConfToNoCheckSantei(randomKey);
+        var users = CheckedOrderData.ReadUserMst(randomKey);
         tenant.PtSanteiConfs.AddRange(ptSanteiConfs);
         tenant.UserMsts.AddRange(users);
         tenant.SaveChanges();
         int hpId = 1, userId = 99999, sinDate = 20220402, primaryDoctor = 1, tantoId = 1, syosaisinKbn = 3;
-        long ptId = long.MaxValue;
+        long ptId = long.MaxValue - randomKey;
         SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
@@ -2458,7 +2468,7 @@ public class CheckedOrderTest : BaseUT
         //Arrange
         int hpId = 1, birthDay = 20, sinDate = 20220402;
         long ptId = long.MaxValue;
-        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider); 
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
         MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
         var ordInfDetailModels = new List<OrdInfDetailModel>()
         {
@@ -3229,10 +3239,10 @@ public class CheckedOrderTest : BaseUT
         var checkModel4s = medicalExaminationRepository.SiIkuji(hpId, sinDate, birthDay, ordInfDetailModels, false, 6);
 
         //Assert
-        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所・情報通信機器）\"を算定できる可能性があります。"));
-        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
-        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"特定疾患療養管理料（診療所）\"を算定できる可能性があります。"));
+        Assert.True(checkModel1s.Count == 1 && checkModel1s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel2s.Count == 1 && checkModel2s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料（情報通信機器）\"を算定できる可能性があります。"));
+        Assert.True(checkModel3s.Count == 1 && checkModel3s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
+        Assert.True(checkModel4s.Count == 1 && checkModel4s.Any(i => i.CheckingContent == "\"乳幼児育児栄養指導料\"を算定できる可能性があります。"));
         if (systemGenerationConf != null) systemGenerationConf.Val = temp;
         if (autoSanteis.Count > 0) tenantTracking.AddRange(autoSanteis);
         tenantTracking.SaveChanges();
@@ -3500,13 +3510,56 @@ public class CheckedOrderTest : BaseUT
         var byomeiModelList = new List<PtDiseaseModel>()
         {
             new PtDiseaseModel(
-                1,
+                5,
                 10,
-                1,
+                0,
                 1,
                 1
             )
         };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
 
         // Act
         var checkModel1s = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModel1s, ordInf1s);
@@ -3514,6 +3567,9 @@ public class CheckedOrderTest : BaseUT
 
         //Assert
         Assert.True(checkModel1s.Count > 0 && checkModel2s.Count > 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
     }
 
     /// <summary>
@@ -3667,7 +3723,7 @@ public class CheckedOrderTest : BaseUT
         var checkModel2 = medicalExaminationRepository.CheckByoMei(hpId, sinDate, hokenId, isCheckShuByomeiOnly2, isCheckTeikyoByomei2, itemTokusyoCd, itemCd, inoutKbn, byomeiModelList);
 
         //Assert
-        Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0);
+        Assert.True(checkModel1.CheckingType > 0 && checkModel2.CheckingType > 0 && !checkModel1.Santei && !checkModel2.Santei);
         tenant.ByomeiMsts.RemoveRange(byomeiMsts);
         tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
         tenant.SaveChanges();
@@ -3749,4 +3805,2692 @@ public class CheckedOrderTest : BaseUT
         tenant.TekiouByomeiMsts.RemoveRange(tekiouByomeiMst);
         tenant.SaveChanges();
     }
+
+    #region TouyakuTokusyoSyoho Special
+    /// <summary>
+    /// Check  day < 28
+    /// </summary>
+    [Test]
+    public void TouyakuTokusyoSyoho_061_SystemSetting1_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_062_SystemSetting1_InOutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+               "1221",
+                20,
+                1
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_063_SystemSetting1_InHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_064_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                0
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_065_SystemSetting1_MainDisease_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_066_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 20000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                21,
+                21
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                1,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_067SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        string byomeiCd = "0670670", itemCd = "0670670670";
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                itemCd,
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                20220101,
+                0,
+                1,
+                1,
+                byomeiCd
+            )
+        };
+
+        var tenant = TenantProvider.GetNoTrackingDataContext();
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+
+        tenant.ByomeiMsts.AddRange(byomeiMsts);
+        tenant.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
+
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenant.SaveChanges();
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+        tenantTracking.SaveChanges();
+    }
+
+    /// <summary>
+    /// Check day > 28
+    /// </summary>
+    [Test]
+    public void TouyakuTokusyoSyoho_068_SystemSetting2_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 2,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 3,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_069_SystemSetting2_InOutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                1,
+                22000101,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_070_SystemSetting2_InHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）");
+
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_071_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+           new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                0
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_072_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+           new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）"); if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_073_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 20000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_074_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0740740", itemCd = "0740740740";
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                itemCd,
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                5,
+                10,
+                1,
+                1,
+                22000101,
+                1,
+                byomeiCd
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+        tenantTracking.SaveChanges();
+    }
+
+    #endregion
+
+    #region TouyakuTokusyoSyoho Other
+    /// <summary>
+    /// Check  day < 28
+    /// </summary>
+    [Test]
+    public void TouyakuTokusyoSyoho_075_SystemSetting1_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123",
+                20,
+                1
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_076_SystemSetting1_InOutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123",
+                20,
+                1
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_077_SystemSetting1_InHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123",
+                20,
+                1
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_078_SystemSetting1_NoMainDisease_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123",
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                0
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_079_SystemSetting1_MainDisease_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "123",
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_080_SystemSetting1_MainDisease_NoMapDrug_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 20000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+               "123",
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_081_SystemSetting1_MainDisease_MapDrug_OutHospistal_LessThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0810810", itemCd = "0810810810";
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                itemCd,
+                20,
+                1
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                1,
+                0,
+                22000101,
+                1,
+                byomeiCd
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 0);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 1);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算１（処方箋料）");
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+        tenantTracking.SaveChanges();
+    }
+
+    /// <summary>
+    /// Check day > 28
+    /// </summary>
+    [Test]
+    public void TouyakuTokusyoSyoho_082_SystemSetting2_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                1,
+                0,
+                1,
+                1,
+                "8846347"
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 2,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 3,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_083_SystemSetting2_InOutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+             new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_084_SystemSetting2_InHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInf1s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+        var ordInf2s = new List<OrdInfModel>() {
+            new OrdInfModel(
+                0,
+                21,
+                ordInfDetailModels
+                )
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 0;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInf1s.Union(ordInf2s).ToList());
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 0 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方料）" && !checkModels.First().Santei);
+
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_085_SystemSetting2_NoMainDisease_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                0
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_086_SystemSetting2_MainDisease_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                1,
+                1,
+                22000101,
+                1,
+                "8846347"
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 0;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 0
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_087_SystemSetting2_MainDisease_NoMapDrug_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 20000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                "1221",
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                0,
+                1,
+                1
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 0);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.SaveChanges();
+    }
+
+    [Test]
+    public void TouyakuTokusyoSyoho_088_SystemSetting2_MainDisease_MapDrug_OutHospistal_MoreThan28()
+    {
+        //Arrange
+        int hpId = 1, sinDate = 21000101, hokenId = 10;
+        SystemConfRepository systemConfRepository = new SystemConfRepository(TenantProvider);
+        MedicalExaminationRepository medicalExaminationRepository = new MedicalExaminationRepository(TenantProvider, systemConfRepository);
+        string byomeiCd = "0880880", itemCd = "0880880880";
+
+        var ordInfDetailModels = new List<OrdInfDetailModel>()
+        {
+            new OrdInfDetailModel(
+                itemCd,
+                20,
+                1
+            ),
+            new OrdInfDetailModel(
+                21,
+                30
+            )
+        };
+
+        var ordInfs = new List<OrdInfModel>() {
+            new OrdInfModel(
+                1,
+                21,
+                ordInfDetailModels
+                ),
+        };
+
+        var byomeiModelList = new List<PtDiseaseModel>()
+        {
+            new PtDiseaseModel(
+                8,
+                10,
+                1,
+                0,
+                22000101,
+                1,
+                byomeiCd
+            )
+        };
+
+        var tenantTracking = TenantProvider.GetTrackingTenantDataContext();
+        var byomeiMsts = CheckedOrderData.ReadByomeiMst(byomeiCd);
+        var tekiouByomeiMsts = CheckedOrderData.ReadTekiouByomeiMst(byomeiCd, itemCd);
+        tenantTracking.ByomeiMsts.AddRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.AddRange(tekiouByomeiMsts);
+        var systemConf = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+            && p.GrpCd == 2002
+            && p.GrpEdaNo == 2);
+        var systemConf2 = tenantTracking.SystemConfs.FirstOrDefault(p => p.HpId == 1
+          && p.GrpCd == 2002
+          && p.GrpEdaNo == 3);
+        var temp = systemConf?.Val ?? 0;
+        var temp1 = systemConf2?.Val ?? 0;
+        if (systemConf != null) systemConf.Val = 1;
+        else
+        {
+            systemConf = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 0,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        if (systemConf2 != null) systemConf2.Val = 1;
+        else
+        {
+            systemConf2 = new SystemConf
+            {
+                HpId = 1,
+                GrpCd = 2002,
+                GrpEdaNo = 1,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                CreateId = 1,
+                UpdateId = 1,
+                Val = 1
+            };
+            tenantTracking.SystemConfs.Add(systemConf);
+        }
+        tenantTracking.SaveChanges();
+
+        // Act
+        var checkModels = medicalExaminationRepository.TouyakuTokusyoSyoho(hpId, sinDate, hokenId, byomeiModelList, ordInfDetailModels, ordInfs);
+
+        //Assert
+        Assert.True(checkModels.Count == 1 && checkModels.First().InOutKbn == 1 && checkModels.First().CheckingType == CheckingType.MissingCalculate && checkModels.First().ItemName == "特定疾患処方管理加算２（処方箋料）" && !checkModels.First().Santei);
+        if (systemConf != null) systemConf.Val = temp;
+        if (systemConf2 != null) systemConf2.Val = temp;
+        tenantTracking.ByomeiMsts.RemoveRange(byomeiMsts);
+        tenantTracking.TekiouByomeiMsts.RemoveRange(tekiouByomeiMsts);
+        tenantTracking.SaveChanges();
+    }
+
+    #endregion
 }
