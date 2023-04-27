@@ -768,7 +768,7 @@ public class RecalculationInteractor : IRecalculationInputPort
                                                                      ))
                              .ToList()));
 
-        var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition, new(), new(), new(), false);
+        var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition);
         foreach (var errorInfo in checkedResult)
         {
             var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;

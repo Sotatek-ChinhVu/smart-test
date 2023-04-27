@@ -33,19 +33,19 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             List<DiseaseResultModel> checkedResult = new List<DiseaseResultModel>();
 
-            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder!.CheckContraindicationForCurrentDisease(HpID, PtID, settingLevel, Sinday, listItemCode, unitCheckerForOrderListResult.PtDiseaseModels, unitCheckerForOrderListResult.IsDataOfDb);
+            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder!.CheckContraindicationForCurrentDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
             if (checkedResultForCurrentDisease != null)
             {
                 checkedResult.AddRange(checkedResultForCurrentDisease);
             }
 
-            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode, unitCheckerForOrderListResult.SpecialNoteModel.ImportantNoteModel.KioRekiItems, unitCheckerForOrderListResult.IsDataOfDb);
+            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
             if (checkedResultForHistoryDisease != null)
             {
                 checkedResult.AddRange(checkedResultForHistoryDisease);
             }
 
-            List<DiseaseResultModel> checkedResultForFamilyDisease = Finder.CheckContraindicationForFamilyDisease(HpID, PtID, settingLevel, Sinday, listItemCode, unitCheckerForOrderListResult.FamilyModels, unitCheckerForOrderListResult.IsDataOfDb);
+            List<DiseaseResultModel> checkedResultForFamilyDisease = Finder.CheckContraindicationForFamilyDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
             if (checkedResultForFamilyDisease != null)
             {
                 checkedResult.AddRange(checkedResultForFamilyDisease);

@@ -1,6 +1,7 @@
 ﻿using CommonChecker.Models;
 using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.Models;
+using System.Reflection;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -15,7 +16,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            List<string> ptAlrgyDrugCodeList = Finder!.GetDrugAllergyByPtId(HpID, PtID, Sinday, unitCheckerForOrderListResult.SpecialNoteModel.ImportantNoteModel.AlrgyDrugItems, unitCheckerForOrderListResult.IsDataOfDb).Select(dr => dr.ItemCd).ToList();
+            List<string> ptAlrgyDrugCodeList = Finder!.GetDrugAllergyByPtId(HpID, PtID, Sinday).Select(dr => dr.ItemCd).ToList();
 
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
