@@ -1,5 +1,4 @@
-﻿using Domain.Models.MstItem;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.GetSetDataTenMst
 {

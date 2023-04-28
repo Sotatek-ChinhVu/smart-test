@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Helper.Common;
 using Helper.Constants;
-using System.Text.Json.Serialization;
 using static Helper.Constants.PtDiseaseConst;
 
 namespace Domain.Models.Diseases
@@ -10,7 +9,6 @@ namespace Domain.Models.Diseases
     {
         private const string FREE_WORD = "0000999";
 
-        [JsonConstructor]
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
             List<PrefixSuffixModel> prefixSuffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate,
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte,

@@ -18,6 +18,11 @@ namespace Domain.Models.MstItem
             ModelModified = modelModified;
         }
 
+        public DrugDayLimitModel()
+        {
+            ItemCd = string.Empty;
+        }
+
         public int Id { get; private set; }
 
         /// <summary>

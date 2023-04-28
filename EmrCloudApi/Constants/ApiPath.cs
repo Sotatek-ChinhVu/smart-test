@@ -290,6 +290,9 @@
         //TenMstMaintenance
         public const string GetListTenMstOrigin = "GetListTenMstOrigin";
         public const string GetTenMstOriginInfoCreate = "GetTenMstOriginInfoCreate";
+        public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
+        public const string GetSetDataTenMst = "GetSetDataTenMst";
+        public const string SaveSetDataTenMst = "SaveSetDataTenMst";
 
         //Lock
         public const string AddLock = "AddLock";
@@ -301,8 +304,6 @@
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
-        public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
-        public const string GetSetDataTenMst = "GetSetDataTenMst";
         public const string GetListDrugImage = "GetListDrugImage";
     }
 }

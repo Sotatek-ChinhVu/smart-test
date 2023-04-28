@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.MstItem
+﻿using Helper.Enum;
+
+namespace Domain.Models.MstItem
 {
     public class TenMstOriginModel
     {
-        public TenMstOriginModel(int hpId, string itemCd, int startDate, int endDate, string masterSbt, int sinKouiKbn, string name, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string ryosyuName, string receName, int tenId, double ten, string receUnitCd, string receUnitName, string odrUnitName, string cnvUnitName, double odrTermVal, double cnvTermVal, double defaultVal, int isAdopted, int koukiKbn, int hokatuKensa, int byomeiKbn, int igakukanri, int jitudayCount, int jituday, int dayCount, int drugKanrenKbn, int kizamiId, int kizamiMin, int kizamiMax, int kizamiVal, double kizamiTen, int kizamiErr, int maxCount, int maxCountErr, string tyuCd, string tyuSeq, int tusokuAge, string minAge, string maxAge, int ageCheck, int timeKasanKbn, int futekiKbn, int futekiSisetuKbn, int syotiNyuyojiKbn, int lowWeightKbn, int handanKbn, int handanGrpKbn, int teigenKbn, int sekituiKbn, int keibuKbn, int autoHougouKbn, int gairaiKanriKbn, int tusokuTargetKbn, int hokatuKbn, int tyoonpaNaisiKbn, int autoFungoKbn, int tyoonpaGyokoKbn, int gazoKasan, int kansatuKbn, int masuiKbn, int fukubikuNaisiKasan, int fukubikuKotunanKasan, int masuiKasan, int moniterKasan, int toketuKasan, string tenKbnNo, int shortstayOpe, int buiKbn, int sisetucd1, int sisetucd2, int sisetucd3, int sisetucd4, int sisetucd5, int sisetucd6, int sisetucd7, int sisetucd8, int sisetucd9, int sisetucd10, string agekasanMin1, string agekasanMax1, string agekasanCd1, string agekasanMin2, string agekasanMax2, string agekasanCd2, string agekasanMin3, string agekasanMax3, string agekasanCd3, string agekasanMin4, string agekasanMax4, string agekasanCd4, int kensaCmt, int madokuKbn, int sinkeiKbn, int seibutuKbn, int zoueiKbn, int drugKbn, int zaiKbn, double zaikeiPoint, int capacity, int kohatuKbn, int tokuzaiAgeKbn, int sansoKbn, int tokuzaiSbt, int maxPrice, int maxTen, string syukeiSaki, string cdKbn, int cdSyo, int cdBu, int cdKbnno, int cdEdano, int cdKouno, string kokujiKbn, int kokujiSyo, int kokujiBu, int kokujiKbnNo, int kokujiEdaNo, int kokujiKouNo, string kokuji1, string kokuji2, int kohyoJun, string yjCd, string yakkaCd, int syusaiSbt, string syohinKanren, int updDate, int delDate, int keikaDate, int rousaiKbn, int sisiKbn, int shotCnt, int isNosearch, int isNodspPaperRece, int isNodspRece, int isNodspRyosyu, int isNodspKarte, int isNodspYakutai, int jihiSbt, int kazeiKbn, int yohoKbn, string ipnNameCd, int fukuyoRise, int fukuyoMorning, int fukuyoDaytime, int fukuyoNight, int fukuyoSleep, int suryoRoundupKbn, int kouseisinKbn, int chusyaDrugSbt, int kensaFukusuSantei, string santeiItemCd, int santeigaiKbn, string kensaItemCd, int kensaItemSeqNo, string renkeiCd1, string renkeiCd2, int saiketuKbn, int cmtKbn, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3, int cmtCol4, int cmtColKeta4, int selectCmtId, int kensaLabel, bool isUpdated, bool isAddNew, int isDeleted, bool isStartDateKeyUpdated, int originStartDate)
+        public TenMstOriginModel(int hpId, string itemCd, int startDate, int endDate, string masterSbt, int sinKouiKbn, string name, string kanaName1, string kanaName2, string kanaName3, string kanaName4, string kanaName5, string kanaName6, string kanaName7, string ryosyuName, string receName, int tenId, double ten, string receUnitCd, string receUnitName, string odrUnitName, string cnvUnitName, double odrTermVal, double cnvTermVal, double defaultVal, int isAdopted, int koukiKbn, int hokatuKensa, int byomeiKbn, int igakukanri, int jitudayCount, int jituday, int dayCount, int drugKanrenKbn, int kizamiId, int kizamiMin, int kizamiMax, int kizamiVal, double kizamiTen, int kizamiErr, int maxCount, int maxCountErr, string tyuCd, string tyuSeq, int tusokuAge, string minAge, string maxAge, int ageCheck, int timeKasanKbn, int futekiKbn, int futekiSisetuKbn, int syotiNyuyojiKbn, int lowWeightKbn, int handanKbn, int handanGrpKbn, int teigenKbn, int sekituiKbn, int keibuKbn, int autoHougouKbn, int gairaiKanriKbn, int tusokuTargetKbn, int hokatuKbn, int tyoonpaNaisiKbn, int autoFungoKbn, int tyoonpaGyokoKbn, int gazoKasan, int kansatuKbn, int masuiKbn, int fukubikuNaisiKasan, int fukubikuKotunanKasan, int masuiKasan, int moniterKasan, int toketuKasan, string tenKbnNo, int shortstayOpe, int buiKbn, int sisetucd1, int sisetucd2, int sisetucd3, int sisetucd4, int sisetucd5, int sisetucd6, int sisetucd7, int sisetucd8, int sisetucd9, int sisetucd10, string agekasanMin1, string agekasanMax1, string agekasanCd1, string agekasanMin2, string agekasanMax2, string agekasanCd2, string agekasanMin3, string agekasanMax3, string agekasanCd3, string agekasanMin4, string agekasanMax4, string agekasanCd4, int kensaCmt, int madokuKbn, int sinkeiKbn, int seibutuKbn, int zoueiKbn, int drugKbn, int zaiKbn, double zaikeiPoint, int capacity, int kohatuKbn, int tokuzaiAgeKbn, int sansoKbn, int tokuzaiSbt, int maxPrice, int maxTen, string syukeiSaki, string cdKbn, int cdSyo, int cdBu, int cdKbnno, int cdEdano, int cdKouno, string kokujiKbn, int kokujiSyo, int kokujiBu, int kokujiKbnNo, int kokujiEdaNo, int kokujiKouNo, string kokuji1, string kokuji2, int kohyoJun, string yjCd, string yakkaCd, int syusaiSbt, string syohinKanren, int updDate, int delDate, int keikaDate, int rousaiKbn, int sisiKbn, int shotCnt, int isNosearch, int isNodspPaperRece, int isNodspRece, int isNodspRyosyu, int isNodspKarte, int isNodspYakutai, int jihiSbt, int kazeiKbn, int yohoKbn, string ipnNameCd, int fukuyoRise, int fukuyoMorning, int fukuyoDaytime, int fukuyoNight, int fukuyoSleep, int suryoRoundupKbn, int kouseisinKbn, int chusyaDrugSbt, int kensaFukusuSantei, string santeiItemCd, int santeigaiKbn, string kensaItemCd, int kensaItemSeqNo, string renkeiCd1, string renkeiCd2, int saiketuKbn, int cmtKbn, int cmtCol1, int cmtColKeta1, int cmtCol2, int cmtColKeta2, int cmtCol3, int cmtColKeta3, int cmtCol4, int cmtColKeta4, int selectCmtId, int kensaLabel, bool isUpdated, bool isAddNew, int isDeleted, bool isStartDateKeyUpdated, int originStartDate, bool isSelected)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -34,7 +36,6 @@
             HokatuKensa = hokatuKensa;
             ByomeiKbn = byomeiKbn;
             Igakukanri = igakukanri;
-            JitudayCount = jitudayCount;
             Jituday = jituday;
             DayCount = dayCount;
             DrugKanrenKbn = drugKanrenKbn;
@@ -58,6 +59,7 @@
             SyotiNyuyojiKbn = syotiNyuyojiKbn;
             LowWeightKbn = lowWeightKbn;
             HandanKbn = handanKbn;
+            JitudayCount = jitudayCount;
             HandanGrpKbn = handanGrpKbn;
             TeigenKbn = teigenKbn;
             SekituiKbn = sekituiKbn;
@@ -190,6 +192,7 @@
             IsLastItem = false;
             IsStartDateKeyUpdated = isStartDateKeyUpdated;
             OriginStartDate = originStartDate;
+            IsSelected = isSelected;
         }
 
         public TenMstOriginModel()
@@ -244,6 +247,7 @@
             RenkeiCd1 = string.Empty;
             RenkeiCd2 = string.Empty;
             MasterSbt = string.Empty;
+            IsSelected = IsSelected;
         }
 
         /// <summary>
@@ -1839,5 +1843,83 @@
         public bool IsStartDateKeyUpdated { get; private set; }
 
         public int OriginStartDate { get; private set; }
+
+        /// <summary>
+        /// Specifies the currently selected version of tenMst in client
+        /// </summary>
+        public bool IsSelected { get; private set; }
+
+        public ItemTypeEnums GetItemType()
+        {
+            if (ItemCd.StartsWith("J"))
+            {
+                return ItemTypeEnums.JihiItem;
+            }
+            else if (ItemCd.StartsWith("Z"))
+            {
+                return ItemTypeEnums.SpecificMedicalMeterialItem;
+            }
+            else if (ItemCd.StartsWith("Y"))
+            {
+                return ItemTypeEnums.UsageItem;
+            }
+            else if (ItemCd.StartsWith("W"))
+            {
+                return ItemTypeEnums.SpecialMedicineCommentItem;
+            }
+            else if (ItemCd.StartsWith("CO"))
+            {
+                return ItemTypeEnums.COCommentItem;
+            }
+            else if (ItemCd.StartsWith("KONI"))
+            {
+                return ItemTypeEnums.KonikaItem;
+            }
+            else if (ItemCd.StartsWith("FCR"))
+            {
+                return ItemTypeEnums.FCRItem;
+            }
+            else if (ItemCd.StartsWith("KN"))
+            {
+                return ItemTypeEnums.KensaItem;
+            }
+            else if (ItemCd.StartsWith("IGE"))
+            {
+                return ItemTypeEnums.TokuiTeki;
+            }
+            else if (ItemCd.StartsWith("SMZ"))
+            {
+                return ItemTypeEnums.Shimadzu;
+            }
+            else if (ItemCd.StartsWith("S"))
+            {
+                return ItemTypeEnums.Jibaiseki;
+            }
+            else if (ItemCd.StartsWith("X"))
+            {
+                return ItemTypeEnums.Dami;
+            }
+            else if (ItemCd.StartsWith("1") && ItemCd.Length == 9)
+            {
+                return ItemTypeEnums.ShinryoKoi;
+            }
+            else if (ItemCd.StartsWith("6") && ItemCd.Length == 9)
+            {
+                return ItemTypeEnums.Yakuzai;
+            }
+            else if (ItemCd.StartsWith("7") && ItemCd.Length == 9)
+            {
+                return ItemTypeEnums.Tokuzai;
+            }
+            else if (ItemCd.Length == 4)
+            {
+                return ItemTypeEnums.Bui;
+            }
+            else if (ItemCd.StartsWith("8") && ItemCd.Length == 9)
+            {
+                return ItemTypeEnums.CommentItem;
+            }
+            return ItemTypeEnums.Other;
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class DensiHoukatuModel
     {
-        public DensiHoukatuModel(int hpId, string itemCd, int startDate, int endDate, int targetKbn, long seqNo, int houkatuTerm, string houkatuGrpNo, int userSetting, int isInvalid, string name, string houkatuGrpItemCd, int spJyoken, bool isModified, bool isDeleted)
+        public DensiHoukatuModel(int hpId, string itemCd, int startDate, int endDate, int targetKbn, long seqNo, int houkatuTerm, string houkatuGrpNo, int userSetting, int isInvalid, bool isInvalidBinding, string name, string houkatuGrpItemCd, int spJyoken, bool isModified, bool isDeleted)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -16,6 +16,7 @@ namespace Domain.Models.MstItem
             HoukatuGrpNo = houkatuGrpNo;
             UserSetting = userSetting;
             IsInvalid = isInvalid;
+            IsInvalidBinding = isInvalidBinding;
             Name = name;
             HoukatuGrpItemCd = houkatuGrpItemCd;
             SpJyoken = spJyoken;
@@ -23,6 +24,13 @@ namespace Domain.Models.MstItem
             IsDeleted = isDeleted;
         }
 
+        public DensiHoukatuModel()
+        {
+            ItemCd = string.Empty;
+            Name = string.Empty;
+            HoukatuGrpNo = string.Empty;
+            HoukatuGrpItemCd = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID
@@ -97,7 +105,10 @@ namespace Domain.Models.MstItem
         /// </summary>
         public int IsInvalid { get; private set; }
 
-        
+        public bool IsInvalidBinding { get; private set; }
+
+        public void SetIsInvalid(int value) => IsInvalid = value;
+
         public string HoukatuTermDisplay
         {
             get

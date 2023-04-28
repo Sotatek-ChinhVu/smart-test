@@ -42,6 +42,11 @@
             ItemGrpCd = itemGrpCd;
         }
 
+        public DensiSanteiKaisuModel()
+        {
+            ItemCd = string.Empty;
+        }
+
         public int Id { get; private set; }
 
         public int HpId { get; private set; }
@@ -75,5 +80,10 @@
         public bool IsModified { get; private set; }
 
         public bool IsDeleted { get; private set; }
+
+        public bool CheckDefaultValue()
+        {
+            return UnitCd == 0 && StartDate == 0 && EndDate == 99999999 && MaxCount == 0;
+        }
     }
 }
