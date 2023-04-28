@@ -46,5 +46,7 @@ namespace Domain.Models.OrdInfs
         OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate);
 
         List<Tuple<string, string>> GetIpnMst(int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds);
+
+        bool CheckOrdInfInDrug(int hpId, long ptId, long raiinNo);
     }
 }

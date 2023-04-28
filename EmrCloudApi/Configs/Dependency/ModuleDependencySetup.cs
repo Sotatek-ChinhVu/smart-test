@@ -335,6 +335,7 @@ using UseCase.NextOrder.GetList;
 using UseCase.NextOrder.Upsert;
 using UseCase.NextOrder.Validation;
 using UseCase.OrdInfs.CheckedSpecialItem;
+using UseCase.OrdInfs.CheckOrdInfInDrug;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -683,6 +684,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
             busBuilder.RegisterUseCase<GetMaxRpNoInputData, GetMaxRpNoInteractor>();
             busBuilder.RegisterUseCase<GetHeaderInfInputData, GetHeaderInfInteractor>();
+            busBuilder.RegisterUseCase<CheckOrdInfInDrugInputData, CheckOrdInfInDrugInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
