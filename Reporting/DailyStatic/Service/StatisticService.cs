@@ -11,6 +11,8 @@ using Reporting.Statistics.Sta1010.Models;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.Models;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2002.Models;
+using Reporting.Statistics.Sta2002.Service;
 using Reporting.Statistics.Sta2003.Models;
 using Reporting.Statistics.Sta2003.Service;
 
@@ -24,8 +26,9 @@ public class StatisticService : IStatisticService
     private readonly ISta2001CoReportService _sta2001CoReportService;
     private readonly ISta2003CoReportService _sta2003CoReportService;
     private readonly ISta1001CoReportService _sta1001CoReportService;
+    private readonly ISta2002CoReportService _sta2002CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -33,6 +36,7 @@ public class StatisticService : IStatisticService
         _sta2001CoReportService = sta2001CoReportService;
         _sta2003CoReportService = sta2003CoReportService;
         _sta1001CoReportService = sta1001CoReportService;
+        _sta2002CoReportService = sta2002CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -49,6 +53,8 @@ public class StatisticService : IStatisticService
                 return PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta2001:
                 return PrintSta2001(hpId, configDaily, monthFrom, monthTo);
+            case StatisticReportType.Sta2002:
+                return PrintSta2002(hpId, configDaily, monthFrom, monthTo);
             case StatisticReportType.Sta2003:
                 return PrintSta2003(hpId, configDaily, monthFrom, monthTo);
         }
@@ -78,6 +84,13 @@ public class StatisticService : IStatisticService
     {
         var printConf = CreateCoSta2001PrintConf(configDaily, monthFrom, monthTo);
         return _sta2001CoReportService.GetSta2001ReportingData(printConf, hpId);
+
+    }
+
+    private CommonReportingRequestModel PrintSta2002(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+    {
+        var printConf = CreateCoSta2002PrintConf(configDaily, monthFrom, monthTo);
+        return _sta2002CoReportService.GetSta2002ReportingData(printConf, hpId);
 
     }
 
@@ -260,6 +273,23 @@ public class StatisticService : IStatisticService
         printConf.HokenSbts = configDaily.InsuranceType.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
         printConf.IsTensu = configDaily.MedicalTreatment;
         printConf.IsJihiFutan = configDaily.NonInsuranceAmount;
+        return printConf;
+    }
+
+    private CoSta2002PrintConf CreateCoSta2002PrintConf(ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+    {
+        CoSta2002PrintConf printConf = new CoSta2002PrintConf(configDaily.MenuId);
+        printConf.StartNyukinYm = monthFrom;
+        printConf.EndNyukinYm = monthTo;
+        printConf.FormFileName = configDaily.FormReport;
+        printConf.ReportName = configDaily.ReportName;
+        printConf.PageBreak1 = configDaily.BreakPage1;
+        printConf.PageBreak2 = configDaily.BreakPage2;
+        printConf.IsTester = configDaily.TestPatient == 1;
+        printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
+        printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+
         return printConf;
     }
     #endregion

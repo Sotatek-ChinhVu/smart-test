@@ -6,50 +6,16 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
-using StackExchange.Redis;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
+builder.Services.AddSignalR();
 builder.Services.AddMemoryCache();
-
-// Setup signalR
-builder.Services.AddSignalR()
-        .AddStackExchangeRedis(o =>
-        {
-            o.ConnectionFactory = async writer =>
-            {
-                var config = new ConfigurationOptions
-                {
-                    AbortOnConnectFail = false
-                };
-
-                string redisHost = builder.Configuration["RedisHost"];
-                string redisPort = builder.Configuration["RedisPort"];
-                config.EndPoints.Add(redisHost, int.Parse(redisPort));
-
-                var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
-                connection.ConnectionFailed += (_, e) =>
-                {
-                    Console.WriteLine("Connection to Redis failed.");
-                };
-
-                if (!connection.IsConnected)
-                {
-                    Console.WriteLine("Did not connect to Redis.");
-                }
-                else
-                {
-                    Console.WriteLine("Connected to Redis.");
-                }
-
-                return connection;
-            };
-        });
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
@@ -153,7 +119,7 @@ if (app.Environment.IsDevelopment() ||
 }
 
 // serilog
-var configuration = new ConfigurationBuilder()
+var Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("env.json", false, true)
                 .AddJsonFile($"env.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true,
@@ -162,7 +128,7 @@ var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .Build();
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(configuration)
+    .ReadFrom.Configuration(Configuration)
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
     .WriteTo.Console()
