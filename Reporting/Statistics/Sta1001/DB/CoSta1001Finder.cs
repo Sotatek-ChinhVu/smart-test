@@ -248,7 +248,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
             joinQuery = joinQuery.Where(n => printConf.PaymentMethodCds.Contains(n.NyukinPaymentMethodCd));
         }
 
-        var result = joinQuery.AsQueryable().Select(
+        var result = joinQuery.Select(
                 data =>
                     new CoSyunoInfModel()
                     {
