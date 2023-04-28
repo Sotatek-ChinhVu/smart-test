@@ -10,9 +10,9 @@ namespace Reporting.Statistics.Sta2010.DB
 {
     public class CoSta2010Finder : RepositoryBase, ICoSta2010Finder
     {
-        private CoHpInfFinder _hpInfFinder;
+        private ICoHpInfFinder _hpInfFinder;
 
-        public CoSta2010Finder(ITenantProvider tenantProvider, CoHpInfFinder hpInfFinder) : base(tenantProvider)
+        public CoSta2010Finder(ITenantProvider tenantProvider, ICoHpInfFinder hpInfFinder) : base(tenantProvider)
         {
             _hpInfFinder = hpInfFinder;
         }

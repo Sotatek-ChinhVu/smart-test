@@ -570,6 +570,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
             services.AddTransient<ICoSta2002Finder, CoSta2002Finder>();
             services.AddTransient<ISta2002CoReportService, Sta2002CoReportService>();
+            services.AddTransient<ICoSta2010Finder, CoSta2010Finder>();
+            services.AddTransient<ISta2010CoReportService, Sta2010CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -661,8 +663,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
-            services.AddTransient<ICoSta2010Finder, CoSta2010Finder>();
-            services.AddTransient<ISta2010CoReportService, Sta2010CoReportService>();
         }
 
         private void SetupUseCase(IServiceCollection services)

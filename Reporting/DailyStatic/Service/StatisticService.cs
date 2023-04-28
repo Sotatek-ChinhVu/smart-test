@@ -62,7 +62,7 @@ public class StatisticService : IStatisticService
             case StatisticReportType.Sta2003:
                 return PrintSta2003(hpId, configDaily, monthFrom, monthTo);
             case StatisticReportType.Sta2010:
-                return PrintSta2010(hpId, configDaily, monthFrom, monthTo);
+                return PrintSta2010(hpId, configDaily, monthFrom);
         }
         return new();
     }
@@ -104,7 +104,7 @@ public class StatisticService : IStatisticService
         return _sta2003CoReportService.GetSta2003ReportingData(printConf, hpId);
     }
 
-    private CommonReportingRequestModel PrintSta2010(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+    private CommonReportingRequestModel PrintSta2010(int hpId, ConfigStatisticModel configDaily, int monthFrom)
     {
         var printConf = CreateCoSta2010PrintConf(configDaily, monthFrom);
         return _sta2010CoReportService.GetSta2010ReportingData(printConf, hpId);
