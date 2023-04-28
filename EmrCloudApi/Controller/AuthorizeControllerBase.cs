@@ -12,15 +12,17 @@ namespace EmrCloudApi.Controller
 
         public int UserId { get; private set; }
 
+        public int DepartmentId { get; private set; }
+
         public string Token { get; private set; }
 
         public AuthorizeControllerBase(IUserService userService)
         {
             var userInfo = userService.GetLoginUser();
-
             HpId = userInfo.HpId;
             UserId = userInfo.UserId;
             Token = userInfo.Token;
+            DepartmentId = userInfo.DepartmentId;
         }
     }
 }

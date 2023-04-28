@@ -54,6 +54,7 @@ using Domain.Models.SpecialNote;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.MainMenu;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
@@ -182,6 +183,8 @@ using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.DB;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2003.DB;
+using Reporting.Statistics.Sta2003.Service;
 using Reporting.Statistics.Sta2002.DB;
 using Reporting.Statistics.Sta2002.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -316,6 +319,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -432,6 +436,7 @@ using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
 using UseCase.SpecialNote.Save;
+using UseCase.MainMenu.GetDailyStatisticMenu;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
@@ -480,6 +485,8 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using Interactor.MainMenu;
+using UseCase.ChartApproval.CheckSaveLogOut;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -556,6 +563,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
             services.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
             services.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
+            services.AddTransient<ICoSta2003Finder, CoSta2003Finder>();
+            services.AddTransient<ISta2003CoReportService, Sta2003CoReportService>();
             services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
             services.AddTransient<ICoSta2002Finder, CoSta2002Finder>();
             services.AddTransient<ISta2002CoReportService, Sta2002CoReportService>();
@@ -649,6 +658,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
+            services.AddTransient<IStatisticRepository, StatisticRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -667,6 +677,7 @@ namespace EmrCloudApi.Configs.Dependency
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
             busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<CheckSaveLogOutInputData, CheckSaveLogOutInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -1081,12 +1092,16 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
+
+            // Statistic
+            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
