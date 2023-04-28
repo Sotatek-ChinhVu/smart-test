@@ -7,7 +7,9 @@ using Helper;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Messaging;
 using Infrastructure.Interfaces;
+using System;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -83,7 +85,23 @@ namespace Interactor.PatientInfor
 
                 (bool resultSave, long ptId) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys , HandlerInsuranceScan, inputData.UserId);
+                {
+                    if(inputData.Patient.PtNum != 0)
+                    {
+                        if (_systemConfRepository.GetSettingValue(1001, 0 , inputData.Patient.HpId) == 1)
+                        {
+                            if (!CIUtil.PtNumCheckDigits(inputData.Patient.PtNum))
+                            {
+                                string msg = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
+                                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>()
+                                {
+                                    new SavePatientInfoValidationResult(msg, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError)
+                                }, SavePatientInfoStatus.Failed, 0);
+                            }
+                        }
+                    }
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                }  
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
 
