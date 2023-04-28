@@ -8,7 +8,7 @@ namespace CloudUnitTest.SampleData
     public static class CheckedDiseaseData
     {
         //Create COM Objects. Create a COM object for everything that is referenced
-        public static List<ByomeiMst> ReadByomeiMst()
+        public static List<ByomeiMst> ReadByomeiMst(string byomeiCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -48,7 +48,7 @@ namespace CloudUnitTest.SampleData
                                     byomeiMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    byomeiMst.ByomeiCd = text;
+                                    byomeiMst.ByomeiCd = byomeiCd;
                                     break;
                                 case "C":
                                     byomeiMst.Byomei = text;
@@ -149,7 +149,7 @@ namespace CloudUnitTest.SampleData
         }
 
         //Create COM Objects. Create a COM object for everything that is referenced
-        public static List<TenMst> ReadTenMst()
+        public static List<TenMst> ReadTenMst(string itemCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -187,7 +187,7 @@ namespace CloudUnitTest.SampleData
                                     tenMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tenMst.ItemCd = text;
+                                    tenMst.ItemCd = itemCd;
                                     break;
                                 case "C":
                                     int.TryParse(text, out int startDate);
@@ -237,7 +237,7 @@ namespace CloudUnitTest.SampleData
             return tenMsts;
         }
 
-        public static List<TekiouByomeiMst> ReadTekiouByomeiMst()
+        public static List<TekiouByomeiMst> ReadTekiouByomeiMst(string itemCd, string byomeiCd)
         {
             var rootPath = Environment.CurrentDirectory;
             rootPath = rootPath.Remove(rootPath.IndexOf("bin"));
@@ -275,10 +275,10 @@ namespace CloudUnitTest.SampleData
                                     tekiouByomeiMst.HpId = hpId;
                                     break;
                                 case "B":
-                                    tekiouByomeiMst.ItemCd = text;
+                                    tekiouByomeiMst.ItemCd = itemCd;
                                     break;
                                 case "C":
-                                    tekiouByomeiMst.ByomeiCd = text;
+                                    tekiouByomeiMst.ByomeiCd = byomeiCd;
                                     break;
                                 case "D":
                                     int.TryParse(text, out int isInvalid);
