@@ -175,6 +175,7 @@ using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Sta1001.DB;
+using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1002.Service;
 using Reporting.Statistics.Sta1010.DB;
@@ -553,6 +554,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
             services.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
             services.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
+            services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

@@ -1,8 +1,8 @@
 ﻿using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
-using Helper.Enum;
 using Reporting.Byomei.Service;
+using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Mapper;
@@ -12,14 +12,14 @@ using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
-using Reporting.ReceiptCheck.Service;
-using Reporting.ReceiptList.Model;
-using Reporting.ReceiptList.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
 using Reporting.Receipt.Service;
+using Reporting.ReceiptCheck.Service;
+using Reporting.ReceiptList.Model;
+using Reporting.ReceiptList.Service;
 using Reporting.Sijisen.Service;
-using Reporting.DailyStatic.Service;
+using Reporting.Statistics.Sta1001.Service;
 
 namespace Reporting.ReportServices;
 
@@ -38,8 +38,9 @@ public class ReportService : IReportService
     private readonly IAccountingCoReportService _accountingCoReportService;
     private readonly IStatisticService _statisticService;
     private readonly IReceiptCoReportService _receiptCoReportService;
+    private readonly ISta1001CoReportService _sta1001CoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, ISta1001CoReportService sta1001CoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -54,6 +55,7 @@ public class ReportService : IReportService
         _accountingCoReportService = accountingCoReportService;
         _statisticService = statisticService;
         _receiptCoReportService = receiptCoReportService;
+        _sta1001CoReportService = sta1001CoReportService;
     }
 
     //Byomei
