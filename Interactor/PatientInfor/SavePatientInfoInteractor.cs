@@ -127,6 +127,7 @@ namespace Interactor.PatientInfor
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
             bool isPatientTest = model.Patient.IsTester == 1 && model.Patient.PtId == 0;
             bool isUpdate = model.Patient.PtId != 0;
+            int hpId = model.Patient.HpId;
 
             #region Patient Info
             if (model.Patient.HpId <= 0)
@@ -156,7 +157,7 @@ namespace Interactor.PatientInfor
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
             int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
-            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
+            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId , model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
@@ -495,10 +496,11 @@ namespace Interactor.PatientInfor
             List<InsuranceModel> insurances,
             int birthDay,
             int sinDay,
+            int hpId,
             ReactSavePatientInfo reactFromUI)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
-            if (_systemConfRepository.GetSettingValue(1005, 0, 0) == 1)
+            if (_systemConfRepository.GetSettingValue(1005, 0, hpId) == 1)
             {
                 var validPattern = insurances?.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
                                                                     !pattern.IsExpirated &&
@@ -513,7 +515,7 @@ namespace Interactor.PatientInfor
                     return resultMessages;
                 }
 
-                string checkParam = _systemConfRepository.GetSettingParams(1005, 0, 0);
+                string checkParam = _systemConfRepository.GetSettingParams(1005, 0, hpId);
                 var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 int invalidAgeCheck = 0;
@@ -695,6 +697,7 @@ namespace Interactor.PatientInfor
             bool isUpdateMode, 
             int birthDay, 
             int sinDay,
+            int hpId,
             ReactSavePatientInfo reactFromUI,
             int ptInfMainHokenPid)
         {
@@ -735,7 +738,7 @@ namespace Interactor.PatientInfor
                 }
             }
 
-            resultMessages.AddRange(IsValidAgeCheck(insurances ?? new List<InsuranceModel>(), birthDay, sinDay, reactFromUI));
+            resultMessages.AddRange(IsValidAgeCheck(insurances ?? new List<InsuranceModel>(), birthDay, sinDay, hpId, reactFromUI));
 
             resultMessages.AddRange(HasElderHoken(insurances ?? new List<InsuranceModel>(), hokenInfs, birthDay, sinDay, reactFromUI));
 
