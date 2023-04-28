@@ -63,6 +63,7 @@
         public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
+        public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
