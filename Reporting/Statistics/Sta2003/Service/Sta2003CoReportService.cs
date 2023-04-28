@@ -212,22 +212,22 @@ public class Sta2003CoReportService : ISta2003CoReportService
             SetFieldData("Title", _printConf.ReportName);
 
             //医療機関名
-            _extralData.Add("HeaderR_0_0_", _hpInf.HpName);
+            _extralData.Add("HeaderR_0_0_" + _currentPage, _hpInf.HpName);
 
             //作成日時
-            _extralData.Add("HeaderR_0_1_", CIUtil.SDateToShowSWDate(
+            _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
                 CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
             ) + DateTime.Now.ToString(" HH:mm") + "作成");
 
             //ページ数
             int totalPage = (int)Math.Ceiling((double)_printDatas.Count / maxRow);
-            _extralData.Add("HeaderR_0_2_", _currentPage + " / " + totalPage);
+            _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
 
             //入金日
-            _extralData.Add("HeaderL_0_1_", _headerL1.Count >= _currentPage ? _headerL1[_currentPage - 1] : "");
+            _extralData.Add("HeaderL_0_1_" + _currentPage, _headerL1.Count >= _currentPage ? _headerL1[_currentPage - 1] : "");
 
             //改ページ条件
-            _extralData.Add("HeaderL_0_2_", _headerL2.Count >= _currentPage ? _headerL2[_currentPage - 1] : "");
+            _extralData.Add("HeaderL_0_2_" + _currentPage, _headerL2.Count >= _currentPage ? _headerL2[_currentPage - 1] : "");
 
             //期間
             SetFieldData("Range",
