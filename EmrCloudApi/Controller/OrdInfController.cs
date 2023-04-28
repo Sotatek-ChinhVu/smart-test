@@ -9,6 +9,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.ConvertInputItemToTodayOdr;
+using UseCase.OrdInfs.CheckOrdInfInDrug;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -107,6 +108,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ConvertInputItemToTodayOrdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckOrdInfInDrug)]
+        public ActionResult<Response<CheckOrdInfInDrugResponse>> CheckOrdInfInDrug([FromQuery] CheckOrdInfInDrugRequest request)
+        {
+            var input = new CheckOrdInfInDrugInputData(request.PtId, HpId, request.RaiinNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new CheckOrdInfInDrugPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckOrdInfInDrugResponse>>(presenter.Result);
         }
     }
 }
