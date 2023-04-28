@@ -50,6 +50,7 @@ public class AuthController : ControllerBase
         {
             new(LoginUserConstant.UserId, user.UserId.ToString()),
             new(LoginUserConstant.HpId, user.HpId.ToString()),
+            new(LoginUserConstant.DepartmentId, user.KaId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var token = CreateToken(claims);

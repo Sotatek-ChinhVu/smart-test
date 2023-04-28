@@ -98,6 +98,7 @@ namespace Infrastructure.Repositories
                             var byomeiModify = new CheckedDiseaseModel(byomei.SikkanCd, byomei.NanByoCd, byomei.Byomei, odrCount, byomei.PtDiseaseModel, byomei.ByomeiMst);
                             byomeis.Add(byomeiModify);
                         }
+                        drugOrders.Add(odrDetail);
                         checkedDiseases.Add((odrDetail.ItemCd, odrDetail.ItemName, byomeis));
                     }
                 }

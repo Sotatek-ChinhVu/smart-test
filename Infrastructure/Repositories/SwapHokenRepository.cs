@@ -111,7 +111,7 @@ namespace Infrastructure.Repositories
                 if (oldHokenId != newHokenId && receSeiKyu.HokenId == newHokenId)
                     receSeiKyu.IsDeleted = DeleteTypes.Deleted;
                 receSeiKyu.HokenId = newHokenId;
-                receSeiKyu.UpdateDate = DateTime.Now;
+                receSeiKyu.UpdateDate = CIUtil.GetJapanDateTimeNow();
                 receSeiKyu.UpdateId = userId;
             }
             return TrackingDataContext.SaveChanges() > 0;

@@ -16,6 +16,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -293,6 +294,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSetDataTenMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSetDataTenMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListDrugImage)]
+        public ActionResult<Response<GetListDrugImageResponse>> GetListDrugImage([FromQuery] GetListDrugImageRequest request)
+        {
+            var input = new GetListDrugImageInputData(request.Type, request.YjCd);
+            var output = _bus.Handle(input);
+            var presenter = new GetListDrugImagePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListDrugImageResponse>>(presenter.Result);
         }
     }
 }
