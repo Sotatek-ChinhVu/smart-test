@@ -13,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
 {
@@ -1803,7 +1804,8 @@ namespace Infrastructure.Repositories
                                                                                    false,
                                                                                    x.IsDeleted,
                                                                                    false,
-                                                                                   x.StartDate)).ToList();
+                                                                                   x.StartDate,
+                                                                                   false)).ToList();
         }
 
         public string GetMaxItemCdByTypeForAdd(string startWithstr)
@@ -2157,7 +2159,8 @@ namespace Infrastructure.Repositories
                                              false,
                                              model.IsDeleted,
                                              false,
-                                             model.StartDate);
+                                             model.StartDate,
+                                             false);
             }
 
         }
@@ -2196,7 +2199,7 @@ namespace Infrastructure.Repositories
                     x => x.HpId == hpId &&
                          x.IsDeleted == 0 &&
                          x.IpnNameCd == IpnNameCd)
-                    .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId, x.IpnNameCd, x.StartDate, x.EndDate, x.Yakka, x.SeqNo, x.IsDeleted))
+                    .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId, x.IpnNameCd, x.StartDate, x.EndDate, x.Yakka, x.SeqNo, x.IsDeleted, false))
                     .ToList();
         }
 
@@ -2265,9 +2268,9 @@ namespace Infrastructure.Repositories
             DrugInf drugAction = listDrugInf.FirstOrDefault(u => u.InfKbn == 1) ?? new DrugInf() { InfKbn = 1, ItemCd = itemCd };
             DrugInf precautions = listDrugInf.FirstOrDefault(u => u.InfKbn == 2) ?? new DrugInf() { InfKbn = 2, ItemCd = itemCd };
 
-            result.Add(new DrugInfModel(description.HpId, description.ItemCd, description.InfKbn, description.SeqNo, description.DrugInfo ?? string.Empty, description.IsDeleted, false));
-            result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false));
-            result.Add(new DrugInfModel(precautions.HpId, precautions.ItemCd, precautions.InfKbn, precautions.SeqNo, precautions.DrugInfo ?? string.Empty, precautions.IsDeleted, false));
+            result.Add(new DrugInfModel(description.HpId, description.ItemCd, description.InfKbn, description.SeqNo, description.DrugInfo ?? string.Empty, description.IsDeleted, false, description.DrugInfo ?? string.Empty));
+            result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false, drugAction.DrugInfo ?? string.Empty));
+            result.Add(new DrugInfModel(precautions.HpId, precautions.ItemCd, precautions.InfKbn, precautions.SeqNo, precautions.DrugInfo ?? string.Empty, precautions.IsDeleted, false, precautions.DrugInfo ?? string.Empty));
             return result;
         }
 
@@ -2281,7 +2284,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                return new PiImageModel(hpId, itemCd, imageType);
+                return new PiImageModel(0, itemCd, imageType);
             }
         }
 
@@ -2626,6 +2629,7 @@ namespace Infrastructure.Repositories
                                                                            x.Hokatu.HoukatuGrpNo ?? string.Empty,
                                                                            x.Hokatu.UserSetting,
                                                                            x.Hokatu.IsInvalid,
+                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
                                                                            x.ItemName,
                                                                            x.HokatuGbp.ItemCd,
                                                                            x.HokatuGbp.SpJyoken,
@@ -2714,6 +2718,7 @@ namespace Infrastructure.Repositories
                                                                            x.Hokatu.HoukatuGrpNo ?? string.Empty,
                                                                            x.Hokatu.UserSetting,
                                                                            x.Hokatu.IsInvalid,
+                                                                           x.Hokatu.IsInvalid == 1 ? true : false,
                                                                            x.ItemName,
                                                                            string.Empty,
                                                                            0,
@@ -2741,7 +2746,8 @@ namespace Infrastructure.Repositories
                         };
 
             return query.AsEnumerable().Select(
-                   data => new CombinedContraindicationModel(data.Kinki.HpId,
+                   data => new CombinedContraindicationModel(data.Kinki.Id,
+                                                             data.Kinki.HpId,
                                                              data.Kinki.ACd,
                                                              data.Kinki.BCd ?? string.Empty,
                                                              data.Kinki.SeqNo,
@@ -2750,6 +2756,1271 @@ namespace Infrastructure.Repositories
                                                              false,
                                                              false,
                                                              data.Kinki.BCd ?? string.Empty)).ToList();
+        }
+
+        public bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId)
+        {
+            #region handler tenMstOrigins
+            List<TenMst> tenMstDatabase = TrackingDataContext.TenMsts.Where(item => item.ItemCd == itemCd).ToList();
+            tenMstGrigins.ForEach(x =>
+            {
+                if (x.IsAddNew && x.IsDeleted == DeleteTypes.None)
+                {
+                    TrackingDataContext.TenMsts.Add(Mapper.Map(x, new TenMst(), (src, dest) =>
+                    {
+                        dest.HpId = hpId;
+                        dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        dest.CreateId = userId;
+                        dest.UpdateId = userId;
+                        dest.ItemCd = itemCd;
+                        return dest;
+                    }));
+
+                    if (x.GetItemType() == ItemTypeEnums.SpecialMedicineCommentItem)
+                    {
+                        TrackingDataContext.CmtKbnMsts.Add(new CmtKbnMst()
+                        {
+                            HpId = hpId,
+                            CmtKbn = 5,
+                            StartDate = 0,
+                            EndDate = 99999999,
+                            ItemCd = itemCd,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
+
+                }
+                else //Modified
+                {
+                    var updateTenMst = tenMstDatabase.FirstOrDefault(it => it.HpId == x.HpId && it.ItemCd == x.ItemCd && it.StartDate == x.StartDate);
+                    if (updateTenMst != null)
+                    {
+                        Mapper.Map(x, updateTenMst, (src, dest) =>
+                        {
+                            dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            dest.UpdateId = userId;
+                            return dest;
+                        });
+                    }
+                }
+            });
+            #endregion
+
+            foreach (CategoryItemEnums category in tabActs)
+            {
+                switch (category)
+                {
+                    case CategoryItemEnums.BasicSetting:
+                        BasicSettingUpdate();
+                        break;
+                    case CategoryItemEnums.IjiSetting:
+                        break;
+                    case CategoryItemEnums.PrecriptionSetting:
+                        PrecriptionSettingUpdate();
+                        break;
+                    case CategoryItemEnums.UsageSetting:
+                        UsageSettingUpdate();
+                        break;
+                    case CategoryItemEnums.SpecialMaterialSetting:
+                        break;
+                    case CategoryItemEnums.DrugInfomation:
+                        DrugInfomationUpdate();
+                        break;
+                    case CategoryItemEnums.TeikyoByomei:
+                        TeikyoByomeiUpdate();
+                        break;
+                    case CategoryItemEnums.SanteiKaishu:
+                        SanteiKaishuUpdate();
+                        break;
+                    case CategoryItemEnums.Haihan:
+                        HaihanUpdate();
+                        break;
+                    case CategoryItemEnums.Houkatsu:
+                        HoukatsuUpdate();
+                        break;
+                    case CategoryItemEnums.CombinedContraindication:
+                        CombinedContraindicationUpdate();
+                        break;
+                    case CategoryItemEnums.RenkeiSetting:
+                        break;
+                }
+            }
+
+            return TrackingDataContext.SaveChanges() > 0;
+
+            #region functions update tabs
+            void BasicSettingUpdate()
+            {
+                List<CmtKbnMstModel> listSource = setDataTen.BasicSettingTab.CmtKbnMstModels.Where(u => !u.CheckDefaultValue()).ToList();
+                if (listSource.Count() == 0)
+                    return;
+
+                var databaseList = TrackingDataContext.CmtKbnMsts.Where(item => item.HpId == hpId && item.ItemCd == itemCd).ToList();
+
+                listSource.ForEach(x =>
+                {
+                    if (x.Id == 0) //Create
+                    {
+                        TrackingDataContext.CmtKbnMsts.Add(new CmtKbnMst()
+                        {
+                            HpId = hpId,
+                            ItemCd = itemCd,
+                            StartDate = x.StartDate,
+                            EndDate = x.EndDate,
+                            CmtKbn = x.CmtKbn,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
+                    else if (x.IsDeleted) //Delete
+                    {
+                        var removeModel = databaseList.FirstOrDefault(k => k.Id == x.Id);
+                        if (removeModel != null)
+                            TrackingDataContext.CmtKbnMsts.Remove(removeModel);
+                    }
+                    else //Update
+                    {
+                        var updateModel = databaseList.FirstOrDefault(k => k.Id == x.Id);
+                        if (updateModel != null)
+                        {
+                            updateModel.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            updateModel.UpdateId = userId;
+                            updateModel.CmtKbn = x.CmtKbn;
+                            updateModel.StartDate = x.StartDate;
+                            updateModel.EndDate = x.EndDate;
+                        }
+                    }
+                });
+            }
+
+            void PrecriptionSettingUpdate()
+            {
+                #region UpdateDosageMstModel
+                DosageMstModel model = setDataTen.PrecriptionSettingTab.DosageMst;
+                if (model.ModelModified)
+                {
+                    if (model.Id == 0)
+                    {
+                        TrackingDataContext.DosageMsts.Add(new DosageMst()
+                        {
+                            HpId = hpId,
+                            ItemCd = itemCd,
+                            SeqNo = model.SeqNo,
+                            OnceMin = model.OnceMin,
+                            OnceMax = model.OnceMax,
+                            OnceLimit = model.OnceLimit,
+                            OnceUnit = model.OnceUnit,
+                            DayMin = model.DayMin,
+                            DayMax = model.DayMax,
+                            DayLimit = model.DayLimit,
+                            DayUnit = model.DayUnit,
+                            IsDeleted = model.IsDeleted,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId
+                        });
+                    }
+                    else
+                    {
+                        if (model.CheckDefaultValue())
+                        {
+                            var dosageMsts = TrackingDataContext.DosageMsts.Where(x =>
+                                                x.HpId == Session.HospitalID &&
+                                                x.IsDeleted == 0 &&
+                                                x.ItemCd == model.ItemCd).ToList();
+
+                            dosageMsts.ForEach(x =>
+                            {
+                                x.IsDeleted = DeleteTypes.Deleted;
+                                x.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                x.UpdateId = userId;
+                            });
+                        }
+                        else
+                        {
+                            var modelDb = TrackingDataContext.DosageMsts.FirstOrDefault(x =>
+                                                x.HpId == hpId &&
+                                                x.IsDeleted == 0 &&
+                                                x.ItemCd == itemCd &&
+                                                x.Id == model.Id);
+
+                            if (modelDb != null)
+                            {
+                                Mapper.Map(model, modelDb, (src, dest) =>
+                                {
+                                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                    dest.UpdateId = userId;
+                                    return dest;
+                                });
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                #region UpdateIpnNameMstModel
+                IpnNameMstModel ipnModel = setDataTen.PrecriptionSettingTab.IpnNameMst;
+                if (ipnModel.ModelModified)
+                {
+                    if (string.IsNullOrEmpty(ipnModel.IpnNameCd))
+                    {
+                        TrackingDataContext.IpnNameMsts.Add(new IpnNameMst()
+                        {
+                            IpnNameCd = ipnModel.IpnNameCd,
+                            HpId = hpId,
+                            StartDate = ipnModel.StartDate,
+                            SeqNo = 1,
+                            EndDate = ipnModel.EndDate,
+                            IpnName = ipnModel.IpnName,
+                            CreateId = userId,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            UpdateId = userId,
+                            IsDeleted = DeleteTypes.None,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow()
+                        });
+                    }
+                    else
+                    {
+                        var ipnDb = TrackingDataContext.IpnNameMsts.FirstOrDefault(x =>
+                                    x.HpId == hpId &&
+                                    x.IpnNameCd == ipnModel.IpnNameCd &&
+                                    x.StartDate == ipnModel.StartDate &&
+                                    x.EndDate == ipnModel.EndDate);
+
+                        if (ipnDb != null)
+                        {
+                            Mapper.Map(ipnModel, ipnDb, (src, dest) =>
+                            {
+                                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                dest.UpdateId = userId;
+                                return dest;
+                            });
+                        }
+                    }
+                }
+                #endregion
+
+                #region UpdateIpnMinYakkaMstModels
+                #endregion
+                List<IpnMinYakkaMstModel> srcIpnMins = setDataTen.PrecriptionSettingTab.IpnMinYakkaMsts;
+                srcIpnMins.ForEach(x =>
+                {
+                    if (!x.CheckDefaultValue() && x.ModelModified)
+                    {
+                        if (x.Id == 0 && x.IsDeleted == 0)
+                        {
+                            TrackingDataContext.IpnMinYakkaMsts.Add(new IpnMinYakkaMst()
+                            {
+                                CreateId = userId,
+                                CreateDate = CIUtil.GetJapanDateTimeNow(),
+                                UpdateId = userId,
+                                IsDeleted = DeleteTypes.None,
+                                UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                                EndDate = x.EndDate,
+                                HpId = hpId,
+                                IpnNameCd = x.IpnNameCd,
+                                SeqNo = 1,
+                                StartDate = x.StartDate,
+                                Yakka = x.Yakka
+                            });
+                        }
+                        else
+                        {
+                            var updateIpnYk = TrackingDataContext.IpnMinYakkaMsts.FirstOrDefault(ip => ip.Id == x.Id && x.HpId == ip.HpId);
+                            if (updateIpnYk != null)
+                            {
+                                updateIpnYk.UpdateId = userId;
+                                updateIpnYk.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                updateIpnYk.StartDate = x.StartDate;
+                                updateIpnYk.EndDate = x.EndDate;
+                                updateIpnYk.Yakka = x.Yakka;
+                            }
+                        }
+                    }
+                });
+
+                #region UpdateDrugDayLimitModels
+                List<DrugDayLimitModel> srcDrugDays = setDataTen.PrecriptionSettingTab.DrugDayLimits;
+                var dbDrugLimitList = TrackingDataContext.DrugDayLimits.Where(x => x.HpId == hpId && x.IsDeleted == 0 && x.ItemCd == itemCd).ToList();
+                srcDrugDays.ForEach(x =>
+                {
+                    if (!x.CheckDefaultValue() && x.ModelModified)
+                    {
+                        if (model.Id == 0 && model.IsDeleted == 0)
+                        {
+                            TrackingDataContext.DrugDayLimits.Add(Mapper.Map(x, new DrugDayLimit(), (src, dest) =>
+                            {
+                                dest.CreateId = userId;
+                                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                dest.UpdateId = userId;
+                                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                return dest;
+                            }));
+                        }
+                        else
+                        {
+                            var updateDrudDay = dbDrugLimitList.FirstOrDefault(dr => dr.Id == x.Id);
+                            if (updateDrudDay != null)
+                            {
+                                updateDrudDay.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                updateDrudDay.UpdateId = userId;
+                                updateDrudDay.LimitDay = x.LimitDay;
+                                updateDrudDay.StartDate = x.StartDate;
+                                updateDrudDay.EndDate = x.EndDate;
+                            }
+                        }
+                    }
+                });
+                #endregion
+            }
+
+            void UsageSettingUpdate()
+            {
+                var yohoDb = TrackingDataContext.YohoInfMsts.FirstOrDefault(x => x.ItemCd == itemCd);
+                if (yohoDb != null)
+                {
+                    yohoDb.YohoSuffix = setDataTen.UsageSettingTab.YohoInfMstPrefix;
+                    yohoDb.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    yohoDb.UpdateId = userId;
+                }
+                else if (!string.IsNullOrEmpty(setDataTen.UsageSettingTab.YohoInfMstPrefix))
+                {
+                    TrackingDataContext.YohoInfMsts.Add(new YohoInfMst()
+                    {
+                        HpId = hpId,
+                        ItemCd = itemCd,
+                        YohoSuffix = setDataTen.UsageSettingTab.YohoInfMstPrefix,
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                    });
+                }
+            }
+
+            void DrugInfomationUpdate()
+            {
+                List<DrugInfModel> drugModels = setDataTen.DrugInfomationTab.DrugInfs;
+                for (int i = 1; i < 3; i++)
+                {
+                    if (string.IsNullOrEmpty(drugModels[i].DrugInfo) && !string.IsNullOrEmpty(drugModels[i].OldDrugInfo))
+                    {
+                        drugModels[i].SetDrugInfo(drugModels[i].OldDrugInfo);
+                        drugModels[i].SetIsDeleted(DeleteTypes.Deleted);
+                    }
+                }
+
+                var listDrugInfoModel = drugModels.Where(u => !u.IsDefaultModel);
+                List<DrugInfModel> addedDrugInfModel = listDrugInfoModel.Where(k => k.IsNewModel && !k.IsDefaultModel).ToList();
+                List<DrugInfModel> updatedDrugInfModel = listDrugInfoModel.Where(k => k.IsModified).ToList();
+
+                TrackingDataContext.AddRange(Mapper.Map<DrugInfModel, DrugInf>(addedDrugInfModel, (src, dest) =>
+                {
+                    dest.HpId = hpId;
+                    dest.UpdateId = userId;
+                    dest.CreateId = userId;
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    return dest;
+                }));
+
+                updatedDrugInfModel.ForEach(x =>
+                {
+                    var drDb = TrackingDataContext.DrugInfs.FirstOrDefault(d => d.HpId == x.HpId && d.InfKbn == x.InfKbn && d.SeqNo == x.SeqNo && x.ItemCd == x.ItemCd);
+                    if (drDb != null)
+                        Mapper.Map(x, drDb, (src, dest) =>
+                        {
+                            dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            dest.UpdateId = userId;
+                            return dest;
+                        });
+                });
+
+                List<PiImageModel> listImages = new List<PiImageModel>() {
+                    setDataTen.DrugInfomationTab.ZaiImage,
+                    setDataTen.DrugInfomationTab.HouImage
+                };
+
+                var listPiImage = listImages.Where(u => !u.IsDefaultModel).ToList();
+                if (listPiImage.Count == 0)
+                    return;
+
+                IEnumerable<PiImageModel> addedImageModel = listPiImage.Where(k => k.IsNewModel && !k.IsDefaultModel);
+                TrackingDataContext.PiImages.AddRange(Mapper.Map<PiImageModel, PiImage>(addedImageModel, (src, dest) =>
+                {
+                    dest.HpId = hpId;
+                    dest.UpdateId = userId;
+                    dest.CreateId = userId;
+                    dest.ItemCd = itemCd;
+                    dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    return dest;
+                }));
+
+                var updatedImageModel = listPiImage.Where(k => k.IsModified).ToList();
+                updatedImageModel.ForEach(x =>
+                {
+                    var upIm = TrackingDataContext.PiImages.FirstOrDefault(i => i.HpId == x.HpId && i.ImageType == x.ImageType && i.ItemCd == x.ItemCd);
+                    if (upIm != null)
+                    {
+                        upIm.UpdateId = userId;
+                        upIm.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        upIm.FileName = x.FileName;
+                    }
+                });
+            }
+
+            void TeikyoByomeiUpdate()
+            {
+                List<TeikyoByomeiModel> teikyoByomeiModels = setDataTen.TeikyoByomeiTab.TeikyoByomeis;
+                foreach (var model in teikyoByomeiModels)
+                {
+                    if (model.CheckDefaultValue()) continue;
+                    if (model.IsModified)
+                    {
+                        var entity = TrackingDataContext.TekiouByomeiMsts.FirstOrDefault(
+                                                x => x.HpId == hpId &&
+                                                     x.ItemCd == model.ItemCd &&
+                                                     x.ByomeiCd == model.ByomeiCd &&
+                                                     x.SystemData == model.SystemData);
+
+                        if (entity != null)
+                        {
+                            if (!model.IsDeleted)
+                            {
+                                //	ユーザーが何らか変更した場合、TEKIOU_BYOMEI_MST.EDIT_KBNを1にする	
+                                if (model.SystemData == 1)
+                                {
+                                    entity.EditKbn = 1;
+                                }
+                                entity.StartYM = model.StartYM;
+                                entity.EndYM = model.EndYM;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.IsInvalidTokusyo = model.IsInvalidTokusyo;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                            else
+                            {
+                                TrackingDataContext.TekiouByomeiMsts.Remove(entity);
+                            }
+                        }
+                        else if (!model.IsDeleted)
+                        {
+                            TrackingDataContext.TekiouByomeiMsts.Add(Mapper.Map(model, new TekiouByomeiMst(), (src, dest) =>
+                            {
+                                dest.HpId = hpId;
+                                dest.CreateId = userId;
+                                dest.UpdateId = userId;
+                                dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                                dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                return dest;
+                            }));
+                        }
+                    }
+                }
+
+            }
+
+            void SanteiKaishuUpdate()
+            {
+                List<DensiSanteiKaisuModel> models = setDataTen.SanteiKaishuTab.DensiSanteiKaisus;
+
+                var databases = TrackingDataContext.DensiSanteiKaisus.Where(x => x.HpId == hpId &&
+                                                                                x.ItemCd == itemCd).ToList();
+
+                foreach (var model in models)
+                {
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        TrackingDataContext.DensiSanteiKaisus.Add(Mapper.Map(model, new DensiSanteiKaisu(), (src, dest) =>
+                        {
+                            dest.HpId = hpId;
+                            dest.CreateId = userId;
+                            dest.UpdateId = userId;
+                            dest.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            return dest;
+                        }));
+                    }
+                    else
+                    {
+                        var modelInDb = databases.FirstOrDefault(x => x.Id == model.Id);
+                        if (modelInDb != null)
+                        {
+                            if (model.IsDeleted)
+                            {
+                                if (model.UserSetting == 0 || model.UserSetting == 1)
+                                {
+                                    modelInDb.IsInvalid = 1;
+                                }
+                                else if (model.UserSetting == 2)
+                                {
+                                    TrackingDataContext.DensiSanteiKaisus.Remove(modelInDb);
+                                }
+                            }
+                            else
+                            {
+                                Mapper.Map(model, modelInDb, (src, dest) =>
+                                {
+                                    dest.UpdateId = userId;
+                                    dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                    return dest;
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            void HaihanUpdate()
+            {
+                var source = new List<DensiHaihanModel>();
+                source.AddRange(setDataTen.HaihanTab.DensiHaihanModel1s);
+                source.AddRange(setDataTen.HaihanTab.DensiHaihanModel2s);
+                source.AddRange(setDataTen.HaihanTab.DensiHaihanModel3s);
+
+                foreach (var model in source)
+                {
+                    if (!model.CheckDefaultValue() && model.IsModified && model.IsValidValue())
+                    {
+                        model.SetEndDate(model.EndDate);
+                        switch (model.ModelType)
+                        {
+                            case (int)HaiHanModelType.DENSI_HAIHAN_DAY:
+                                CRUDDensiHaihanDay(model);
+                                break;
+                            case (int)HaiHanModelType.DENSI_HAIHAN_MONTH:
+                                CRUDDensiHaihanMonth(model);
+                                break;
+                            case (int)HaiHanModelType.DENSI_HAIHAN_KARTE:
+                                CRUDDensiHaihanKarte(model);
+                                break;
+                            case (int)HaiHanModelType.DENSI_HAIHAN_WEEK:
+                                CRUDDensiHaihanWeek(model);
+                                break;
+                            case (int)HaiHanModelType.DENSI_HAIHAN_CUSTOM:
+                                CRUDDensiHaihanCustom(model);
+                                break;
+                        }
+                    }
+                }
+
+                void CRUDDensiHaihanDay(DensiHaihanModel model)
+                {
+                    ///・DENSI_HAIHA_*は、同一の項目組み合わせでITEM_CD1, ITEM_CD2が逆のレコードが必ず作成される
+                    ///ただし、HAIHAN_KBNが1,2の場合、逆になる
+                    ///HAIHAN_KBN = 3のものはどちらも3になる
+                    DensiHaihanDay? originOppositionEntity = TrackingDataContext.DensiHaihanDays.FirstOrDefault(
+                                        x => x.HpId == model.HpId &&
+                                             x.ItemCd1 == (model.OriginItemCd2 == "" ? model.ItemCd2 : model.OriginItemCd2) &&
+                                             x.ItemCd2 == model.ItemCd1 &&
+                                             x.HaihanKbn == (
+                                                model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1))
+                                             );
+                    if (originOppositionEntity != null)
+                    {
+                        if (model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            DensiHaihanDay densiHaihanDay = CreateDensiHaihanDay(model);
+                            densiHaihanDay.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanDay.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanDay.CreateId = userId;
+                            densiHaihanDay.UpdateId = userId;
+                            densiHaihanDay.ItemCd1 = model.ItemCd2;
+                            densiHaihanDay.ItemCd2 = model.ItemCd1;
+                            densiHaihanDay.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanDays.Add(densiHaihanDay);
+                        }
+                        else
+                        {
+                            originOppositionEntity.SpJyoken = model.SpJyoken;
+                            originOppositionEntity.StartDate = model.StartDate;
+                            originOppositionEntity.EndDate = model.EndDate;
+                            originOppositionEntity.IsInvalid = model.IsInvalid;
+                            originOppositionEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            originOppositionEntity.UpdateId = userId;
+                        }
+                        if (model.Id != 0 && model.IsDeleted || model.InitModelType != model.ModelType || model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            TrackingDataContext.DensiHaihanDays.Remove(originOppositionEntity);
+                        }
+                    }
+                    else
+                    {
+                        if (model.ItemCd1 != model.ItemCd2)
+                        {
+                            DensiHaihanDay densiHaihanDay = CreateDensiHaihanDay(model);
+                            densiHaihanDay.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanDay.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanDay.CreateId = userId;
+                            densiHaihanDay.UpdateId = userId;
+                            densiHaihanDay.ItemCd1 = model.ItemCd2;
+                            densiHaihanDay.ItemCd2 = model.ItemCd1;
+                            densiHaihanDay.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanDays.Add(densiHaihanDay);
+                        }
+                    }
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        var create = CreateDensiHaihanDay(model);
+                        create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        create.CreateId = userId;
+                        create.UpdateId = userId;
+                        TrackingDataContext.DensiHaihanDays.Add(create);
+                    }
+                    else if (model.Id != 0 && !model.IsDeleted)
+                    {
+                        if (model.InitModelType != model.ModelType)
+                        {
+                            //In case the user updates the model type of the model
+                            DeleteDensiHaihan(model);
+
+                            var create = CreateDensiHaihanDay(model);
+                            create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            create.CreateId = userId;
+                            create.UpdateId = userId;
+                            TrackingDataContext.DensiHaihanDays.Add(create);
+                        }
+                        else
+                        {
+                            DensiHaihanDay? entity = TrackingDataContext.DensiHaihanDays.FirstOrDefault(
+                                x => x.HpId == model.HpId &&
+                                        x.ItemCd1 == model.ItemCd1 &&
+                                        x.Id == model.Id);
+
+                            if (entity != null)
+                            {
+                                entity.ItemCd2 = model.ItemCd2;
+                                entity.HaihanKbn = model.HaihanKbn;
+                                entity.SpJyoken = model.SpJyoken;
+                                entity.StartDate = model.StartDate;
+                                entity.EndDate = model.EndDate;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                        }
+                    }
+                    else if (model.Id != 0 && model.IsDeleted)
+                    {
+                        DeleteDensiHaihan(model);
+                    }
+                }
+
+                void CRUDDensiHaihanMonth(DensiHaihanModel model)
+                {
+                    ///・DENSI_HAIHA_*は、同一の項目組み合わせでITEM_CD1, ITEM_CD2が逆のレコードが必ず作成される
+                    ///ただし、HAIHAN_KBNが1,2の場合、逆になる
+                    ///HAIHAN_KBN = 3のものはどちらも3になる
+                    DensiHaihanMonth? originOppositionEntity = TrackingDataContext.DensiHaihanMonths.FirstOrDefault(
+                                        x => x.HpId == model.HpId &&
+                                             x.ItemCd1 == (model.OriginItemCd2 == "" ? model.ItemCd2 : model.OriginItemCd2) &&
+                                             x.ItemCd2 == model.ItemCd1 &&
+                                             x.HaihanKbn == (
+                                                model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1))
+                                             );
+                    if (originOppositionEntity != null)
+                    {
+                        if (model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            DensiHaihanMonth densiHaihanMonth = CreateDensiHaihanMonth(model);
+                            densiHaihanMonth.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanMonth.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanMonth.CreateId = userId;
+                            densiHaihanMonth.UpdateId = userId;
+                            densiHaihanMonth.ItemCd1 = model.ItemCd2;
+                            densiHaihanMonth.ItemCd2 = model.ItemCd1;
+                            densiHaihanMonth.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanMonths.Add(densiHaihanMonth);
+                        }
+                        else
+                        {
+                            originOppositionEntity.SpJyoken = model.SpJyoken;
+                            originOppositionEntity.StartDate = model.StartDate;
+                            originOppositionEntity.EndDate = model.EndDate;
+                            originOppositionEntity.IsInvalid = model.IsInvalid;
+                            originOppositionEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            originOppositionEntity.UpdateId = userId;
+                        }
+                        if (model.Id != 0 && model.IsDeleted || model.InitModelType != model.ModelType || model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            TrackingDataContext.DensiHaihanMonths.Remove(originOppositionEntity);
+                        }
+                    }
+                    else
+                    {
+                        DensiHaihanMonth densiHaihanMonth = CreateDensiHaihanMonth(model);
+                        densiHaihanMonth.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanMonth.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanMonth.CreateId = userId;
+                        densiHaihanMonth.UpdateId = userId;
+                        densiHaihanMonth.ItemCd1 = model.ItemCd2;
+                        densiHaihanMonth.ItemCd2 = model.ItemCd1;
+                        densiHaihanMonth.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                        TrackingDataContext.DensiHaihanMonths.Add(densiHaihanMonth);
+                    }
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        var create = CreateDensiHaihanMonth(model);
+                        create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        create.CreateId = userId;
+                        create.UpdateId = userId;
+                        TrackingDataContext.DensiHaihanMonths.Add(create);
+                    }
+                    else if (model.Id != 0 && !model.IsDeleted)
+                    {
+                        if (model.InitModelType != model.ModelType)
+                        {
+                            DeleteDensiHaihan(model);
+
+                            //In case the user updates the model type of the model
+                            var create = CreateDensiHaihanMonth(model);
+                            create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            create.CreateId = userId;
+                            create.UpdateId = userId;
+                            TrackingDataContext.DensiHaihanMonths.Add(create);
+                        }
+                        else
+                        {
+                            DensiHaihanMonth? entity = TrackingDataContext.DensiHaihanMonths.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                 x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                 x.Id == model.Id);
+                            if (entity != null)
+                            {
+                                //ApplyChange(model, entity);
+                                entity.ItemCd2 = model.ItemCd2;
+                                entity.SpJyoken = model.SpJyoken;
+                                entity.StartDate = model.StartDate;
+                                entity.EndDate = model.EndDate;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                        }
+                    }
+                    else if (model.Id != 0 && model.IsDeleted)
+                    {
+                        DeleteDensiHaihan(model);
+                    }
+                }
+
+                void CRUDDensiHaihanKarte(DensiHaihanModel model)
+                {
+                    ///・DENSI_HAIHA_*は、同一の項目組み合わせでITEM_CD1, ITEM_CD2が逆のレコードが必ず作成される
+                    ///ただし、HAIHAN_KBNが1,2の場合、逆になる
+                    ///HAIHAN_KBN = 3のものはどちらも3になる
+                    DensiHaihanKarte? originOppositionEntity = TrackingDataContext.DensiHaihanKartes.FirstOrDefault(
+                                        x => x.HpId == model.HpId &&
+                                             x.ItemCd1 == (model.OriginItemCd2 == "" ? model.ItemCd2 : model.OriginItemCd2) &&
+                                             x.ItemCd2 == model.ItemCd1 &&
+                                             x.HaihanKbn == (
+                                                model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1))
+                                             );
+                    if (originOppositionEntity != null)
+                    {
+                        if (model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            DensiHaihanKarte densiHaihanKarte = CreateDensiHaihanKarte(model);
+                            densiHaihanKarte.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanKarte.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanKarte.CreateId = userId;
+                            densiHaihanKarte.UpdateId = userId;
+                            densiHaihanKarte.ItemCd1 = model.ItemCd2;
+                            densiHaihanKarte.ItemCd2 = model.ItemCd1;
+                            densiHaihanKarte.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanKartes.Add(densiHaihanKarte);
+                        }
+                        else
+                        {
+                            originOppositionEntity.SpJyoken = model.SpJyoken;
+                            originOppositionEntity.StartDate = model.StartDate;
+                            originOppositionEntity.EndDate = model.EndDate;
+                            originOppositionEntity.IsInvalid = model.IsInvalid;
+                            originOppositionEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            originOppositionEntity.UpdateId = userId;
+                        }
+                        if (model.Id != 0 && model.IsDeleted || model.InitModelType != model.ModelType || model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            TrackingDataContext.DensiHaihanKartes.Remove(originOppositionEntity);
+                        }
+                    }
+                    else
+                    {
+                        DensiHaihanKarte densiHaihanKarte = CreateDensiHaihanKarte(model);
+                        densiHaihanKarte.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanKarte.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanKarte.CreateId = userId;
+                        densiHaihanKarte.UpdateId = userId;
+                        densiHaihanKarte.ItemCd1 = model.ItemCd2;
+                        densiHaihanKarte.ItemCd2 = model.ItemCd1;
+                        densiHaihanKarte.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                        TrackingDataContext.DensiHaihanKartes.Add(densiHaihanKarte);
+                    }
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        var create = CreateDensiHaihanKarte(model);
+                        create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        create.CreateId = userId;
+                        create.UpdateId = userId;
+                        TrackingDataContext.DensiHaihanKartes.Add(create);
+                    }
+                    else if (model.Id != 0 && !model.IsDeleted)
+                    {
+                        if (model.InitModelType != model.ModelType)
+                        {
+                            DeleteDensiHaihan(model);
+
+                            //In case the user updates the model type of the model
+                            var create = CreateDensiHaihanKarte(model);
+                            create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            create.CreateId = userId;
+                            create.UpdateId = userId;
+                            TrackingDataContext.DensiHaihanKartes.Add(create);
+                        }
+                        else
+                        {
+                            DensiHaihanKarte? entity = TrackingDataContext.DensiHaihanKartes.FirstOrDefault(
+                                x => x.HpId == model.HpId &&
+                                        x.ItemCd1 == model.ItemCd1 &&
+                                        x.Id == model.Id);
+
+                            if (entity != null)
+                            {
+                                entity.ItemCd2 = model.ItemCd2;
+                                entity.SpJyoken = model.SpJyoken;
+                                entity.StartDate = model.StartDate;
+                                entity.EndDate = model.EndDate;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                        }
+                    }
+                    else if (model.Id != 0 && model.IsDeleted)
+                    {
+                        DeleteDensiHaihan(model);
+                    }
+                }
+
+                void CRUDDensiHaihanWeek(DensiHaihanModel model)
+                {
+                    ///・DENSI_HAIHA_*は、同一の項目組み合わせでITEM_CD1, ITEM_CD2が逆のレコードが必ず作成される
+                    ///ただし、HAIHAN_KBNが1,2の場合、逆になる
+                    ///HAIHAN_KBN = 3のものはどちらも3になる
+                    DensiHaihanWeek? originOppositionEntity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(
+                                        x => x.HpId == model.HpId &&
+                                             x.ItemCd1 == (model.OriginItemCd2 == "" ? model.ItemCd2 : model.OriginItemCd2) &&
+                                             x.ItemCd2 == model.ItemCd1 &&
+                                             x.HaihanKbn == (
+                                                model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1))
+                                             );
+                    if (originOppositionEntity != null)
+                    {
+                        if (model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            DensiHaihanWeek densiHaihanWeek = CreateDensiHaihanWeek(model);
+                            densiHaihanWeek.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanWeek.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanWeek.CreateId = userId;
+                            densiHaihanWeek.UpdateId = userId;
+                            densiHaihanWeek.ItemCd1 = model.ItemCd2;
+                            densiHaihanWeek.ItemCd2 = model.ItemCd1;
+                            densiHaihanWeek.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanWeeks.Add(densiHaihanWeek);
+                        }
+                        else
+                        {
+                            originOppositionEntity.SpJyoken = model.SpJyoken;
+                            originOppositionEntity.StartDate = model.StartDate;
+                            originOppositionEntity.EndDate = model.EndDate;
+                            originOppositionEntity.IsInvalid = model.IsInvalid;
+                            originOppositionEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            originOppositionEntity.UpdateId = userId;
+                        }
+                        if (model.Id != 0 && model.IsDeleted || model.InitModelType != model.ModelType || model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            TrackingDataContext.DensiHaihanWeeks.Remove(originOppositionEntity);
+                        }
+                    }
+                    else
+                    {
+                        DensiHaihanWeek densiHaihanWeek = CreateDensiHaihanWeek(model);
+                        densiHaihanWeek.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanWeek.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanWeek.CreateId = userId;
+                        densiHaihanWeek.UpdateId = userId;
+                        densiHaihanWeek.ItemCd1 = model.ItemCd2;
+                        densiHaihanWeek.ItemCd2 = model.ItemCd1;
+                        densiHaihanWeek.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                        TrackingDataContext.DensiHaihanWeeks.Add(densiHaihanWeek);
+                    }
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        var create = CreateDensiHaihanWeek(model);
+                        create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        create.CreateId = userId;
+                        create.UpdateId = userId;
+                        TrackingDataContext.DensiHaihanWeeks.Add(create);
+                    }
+                    else if (model.Id != 0 && !model.IsDeleted)
+                    {
+                        if (model.InitModelType != model.ModelType)
+                        {
+                            DeleteDensiHaihan(model);
+
+                            //In case the user updates the model type of the model
+                            var create = CreateDensiHaihanWeek(model);
+                            create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            create.CreateId = userId;
+                            create.UpdateId = userId;
+                            TrackingDataContext.DensiHaihanWeeks.Add(create);
+                        }
+                        else
+                        {
+                            DensiHaihanWeek? entity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                              x.ItemCd1 == model.ItemCd1 &&
+                                                                                                              x.Id == model.Id);
+                            if (entity != null)
+                            {
+                                entity.ItemCd2 = model.ItemCd2;
+                                entity.SpJyoken = model.SpJyoken;
+                                entity.StartDate = model.StartDate;
+                                entity.EndDate = model.EndDate;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                        }
+                    }
+                    else if (model.Id != 0 && model.IsDeleted)
+                    {
+                        DeleteDensiHaihan(model);
+                    }
+                }
+
+                void CRUDDensiHaihanCustom(DensiHaihanModel model)
+                {
+                    ///・DENSI_HAIHA_*は、同一の項目組み合わせでITEM_CD1, ITEM_CD2が逆のレコードが必ず作成される
+                    ///ただし、HAIHAN_KBNが1,2の場合、逆になる
+                    ///HAIHAN_KBN = 3のものはどちらも3になる
+                    DensiHaihanCustom? originOppositionEntity = TrackingDataContext.DensiHaihanCustoms.FirstOrDefault(
+                                        x => x.HpId == model.HpId &&
+                                             x.ItemCd1 == (model.OriginItemCd2 == "" ? model.ItemCd2 : model.OriginItemCd2) &&
+                                             x.ItemCd2 == model.ItemCd1 &&
+                                             x.HaihanKbn == (
+                                                model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1))
+                                             );
+
+                    if (originOppositionEntity != null)
+                    {
+                        if (model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            DensiHaihanCustom densiHaihanCustom = CreateDensiHaihanCustom(model);
+                            densiHaihanCustom.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanCustom.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            densiHaihanCustom.CreateId = userId;
+                            densiHaihanCustom.UpdateId = userId;
+                            densiHaihanCustom.ItemCd1 = model.ItemCd2;
+                            densiHaihanCustom.ItemCd2 = model.ItemCd1;
+                            densiHaihanCustom.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                            TrackingDataContext.DensiHaihanCustoms.Add(densiHaihanCustom);
+                        }
+                        else
+                        {
+                            originOppositionEntity.SpJyoken = model.SpJyoken;
+                            originOppositionEntity.StartDate = model.StartDate;
+                            originOppositionEntity.EndDate = model.EndDate;
+                            originOppositionEntity.TermCnt = model.TermCnt;
+                            originOppositionEntity.TermSbt = model.TermSbt;
+                            originOppositionEntity.IsInvalid = model.IsInvalid;
+                            originOppositionEntity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            originOppositionEntity.UpdateId = userId;
+                        }
+                        if (model.Id != 0 && model.IsDeleted || model.InitModelType != model.ModelType || model.OriginItemCd2 != "" && model.OriginItemCd2 != model.ItemCd2)
+                        {
+                            TrackingDataContext.DensiHaihanCustoms.Remove(originOppositionEntity);
+                        }
+                    }
+                    else
+                    {
+                        DensiHaihanCustom densiHaihanCustom = CreateDensiHaihanCustom(model);
+                        densiHaihanCustom.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        densiHaihanCustom.CreateId = userId;
+                        densiHaihanCustom.ItemCd1 = model.ItemCd2;
+                        densiHaihanCustom.ItemCd2 = model.ItemCd1;
+                        densiHaihanCustom.HaihanKbn = model.HaihanKbn == 3 ? 3 : (model.HaihanKbn == 1 ? 2 : 1);
+                        TrackingDataContext.DensiHaihanCustoms.Add(densiHaihanCustom);
+                    }
+                    if (model.Id == 0 && !model.IsDeleted)
+                    {
+                        var create = CreateDensiHaihanCustom(model);
+                        create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                        create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        create.CreateId = userId;
+                        create.UpdateId = userId;
+                        TrackingDataContext.DensiHaihanCustoms.Add(create);
+                    }
+                    else if (model.Id != 0 && !model.IsDeleted)
+                    {
+                        if (model.InitModelType != model.ModelType)
+                        {
+                            DeleteDensiHaihan(model);
+
+                            //In case the user updates the model type of the model
+                            var create = CreateDensiHaihanCustom(model);
+                            create.CreateDate = CIUtil.GetJapanDateTimeNow();
+                            create.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            create.CreateId = userId;
+                            create.UpdateId = userId;
+                            TrackingDataContext.DensiHaihanCustoms.Add(create);
+                        }
+                        else
+                        {
+                            DensiHaihanCustom? entity = TrackingDataContext.DensiHaihanCustoms.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                    x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                    x.Id == model.Id);
+                            if (entity != null)
+                            {
+                                entity.ItemCd2 = model.ItemCd2;
+                                entity.SpJyoken = model.SpJyoken;
+                                entity.StartDate = model.StartDate;
+                                entity.EndDate = model.EndDate;
+                                entity.IsInvalid = model.IsInvalid;
+                                entity.TermCnt = model.TermCnt;
+                                entity.TermSbt = model.TermSbt;
+                                entity.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                                entity.UpdateId = userId;
+                            }
+                        }
+                    }
+                    else if (model.Id != 0 && model.IsDeleted)
+                    {
+                        DeleteDensiHaihan(model);
+                    }
+                }
+
+                DensiHaihanDay CreateDensiHaihanDay(DensiHaihanModel x) => Mapper.Map(x, new DensiHaihanDay());
+
+                DensiHaihanKarte CreateDensiHaihanKarte(DensiHaihanModel x) => Mapper.Map(x, new DensiHaihanKarte());
+
+                DensiHaihanMonth CreateDensiHaihanMonth(DensiHaihanModel x) => Mapper.Map(x, new DensiHaihanMonth());
+
+                DensiHaihanWeek CreateDensiHaihanWeek(DensiHaihanModel x) => Mapper.Map(x, new DensiHaihanWeek());
+
+                DensiHaihanCustom CreateDensiHaihanCustom(DensiHaihanModel x) => Mapper.Map(x, new DensiHaihanCustom());
+
+                void DeleteDensiHaihan(DensiHaihanModel model)
+                {
+                    switch (model.InitModelType)
+                    {
+                        case (int)HaiHanModelType.DENSI_HAIHAN_DAY:
+                            {
+                                DensiHaihanDay? entity = TrackingDataContext.DensiHaihanDays.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                 x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                 x.Id == model.Id);
+                                if (entity != null)
+                                    TrackingDataContext.DensiHaihanDays.Remove(entity);
+
+                                DensiHaihanDay? originOppositionEntity = TrackingDataContext.DensiHaihanDays.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                                 x.ItemCd1 == model.OriginItemCd2 &&
+                                                                                                                                 x.ItemCd2 == model.ItemCd1);
+
+                                if (originOppositionEntity != null)
+                                {
+                                    TrackingDataContext.DensiHaihanDays.Remove(originOppositionEntity);
+                                }
+                                break;
+                            }
+                        case (int)HaiHanModelType.DENSI_HAIHAN_MONTH:
+                            {
+                                DensiHaihanMonth? entity = TrackingDataContext.DensiHaihanMonths.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                     x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                     x.Id == model.Id);
+
+                                if (entity != null)
+                                    TrackingDataContext.DensiHaihanMonths.Remove(entity);
+
+                                DensiHaihanMonth? originOppositionEntity = TrackingDataContext.DensiHaihanMonths.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                                     x.ItemCd1 == model.OriginItemCd2 &&
+                                                                                                                                     x.ItemCd2 == model.ItemCd1);
+                                if (originOppositionEntity != null)
+                                {
+                                    TrackingDataContext.DensiHaihanMonths.Add(originOppositionEntity);
+                                }
+                                break;
+                            }
+                        case (int)HaiHanModelType.DENSI_HAIHAN_KARTE:
+                            {
+                                DensiHaihanKarte? entity = TrackingDataContext.DensiHaihanKartes.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                     x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                     x.Id == model.Id);
+
+                                if (entity != null)
+                                    TrackingDataContext.DensiHaihanKartes.Remove(entity);
+
+                                DensiHaihanKarte? originOppositionEntity = TrackingDataContext.DensiHaihanKartes.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                                     x.ItemCd1 == model.OriginItemCd2 &&
+                                                                                                                                     x.ItemCd2 == model.ItemCd1);
+
+                                if (originOppositionEntity != null)
+                                {
+                                    TrackingDataContext.DensiHaihanKartes.Remove(originOppositionEntity);
+                                }
+                                break;
+                            }
+                        case (int)HaiHanModelType.DENSI_HAIHAN_WEEK:
+                            {
+                                DensiHaihanWeek? entity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                   x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                   x.Id == model.Id);
+
+                                if (entity != null)
+                                    TrackingDataContext.DensiHaihanWeeks.Remove(entity);
+
+                                DensiHaihanWeek? originOppositionEntity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                                   x.ItemCd1 == model.OriginItemCd2 &&
+                                                                                                                                   x.ItemCd2 == model.ItemCd1);
+                                if (originOppositionEntity != null)
+                                {
+                                    TrackingDataContext.DensiHaihanWeeks.Remove(originOppositionEntity);
+                                }
+                                break;
+                            }
+                        case (int)HaiHanModelType.DENSI_HAIHAN_CUSTOM:
+                            {
+                                DensiHaihanCustom? entity = TrackingDataContext.DensiHaihanCustoms.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                       x.ItemCd1 == model.ItemCd1 &&
+                                                                                                                       x.Id == model.Id);
+                                if (entity != null)
+                                    TrackingDataContext.DensiHaihanCustoms.Remove(entity);
+
+                                DensiHaihanCustom? originOppositionEntity = TrackingDataContext.DensiHaihanCustoms.FirstOrDefault(x => x.HpId == model.HpId &&
+                                                                                                                                       x.ItemCd1 == model.OriginItemCd2 &&
+                                                                                                                                       x.ItemCd2 == model.ItemCd1);
+                                if (originOppositionEntity != null)
+                                {
+                                    TrackingDataContext.DensiHaihanCustoms.Remove(originOppositionEntity);
+                                }
+                                break;
+                            }
+                    }
+                }
+            }
+
+            void HoukatsuUpdate()
+            {
+                List<DensiHoukatuGrpModel> listDensiHoukatuGrp = setDataTen.HoukatsuTab.ListDensiHoukatuGrpModels.Where(x => !x.CheckDefaultValue() && x.IsUpdate).ToList();
+                List<DensiHoukatuModel> listDensiHoukatu = setDataTen.HoukatsuTab.ListDensiHoukatuModels.Where(x => !x.CheckDefaultValue() && x.IsModified).ToList();
+                List<string> listHoukatuGrpItemCd = listDensiHoukatu.GroupBy(x => x.HoukatuGrpItemCd).Select(x => x.Key).ToList();
+
+                List<DensiHoukatuModel> listDensiHoukatuToUpdate = new List<DensiHoukatuModel>();
+                foreach (var item in listHoukatuGrpItemCd)
+                {
+                    var listGrpItem = listDensiHoukatu.Where(x => x.HoukatuGrpItemCd == item).ToList();
+                    int invalidCount = listGrpItem.Count(x => x.IsInvalidBinding);
+                    int isvalidCount = listGrpItem.Count(x => !x.IsInvalidBinding);
+                    if (invalidCount > isvalidCount)
+                    {
+                        var invalidItem = listGrpItem.FirstOrDefault(x => x.IsInvalidBinding);
+                        if (invalidItem != null)
+                        {
+                            invalidItem.SetIsInvalid(1);
+                            listDensiHoukatuToUpdate.Add(invalidItem);
+                        }
+                    }
+                    else
+                    {
+                        var isvalidItem = listGrpItem.FirstOrDefault(x => !x.IsInvalidBinding);
+                        if (isvalidItem != null)
+                        {
+                            isvalidItem.SetIsInvalid(0);
+                            listDensiHoukatuToUpdate.Add(isvalidItem);
+                        }
+                    }
+                }
+
+                listDensiHoukatuGrp.ForEach(x =>
+                {
+                    DensiHoukatuGrp? update = TrackingDataContext.DensiHoukatuGrps.FirstOrDefault(f => f.SeqNo == x.SeqNo && f.HpId == x.HpId && f.HoukatuGrpNo == x.HoukatuGrpNo && f.ItemCd == x.ItemCd && f.StartDate == x.StartDate && f.UserSetting == x.UserSetting);
+                    if (update != null)
+                    {
+                        update.SpJyoken = x.SpJyoken;
+                        update.EndDate = x.EndDate;
+                        update.TargetKbn = x.TargetKbn;
+                        update.IsInvalid = x.IsInvalid;
+                        update.UpdateId = userId;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                });
+
+                listDensiHoukatuToUpdate.ForEach(x =>
+                {
+                    DensiHoukatuGrp? update = TrackingDataContext.DensiHoukatuGrps.FirstOrDefault(f => f.SeqNo == x.SeqNo && f.HpId == x.HpId && f.HoukatuGrpNo == x.HoukatuGrpNo && f.ItemCd == x.ItemCd && f.StartDate == x.StartDate && f.UserSetting == x.UserSetting);
+                    if (update != null)
+                    {
+                        update.SpJyoken = x.SpJyoken;
+                        update.EndDate = x.EndDate;
+                        update.TargetKbn = x.TargetKbn;
+                        update.IsInvalid = x.IsInvalid;
+                        update.UpdateId = userId;
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                    }
+                });
+            }
+
+            void CombinedContraindicationUpdate()
+            {
+                List<CombinedContraindicationModel> source = setDataTen.CombinedContraindicationTab.CombinedContraindications;
+                var kinkiQueryDb = TrackingDataContext.KinkiMsts.Where(item => item.ACd == itemCd).ToList();
+                foreach (CombinedContraindicationModel model in source)
+                {
+                    if (model.CheckDefaultValue())
+                    {
+                        continue;
+                    }
+                    if (model.IsAddNew)
+                    {
+                        TrackingDataContext.KinkiMsts.Add(new KinkiMst()
+                        {
+                            HpId = hpId,
+                            ACd = model.ACd,
+                            BCd = model.BCd,
+                            CreateDate = CIUtil.GetJapanDateTimeNow(),
+                            CreateId = userId,
+                            UpdateId = userId,
+                            UpdateDate = CIUtil.GetJapanDateTimeNow()
+                        });
+                        continue;
+                    }
+                    if (model.IsUpdated)
+                    {
+                        var update = kinkiQueryDb.FirstOrDefault(x => x.Id == model.Id);
+                        if (update != null)
+                        {
+                            update.UpdateId = userId;
+                            update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                            update.BCd = model.BCd;
+                        }
+                    }
+                }
+            }
+            #endregion
         }
     }
 }

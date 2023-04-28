@@ -1,5 +1,4 @@
-﻿using Domain.Models.DrugInfor;
-using Domain.Models.OrdInf;
+﻿using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 
 namespace Domain.Models.MstItem
@@ -83,7 +82,7 @@ namespace Domain.Models.MstItem
             IpnMinYakkaMsts = ipnMinYakkaMsts;
             DrugDayLimits = drugDayLimits;
             DosageMst = dosageMst;
-            this.ipnNameMst = ipnNameMst;
+            IpnNameMst = ipnNameMst;
         }
 
         public List<M10DayLimitModel> M10DayLimits { get; private set; }
@@ -94,7 +93,7 @@ namespace Domain.Models.MstItem
 
         public DosageMstModel DosageMst { get; private set; }
 
-        public IpnNameMstModel ipnNameMst { get; private set; }
+        public IpnNameMstModel IpnNameMst { get; private set; }
     }
 
     public class UsageSettingTabModel

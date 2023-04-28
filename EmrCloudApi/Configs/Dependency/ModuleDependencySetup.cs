@@ -152,6 +152,8 @@ using Reporting.Calculate.Interface;
 using Reporting.CommonMasters.Common;
 using Reporting.CommonMasters.Common.Interface;
 using Reporting.CommonMasters.Config;
+using Reporting.DailyStatic.DB;
+using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Service;
@@ -172,6 +174,11 @@ using Reporting.ReceiptList.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
 using Reporting.Statistics.DB;
+using Reporting.Statistics.Sta1001.DB;
+using Reporting.Statistics.Sta1002.DB;
+using Reporting.Statistics.Sta1002.Service;
+using Reporting.Statistics.Sta1010.DB;
+using Reporting.Statistics.Sta1010.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -308,6 +315,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -467,13 +475,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using Reporting.Statistics.Sta1002.Service;
-using Reporting.Statistics.Sta1002.DB;
-using Reporting.Statistics.Sta1001.DB;
-using Reporting.DailyStatic.Service;
-using Reporting.DailyStatic.DB;
-using Reporting.Statistics.Sta1010.Service;
-using Reporting.Statistics.Sta1010.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1069,6 +1070,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
