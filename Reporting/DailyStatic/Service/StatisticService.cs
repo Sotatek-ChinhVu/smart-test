@@ -1,10 +1,10 @@
 ﻿using Helper.Extension;
-using Newtonsoft.Json;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Enum;
 using Reporting.DailyStatic.Model;
 using Reporting.Mappers.Common;
 using Reporting.Statistics.Sta1001.Models;
+using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.Models;
 using Reporting.Statistics.Sta1002.Service;
 using Reporting.Statistics.Sta1010.Models;
@@ -23,14 +23,16 @@ public class StatisticService : IStatisticService
     private readonly ISta1010CoReportService _sta1010CoReportService;
     private readonly ISta2001CoReportService _sta2001CoReportService;
     private readonly ISta2003CoReportService _sta2003CoReportService;
+    private readonly ISta1001CoReportService _sta1001CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
         _sta1010CoReportService = sta1010CoReportService;
         _sta2001CoReportService = sta2001CoReportService;
         _sta2003CoReportService = sta2003CoReportService;
+        _sta1001CoReportService = sta1001CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -40,7 +42,7 @@ public class StatisticService : IStatisticService
         switch ((StatisticReportType)configDaily.ReportId)
         {
             case StatisticReportType.Sta1001:
-                return PrintSta1001(configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                return PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta1002:
                 return PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta1010:
@@ -54,11 +56,10 @@ public class StatisticService : IStatisticService
     }
 
     #region Print Report
-    private CommonReportingRequestModel PrintSta1001(ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
+    private CommonReportingRequestModel PrintSta1001(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
     {
         CoSta1001PrintConf printConf = CreateCoSta1001PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-        //reportService
-        return new();
+        return _sta1001CoReportService.GetSta1001ReportingData(printConf, hpId);
     }
 
     private CommonReportingRequestModel PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)

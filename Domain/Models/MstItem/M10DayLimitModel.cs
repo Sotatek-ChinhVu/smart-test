@@ -15,6 +15,13 @@ namespace Domain.Models.MstItem
             Cmt = cmt;
         }
 
+        public M10DayLimitModel()
+        {
+            Cmt = string.Empty;
+            YjCd = string.Empty;
+            StDate = string.Empty;
+            EdDate = string.Empty;
+        }
 
         /// <summary>
         /// 個別医薬品コード
