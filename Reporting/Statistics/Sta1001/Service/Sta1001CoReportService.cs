@@ -199,11 +199,9 @@ namespace Reporting.Statistics.Sta1001.Service
             _dailyStatisticCommandFinder = dailyStatisticCommandFinder;
         }
 
-        public CommonReportingRequestModel GetSta1001ReportingData(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo)
+        public CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId)
         {
-            var configDaily = _dailyStatisticCommandFinder.GetDailyConfigStatisticMenu(hpId, menuId);
-            if (configDaily == null) return new();
-            _printConf = CreateCoSta1001PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
+            _printConf = printConf;
 
             HpId = hpId;
             GetFieldNameList();
@@ -223,45 +221,6 @@ namespace Reporting.Statistics.Sta1001.Service
             }
 
             return new Sta1001Mapper(_extralData, SingleData, CellData, _rowCountFieldName).GetData();
-        }
-
-        private CoSta1001PrintConf CreateCoSta1001PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
-
-        {
-            CoSta1001PrintConf printConf = new CoSta1001PrintConf(configDaily.MenuId);
-            printConf.StartNyukinDate = dateFrom;
-            printConf.EndNyukinDate = dateTo;
-
-            if (configDaily.TimeDailyFrom > 0 || configDaily.TimeDailyTo > 0)
-            {
-                printConf.StartNyukinTime = configDaily.TimeDailyFrom;
-                printConf.EndNyukinTime = configDaily.TimeDailyTo;
-            }
-            else
-            {
-                printConf.StartNyukinTime = timeFrom;
-                printConf.EndNyukinTime = timeTo;
-            }
-
-            printConf.FormFileName = configDaily.FormReport;
-            printConf.ReportName = configDaily.ReportName;
-            printConf.PageBreak1 = configDaily.BreakPage1;
-            printConf.PageBreak2 = configDaily.BreakPage2;
-            printConf.PageBreak3 = configDaily.BreakPage3;
-            printConf.SortOrder1 = configDaily.SortOrder1;
-            printConf.SortOrder2 = configDaily.SortOrder2;
-            printConf.SortOrder3 = configDaily.SortOrder3;
-            printConf.SortOpt1 = configDaily.OrderBy1;
-            printConf.SortOpt2 = configDaily.OrderBy2;
-            printConf.SortOpt3 = configDaily.OrderBy3;
-            printConf.IsTester = configDaily.TestPatient == 1;
-            printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
-            printConf.UketukeSbtIds = configDaily.UketukeKbnId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-            printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-            printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-            printConf.PaymentMethodCds = configDaily.PaymentKbn.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
-
-            return printConf;
         }
 
         private void GetFieldNameList()
