@@ -474,6 +474,7 @@ using Reporting.DailyStatic.Service;
 using Reporting.DailyStatic.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta1010.DB;
+using UseCase.ChartApproval.CheckSaveLogOut;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -656,6 +657,7 @@ namespace EmrCloudApi.Configs.Dependency
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
             busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<CheckSaveLogOutInputData, CheckSaveLogOutInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
