@@ -6,9 +6,8 @@ using Reporting.ReadRseReportFile.Service;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
-using Reporting.Statistics.Sta1002.Mapper;
-using Reporting.Statistics.Sta1002.Models;
 using Reporting.Statistics.Sta2002.DB;
+using Reporting.Statistics.Sta2002.Mapper;
 using Reporting.Statistics.Sta2002.Models;
 using System.Globalization;
 
@@ -17,7 +16,7 @@ namespace Reporting.Statistics.Sta2002.Service
     public class Sta2002CoReportService : ISta2002CoReportService
     {
         #region Private properties
-        private readonly ICoSta2002Finder staFinder;
+        private readonly ICoSta2002Finder _staFinder;
         private readonly IReadRseReportFileService _readRseReportFileService;
 
         /// <summary>
@@ -25,26 +24,26 @@ namespace Reporting.Statistics.Sta2002.Service
         /// </summary>
         private int HpId;
         private int _maxRow = 45;
-        private List<CoSta2002PrintData> printDatas;
-        private List<string> headerL1;
-        private List<string> headerL2;
-        private List<CoSyunoInfModel> syunoInfs;
-        private List<CoJihiSbtMstModel> jihiSbtMsts;
-        private List<CoJihiSbtFutan> jihiSbtFutans;
-        private CoHpInfModel hpInf;
+        private List<CoSta2002PrintData> printDatas = new();
+        private List<string> headerL1 = new();
+        private List<string> headerL2 = new();
+        private List<CoSyunoInfModel> syunoInfs = new();
+        private List<CoJihiSbtMstModel> jihiSbtMsts = new();
+        private List<CoJihiSbtFutan> jihiSbtFutans = new();
+        private CoHpInfModel hpInf = new();
 
-        private CoSta2002PrintConf _printConf;
+        private CoSta2002PrintConf _printConf = new(0);
 
         private List<PutColumn> putCurColumns = new List<PutColumn>();
 
         private int _currentPage;
         private string _rowCountFieldName = string.Empty;
-        private List<string> _objectRseList;
+        private List<string> _objectRseList = new();
         private bool _hasNextPage;
 
-        private readonly Dictionary<string, string> _singleFieldData;
-        private readonly Dictionary<string, string> _extralData;
-        private readonly List<Dictionary<string, CellModel>> _tableFieldData;
+        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         #endregion
 
         private List<PutColumn> putColumns = new List<PutColumn>
@@ -75,7 +74,13 @@ namespace Reporting.Statistics.Sta2002.Service
             new PutColumn("PostAdjustFutan", "期間外調整額")
         };
 
-        public CommonReportingRequestModel GetSta1002ReportingData(CoSta2002PrintConf printConf, int hpId)
+        public Sta2002CoReportService(IReadRseReportFileService readRseReportFileService, ICoSta2002Finder staFinder)
+        {
+            _readRseReportFileService = readRseReportFileService;
+            _staFinder = staFinder;
+        }
+
+        public CommonReportingRequestModel GetSta2002ReportingData(CoSta2002PrintConf printConf, int hpId)
         {
             HpId = hpId;
             _printConf = printConf;
@@ -94,16 +99,10 @@ namespace Reporting.Statistics.Sta2002.Service
                 _currentPage++;
             }
 
-           // return new Sta1002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+            return new Sta2002Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
         }
 
         #region UpdateDrawForm
-        private bool UpdateCrForm()
-        {
-            if (syunoInfs == null) return false;
-            bool bRet = UpdateDrawForm();
-            return bRet && _hasNextPage;
-        }
 
         private bool UpdateDrawForm()
         {
@@ -117,18 +116,18 @@ namespace Reporting.Statistics.Sta2002.Service
                 //タイトル
                 SetFieldData("Title", _printConf.ReportName);
                 //医療機関名
-                _extralData.Add("HeaderR_0_0_", hpInf.HpName);
+                _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
                 //作成日時
-                _extralData.Add("HeaderR_0_1_", CIUtil.SDateToShowSWDate(
+                _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
                 ) + DateTime.Now.ToString(" HH:mm") + "作成");
                 //ページ数
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / _maxRow);
-                _extralData.Add("HeaderR_0_2_", _currentPage + " / " + totalPage);
+                _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
                 //入金日
-                _extralData.Add("HeaderL_0_1_", headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
+                _extralData.Add("HeaderL_0_1_" + _currentPage, headerL1.Count >= _currentPage ? headerL1[_currentPage - 1] : "");
                 //改ページ条件
-                _extralData.Add("HeaderL_0_2_", headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
+                _extralData.Add("HeaderL_0_2_" + _currentPage, headerL2.Count >= _currentPage ? headerL2[_currentPage - 1] : "");
 
                 //期間
                 SetFieldData("Range",
@@ -195,6 +194,8 @@ namespace Reporting.Statistics.Sta2002.Service
                         _extralData.Add("baseListName_" + rowNoKey, baseListName);
                         _extralData.Add("rowNo_" + rowNoKey, rowNo.ToString());
                     }
+
+                    _tableFieldData.Add(data);
 
                     hokIndex++;
                     if (hokIndex >= printDatas.Count)
@@ -593,14 +594,14 @@ namespace Reporting.Statistics.Sta2002.Service
                 }
             }
 
-            hpInf = staFinder.GetHpInf(HpId, _printConf.StartNyukinYm * 100 + 1);
+            hpInf = _staFinder.GetHpInf(HpId, _printConf.StartNyukinYm * 100 + 1);
 
             //データ取得
-            syunoInfs = staFinder.GetSyunoInfs(HpId, _printConf);
+            syunoInfs = _staFinder.GetSyunoInfs(HpId, _printConf);
             if ((syunoInfs?.Count ?? 0) == 0) return false;
 
-            jihiSbtMsts = staFinder.GetJihiSbtMst(HpId);
-            jihiSbtFutans = staFinder.GetJihiSbtFutan(HpId, _printConf);
+            jihiSbtMsts = _staFinder.GetJihiSbtMst(HpId);
+            jihiSbtFutans = _staFinder.GetJihiSbtFutan(HpId, _printConf);
 
             //印刷用データの作成
             MakePrintData();
@@ -613,7 +614,7 @@ namespace Reporting.Statistics.Sta2002.Service
 
         private void GetFieldNameList()
         {
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2002, string.Empty, new());
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2002, "sta2002a.rse", new());
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _objectRseList = javaOutputData.objectNames;
         }
@@ -626,7 +627,7 @@ namespace Reporting.Statistics.Sta2002.Service
                 new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
             };
 
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2002, string.Empty, fieldInputList);
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2002, "sta2002a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
         }

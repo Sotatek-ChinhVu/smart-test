@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Infrastructure.Base;
+using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.DB;
@@ -7,7 +8,7 @@ using Reporting.Statistics.Sta2002.Models;
 
 namespace Reporting.Statistics.Sta2002.DB
 {
-    public class CoSta2002Finder : ICoSta2002Finder
+    public class CoSta2002Finder : RepositoryBase, ICoSta2002Finder
     {
         private ICoHpInfFinder _coHpInfFinder;
         private ICoSta1001Finder _coSta1001Finder;
