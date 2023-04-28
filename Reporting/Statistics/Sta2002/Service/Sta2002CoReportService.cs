@@ -22,7 +22,7 @@ namespace Reporting.Statistics.Sta2002.Service
         /// <summary>
         /// CoReport Model
         /// </summary>
-        private int HpId;
+        private int hpId;
         private int _maxRow = 45;
         private List<CoSta2002PrintData> printDatas = new();
         private List<string> headerL1 = new();
@@ -82,7 +82,7 @@ namespace Reporting.Statistics.Sta2002.Service
 
         public CommonReportingRequestModel GetSta2002ReportingData(CoSta2002PrintConf printConf, int hpId)
         {
-            HpId = hpId;
+            this.hpId = hpId;
             _printConf = printConf;
             // get data to print
             GetFieldNameList();
@@ -594,14 +594,14 @@ namespace Reporting.Statistics.Sta2002.Service
                 }
             }
 
-            hpInf = _staFinder.GetHpInf(HpId, _printConf.StartNyukinYm * 100 + 1);
+            hpInf = _staFinder.GetHpInf(hpId, _printConf.StartNyukinYm * 100 + 1);
 
             //データ取得
-            syunoInfs = _staFinder.GetSyunoInfs(HpId, _printConf);
+            syunoInfs = _staFinder.GetSyunoInfs(hpId, _printConf);
             if ((syunoInfs?.Count ?? 0) == 0) return false;
 
-            jihiSbtMsts = _staFinder.GetJihiSbtMst(HpId);
-            jihiSbtFutans = _staFinder.GetJihiSbtFutan(HpId, _printConf);
+            jihiSbtMsts = _staFinder.GetJihiSbtMst(hpId);
+            jihiSbtFutans = _staFinder.GetJihiSbtFutan(hpId, _printConf);
 
             //印刷用データの作成
             MakePrintData();
