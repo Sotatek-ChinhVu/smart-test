@@ -24,6 +24,12 @@
             IsDeleted = false;
         }
 
+        public PiImageModel()
+        {
+            ItemCd = string.Empty;
+            FileName = string.Empty;
+            ImagePath = string.Empty;
+        }
 
         /// <summary>
         /// 医療機関識別ID
