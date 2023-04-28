@@ -3479,5 +3479,30 @@ namespace Helper.Common
 
             return timeSpan.ToString(format);
         }
+
+        public static bool PtNumCheckDigits(long ptNum)
+        {
+            long ptNumber = ptNum / 10;
+            return ptNum == PtIDChkDgtMakeM10W31(ptNumber);
+        }
+
+        public static long PtIDChkDgtMakeM10W31(long ptNum)
+        {
+            int digit = 0;
+            string ptStr = ptNum.ToString("D10");
+            int weight = 1;
+
+            for (int i = 0; i <= ptStr.Length - 1; i++)
+            {
+                digit += (ptStr[i] - '0') * weight;
+                weight = (weight == 1) ? 3 : 1;
+            }
+
+            digit %= 10;
+            if (digit != 0)
+                digit = 10 - digit;
+
+            return ptNum * 10 + digit;
+        }
     }
 }
