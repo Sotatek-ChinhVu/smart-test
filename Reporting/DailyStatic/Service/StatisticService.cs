@@ -17,6 +17,8 @@ using Reporting.Statistics.Sta2003.Models;
 using Reporting.Statistics.Sta2003.Service;
 using Reporting.Statistics.Sta2010.Models;
 using Reporting.Statistics.Sta2010.Service;
+using Reporting.Statistics.Sta2011.Models;
+using Reporting.Statistics.Sta2011.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -30,8 +32,9 @@ public class StatisticService : IStatisticService
     private readonly ISta1001CoReportService _sta1001CoReportService;
     private readonly ISta2002CoReportService _sta2002CoReportService;
     private readonly ISta2010CoReportService _sta2010CoReportService;
+    private readonly ISta2011CoReportService _sta2011CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -41,6 +44,7 @@ public class StatisticService : IStatisticService
         _sta1001CoReportService = sta1001CoReportService;
         _sta2002CoReportService = sta2002CoReportService;
         _sta2010CoReportService = sta2010CoReportService;
+        _sta2011CoReportService = sta2011CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -63,6 +67,8 @@ public class StatisticService : IStatisticService
                 return PrintSta2003(hpId, configDaily, monthFrom, monthTo);
             case StatisticReportType.Sta2010:
                 return PrintSta2010(hpId, configDaily, monthFrom);
+            case StatisticReportType.Sta2011:
+                return PrintSta2011(hpId, configDaily, monthFrom);
         }
         return new();
     }
@@ -108,6 +114,12 @@ public class StatisticService : IStatisticService
     {
         var printConf = CreateCoSta2010PrintConf(configDaily, monthFrom);
         return _sta2010CoReportService.GetSta2010ReportingData(printConf, hpId);
+    }
+
+    private CommonReportingRequestModel PrintSta2011(int hpId, ConfigStatisticModel configDaily, int monthFrom)
+    {
+        var printConf = CreateCoSta2011PrintConf(configDaily, monthFrom);
+        return _sta2011CoReportService.GetSta2011ReportingData(printConf, hpId);
     }
     #endregion
 
@@ -316,6 +328,27 @@ public class StatisticService : IStatisticService
         printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
         printConf.HokenSbts = configDaily.InsuranceType.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
         printConf.SeikyuTypes = configDaily.TargetReceipt.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+
+        return printConf;
+    }
+
+    public static CoSta2011PrintConf CreateCoSta2011PrintConf(ConfigStatisticModel configDaily, int monthFrom)
+
+    {
+        CoSta2011PrintConf printConf = new CoSta2011PrintConf(configDaily.MenuId);
+        printConf.SeikyuYm = monthFrom;
+        printConf.FormFileName = configDaily.FormReport;
+        printConf.ReportName = configDaily.ReportName;
+        printConf.PageBreak1 = configDaily.BreakPage1;
+        printConf.PageBreak2 = configDaily.BreakPage2;
+        printConf.PageBreak3 = configDaily.BreakPage3;
+        printConf.IsTester = configDaily.TestPatient == 1;
+        printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.SeikyuTypes = configDaily.TargetReceipt.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.IsZaitaku = configDaily.HomePatient == 1;
+        printConf.IsUchiwake = configDaily.ShowBreakdown == 1;
+        printConf.ZaitakuItems = configDaily.ItemInput.Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToList();
 
         return printConf;
     }

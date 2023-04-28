@@ -190,6 +190,8 @@ using Reporting.Statistics.Sta2003.DB;
 using Reporting.Statistics.Sta2003.Service;
 using Reporting.Statistics.Sta2010.DB;
 using Reporting.Statistics.Sta2010.Service;
+using Reporting.Statistics.Sta2011.DB;
+using Reporting.Statistics.Sta2011.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -572,6 +574,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2002CoReportService, Sta2002CoReportService>();
             services.AddTransient<ICoSta2010Finder, CoSta2010Finder>();
             services.AddTransient<ISta2010CoReportService, Sta2010CoReportService>();
+            services.AddTransient<ICoSta2011Finder, CoSta2011Finder>();
+            services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
