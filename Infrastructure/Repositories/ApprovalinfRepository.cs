@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using System;
 
 namespace Infrastructure.Repositories
@@ -106,6 +107,39 @@ namespace Infrastructure.Repositories
                 }
             });
             return TrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool NeedApprovalInf(int hpId, int startDate, int departmentId, int tantoId)
+        {
+            int endDate = 99999999;
+            var approvalInfs = NoTrackingDataContext.ApprovalInfs.Where((x) =>
+                                   x.HpId == hpId &&
+                                   x.SinDate >= startDate &&
+                                   x.SinDate <= endDate &&
+                                   x.IsDeleted == 0);
+
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where((x) =>
+                    x.HpId == hpId &&
+                    x.IsDeleted == DeleteTypes.None &&
+                    x.Status >= RaiinState.TempSave &&
+                    x.SinDate >= startDate &&
+                    x.SinDate <= endDate &&
+                    (tantoId == 0 || x.TantoId == tantoId) &&
+                    (departmentId == 0 || x.KaId == departmentId));
+
+            var query = from raiinInf in raiinInfs
+                        join approvalInf in approvalInfs on
+                            new { raiinInf.RaiinNo, raiinInf.PtId, raiinInf.SinDate } equals
+                            new { approvalInf.RaiinNo, approvalInf.PtId, approvalInf.SinDate } into approveInfList
+                        from approvalInf in approveInfList.DefaultIfEmpty()
+                        where approvalInf == null
+                        select new
+                        {
+                            RaiinNo = raiinInf.RaiinNo,
+                            ApprovalInf = approvalInf ?? new ApprovalInf()
+                        };
+
+            return query.AsEnumerable().Any(item => item.ApprovalInf.Id == 0);
         }
 
         public void ReleaseResource()

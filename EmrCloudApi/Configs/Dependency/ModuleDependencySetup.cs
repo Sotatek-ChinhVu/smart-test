@@ -481,6 +481,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.ChartApproval.CheckSaveLogOut;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -668,6 +669,7 @@ namespace EmrCloudApi.Configs.Dependency
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
             busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<CheckSaveLogOutInputData, CheckSaveLogOutInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
