@@ -1,19 +1,8 @@
-﻿using Entity.Tenant;
-
-namespace Reporting.Statistics.Sta1001.Models;
+﻿namespace Reporting.Statistics.Sta1001.Models;
 
 public class CoSyunoInfModel
 {
-    public SyunoNyukin SyunoNyukin { get; private set; }
-    public PaymentMethodMst PaymentMethodMst { get; private set; }
-    public SyunoSeikyu SyunoSeikyu { get; private set; }
-    public RaiinInf RaiinInf { get; private set; }
-    public PtInf PtInf { get; private set; }
-    public UketukeSbtMst UketukeSbtMst { get; private set; }
-    public KaMst KaMst { get; private set; }
-    public UserMst TantoMst { get; private set; }
-    public UserMst UketukeUserMst { get; private set; }
-    public UserMst NyukinUserMst { get; private set; }
+    public bool IsNyukin { get; set; }
 
     /// <summary>
     /// 前回入金額
@@ -28,22 +17,22 @@ public class CoSyunoInfModel
     /// <summary>
     /// 患者負担額
     /// </summary>
-    public int PtFutan { get; private set; }
+    public int PtFutan { get; set; }
 
     /// <summary>
     /// 保険外金額
     /// </summary>
-    public int JihiFutan { get; private set; }
+    public int JihiFutan { get; set; }
 
     /// <summary>
     /// 消費税
     /// </summary>
-    public int JihiTax { get; private set; }
+    public int JihiTax { get; set; }
 
     /// <summary>
     /// 計算による調整額（KaikeInf.AdjustFutan）の正負反転
     /// </summary>
-    public int KaikeiAdjustFutan { get; private set; }
+    public int KaikeiAdjustFutan { get; set; }
 
     /// <summary>
     /// 保険種別コード
@@ -61,7 +50,7 @@ public class CoSyunoInfModel
     ///         公費単独(12)         = 511    
     ///         公費２併(21+12)      = 522    
     /// </summary>
-    public int HokenSbtCd { get; private set; }
+    public int HokenSbtCd { get; set; }
 
     /// <summary>
     /// 保険区分
@@ -73,7 +62,7 @@ public class CoSyunoInfModel
     ///     13:アフターケア          
     ///     14:自賠責          
     /// </summary>
-    public int HokenKbn { get; private set; }
+    public int HokenKbn { get; set; }
 
     /// <summary>
     /// レセプト種別
@@ -89,130 +78,90 @@ public class CoSyunoInfModel
     ///     14x4: 退職未就学者          
     ///     14x6: 退職家族          
     /// </summary>
-    public string ReceSbt { get; private set; }
+    public string ReceSbt
+    {
+        get => _receSbt ?? "0000";
+        set => _receSbt = value;
+    }
+    private string? _receSbt;
 
     /// <summary>
     /// 初回来院日
     /// </summary>
-    public int FirstRaiinDate { get; private set; }
-
-    public CoSyunoInfModel(SyunoNyukin syunoNyukin, PaymentMethodMst paymentMethodMst,
-        SyunoSeikyu syunoSeikyu, RaiinInf raiinInf, PtInf ptInf,
-        UketukeSbtMst uketukeSbtMst, UserMst nyukinUserMst, KaMst kaMst, UserMst tantoMst, UserMst uketukeUserMst,
-        int preNyukinGaku, int preAdjustFutan, int ptFutan, int jihiFutan, int jihiTax, int adjustFutan,
-        int hokenKbn, int hokenSbtCd, string receSbt, int firstRaiinDate)
-    {
-        SyunoNyukin = syunoNyukin;
-        PaymentMethodMst = paymentMethodMst;
-        SyunoSeikyu = syunoSeikyu;
-        RaiinInf = raiinInf;
-        PtInf = ptInf;
-        UketukeSbtMst = uketukeSbtMst;
-        KaMst = kaMst;
-        TantoMst = tantoMst;
-        UketukeUserMst = uketukeUserMst;
-        NyukinUserMst = nyukinUserMst;
-        PreNyukinGaku = preNyukinGaku;
-        PreAdjustFutan = preAdjustFutan;
-        PtFutan = ptFutan;
-        JihiFutan = jihiFutan;
-        JihiTax = jihiTax;
-        KaikeiAdjustFutan = -adjustFutan;
-        HokenKbn = hokenKbn;
-        HokenSbtCd = hokenSbtCd;
-        ReceSbt = receSbt;
-        FirstRaiinDate = firstRaiinDate;
-    }
+    public int FirstRaiinDate { get; set; }
 
     /// <summary>
     /// 来院番号
     /// </summary>
-    public long RaiinNo
-    {
-        get => SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 ? SyunoSeikyu.RaiinNo : SyunoNyukin.RaiinNo;
-    }
+    public long RaiinNo { get; set; }
 
     /// <summary>
     /// 親来院番号
     /// </summary>
-    public long OyaRaiinNo
-    {
-        get => RaiinInf.OyaRaiinNo;
-    }
+    public long OyaRaiinNo { get; set; }
 
     /// <summary>
     /// 診察日
     /// </summary>
-    public int SinDate
-    {
-        get => SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 ? SyunoSeikyu.SinDate : SyunoNyukin.SinDate;
-    }
+    public int SinDate { get; set; }
 
     /// <summary>
     /// 患者番号
     /// </summary>
-    public long PtNum
-    {
-        get => PtInf.PtNum;
-    }
+    public long PtNum { get; set; }
 
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName
-    {
-        get => PtInf.Name ?? string.Empty;
-    }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName
-    {
-        get => PtInf.KanaName ?? string.Empty;
-    }
+    public string PtKanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 請求点数
     /// </summary>
-    public int Tensu
-    {
-        get => SyunoSeikyu.SeikyuTensu;
-    }
+    public int Tensu { get; set; }
 
     /// <summary>
     /// 請求点数(新)
     /// </summary>
-    public int NewTensu
-    {
-        get => SyunoSeikyu.NewSeikyuTensu;
-    }
+    public int NewTensu { get; set; }
 
     /// <summary>
     /// 請求額
     /// </summary>
     public int SeikyuGaku
     {
-        get => SyunoSeikyu.NyukinKbn == 2 ? 0 :
-            SyunoSeikyu.SeikyuGaku - (SyunoNyukin?.AdjustFutan ?? 0) - PreAdjustFutan;
+        get => NyukinKbn == 2 ? 0 :
+            BaseSeikyuGaku - NyukinAdjustFutan - PreAdjustFutan;
     }
+
+    /// <summary>
+    /// SyunoSeikyu.SeikyuGaku
+    /// </summary>
+    public int BaseSeikyuGaku { get; set; }
 
     /// <summary>
     /// 請求額(新)
     /// </summary>
     public int NewSeikyuGaku
     {
-        get => SyunoSeikyu.NyukinKbn == 2 ? 0 :
-            SyunoSeikyu.NewSeikyuGaku - (SyunoNyukin?.AdjustFutan ?? 0) - PreAdjustFutan;
+        get => NyukinKbn == 2 ? 0 :
+            BaseNewSeikyuGaku - NyukinAdjustFutan - PreAdjustFutan;
     }
+
+    /// <summary>
+    /// SyunoSeikyu.NewSeikyuGaku
+    /// </summary>
+    public int BaseNewSeikyuGaku { get; set; }
 
     /// <summary>
     /// 入金区分
     /// </summary>
-    public int NyukinKbn
-    {
-        get => SyunoSeikyu.NyukinKbn;
-    }
+    public int NyukinKbn { get; set; }
 
     /// <summary>
     /// 入金区分名称
@@ -221,7 +170,7 @@ public class CoSyunoInfModel
     {
         get
         {
-            switch (SyunoSeikyu.NyukinKbn)
+            switch (NyukinKbn)
             {
                 case 0: return "未";
                 case 1: return "一部";
@@ -237,7 +186,7 @@ public class CoSyunoInfModel
     /// </summary>
     public int AdjustFutan
     {
-        get => (SyunoNyukin?.AdjustFutan ?? 0) + KaikeiAdjustFutan;
+        get => NyukinAdjustFutan + KaikeiAdjustFutan;
     }
 
     /// <summary>
@@ -245,16 +194,20 @@ public class CoSyunoInfModel
     /// </summary>
     public int NyukinAdjustFutan
     {
-        get => SyunoNyukin?.AdjustFutan ?? 0;
+        get => IsNyukin ? _nyukinAdjustFutan : 0;
+        set => _nyukinAdjustFutan = value;
     }
+    private int _nyukinAdjustFutan;
 
     /// <summary>
     /// 支払方法コード
     /// </summary>
     public int PayCd
     {
-        get => SyunoNyukin?.PaymentMethodCd ?? 0;
+        get => IsNyukin ? _payCd : 0;
+        set => _payCd = value;
     }
+    private int _payCd;
 
     /// <summary>
     /// 支払方法略称
@@ -262,15 +215,17 @@ public class CoSyunoInfModel
     /// </summary>
     public string PaySName
     {
-        get => PaymentMethodMst?.PaySname ?? string.Empty;
+        get => IsNyukin ? _paySName ?? string.Empty : string.Empty;
+        set => _paySName = value;
     }
+    private string? _paySName;
 
     /// <summary>
     /// 免除額
     /// </summary>
     public int MenjyoGaku
     {
-        get => SyunoSeikyu.NyukinKbn == 2 ? SyunoSeikyu.SeikyuGaku : 0;
+        get => NyukinKbn == 2 ? BaseSeikyuGaku : 0;
     }
 
     /// <summary>
@@ -279,36 +234,46 @@ public class CoSyunoInfModel
     /// </summary>
     public int NyukinSortNo
     {
-        get => SyunoNyukin?.SortNo ?? 0;
+        get => IsNyukin ? _nyukinSortNo : 0;
+        set => _nyukinSortNo = value;
     }
+    private int _nyukinSortNo;
+
+    /// <summary>
+    /// SyunoNyukin.SeqNo
+    /// </summary>
+    public long NyukinSeqNo { get; set; }
 
     /// <summary>
     /// 入金額
     /// </summary>
     public int NyukinGaku
     {
-        get => SyunoSeikyu.NyukinKbn == 0 ? 0 : (SyunoNyukin?.NyukinGaku ?? 0);
+        get => !IsNyukin || NyukinKbn == 0 ? 0 : _nyukinGaku;
+        set => _nyukinGaku = value;
     }
+    private int _nyukinGaku;
 
     /// <summary>
     /// 入金日
     /// </summary>
     public int NyukinDate
     {
-        get { return SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 ? SyunoSeikyu.SinDate : SyunoNyukin.NyukinDate; }
+        get { return !IsNyukin || NyukinKbn == 0 ? SinDate : _nyukinDate; }
         set
         {
-            if (SyunoNyukin == null) return;
-            SyunoNyukin.NyukinDate = value;
+            if (!IsNyukin) return;
+            _nyukinDate = value;
         }
     }
+    private int _nyukinDate;
 
     /// <summary>
     /// 入金年月
     /// </summary>
     public int NyukinYm
     {
-        get => (SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 ? SyunoSeikyu.SinDate : SyunoNyukin.NyukinDate) / 100;
+        get => NyukinDate / 100;
     }
 
     /// <summary>
@@ -316,113 +281,89 @@ public class CoSyunoInfModel
     /// </summary>
     public int NyukinUserId
     {
-        get => SyunoNyukin?.UpdateId ?? 0;
+        get => IsNyukin ? _nyukinUserId : 0;
+        set => _nyukinUserId = value;
     }
+    private int _nyukinUserId;
 
     /// <summary>
     /// 入金者略称
     /// </summary>
     public string NyukinUserSname
     {
-        get => NyukinUserMst?.Sname ?? "";
+        get => IsNyukin ? _nyukinUserSname ?? string.Empty : string.Empty;
+        set => _nyukinUserSname = value;
     }
+    private string? _nyukinUserSname;
 
     /// <summary>
     /// 入金時間
     /// </summary>
     public int NyukinTime
     {
-        get => SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 ? 0 : int.Parse(SyunoNyukin.UpdateDate.ToString("HHmm"));
+        get => !IsNyukin || NyukinKbn == 0 ? 0 : _nyukinTime;
+        set => _nyukinTime = value;
     }
+    private int _nyukinTime;
 
     /// <summary>
     /// 未収額
     /// </summary>
     public int MisyuGaku
     {
-        get => new int[] { 0, 2 }.Contains(SyunoSeikyu.NyukinKbn) ? 0 :
-            SyunoSeikyu.SeikyuGaku - (SyunoNyukin?.AdjustFutan ?? 0) - (SyunoNyukin?.NyukinGaku ?? 0) - PreNyukinGaku - PreAdjustFutan;
+        get => new int[] { 0, 2 }.Contains(NyukinKbn) ? 0 :
+            BaseSeikyuGaku - NyukinAdjustFutan - NyukinGaku - PreNyukinGaku - PreAdjustFutan;
     }
 
     /// <summary>
     /// 受付種別
     /// </summary>
-    public int UketukeSbt
-    {
-        get => SyunoNyukin?.UketukeSbt ?? RaiinInf.UketukeSbt;
-    }
+    public int UketukeSbt { get; set; }
 
     /// <summary>
     /// 受付種別名称
     /// </summary>
-    public string UketukeSbtName
-    {
-        get => UketukeSbtMst?.KbnName ?? "";
-    }
+    public string UketukeSbtName { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療科ID
     /// </summary>
-    public int KaId
-    {
-        get => RaiinInf.KaId;
-    }
+    public int KaId { get; set; }
 
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname
-    {
-        get => KaMst?.KaSname ?? "";
-    }
+    public string KaSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医ID
     /// </summary>
-    public int TantoId
-    {
-        get => RaiinInf.TantoId;
-    }
+    public int TantoId { get; set; }
 
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname
-    {
-        get => TantoMst?.Sname ?? "";
-    }
+    public string TantoSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 来院時間
     /// </summary>
-    public string UketukeTime
-    {
-        get => RaiinInf.UketukeTime ?? string.Empty;
-    }
+    public string UketukeTime { get; set; } = string.Empty;
 
     /// <summary>
     /// 精算時間
     /// </summary>
-    public string KaikeiTime
-    {
-        get => RaiinInf.KaikeiTime ?? string.Empty;
-    }
+    public string KaikeiTime { get; set; } = string.Empty;
 
     /// <summary>
     /// 受付者ID
     /// </summary>
-    public int UketukeId
-    {
-        get => RaiinInf.UketukeId;
-    }
+    public int UketukeId { get; set; }
 
     /// <summary>
     /// 受付者名
     /// </summary>
-    public string UketukeSname
-    {
-        get => UketukeUserMst?.Sname ?? "";
-    }
+    public string UketukeSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別
@@ -434,21 +375,21 @@ public class CoSyunoInfModel
             string hokenSbt = "";
             switch (HokenKbn)
             {
-                case CommonMasters.Constants.HokenKbn.Jihi:
+                case Helper.Constants.HokenKbn.Jihi:
                     switch (ReceSbt.Substring(0, 1))
                     {
                         case "8": return "自費保険";
                         case "9": return "自レ保険";
                     }
                     break;
-                case CommonMasters.Constants.HokenKbn.Syaho:
+                case Helper.Constants.HokenKbn.Syaho:
                     switch (ReceSbt.Substring(1, 1))
                     {
                         case "1": hokenSbt = "社"; break;
                         case "2": hokenSbt = "公費"; break;
                     }
                     break;
-                case CommonMasters.Constants.HokenKbn.Kokho:
+                case Helper.Constants.HokenKbn.Kokho:
                     switch (ReceSbt.Substring(1, 1))
                     {
                         case "1": hokenSbt = "国"; break;
@@ -456,18 +397,18 @@ public class CoSyunoInfModel
                         case "4": hokenSbt = "退"; break;
                     }
                     break;
-                case CommonMasters.Constants.HokenKbn.RousaiShort:
-                case CommonMasters.Constants.HokenKbn.RousaiLong:
-                case CommonMasters.Constants.HokenKbn.AfterCare:
+                case Helper.Constants.HokenKbn.RousaiShort:
+                case Helper.Constants.HokenKbn.RousaiLong:
+                case Helper.Constants.HokenKbn.AfterCare:
                     return "労災";
-                case CommonMasters.Constants.HokenKbn.Jibai:
+                case Helper.Constants.HokenKbn.Jibai:
                     return "自賠";
             }
 
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if (!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
+                if(!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {
@@ -624,12 +565,17 @@ public class CoSyunoInfModel
     {
         get =>
             new int[] {
-                CommonMasters.Constants.HokenKbn.RousaiShort,
-                CommonMasters.Constants.HokenKbn.RousaiLong,
-                CommonMasters.Constants.HokenKbn.AfterCare
+                    Helper.Constants.HokenKbn.RousaiShort,
+                    Helper.Constants.HokenKbn.RousaiLong,
+                    Helper.Constants.HokenKbn.AfterCare
             }.Contains(HokenKbn);
     }
     #endregion
+
+    /// <summary>
+    /// 初再診区分
+    /// </summary>
+    public int SyosaisinKbn { get; set; }
 
     /// <summary>
     /// 初再診
@@ -637,8 +583,8 @@ public class CoSyunoInfModel
     public string Syosaisin
     {
         get =>
-            new int[] { 1, 6 }.Contains(RaiinInf.SyosaisinKbn) ? "初診" :
-            new int[] { 3, 4, 7, 8 }.Contains(RaiinInf.SyosaisinKbn) ? "再診" :
+            new int[] { 1, 6 }.Contains(SyosaisinKbn) ? "初診" :
+            new int[] { 3, 4, 7, 8 }.Contains(SyosaisinKbn) ? "再診" :
             "-";
     }
 
@@ -647,6 +593,7 @@ public class CoSyunoInfModel
     /// </summary>
     public bool IsFirstRaiin
     {
+        //get => SyunoNyukin.SinDate == FirstRaiinDate && SyunoNyukin.SinDate == SyunoNyukin.NyukinDate;
         get => SinDate == FirstRaiinDate && SinDate == NyukinDate;
     }
 
@@ -656,7 +603,7 @@ public class CoSyunoInfModel
     public bool IsSinDate
     {
         //未精算の来院は当日の0円入金扱いのためtrue
-        get => SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0 || SyunoNyukin.SinDate == SyunoNyukin.NyukinDate;
+        get => !IsNyukin || NyukinKbn == 0 || SinDate == NyukinDate;
     }
 
     /// <summary>
@@ -665,19 +612,21 @@ public class CoSyunoInfModel
     public bool IsSinMonth
     {
         //未精算の来院は当日の0円入金扱いのためtrue
-        get => (SyunoNyukin == null || SyunoSeikyu.NyukinKbn == 0) || (SyunoNyukin.SinDate / 100) == (SyunoNyukin.NyukinDate / 100);
+        get => !IsNyukin || NyukinKbn == 0 || (SinDate / 100) == (NyukinDate / 100);
     }
 
     /// <summary>
     /// 来院コメント
     /// </summary>
-    public string RaiinCmt { get; set; }
+    public string RaiinCmt { get; set; } = string.Empty;
 
     /// <summary>
     /// 入金コメント
     /// </summary>
     public string NyukinCmt
     {
-        get => SyunoNyukin?.NyukinCmt ?? "";
+        get => IsNyukin ? _nyukinCmt ?? string.Empty : string.Empty;
+        set => _nyukinCmt = value;
     }
+    private string? _nyukinCmt;
 }
