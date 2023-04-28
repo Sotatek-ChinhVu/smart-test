@@ -4,6 +4,7 @@ using Reporting.DailyStatic.Enum;
 using Reporting.DailyStatic.Model;
 using Reporting.Mappers.Common;
 using Reporting.Statistics.Sta1001.Models;
+using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.Models;
 using Reporting.Statistics.Sta1002.Service;
 
@@ -13,11 +14,13 @@ public class StatisticService : IStatisticService
 {
     private readonly IDailyStatisticCommandFinder _finder;
     private readonly ISta1002CoReportService _sta1002CoReportService;
+    private readonly ISta1001CoReportService _sta1001CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1001CoReportService sta1001CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
+        _sta1001CoReportService = sta1001CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -27,7 +30,7 @@ public class StatisticService : IStatisticService
         switch ((StatisticReportType)configDaily.ReportId)
         {
             case StatisticReportType.Sta1001:
-                return PrintSta1001(configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                return PrintSta1001(hpId, menuId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta1002:
                 return PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
         }
@@ -35,11 +38,10 @@ public class StatisticService : IStatisticService
     }
 
     #region Print Report
-    private CommonReportingRequestModel PrintSta1001(ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
+    private CommonReportingRequestModel PrintSta1001(int hpId, int menuId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
     {
         CoSta1001PrintConf printConf = CreateCoSta1001PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-        //reportService
-        return new();
+        return _sta1001CoReportService.GetSta1001ReportingData(hpId, menuId, dateFrom, dateTo, timeFrom, timeTo);
     }
 
     private CommonReportingRequestModel PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)

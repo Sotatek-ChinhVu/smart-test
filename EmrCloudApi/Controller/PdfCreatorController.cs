@@ -152,14 +152,6 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
-    [HttpGet(ApiPath.Sta1001)]
-    public async Task<IActionResult> Sta1001([FromQuery] Sta1001Request request)
-    {
-        var data = _reportService.GetSta1001ReportingData(request.HpId, request.MenuId, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo);
-        var oMycustomclassname = JsonSerializer.Serialize(data);
-        return await RenderPdf(data, ReportType.Common);
-    }
-
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {

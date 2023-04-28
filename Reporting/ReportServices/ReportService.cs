@@ -213,9 +213,4 @@ public class ReportService : IReportService
     {
         return _receiptCoReportService.GetReceiptData(hpId, ptId, seikyuYm, sinYm, hokenId);
     }
-
-    public CommonReportingRequestModel GetSta1001ReportingData(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo)
-    {
-        return _sta1001CoReportService.GetSta1001ReportingData(hpId, menuId, dateFrom, dateTo, timeFrom, timeTo);
-    }
 }
