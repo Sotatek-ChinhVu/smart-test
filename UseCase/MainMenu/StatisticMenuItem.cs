@@ -12,6 +12,7 @@ public class StatisticMenuItem
         SortNo = model.SortNo;
         MenuName = model.MenuName;
         IsPrint = model.IsPrint;
+        StaConfigList = model.StaConfigList.Select(item => new StaConfItem(item)).ToList();
         IsDeleted = model.IsDeleted;
     }
 
@@ -26,6 +27,8 @@ public class StatisticMenuItem
     public string MenuName { get; private set; }
 
     public int IsPrint { get; private set; }
+
+    public List<StaConfItem> StaConfigList { get; private set; }
 
     public bool IsDeleted { get; private set; }
 }

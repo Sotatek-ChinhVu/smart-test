@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MainMenu;
+using Entity.Tenant;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
 
@@ -12,24 +13,50 @@ public class StatisticRepository : RepositoryBase, IStatisticRepository
 
     public List<StatisticMenuModel> GetDailyStatisticMenu(int hpId, int groupId)
     {
-        var result = NoTrackingDataContext.StaMenus.Where(item => item.HpId == hpId
-                                                                  && (groupId == 0 || item.GrpId == groupId)
-                                                                  && item.IsDeleted == 0)
-                                                   .OrderBy(item => item.SortNo)
-                                                   .Select(item => new StatisticMenuModel(
-                                                                       item.MenuId,
-                                                                       item.GrpId,
-                                                                       item.ReportId,
-                                                                       item.SortNo,
-                                                                       item.MenuName ?? string.Empty,
-                                                                       item.IsPrint))
-                                                   .ToList();
+        var staMenuList = NoTrackingDataContext.StaMenus.Where(item => item.HpId == hpId
+                                                                       && (groupId == 0 || item.GrpId == groupId)
+                                                                       && item.IsDeleted == 0)
+                                                        .OrderBy(item => item.SortNo)
+                                                        .ToList();
 
-        return result;
+        var menuIdList = staMenuList.Select(item=> item.MenuId).Distinct().ToList();
+
+        var staConfigList = NoTrackingDataContext.StaConfs.Where(item => item.HpId == hpId
+                                                                         && menuIdList.Contains(item.MenuId))
+                                                          .ToList();
+
+        return ConvertToStatisticList(staMenuList, staConfigList);
     }
 
     public void ReleaseResource()
     {
         DisposeDataContext();
     }
+
+    #region private function
+    private List<StatisticMenuModel> ConvertToStatisticList(List<StaMenu> staMenuList, List<StaConf> staConfigList)
+    {
+        List<StatisticMenuModel> result = new();
+        foreach (StaMenu staMenu in staMenuList)
+        {
+            var staConfigItem = staConfigList.Where(item => item.MenuId == staMenu.MenuId)
+                                             .Select(item => new StaConfModel(
+                                                                 item.MenuId,
+                                                                 item.ConfId,
+                                                                 item.Val ?? string.Empty))
+                                             .ToList();
+
+            result.Add(new StatisticMenuModel(
+                           staMenu.MenuId,
+                           staMenu.GrpId,
+                           staMenu.ReportId,
+                           staMenu.SortNo,
+                           staMenu.MenuName ?? string.Empty,
+                           staMenu.IsPrint,
+                           staConfigItem));
+        }
+
+        return result;
+    }
+    #endregion
 }
