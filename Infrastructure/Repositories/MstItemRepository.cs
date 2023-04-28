@@ -13,12 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Net.WebSockets;
-using System.Reflection;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -2204,7 +2199,7 @@ namespace Infrastructure.Repositories
                     x => x.HpId == hpId &&
                          x.IsDeleted == 0 &&
                          x.IpnNameCd == IpnNameCd)
-                    .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId ,x.IpnNameCd ,x.StartDate , x.EndDate, x.Yakka, x.SeqNo , x.IsDeleted, false))
+                    .Select(x => new IpnMinYakkaMstModel(x.Id, x.HpId, x.IpnNameCd, x.StartDate, x.EndDate, x.Yakka, x.SeqNo, x.IsDeleted, false))
                     .ToList();
         }
 
@@ -2273,8 +2268,8 @@ namespace Infrastructure.Repositories
             DrugInf drugAction = listDrugInf.FirstOrDefault(u => u.InfKbn == 1) ?? new DrugInf() { InfKbn = 1, ItemCd = itemCd };
             DrugInf precautions = listDrugInf.FirstOrDefault(u => u.InfKbn == 2) ?? new DrugInf() { InfKbn = 2, ItemCd = itemCd };
 
-            result.Add(new DrugInfModel(description.HpId, description.ItemCd, description.InfKbn, description.SeqNo, description.DrugInfo ?? string.Empty, description.IsDeleted, false , description.DrugInfo ?? string.Empty));
-            result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false , drugAction.DrugInfo ?? string.Empty));
+            result.Add(new DrugInfModel(description.HpId, description.ItemCd, description.InfKbn, description.SeqNo, description.DrugInfo ?? string.Empty, description.IsDeleted, false, description.DrugInfo ?? string.Empty));
+            result.Add(new DrugInfModel(drugAction.HpId, drugAction.ItemCd, drugAction.InfKbn, drugAction.SeqNo, drugAction.DrugInfo ?? string.Empty, drugAction.IsDeleted, false, drugAction.DrugInfo ?? string.Empty));
             result.Add(new DrugInfModel(precautions.HpId, precautions.ItemCd, precautions.InfKbn, precautions.SeqNo, precautions.DrugInfo ?? string.Empty, precautions.IsDeleted, false, precautions.DrugInfo ?? string.Empty));
             return result;
         }
@@ -3123,10 +3118,10 @@ namespace Infrastructure.Repositories
                 }
 
                 var listDrugInfoModel = drugModels.Where(u => !u.IsDefaultModel);
-                List<DrugInfModel> AddedDrugInfModel = listDrugInfoModel.Where(k => k.IsNewModel && !k.IsDefaultModel).ToList();
-                List<DrugInfModel> UpdatedDrugInfModel = listDrugInfoModel.Where(k => k.IsModified).ToList();
+                List<DrugInfModel> addedDrugInfModel = listDrugInfoModel.Where(k => k.IsNewModel && !k.IsDefaultModel).ToList();
+                List<DrugInfModel> updatedDrugInfModel = listDrugInfoModel.Where(k => k.IsModified).ToList();
 
-                TrackingDataContext.AddRange(Mapper.Map<DrugInfModel, DrugInf>(AddedDrugInfModel, (src, dest) =>
+                TrackingDataContext.AddRange(Mapper.Map<DrugInfModel, DrugInf>(addedDrugInfModel, (src, dest) =>
                 {
                     dest.HpId = hpId;
                     dest.UpdateId = userId;
@@ -3136,7 +3131,7 @@ namespace Infrastructure.Repositories
                     return dest;
                 }));
 
-                UpdatedDrugInfModel.ForEach(x =>
+                updatedDrugInfModel.ForEach(x =>
                 {
                     var drDb = TrackingDataContext.DrugInfs.FirstOrDefault(d => d.HpId == x.HpId && d.InfKbn == x.InfKbn && d.SeqNo == x.SeqNo && x.ItemCd == x.ItemCd);
                     if (drDb != null)
@@ -3173,7 +3168,7 @@ namespace Infrastructure.Repositories
                 updatedImageModel.ForEach(x =>
                 {
                     var upIm = TrackingDataContext.PiImages.FirstOrDefault(i => i.HpId == x.HpId && i.ImageType == x.ImageType && i.ItemCd == x.ItemCd);
-                    if(upIm != null)
+                    if (upIm != null)
                     {
                         upIm.UpdateId = userId;
                         upIm.UpdateDate = CIUtil.GetJapanDateTimeNow();
@@ -3243,7 +3238,7 @@ namespace Infrastructure.Repositories
 
                 foreach (var model in models)
                 {
-                    if(model.Id == 0 && !model.IsDeleted)
+                    if (model.Id == 0 && !model.IsDeleted)
                     {
                         TrackingDataContext.DensiSanteiKaisus.Add(Mapper.Map(model, new DensiSanteiKaisu(), (src, dest) =>
                         {
@@ -3254,13 +3249,13 @@ namespace Infrastructure.Repositories
                             dest.UpdateDate = CIUtil.GetJapanDateTimeNow();
                             return dest;
                         }));
-                    } 
+                    }
                     else
                     {
                         var modelInDb = databases.FirstOrDefault(x => x.Id == model.Id);
-                        if(modelInDb != null)
+                        if (modelInDb != null)
                         {
-                            if(model.IsDeleted)
+                            if (model.IsDeleted)
                             {
                                 if (model.UserSetting == 0 || model.UserSetting == 1)
                                 {
@@ -3403,7 +3398,7 @@ namespace Infrastructure.Repositories
                                         x.ItemCd1 == model.ItemCd1 &&
                                         x.Id == model.Id);
 
-                            if(entity != null)
+                            if (entity != null)
                             {
                                 entity.ItemCd2 = model.ItemCd2;
                                 entity.HaihanKbn = model.HaihanKbn;
@@ -3502,7 +3497,7 @@ namespace Infrastructure.Repositories
                             DensiHaihanMonth? entity = TrackingDataContext.DensiHaihanMonths.FirstOrDefault(x => x.HpId == model.HpId &&
                                                                                                                  x.ItemCd1 == model.ItemCd1 &&
                                                                                                                  x.Id == model.Id);
-                            if(entity != null)
+                            if (entity != null)
                             {
                                 //ApplyChange(model, entity);
                                 entity.ItemCd2 = model.ItemCd2;
@@ -3701,7 +3696,7 @@ namespace Infrastructure.Repositories
                             DensiHaihanWeek? entity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(x => x.HpId == model.HpId &&
                                                                                                               x.ItemCd1 == model.ItemCd1 &&
                                                                                                               x.Id == model.Id);
-                            if(entity != null)
+                            if (entity != null)
                             {
                                 entity.ItemCd2 = model.ItemCd2;
                                 entity.SpJyoken = model.SpJyoken;
@@ -3895,7 +3890,7 @@ namespace Infrastructure.Repositories
                                                                                                                    x.ItemCd1 == model.ItemCd1 &&
                                                                                                                    x.Id == model.Id);
 
-                                if(entity != null)
+                                if (entity != null)
                                     TrackingDataContext.DensiHaihanWeeks.Remove(entity);
 
                                 DensiHaihanWeek? originOppositionEntity = TrackingDataContext.DensiHaihanWeeks.FirstOrDefault(x => x.HpId == model.HpId &&
@@ -3943,7 +3938,7 @@ namespace Infrastructure.Repositories
                     if (invalidCount > isvalidCount)
                     {
                         var invalidItem = listGrpItem.FirstOrDefault(x => x.IsInvalidBinding);
-                        if(invalidItem != null)
+                        if (invalidItem != null)
                         {
                             invalidItem.SetIsInvalid(1);
                             listDensiHoukatuToUpdate.Add(invalidItem);
@@ -3963,7 +3958,7 @@ namespace Infrastructure.Repositories
                 listDensiHoukatuGrp.ForEach(x =>
                 {
                     DensiHoukatuGrp? update = TrackingDataContext.DensiHoukatuGrps.FirstOrDefault(f => f.SeqNo == x.SeqNo && f.HpId == x.HpId && f.HoukatuGrpNo == x.HoukatuGrpNo && f.ItemCd == x.ItemCd && f.StartDate == x.StartDate && f.UserSetting == x.UserSetting);
-                    if(update != null)
+                    if (update != null)
                     {
                         update.SpJyoken = x.SpJyoken;
                         update.EndDate = x.EndDate;
@@ -4016,7 +4011,7 @@ namespace Infrastructure.Repositories
                     if (model.IsUpdated)
                     {
                         var update = kinkiQueryDb.FirstOrDefault(x => x.Id == model.Id);
-                        if(update != null)
+                        if (update != null)
                         {
                             update.UpdateId = userId;
                             update.UpdateDate = CIUtil.GetJapanDateTimeNow();

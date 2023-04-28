@@ -250,7 +250,6 @@ namespace EmrCloudApi.Controller
             return new ActionResult<Response<GetSetDataTenMstResponse>>(presenter.Result);
         }
 
-
         [HttpPost(ApiPath.SaveSetDataTenMst)]
         public ActionResult<Response<SaveSetDataTenMstResponse>> SaveSetDataTenMst([FromBody] SaveSetDataTenMstRequest request)
         {
