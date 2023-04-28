@@ -183,6 +183,8 @@ using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.DB;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2003.DB;
+using Reporting.Statistics.Sta2003.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -315,6 +317,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -481,6 +484,7 @@ using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiin
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using Interactor.MainMenu;
+using UseCase.ChartApproval.CheckSaveLogOut;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -557,6 +561,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
             services.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
             services.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
+            services.AddTransient<ICoSta2003Finder, CoSta2003Finder>();
+            services.AddTransient<ISta2003CoReportService, Sta2003CoReportService>();
             services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
 
             //call Calculate API
@@ -667,6 +673,7 @@ namespace EmrCloudApi.Configs.Dependency
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
             busBuilder.RegisterUseCase<SaveApprovalInfListInputData, SaveApprovalInfListInteractor>();
+            busBuilder.RegisterUseCase<CheckSaveLogOutInputData, CheckSaveLogOutInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -1081,6 +1088,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

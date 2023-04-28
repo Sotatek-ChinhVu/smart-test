@@ -7,6 +7,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.ChartApproval;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ChartApproval.CheckSaveLogOut;
 using UseCase.ChartApproval.GetApprovalInfList;
 using UseCase.ChartApproval.SaveApprovalInfList;
 using UseCase.Core.Sync;
@@ -40,6 +41,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveApprovalInfListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveApprovalInfListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckSaveLogOutChartApporval)]
+        public ActionResult<Response<CheckSaveLogOutResponse>> CheckSaveLogOut()
+        {
+            var input = new CheckSaveLogOutInputData(HpId, UserId, DepartmentId);
+            var output = _bus.Handle(input);
+            var presenter = new CheckSaveLogOutPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckSaveLogOutResponse>>(presenter.Result);
         }
     }
 }

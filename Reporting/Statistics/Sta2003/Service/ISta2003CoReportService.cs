@@ -1,0 +1,9 @@
+﻿using Reporting.Mappers.Common;
+using Reporting.Statistics.Sta2003.Models;
+
+namespace Reporting.Statistics.Sta2003.Service;
+
+public interface ISta2003CoReportService
+{
+    CommonReportingRequestModel GetSta2003ReportingData(CoSta2003PrintConf printConf, int hpId);
+}
