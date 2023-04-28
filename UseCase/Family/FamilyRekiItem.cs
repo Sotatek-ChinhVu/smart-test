@@ -1,9 +1,11 @@
 ﻿using Domain.Models.Family;
+using System.Text.Json.Serialization;
 
 namespace UseCase.Family;
 
 public class FamilyRekiItem
 {
+    [JsonConstructor]
     public FamilyRekiItem(long id, string byomeiCd, string byomei, string cmt, int sortNo, bool isDeleted)
     {
         Id = id;

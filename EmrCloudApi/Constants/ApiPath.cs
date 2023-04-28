@@ -304,6 +304,7 @@
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
+        public const string GetListDrugImage = "GetListDrugImage";
 
         //ChartApporval
         public const string CheckSaveLogOutChartApporval = "CheckSaveLogOutOut";

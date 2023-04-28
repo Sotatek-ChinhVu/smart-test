@@ -1,9 +1,9 @@
 ﻿using Reporting.Mappers.Common;
+using Reporting.Statistics.Sta1001.Models;
 
-namespace Reporting.Statistics.Sta1001.Service
+namespace Reporting.Statistics.Sta1001.Service;
+
+public interface ISta1001CoReportService
 {
-    public interface ISta1001CoReportService
-    {
-        CommonReportingRequestModel GetSta1001ReportingData(int hpId, int menuId, int dateFrom, int dateTo, int timeFrom, int timeTo);
-    }
+    CommonReportingRequestModel GetSta1001ReportingData(CoSta1001PrintConf printConf, int hpId);
 }
