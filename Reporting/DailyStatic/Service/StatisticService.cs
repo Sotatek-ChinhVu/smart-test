@@ -1,5 +1,4 @@
 ﻿using Helper.Extension;
-using Newtonsoft.Json;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Enum;
 using Reporting.DailyStatic.Model;
@@ -17,6 +16,7 @@ public class StatisticService : IStatisticService
 {
     private readonly IDailyStatisticCommandFinder _finder;
     private readonly ISta1002CoReportService _sta1002CoReportService;
+    private readonly ISta1010CoReportService _sta1010CoReportService;
     private readonly ISta1001CoReportService _sta1001CoReportService;
 
     public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta1001CoReportService sta1001CoReportService)
