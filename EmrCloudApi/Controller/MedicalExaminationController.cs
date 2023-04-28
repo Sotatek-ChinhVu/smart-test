@@ -338,7 +338,7 @@ namespace EmrCloudApi.Controllers
         [HttpPost(ApiPath.OrderRealtimeChecker)]
         public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
         {
-            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder, request.SpecialNoteItem, request.PtDiseaseModels, request.FamilyItems, request.IsDataOfDb);
+            var input = new GetOrderCheckerInputData(request.PtId, request.HpId, request.SinDay, request.CurrentListOdr, request.ListCheckingOrder);
             var output = _bus.Handle(input);
             var presenter = new OrderRealtimeCheckerPresenter();
             presenter.Complete(output);
