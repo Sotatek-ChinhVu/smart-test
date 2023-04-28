@@ -53,7 +53,7 @@ namespace Interactor.PatientInfor
                             if (item.File.Length > 0) //File is existings
                             {
                                 path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
-                                string fileName =  ptNum + "_" + item.HokenGrp.AsString() + "_" + item.HokenId + "_" + CIUtil.GetJapanDateTimeNow().ToString("yyyyMMddHHmmsshhhhhh") + ".png";
+                                string fileName = ptNum + "_" + item.HokenGrp.AsString() + "_" + item.HokenId + "_" + CIUtil.GetJapanDateTimeNow().ToString("yyyyMMddHHmmsshhhhhh") + ".png";
                                 string pathScan = _amazonS3Service.UploadObjectAsync(path, fileName, item.File, true).Result;
                                 //Create or update
 
@@ -83,7 +83,23 @@ namespace Interactor.PatientInfor
 
                 (bool resultSave, long ptId) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys , HandlerInsuranceScan, inputData.UserId);
+                {
+                    if (inputData.Patient.PtNum != 0)
+                    {
+                        if (_systemConfRepository.GetSettingValue(1001, 0, inputData.Patient.HpId) == 1)
+                        {
+                            if (!CIUtil.PtNumCheckDigits(inputData.Patient.PtNum))
+                            {
+                                string msg = string.Format(ErrorMessage.MessageType_mNG01010, "患者番号");
+                                return new SavePatientInfoOutputData(new List<SavePatientInfoValidationResult>()
+                                {
+                                    new SavePatientInfoValidationResult(msg, SavePatientInforValidationCode.InvalidPtNumCheckDigits, TypeMessage.TypeMessageError)
+                                }, SavePatientInfoStatus.Failed, 0);
+                            }
+                        }
+                    }
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
+                }
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps, inputData.MaxMoneys, HandlerInsuranceScan, inputData.UserId);
 
@@ -109,6 +125,7 @@ namespace Interactor.PatientInfor
             bool isPatientTempotary = model.Patient.PtId == 0 && !model.Insurances.Any(x => x.IsDeleted == DeleteTypes.None);
             bool isPatientTest = model.Patient.IsTester == 1 && model.Patient.PtId == 0;
             bool isUpdate = model.Patient.PtId != 0;
+            int hpId = model.Patient.HpId;
 
             #region Patient Info
             if (model.Patient.HpId <= 0)
@@ -138,7 +155,7 @@ namespace Interactor.PatientInfor
 
             resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName ?? string.Empty, model.Patient.Name ?? string.Empty, model.Patient.HpId, model.ReactSave));
             int sinDay = DateTime.Now.ToString("yyyyMMdd").AsInteger();
-            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay , model.ReactSave, model.Patient.MainHokenPid));
+            resultMessages.AddRange(IsValidHokenPatternAll(model.Insurances, model.HokenInfs, model.HokenKohis, isUpdate, model.Patient.Birthday, sinDay, hpId, model.ReactSave, model.Patient.MainHokenPid));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"), SavePatientInforValidationCode.InvalidIsDead, TypeMessage.TypeMessageError));
@@ -272,7 +289,7 @@ namespace Interactor.PatientInfor
                     resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].EdaNo`"), SavePatientInforValidationCode.PtSanteiInvalidEdaNo, TypeMessage.TypeMessageError));
 
                 if (model.PtSanteis[i].KbnVal < 0)
-                    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].KbnVal`"), SavePatientInforValidationCode.PtSanteiInvalidKbnVal, TypeMessage.TypeMessageError));;
+                    resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].KbnVal`"), SavePatientInforValidationCode.PtSanteiInvalidKbnVal, TypeMessage.TypeMessageError)); ;
 
                 if (model.PtSanteis[i].StartDate < 0)
                     resultMessages.Add(new SavePatientInfoValidationResult(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].StartDate`"), SavePatientInforValidationCode.PtSanteiInvalidStartDate, TypeMessage.TypeMessageError));
@@ -307,9 +324,9 @@ namespace Interactor.PatientInfor
         /// <param name="kanjiName">Name</param>
         /// <param name="hpId"></param>
         /// <returns></returns>
-        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName 
+        private IEnumerable<SavePatientInfoValidationResult> IsValidKanjiName(string kanaName
             , string kanjiName
-            , int hpId 
+            , int hpId
             , ReactSavePatientInfo react)
         {
 
@@ -320,9 +337,10 @@ namespace Interactor.PatientInfor
 
             string message = string.Empty;
             if (string.IsNullOrEmpty(firstNameKana))
-            { message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
+            {
+                message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
                 resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidFirstNameKana, TypeMessage.TypeMessageError));
-               
+
             }
 
             if (string.IsNullOrEmpty(firstNameKanji))
@@ -334,7 +352,7 @@ namespace Interactor.PatientInfor
             // validate full name if setting
             if (isValidateFullName)
             {
-                if (string.IsNullOrEmpty(lastNameKana) && !resultMessages.Any(x=>x.Code == SavePatientInforValidationCode.InvalidFirstNameKana))
+                if (string.IsNullOrEmpty(lastNameKana) && !resultMessages.Any(x => x.Code == SavePatientInforValidationCode.InvalidFirstNameKana))
                 {
                     message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
                     resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.InvalidLastKanaName, TypeMessage.TypeMessageError));
@@ -477,10 +495,11 @@ namespace Interactor.PatientInfor
             List<InsuranceModel> insurances,
             int birthDay,
             int sinDay,
+            int hpId,
             ReactSavePatientInfo reactFromUI)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
-            if (_systemConfRepository.GetSettingValue(1005, 0, 0) == 1)
+            if (_systemConfRepository.GetSettingValue(1005, 0, hpId) == 1)
             {
                 var validPattern = insurances?.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
                                                                     !pattern.IsExpirated &&
@@ -495,7 +514,7 @@ namespace Interactor.PatientInfor
                     return resultMessages;
                 }
 
-                string checkParam = _systemConfRepository.GetSettingParams(1005, 0, 0);
+                string checkParam = _systemConfRepository.GetSettingParams(1005, 0, hpId);
                 var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 int invalidAgeCheck = 0;
@@ -507,7 +526,7 @@ namespace Interactor.PatientInfor
                     foreach (var pattern in validPattern)
                     {
                         int confirmDate = pattern.HokenInf.ConfirmDate;
-                        if (!IsValidAgeCheckConfirm(ageCheck, pattern.HokenInf.ConfirmDate, birthDay , sinDay))
+                        if (!IsValidAgeCheckConfirm(ageCheck, pattern.HokenInf.ConfirmDate, birthDay, sinDay))
                         {
                             if (invalidAgeCheck <= ageCheck)
                             {
@@ -538,9 +557,9 @@ namespace Interactor.PatientInfor
         }
 
         private IEnumerable<SavePatientInfoValidationResult> HasElderHoken(
-            List<InsuranceModel> insurances, 
-            List<HokenInfModel> hokenInfs, 
-            int birthDay, 
+            List<InsuranceModel> insurances,
+            List<HokenInfModel> hokenInfs,
+            int birthDay,
             int sinDay,
             ReactSavePatientInfo reactFromUI)
         {
@@ -580,7 +599,7 @@ namespace Interactor.PatientInfor
             return resultMessages;
         }
 
-        private bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs , int ptInfMainHokenPid)
+        private bool NeedCheckMainHoken(List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, int ptInfMainHokenPid)
         {
             var selectedHokenPattern = insurances.FirstOrDefault(x => x.HokenPatternSelected);
             var selectedInf = hokenInfs.FirstOrDefault(x => x.HokenId == selectedHokenPattern?.HokenId);
@@ -646,17 +665,17 @@ namespace Interactor.PatientInfor
         }
 
         private IEnumerable<SavePatientInfoValidationResult> IsValidMainHoken
-            (List<InsuranceModel> insurances, 
+            (List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             ReactSavePatientInfo reactFromUI,
             int ptInfMainHokenPid)
         {
             var resultMessages = new List<SavePatientInfoValidationResult>();
             string message = string.Empty;
-            if (ptInfMainHokenPid == 0 && NeedCheckMainHoken(insurances, hokenInfs , ptInfMainHokenPid) && !reactFromUI.ConfirmHokenPatternSelectedIsInfMainHokenPid) //if patient info not set PatientInf.MainHokenPid
+            if (ptInfMainHokenPid == 0 && NeedCheckMainHoken(insurances, hokenInfs, ptInfMainHokenPid) && !reactFromUI.ConfirmHokenPatternSelectedIsInfMainHokenPid) //if patient info not set PatientInf.MainHokenPid
             {
                 //In UI user set yes this message will set PatientInf.MainHokenPid = value;
-                message = "'" + insurances.FirstOrDefault(x=>x.HokenPatternSelected)?.HokenName + "'" + "の保険組合せを主保険に設定しますか？";
+                message = "'" + insurances.FirstOrDefault(x => x.HokenPatternSelected)?.HokenName + "'" + "の保険組合せを主保険に設定しますか？";
                 resultMessages.Add(new SavePatientInfoValidationResult(message, SavePatientInforValidationCode.ConfirmHokenPatternSelectedIsInfMainHokenPid, TypeMessage.TypeMessageConfirmation));
             }
 
@@ -674,9 +693,10 @@ namespace Interactor.PatientInfor
             List<InsuranceModel> insurances,
             List<HokenInfModel> hokenInfs,
             List<KohiInfModel> kohis,
-            bool isUpdateMode, 
-            int birthDay, 
+            bool isUpdateMode,
+            int birthDay,
             int sinDay,
+            int hpId,
             ReactSavePatientInfo reactFromUI,
             int ptInfMainHokenPid)
         {
@@ -698,7 +718,7 @@ namespace Interactor.PatientInfor
                 // 同じ組合せの保険が既に登録されている場合は警告。
                 var PatternHokenOnly = insurances.Where(pattern => pattern.HokenKbn >= 1 && pattern.HokenKbn <= 4 && pattern.IsDeleted == 0);
 
-                if(!reactFromUI.ConfirmRegisteredInsuranceCombination)
+                if (!reactFromUI.ConfirmRegisteredInsuranceCombination)
                 {
                     foreach (var pattern in PatternHokenOnly)
                     {
@@ -717,7 +737,7 @@ namespace Interactor.PatientInfor
                 }
             }
 
-            resultMessages.AddRange(IsValidAgeCheck(insurances ?? new List<InsuranceModel>(), birthDay, sinDay, reactFromUI));
+            resultMessages.AddRange(IsValidAgeCheck(insurances ?? new List<InsuranceModel>(), birthDay, sinDay, hpId, reactFromUI));
 
             resultMessages.AddRange(HasElderHoken(insurances ?? new List<InsuranceModel>(), hokenInfs, birthDay, sinDay, reactFromUI));
 
