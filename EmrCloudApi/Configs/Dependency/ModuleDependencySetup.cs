@@ -182,6 +182,8 @@ using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.DB;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2003.DB;
+using Reporting.Statistics.Sta2003.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -314,6 +316,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
@@ -478,17 +481,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using Reporting.Statistics.Sta1002.Service;
-using Reporting.Statistics.Sta1002.DB;
-using Reporting.Statistics.Sta1001.DB;
-using Reporting.DailyStatic.Service;
-using Reporting.DailyStatic.DB;
-using Reporting.Statistics.Sta1010.Service;
-using Reporting.Statistics.Sta1010.DB;
-using Reporting.Statistics.Sta2001.Service;
-using Reporting.Statistics.Sta2001.DB;
-using Reporting.Statistics.Sta2003.DB;
-using Reporting.Statistics.Sta2003.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1090,6 +1082,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();
