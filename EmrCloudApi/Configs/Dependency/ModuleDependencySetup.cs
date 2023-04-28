@@ -54,6 +54,7 @@ using Domain.Models.SpecialNote;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.MainMenu;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
@@ -430,6 +431,7 @@ using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
 using UseCase.SpecialNote.Save;
+using UseCase.MainMenu.GetDailyStatisticMenu;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
@@ -478,6 +480,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using Interactor.MainMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -645,6 +648,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
+            services.AddTransient<IStatisticRepository, StatisticRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1083,6 +1087,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckLockInputData, CheckLockInteractor>();
             busBuilder.RegisterUseCase<RemoveLockInputData, RemoveLockInteractor>();
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
+
+            // Statistic
+            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

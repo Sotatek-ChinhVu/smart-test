@@ -304,5 +304,8 @@
         //Monshin
         public const string GetMonshinInf = "GetMonshinInf";
         public const string SaveMonshinInf = "SaveMonshinInf";
+
+        // MainMenu
+        public const string GetDailyStatisticMenuList = "GetDailyStatisticMenuList";
     }
 }
