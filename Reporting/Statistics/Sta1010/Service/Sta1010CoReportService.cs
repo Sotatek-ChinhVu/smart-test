@@ -43,7 +43,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
     #region Constant
     private int maxRow = 43;
 
-    private List<PutColumn> putColumns = new List<PutColumn>
+    private readonly List<PutColumn> putColumns = new List<PutColumn>
         {
             new PutColumn("KaId", "診療科ID", false),
             new PutColumn("KaSname", "診療科略称", false),
@@ -133,6 +133,7 @@ public class Sta1010CoReportService : ISta1010CoReportService
     private string _rowCountFieldName = string.Empty;
     private List<string> _objectRseList;
     private bool _hasNextPage;
+
     public CommonReportingRequestModel GetSta1010ReportingData(CoSta1010PrintConf printConf, int hpId)
     {
         _printConf = printConf;

@@ -719,7 +719,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd ?? string.Empty)).ToList(),
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd?.Length > 0 ? "#" + d.ColorCd : string.Empty)).ToList(),
                 sinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
@@ -889,8 +889,8 @@ namespace Infrastructure.Repositories
         {
             var isDoctor = NoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
             var doctors = NoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
-            if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
-            {
+            //if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
+            //{
                 // if have only 1 doctor in user list
                 if (doctors.Count == 2)
                 {
@@ -955,9 +955,9 @@ namespace Infrastructure.Repositories
 
                 //if DefaultDoctorSetting = 0
                 return doctors.Count > 0 ? doctors[0].Id : 0;
-            }
+            //}
 
-            return 0;
+            //return 0;
         }
 
         public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)

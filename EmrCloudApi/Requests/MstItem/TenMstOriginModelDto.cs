@@ -24,31 +24,7 @@
         /// </summary>
         public int StartDate { get; set; }
 
-        public void SetStartDate(int value)
-        {
-            if (StartDate == value) return;
-            IsStartDateKeyUpdated = true;
-            StartDate = value;
-        }
-
         public int EndDate { get; set; }
-        /// <summary>
-        /// 有効終了年月日
-        ///     yyyymmdd
-        /// </summary>
-        public void SetEndDate(int value)
-        {
-            if (value == 0)
-            {
-                if (IsLastItem || EndDate == 99999999)
-                {
-                    EndDate = 99999999;
-                }
-                return;
-            }
-            if (EndDate == value) return;
-            EndDate = value;
-        }
 
         /// <summary>
         /// マスター種別
@@ -64,31 +40,6 @@
 
 
         public int SinKouiKbn { get; set; }
-        /// <summary>
-        /// 診療行為区分
-        /// </summary>
-        public void setSinKouiKbn(int value)
-        {
-            if (SinKouiKbn == value) return;
-            SinKouiKbn = value;
-            switch (value)
-            {
-                case 21:
-                    OdrUnitName = "日分";
-                    ReceUnitName = "日分";
-                    break;
-                case 22:
-                    OdrUnitName = "回分";
-                    ReceUnitName = "回分";
-                    break;
-                case 23:
-                    OdrUnitName = "調剤";
-                    ReceUnitName = "調剤";
-                    break;
-                default:
-                    break;
-            }
-        }
 
         /// <summary>
         /// 漢字名称
@@ -1079,36 +1030,6 @@
         public string SyukeiSaki { get; set; } = string.Empty;
 
         /// <summary>
-        /// 点数欄集計先識別（外来）
-        ///     当該診療行為の入院外レセプトにおける点数欄への集計先を表す。
-        ///     点数欄集計先識別については「別紙９」を参照。
-        ///     入院外レセプトで使用不可の診療行為は「０」である。
-        /// </summary>
-        public void SetSyukeiSaki(string value)
-        {
-            if (SyukeiSaki == value) return;
-            SyukeiSaki = value;
-            switch (value)
-            {
-                case "ZZ0":
-                    KanaName1 = "ｼﾝﾀﾞﾝｼｮﾘｮｳ";
-                    ReceUnitName = "通";
-                    OdrUnitName = "通";
-                    break;
-                case "ZZ1":
-                    KanaName1 = "ﾒｲｻｲｼｮﾘｮｳ";
-                    ReceUnitName = "通";
-                    OdrUnitName = "通";
-                    break;
-                case "A18":
-                    KanaName1 = "ｿﾉﾀ";
-                    ReceUnitName = string.Empty;
-                    OdrUnitName = string.Empty;
-                    break;
-            }
-        }
-
-        /// <summary>
         /// コード表用区分－区分
         ///     当該診療行為について医科点数表の章、部、区分番号及び項番を記録する。
         ///             区分（アルファベット部）：
@@ -1598,5 +1519,7 @@
         public bool IsStartDateKeyUpdated { get; set; }
 
         public int OriginStartDate { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 }
