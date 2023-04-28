@@ -17,9 +17,11 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Messaging;
 using Helper.Messaging.Data;
+using Infrastructure.Repositories;
 using Interactor.CalculateService;
 using Interactor.CommonChecker.CommonMedicalCheck;
 using System.Text;
+using UseCase.Receipt.Recalculation;
 using UseCase.ReceSeikyu.Save;
 
 namespace Interactor.ReceSeikyu
@@ -95,7 +97,7 @@ namespace Interactor.ReceSeikyu
                     }
                     else if (modifiedReceSeikyu.IsDeleted == DeleteTypes.None)
                     {
-                        _receSeikyuRepository.EntryDeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId, inputData.UserAct);
+                        _receSeikyuRepository.EntryDeleteHenJiyuu(modifiedReceSeikyu.PtId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.HokenId , inputData.UserAct);
 
                         receInfos.Add(new ReceInfo(modifiedReceSeikyu.PtId, modifiedReceSeikyu.HokenId, modifiedReceSeikyu.SinYm, modifiedReceSeikyu.SinYm));
 
@@ -186,7 +188,7 @@ namespace Interactor.ReceSeikyu
                     }
 
                     // Insert new rece_seikyu record with seikyuym = 999999
-                    isSuccessCompletedSeikyu = _receSeikyuRepository.InsertNewReceSeikyu(insertDefaultList, inputData.UserAct, inputData.HpId);
+                    isSuccessCompletedSeikyu = _receSeikyuRepository.InsertNewReceSeikyu(insertDefaultList, inputData.UserAct , inputData.HpId);
                     if (isSuccessCompletedSeikyu)
                     {
                         foreach (var receSeikyu in deletedSourceList)
@@ -225,7 +227,7 @@ namespace Interactor.ReceSeikyu
                 }
                 #endregion
 
-                if (receInfos.Any())
+                if(receInfos.Any())
                 {
                     //Rece Calculation
                     int totalRecord = receInfos.Count;
@@ -281,8 +283,8 @@ namespace Interactor.ReceSeikyu
                                 break;
                             }
                             var receRecalculationList = _receiptRepository.GetReceRecalculationList(inputData.HpId, receInfos[i].SeikyuYm, new List<long> { receInfos[i].PtId });
-                            int allCheckCount = _receiptRepository.GetCountReceInfs(inputData.HpId, new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm);
-                            CheckErrorInMonth(inputData, receRecalculationList, allCheckCount);
+                            int allCheckCount = _receiptRepository.GetCountReceInfs(inputData.HpId ,new List<long> { receInfos[i].PtId }, receInfos[i].SeikyuYm);
+                            CheckErrorInMonth(inputData, receRecalculationList , allCheckCount);
                             Messenger.Instance.Send(new RecalculateInSeikyuPendingStatus($"レセチェック処理中..残り[{(receInfos.Count - (i + 1))}件]です", (int)Math.Round((double)(100 * (i + 1)) / totalRecord), false, false));
                         }
                     }
@@ -311,7 +313,7 @@ namespace Interactor.ReceSeikyu
         }
 
 
-        private bool CheckErrorInMonth(SaveReceSeiKyuInputData inputData, List<ReceRecalculationModel> receRecalculationList, int allCheckCount)
+        private bool CheckErrorInMonth(SaveReceSeiKyuInputData inputData, List<ReceRecalculationModel> receRecalculationList ,int allCheckCount)
         {
             List<ReceCheckErrModel> newReceCheckErrList = new();
             StringBuilder errorText = new();
@@ -1916,7 +1918,7 @@ namespace Interactor.ReceSeikyu
                                                                          ))
                                  .ToList()));
 
-            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition, new(), new(), new(), false);
+            var checkedResult = _commonMedicalCheck.CheckListOrder(hpId, ptId, sinDate, orderInfList, condition);
             foreach (var errorInfo in checkedResult)
             {
                 var dayLimitList = errorInfo.ErrorInfo as List<DayLimitResultModel>;

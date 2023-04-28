@@ -178,6 +178,10 @@ using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1002.Service;
+using Reporting.Statistics.Sta1002.DB;
+using Reporting.Statistics.Sta1002.Service;
+using Reporting.Statistics.Sta1010.DB;
+using Reporting.Statistics.Sta1010.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -314,6 +318,7 @@ using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.GetSetDataTenMst;
 using UseCase.MstItem.GetTenMstOriginInfoCreate;
+using UseCase.MstItem.SaveSetDataTenMst;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -545,7 +550,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSta1001Finder, CoSta1001Finder>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
-            services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
+            services.AddTransient<ISta1010CoReportService, Sta1010CoReportService>();
+            services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1067,6 +1073,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetTenMstOriginInfoCreateInputData, GetTenMstOriginInfoCreateInteractor>();
             busBuilder.RegisterUseCase<DeleteOrRecoverTenMstInputData, DeleteOrRecoverTenMstInteractor>();
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
+            busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

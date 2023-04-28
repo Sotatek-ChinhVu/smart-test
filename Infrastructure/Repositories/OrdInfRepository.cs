@@ -275,11 +275,12 @@ namespace Infrastructure.Repositories
                         yakkaMst.EndDate,
                         yakkaMst.Yakka,
                         yakkaMst.SeqNo,
-                        yakkaMst.IsDeleted
+                        yakkaMst.IsDeleted,
+                        false
                     );
             }
 
-            return new IpnMinYakkaMstModel(0, 0, string.Empty, 0, 0, 0, 0, 0);
+            return new IpnMinYakkaMstModel(0, 0, string.Empty, 0, 0, 0, 0, 0, false);
         }
 
         public List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds)
@@ -298,7 +299,8 @@ namespace Infrastructure.Repositories
                     yakkaMst.EndDate,
                     yakkaMst.Yakka,
                     yakkaMst.SeqNo,
-                    yakkaMst.IsDeleted
+                    yakkaMst.IsDeleted,
+                    false
                 )).ToList();
         }
 

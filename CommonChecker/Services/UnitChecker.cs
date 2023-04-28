@@ -5,10 +5,7 @@ using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services.Interface;
-using Domain.Models.Diseases;
-using Domain.Models.Family;
 using PostgreDataContext;
-using SpecialNoteFull = Domain.Models.SpecialNote.SpecialNoteModel;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -50,10 +47,9 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return unitCheckResult;
         }
 
-        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> CheckOrderList(List<TOdrInf> checkingOrderList, SpecialNoteFull specialNoteModel, List<PtDiseaseModel> ptDiseaseModels, List<FamilyModel> familyModels, bool isDataOfDb)
+        public UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> CheckOrderList(List<TOdrInf> checkingOrderList)
         {
-
-            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(CheckType, checkingOrderList, Sinday, PtID, specialNoteModel, ptDiseaseModels, familyModels, isDataOfDb);
+            UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckForOrderListResult = new UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>(CheckType, checkingOrderList, Sinday, PtID);
             unitCheckForOrderListResult = HandleCheckOrderList(unitCheckForOrderListResult);
             return unitCheckForOrderListResult;
         }
