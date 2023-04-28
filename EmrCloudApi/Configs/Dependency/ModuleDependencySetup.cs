@@ -179,6 +179,8 @@ using Reporting.Statistics.Sta1002.DB;
 using Reporting.Statistics.Sta1002.Service;
 using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
+using Reporting.Statistics.Sta2001.DB;
+using Reporting.Statistics.Sta2001.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -512,7 +514,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
-            //Reporting
+            // Reporting
             services.AddTransient<IEventProcessorService, EventProcessorService>();
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<ICoDrugInfFinder, CoDrugInfFinder>();
@@ -549,6 +551,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDailyStatisticCommandFinder, DailyStatisticCommandFinder>();
             services.AddTransient<ISta1010CoReportService, Sta1010CoReportService>();
             services.AddTransient<ICoSta1010Finder, CoSta1010Finder>();
+            services.AddTransient<ICoSta2001Finder, CoSta2001Finder>();
+            services.AddTransient<ISta2001CoReportService, Sta2001CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
