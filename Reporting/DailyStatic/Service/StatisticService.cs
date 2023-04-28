@@ -11,6 +11,8 @@ using Reporting.Statistics.Sta1010.Models;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.Models;
 using Reporting.Statistics.Sta2001.Service;
+using Reporting.Statistics.Sta2003.Models;
+using Reporting.Statistics.Sta2003.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -20,14 +22,16 @@ public class StatisticService : IStatisticService
     private readonly ISta1002CoReportService _sta1002CoReportService;
     private readonly ISta1010CoReportService _sta1010CoReportService;
     private readonly ISta2001CoReportService _sta2001CoReportService;
+    private readonly ISta2003CoReportService _sta2003CoReportService;
     private readonly ISta1001CoReportService _sta1001CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta1001CoReportService sta1001CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
         _sta1010CoReportService = sta1010CoReportService;
         _sta2001CoReportService = sta2001CoReportService;
+        _sta2003CoReportService = sta2003CoReportService;
         _sta1001CoReportService = sta1001CoReportService;
     }
 
@@ -38,22 +42,24 @@ public class StatisticService : IStatisticService
         switch ((StatisticReportType)configDaily.ReportId)
         {
             case StatisticReportType.Sta1001:
-                return PrintSta1001(hpId, menuId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
+                return PrintSta1001(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta1002:
                 return PrintSta1002(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta1010:
                 return PrintSta1010(hpId, configDaily, dateFrom, dateTo, timeFrom, timeTo);
             case StatisticReportType.Sta2001:
                 return PrintSta2001(hpId, configDaily, monthFrom, monthTo);
+            case StatisticReportType.Sta2003:
+                return PrintSta2003(hpId, configDaily, monthFrom, monthTo);
         }
         return new();
     }
 
     #region Print Report
-    private CommonReportingRequestModel PrintSta1001(int hpId, int menuId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
+    private CommonReportingRequestModel PrintSta1001(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
     {
         CoSta1001PrintConf printConf = CreateCoSta1001PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
-        return _sta1001CoReportService.GetSta1001ReportingData(hpId, menuId, dateFrom, dateTo, timeFrom, timeTo);
+        return _sta1001CoReportService.GetSta1001ReportingData(printConf, hpId);
     }
 
     private CommonReportingRequestModel PrintSta1002(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -67,10 +73,18 @@ public class StatisticService : IStatisticService
         var printConf = CreateCoSta1010PrintConf(configDaily, dateFrom, dateTo, timeFrom, timeTo);
         return _sta1010CoReportService.GetSta1010ReportingData(printConf, hpId);
     }
+
     private CommonReportingRequestModel PrintSta2001(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
     {
         var printConf = CreateCoSta2001PrintConf(configDaily, monthFrom, monthTo);
         return _sta2001CoReportService.GetSta2001ReportingData(printConf, hpId);
+
+    }
+
+    private CommonReportingRequestModel PrintSta2003(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+    {
+        var printConf = CreateCoSta2003PrintConf(configDaily, monthFrom, monthTo);
+        return _sta2003CoReportService.GetSta2003ReportingData(printConf, hpId);
 
     }
     #endregion
@@ -222,6 +236,30 @@ public class StatisticService : IStatisticService
         printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
         printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
         printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        return printConf;
+    }
+
+    private CoSta2003PrintConf CreateCoSta2003PrintConf(ConfigStatisticModel configDaily,
+                                                                 int monthFrom,
+                                                                 int monthTo)
+
+    {
+        CoSta2003PrintConf printConf = new CoSta2003PrintConf(configDaily.MenuId);
+        printConf.StartNyukinYm = monthFrom;
+        printConf.EndNyukinYm = monthTo;
+        printConf.FormFileName = configDaily.FormReport;
+        printConf.ReportName = configDaily.ReportName;
+        printConf.PageBreak1 = configDaily.BreakPage1;
+        printConf.PageBreak2 = configDaily.BreakPage2;
+        printConf.SortOrder1 = configDaily.SortOrder1;
+        printConf.SortOpt1 = configDaily.OrderBy1;
+        printConf.IsTester = configDaily.TestPatient == 1;
+        printConf.IsExcludeUnpaid = configDaily.ExcludingUnpaid == 1;
+        printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.HokenSbts = configDaily.InsuranceType.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.IsTensu = configDaily.MedicalTreatment;
+        printConf.IsJihiFutan = configDaily.NonInsuranceAmount;
         return printConf;
     }
     #endregion
