@@ -308,5 +308,8 @@
 
         //ChartApporval
         public const string CheckSaveLogOutChartApporval = "CheckSaveLogOutOut";
+
+        // MainMenu
+        public const string GetDailyStatisticMenuList = "GetDailyStatisticMenuList";
     }
 }
