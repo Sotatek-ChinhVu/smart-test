@@ -22,6 +22,14 @@ namespace Domain.Models.MstItem
             IsModified = isModified;
         }
 
+        public TeikyoByomeiModel()
+        {
+            ItemCd = string.Empty;
+            ByomeiCd = string.Empty;
+            Byomei = string.Empty;
+            KanaName = string.Empty;
+        }
+
         public int SikkanCd { get; private set; }
 
         /// <summary>

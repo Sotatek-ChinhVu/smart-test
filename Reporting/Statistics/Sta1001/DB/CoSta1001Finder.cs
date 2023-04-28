@@ -38,8 +38,8 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                                                                         s.NyukinDate <= printConf.EndNyukinDate &&
                                                                         s.IsDeleted == DeleteStatus.None);
 
-        var minSinDate = syunoNyukins.Select(x => x.SinDate).Min();
-        var maxSinDate = syunoNyukins.Select(x => x.SinDate).Max();
+        var minSinDate = syunoNyukins.Select(x => x.SinDate).DefaultIfEmpty(0).Min();
+        var maxSinDate = syunoNyukins.Select(x => x.SinDate).DefaultIfEmpty(0).Max();
         //支払方法
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
