@@ -83,7 +83,7 @@ public class CoSyunoInfModel
         get => _receSbt ?? "0000";
         set => _receSbt = value;
     }
-    private string _receSbt;
+    private string? _receSbt;
 
     /// <summary>
     /// 初回来院日
@@ -113,12 +113,12 @@ public class CoSyunoInfModel
     /// <summary>
     /// 氏名
     /// </summary>
-    public string PtName { get; set; }
+    public string PtName { get; set; } = string.Empty;
 
     /// <summary>
     /// カナ氏名
     /// </summary>
-    public string PtKanaName { get; set; }
+    public string PtKanaName { get; set; } = string.Empty;
 
     /// <summary>
     /// 請求点数
@@ -215,10 +215,10 @@ public class CoSyunoInfModel
     /// </summary>
     public string PaySName
     {
-        get => IsNyukin ? _paySName : string.Empty;
+        get => IsNyukin ? _paySName ?? string.Empty : string.Empty;
         set => _paySName = value;
     }
-    private string _paySName;
+    private string? _paySName;
 
     /// <summary>
     /// 免除額
@@ -238,9 +238,6 @@ public class CoSyunoInfModel
         set => _nyukinSortNo = value;
     }
     private int _nyukinSortNo;
-    //{
-    //    get => SyunoNyukin?.SortNo ?? 0;
-    //}
 
     /// <summary>
     /// SyunoNyukin.SeqNo
@@ -294,10 +291,10 @@ public class CoSyunoInfModel
     /// </summary>
     public string NyukinUserSname
     {
-        get => IsNyukin ? _nyukinUserSname : string.Empty;
+        get => IsNyukin ? _nyukinUserSname ?? string.Empty : string.Empty;
         set => _nyukinUserSname = value;
     }
-    private string _nyukinUserSname;
+    private string? _nyukinUserSname;
 
     /// <summary>
     /// 入金時間
@@ -326,7 +323,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 受付種別名称
     /// </summary>
-    public string UketukeSbtName { get; set; }
+    public string UketukeSbtName { get; set; } = string.Empty;
 
     /// <summary>
     /// 診療科ID
@@ -336,7 +333,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 診療科略称
     /// </summary>
-    public string KaSname { get; set; }
+    public string KaSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 担当医ID
@@ -346,17 +343,17 @@ public class CoSyunoInfModel
     /// <summary>
     /// 担当医略称
     /// </summary>
-    public string TantoSname { get; set; }
+    public string TantoSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 来院時間
     /// </summary>
-    public string UketukeTime { get; set; }
+    public string UketukeTime { get; set; } = string.Empty;
 
     /// <summary>
     /// 精算時間
     /// </summary>
-    public string KaikeiTime { get; set; }
+    public string KaikeiTime { get; set; } = string.Empty;
 
     /// <summary>
     /// 受付者ID
@@ -366,7 +363,7 @@ public class CoSyunoInfModel
     /// <summary>
     /// 受付者名
     /// </summary>
-    public string UketukeSname { get; set; }
+    public string UketukeSname { get; set; } = string.Empty;
 
     /// <summary>
     /// 保険種別
@@ -411,11 +408,7 @@ public class CoSyunoInfModel
             if (hokenSbt != "")
             {
                 //公費・後期..に本人家族は不要なので抜ける
-                if (new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
-                {
-
-                }
-                else
+                if(!new string[] { "2", "3" }.Contains(ReceSbt.Substring(1, 1)))
                 {
                     switch (ReceSbt.Substring(3, 1))
                     {
@@ -610,7 +603,7 @@ public class CoSyunoInfModel
     public bool IsSinDate
     {
         //未精算の来院は当日の0円入金扱いのためtrue
-        get => !IsNyukin || NyukinKbn == 0 ? true : SinDate == NyukinDate;
+        get => !IsNyukin || NyukinKbn == 0 || SinDate == NyukinDate;
     }
 
     /// <summary>
@@ -619,21 +612,21 @@ public class CoSyunoInfModel
     public bool IsSinMonth
     {
         //未精算の来院は当日の0円入金扱いのためtrue
-        get => !IsNyukin || NyukinKbn == 0 ? true : (SinDate / 100) == (NyukinDate / 100);
+        get => !IsNyukin || NyukinKbn == 0 || (SinDate / 100) == (NyukinDate / 100);
     }
 
     /// <summary>
     /// 来院コメント
     /// </summary>
-    public string RaiinCmt { get; set; }
+    public string RaiinCmt { get; set; } = string.Empty;
 
     /// <summary>
     /// 入金コメント
     /// </summary>
     public string NyukinCmt
     {
-        get => IsNyukin ? _nyukinCmt : string.Empty;
+        get => IsNyukin ? _nyukinCmt ?? string.Empty : string.Empty;
         set => _nyukinCmt = value;
     }
-    private string _nyukinCmt;
+    private string? _nyukinCmt;
 }

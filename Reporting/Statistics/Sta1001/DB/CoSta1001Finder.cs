@@ -1,4 +1,5 @@
-﻿using Domain.Constant;
+﻿
+using Domain.Constant;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Base;
@@ -6,6 +7,7 @@ using Infrastructure.Interfaces;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta1001.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Reporting.Statistics.Sta1001.DB;
 
@@ -36,8 +38,8 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                                                                         s.NyukinDate <= printConf.EndNyukinDate &&
                                                                         s.IsDeleted == DeleteStatus.None);
 
-        var minSinDate = syunoNyukins.Select(x => x.SinDate).Min();
-        var maxSinDate = syunoNyukins.Select(x => x.SinDate).Max();
+        var minSinDate = syunoNyukins.Select(x => x.SinDate).DefaultIfEmpty(0).Min();
+        var maxSinDate = syunoNyukins.Select(x => x.SinDate).DefaultIfEmpty(0).Max();
         //支払方法
         var payMsts = NoTrackingDataContext.PaymentMethodMsts.Where(p => p.IsDeleted == DeleteStatus.None);
         //請求情報
@@ -45,9 +47,9 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
                                                                         s.SinDate >= minSinDate &&
                                                                         s.SinDate <= maxSinDate &&
                                                                         s.NyukinKbn != 0);  //0:未精算を除く
-                                                                                             //会計情報
-                                                                                             //var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where();
-        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.Where( x=> x.HpId == hpId && x.SinDate >= minSinDate && x.SinDate <= maxSinDate)
+                                                                                            //会計情報
+                                                                                            //var kaikeiInfs = NoTrackingDataContext.KaikeiInfs.Where();
+        var kaikeiFutans = NoTrackingDataContext.KaikeiInfs.Where(x => x.HpId == hpId && x.SinDate >= minSinDate && x.SinDate <= maxSinDate)
             .GroupBy(k => new { k.HpId, k.PtId, k.RaiinNo })
             .Select(k =>
                 new
@@ -238,7 +240,7 @@ public class CoSta1001Finder : RepositoryBase, ICoSta1001Finder
         if (printConf.UketukeSbtIds?.Count >= 1)
         {
             //受付種別の条件指定
-           joinQuery = joinQuery.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt));
+            joinQuery = joinQuery.Where(n => printConf.UketukeSbtIds.Contains(n.NyukinUketukeSbt));
         }
         if (printConf.PaymentMethodCds?.Count >= 1)
         {

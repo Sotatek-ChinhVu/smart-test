@@ -6,6 +6,10 @@ public class StatisticExportRequest
 
     public int MenuId { get; set; }
 
+    public int MonthFrom { get; set; }
+
+    public int MonthTo { get; set; }
+
     public int DateFrom { get; set; }
 
     public int DateTo { get; set; }
