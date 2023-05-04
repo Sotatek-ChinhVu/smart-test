@@ -38,6 +38,7 @@ using UseCase.Receipt.SaveReceStatus;
 using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
+using Helper.Extension;
 
 namespace EmrCloudApi.Controller;
 
@@ -494,8 +495,8 @@ public class ReceiptController : AuthorizeControllerBase
                    request.IsIncludeSingle,
                    request.HokensyaNoFrom,
                    request.HokensyaNoTo,
-                   request.HokensyaNoFromLong,
-                   request.HokensyaNoToLong,
+                   request.HokensyaNoFrom.AsLong(),
+                   request.HokensyaNoTo.AsLong(),
                    request.PtId,
                    request.PtIdFrom,
                    request.PtIdTo,
