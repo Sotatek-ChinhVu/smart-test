@@ -6,4 +6,5 @@ public enum CalculateTypeEnum : byte
     GetListRowCount = 1,
     GetFormatLength = 2,
     GetFormatLendB = 3,
+    GetListColCount = 4,
 }
