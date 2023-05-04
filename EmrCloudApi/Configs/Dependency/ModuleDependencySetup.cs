@@ -495,6 +495,8 @@ using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiin
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -582,6 +584,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
             services.AddTransient<ICoSta2021Finder, CoSta2021Finder>();
             services.AddTransient<ISta2021CoReportService, Sta2021CoReportService>();
+            services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
+            services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
