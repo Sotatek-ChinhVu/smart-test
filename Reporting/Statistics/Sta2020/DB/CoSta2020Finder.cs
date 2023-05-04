@@ -28,16 +28,16 @@ namespace Reporting.Statistics.Sta2020.DB
         /// </summary>
         /// <param name="printConf"></param>
         /// <returns></returns>
-        public List<CoSinKouiModel> GetSinKouis(CoSta2020PrintConf printConf)
+        public List<CoSinKouiModel> GetSinKouis(int hpId, CoSta2020PrintConf printConf)
         {
             List<CoSinKouiModel> sinData;
             if (printConf.DataKind == 0)
             {
-                sinData = getSinKouis(printConf);
+                sinData = getSinKouis(hpId, printConf);
             }
             else
             {
-                sinData = getOdrInfs(printConf);
+                sinData = getOdrInfs(hpId, printConf);
             }
             return sinData;
         }

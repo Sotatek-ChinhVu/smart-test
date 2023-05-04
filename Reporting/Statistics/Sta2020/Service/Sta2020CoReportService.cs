@@ -5,12 +5,13 @@ using Reporting.ReadRseReportFile.Service;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta2020.DB;
+using Reporting.Statistics.Sta2020.Mapper;
 using Reporting.Statistics.Sta2020.Models;
 using System.ComponentModel;
 
 namespace Reporting.Statistics.Sta2020.Service
 {
-    public class Sta2020CoReportService
+    public class Sta2020CoReportService : ISta2020CoReportService
     {
         #region Constant
         private int _maxRow = 43;
@@ -88,6 +89,28 @@ namespace Reporting.Statistics.Sta2020.Service
             _readRseReportFileService = readRseReportFileService;
         }
         #endregion
+
+        public CommonReportingRequestModel GetSta2020ReportingData(CoSta2020PrintConf printConf, int hpId)
+        {
+            HpId = hpId;
+            _printConf = printConf;
+            // get data to print
+            GetFieldNameList();
+            GetRowCount();
+            GetData();
+            _hasNextPage = true;
+
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
+            }
+
+            return new Sta2020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+        }
 
         #region Get  Data
         private bool GetData()
@@ -350,9 +373,9 @@ namespace Reporting.Statistics.Sta2020.Service
             return printDatas.Count > 0;
         }
 
-        private bool UpdateDrawForm(out bool hasNextPage)
+        private bool UpdateDrawForm()
         {
-            bool _hasNextPage = true;
+            _hasNextPage = true;
 
             #region SubMethod
 
@@ -450,17 +473,14 @@ namespace Reporting.Statistics.Sta2020.Service
             {
                 if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
                 {
-                    hasNextPage = _hasNextPage;
                     return false;
                 }
             }
             catch (Exception e)
             {
-                hasNextPage = _hasNextPage;
                 return false;
             }
 
-            hasNextPage = _hasNextPage;
             return true;
         }
 
