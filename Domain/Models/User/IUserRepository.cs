@@ -55,5 +55,7 @@ namespace Domain.Models.User
         bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId);
 
         PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
+
+        List<UserPermissionModel> GetAllPermission(int hpId, int userId);
     }
 }
