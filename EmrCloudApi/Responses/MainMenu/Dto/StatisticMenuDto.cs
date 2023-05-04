@@ -12,6 +12,7 @@ public class StatisticMenuDto
         SortNo = model.SortNo;
         MenuName = model.MenuName;
         IsPrint = model.IsPrint;
+        StaConfigList = model.StaConfigList.Select(item => new StaConfDto(item)).ToList();
     }
 
     public int MenuId { get; private set; }
@@ -25,4 +26,6 @@ public class StatisticMenuDto
     public string MenuName { get; private set; }
 
     public int IsPrint { get; private set; }
+
+    public List<StaConfDto> StaConfigList { get; private set; }
 }

@@ -23,6 +23,7 @@ using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.Lock;
+using Domain.Models.MainMenu;
 using Domain.Models.MaxMoney;
 using Domain.Models.Medical;
 using Domain.Models.MedicalExamination;
@@ -54,7 +55,6 @@ using Domain.Models.SpecialNote;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
-using Domain.Models.MainMenu;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
@@ -107,6 +107,7 @@ using Interactor.KarteInf;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.Lock;
+using Interactor.MainMenu;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
 using Interactor.MedicalExamination.HistoryCommon;
@@ -183,10 +184,16 @@ using Reporting.Statistics.Sta1010.DB;
 using Reporting.Statistics.Sta1010.Service;
 using Reporting.Statistics.Sta2001.DB;
 using Reporting.Statistics.Sta2001.Service;
-using Reporting.Statistics.Sta2003.DB;
-using Reporting.Statistics.Sta2003.Service;
 using Reporting.Statistics.Sta2002.DB;
 using Reporting.Statistics.Sta2002.Service;
+using Reporting.Statistics.Sta2003.DB;
+using Reporting.Statistics.Sta2003.Service;
+using Reporting.Statistics.Sta2010.DB;
+using Reporting.Statistics.Sta2010.Service;
+using Reporting.Statistics.Sta2011.DB;
+using Reporting.Statistics.Sta2011.Service;
+using Reporting.Statistics.Sta2021.DB;
+using Reporting.Statistics.Sta2021.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -201,6 +208,7 @@ using UseCase.Accounting.Recaculate;
 using UseCase.Accounting.SaveAccounting;
 using UseCase.Accounting.WarningMemo;
 using UseCase.CalculationInf;
+using UseCase.ChartApproval.CheckSaveLogOut;
 using UseCase.ChartApproval.GetApprovalInfList;
 using UseCase.ChartApproval.SaveApprovalInfList;
 using UseCase.ColumnSetting.GetList;
@@ -275,6 +283,7 @@ using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
+using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -437,7 +446,6 @@ using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.GetPtWeight;
 using UseCase.SpecialNote.Save;
-using UseCase.MainMenu.GetDailyStatisticMenu;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
@@ -486,8 +494,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using Interactor.MainMenu;
-using UseCase.ChartApproval.CheckSaveLogOut;
+using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -569,6 +576,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta1001CoReportService, Sta1001CoReportService>();
             services.AddTransient<ICoSta2002Finder, CoSta2002Finder>();
             services.AddTransient<ISta2002CoReportService, Sta2002CoReportService>();
+            services.AddTransient<ICoSta2010Finder, CoSta2010Finder>();
+            services.AddTransient<ISta2010CoReportService, Sta2010CoReportService>();
+            services.AddTransient<ICoSta2011Finder, CoSta2011Finder>();
+            services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
+            services.AddTransient<ICoSta2021Finder, CoSta2021Finder>();
+            services.AddTransient<ISta2021CoReportService, Sta2021CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1103,7 +1116,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             // Statistic
-            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<SaveDailyStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

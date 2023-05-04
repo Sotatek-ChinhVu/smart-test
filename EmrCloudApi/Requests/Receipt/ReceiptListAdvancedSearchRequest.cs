@@ -54,10 +54,6 @@ public class ReceiptListAdvancedSearchRequest
     public string HokensyaNoFrom { get; set; } = string.Empty;
 
     public string HokensyaNoTo { get; set; } = string.Empty;
-
-    public long HokensyaNoFromLong { get; set; }
-
-    public long HokensyaNoToLong { get; set; }
     #endregion
 
     #region 患者番号 PtId
