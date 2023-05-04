@@ -2,5 +2,5 @@
 
 public class GetDailyStatisticMenuRequest
 {
-    public int MenuId { get; set; }
+    public int GrpId { get; set; }
 }

@@ -4,13 +4,13 @@ namespace UseCase.MainMenu.GetDailyStatisticMenu;
 
 public class GetDailyStatisticMenuInputData : IInputData<GetDailyStatisticMenuOutputData>
 {
-    public GetDailyStatisticMenuInputData(int hpId, int menuId)
+    public GetDailyStatisticMenuInputData(int hpId, int grpId)
     {
         HpId = hpId;
-        MenuId = menuId;
+        GrpId = grpId;
     }
 
     public int HpId { get; private set; }
 
-    public int MenuId { get; private set; }
+    public int GrpId { get; private set; }
 }

@@ -16,6 +16,18 @@ public class StatisticMenuItem
         IsDeleted = model.IsDeleted;
     }
 
+    public StatisticMenuItem(int menuId, int grpId, int reportId, int sortNo, string menuName, int isPrint, List<StaConfItem> staConfigList, bool isDeleted)
+    {
+        MenuId = menuId;
+        GrpId = grpId;
+        ReportId = reportId;
+        SortNo = sortNo;
+        MenuName = menuName;
+        IsPrint = isPrint;
+        StaConfigList = staConfigList;
+        IsDeleted = isDeleted;
+    }
+
     public int MenuId { get; private set; }
 
     public int GrpId { get; private set; }

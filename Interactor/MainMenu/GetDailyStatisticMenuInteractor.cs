@@ -17,10 +17,15 @@ public class GetDailyStatisticMenuInteractor : IGetDailyStatisticMenuInputPort
     {
         try
         {
-            var result = _statisticRepository.GetDailyStatisticMenu(inputData.HpId, inputData.MenuId)
+            var grpList = _statisticRepository.GetStaGrp(inputData.HpId, inputData.GrpId)
+                                              .Select(grp => new StaGrpItem(grp))
+                                              .ToList();
+
+            var result = _statisticRepository.GetStatisticMenu(inputData.HpId, inputData.GrpId)
                                              .Select(item => new StatisticMenuItem(item))
                                              .ToList();
-            return new GetDailyStatisticMenuOutputData(result, GetDailyStatisticMenuStatus.Successed);
+
+            return new GetDailyStatisticMenuOutputData(result, grpList, GetDailyStatisticMenuStatus.Successed);
         }
         finally
         {

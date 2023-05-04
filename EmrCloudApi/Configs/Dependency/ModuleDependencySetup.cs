@@ -487,6 +487,7 @@ using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInter
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using Interactor.MainMenu;
 using UseCase.ChartApproval.CheckSaveLogOut;
+using UseCase.MainMenu.SaveDailyStatisticMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1102,6 +1103,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Statistic
             busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<SaveDailyStatisticMenuInputData, SaveDailyStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

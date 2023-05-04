@@ -11,6 +11,13 @@ public class StaConfItem
         Val = model.Val;
     }
 
+    public StaConfItem(int menuId, int confId, string val)
+    {
+        MenuId = menuId;
+        ConfId = confId;
+        Val = val;
+    }
+
     public int MenuId { get; private set; }
 
     public int ConfId { get; private set; }

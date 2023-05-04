@@ -11,7 +11,7 @@ public class GetDailyStatisticMenuPresenter : IGetDailyStatisticMenuOutputPort
 
     public void Complete(GetDailyStatisticMenuOutputData output)
     {
-        Result.Data = new GetDailyStatisticMenuResponse(output.StatisticMenuList);
+        Result.Data = new GetDailyStatisticMenuResponse(output.StatisticMenuList, output.StaGrpItemList);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

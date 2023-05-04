@@ -311,5 +311,6 @@
 
         // MainMenu
         public const string GetDailyStatisticMenuList = "GetDailyStatisticMenuList";
+        public const string SaveDailyStatisticMenuList = "SaveDailyStatisticMenuList";
     }
 }
