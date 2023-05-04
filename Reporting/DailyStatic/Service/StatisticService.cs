@@ -19,6 +19,8 @@ using Reporting.Statistics.Sta2010.Models;
 using Reporting.Statistics.Sta2010.Service;
 using Reporting.Statistics.Sta2011.Models;
 using Reporting.Statistics.Sta2011.Service;
+using Reporting.Statistics.Sta2021.Models;
+using Reporting.Statistics.Sta2021.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -33,8 +35,9 @@ public class StatisticService : IStatisticService
     private readonly ISta2002CoReportService _sta2002CoReportService;
     private readonly ISta2010CoReportService _sta2010CoReportService;
     private readonly ISta2011CoReportService _sta2011CoReportService;
+    private readonly ISta2021CoReportService _sta2021CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -45,6 +48,7 @@ public class StatisticService : IStatisticService
         _sta2002CoReportService = sta2002CoReportService;
         _sta2010CoReportService = sta2010CoReportService;
         _sta2011CoReportService = sta2011CoReportService;
+        _sta2021CoReportService = sta2021CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
@@ -69,6 +73,8 @@ public class StatisticService : IStatisticService
                 return PrintSta2010(hpId, configDaily, monthFrom);
             case StatisticReportType.Sta2011:
                 return PrintSta2011(hpId, configDaily, monthFrom);
+            case StatisticReportType.Sta2021:
+                return PrintSta2021(hpId, configDaily, monthFrom, monthTo);
         }
         return new();
     }
@@ -120,6 +126,13 @@ public class StatisticService : IStatisticService
     {
         var printConf = CreateCoSta2011PrintConf(configDaily, monthFrom);
         return _sta2011CoReportService.GetSta2011ReportingData(printConf, hpId);
+    }
+
+    private CommonReportingRequestModel PrintSta2021(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo)
+    {
+        var printConf = CreateCoSta2021PrintConf(configDaily.ConfigStatistic2021, monthFrom, monthTo);
+        return _sta2021CoReportService.GetSta2021ReportingData(printConf, hpId);
+
     }
     #endregion
 
@@ -349,6 +362,43 @@ public class StatisticService : IStatisticService
         printConf.IsZaitaku = configDaily.HomePatient == 1;
         printConf.IsUchiwake = configDaily.ShowBreakdown == 1;
         printConf.ZaitakuItems = configDaily.ItemInput.Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+        return printConf;
+    }
+
+    private CoSta2021PrintConf CreateCoSta2021PrintConf(ConfigStatistic2021Model configStatistic, int monthFrom, int monthTo)
+    {
+        CoSta2021PrintConf printConf = new CoSta2021PrintConf(configStatistic.MenuId);
+        printConf.FormFileName = configStatistic.FormReport;
+        printConf.ReportName = configStatistic.ReportName;
+        printConf.IsTester = configStatistic.TestPatient == 1;
+
+        printConf.StartSinYm = monthFrom;
+        printConf.EndSinYm = monthTo;
+
+        printConf.DataKind = configStatistic.DataKind;
+        printConf.PageBreak1 = configStatistic.PageBreak1;
+        printConf.PageBreak2 = configStatistic.PageBreak2;
+        printConf.SortOrder1 = configStatistic.SortOrder1;
+        printConf.SortOpt1 = configStatistic.SortOpt1;
+        printConf.SortOrder2 = configStatistic.SortOrder2;
+        printConf.SortOpt2 = configStatistic.SortOpt2;
+        printConf.SortOrder3 = configStatistic.SortOrder3;
+        printConf.SortOpt3 = configStatistic.SortOpt3;
+        printConf.KaIds = configStatistic.ListKaId;
+        printConf.TantoIds = configStatistic.ListTantoId;
+        printConf.HokenSbts = configStatistic.ListHokenSbt;
+        printConf.SinIds = configStatistic.ListSinId;
+        printConf.SinKouiKbns = configStatistic.ListSinKouiKbn;
+        printConf.MadokuKbns = configStatistic.ListMadokuKbn;
+        printConf.KouseisinKbns = configStatistic.ListKouseisinKbn;
+        printConf.ItemCds = configStatistic.ListItemCd;
+        printConf.SearchWord = configStatistic.SearchWord;
+        printConf.SearchOpt = configStatistic.SearchOpt;
+        printConf.ItemSearchOpt = configStatistic.ItemCdOpt;
+        printConf.InoutKbns = configStatistic.ListInoutKbn;
+        printConf.KohatuKbns = configStatistic.ListKohatuKbn;
+        printConf.IsAdopteds = configStatistic.ListIsAdopted;
 
         return printConf;
     }
