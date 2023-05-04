@@ -6,7 +6,7 @@ namespace Domain.Models.HistoryOrder
 {
     public interface IHistoryOrderRepository : IRepositoryBase
     {
-        (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted);
+        (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, int isShowApproval);
 
         (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted);
 

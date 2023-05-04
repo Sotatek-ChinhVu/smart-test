@@ -278,23 +278,23 @@ namespace Infrastructure.Repositories
             return GenerateResult(foundRaiinNo);
         }
 
-        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted)
+        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted, int isShowApproval = 0)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
-            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
         }
 
-        public (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted)
+        public (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, int startDate, int endDate, int isDeleted, int isShowApproval = 0)
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
             List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).ToList();
-            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted);
+            return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
         }
 
-        private (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted)
+        private (int totalCount, List<HistoryOrderModel> historyOrderModelList) GetList(int hpId, long ptId, int sinDate, List<RaiinInf> raiinInfList, int totalCount, int isDeleted, int isShowApproval)
         {
             if (!raiinInfList.Any())
             {
@@ -311,6 +311,7 @@ namespace Infrastructure.Repositories
             List<FileInfModel> listKarteFile = _karteInfRepository.GetListKarteFile(hpId, ptId, raiinNoList, isDeleted != 0);
 
             List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
+            var approveInfs = (isShowApproval == 1 || isShowApproval == 2) ? GetApproveInf(hpId, ptId, isShowApproval == 2, raiinNoList) : new List<ApproveInfModel>();
             foreach (long raiinNo in raiinNoList)
             {
                 RaiinInf? raiinInf = raiinInfList.FirstOrDefault(r => r.RaiinNo == raiinNo);
@@ -328,8 +329,9 @@ namespace Infrastructure.Repositories
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
+                var approveInf =  approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo);
 
-                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, string.Empty, listKarteFileModel));
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel));
             }
 
             return (totalCount, historyOrderModelList);
@@ -645,6 +647,50 @@ namespace Infrastructure.Repositories
         public void ReleaseResource()
         {
             DisposeDataContext();
+        }
+
+        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
+        {
+            var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
+            return result.Select(
+                    r => new ApproveInfModel(
+                            r.Id,
+                            r.HpId,
+                            r.PtId,
+                            r.SinDate,
+                            r.RaiinNo,
+                            r.SeqNo,
+                            r.IsDeleted,
+                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
+                        )
+                );
+        }
+
+        private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
+        {
+            string result = string.Empty;
+            string info = string.Empty;
+
+            string docName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            if (!string.IsNullOrEmpty(docName))
+            {
+                info += docName;
+            }
+
+            string approvalDateTime = string.Empty;
+            if (updateDate != null && updateDate.Value != DateTime.MinValue)
+            {
+                approvalDateTime = " " + updateDate.Value.ToString("yyyy/MM/dd HH:mm");
+            }
+
+            info += approvalDateTime;
+
+            if (!string.IsNullOrEmpty(info))
+            {
+                result += "（承認: " + info + "）";
+            }
+
+            return result;
         }
 
         #endregion
