@@ -86,7 +86,7 @@ public class UserController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetAllPermission)]
-    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission([FromQuery] GetPermissionByScreenRequest request)
+    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission()
     {
         var input = new GetAllPermissionInputData(HpId, UserId);
         var output = _bus.Handle(input);
