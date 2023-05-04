@@ -311,6 +311,7 @@
         public const string CheckSaveLogOutChartApporval = "CheckSaveLogOutOut";
 
         // MainMenu
-        public const string GetDailyStatisticMenuList = "GetDailyStatisticMenuList";
+        public const string GetStatisticMenuList = "GetStatisticMenuList";
+        public const string SaveStatisticMenuList = "SaveStatisticMenuList";
     }
 }

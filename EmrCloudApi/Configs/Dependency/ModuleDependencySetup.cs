@@ -281,7 +281,7 @@ using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
-using UseCase.MainMenu.GetDailyStatisticMenu;
+using UseCase.MainMenu.GetStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -492,6 +492,7 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1111,7 +1112,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             // Statistic
-            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<SaveDailyStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
