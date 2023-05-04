@@ -1116,8 +1116,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             // Statistic
-            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetStatisticMenuInteractor>();
-            busBuilder.RegisterUseCase<SaveDailyStatisticMenuInputData, SaveStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
