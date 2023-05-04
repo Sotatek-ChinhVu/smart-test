@@ -63,6 +63,7 @@
         public const string ChangeAfterAutoCheckOrder = "ChangeAfterAutoCheckOrder";
         public const string Recaculation = "Recaculation";
         public const string ConvertItem = "ConvertItem";
+        public const string CheckOrdInfInDrug = "CheckOrdInfInDrug";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -310,7 +311,7 @@
         public const string CheckSaveLogOutChartApporval = "CheckSaveLogOutOut";
 
         // MainMenu
-        public const string GetDailyStatisticMenuList = "GetDailyStatisticMenuList";
-        public const string SaveDailyStatisticMenuList = "SaveDailyStatisticMenuList";
+        public const string GetStatisticMenuList = "GetStatisticMenuList";
+        public const string SaveStatisticMenuList = "SaveStatisticMenuList";
     }
 }

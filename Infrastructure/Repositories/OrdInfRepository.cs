@@ -444,7 +444,7 @@ namespace Infrastructure.Repositories
                         ordInf.UpdateDate,
                         ordInf.UpdateId,
                         updateName,
-                        ordInf.CreateMachine ?? string.Empty ,
+                        ordInf.CreateMachine ?? string.Empty,
                         ordInf.UpdateMachine ?? string.Empty
                    );
         }
@@ -642,6 +642,25 @@ namespace Infrastructure.Repositories
             var ipnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
 
             return ipnNameMsts;
+        }
+
+
+        public bool CheckOrdInfInDrug(int hpId, long ptId, long raiinNo)
+        {
+            var odrInfList = NoTrackingDataContext.OdrInfs.Where(item => item.RaiinNo == raiinNo
+                                                                                && item.PtId == ptId
+                                                                                && item.IsDeleted == 0
+                                                                                && item.OdrKouiKbn >= 20 && item.OdrKouiKbn <= 29
+                                                                                && item.HpId == hpId)
+                                                        .Select(item => new { item.InoutKbn })
+                                                        .ToList();
+
+            if (odrInfList != null && odrInfList.FirstOrDefault(item => item.InoutKbn == 0) != null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public OrdInfModel Read(int ordId)
