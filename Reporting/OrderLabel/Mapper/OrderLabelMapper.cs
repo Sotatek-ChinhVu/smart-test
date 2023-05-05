@@ -22,6 +22,11 @@ public class OrderLabelMapper : CommonReportingRequest
         return "lsOrder";
     }
 
+    public override string GetJobName()
+    {
+        return "オーダーラベル";
+    }
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         Dictionary<string, string> data = new();

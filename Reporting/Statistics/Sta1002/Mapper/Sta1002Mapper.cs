@@ -51,4 +51,9 @@ public class Sta1002Mapper : CommonReportingRequest
     {
         return new();
     }
+
+    public override string GetJobName()
+    {
+        return "sta1002a";
+    }
 }
