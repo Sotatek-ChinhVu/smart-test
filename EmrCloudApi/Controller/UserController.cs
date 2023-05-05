@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
+using UseCase.User.GetAllPermission;
 using UseCase.User.GetList;
 using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.UpsertList;
@@ -82,6 +83,17 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetPermissionByScreenResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetAllPermission)]
+    public ActionResult<Response<GetAllPermissionResponse>> GetAllPermission()
+    {
+        var input = new GetAllPermissionInputData(HpId, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetAllPermissionPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetAllPermissionResponse>>(presenter.Result);
     }
 
     private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int HpId)
