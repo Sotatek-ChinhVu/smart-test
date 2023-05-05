@@ -154,5 +154,10 @@ namespace Reporting.Byomei.Mapper
         {
             return "lsByomei";
         }
+
+        public override string GetJobName()
+        {
+            return "病名一覧";
+        }
     }
 }

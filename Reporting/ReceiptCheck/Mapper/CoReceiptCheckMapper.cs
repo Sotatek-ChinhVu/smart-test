@@ -23,6 +23,11 @@ public class CoReceiptCheckMapper : CommonReportingRequest
         return string.Empty;
     }
 
+    public override string GetJobName()
+    {
+        return "レセプトチェックリスト";
+    }
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         return _singleFieldData;

@@ -7,6 +7,9 @@ namespace Reporting.Mappers.Common
         [JsonPropertyName("reportType")]
         public int ReportType { get; set; }
 
+        [JsonPropertyName("jobName")]
+        public string JobName { get; set; } = string.Empty;
+
         [JsonPropertyName("fileNamePageMap")]
         public Dictionary<string, string> FileNamePageMap { get; set; } = new Dictionary<string, string>();
 
