@@ -50,6 +50,13 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         // Rece
         var receInfs = NoTrackingDataContext.ReceInfs.Where(item => item.SeikyuYm == seikyuYm
                                                                     && item.HpId == hpId);
+
+        // 練習患者を表示しない
+        if (!searchModel.IsTestPatientSearch)
+        {
+            receInfs = receInfs.Where(item => item.IsTester != 1);
+        }
+
         List<ReceInf> receInfFilters = new();
 
         var listPtIds = receInfs.Select(item => item.PtId).Distinct().ToList();
@@ -168,12 +175,6 @@ public class ReceiptRepository : RepositoryBase, IReceiptRepository
         if (searchModel.IsAdvanceSearch)
         {
             var listSinYm = receInfs.Select(item => item.SinYm).Distinct().ToList();
-
-            // 練習患者を表示しない
-            if (!searchModel.IsTestPatientSearch)
-            {
-                receInfs = receInfs.Where(item => item.IsTester != 1);
-            }
 
             // レセプト種別
             if (searchModel.HokenSbts != null && searchModel.HokenSbts.Count > 0)

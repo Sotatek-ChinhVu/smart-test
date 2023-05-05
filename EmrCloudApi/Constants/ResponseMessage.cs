@@ -990,5 +990,12 @@
 
         //Chart Apporval
         public static readonly string InvalidInputListApporoval = "List ApprovalInf input is invalid";
+
+        //Statistic
+        public static readonly string InvalidMenuId = "Invalid MenuId!";
+        public static readonly string InvalidGrpId = "Invalid GrpId!";
+        public static readonly string InvalidReportId = "Invalid ReportId!";
+        public static readonly string InvalidMenuName = "Invalid MenuName!";
+
     }
 }
