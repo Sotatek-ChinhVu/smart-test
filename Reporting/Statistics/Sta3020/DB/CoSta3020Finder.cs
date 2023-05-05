@@ -157,35 +157,27 @@ namespace Reporting.Statistics.Sta3020.DB
                         }
                 }
 
-                try
+                retData = joinDetails.AsEnumerable().Select(
+                data => new CoListSetModel()
                 {
-                    retData = joinDetails.AsEnumerable().Select(
-                    data => new CoListSetModel()
-                    {
-                        SetKbn = data.SetKbn,
-                        Level1 = data.Level1,
-                        Level2 = data.Level2,
-                        Level3 = data.Level3,
-                        Level4 = data.Level4,
-                        Level5 = data.Level5,
-                        SetCd = data.SetId,
-                        ItemCd = data.ItemCd,
-                        SetName = data.SetName,
-                        IsTitle = data.IsTitle,
-                        SelectType = data.SelectType,
-                        Suryo = data.Suryo,
-                        UnitName = data.UnitSbt == 2 ? data.CnvUnitName : data.OdrUnitName,
-                        KensaItemCd = data.KensaItemCd,
-                        CenterItemCd1 = data.CenterItemCd1,
-                        CenterItemCd2 = data.CenterItemCd2,
-                        MaxEndDate = data.MaxEndDate
-                    }).ToList();
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
+                    SetKbn = data.SetKbn,
+                    Level1 = data.Level1,
+                    Level2 = data.Level2,
+                    Level3 = data.Level3,
+                    Level4 = data.Level4,
+                    Level5 = data.Level5,
+                    SetCd = data.SetId,
+                    ItemCd = data.ItemCd,
+                    SetName = data.SetName,
+                    IsTitle = data.IsTitle,
+                    SelectType = data.SelectType,
+                    Suryo = data.Suryo,
+                    UnitName = data.UnitSbt == 2 ? data.CnvUnitName : data.OdrUnitName,
+                    KensaItemCd = data.KensaItemCd,
+                    CenterItemCd1 = data.CenterItemCd1,
+                    CenterItemCd2 = data.CenterItemCd2,
+                    MaxEndDate = data.MaxEndDate
+                }).ToList();
             }
             #endregion
 

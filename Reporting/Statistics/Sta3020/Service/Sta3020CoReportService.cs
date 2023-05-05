@@ -47,7 +47,7 @@ namespace Reporting.Statistics.Sta3020.Service
         /// </summary>
         private readonly ICoSta3020Finder _sta3020Finder;
         private readonly IReadRseReportFileService _readRseReportFileService;
-        private int HpId;
+        private int hpId;
         private int _currentPage;
         private bool _hasNextPage;
         private string _rowCountFieldName = string.Empty;
@@ -74,7 +74,7 @@ namespace Reporting.Statistics.Sta3020.Service
 
         public CommonReportingRequestModel GetSta3020ReportingData(CoSta3020PrintConf printConf, int hpId)
         {
-            HpId = hpId;
+            this.hpId = hpId;
             _printConf = printConf;
             // get data to print
             GetFieldNameList();
@@ -237,9 +237,9 @@ namespace Reporting.Statistics.Sta3020.Service
 
             }
 
-            _hpInf = _sta3020Finder.GetHpInf(HpId, CIUtil.DateTimeToInt(DateTime.Today));
+            _hpInf = _sta3020Finder.GetHpInf(hpId, CIUtil.DateTimeToInt(DateTime.Today));
 
-            listSets = _sta3020Finder.GetListSet(HpId, _printConf);
+            listSets = _sta3020Finder.GetListSet(hpId, _printConf);
             if ((listSets?.Count ?? 0) == 0) return false;
 
             //印刷用データの作成
