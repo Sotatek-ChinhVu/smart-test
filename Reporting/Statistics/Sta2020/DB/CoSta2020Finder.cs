@@ -390,8 +390,8 @@ namespace Reporting.Statistics.Sta2020.DB
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
                 odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
 
-            var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId);
-            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId);
+            var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(x => x.HpId == hpId).AsEnumerable();
+            var tenMsts = NoTrackingDataContext.TenMsts.Where(x => x.HpId == hpId).AsEnumerable();
             var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteStatus.None);
             if (!printConf.IsTester)
             {
@@ -454,7 +454,7 @@ namespace Reporting.Statistics.Sta2020.DB
             var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && u.IsDeleted == DeleteStatus.None);
 
             var joinOdrs = (
-                from odrInf in odrInfs
+                from odrInf in odrInfs.AsEnumerable()
                 join odrDetail in odrDetails on
                     new { odrInf.HpId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                     new { odrDetail.HpId, odrDetail.RaiinNo, odrDetail.RpNo, odrDetail.RpEdaNo }
@@ -700,43 +700,44 @@ namespace Reporting.Statistics.Sta2020.DB
                 ItemCdConst.ZaiHoumon1_2Dou, ItemCdConst.ZaiHoumon1_2DouIgai,
                 ItemCdConst.ZaiHoumon2i, ItemCdConst.ZaiHoumon2ro
             };
+            var retData = new List<CoSinKouiModel>();
 
-            var retData = joinQuery.AsEnumerable().Select(
-                data =>
-                    new CoSinKouiModel()
-                    {
-                        PtId = data.PtId,
-                        RaiinNo = data.RaiinNo,
-                        SinYm = data.SinYm,
-                        SinDate = data.SinDate,
-                        SinId = data.SinId,
-                        Suryo = data.Suryo,
-                        Money =
-                            zaiSuryos.Contains(data.ItemCd) ? (int)Math.Round(data.Ten * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
-                            (int)Math.Round(data.Ten * data.Suryo * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
-                        ItemCd = data.ItemCd,
-                        ItemCdCmt = data.ItemCdCmt,
-                        ItemName = data.ItemName,
-                        ItemKanaName1 = data.ItemKanaName1,
-                        ItemKanaName2 = data.ItemKanaName2,
-                        ItemKanaName3 = data.ItemKanaName3,
-                        ItemKanaName4 = data.ItemKanaName4,
-                        ItemKanaName5 = data.ItemKanaName5,
-                        ItemKanaName6 = data.ItemKanaName6,
-                        ItemKanaName7 = data.ItemKanaName7,
-                        KaId = data.KaId,
-                        KaSname = data.KaSname,
-                        TantoId = data.TantoId,
-                        TantoSname = data.TantoSname,
-                        SinKouiKbn = data.SinKouiKbn,
-                        MadokuKbn = data.MadokuKbn,
-                        KouseisinKbn = data.KouseisinKbn,
-                        KazeiKbn = data.KazeiKbn,
-                        EntenKbn = data.EntenKbn,
-                        Ten = data.Ten
-                    }
-            )
-            .ToList();
+            retData = joinQuery.Select(
+            data =>
+                new CoSinKouiModel()
+                {
+                    PtId = data.PtId,
+                    RaiinNo = data.RaiinNo,
+                    SinYm = data.SinYm,
+                    SinDate = data.SinDate,
+                    SinId = data.SinId,
+                    Suryo = data.Suryo,
+                    Money =
+                        zaiSuryos.Contains(data.ItemCd) ? (int)Math.Round(data.Ten * data.Count * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero) :
+                        (int)Math.Round(data.Ten * data.Suryo * (data.EntenKbn == 1 ? 1 : 10), MidpointRounding.AwayFromZero),
+                    ItemCd = data.ItemCd,
+                    ItemCdCmt = data.ItemCdCmt,
+                    ItemName = data.ItemName,
+                    ItemKanaName1 = data.ItemKanaName1,
+                    ItemKanaName2 = data.ItemKanaName2,
+                    ItemKanaName3 = data.ItemKanaName3,
+                    ItemKanaName4 = data.ItemKanaName4,
+                    ItemKanaName5 = data.ItemKanaName5,
+                    ItemKanaName6 = data.ItemKanaName6,
+                    ItemKanaName7 = data.ItemKanaName7,
+                    KaId = data.KaId,
+                    KaSname = data.KaSname,
+                    TantoId = data.TantoId,
+                    TantoSname = data.TantoSname,
+                    SinKouiKbn = data.SinKouiKbn,
+                    MadokuKbn = data.MadokuKbn,
+                    KouseisinKbn = data.KouseisinKbn,
+                    KazeiKbn = data.KazeiKbn,
+                    EntenKbn = data.EntenKbn,
+                    Ten = data.Ten
+                }
+        )
+        .ToList();
 
             return retData;
         }

@@ -97,13 +97,12 @@ namespace Reporting.Statistics.Sta2020.Service
             // get data to print
             GetFieldNameList();
             GetRowCount();
-            GetData();
             _hasNextPage = true;
 
             _currentPage = 1;
 
             //印刷
-            while (_hasNextPage)
+            while (_hasNextPage && GetData())
             {
                 UpdateDrawForm();
                 _currentPage++;
