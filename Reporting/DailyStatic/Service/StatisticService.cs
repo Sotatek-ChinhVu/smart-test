@@ -80,7 +80,7 @@ public class StatisticService : IStatisticService
             case StatisticReportType.Sta2021:
                 return PrintSta2021(hpId, configDaily, monthFrom, monthTo);
             case StatisticReportType.Sta3001:
-                return PrintSta3001(hpId, configDaily, monthFrom, monthTo);
+                return PrintSta3001(hpId, configDaily, dateFrom);
         }
         return new();
     }
