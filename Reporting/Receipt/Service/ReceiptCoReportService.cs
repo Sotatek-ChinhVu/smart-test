@@ -39,8 +39,8 @@ namespace Reporting.Receipt.Service
             _readRseReportFileService = readRseReportFileService;
         }
 
-        private List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels;
-        private Reporting.Calculate.ReceFutan.Models.ReceInfModel ReceInf;
+        private List<Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbnModels = new();
+        private Calculate.ReceFutan.Models.ReceInfModel ReceInf;
 
         private int HpId;
         private int SeikyuYm;
@@ -210,7 +210,7 @@ namespace Reporting.Receipt.Service
 
                 if (Target == TargetConst.RousaiAfter)
                 {
-                    while (i + 1 < CoModels.Count() &&
+                    while (i + 1 < CoModels.Count &&
                         CoModel.PtId == CoModels[i + 1].PtId &&
                         CoModel.SinYm == CoModels[i + 1].SinYm &&
                         CoModel.HokenId == CoModels[i + 1].HokenId
@@ -429,11 +429,11 @@ namespace Reporting.Receipt.Service
             {
                 if (ReceInf == null)
                 {
-                    List<long> targetPtIds = new List<long>();
+                    List<long> targetPtIds = new();
 
                     foreach (long addPtId in AptId)
                     {
-                        if (gettedPtId.Any(p => p == addPtId) == false)
+                        if (!gettedPtId.Any(p => p == addPtId))
                         {
                             gettedPtId.Add(addPtId);
                             targetPtIds.Add(addPtId);
@@ -478,7 +478,7 @@ namespace Reporting.Receipt.Service
             }
 
 
-            if (PtId == null || PtId.Any() == false)
+            if (PtId == null || !PtId.Any())
             {
                 // 患者番号の指定がない場合
                 _getReceData(PtId);
