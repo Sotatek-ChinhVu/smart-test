@@ -66,12 +66,12 @@
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為名称
         /// </summary>
-        public string SetName { get; set; }
+        public string SetName { get; set; } = string.Empty;
 
         /// <summary>
         /// タイトル
@@ -91,22 +91,22 @@
         /// <summary>
         /// 単位
         /// </summary>
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査項目コード
         /// </summary>
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注検査項目コード１
         /// </summary>
-        public string CenterItemCd1 { get; set; }
+        public string CenterItemCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注検査項目コード２
         /// </summary>
-        public string CenterItemCd2 { get; set; }
+        public string CenterItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注検査項目コード

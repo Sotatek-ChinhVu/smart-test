@@ -194,6 +194,8 @@ using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
+using Reporting.Statistics.Sta3020.DB;
+using Reporting.Statistics.Sta3020.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -284,6 +286,7 @@ using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -494,7 +497,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -673,6 +675,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
+            services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
+            services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
         }
 
         private void SetupUseCase(IServiceCollection services)

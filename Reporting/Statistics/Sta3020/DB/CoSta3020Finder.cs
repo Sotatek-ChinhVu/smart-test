@@ -112,12 +112,12 @@ namespace Reporting.Statistics.Sta3020.DB
                         listSetMst.SelectType,
                         listSetMst.Suryo,
                         listSetMst.UnitSbt,
-                        unionTenMstJoin.OdrUnitName,
-                        unionTenMstJoin.CnvUnitName,
-                        kensaMstJoin.KensaItemCd,
-                        kensaMstJoin.CenterItemCd1,
-                        kensaMstJoin.CenterItemCd2,
-                        maxTenMstJoin.MaxEndDate
+                        OdrUnitName = unionTenMstJoin.OdrUnitName == null ? string.Empty : unionTenMstJoin.OdrUnitName,
+                        CnvUnitName = unionTenMstJoin.CnvUnitName == null ? string.Empty : unionTenMstJoin.CnvUnitName,
+                        KensaItemCd = kensaMstJoin.KensaItemCd == null ? string.Empty : kensaMstJoin.KensaItemCd,
+                        CenterItemCd1 = kensaMstJoin.CenterItemCd1 == null ? string.Empty : kensaMstJoin.CenterItemCd1,
+                        CenterItemCd2 = kensaMstJoin.CenterItemCd2 == null ? string.Empty : kensaMstJoin.CenterItemCd2,
+                        MaxEndDate = maxTenMstJoin.MaxEndDate == null ? 0 : maxTenMstJoin.MaxEndDate
                     }
                 );
 
@@ -157,29 +157,35 @@ namespace Reporting.Statistics.Sta3020.DB
                         }
                 }
 
-                retData = joinDetails.AsEnumerable().Select(data => new CoListSetModel()
+                try
                 {
-                    SetKbn = data.SetKbn,
-                    Level1 = data.Level1,
-                    Level2 = data.Level2,
-                    Level3 = data.Level3,
-                    Level4 = data.Level4,
-                    Level5 = data.Level5,
-                    SetCd = data.SetId,
-                    ItemCd = data.ItemCd,
-                    SetName = data.SetName,
-                    IsTitle = data.IsTitle,
-                    SelectType = data.SelectType,
-                    Suryo = data.Suryo,
-                    UnitName = data.UnitSbt == 2 ? data.CnvUnitName : data.OdrUnitName,
-                    KensaItemCd = data.KensaItemCd,
-                    CenterItemCd1 = data.CenterItemCd1,
-                    CenterItemCd2 = data.CenterItemCd2,
-                    MaxEndDate = data.MaxEndDate
+                    retData = joinDetails.AsEnumerable().Select(
+                    data => new CoListSetModel()
+                    {
+                        SetKbn = data.SetKbn,
+                        Level1 = data.Level1,
+                        Level2 = data.Level2,
+                        Level3 = data.Level3,
+                        Level4 = data.Level4,
+                        Level5 = data.Level5,
+                        SetCd = data.SetId,
+                        ItemCd = data.ItemCd,
+                        SetName = data.SetName,
+                        IsTitle = data.IsTitle,
+                        SelectType = data.SelectType,
+                        Suryo = data.Suryo,
+                        UnitName = data.UnitSbt == 2 ? data.CnvUnitName : data.OdrUnitName,
+                        KensaItemCd = data.KensaItemCd,
+                        CenterItemCd1 = data.CenterItemCd1,
+                        CenterItemCd2 = data.CenterItemCd2,
+                        MaxEndDate = data.MaxEndDate
+                    }).ToList();
                 }
-                ).ToList();
+                catch (Exception)
+                {
 
-
+                    throw;
+                }
             }
             #endregion
 
@@ -187,7 +193,7 @@ namespace Reporting.Statistics.Sta3020.DB
             if (printConf.SetKbnByomei && !(printConf.TgtData == 2 && printConf.ItemSearchOpt == 0 && (printConf.ItemCds?.Count ?? 0) > 0))
             {
                 //セットの世代を取得
-                int generationId = GetByomeiSetGenerationId(printConf.StdDate);
+                int generationId = GetByomeiSetGenerationId(hpId, printConf.StdDate);
                 var byomeiSetMsts = NoTrackingDataContext.ByomeiSetMsts.Where(x => x.HpId == hpId && x.GenerationId == generationId && x.IsDeleted == 0);
                 var byomeiMsts = NoTrackingDataContext.ByomeiMsts.Where(x => x.HpId == hpId);
 
@@ -295,7 +301,7 @@ namespace Reporting.Statistics.Sta3020.DB
         /// </summary>
         /// <param name="stdDate">基準日</param>
         /// <returns></returns>
-        private int GetByomeiSetGenerationId(int stdDate)
+        private int GetByomeiSetGenerationId(int hpId, int stdDate)
         {
             var generation = NoTrackingDataContext.ByomeiSetGenerationMsts
                 .Where(x => x.HpId == hpId && x.StartDate <= stdDate && x.IsDeleted == 0)

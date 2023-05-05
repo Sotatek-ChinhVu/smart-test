@@ -5,11 +5,12 @@ using Reporting.ReadRseReportFile.Service;
 using Reporting.Statistics.Enums;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3020.DB;
+using Reporting.Statistics.Sta3020.Mapper;
 using Reporting.Statistics.Sta3020.Models;
 
 namespace Reporting.Statistics.Sta3020.Service
 {
-    public class Sta3020CoReportService
+    public class Sta3020CoReportService : ISta3020CoReportService
     {
         #region Constant
         private int maxRow = 40;
@@ -70,11 +71,33 @@ namespace Reporting.Statistics.Sta3020.Service
             _sta3020Finder = sta3020Finder;
             _readRseReportFileService = readRseReportFileService;
         }
+
+        public CommonReportingRequestModel GetSta3020ReportingData(CoSta3020PrintConf printConf, int hpId)
+        {
+            HpId = hpId;
+            _printConf = printConf;
+            // get data to print
+            GetFieldNameList();
+            GetRowCount();
+            GetData();
+            _hasNextPage = true;
+
+            _currentPage = 1;
+
+            //印刷
+            while (_hasNextPage)
+            {
+                UpdateDrawForm();
+                _currentPage++;
+            }
+
+            return new Sta3020Mapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName).GetData();
+        }
+
         private bool GetData()
         {
             void MakePrintData()
             {
-
                 //改ページ条件
                 bool pbSetKbn = new int[] { _printConf.PageBreak1 }.Contains(1);
 
@@ -176,12 +199,20 @@ namespace Reporting.Statistics.Sta3020.Service
                     #endregion
 
                     printData.SetKbn = listSet.SetKbn;
-                    printData.SetKbnName = outputFileType == CoFileType.Csv ? listSet.SetKbnName : setKbnName;
-                    printData.Level1 = outputFileType == CoFileType.Csv ? listSet.Level1.ToString() : level1Fmt;
-                    printData.Level2 = outputFileType == CoFileType.Csv ? listSet.Level2.ToString() : level2Fmt;
-                    printData.Level3 = outputFileType == CoFileType.Csv ? listSet.Level3.ToString() : level3Fmt;
-                    printData.Level4 = outputFileType == CoFileType.Csv ? listSet.Level4.ToString() : level4Fmt;
-                    printData.Level5 = outputFileType == CoFileType.Csv ? listSet.Level5.ToString() : level5Fmt;
+                    //printData.SetKbnName = outputFileType == CoFileType.Csv ? listSet.SetKbnName : setKbnName;
+                    //printData.Level1 = outputFileType == CoFileType.Csv ? listSet.Level1.ToString() : level1Fmt;
+                    //printData.Level2 = outputFileType == CoFileType.Csv ? listSet.Level2.ToString() : level2Fmt;
+                    //printData.Level3 = outputFileType == CoFileType.Csv ? listSet.Level3.ToString() : level3Fmt;
+                    //printData.Level4 = outputFileType == CoFileType.Csv ? listSet.Level4.ToString() : level4Fmt;
+                    //printData.Level5 = outputFileType == CoFileType.Csv ? listSet.Level5.ToString() : level5Fmt;
+
+                    printData.SetKbnName = setKbnName;
+                    printData.Level1 = level1Fmt;
+                    printData.Level2 = level2Fmt;
+                    printData.Level3 = level3Fmt;
+                    printData.Level4 = level4Fmt;
+                    printData.Level5 = level5Fmt;
+
                     printData.SetCd = listSet.SetCd;
                     printData.ItemCd = listSet.ItemCd;
                     printData.SetName = listSet.SetName;
@@ -229,16 +260,16 @@ namespace Reporting.Statistics.Sta3020.Service
                 SetFieldData("Title", _printConf.ReportName);
 
                 //医療機関名
-                _extralData.Add("HeaderR_0_0_", _hpInf.HpName);
+                _extralData.Add("HeaderR_0_0_" + _currentPage, _hpInf.HpName);
 
                 //作成日時
-                _extralData.Add("HeaderR_0_1_", CIUtil.SDateToShowSWDate(
+                _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
                 ) + DateTime.Now.ToString(" HH:mm") + "作成");
 
                 //ページ数
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
-                _extralData.Add("HeaderR_0_2_", _currentPage + " / " + totalPage);
+                _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
 
                 //基準日
                 SetFieldData("StandardDate", string.Format("基準日: {0}　",
@@ -263,11 +294,12 @@ namespace Reporting.Statistics.Sta3020.Service
                     var printData = printDatas[ptIndex];
                     string baseListName = "";
 
+                    Dictionary<string, CellModel> data = new();
                     //明細データ出力
                     foreach (var colName in existsCols)
                     {
                         var value = typeof(CoSta3020PrintData).GetProperty(colName).GetValue(printData);
-                        CoRep.ListText(colName, 0, rowNo, value == null ? "" : value.ToString());
+                        AddListData(ref data, colName, value == null ? "" : value.ToString());
 
                         if (baseListName == "" && _objectRseList.Contains(colName))
                         {
@@ -282,11 +314,16 @@ namespace Reporting.Statistics.Sta3020.Service
                     {
                         lineCount = 0;
 
-                        (long startX1, long startY1, long endX1, long endY1) = CoRep.GetBounds("headerLine");
-                        (long startX2, long startY2, long endX2, long endY2) = CoRep.GetListRowBounds(baseListName, rowNo);
-
-                        CoRep.DrawLine(startX1, endY2, endX1, endY2, 10, Hos.CnDraw.Constants.ConLineStyle.Dash);
+                        if (!_extralData.ContainsKey("headerLine"))
+                        {
+                            _extralData.Add("headerLine", "true");
+                        }
+                        string rowNoKey = rowNo + "_" + _currentPage;
+                        _extralData.Add("baseListName_" + rowNoKey, baseListName);
+                        _extralData.Add("rowNo_" + rowNoKey, rowNo.ToString());
                     }
+
+                    _tableFieldData.Add(data);
 
                     ptIndex++;
                     if (ptIndex >= printDatas.Count)
@@ -336,21 +373,20 @@ namespace Reporting.Statistics.Sta3020.Service
 
         private void GetFieldNameList()
         {
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2021, "sta2021a.rse", new());
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3020, "sta3020a.rse", new());
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _objectRseList = javaOutputData.objectNames;
         }
 
-        private void GetColRowCount()
+        private void GetRowCount()
         {
             _rowCountFieldName = putColumns.Find(p => _objectRseList.Contains(p.ColName)).ColName;
             List<ObjectCalculate> fieldInputList = new()
         {
-            new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount),
-            new ObjectCalculate("SinYm", (int)CalculateTypeEnum.GetListColCount)
+            new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
         };
 
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2021, "sta2021a.rse", fieldInputList);
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3020, "sta3020a.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? maxRow;
         }
