@@ -329,7 +329,7 @@ namespace Infrastructure.Repositories
                 List<FileInfModel> listKarteFileModel = listKarteFile.Where(item => item.RaiinNo == raiinNo).ToList();
                 string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
                 string kaName = _kaService.GetNameById(raiinInf.KaId);
-                var approveInf =  approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo);
+                var approveInf = approveInfs?.Count() > 0 ? approveInfs.FirstOrDefault(a => a.RaiinNo == raiinNo) : new();
 
                 historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModels, kaName, tantoName, tagModel.TagNo, approveInf?.DisplayApprovalInfo ?? string.Empty, listKarteFileModel));
             }
@@ -649,10 +649,12 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
+        private List<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
         {
-            var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
-            return result.Select(
+            var result = NoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo)).ToList();
+            var userIds = result.Select(r => r.UpdateId).Distinct().ToList();
+            var userMsts = NoTrackingDataContext.UserMsts.Where(u => userIds.Contains(u.UpdateId)).ToList();
+            return result.AsEnumerable().Select(
                     r => new ApproveInfModel(
                             r.Id,
                             r.HpId,
@@ -661,17 +663,17 @@ namespace Infrastructure.Repositories
                             r.RaiinNo,
                             r.SeqNo,
                             r.IsDeleted,
-                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
+                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate, userMsts)
                         )
-                );
+                ).ToList();
         }
 
-        private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
+        private static string GetDisplayApproveInf(int updateId, DateTime? updateDate, List<UserMst> userMsts)
         {
             string result = string.Empty;
             string info = string.Empty;
 
-            string docName = NoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            string docName = userMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
             if (!string.IsNullOrEmpty(docName))
             {
                 info += docName;
