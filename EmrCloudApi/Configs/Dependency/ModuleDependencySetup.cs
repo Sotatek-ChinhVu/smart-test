@@ -284,6 +284,7 @@ using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
 using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -470,6 +471,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UketukeSbtMst.Upsert;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.CheckedLockMedicalExamination;
+using UseCase.User.GetAllPermission;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetPermissionByScreenCode;
@@ -494,7 +496,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.MainMenu.SaveStatisticMenu;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -687,6 +688,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
+            busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();

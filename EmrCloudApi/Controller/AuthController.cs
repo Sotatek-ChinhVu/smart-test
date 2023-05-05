@@ -73,7 +73,7 @@ public class AuthController : ControllerBase
         {
             return new Response<ExchangeTokenResponse>
             {
-                Data = new ExchangeTokenResponse(token, userId, name, kanaName, kaId, isDoctor, 0),
+                Data = new ExchangeTokenResponse(token, userId, name, kanaName, kaId, isDoctor, managerKbn),
                 Status = 1,
                 Message = ResponseMessage.Success
             };

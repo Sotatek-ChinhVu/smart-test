@@ -345,6 +345,14 @@ namespace Infrastructure.Repositories
             return null;
         }
 
+        public List<UserPermissionModel> GetAllPermission(int hpId, int userId)
+        {
+            var listUserPermission = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).AsEnumerable().Select(u => new UserPermissionModel(u.HpId, u.UserId, u.FunctionCd, u.Permission, false));
+
+            var listUserPermissionOfUserDefault = NoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).AsEnumerable().Select(u => new UserPermissionModel(u.HpId, u.UserId, u.FunctionCd, u.Permission, true));
+
+            return listUserPermission.Union(listUserPermissionOfUserDefault).ToList();
+        }
 
         public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
         {
