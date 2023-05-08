@@ -166,6 +166,8 @@ using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.DB;
+using Reporting.PatientManagement.Service;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Receipt.DB;
 using Reporting.Receipt.Service;
@@ -194,6 +196,8 @@ using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
+using Reporting.Statistics.Sta9000.DB;
+using Reporting.Statistics.Sta9000.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -585,6 +589,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
             services.AddTransient<ICoSta2021Finder, CoSta2021Finder>();
             services.AddTransient<ISta2021CoReportService, Sta2021CoReportService>();
+            services.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
+            services.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
+            services.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
+            services.AddTransient<IPatientManagementService, PatientManagementService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();

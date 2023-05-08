@@ -48,4 +48,6 @@ public interface IReportService
     CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo);
 
     CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+
+    CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
 }

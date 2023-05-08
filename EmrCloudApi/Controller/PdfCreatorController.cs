@@ -96,7 +96,6 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.OutDug);
     }
 
-
     [HttpGet(ApiPath.ReceiptCheck)]
     public async Task<IActionResult> GetReceiptCheckReport([FromQuery] ReceiptCheckRequest request)
     {
@@ -142,6 +141,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
         var data = _reportService.GetStatisticReportingData(request.HpId, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.PatientManagement)]
+    public async Task<IActionResult> GeneratePatientManagement([FromQuery] PatientManagementRequest request)
+    {
+        var data = _reportService.GetPatientManagement(request.HpId, request.MenuId);
         return await RenderPdf(data, ReportType.Common);
     }
 
