@@ -60,6 +60,7 @@ using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TimeZone;
+using Domain.Models.TimeZoneConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.Todo;
 using Domain.Models.UketukeSbtDayInf;
@@ -137,6 +138,7 @@ using Interactor.SuperSetDetail;
 using Interactor.SwapHoken;
 using Interactor.SystemConf;
 using Interactor.SystemGenerationConf;
+using Interactor.TimeZoneConf;
 using Interactor.Todo;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
@@ -462,6 +464,7 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
+using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
 using UseCase.Todo.UpsertTodoInf;
@@ -674,6 +677,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
+            services.AddTransient<ITimeZoneConfRepository, TimeZoneConfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1120,6 +1124,9 @@ namespace EmrCloudApi.Configs.Dependency
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
+
+            //GetTimeZoneConfGroup
+            busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
