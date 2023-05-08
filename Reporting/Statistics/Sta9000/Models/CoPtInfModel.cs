@@ -12,14 +12,14 @@ namespace Reporting.Statistics.Sta9000.Models
     {
         public PtInf PtInf { get; private set; }
 
-        private readonly string ptCmt;
+        private readonly string _ptCmt;
 
         public CoPtInfModel(PtInf ptInf, int firstVisitDate, int lastVisitDate, string ptCmt)
         {
             PtInf = ptInf;
             FirstVisitDate = firstVisitDate;
             LastVisitDate = lastVisitDate;
-            this.ptCmt = ptCmt;
+            _ptCmt = ptCmt;
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace Reporting.Statistics.Sta9000.Models
         /// </summary>
         public string PtCmt
         {
-            get => ptCmt.AsString().Replace(Environment.NewLine, "⏎");
+            get => _ptCmt.AsString().Replace(Environment.NewLine, "⏎");
         }
 
         /// <summary>

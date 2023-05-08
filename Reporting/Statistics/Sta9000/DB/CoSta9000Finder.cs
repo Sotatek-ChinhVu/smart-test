@@ -313,7 +313,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var ptByomeis, bool isByomeiConf) = getPtByomeis(byomeiConf);
+        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
 
         //検索病名
         if (isByomeiConf)
@@ -356,7 +356,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         CoSta9000RaiinConf raiinConf, CoSta9000SinConf sinConf, CoSta9000KarteConf karteConf)
     {
         var ptInfs = GetPtInfs(ptConf, hokenConf, byomeiConf, raiinConf, sinConf, karteConf);
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = getPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         var ptHokens = (
             from ptInf in ptInfs
@@ -434,7 +434,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         var ptFirstVisits = GetPtFirstVisits();
 
         //保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = getPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -576,7 +576,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         var odrInfs = NoTrackingDataContext.OdrInfs.Where(p => p.IsDeleted == DeleteStatus.None);
         IQueryable<OdrInfDetail> odrDetails = NoTrackingDataContext.OdrInfDetails;
         //保険情報
-        (var wrkHokenPatterns, var wrkHokenInfs, var wrkKohis, var isHokenConf, var isKohiConf) = getPtHokenPatterns(hokenConf);
+        (var wrkHokenPatterns, var wrkHokenInfs, var wrkKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -794,7 +794,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         IQueryable<SinKouiDetail> sinKouiDetails = NoTrackingDataContext.SinKouiDetails;
         var jihiSbtMsts = NoTrackingDataContext.JihiSbtMsts;
         //保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = getPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         //保険の絞り込み
         if (isHokenConf)
@@ -1105,7 +1105,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 保険情報
-        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = getPtHokenPatterns(hokenConf);
+        (var ptHokenPatterns, var ptHokenInfs, var ptKohis, var isHokenConf, var isKohiConf) = GetPtHokenPatterns(hokenConf);
 
         var ptHokens = (
             from hokenPattern in ptHokenPatterns
@@ -1169,7 +1169,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
         #endregion
 
         #region 病名情報
-        (var ptByomeis, bool isByomeiConf) = getPtByomeis(byomeiConf);
+        (var ptByomeis, bool isByomeiConf) = GetPtByomeis(byomeiConf);
         #endregion
 
         #region 来院情報
@@ -1299,27 +1299,27 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
                 }
             }
             //検索項目
-            var ItemCds = new List<string>();
+            var itemCds = new List<string>();
             if (sinConf.ItemCds?.Count >= 1)
             {
-                ItemCds.AddRange(sinConf.ItemCds);
+                itemCds.AddRange(sinConf.ItemCds);
             }
             for (int i = 0; i < sinConf.ItemCmts?.Count; i++)
             {
-                ItemCds.Add(sinConf.ItemCmts[i]);
-                ItemCds.Add("");
-                ItemCds.Add("");
+                itemCds.Add(sinConf.ItemCmts[i]);
+                itemCds.Add("");
+                itemCds.Add("");
             }
 
-            if (ItemCds.Count >= 3)
+            if (itemCds.Count >= 3)
             {
                 var wrkItems = sinJoins;
 
-                for (int i = 0; i + 3 <= ItemCds.Count; i += 3)
+                for (int i = 0; i + 3 <= itemCds.Count; i += 3)
                 {
-                    string wrkCd = ItemCds[i];
-                    int lowVal = ItemCds[i + 1].AsInteger();
-                    int highVal = ItemCds[i + 2].AsInteger();
+                    string wrkCd = itemCds[i];
+                    int lowVal = itemCds[i + 1].AsInteger();
+                    int highVal = itemCds[i + 2].AsInteger();
 
                     var curItems =
                         lowVal == 0 && highVal == 0 ?
@@ -1753,7 +1753,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     }
 
     private (IQueryable<PtHokenPattern> ptHokenPatterns, IQueryable<PtHokenInf> ptHokenInfs, IQueryable<PtKohi> ptKohis, bool isHokenConf, bool isKohiConf)
-        getPtHokenPatterns(CoSta9000HokenConf hokenConf)
+        GetPtHokenPatterns(CoSta9000HokenConf hokenConf)
     {
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(p => p.IsDeleted == DeleteStatus.None);
         var ptHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(p => p.IsDeleted == DeleteStatus.None);
@@ -1883,7 +1883,7 @@ public class CoSta9000Finder : RepositoryBase, ICoSta9000Finder
     /// </summary>
     /// <param name="byomeiConf"></param>
     /// <returns></returns>
-    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) getPtByomeis(CoSta9000ByomeiConf byomeiConf)
+    private (IQueryable<PtByomei> ptByomeis, bool isByomeiConf) GetPtByomeis(CoSta9000ByomeiConf byomeiConf)
     {
         var ptByomeis = NoTrackingDataContext.PtByomeis.Where(p => p.IsDeleted == DeleteStatus.None);
 
