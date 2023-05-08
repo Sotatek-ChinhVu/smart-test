@@ -196,6 +196,8 @@ using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
+using Reporting.Statistics.Sta3020.DB;
+using Reporting.Statistics.Sta3020.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -677,6 +679,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
+            services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
+            services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
             services.AddTransient<ITimeZoneConfRepository, TimeZoneConfRepository>();
         }
 
