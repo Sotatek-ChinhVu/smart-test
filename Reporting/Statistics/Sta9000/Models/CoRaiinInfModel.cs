@@ -11,9 +11,9 @@ public class CoRaiinInfModel
     public KaMst KaMst { get; private set; }
     public UserMst UserMst { get; private set; }
 
-    private readonly string raiinCmt;
-    private readonly string raiinBiko;
-    private readonly int firstVisitDate;
+    private readonly string _raiinCmt;
+    private readonly string _raiinBiko;
+    private readonly int _firstVisitDate;
 
     public CoRaiinInfModel(RaiinInf raiinInf, UketukeSbtMst uketukeSbtMst, KaMst kaMst, UserMst userMst, string raiinCmt, string raiinBiko, int firstVisitDate)
     {
@@ -21,9 +21,9 @@ public class CoRaiinInfModel
         UketukeSbtMst = uketukeSbtMst;
         KaMst = kaMst;
         UserMst = userMst;
-        this.raiinCmt = raiinCmt;
-        this.raiinBiko = raiinBiko;
-        this.firstVisitDate = firstVisitDate;
+        _raiinCmt = raiinCmt;
+        _raiinBiko = raiinBiko;
+        _firstVisitDate = firstVisitDate;
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class CoRaiinInfModel
             if (RaiinInf.YoyakuTime?.AsString() == string.Empty) return string.Empty;
 
             string value = RaiinInf.YoyakuTime ?? string.Empty.PadLeft(4, '0');
-            return value.Substring(0, 2) + ":" + value.Substring(2, 2);
+            return value.Length >= 4 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2)) : string.Empty;
         }
     }
 
@@ -100,8 +100,8 @@ public class CoRaiinInfModel
 
             string value = RaiinInf.UketukeTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
-            return value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2);
-        }
+            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)) : string.Empty;
+        } 
     }
 
     public int UketukeId
@@ -122,7 +122,7 @@ public class CoRaiinInfModel
 
             string value = RaiinInf.SinStartTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
-            return value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2);
+            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)) : string.Empty;
         }
     }
 
@@ -134,7 +134,7 @@ public class CoRaiinInfModel
 
             string value = RaiinInf.SinEndTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
-            return value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2);
+            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)): string.Empty;
         }
     }
 
@@ -146,7 +146,7 @@ public class CoRaiinInfModel
 
             string value = RaiinInf.KaikeiTime ?? string.Empty.PadLeft(4, '0');
             value = value.PadRight(6, '0');
-            return value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2);
+            return value.Length >= 6 ? (value.Substring(0, 2) + ":" + value.Substring(2, 2) + ":" + value.Substring(4, 2)) : string.Empty;
         }
     }
 
@@ -241,12 +241,12 @@ public class CoRaiinInfModel
 
     public string RaiinCmt
     {
-        get => raiinCmt.AsString().Replace(Environment.NewLine, "⏎");
+        get => _raiinCmt.AsString().Replace(Environment.NewLine, "⏎");
     }
 
     public string RaiinBiko
     {
-        get => raiinBiko.AsString().Replace(Environment.NewLine, "⏎");
+        get => _raiinBiko.AsString().Replace(Environment.NewLine, "⏎");
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public class CoRaiinInfModel
     /// </summary>
     public string FirstVisitDate
     {
-        get => CIUtil.SDateToShowSDate(firstVisitDate);
+        get => CIUtil.SDateToShowSDate(_firstVisitDate);
     }
 
     /// <summary>
@@ -284,6 +284,6 @@ public class CoRaiinInfModel
     /// </summary>
     public string IsFirstVisitDate
     {
-        get => RaiinInf.SinDate == firstVisitDate ? "*" : "";
+        get => RaiinInf.SinDate == _firstVisitDate ? "*" : "";
     }
 }

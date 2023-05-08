@@ -260,7 +260,7 @@ public class CoOdrInfModel
 
     public string ItemCd
     {
-        get => OdrInfDetail.ItemCd??string.Empty;
+        get => OdrInfDetail.ItemCd ?? string.Empty;
     }
 
     public string ItemName
