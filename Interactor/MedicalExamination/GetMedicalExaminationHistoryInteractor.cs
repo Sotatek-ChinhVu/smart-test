@@ -33,7 +33,9 @@ namespace Interactor.MedicalExamination
                     inputData.Offset,
                     inputData.Limit,
                     (int)inputData.FilterId,
-                    inputData.DeleteConditon);
+                    inputData.DeleteConditon,
+                    inputData.IsShowApproval
+                    );
                 return _historyCommon.GetHistoryOutput(inputData.HpId, inputData.PtId, inputData.SinDate, historyList);
             }
             finally
