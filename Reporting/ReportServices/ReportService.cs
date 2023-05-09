@@ -14,6 +14,7 @@ using Reporting.OrderLabel.Model;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.Model.Output;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.Service;
 using Reporting.Receipt.Service;
 using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.Model;
@@ -38,9 +39,9 @@ public class ReportService : IReportService
     private readonly IAccountingCoReportService _accountingCoReportService;
     private readonly IStatisticService _statisticService;
     private readonly IReceiptCoReportService _receiptCoReportService;
-    private readonly ISta1001CoReportService _sta1001CoReportService;
+    private readonly IPatientManagementService _patientManagementService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, ISta1001CoReportService sta1001CoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -55,7 +56,7 @@ public class ReportService : IReportService
         _accountingCoReportService = accountingCoReportService;
         _statisticService = statisticService;
         _receiptCoReportService = receiptCoReportService;
-        _sta1001CoReportService = sta1001CoReportService;
+        _patientManagementService = patientManagementService;
     }
 
     //Byomei
@@ -206,6 +207,11 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
     {
         return _statisticService.PrintExecute(hpId, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo);
+    }
+
+    public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)
+    {
+        return _patientManagementService.PrintData(hpId, menuId);
     }
 
     //Receipt Preview

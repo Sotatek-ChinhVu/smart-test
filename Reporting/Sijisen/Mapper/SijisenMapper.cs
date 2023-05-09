@@ -15,19 +15,21 @@ namespace Reporting.Sijisen.Mapper
         private readonly DateTime _printoutDateTime;
         private readonly int _formType;
         private readonly ISystemConfig _systemConfig;
+        private readonly string _jobName;
 
         private const int _dataCharCount = 68;
         private const int _suryoCharCount = 9;
         private const int _unitCharCount = 8;
         private const int _dataRowCount = 40;
 
-        public SijisenMapper(int formType, CoSijisenModel coSijisen, List<CoRaiinKbnMstModel> raiinKbnMstList, ISystemConfig systemConfig)
+        public SijisenMapper(int formType, CoSijisenModel coSijisen, List<CoRaiinKbnMstModel> raiinKbnMstList, ISystemConfig systemConfig, string jobName)
         {
             _coSijisen = coSijisen;
             _raiinKbnMstList = raiinKbnMstList;
             _printoutDateTime = DateTime.Now;
             _formType = formType;
             _systemConfig = systemConfig;
+            _jobName = jobName;
         }
 
         #region override function
@@ -378,6 +380,11 @@ namespace Reporting.Sijisen.Mapper
         public override string GetRowCountFieldName()
         {
             return "lsOrder";
+        }
+
+        public override string GetJobName()
+        {
+            return _jobName;
         }
 
         #endregion

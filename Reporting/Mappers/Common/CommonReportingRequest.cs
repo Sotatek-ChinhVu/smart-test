@@ -7,6 +7,7 @@ public class CommonReportingRequest : ICommonReportingRequest
         CommonReportingRequestModel result = new CommonReportingRequestModel()
         {
             ReportType = GetReportType(),
+            JobName = GetJobName(),
             FileNamePageMap = GetFileNamePageMap(),
             SingleFieldList = GetSingleFieldData(),
             TableFieldData = GetTableFieldData(),
@@ -65,5 +66,10 @@ public class CommonReportingRequest : ICommonReportingRequest
     public virtual Dictionary<string, string> GetExtralData()
     {
         return new();
+    }
+
+    public virtual string GetJobName()
+    {
+        return string.Empty;
     }
 }

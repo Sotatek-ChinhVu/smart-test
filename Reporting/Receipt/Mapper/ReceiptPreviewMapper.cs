@@ -83,6 +83,11 @@ namespace Reporting.Receipt.Mapper
             return CellData;
         }
 
+        public override string GetJobName()
+        {
+            return "レセプト";
+        }
+
         public void UpdateDrawForm()
         {
             if (_coReceipt == null) return;

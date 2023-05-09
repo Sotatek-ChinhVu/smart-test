@@ -166,6 +166,8 @@ using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.DB;
+using Reporting.PatientManagement.Service;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Receipt.DB;
 using Reporting.Receipt.Service;
@@ -192,6 +194,12 @@ using Reporting.Statistics.Sta2010.DB;
 using Reporting.Statistics.Sta2010.Service;
 using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
+using Reporting.Statistics.Sta2021.DB;
+using Reporting.Statistics.Sta2021.Service;
+using Reporting.Statistics.Sta9000.DB;
+using Reporting.Statistics.Sta9000.Service;
+using Reporting.Statistics.Sta3020.DB;
+using Reporting.Statistics.Sta3020.Service;
 using Reporting.Statistics.Sta2020.DB;
 using Reporting.Statistics.Sta2020.Service;
 using UseCase.AccountDue.GetAccountDueList;
@@ -283,7 +291,8 @@ using UseCase.Lock.Add;
 using UseCase.Lock.Check;
 using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
-using UseCase.MainMenu.GetDailyStatisticMenu;
+using UseCase.MainMenu.GetStatisticMenu;
+using UseCase.MainMenu.SaveStatisticMenu;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.GetMaxMoneyByPtId;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -470,6 +479,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UketukeSbtMst.Upsert;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.CheckedLockMedicalExamination;
+using UseCase.User.GetAllPermission;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetPermissionByScreenCode;
@@ -579,6 +589,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2010CoReportService, Sta2010CoReportService>();
             services.AddTransient<ICoSta2011Finder, CoSta2011Finder>();
             services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
+            services.AddTransient<ICoSta2021Finder, CoSta2021Finder>();
+            services.AddTransient<ISta2021CoReportService, Sta2021CoReportService>();
+            services.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
+            services.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
+            services.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
+            services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
 
@@ -672,6 +688,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
+            services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
+            services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -686,6 +704,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
             busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
+            busBuilder.RegisterUseCase<GetAllPermissionInputData, GetAllPermissionInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
@@ -1115,7 +1134,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ExtendTtlLockInputData, ExtendTtlLockInteractor>();
 
             // Statistic
-            busBuilder.RegisterUseCase<GetDailyStatisticMenuInputData, GetDailyStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
+            busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

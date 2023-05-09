@@ -4,5 +4,9 @@ namespace Domain.Models.MainMenu;
 
 public interface IStatisticRepository : IRepositoryBase
 {
-    List<StatisticMenuModel> GetDailyStatisticMenu(int hpId, int groupId);
+    List<StatisticMenuModel> GetStatisticMenu(int hpId, int grpId);
+
+    List<StaGrpModel> GetStaGrp(int hpId, int grpId);
+
+    bool SaveStatisticMenu(int hpId, int userId, List<StatisticMenuModel> statisticMenuModelList);
 }

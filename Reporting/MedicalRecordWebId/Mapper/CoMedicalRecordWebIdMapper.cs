@@ -23,6 +23,11 @@ public class CoMedicalRecordWebIdMapper : CommonReportingRequest
         return string.Empty;
     }
 
+    public override string GetJobName()
+    {
+        return "Web登録用ID";
+    }
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         Dictionary<string, string> data = new();
