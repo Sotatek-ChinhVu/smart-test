@@ -1027,7 +1027,7 @@ namespace Infrastructure.Repositories
                 List<Tuple<int, long, long>> result = new();
                 foreach (var raiinNoAndOya in receptions)
                 {
-                    var deletedItem = DeleteKarute(hpId, ptId, raiinNoAndOya.Item1, raiinNoAndOya.Item2, raiinNoAndOya.Item3, sinDate);
+                    var deletedItem = DeleteKarute(hpId, ptId, raiinNoAndOya.Item1, raiinNoAndOya.Item2, raiinNoAndOya.Item3, sinDate, userId);
                     if (deletedItem.Item1 != 0 && deletedItem.Item2 != 0 && deletedItem.Item3 != 0)
                         result.Add(deletedItem);
                 }
@@ -1036,7 +1036,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private Tuple<int, long, long> DeleteKarute(int hpId, long ptId, long raiinNo, long oyaRaiinNo, int status, int sinDate)
+        private Tuple<int, long, long> DeleteKarute(int hpId, long ptId, long raiinNo, long oyaRaiinNo, int status, int sinDate, int userId)
         {
             int deleteFlag = 1;
             if (status == RaiinState.Reservation || status == RaiinState.Receptionist || status == RaiinState.TempSave)
@@ -1052,8 +1052,8 @@ namespace Infrastructure.Repositories
             var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
             if (raiinInf == null) return new(0, 0, 0);
 
-            raiinInf.UpdateId = Session.UserID;
-            raiinInf.UpdateDate = DateTime.Now;
+            raiinInf.UpdateId = userId;
+            raiinInf.UpdateDate = CIUtil.GetJapanDateTimeNow();
             raiinInf.IsDeleted = deleteFlag;
 
             // Update oyaRaiinNo of other raiinInf
@@ -1082,8 +1082,8 @@ namespace Infrastructure.Repositories
                                                                            && odr.SinDate == sinDate);
             if (odrInfs != null)
             {
-                var updateId = Session.UserID;
-                var updateDate = DateTime.Now;
+                var updateId = userId;
+                var updateDate = CIUtil.GetJapanDateTimeNow();
 
                 foreach (var odrInf in odrInfs)
                 {
@@ -1101,8 +1101,8 @@ namespace Infrastructure.Repositories
                                                                              && k.SinDate == sinDate);
             if (karteInfs != null)
             {
-                var updateId = Session.UserID;
-                var updateDate = DateTime.Now;
+                var updateId = userId;
+                var updateDate = CIUtil.GetJapanDateTimeNow();
 
                 foreach (var karteInf in karteInfs)
                 {
