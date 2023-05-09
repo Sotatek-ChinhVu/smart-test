@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
             {
                 HpId = hpId,
                 TodoNo = u.TodoNo,
-                TodoEdaNo = u.TodoEdaNo,
+                TodoEdaNo = hpId,
                 PtId = u.PtId,
                 SinDate = u.SinDate,
                 RaiinNo = u.RaiinNo,

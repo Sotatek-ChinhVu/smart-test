@@ -6,7 +6,7 @@ namespace UseCase.Todo.GetTodoInfFinder
     public class GetListTodoInfFinderOutputItem
     {
 
-        public GetListTodoInfFinderOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
+        public GetListTodoInfFinderOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -30,6 +30,9 @@ namespace UseCase.Todo.GetTodoInfFinder
             HokensyaNo = hokensyaNo;
             HokenId = hokenId;
             UpdateDate = updateDate;
+            TantoId = tantoId;
+            TodoNo = todoNo;
+            TodoEdaNo = todoEdaNo;
         }
 
         public long PtNum { get; private set; }
@@ -152,5 +155,11 @@ namespace UseCase.Todo.GetTodoInfFinder
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
+
+        public int TantoId { get; private set; }
+
+        public int TodoNo { get; private set; }
+
+        public int TodoEdaNo { get; private set; }
     }
 }

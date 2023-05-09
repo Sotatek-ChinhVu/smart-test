@@ -77,11 +77,11 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
     {
         foreach (var insertTodoInf in insertTodoInfDtos)
         {
-            if (insertTodoInf.TodoNo <= 0)
+            if (insertTodoInf.TodoNo < 0)
             {
                 return UpsertTodoInfStatus.InvalidTodoNo;
             }
-            else if (insertTodoInf.TodoEdaNo <= 0)
+            else if (insertTodoInf.TodoEdaNo < 0)
             {
                 return UpsertTodoInfStatus.InvalidTodoEdaNo;
             }
