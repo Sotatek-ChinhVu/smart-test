@@ -2,6 +2,7 @@
 using Reporting.Accounting.Model.Output;
 using Reporting.Accounting.Service;
 using Reporting.Byomei.Service;
+using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
@@ -20,7 +21,6 @@ using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.Model;
 using Reporting.ReceiptList.Service;
 using Reporting.Sijisen.Service;
-using Reporting.Statistics.Sta1001.Service;
 
 namespace Reporting.ReportServices;
 
@@ -204,9 +204,9 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
     }
 
-    public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo)
+    public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null)
     {
-        return _statisticService.PrintExecute(hpId, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo);
+        return _statisticService.PrintExecute(hpId, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType);
     }
 
     public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)

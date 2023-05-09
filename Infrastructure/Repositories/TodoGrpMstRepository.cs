@@ -51,6 +51,14 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
+        public List<TodoGrpMstModel> GetTodoGrpMsts(int hpId)
+        {
+            List<TodoGrpMstModel> result = NoTrackingDataContext.TodoGrpMsts.Where(p => p.HpId == hpId && p.IsDeleted == 0)
+                        .OrderBy(t => t.SortNo).AsEnumerable()
+                        .Select(t => new TodoGrpMstModel(t.TodoGrpNo, t.TodoGrpName ?? string.Empty, t.GrpColor ?? string.Empty, t.SortNo, t.IsDeleted)).ToList();
+            return result;
+        }
+
         private TodoGrpMst ConvertTodoGrpMst(TodoGrpMstModel u, int userId, int hpId)
         {
             return new TodoGrpMst
