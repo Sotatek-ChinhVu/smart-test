@@ -92,13 +92,13 @@ namespace Reporting.Statistics.Sta3001.Service
             // get data to print
             GetFieldNameList();
             GetColRowCount();
-            GetData();
+            
             _hasNextPage = true;
 
             _currentPage = 1;
-
+            var getData = GetData();
             //印刷
-            while (_hasNextPage)
+            while (_hasNextPage && getData)
             {
                 UpdateDrawForm();
                 _currentPage++;
@@ -322,19 +322,19 @@ namespace Reporting.Statistics.Sta3001.Service
                 SetFieldData("Title", _printConf.ReportName);
 
                 //医療機関名
-                _extralData.Add("HeaderR_0_0_", hpInf.HpName);
+                _extralData.Add("HeaderR_0_0_" + _currentPage, hpInf.HpName);
 
                 //作成日時
-                _extralData.Add("HeaderR_0_1_", CIUtil.SDateToShowSWDate(
+                _extralData.Add("HeaderR_0_1_" + _currentPage, CIUtil.SDateToShowSWDate(
                     CIUtil.ShowSDateToSDate(DateTime.Now.ToString("yyyy/MM/dd")), 0, 1
                 ) + DateTime.Now.ToString(" HH:mm") + "作成");
 
                 //ページ数
                 int totalPage = (int)Math.Ceiling((double)printDatas.Count / maxRow);
-                _extralData.Add("HeaderR_0_2_", _currentPage + " / " + totalPage);
+                _extralData.Add("HeaderR_0_2_" + _currentPage, _currentPage + " / " + totalPage);
 
                 //改ページ条件
-                _extralData.Add("HeaderL_0_2_", headerL.Count >= _currentPage ? headerL[_currentPage - 1] : "");
+                _extralData.Add("HeaderL_0_2_" + _currentPage, headerL.Count >= _currentPage ? headerL[_currentPage - 1] : "");
 
                 //期間
                 string range = "";

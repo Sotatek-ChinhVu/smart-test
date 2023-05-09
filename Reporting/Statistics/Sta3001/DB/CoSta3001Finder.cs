@@ -140,18 +140,23 @@ namespace Reporting.Statistics.Sta3001.DB
                 join maxIpnName in maxIpnNames on
                     new { ipnNameMst.HpId, ipnNameMst.IpnNameCd, ipnNameMst.StartDate } equals
                     new { maxIpnName.HpId, maxIpnName.IpnNameCd, maxIpnName.StartDate }
-                select new { ipnNameMst.HpId, ipnNameMst.IpnNameCd, ipnNameMst.IpnName }
+                select new
+                {
+                    HpId = ipnNameMst.HpId == null ? 0 : ipnNameMst.HpId,
+                    IpnNameCd = ipnNameMst.IpnNameCd == null ? string.Empty : ipnNameMst.IpnNameCd,
+                    IpnName = ipnNameMst.IpnName == null ? string.Empty : ipnNameMst.IpnName
+                }
                 );
 
             //一般名があれば、採用薬情報に外部結合する
             var joinQuery = (
-                from latestTenMst in latestTenMsts
-                join latestIpnName in latestIpnNames on
-                    new { latestTenMst.HpId, latestTenMst.IpnNameCd } equals
-                    new { latestIpnName.HpId, latestIpnName.IpnNameCd } into ipnNameMstJoins
-                from ipnNameMstJoin in ipnNameMstJoins.DefaultIfEmpty()
-                select new { latestTenMst, ipnNameMstJoin }
-                ).ToList();
+                            from latestTenMst in latestTenMsts
+                            join latestIpnName in latestIpnNames on
+                                new { latestTenMst.HpId, latestTenMst.IpnNameCd } equals
+                                new { latestIpnName.HpId, latestIpnName.IpnNameCd } into ipnNameMstJoins
+                            from ipnNameMstJoin in ipnNameMstJoins.DefaultIfEmpty()
+                            select new { latestTenMst, ipnNameMstJoin }
+                            ).ToList();
 
             var retData = joinQuery.AsEnumerable().Select(data => new CoAdpDrugsModel()
             {
