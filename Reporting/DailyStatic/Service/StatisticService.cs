@@ -523,5 +523,16 @@ public class StatisticService : IStatisticService
 
         return printConf;
     }
+
+    private CoSta3080PrintConf CreateCoSta3080PrintConf(ConfigStatistic3080Model configStatistic, int timeFrom, int timeTo)
+    {
+        CoSta3080PrintConf printConf = new CoSta3080PrintConf(configStatistic.MenuId);
+        printConf.FormFileName = configStatistic.FormReport;
+        printConf.ReportName = configStatistic.ReportName;
+        printConf.IsTester = configStatistic.TestPatient == 1;
+        printConf.FromYm = timeFrom;
+        printConf.ToYm = timeTo;
+        return printConf;
+    }
     #endregion
 }
