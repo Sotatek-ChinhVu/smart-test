@@ -33,16 +33,16 @@ namespace Reporting.Statistics.Sta2020.DB
             List<CoSinKouiModel> sinData;
             if (printConf.DataKind == 0)
             {
-                sinData = getSinKouis(hpId, printConf);
+                sinData = GetSinKouiChilds(hpId, printConf);
             }
             else
             {
-                sinData = getOdrInfs(hpId, printConf);
+                sinData = GetOdrInfs(hpId, printConf);
             }
             return sinData;
         }
 
-        private List<CoSinKouiModel> getSinKouis(int hpId, CoSta2020PrintConf printConf)
+        private List<CoSinKouiModel> GetSinKouiChilds(int hpId, CoSta2020PrintConf printConf)
         {
             var sinKouiCounts = NoTrackingDataContext.SinKouiCounts.Where(s => s.HpId == hpId);
             sinKouiCounts = printConf.StartSinYm >= 0 ?
@@ -383,7 +383,7 @@ namespace Reporting.Statistics.Sta2020.DB
             return retData;
         }
 
-        private List<CoSinKouiModel> getOdrInfs(int hpId, CoSta2020PrintConf printConf)
+        private List<CoSinKouiModel> GetOdrInfs(int hpId, CoSta2020PrintConf printConf)
         {
             var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.HpId == hpId && s.IsDeleted == DeleteStatus.None);
             odrInfs = printConf.StartSinYm >= 0 ?
