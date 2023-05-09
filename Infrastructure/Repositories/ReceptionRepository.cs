@@ -1049,7 +1049,7 @@ namespace Infrastructure.Repositories
             }
 
             //delete raiinInf
-            var raiinInf = NoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+            var raiinInf = TrackingDataContext.RaiinInfs.FirstOrDefault(r => r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
             if (raiinInf == null) return new(0, 0, 0);
 
             raiinInf.UpdateId = Session.UserID;
@@ -1057,7 +1057,7 @@ namespace Infrastructure.Repositories
             raiinInf.IsDeleted = deleteFlag;
 
             // Update oyaRaiinNo of other raiinInf
-            var listRaiinInf = NoTrackingDataContext.RaiinInfs.Where(r => r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
+            var listRaiinInf = TrackingDataContext.RaiinInfs.Where(r => r.OyaRaiinNo == raiinNo && r.RaiinNo != raiinNo && r.IsDeleted == DeleteTypes.None).ToList();
             if (listRaiinInf.Count > 0)
             {
                 long minRaiinNo = listRaiinInf.Min(r => r.RaiinNo);
@@ -1067,17 +1067,17 @@ namespace Infrastructure.Repositories
                 });
             }
             // No.6512 commit raiininf first for trigger
-            var checkSave = NoTrackingDataContext.SaveChanges() > 0;
+            TrackingDataContext.SaveChanges();
 
             // Delete reservation info
-            var rsvInf = NoTrackingDataContext.RsvInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
-            if (rsvInf != null) NoTrackingDataContext.RsvInfs.Remove(rsvInf);
+            var rsvInf = TrackingDataContext.RsvInfs.FirstOrDefault(r => r.RaiinNo == raiinNo && r.SinDate == sinDate && r.PtId == ptId);
+            if (rsvInf != null) TrackingDataContext.RsvInfs.Remove(rsvInf);
 
-            var rsvFrameInf = NoTrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.Number == raiinNo);
-            if (rsvFrameInf != null) NoTrackingDataContext.RsvFrameInfs.Remove(rsvFrameInf);
+            var rsvFrameInf = TrackingDataContext.RsvFrameInfs.FirstOrDefault(r => r.Number == raiinNo);
+            if (rsvFrameInf != null) TrackingDataContext.RsvFrameInfs.Remove(rsvFrameInf);
 
             //delete order
-            var odrInfs = NoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId
+            var odrInfs = TrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId
                                                                            && odr.RaiinNo == raiinNo
                                                                            && odr.SinDate == sinDate);
             if (odrInfs != null)
@@ -1114,14 +1114,14 @@ namespace Infrastructure.Repositories
             }
 
             // Delete KENSA_INF,KENSA_INF_DETAIL
-            var listKendaInf = NoTrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
+            var listKendaInf = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
                                                                                    k.RaiinNo == raiinNo).ToList();
             listKendaInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
             });
 
-            var listKendaInfDetail = NoTrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
+            var listKendaInfDetail = TrackingDataContext.KensaInfs.Where(k => k.PtId == ptId &&
                                                                                                k.RaiinNo == raiinNo).ToList();
             listKendaInfDetail.ForEach((k) =>
             {
@@ -1129,14 +1129,14 @@ namespace Infrastructure.Repositories
             });
 
             // Delete LIMIT_LIST_INF、LIMIT_CNT_LIST_INF
-            var listLimitListInf = NoTrackingDataContext.LimitListInfs.Where(k => k.PtId == ptId &&
+            var listLimitListInf = TrackingDataContext.LimitListInfs.Where(k => k.PtId == ptId &&
                                                                                        k.RaiinNo == raiinNo).ToList();
             listLimitListInf.ForEach((k) =>
             {
                 k.IsDeleted = DeleteTypes.Deleted;
             });
 
-            var listLimitCntListInf = NoTrackingDataContext.LimitCntListInfs.Where(k => k.PtId == ptId &&
+            var listLimitCntListInf = TrackingDataContext.LimitCntListInfs.Where(k => k.PtId == ptId &&
                                                                                                  k.OyaRaiinNo == oyaRaiinNo).ToList();
             listLimitCntListInf.ForEach((k) =>
             {
@@ -1144,12 +1144,14 @@ namespace Infrastructure.Repositories
             });
 
             // Delete Monshin
-            var listMonshinInf = NoTrackingDataContext.MonshinInfo.Where(m => m.PtId == ptId && m.RaiinNo == raiinNo && m.SinDate == sinDate).ToList();
+            var listMonshinInf = TrackingDataContext.MonshinInfo.Where(m => m.PtId == ptId && m.RaiinNo == raiinNo && m.SinDate == sinDate).ToList();
             listMonshinInf.ForEach((m) =>
             {
                 m.IsDeleted = DeleteTypes.Deleted;
             });
             var result = new Tuple<int, long, long>(raiinInf.SinDate, raiinInf.RaiinNo, raiinInf.PtId);
+
+            TrackingDataContext.SaveChanges();
 
             return result;
         }
@@ -1215,6 +1217,7 @@ namespace Infrastructure.Repositories
                             raiinInf.IsDeleted == 1);
                 result.Add(item);
             }
+
             return result;
         }
     }
