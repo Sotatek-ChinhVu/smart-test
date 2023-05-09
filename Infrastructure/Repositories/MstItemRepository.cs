@@ -290,7 +290,7 @@ namespace Infrastructure.Repositories
             var queryResult = NoTrackingDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
                                 || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
-                                || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
+                                || (t.KanaName1 != null && t.KanaName1 != "" && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -301,7 +301,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                  (!String.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
+                                  (t.KanaName2 != null && t.KanaName2 != "" && t.KanaName2.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -312,8 +312,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
 
-                                || (
-                                  !String.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
+                                || (t.KanaName3 != null && t.KanaName3 != "" && t.KanaName3.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -323,19 +322,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｭ", "ﾕ")
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                || (
-                                  !String.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                ||
-                                (!String.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
+                                || (t.KanaName4 != null && t.KanaName4 != "" && t.KanaName4.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -346,18 +333,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                (!String.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
-                                  .Replace("ｧ", "ｱ")
-                                  .Replace("ｨ", "ｲ")
-                                  .Replace("ｩ", "ｳ")
-                                  .Replace("ｪ", "ｴ")
-                                  .Replace("ｫ", "ｵ")
-                                  .Replace("ｬ", "ﾔ")
-                                  .Replace("ｭ", "ﾕ")
-                                  .Replace("ｮ", "ﾖ")
-                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                || (
-                                  !String.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
+                                (t.KanaName5 != null && t.KanaName5 != "" && t.KanaName5.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
                                   .Replace("ｩ", "ｳ")
@@ -368,9 +344,29 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
-
-            var count = queryResult.Count();
+                                (t.KanaName6 != null && t.KanaName6 != "" && t.KanaName6.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (
+                                  t.KanaName7 != null && t.KanaName7 != "" && t.KanaName7.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (t.Name != null && t.Name != "" && t.Name.Contains(keyword)));
 
             if (masterSBT.ToLower() != "all")
             {

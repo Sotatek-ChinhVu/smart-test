@@ -16,6 +16,9 @@ builder.Services.AddControllers();
 builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
 
+#if DEBUG
+builder.Services.AddSignalR();
+#else
 // Setup signalR
 builder.Services.AddSignalR()
         .AddStackExchangeRedis(o =>
@@ -49,6 +52,7 @@ builder.Services.AddSignalR()
                 return connection;
             };
         });
+#endif
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
