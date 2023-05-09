@@ -21,10 +21,12 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ReceiptCheck\DB\" />
+    <Folder Include="Statistics\Sta2020\Service\" />
   </ItemGroup>
 
 </Project>

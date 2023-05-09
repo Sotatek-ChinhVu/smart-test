@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Requests.ExportPDF;
+﻿using Reporting.CommonMasters.Enums;
+
+namespace EmrCloudApi.Requests.ExportPDF;
 
 public class StatisticExportRequest
 {
@@ -17,4 +19,6 @@ public class StatisticExportRequest
     public int TimeFrom { get; set; }
 
     public int TimeTo { get; set; }
+
+    public CoFileType? CoFileType { get; set; } = null;
 }

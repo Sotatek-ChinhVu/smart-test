@@ -68,8 +68,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             var filters = searchItems.Where(s => s.Level3 == 0).ToList();
             foreach (var filter in filters)
             {
-                if(filter.Level2 > 0)
-                   searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 == filter.Level2 && s.Level3 > 0);
+                if (filter.Level2 > 0)
+                    searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 == filter.Level2 && s.Level3 > 0);
                 else
                     searchItems.RemoveAll(s => s.Level1 == filter.Level1 && s.Level2 > 0);
             }
@@ -81,10 +81,10 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
                     var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1);
                     result.AddRange(resultItem);
                 }
-                else if(searchItem.Level3 == 0)
+                else if (searchItem.Level3 == 0)
                 {
-                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId  && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2);
-                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId  && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
+                    var resultItem = setMstModelList!.Where(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == searchItem.Level2);
+                    var rootItem = setMstModelList!.FirstOrDefault(s => s.HpId == hpId && s.GenerationId == generationId && s.SetKbn == searchItem.SetKbn && s.SetKbnEdaNo == searchItem.SetKbnEdaNo && s.IsDeleted == 0 && s.Level1 == searchItem.Level1 && s.Level2 == 0 && s.Level3 == 0);
                     if (rootItem != null)
                     {
                         result.Add(rootItem);
@@ -178,6 +178,7 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
             {
                 // set status for IsDelete
                 setMst.IsDeleted = 0;
+                ChangeRpName(userId, setMst.SetCd, setMst.SetName ?? string.Empty);
 
                 // If SetMst is add new
                 if (setMstModel.SetCd == 0 || TrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd) == null)
@@ -1295,6 +1296,20 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         }
 
         return result;
+    }
+
+    private void ChangeRpName(int userId, int setCd, string setName)
+    {
+        if (setCd != 0 && setName != string.Empty)
+        {
+            var setOrderInfListBySetCd = TrackingDataContext.SetOdrInf.Where(item => item.SetCd == setCd).ToList();
+            foreach (var item in setOrderInfListBySetCd)
+            {
+                item.RpName = setName;
+                item.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                item.UpdateId = userId;
+            }
+        }
     }
     #endregion
 }

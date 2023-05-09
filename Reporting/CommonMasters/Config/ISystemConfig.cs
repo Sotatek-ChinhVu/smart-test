@@ -45,4 +45,9 @@ public interface ISystemConfig
     int AccountingDetailMonthFormType();
     int PrintReceiptPay0Yen();
     int PrintDetailPay0Yen();
+    string PlanetHostName();
+    string PlanetDatabase();
+    string PlanetUserName();
+    string PlanetPassword();
+    int PlanetType();
 }

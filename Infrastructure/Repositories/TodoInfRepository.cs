@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
             {
                 HpId = hpId,
                 TodoNo = u.TodoNo,
-                TodoEdaNo = u.TodoEdaNo,
+                TodoEdaNo = hpId,
                 PtId = u.PtId,
                 SinDate = u.SinDate,
                 RaiinNo = u.RaiinNo,
@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
         public bool CheckExist(List<Tuple<int, int, long>> inputs)
         {
             inputs = inputs.Distinct().ToList();
-            var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
+            var countptIds = NoTrackingDataContext.TodoInfs.AsEnumerable().Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
             return inputs.Count == countptIds;
         }
 
@@ -222,11 +222,18 @@ namespace Infrastructure.Repositories
                                 x.UpdaterName,
                                 x.TodoGrpName,
                                 x.TodoInf.Term,
-                                x.HokenPattern.HokenPid,
-                                x.PtHokenInf.Houbetu ?? string.Empty,
-                                x.HokenPattern.HokenKbn,
-                                x.PtHokenInf.HokensyaNo ?? string.Empty,
-                                x.PtHokenInf.HokenId
+                                x.HokenPattern?.HokenPid ?? 0,
+                                x.PtHokenInf?.Houbetu ?? string.Empty,
+                                x.HokenPattern?.HokenKbn ?? 0,
+                                x.PtHokenInf?.HokensyaNo ?? string.Empty,
+                                x.PtHokenInf?.HokenId ?? 0,
+                                x.TodoInf.Tanto,
+                                x.TodoInf.TodoNo,
+                                x.TodoInf.TodoEdaNo,
+                                x.TodoInf.RaiinNo,
+                                x.TodoKbnNo,
+                                x.TodoGrpNo,
+                                x.TodoInf.IsDone
                                 )).OrderByDescending(model => model.UpdateDate)
                                 .ThenBy(model => model.PtId)
                                 .ToList();

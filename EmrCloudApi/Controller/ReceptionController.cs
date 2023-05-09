@@ -260,7 +260,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.Delete)]
         public async Task<ActionResult<Response<DeleteReceptionResponse>>> Delete([FromBody] DeleteReceptionRequest req)
         {
-            var input = new DeleteReceptionInputData(HpId, UserId, req.RaiinNos);
+            var input = new DeleteReceptionInputData(HpId, req.PtId, req.SinDate, req.Flag, UserId, req.RaiinNos);
             var output = _bus.Handle(input);
             var deleteFirst = output.DeleteReceptionItems.FirstOrDefault();
             if (output.Status == DeleteReceptionStatus.Successed && deleteFirst != null)

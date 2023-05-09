@@ -1,9 +1,11 @@
 ﻿using Domain.Models.Todo;
+using System.Text.Json.Serialization;
 
 namespace UseCase.Todo
 {
     public class TodoInfDto
     {
+        [JsonConstructor]
         public TodoInfDto(int todoNo, int todoEdaNo, long ptId, int sinDate, long raiinNo, int todoKbnNo, int todoGrpNo, int tanto, int term, string cmt1, string cmt2, int isDone, int isDeleted)
         {
             TodoNo = todoNo;

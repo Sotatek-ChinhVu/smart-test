@@ -1610,7 +1610,7 @@ public class SystemConfig : RepositoryBase, ISystemConfig
     /// 1: Planet 改
     /// 2: Planet Next
     /// </summary>
-    public int PlanetType => (int)GetSettingValue(8010, 0);
+    public int PlanetType() { return (int)GetSettingValue(8010, 0); }
     /// <summary>
     /// Planete 送信先 ホスト
     /// </summary>
