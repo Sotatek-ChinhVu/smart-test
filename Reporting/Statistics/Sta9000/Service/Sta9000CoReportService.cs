@@ -1054,7 +1054,6 @@ public class Sta9000CoReportService : ISta9000CoReportService
         }
     }
 
-
     private void SetFieldData(string field, string value)
     {
         if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
