@@ -33,8 +33,8 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
 
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
         //健保を抽出する
-        int[] Kenpos = new int[] { 1, 2 };
-        ptHokenPatterns = ptHokenPatterns.Where(x => Kenpos.Contains(x.HokenKbn));
+        int[] kenpos = new int[] { 1, 2 };
+        ptHokenPatterns = ptHokenPatterns.Where(x => kenpos.Contains(x.HokenKbn));
 
         var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None && x.SanteiKbn == 0);
         #region 条件
@@ -44,14 +44,14 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
 
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
 
-        string[] SeisinDayCareItems = new string[] {"180028610", "180028710", "180036030", "180039030", "180039130",
+        string[] seisinDayCareItems = new string[] {"180028610", "180028710", "180036030", "180039030", "180039130",
                                                     "180039230", "180007510", "180007610", "180048030", "180048130",
                                                     "180039330", "180036130", "180039530", "180039430", "180049030",
                                                     "180048930", "180007810", "180048430", "180017210", "180048530"
                                                     };
 
         //精神科デイ・ケアの項目を抽出する
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => SeisinDayCareItems.Contains(x.ItemCd));
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => seisinDayCareItems.Contains(x.ItemCd));
 
         var odrJoins = (
             from odrInf in odrInfs
@@ -90,7 +90,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
 
         var sinKouis = NoTrackingDataContext.SinKouis.Where(p => p.IsDeleted == DeleteStatus.None);
 
-        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(x => SeisinDayCareItems.Contains(x.ItemCd));
+        var sinKouiDetails = NoTrackingDataContext.SinKouiDetails.Where(x => seisinDayCareItems.Contains(x.ItemCd));
 
         var sinJoins = (
             from sinKoui in sinKouis
@@ -116,7 +116,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
                               SyokaiYm = grpSinJoin.Min(x => x.SinYm)
                           };
 
-        var SeisinDayCareInfs =
+        var seisinDayCareInfs =
             from grpOdrJoin in grpOdrJoins
             join grpSinJoin in grpSinJoins on
                  new { grpOdrJoin.PtNum } equals
@@ -133,7 +133,7 @@ public class CoSta3080Finder : RepositoryBase, ICoSta3080Finder
                 grpSinJoin.SyokaiYm
             };
 
-        var retData = SeisinDayCareInfs.AsEnumerable().Select(data => new CoSeisinDayCareInf()
+        var retData = seisinDayCareInfs.AsEnumerable().Select(data => new CoSeisinDayCareInf()
         {
             SinYm = data.SinYm,
             PtNum = data.PtNum,

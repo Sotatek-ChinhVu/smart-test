@@ -387,24 +387,24 @@ public class Sta3080CoReportService : ISta3080CoReportService
                     //空行を追加
                     printDatas.Add(new CoSta3080PrintData(RowType.Brank));
 
-                    int Monthdiff = MonthDifference(printConf.FromYm, printConf.ToYm);
-                    double AvrgPtCnt1 = 0;
-                    double AvrgPtCnt14 = 0;
+                    int monthdiff = MonthDifference(printConf.FromYm, printConf.ToYm);
+                    double avrgPtCnt1 = 0;
+                    double avrgPtCnt14 = 0;
                     double rate = 0;
 
                     if (totalData.PtCount1 > 0)
                     {
-                        AvrgPtCnt1 = 1.0 * totalData.PtCount1 / Monthdiff;
+                        avrgPtCnt1 = 1.0 * totalData.PtCount1 / monthdiff;
                     }
 
                     if (totalData.PtCount14 > 0)
                     {
-                        AvrgPtCnt14 = 1.0 * totalData.PtCount14 / Monthdiff;
+                        avrgPtCnt14 = 1.0 * totalData.PtCount14 / monthdiff;
                     }
 
-                    if (AvrgPtCnt1 > 0)
+                    if (avrgPtCnt1 > 0)
                     {
-                        rate = 1.0 * AvrgPtCnt14 / AvrgPtCnt1;
+                        rate = 1.0 * avrgPtCnt14 / avrgPtCnt1;
                     }
 
                     printDatas.Add(
@@ -412,7 +412,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                         {
                             TotalCaption = string.Format("①　精神科デイ・ケア等を１回以上実施した患者数：　{0,5}　人　②　1月当たりの平均：　{1,5:f2}　人",
                                 totalData.PtCount1,
-                                AvrgPtCnt1
+                                avrgPtCnt1
                                 )
                         }
                     );
@@ -421,7 +421,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
                         {
                             TotalCaption = string.Format("③　精神科デイ・ケア等を14回以上実施した患者数：　{0,5}　人　④　1月当たりの平均：　{1,5:f2}　人",
                                 totalData.PtCount14,
-                                AvrgPtCnt14
+                                avrgPtCnt14
                                 )
                         }
                     );
