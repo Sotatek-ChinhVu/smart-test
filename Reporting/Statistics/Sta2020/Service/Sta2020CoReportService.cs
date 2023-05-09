@@ -101,8 +101,10 @@ namespace Reporting.Statistics.Sta2020.Service
 
             _currentPage = 1;
 
+            var getData = GetData();
+
             //印刷
-            while (_hasNextPage && GetData())
+            while (_hasNextPage && getData)
             {
                 UpdateDrawForm();
                 _currentPage++;
