@@ -34,7 +34,7 @@ public class UpsertTodoInfInteractor : IUpsertTodoInfInputPort
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidTodoInf);
             }
 
-            if (_todoInfRepository.CheckExist(input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => new Tuple<int, int, long>(x.TodoNo, x.TodoEdaNo, x.PtId)).ToList()))
+            if (!_todoInfRepository.CheckExist(input.TodoInfs.Where(x => x.TodoNo > 0).Select(x => new Tuple<int, int, long>(x.TodoNo, x.TodoEdaNo, x.PtId)).ToList()))
             {
                 return new UpsertTodoInfOutputData(UpsertTodoInfStatus.InvalidExistedInput);
             }

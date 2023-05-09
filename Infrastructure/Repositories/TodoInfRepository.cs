@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
         public bool CheckExist(List<Tuple<int, int, long>> inputs)
         {
             inputs = inputs.Distinct().ToList();
-            var countptIds = NoTrackingDataContext.TodoInfs.Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
+            var countptIds = NoTrackingDataContext.TodoInfs.AsEnumerable().Count(t => inputs.Any(i => i.Item1 == t.TodoNo && i.Item2 == t.TodoEdaNo && i.Item3 == t.PtId));
             return inputs.Count == countptIds;
         }
 
@@ -226,7 +226,14 @@ namespace Infrastructure.Repositories
                                 x.PtHokenInf.Houbetu ?? string.Empty,
                                 x.HokenPattern.HokenKbn,
                                 x.PtHokenInf.HokensyaNo ?? string.Empty,
-                                x.PtHokenInf.HokenId
+                                x.PtHokenInf.HokenId,
+                                x.TodoInf.Tanto,
+                                x.TodoInf.TodoNo,
+                                x.TodoInf.TodoEdaNo,
+                                x.TodoInf.RaiinNo,
+                                x.TodoKbnNo,
+                                x.TodoGrpNo,
+                                x.TodoInf.IsDone
                                 )).OrderByDescending(model => model.UpdateDate)
                                 .ThenBy(model => model.PtId)
                                 .ToList();

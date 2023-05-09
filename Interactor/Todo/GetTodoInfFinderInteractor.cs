@@ -65,7 +65,11 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
                                                                         x.HokenId,
                                                                         x.Tanto,
                                                                         x.TodoNo,
-                                                                        x.TodoEdaNo
+                                                                        x.TodoEdaNo,
+                                                                        x.RaiinNo,
+                                                                        x.TodoKbnNo,
+                                                                        x.TodoGrpNo,
+                                                                        x.IsDone
                                                                         )));
         return result;
     }

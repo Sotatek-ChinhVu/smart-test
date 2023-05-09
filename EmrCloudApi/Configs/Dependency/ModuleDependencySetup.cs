@@ -196,10 +196,10 @@ using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
-using Reporting.Statistics.Sta9000.DB;
-using Reporting.Statistics.Sta9000.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta9000.DB;
+using Reporting.Statistics.Sta9000.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -468,6 +468,7 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
+using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
 using UseCase.Todo.UpsertTodoInf;
@@ -1111,6 +1112,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
+            busBuilder.RegisterUseCase<GetTodoGrpInputData, GetTodoGrpInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
