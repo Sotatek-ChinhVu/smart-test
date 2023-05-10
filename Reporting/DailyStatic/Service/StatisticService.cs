@@ -29,6 +29,8 @@ using Reporting.Statistics.Sta3071.Models;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.Models;
 using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta2020.Models;
+using Reporting.Statistics.Sta2020.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -47,8 +49,9 @@ public class StatisticService : IStatisticService
     private readonly ISta3020CoReportService _sta3020CoReportService;
     private readonly ISta3080CoReportService _sta3080CoReportService;
     private readonly ISta3071CoReportService _sta3071CoReportService;
+    private readonly ISta2020CoReportService _sta2020CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -63,6 +66,7 @@ public class StatisticService : IStatisticService
         _sta3020CoReportService = sta3020CoReportService;
         _sta3080CoReportService = sta3080CoReportService;
         _sta3071CoReportService = sta3071CoReportService;
+        _sta2020CoReportService = sta2020CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false)
@@ -95,6 +99,8 @@ public class StatisticService : IStatisticService
                 return PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType);
             case StatisticReportType.Sta3071:
                 return PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
+            case StatisticReportType.Sta2020:
+                return PrintSta2020(hpId, configDaily, timeFrom, timeTo);
         }
         return new();
     }
@@ -168,6 +174,12 @@ public class StatisticService : IStatisticService
     private CommonReportingRequestModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, CoFileType? coFileType, bool? isPutTotalRow)
     {
         return _sta3071CoReportService.GetSta3071ReportingData(CreateCoSta3071PrintConf(configDaily.ConfigStatistic3071, dateFrom, dateTo), hpId, coFileType ?? CoFileType.Binary, isPutTotalRow ?? false);
+    }
+
+    private CommonReportingRequestModel PrintSta2020(int hpId, ConfigStatisticModel configDaily, int timeFrom, int timeTo)
+    {
+        var printConf = CreateCoSta2020PrintConf(configDaily, timeFrom, timeTo);
+        return _sta2020CoReportService.GetSta2020ReportingData(printConf, hpId);
     }
     #endregion
 
@@ -474,6 +486,52 @@ public class StatisticService : IStatisticService
         {
             printConf.ItemCds = configStatistic.ListByomeiCd;
         }
+
+        return printConf;
+    }
+
+    private CoSta2020PrintConf CreateCoSta2020PrintConf(ConfigStatisticModel configDaily, int dateFrom, int dateTo)
+
+    {
+        CoSta2020PrintConf printConf = new CoSta2020PrintConf(configDaily.MenuId);
+        if (dateFrom.AsString().Length == 6)
+        {
+            printConf.StartSinYm = dateFrom;
+            printConf.EndSinYm = dateTo;
+        }
+        else if (dateFrom.AsString().Length == 8)
+        {
+            printConf.StartSinDate = dateFrom;
+            printConf.EndSinDate = dateTo;
+        }
+
+        printConf.FormFileName = configDaily.FormReport;
+        printConf.ReportName = configDaily.ReportName;
+        printConf.DataKind = configDaily.TargetData;
+        printConf.PageBreak1 = configDaily.BreakPage1;
+        printConf.PageBreak2 = configDaily.BreakPage2;
+        printConf.PageBreak3 = configDaily.BreakPage3;
+        printConf.SortOrder1 = configDaily.SortOrder1;
+        printConf.SortOpt1 = configDaily.OrderBy1;
+        printConf.SortOrder2 = configDaily.SortOrder2;
+        printConf.SortOpt2 = configDaily.OrderBy2;
+        printConf.SortOrder3 = configDaily.SortOrder3;
+        printConf.SortOpt3 = configDaily.OrderBy3;
+        printConf.IsTester = configDaily.TestPatient == 1;
+        printConf.KaIds = configDaily.KaId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.TantoIds = configDaily.UserId.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.HokenSbts = configDaily.InsuranceType.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.SinIds = configDaily.MedicaIdentification.Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToList();
+        printConf.SinKouiKbns = configDaily.DiagnosisTreatment.Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToList();
+        printConf.MadokuKbns = configDaily.Leprosy.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.KouseisinKbns = configDaily.PsychotropiDrug.Split(' ').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.AsInteger()).ToList();
+        printConf.SearchWord = configDaily.KeySearch;
+        printConf.SearchOpt = configDaily.SearchOperator;
+        printConf.ItemCds = configDaily.ItemInput.Split(' ').Where(x => !string.IsNullOrEmpty(x)).ToList();
+        printConf.ItemSearchOpt = configDaily.ItemCdOpt;
+        printConf.InoutKbns = configDaily.ListInoutKbn;
+        printConf.KohatuKbns = configDaily.ListKohatuKbn;
+        printConf.IsAdopteds = configDaily.ListIsAdopted;
 
         return printConf;
     }

@@ -5,6 +5,8 @@ using Domain.Models.Reception;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Helper.Constants;
+using Interactor.CalculateService;
+using UseCase.Accounting.Recaculate;
 using UseCase.Reception.UpdateStaticCell;
 
 namespace Interactor.Reception;
@@ -17,13 +19,16 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
     private readonly IUketukeSbtMstRepository _uketukeSbtMstRepository;
     private readonly IKaRepository _kaMstRepository;
     private readonly IPtCmtInfRepository _ptCmtInfRepository;
+    private readonly ICalculateService _calculateRepository;
 
     public UpdateReceptionStaticCellInteractor(IReceptionRepository receptionRepository,
         IRaiinCmtInfRepository raiinCmtInfRepository,
         IUserRepository userRepository,
         IUketukeSbtMstRepository uketukeSbtMstRepository,
         IKaRepository kaMstRepository,
-        IPtCmtInfRepository ptCmtInfRepository)
+        IPtCmtInfRepository ptCmtInfRepository,
+        ICalculateService calculateRepository
+        )
     {
         _receptionRepository = receptionRepository;
         _raiinCmtInfRepository = raiinCmtInfRepository;
@@ -31,6 +36,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         _uketukeSbtMstRepository = uketukeSbtMstRepository;
         _kaMstRepository = kaMstRepository;
         _ptCmtInfRepository = ptCmtInfRepository;
+        _calculateRepository = calculateRepository;
     }
 
     public UpdateReceptionStaticCellOutputData Handle(UpdateReceptionStaticCellInputData input)
@@ -55,6 +61,16 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
         try
         {
             var status = UpdateStaticCell(input);
+
+            //Run Calculate with cell status
+            if (input.CellName.ToLower() == "status")
+            {
+                Task.Run(() =>
+                {
+                    _calculateRepository.RunCalculate(new RecaculationInputDto(input.HpId, input.PtId, input.SinDate, 0, ""));
+                });
+            }
+
             return new UpdateReceptionStaticCellOutputData(status);
         }
         finally
