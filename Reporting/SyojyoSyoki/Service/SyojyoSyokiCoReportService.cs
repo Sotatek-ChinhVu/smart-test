@@ -3,6 +3,7 @@ using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.SyojyoSyoki.DB;
+using Reporting.SyojyoSyoki.Mapper;
 using Reporting.SyojyoSyoki.Model;
 
 namespace Reporting.SyojyoSyoki.Service
@@ -27,8 +28,6 @@ namespace Reporting.SyojyoSyoki.Service
 
         private readonly IReadRseReportFileService _readRseReportFileService;
         private int _currentPage = 1;
-        private int _maxRow;
-        private string _rowCountFieldName = string.Empty;
         private List<string> _objectRseList = new();
         private bool _hasNextPage;
         private int _hpId;
@@ -36,6 +35,12 @@ namespace Reporting.SyojyoSyoki.Service
         private int _seiKyuYm;
         private int _sinYm;
         private int _hokenId;
+        private int _syojyoSyokiRowCount;
+        private int _syojyoSyokiCharCount;
+        private List<string> _syojyoSyokiList;
+        private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
+        private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
 
         public SyojyoSyokiCoReportService(IReadRseReportFileService readRseReportFileService, ICoSyojyoSyokiFinder finder)
         {
@@ -43,12 +48,95 @@ namespace Reporting.SyojyoSyoki.Service
             _finder = finder;
         }
 
+        public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seiKyuYm, int hokenId)
+        {
+            _hpId = hpId;
+            _ptId = ptId;
+            _seiKyuYm = seiKyuYm;
+            _hokenId = hokenId;
+            GetRowCount();
+            coModels = GetData();
+
+            foreach (CoSyojyoSyokiModel model in coModels)
+            {
+                coModel = model;
+
+                if (coModel != null && coModel.ReceInf != null)
+                {
+                    _hasNextPage = true;
+                    _currentPage = 1;
+
+                    //// フォームのプロパティを取得
+                    //_syojyoSyokiCharCount = CoRep.GetFormat("lsSyojyoSyoki").Length;
+                    //_syojyoSyokiRowCount = CoRep.GetListRowCount("lsSyojyoSyoki");
+
+                    // 症状詳記リスト
+                    _syojyoSyokiList = new List<string>();
+
+                    MakeSyojyoSyokiList();
+
+                    while (_hasNextPage)
+                    {
+                        _hasNextPage = UpdateDrawForm();
+                        _currentPage++;
+                    }
+
+                }
+            }
+
+            return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _syojyoSyokiRowCount);
+        }
+
         private List<CoSyojyoSyokiModel> GetData()
         {
             return _finder.FindSyoukiInf(_hpId, _ptId, _seiKyuYm, _sinYm, _hokenId);
         }
 
-        private bool UpdateDrawForm(out bool hasNextPage)
+        private void MakeSyojyoSyokiList()
+        {
+            #region sub func
+            // 症状詳記リストに文字列を折り返して追加する。
+            void _addList(string str)
+            {
+                string line = str;
+                while (line != "")
+                {
+                    string tmp = line;
+                    if (CIUtil.LenB(line) > _syojyoSyokiCharCount)
+                    {
+                        tmp = CIUtil.CiCopyStrWidth(line, 1, _syojyoSyokiCharCount);
+                    }
+                    _syojyoSyokiList.Add(tmp);
+
+                    line = CIUtil.CiCopyStrWidth(line, CIUtil.LenB(tmp) + 1, CIUtil.LenB(line) - CIUtil.LenB(tmp));
+                }
+            }
+            #endregion
+
+            _syojyoSyokiList.Clear();
+
+            foreach (CoSyoukiInfModel syoukiInf in coModel.SyoukiInfs)
+            {
+                if (_syojyoSyokiList.Any() && _syojyoSyokiList.Count() % _syojyoSyokiRowCount != 0)
+                {
+                    _syojyoSyokiList.Add("");
+                }
+
+                // 区分名
+                _addList($"【{syoukiInf.KbnName}】");
+
+                // 症状詳記
+                string[] del = { "\r\n", "\r", "\n" };
+
+                foreach (string addstr in syoukiInf.Syouki.Split(del, StringSplitOptions.None).ToList())
+                {
+                    _addList(addstr);
+                }
+
+            }
+        }
+
+        private bool UpdateDrawForm()
         {
             _hasNextPage = true;
             #region SubMethod
@@ -148,13 +236,13 @@ namespace Reporting.SyojyoSyoki.Service
                 #endregion
 
                 // ページ
-                SetFieldData("dfPage", _currentPage);
+                SetFieldData("dfPage", _currentPage.ToString());
                 // 患者番号
-                SetFieldData("dfPtNo", coModel.PtNum);
+                SetFieldData("dfPtNo", coModel.PtNum.ToString());
                 // 診療年月
                 SetFieldData("dfSinYM", _getSinYm());
                 // 県番号
-                SetFieldData("dfPrefNo", coModel.PrefNo);
+                SetFieldData("dfPrefNo", coModel.PrefNo.ToString());
                 // 医療機関コード
                 SetFieldData("dfHpNo", CIUtil.FormatHpCd(coModel.HpCd, coModel.PrefNo));
                 // レセ種別１
@@ -215,7 +303,11 @@ namespace Reporting.SyojyoSyoki.Service
 
                 for (short i = 0; i < _syojyoSyokiRowCount; i++)
                 {
-                    CoRep.ListText("lsSyojyoSyoki", 0, i, _syojyoSyokiList[dataIndex]);
+                    Dictionary<string, CellModel> data = new();
+
+                    AddListData(ref data, "lsSyojyoSyoki", _syojyoSyokiList[dataIndex]);
+
+                    _tableFieldData.Add(data);
 
                     dataIndex++;
                     if (dataIndex >= _syojyoSyokiList.Count)
@@ -233,17 +325,14 @@ namespace Reporting.SyojyoSyoki.Service
             {
                 if (UpdateFormHeader() < 0 || UpdateFormBody() < 0)
                 {
-                    hasNextPage = _hasNextPage;
                     return false;
                 }
             }
             catch (Exception e)
             {
-                hasNextPage = _hasNextPage;
                 return false;
             }
 
-            hasNextPage = _hasNextPage;
             return true;
         }
 
@@ -265,24 +354,17 @@ namespace Reporting.SyojyoSyoki.Service
 
         #region get field java
 
-        private void GetFieldNameList()
-        {
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2011, "sta2011a.rse", new());
-            var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-            _objectRseList = javaOutputData.objectNames;
-        }
-
         private void GetRowCount()
         {
-            _rowCountFieldName = putColumns.Find(p => _objectRseList.Contains(p.ColName)).ColName;
-            List<ObjectCalculate> fieldInputList = new()
-            {
-                new ObjectCalculate(_rowCountFieldName, (int)CalculateTypeEnum.GetListRowCount)
-            };
+            List<ObjectCalculate> fieldInputList = new();
 
-            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta2011, "sta2011a.rse", fieldInputList);
+            fieldInputList.Add(new ObjectCalculate("lsSyojyoSyoki", (int)CalculateTypeEnum.GetFormatLength));
+            fieldInputList.Add(new ObjectCalculate("lsSyojyoSyoki", (int)CalculateTypeEnum.GetListRowCount));
+
+            CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.SyojyoSyoki, "fmSyojyoSyoki.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
-            _maxRow = javaOutputData.responses?.FirstOrDefault(item => item.listName == _rowCountFieldName && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? _maxRow;
+            _syojyoSyokiRowCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSyojyoSyoki" && item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
+            _syojyoSyokiCharCount = javaOutputData.responses?.FirstOrDefault(item => item.listName == "lsSyojyoSyoki" && item.typeInt == (int)CalculateTypeEnum.GetFormatLength)?.result ?? 0;
         }
         #endregion
     }
