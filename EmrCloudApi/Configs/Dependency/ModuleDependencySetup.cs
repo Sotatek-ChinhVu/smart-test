@@ -507,6 +507,8 @@ using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInter
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3071.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -598,6 +600,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
             services.AddTransient<ICoSta3080Finder, CoSta3080Finder>();
             services.AddTransient<ISta3080CoReportService, Sta3080CoReportService>();
+            services.AddTransient<ICoSta3071Finder, CoSta3071Finder>();
+            services.AddTransient<ISta3071CoReportService, Sta3071CoReportService>();
             services.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
             services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
