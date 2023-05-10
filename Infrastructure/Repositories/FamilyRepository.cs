@@ -209,8 +209,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         }
 
         var ptFamilyPtIdList = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
-                                                                        && item.PtId == ptId
-                                                                        && item.IsDeleted != 1)
+                                                                             && item.PtId == ptId
+                                                                             && item.IsDeleted != 1)
                                                               .Select(item => item.FamilyPtId)
                                                               .ToList();
 
