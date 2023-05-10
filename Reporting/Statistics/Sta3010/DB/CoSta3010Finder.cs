@@ -2,7 +2,6 @@
 using Helper.Common;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
 using Reporting.Statistics.Sta3010.Models;
@@ -82,18 +81,19 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
 
         var kensaMsts = NoTrackingDataContext.KensaMsts.Where(x => x.HpId == hpId);
 
+        var setOdrInfDetailList = setOdrInfDetails.ToList();
         var joinDetails = (
-            from setOdrInfDetail in setOdrInfDetails
+            from setOdrInfDetail in setOdrInfDetailList
             join unionTenMst in unionTenMsts on
                 new { setOdrInfDetail.HpId, setOdrInfDetail.ItemCd } equals
                 new { unionTenMst.HpId, unionTenMst.ItemCd } into unionTenMstJoins
             from unionTenMstJoin in unionTenMstJoins.DefaultIfEmpty()
             join maxTenMst in maxTenMsts on
-                new { unionTenMstJoin.HpId, unionTenMstJoin.ItemCd } equals
+                new { HpId = unionTenMstJoin != null ? unionTenMstJoin.HpId : 1, ItemCd = unionTenMstJoin != null ? unionTenMstJoin.ItemCd : string.Empty } equals
                 new { maxTenMst.HpId, maxTenMst.ItemCd } into maxTenMstJoins
             from maxTenMstJoin in maxTenMstJoins.DefaultIfEmpty()
             join kensaMst in kensaMsts on
-                new { unionTenMstJoin.HpId, unionTenMstJoin.KensaItemCd, unionTenMstJoin.KensaItemSeqNo } equals
+                new { HpId = unionTenMstJoin != null ? unionTenMstJoin.HpId : 1, KensaItemCd = unionTenMstJoin != null ? unionTenMstJoin.KensaItemCd : string.Empty, KensaItemSeqNo = unionTenMstJoin != null ? unionTenMstJoin.KensaItemSeqNo : 0 } equals
                 new { kensaMst.HpId, kensaMst.KensaItemCd, kensaMst.KensaItemSeqNo } into kensaMstJoins
             from kensaMstJoin in kensaMstJoins.DefaultIfEmpty()
             select
@@ -111,18 +111,19 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
                     setOdrInfDetail.SyohoKbn,
                     setOdrInfDetail.SyohoLimitKbn,
                     setOdrInfDetail.DrugKbn,
-                    unionTenMstJoin.BuiKbn,
-                    unionTenMstJoin.CmtSbt,
-                    kensaMstJoin.KensaItemCd,
-                    kensaMstJoin.KensaItemSeqNo,
-                    kensaMstJoin.CenterItemCd1,
-                    kensaMstJoin.CenterItemCd2,
-                    maxTenMstJoin.MaxEndDate
+                    BuiKbn = unionTenMstJoin != null ? unionTenMstJoin.BuiKbn : 0,
+                    CmtSbt = unionTenMstJoin != null ? unionTenMstJoin.CmtSbt : 0,
+                    KensaItemCd = kensaMstJoin != null ? kensaMstJoin.KensaItemCd : null,
+                    KensaItemSeqNo = kensaMstJoin != null ? kensaMstJoin.KensaItemSeqNo : 0,
+                    CenterItemCd1 = kensaMstJoin != null ? kensaMstJoin.CenterItemCd1 : null,
+                    CenterItemCd2 = kensaMstJoin != null ? kensaMstJoin.CenterItemCd2 : null,
+                    MaxEndDate = maxTenMstJoin != null ? maxTenMstJoin.MaxEndDate : 0
                 }
             );
 
+        var setKbnMstList = setKbnMsts.ToList();
         var joinQuery = (
-            from setKbnMst in setKbnMsts
+            from setKbnMst in setKbnMstList
             join setMst in setMsts on
                 new { setKbnMst.HpId, setKbnMst.GenerationId, setKbnMst.SetKbn } equals
                 new { setMst.HpId, setMst.GenerationId, setMst.SetKbn }
@@ -131,7 +132,7 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
                 new { setOdrInf.HpId, setOdrInf.SetCd } into setOdrInfJoins
             from setOdrInfJoin in setOdrInfJoins.DefaultIfEmpty()
             join joinDetail in joinDetails on
-                new { setOdrInfJoin.HpId, setOdrInfJoin.SetCd, setOdrInfJoin.RpNo, setOdrInfJoin.RpEdaNo } equals
+                new { HpId = setOdrInfJoin != null ? setOdrInfJoin.HpId : 1, SetCd = setOdrInfJoin != null ? setOdrInfJoin.SetCd : 0, RpNo = setOdrInfJoin != null ? setOdrInfJoin.RpNo : 0, RpEdaNo = setOdrInfJoin != null ? setOdrInfJoin.RpEdaNo : 0 } equals
                 new { joinDetail.HpId, joinDetail.SetCd, joinDetail.RpNo, joinDetail.RpEdaNo } into joinDetailJoins
             from joinDetailJoin in joinDetailJoins.DefaultIfEmpty()
             select
@@ -139,7 +140,7 @@ public class CoSta3010Finder : RepositoryBase, ICoSta3010Finder
                 {
                     setKbnMst,
                     setMst,
-                    setOdrInf = setOdrInfJoin,
+                    setOdrInf = setOdrInfJoin ?? new(),
                     joinDetail = joinDetailJoin
                 }
             ).Distinct().ToList();

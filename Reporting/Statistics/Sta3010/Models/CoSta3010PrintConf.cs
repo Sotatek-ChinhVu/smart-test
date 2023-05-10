@@ -13,6 +13,15 @@ public class CoSta3010PrintConf
         OtherItemOpt = 0;
     }
 
+    public CoSta3010PrintConf()
+    {
+        MenuId = 0;
+        StdDate = CIUtil.DateTimeToInt(DateTime.Today);
+        TgtData = 0;
+        SearchOpt = 0;
+        OtherItemOpt = 0;
+    }
+
     /// <summary>
     /// STA_MENU.MENU_ID
     /// </summary>
