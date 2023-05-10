@@ -395,6 +395,8 @@ namespace Reporting.Statistics.Sta3001.Service
 
                     if (lineCount == sptMaxRow && rowNo != maxRow - 1)
                     {
+                        lineCount = 0;
+
                         if (!_extralData.ContainsKey("headerLine"))
                         {
                             _extralData.Add("headerLine", "true");
