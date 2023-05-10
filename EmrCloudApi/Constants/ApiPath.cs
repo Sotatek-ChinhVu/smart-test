@@ -90,6 +90,7 @@
         public const string ReceiptReport = "ReceiptReport";
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
+        public const string PatientManagement = "PatientManagement";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -208,6 +209,7 @@
         //User
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
         public const string GetPermissionByScreen = "GetPermissionByScreen";
+        public const string GetAllPermission = "GetAllPermission";
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";

@@ -21,6 +21,11 @@ public class NameLabelMapper : CommonReportingRequest
         return string.Empty;
     }
 
+    public override string GetJobName()
+    {
+        return "ネームラベル印刷";
+    }
+
     public override Dictionary<string, string> GetSingleFieldData()
     {
         Dictionary<string, string> data = new();

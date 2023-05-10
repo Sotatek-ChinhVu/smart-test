@@ -27,9 +27,10 @@ public class TodoInfModel
         TodoGrpName = string.Empty;
         Houbetu = string.Empty;
         HokensyaNo = string.Empty;
+        Sex = string.Empty;
     }
 
-    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId)
+    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, string sex)
     {
         HpId = hpId;
         PtId = ptId;
@@ -53,6 +54,15 @@ public class TodoInfModel
         HokensyaNo = hokensyaNo;
         HokenId = hokenId;
         UpdateDate = updateDate;
+        Tanto = tantoId;
+        TodoNo = todoNo;
+        TodoEdaNo = todoEdaNo;
+        RaiinNo = raiinNo;
+        TodoKbnNo = todoKbnNo;
+        TodoGrpNo = todoGrpNo;
+        IsDone = isDone;
+        Status = status;
+        Sex = sex;
     }
 
     public int HpId { get; private set; }
@@ -114,4 +124,8 @@ public class TodoInfModel
     public int HokenId { get; private set; }
 
     public string Houbetu { get; private set; }
+
+    public int Status { get; private set; }
+
+    public string Sex { get; private set; }
 }

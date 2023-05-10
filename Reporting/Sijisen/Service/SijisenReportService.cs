@@ -7,6 +7,7 @@ using Reporting.Mappers.Common;
 using Reporting.Sijisen.DB;
 using Reporting.Sijisen.Mapper;
 using Reporting.Sijisen.Model;
+using System;
 
 namespace Reporting.Sijisen.Service;
 
@@ -88,7 +89,7 @@ public class SijisenReportService : ISijisenReportService
                 if (!find)
                 {
                     // 印刷しない
-                    return new SijisenMapper(formType, new(), new(), _systemConfig).GetData();
+                    return new SijisenMapper(formType, new(), new(), _systemConfig, GetJobName(formType, ptInf.PtNum)).GetData();
                 }
             }
 
@@ -105,14 +106,26 @@ public class SijisenReportService : ISijisenReportService
             {
                 // オーダーあり or
                 // 受診票で、オーダーなしでも印刷の指示あり
-                return new SijisenMapper(formType, coSijisen, raiinKbnMstModels, _systemConfig).GetData();
+                return new SijisenMapper(formType, coSijisen, raiinKbnMstModels, _systemConfig, GetJobName(formType, ptInf.PtNum)).GetData();
             }
             else
             {
-                return new SijisenMapper(formType, new(), new(), _systemConfig).GetData();
+                return new SijisenMapper(formType, new(), new(), _systemConfig, GetJobName(formType, ptInf.PtNum)).GetData();
             }
-
         }
+    }
+
+    private string GetJobName(int formType, long ptNum)
+    {
+        string jobName = $"指示箋_{ptNum:D9}";
+
+        if (formType == (int)CoSijisenFormType.JyusinHyo)
+        {
+            // 受診票
+            jobName = "受診票";
+        }
+
+        return jobName;
     }
 
     #region Factory Method

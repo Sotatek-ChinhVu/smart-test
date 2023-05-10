@@ -1,7 +1,15 @@
-﻿namespace EmrCloudApi.Requests.Reception
+﻿using UseCase.Reception.Delete;
+
+namespace EmrCloudApi.Requests.Reception
 {
     public class DeleteReceptionRequest
     {
-        public List<long> RaiinNos { get; set; } = new();
+        public long PtId { get; set; }
+
+        public int SinDate { get; set; }
+
+        public bool Flag { get; set; }
+
+        public List<DeleteReception> RaiinNos { get; set; } = new();
     }
 }

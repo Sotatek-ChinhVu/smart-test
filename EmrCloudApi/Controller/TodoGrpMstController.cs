@@ -1,4 +1,5 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Todo;
 using EmrCloudApi.Presenters.TodoGroupMst;
 using EmrCloudApi.Requests.Todo;
 using EmrCloudApi.Responses;
@@ -7,6 +8,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Todo;
+using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.UpsertTodoGrpMst;
 
 namespace EmrCloudApi.Controller;
@@ -35,5 +37,16 @@ public class TodoGrpMstController : AuthorizeControllerBase
         var presenter = new UpsertTodoGrpMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<UpsertTodoGrpMstResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public ActionResult<Response<GetTodoGrpResponse>> GetList()
+    {
+        var input = new GetTodoGrpInputData(HpId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetTodoGrpPresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<GetTodoGrpResponse>>(presenter.Result);
     }
 }
