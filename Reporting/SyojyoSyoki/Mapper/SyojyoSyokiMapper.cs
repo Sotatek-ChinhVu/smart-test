@@ -12,7 +12,6 @@ namespace Reporting.SyojyoSyoki.Mapper
         {
             _singleFieldData = singleFieldData;
             _tableFieldData = tableFieldData;
-            _extralData = extralData;
             _rowCountFieldName = rowCountFieldName;
         }
 
