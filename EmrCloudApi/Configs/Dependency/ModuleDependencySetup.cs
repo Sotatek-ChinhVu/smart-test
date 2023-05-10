@@ -512,6 +512,8 @@ using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3071.DB;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -609,6 +611,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
+            services.AddTransient<ICoSta3010Finder, CoSta3010Finder>();
+            services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
             services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
             services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
 
