@@ -6,6 +6,7 @@ using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
 using Reporting.ReceiptList.Model;
 using Reporting.OutDrug.Model.Output;
+using Reporting.CommonMasters.Enums;
 
 namespace Reporting.ReportServices;
 
@@ -45,7 +46,9 @@ public interface IReportService
 
     AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 
-    CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo);
+    CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null);
 
     CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
+
+    CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
 }
