@@ -21,4 +21,6 @@ public class StatisticExportRequest
     public int TimeTo { get; set; }
 
     public CoFileType? CoFileType { get; set; } = null;
+
+    public bool? IsPutTotalRow { get; set; } = false;
 }

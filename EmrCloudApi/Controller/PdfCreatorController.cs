@@ -140,7 +140,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.StaticReport)]
     public async Task<IActionResult> GenerateStatisticReport([FromQuery] StatisticExportRequest request)
     {
-        var data = _reportService.GetStatisticReportingData(request.HpId, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType);
+        var data = _reportService.GetStatisticReportingData(request.HpId, request.MenuId, request.MonthFrom, request.MonthTo, request.DateFrom, request.DateTo, request.TimeFrom, request.TimeTo, request.CoFileType, request.IsPutTotalRow);
         return await RenderPdf(data, ReportType.Common);
     }
 
