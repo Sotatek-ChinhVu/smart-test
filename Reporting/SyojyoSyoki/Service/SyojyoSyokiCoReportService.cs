@@ -28,7 +28,6 @@ namespace Reporting.SyojyoSyoki.Service
 
         private readonly IReadRseReportFileService _readRseReportFileService;
         private int _currentPage = 1;
-        private List<string> _objectRseList = new();
         private bool _hasNextPage;
         private int _hpId;
         private long _ptId;
@@ -37,6 +36,7 @@ namespace Reporting.SyojyoSyoki.Service
         private int _hokenId;
         private int _syojyoSyokiRowCount;
         private int _syojyoSyokiCharCount;
+        private string _rowCountFieldName = "lsSyojyoSyoki";
         private List<string> _syojyoSyokiList;
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
@@ -84,12 +84,20 @@ namespace Reporting.SyojyoSyoki.Service
                 }
             }
 
-            return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _syojyoSyokiRowCount);
+            return new SyojyoSyokiMapper(_singleFieldData, _tableFieldData, _rowCountFieldName).GetData();
         }
 
         private List<CoSyojyoSyokiModel> GetData()
         {
-            return _finder.FindSyoukiInf(_hpId, _ptId, _seiKyuYm, _sinYm, _hokenId);
+            try
+            {
+
+                return _finder.FindSyoukiInf(_hpId, _ptId, _seiKyuYm, _sinYm, _hokenId);
+            }
+            finally
+            {
+                _finder.ReleaseResource();
+            }
         }
 
         private void MakeSyojyoSyokiList()

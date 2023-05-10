@@ -13,6 +13,11 @@ namespace Reporting.SyojyoSyoki.DB
         {
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public List<CoSyojyoSyokiModel> FindSyoukiInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
         {
 

@@ -194,14 +194,18 @@ using Reporting.Statistics.Sta2010.DB;
 using Reporting.Statistics.Sta2010.Service;
 using Reporting.Statistics.Sta2011.DB;
 using Reporting.Statistics.Sta2011.Service;
+using Reporting.Statistics.Sta2020.DB;
+using Reporting.Statistics.Sta2020.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Service;
-using Reporting.Statistics.Sta2020.DB;
-using Reporting.Statistics.Sta2020.Service;
+using Reporting.SyojyoSyoki.DB;
+using Reporting.SyojyoSyoki.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -505,8 +509,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using Reporting.Statistics.Sta3080.Service;
-using Reporting.Statistics.Sta3080.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -602,6 +604,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
+            services.AddTransient<ISyojyoSyokiCoReportService, SyojyoSyokiCoReportService>();
+            services.AddTransient<ICoSyojyoSyokiFinder, CoSyojyoSyokiFinder>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
