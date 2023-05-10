@@ -168,6 +168,8 @@ using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
 using Reporting.OutDrug.DB;
 using Reporting.OutDrug.Service;
+using Reporting.PatientManagement.DB;
+using Reporting.PatientManagement.Service;
 using Reporting.ReadRseReportFile.Service;
 using Reporting.Receipt.DB;
 using Reporting.Receipt.Service;
@@ -198,6 +200,10 @@ using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta9000.DB;
+using Reporting.Statistics.Sta9000.Service;
+using Reporting.Statistics.Sta2020.DB;
+using Reporting.Statistics.Sta2020.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -466,6 +472,7 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
+using UseCase.Todo.GetTodoGrp;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -501,6 +508,8 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta3080.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -588,6 +597,14 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2011CoReportService, Sta2011CoReportService>();
             services.AddTransient<ICoSta2021Finder, CoSta2021Finder>();
             services.AddTransient<ISta2021CoReportService, Sta2021CoReportService>();
+            services.AddTransient<ICoSta9000Finder, CoSta9000Finder>();
+            services.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
+            services.AddTransient<ICoSta3080Finder, CoSta3080Finder>();
+            services.AddTransient<ISta3080CoReportService, Sta3080CoReportService>();
+            services.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
+            services.AddTransient<IPatientManagementService, PatientManagementService>();
+            services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
+            services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1107,6 +1124,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodoGrpMstInputData, UpsertTodoGrpMstInteractor>();
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
+            busBuilder.RegisterUseCase<GetTodoGrpInputData, GetTodoGrpInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();

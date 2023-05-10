@@ -51,17 +51,7 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="hpId"></param>
-        /// <param name="userId"></param>
-        /// <param name="raiinNos"></param>
-        /// <returns></returns>
-        /// Item1: SinDate
-        /// Item2: RaiinNo
-        /// Item3: PtId
-        List<Tuple<int, long, long>> Delete(int hpId, int userId, List<long> raiinNos);
+        List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
         bool CheckExistOfRaiinNos(List<long> raininNos);
     }
