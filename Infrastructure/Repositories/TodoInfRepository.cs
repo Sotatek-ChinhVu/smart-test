@@ -201,6 +201,7 @@ namespace Infrastructure.Repositories
                     Gender = pi1 == null ? 0 : pi1.Sex,
                     HokenPattern = ptHokenPatternItem,
                     PtHokenInf = ptHokenInfItem,
+                    Sex = pi1 == null ? "" : pi1.Sex == 1 ? "男" : pi1.Sex == 2 ? "女" : ""
                 };
 
             result = query.AsEnumerable().Select(
@@ -233,7 +234,9 @@ namespace Infrastructure.Repositories
                                 x.TodoInf.RaiinNo,
                                 x.TodoKbnNo,
                                 x.TodoGrpNo,
-                                x.TodoInf.IsDone
+                                x.TodoInf.IsDone,
+                                x.Status,
+                                x.Sex
                                 )).OrderByDescending(model => model.UpdateDate)
                                 .ThenBy(model => model.PtId)
                                 .ToList();
