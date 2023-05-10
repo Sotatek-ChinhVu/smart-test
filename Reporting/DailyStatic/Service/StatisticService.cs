@@ -1,5 +1,4 @@
 ﻿using Helper.Extension;
-using Newtonsoft.Json;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Enum;
@@ -31,6 +30,8 @@ using Reporting.Statistics.Sta3080.Models;
 using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta2020.Models;
 using Reporting.Statistics.Sta2020.Service;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.Models;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -50,8 +51,9 @@ public class StatisticService : IStatisticService
     private readonly ISta3080CoReportService _sta3080CoReportService;
     private readonly ISta3071CoReportService _sta3071CoReportService;
     private readonly ISta2020CoReportService _sta2020CoReportService;
+    private readonly ISta3010CoReportService _sta3010CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -67,6 +69,7 @@ public class StatisticService : IStatisticService
         _sta3080CoReportService = sta3080CoReportService;
         _sta3071CoReportService = sta3071CoReportService;
         _sta2020CoReportService = sta2020CoReportService;
+        _sta3010CoReportService = sta3010CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false)
@@ -101,6 +104,8 @@ public class StatisticService : IStatisticService
                 return PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
             case StatisticReportType.Sta2020:
                 return PrintSta2020(hpId, configDaily, timeFrom, timeTo);
+            case StatisticReportType.Sta3010:
+                return PrintSta3010(hpId, configDaily, dateFrom, coFileType);
         }
         return new();
     }
@@ -180,6 +185,12 @@ public class StatisticService : IStatisticService
     {
         var printConf = CreateCoSta2020PrintConf(configDaily, timeFrom, timeTo);
         return _sta2020CoReportService.GetSta2020ReportingData(printConf, hpId);
+    }
+
+
+    private CommonReportingRequestModel PrintSta3010(int hpId, ConfigStatisticModel configDaily, int dateFrom, CoFileType? coFileType)
+    {
+        return _sta3010CoReportService.GetSta3010ReportingData(CreateCoSta3010PrintConf(configDaily.ConfigStatistic3010, dateFrom), hpId, coFileType ?? CoFileType.Binary);
     }
     #endregion
 
@@ -546,6 +557,473 @@ public class StatisticService : IStatisticService
         printConf.ToYm = timeTo;
         return printConf;
     }
+
+    public static CoSta3010PrintConf CreateCoSta3010PrintConf(ConfigStatistic3010Model configStatistic, int stdDate)
+    {
+        CoSta3010PrintConf printConf = new CoSta3010PrintConf(configStatistic.MenuId);
+        int[] arrEdaNo = { 0, 1, 2, 3, 4, 5 };
+
+        // 帳票タイトル
+        printConf.ReportName = configStatistic.ReportName;
+
+        // フォームファイル名
+        printConf.FormFileName = configStatistic.FormReport;
+
+        // 基準日
+        printConf.StdDate = stdDate;
+
+        // 改ページ１
+        printConf.PageBreak1 = configStatistic.BreakPage1;
+
+        // セット区分１_1~6
+        int lengthSet1 = configStatistic.Set1_1 +
+                         configStatistic.Set1_2 +
+                         configStatistic.Set1_3 +
+                         configStatistic.Set1_4 +
+                         configStatistic.Set1_5 +
+                         configStatistic.Set1_6;
+        if (configStatistic.Set1 == 1 || lengthSet1 > 0)
+        {
+            printConf.Set1 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet1 && lengthSet1 < 6;
+
+            if (configStatistic.Set1_1 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(0);
+            }
+
+            if (configStatistic.Set1_2 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(1);
+            }
+
+            if (configStatistic.Set1_3 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(2);
+            }
+
+            if (configStatistic.Set1_4 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(3);
+            }
+
+            if (configStatistic.Set1_5 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(4);
+            }
+
+            if (configStatistic.Set1_6 == 0 && isRemove)
+            {
+                printConf.Set1.Remove(5);
+            }
+        }
+
+        // セット区分2_1~6
+        int lengthSet2 = configStatistic.Set2_1 +
+                         configStatistic.Set2_2 +
+                         configStatistic.Set2_3 +
+                         configStatistic.Set2_4 +
+                         configStatistic.Set2_5 +
+                         configStatistic.Set2_6;
+        if (configStatistic.Set2 == 1 || lengthSet2 > 0)
+        {
+            printConf.Set2 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet2 && lengthSet2 < 6;
+
+            if (configStatistic.Set2_1 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(0);
+            }
+
+            if (configStatistic.Set2_2 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(1);
+            }
+
+            if (configStatistic.Set2_3 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(2);
+            }
+
+            if (configStatistic.Set2_4 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(3);
+            }
+
+            if (configStatistic.Set2_5 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(4);
+            }
+
+            if (configStatistic.Set2_6 == 0 && isRemove)
+            {
+                printConf.Set2.Remove(5);
+            }
+        }
+
+        // セット区分3_1~6
+        int lengthSet3 = configStatistic.Set3_1 +
+                         configStatistic.Set3_2 +
+                         configStatistic.Set3_3 +
+                         configStatistic.Set3_4 +
+                         configStatistic.Set3_5 +
+                         configStatistic.Set3_6;
+        if (configStatistic.Set3 == 1 || lengthSet3 > 0)
+        {
+            printConf.Set3 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet3 && lengthSet3 < 6;
+
+            if (configStatistic.Set3_1 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(0);
+            }
+
+            if (configStatistic.Set3_2 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(1);
+            }
+
+            if (configStatistic.Set3_3 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(2);
+            }
+
+            if (configStatistic.Set3_4 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(3);
+            }
+
+            if (configStatistic.Set3_5 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(4);
+            }
+
+            if (configStatistic.Set3_6 == 0 && isRemove)
+            {
+                printConf.Set3.Remove(5);
+            }
+        }
+
+        // セット区分4_1~6
+        int lengthSet4 = configStatistic.Set4_1 +
+                         configStatistic.Set4_2 +
+                         configStatistic.Set4_3 +
+                         configStatistic.Set4_4 +
+                         configStatistic.Set4_5 +
+                         configStatistic.Set4_6;
+        if (configStatistic.Set4 == 1 || lengthSet4 > 0)
+        {
+            printConf.Set4 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet4 && lengthSet4 < 6;
+
+            if (configStatistic.Set4_1 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(0);
+            }
+
+            if (configStatistic.Set4_2 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(1);
+            }
+
+            if (configStatistic.Set4_3 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(2);
+            }
+
+            if (configStatistic.Set4_4 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(3);
+            }
+
+            if (configStatistic.Set4_5 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(4);
+            }
+
+            if (configStatistic.Set4_6 == 0 && isRemove)
+            {
+                printConf.Set4.Remove(5);
+            }
+        }
+
+        // セット区分5_1~6
+        int lengthSet5 = configStatistic.Set5_1 +
+                         configStatistic.Set5_2 +
+                         configStatistic.Set5_3 +
+                         configStatistic.Set5_4 +
+                         configStatistic.Set5_5 +
+                         configStatistic.Set5_6;
+        if (configStatistic.Set5 == 1 || lengthSet5 > 0)
+        {
+            printConf.Set5 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet5 && lengthSet5 < 6;
+
+            if (configStatistic.Set5_1 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(0);
+            }
+
+            if (configStatistic.Set5_2 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(1);
+            }
+
+            if (configStatistic.Set5_3 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(2);
+            }
+
+            if (configStatistic.Set5_4 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(3);
+            }
+
+            if (configStatistic.Set5_5 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(4);
+            }
+
+            if (configStatistic.Set5_6 == 0 && isRemove)
+            {
+                printConf.Set5.Remove(5);
+            }
+        }
+
+        // セット区分6_1~6
+        int lengthSet6 = configStatistic.Set6_1 +
+                         configStatistic.Set6_2 +
+                         configStatistic.Set6_3 +
+                         configStatistic.Set6_4 +
+                         configStatistic.Set6_5 +
+                         configStatistic.Set6_6;
+        if (configStatistic.Set6 == 1 || lengthSet6 > 0)
+        {
+            printConf.Set6 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet6 && lengthSet6 < 6;
+
+            if (configStatistic.Set6_1 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(0);
+            }
+
+            if (configStatistic.Set6_2 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(1);
+            }
+
+            if (configStatistic.Set6_3 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(2);
+            }
+
+            if (configStatistic.Set6_4 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(3);
+            }
+
+            if (configStatistic.Set6_5 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(4);
+            }
+
+            if (configStatistic.Set6_6 == 0 && isRemove)
+            {
+                printConf.Set6.Remove(5);
+            }
+        }
+
+        // セット区分7_1~6
+        int lengthSet7 = configStatistic.Set7_1 +
+                         configStatistic.Set7_2 +
+                         configStatistic.Set7_3 +
+                         configStatistic.Set7_4 +
+                         configStatistic.Set7_5 +
+                         configStatistic.Set7_6;
+        if (configStatistic.Set7 == 1 || lengthSet7 > 0)
+        {
+            printConf.Set7 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet7 && lengthSet7 < 6;
+
+            if (configStatistic.Set7_1 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(0);
+            }
+
+            if (configStatistic.Set7_2 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(1);
+            }
+
+            if (configStatistic.Set7_3 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(2);
+            }
+
+            if (configStatistic.Set7_4 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(3);
+            }
+
+            if (configStatistic.Set7_5 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(4);
+            }
+
+            if (configStatistic.Set7_6 == 0 && isRemove)
+            {
+                printConf.Set7.Remove(5);
+            }
+        }
+
+        // セット区分8_1~6
+        int lengthSet8 = configStatistic.Set8_1 +
+                         configStatistic.Set8_2 +
+                         configStatistic.Set8_3 +
+                         configStatistic.Set8_4 +
+                         configStatistic.Set8_5 +
+                         configStatistic.Set8_6;
+        if (configStatistic.Set8 == 1 || lengthSet8 > 0)
+        {
+            printConf.Set8 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet8 && lengthSet8 < 6;
+
+            if (configStatistic.Set8_1 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(0);
+            }
+
+            if (configStatistic.Set8_2 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(1);
+            }
+
+            if (configStatistic.Set8_3 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(2);
+            }
+
+            if (configStatistic.Set8_4 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(3);
+            }
+
+            if (configStatistic.Set8_5 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(4);
+            }
+
+            if (configStatistic.Set8_6 == 0 && isRemove)
+            {
+                printConf.Set8.Remove(5);
+            }
+        }
+
+        // セット区分9_1~6
+        int lengthSet9 = configStatistic.Set9_1 +
+                         configStatistic.Set9_2 +
+                         configStatistic.Set9_3 +
+                         configStatistic.Set9_4 +
+                         configStatistic.Set9_5 +
+                         configStatistic.Set9_6;
+        if (configStatistic.Set9 == 1 || lengthSet9 > 0)
+        {
+            printConf.Set9 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet9 && lengthSet9 < 6;
+
+            if (configStatistic.Set9_1 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(0);
+            }
+
+            if (configStatistic.Set9_2 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(1);
+            }
+
+            if (configStatistic.Set9_3 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(2);
+            }
+
+            if (configStatistic.Set9_4 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(3);
+            }
+
+            if (configStatistic.Set9_5 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(4);
+            }
+
+            if (configStatistic.Set9_6 == 0 && isRemove)
+            {
+                printConf.Set9.Remove(5);
+            }
+        }
+
+        // セット区分10_1~6
+        int lengthSet10 = configStatistic.Set10_1 +
+                          configStatistic.Set10_2 +
+                          configStatistic.Set10_3 +
+                          configStatistic.Set10_4 +
+                          configStatistic.Set10_5 +
+                          configStatistic.Set10_6;
+        if (configStatistic.Set10 == 1 || lengthSet10 > 0)
+        {
+            printConf.Set10 = arrEdaNo.ToList();
+            bool isRemove = 0 < lengthSet10 && lengthSet10 < 6;
+
+            if (configStatistic.Set10_1 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(0);
+            }
+
+            if (configStatistic.Set10_2 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(1);
+            }
+
+            if (configStatistic.Set10_3 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(2);
+            }
+
+            if (configStatistic.Set10_4 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(3);
+            }
+
+            if (configStatistic.Set10_5 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(4);
+            }
+
+            if (configStatistic.Set10_6 == 0 && isRemove)
+            {
+                printConf.Set10.Remove(5);
+            }
+        }
+
+        // 対象データ
+        printConf.TgtData = configStatistic.TargetData;
+
+        // セット内の他の項目
+        printConf.OtherItemOpt = configStatistic.OtherItemOpt;
+
+        // 検索項目
+        printConf.ItemCds = configStatistic.GetListItemCd();
+        printConf.ItemSearchOpt = configStatistic.ItemCdOpt;
+
+        // 検索ワード
+        printConf.SearchWord = configStatistic.SearchWord;
+
+        // 検索ワードの検索オプション
+        printConf.SearchOpt = configStatistic.SearchOpt;
+
+        return printConf;
+    }
+
 
     private CoSta3071PrintConf CreateCoSta3071PrintConf(ConfigStatistic3071Model configStatistic, int timeFrom, int timeTo)
     {
