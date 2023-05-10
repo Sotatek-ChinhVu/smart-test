@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.Family;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.GetMaybeFamilyList;
 using UseCase.Family.GetRaiinInfList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.Family.ValidateFamilyList;
@@ -34,6 +35,18 @@ public class FamilyController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetFamilyListResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetMaybeFamilyList)]
+    public ActionResult<Response<GetMaybeFamilyListResponse>> GetMaybeFamilyList([FromQuery] GetMaybeFamilyListRequest request)
+    {
+        var input = new GetMaybeFamilyListInputData(HpId, request.PtId, request.SinDate);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetMaybeFamilyListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetMaybeFamilyListResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.GetFamilyReverserList)]

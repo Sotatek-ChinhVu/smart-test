@@ -17,4 +17,6 @@ public interface IFamilyRepository : IRepositoryBase
     List<RaiinInfModel> GetRaiinInfListByPtId(int hpId, long ptId);
 
     List<FamilyModel> GetFamilyListByPtId(int hpId, long ptId, int sinDate);
+
+    List<FamilyModel> GetMaybeFamilyList(int hpId, long ptId, int sinDate);
 }
