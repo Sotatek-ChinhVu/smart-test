@@ -6,7 +6,7 @@ namespace UseCase.Todo.GetTodoInfFinder
     public class GetListTodoInfFinderOutputItem
     {
 
-        public GetListTodoInfFinderOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone)
+        public GetListTodoInfFinderOutputItem(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, string sex)
         {
             HpId = hpId;
             PtId = ptId;
@@ -37,6 +37,8 @@ namespace UseCase.Todo.GetTodoInfFinder
             TodoKbnNo = todoKbnNo;
             TodoGrpNo = todoGrpNo;
             IsDone = isDone;
+            Status = status;
+            Sex = sex;
         }
 
         public long PtNum { get; private set; }
@@ -173,5 +175,9 @@ namespace UseCase.Todo.GetTodoInfFinder
         public int TodoGrpNo { get; private set; }
 
         public int IsDone { get; private set; }
+
+        public int Status { get; private set; }
+
+        public string Sex { get; private set; }
     }
 }
