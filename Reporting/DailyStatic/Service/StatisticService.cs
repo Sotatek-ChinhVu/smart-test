@@ -1,4 +1,5 @@
 ﻿using Helper.Extension;
+using Newtonsoft.Json;
 using Reporting.CommonMasters.Enums;
 using Reporting.DailyStatic.DB;
 using Reporting.DailyStatic.Enum;
@@ -24,6 +25,8 @@ using Reporting.Statistics.Sta2021.Models;
 using Reporting.Statistics.Sta2021.Service;
 using Reporting.Statistics.Sta3020.Models;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3071.Models;
+using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.Models;
 using Reporting.Statistics.Sta3080.Service;
 
@@ -43,8 +46,9 @@ public class StatisticService : IStatisticService
     private readonly ISta2021CoReportService _sta2021CoReportService;
     private readonly ISta3020CoReportService _sta3020CoReportService;
     private readonly ISta3080CoReportService _sta3080CoReportService;
+    private readonly ISta3071CoReportService _sta3071CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -58,9 +62,10 @@ public class StatisticService : IStatisticService
         _sta2021CoReportService = sta2021CoReportService;
         _sta3020CoReportService = sta3020CoReportService;
         _sta3080CoReportService = sta3080CoReportService;
+        _sta3071CoReportService = sta3071CoReportService;
     }
 
-    public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null)
+    public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false)
     {
         var configDaily = _finder.GetDailyConfigStatisticMenu(hpId, menuId);
 
@@ -88,6 +93,8 @@ public class StatisticService : IStatisticService
                 return PrintSta3020(hpId, configDaily, dateFrom);
             case StatisticReportType.Sta3080:
                 return PrintSta3080(hpId, configDaily, monthFrom, monthTo, coFileType);
+            case StatisticReportType.Sta3071:
+                return PrintSta3071(hpId, configDaily, dateFrom, dateTo, coFileType, isPutTotalRow);
         }
         return new();
     }
@@ -156,6 +163,11 @@ public class StatisticService : IStatisticService
     private CommonReportingRequestModel PrintSta3080(int hpId, ConfigStatisticModel configDaily, int monthFrom, int monthTo, CoFileType? coFileType)
     {
         return _sta3080CoReportService.GetSta3080ReportingData(CreateCoSta3080PrintConf(configDaily.ConfigStatistic3080, monthFrom, monthTo), hpId, coFileType ?? CoFileType.Binary);
+    }
+
+    private CommonReportingRequestModel PrintSta3071(int hpId, ConfigStatisticModel configDaily, int dateFrom, int dateTo, CoFileType? coFileType, bool? isPutTotalRow)
+    {
+        return _sta3071CoReportService.GetSta3071ReportingData(CreateCoSta3071PrintConf(configDaily.ConfigStatistic3071, dateFrom, dateTo), hpId, coFileType ?? CoFileType.Binary, isPutTotalRow ?? false);
     }
     #endregion
 
@@ -474,6 +486,22 @@ public class StatisticService : IStatisticService
         printConf.IsTester = configStatistic.TestPatient == 1;
         printConf.FromYm = timeFrom;
         printConf.ToYm = timeTo;
+        return printConf;
+    }
+
+    private CoSta3071PrintConf CreateCoSta3071PrintConf(ConfigStatistic3071Model configStatistic, int timeFrom, int timeTo)
+    {
+        CoSta3071PrintConf printConf = new CoSta3071PrintConf(configStatistic.MenuId);
+        printConf.FormFileName = configStatistic.FormReport;
+        printConf.ReportName = configStatistic.ReportName;
+        printConf.ReportKbnV = configStatistic.ReportKbnV;
+        printConf.ReportKbnH = configStatistic.ReportKbnH;
+        printConf.IsTester = configStatistic.TestPatient == 1;
+        printConf.RangeFrom = timeFrom;
+        printConf.RangeTo = timeTo;
+
+        printConf.KaIds = configStatistic.ListKaId;
+        printConf.TantoIds = configStatistic.ListTantoId;
         return printConf;
     }
     #endregion
