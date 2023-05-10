@@ -209,14 +209,14 @@ public class CoSta3010PrintConf
     {
         get
         {
-            List<string> SearchWords = new List<string>();
+            List<string> searchWords = new List<string>();
             if (SearchWord != null)
             {
                 //スペース区切りでキーワードを分解
                 string[] values = SearchWord.Replace("　", " ").Split(' ');
-                SearchWords.AddRange(values);
+                searchWords.AddRange(values);
             }
-            return SearchWords;
+            return searchWords;
         }
     }
 
