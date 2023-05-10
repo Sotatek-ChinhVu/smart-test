@@ -1,4 +1,4 @@
-﻿using Domain.Models.TimeZoneConf;
+﻿using Domain.Models.TimeZone;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.TimeZoneConf.GetTimeZoneConfGroup

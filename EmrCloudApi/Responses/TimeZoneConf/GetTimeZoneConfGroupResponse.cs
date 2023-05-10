@@ -1,4 +1,4 @@
-﻿using Domain.Models.TimeZoneConf;
+﻿using Domain.Models.TimeZone;
 
 namespace EmrCloudApi.Responses.TimeZoneConf
 {

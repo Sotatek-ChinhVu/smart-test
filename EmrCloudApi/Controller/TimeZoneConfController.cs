@@ -6,7 +6,6 @@ using UseCase.Core.Sync;
 using EmrCloudApi.Responses.TimeZoneConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using EmrCloudApi.Presenters.TimeZoneConf;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Controller
 {

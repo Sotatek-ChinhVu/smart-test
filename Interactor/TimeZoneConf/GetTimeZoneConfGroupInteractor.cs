@@ -1,4 +1,4 @@
-﻿using Domain.Models.TimeZoneConf;
+﻿using Domain.Models.TimeZone;
 using Domain.Models.User;
 using Helper.Constants;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
@@ -8,10 +8,10 @@ namespace Interactor.TimeZoneConf
 {
     public class GetTimeZoneConfGroupInteractor : IGetTimeZoneConfGroupInputPort
     {
-        private readonly ITimeZoneConfRepository _timeZoneConfRepository;
+        private readonly ITimeZoneRepository _timeZoneConfRepository;
         private readonly IUserRepository _userRepository;
 
-        public GetTimeZoneConfGroupInteractor(ITimeZoneConfRepository timeZoneConfRepository, IUserRepository userRepository)
+        public GetTimeZoneConfGroupInteractor(ITimeZoneRepository timeZoneConfRepository, IUserRepository userRepository)
         {
             _timeZoneConfRepository = timeZoneConfRepository;
             _userRepository = userRepository;

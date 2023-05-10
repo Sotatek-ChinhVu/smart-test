@@ -60,7 +60,6 @@ using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TimeZone;
-using Domain.Models.TimeZoneConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.Todo;
 using Domain.Models.UketukeSbtDayInf;
@@ -698,7 +697,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
             services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
-            services.AddTransient<ITimeZoneConfRepository, TimeZoneConfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

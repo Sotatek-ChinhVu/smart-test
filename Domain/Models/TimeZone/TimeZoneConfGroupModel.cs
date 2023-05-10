@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.TimeZoneConf
+﻿namespace Domain.Models.TimeZone
 {
     public class TimeZoneConfGroupModel
     {

@@ -1,6 +1,6 @@
 ﻿using Helper.Common;
 
-namespace Domain.Models.TimeZoneConf
+namespace Domain.Models.TimeZone
 {
     public class TimeZoneConfDetailModel
     {
@@ -102,7 +102,7 @@ namespace Domain.Models.TimeZoneConf
 
         public bool IsDefaultValueItem
         {
-            get => (StartTime == 0 && EndTime == 0) || IsDelete == 1;
+            get => StartTime == 0 && EndTime == 0 || IsDelete == 1;
         }
 
         public bool IsNewStartTime { get; private set; }
