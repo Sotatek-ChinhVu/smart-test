@@ -198,8 +198,14 @@ using Reporting.Statistics.Sta2020.DB;
 using Reporting.Statistics.Sta2020.Service;
 using Reporting.Statistics.Sta2021.DB;
 using Reporting.Statistics.Sta2021.Service;
+using Reporting.Statistics.Sta3001.DB;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3010.DB;
+using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3071.DB;
+using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta9000.DB;
@@ -254,6 +260,7 @@ using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.Family.GetFamilyList;
 using UseCase.Family.GetFamilyReverserList;
+using UseCase.Family.GetMaybeFamilyList;
 using UseCase.Family.SaveFamilyList;
 using UseCase.Family.ValidateFamilyList;
 using UseCase.FlowSheet.GetList;
@@ -509,16 +516,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.MainMenu.SaveStatisticMenu;
-using Reporting.Statistics.Sta3001.Service;
-using Reporting.Statistics.Sta3001.DB;
-using Reporting.Statistics.Sta3080.Service;
-using Reporting.Statistics.Sta3080.DB;
-using Reporting.Statistics.Sta3071.Service;
-using Reporting.Statistics.Sta3071.DB;
-using UseCase.Family.GetMaybeFamilyList;
-using Reporting.Statistics.Sta3010.Service;
-using Reporting.Statistics.Sta3010.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
