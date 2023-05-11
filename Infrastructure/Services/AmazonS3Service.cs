@@ -195,13 +195,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             MaxKeys = 1
         });
 
-        if (listS3Objects.S3Objects.Any() == false)
-        {
-            // S3 object doesn't exist
-            return false;
-        }
-
-        // S3 object exists
-        return true;
+        return listS3Objects.S3Objects.Any();
     }
 }
