@@ -509,6 +509,16 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
+using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3071.DB;
+using UseCase.Family.GetMaybeFamilyList;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -600,12 +610,18 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta9000CoReportService, Sta9000CoReportService>();
             services.AddTransient<ICoSta3080Finder, CoSta3080Finder>();
             services.AddTransient<ISta3080CoReportService, Sta3080CoReportService>();
+            services.AddTransient<ICoSta3071Finder, CoSta3071Finder>();
+            services.AddTransient<ISta3071CoReportService, Sta3071CoReportService>();
             services.AddTransient<IPatientManagementFinder, PatientManagementFinder>();
             services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
             services.AddTransient<ISyojyoSyokiCoReportService, SyojyoSyokiCoReportService>();
             services.AddTransient<ICoSyojyoSyokiFinder, CoSyojyoSyokiFinder>();
+            services.AddTransient<ICoSta3010Finder, CoSta3010Finder>();
+            services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
+            services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
+            services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1077,6 +1093,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractorOfReception>();
             busBuilder.RegisterUseCase<ValidateFamilyListInputData, ValidateFamilyListInteractor>();
+            busBuilder.RegisterUseCase<GetMaybeFamilyListInputData, GetMaybeFamilyListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();

@@ -50,9 +50,9 @@ public class Sta3080CoReportService : ISta3080CoReportService
     private List<CoSta3080PrintData> printDatas;
     #endregion
 
-    private readonly Dictionary<string, string> _singleFieldData ;
-    private readonly Dictionary<string, string> _extralData ;
-    private readonly List<Dictionary<string, CellModel>> _tableFieldData ;
+    private readonly Dictionary<string, string> _singleFieldData;
+    private readonly Dictionary<string, string> _extralData;
+    private readonly List<Dictionary<string, CellModel>> _tableFieldData;
     private readonly Dictionary<string, bool> _visibleFieldData;
     private readonly ICoSta3080Finder _finder;
     private readonly IReadRseReportFileService _readRseReportFileService;
@@ -78,7 +78,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
         objectRseList = new();
         printConf = new();
         seisinDayCareInfs = new();
-        printDatas=new();
+        printDatas = new();
         headerR = new();
         rowCountFieldName = string.Empty;
     }
@@ -103,7 +103,7 @@ public class Sta3080CoReportService : ISta3080CoReportService
             currentPage++;
         }
 
-        return new Sta3080Mapper(_singleFieldData, _tableFieldData, _extralData, rowCountFieldName, formFileName).GetData();
+        return new Sta3080Mapper(_singleFieldData, _tableFieldData, _extralData, _visibleFieldData, rowCountFieldName, formFileName).GetData();
     }
 
     private struct CountData
@@ -192,13 +192,13 @@ public class Sta3080CoReportService : ISta3080CoReportService
                 //終了年月の時のみ初回算定月と経過月数を表示
                 if (printConf.ToYm == sinYm)
                 {
-                    _visibleFieldData.Add("lblSyokaiYm", true);
-                    _visibleFieldData.Add("lblKeikaMon", true);
+                    SetVisibleFieldData("lblSyokaiYm", true);
+                    SetVisibleFieldData("lblKeikaMon", true);
                 }
                 else
                 {
-                    _visibleFieldData.Add("lblSyokaiYm", false);
-                    _visibleFieldData.Add("lblKeikaMon", false);
+                    SetVisibleFieldData("lblSyokaiYm", false);
+                    SetVisibleFieldData("lblKeikaMon", false);
                 }
 
                 //明細と合計のデータ出力
@@ -679,6 +679,18 @@ public class Sta3080CoReportService : ISta3080CoReportService
         CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.Sta3080, fileName, new());
         var javaOutputData = _readRseReportFileService.ReadFileRse(data);
         objectRseList = javaOutputData.objectNames;
+    }
+
+    private void SetVisibleFieldData(string fieldName, bool status)
+    {
+        if (!_visibleFieldData.ContainsKey(fieldName))
+        {
+            _visibleFieldData.Add(fieldName, status);
+        }
+        else if (_visibleFieldData.ContainsKey(fieldName))
+        {
+            _visibleFieldData[fieldName] = status;
+        }
     }
 
     private void GetRowCount(string fileName)

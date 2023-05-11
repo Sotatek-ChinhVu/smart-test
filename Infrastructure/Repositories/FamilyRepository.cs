@@ -5,7 +5,9 @@ using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
 
@@ -196,6 +198,44 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, ptKohis))
                            .OrderByDescending(item => item.SinDate)
                            .ToList();
+    }
+
+    public List<FamilyModel> GetMaybeFamilyList(int hpId, long ptId, int sinDate)
+    {
+        var mainPtInf = NoTrackingDataContext.PtInfs.FirstOrDefault(item => item.HpId == hpId && item.PtId == ptId);
+        if (mainPtInf == null)
+        {
+            return new();
+        }
+
+        var ptFamilyPtIdList = NoTrackingDataContext.PtFamilys.Where(item => item.HpId == hpId
+                                                                             && item.PtId == ptId
+                                                                             && item.IsDeleted != 1)
+                                                              .Select(item => item.FamilyPtId)
+                                                              .ToList();
+
+        var ptIdList = GetMaybeFamilyListByAddressOrPhone(hpId, mainPtInf);
+        ptIdList.AddRange(GetPatientInfByInsurance(hpId, ptId, sinDate));
+
+        ptIdList = ptIdList.Distinct().ToList();
+
+        var ptInfList = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId
+                                                                   && ptIdList.Contains(item.PtId)
+                                                                   && item.PtId != ptId
+                                                                   && item.IsDelete == 0
+                                                                   && !ptFamilyPtIdList.Contains(item.PtId))
+                                                    .OrderBy(item => item.PtNum)
+                                                    .ToList();
+
+        return ptInfList.Select(item => new FamilyModel(
+                                            item.PtId,
+                                            item.PtNum,
+                                            item.Name ?? string.Empty,
+                                            item.KanaName ?? string.Empty,
+                                            item.Sex,
+                                            item.Birthday,
+                                            item.IsDead
+                         )).ToList();
     }
 
     #region private function
@@ -414,6 +454,188 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         {
             ptInf.IsDead = isDead;
         }
+    }
+
+    private List<long> GetMaybeFamilyListByAddressOrPhone(int hpId, PtInf mainPtInf)
+    {
+        string tel1 = mainPtInf.Tel1?.Replace("ー", string.Empty)
+                                     .Replace("ｰ", string.Empty)
+                                     .Replace("-", string.Empty)
+                                     .Replace("　", string.Empty)
+                                     .Replace(" ", string.Empty) ?? string.Empty;
+
+        string tel2 = mainPtInf.Tel2?.Replace("ー", string.Empty)
+                                     .Replace("ｰ", string.Empty)
+                                     .Replace("-", string.Empty)
+                                     .Replace("　", string.Empty)
+                                     .Replace(" ", string.Empty) ?? string.Empty;
+
+        var homeAddress = mainPtInf.HomeAddress1 + mainPtInf.HomeAddress2;
+        homeAddress = homeAddress?.Replace("　", string.Empty)
+                                  .Replace(" ", string.Empty) ?? string.Empty;
+
+        var fullSizeHomeAddress = HenkanJ.Instance.ToFullsize(homeAddress);
+        var halfSizeHomeAddress = HenkanJ.Instance.ToHalfsize(homeAddress);
+        var ptInfRepos = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId &&
+                                                                    item.IsDelete == 0);
+
+        var query = from ptInf in ptInfRepos
+                    select new
+                    {
+                        PtInf = ptInf,
+                        ptInf.Tel1,
+                        ptInf.Tel2,
+                        HomeAddress = ptInf.HomeAddress1 + ptInf.HomeAddress2
+                    };
+
+        query = query.Where(item =>
+            (!string.IsNullOrEmpty(item.Tel1) &&
+             tel1 != string.Empty &&
+             item.Tel1.Replace("ー", string.Empty)
+                      .Replace("ｰ", string.Empty)
+                      .Replace("-", string.Empty)
+                      .Replace("　", string.Empty)
+                      .Replace(" ", string.Empty) == tel1) ||
+            (!string.IsNullOrEmpty(item.Tel2) &&
+             tel1 != string.Empty &&
+             item.Tel2.Replace("ー", string.Empty)
+                      .Replace("ｰ", string.Empty)
+                      .Replace("-", string.Empty)
+                      .Replace("　", string.Empty)
+                      .Replace(" ", string.Empty) == tel1) ||
+            (!string.IsNullOrEmpty(item.Tel1) &&
+             tel2 != string.Empty &&
+             item.Tel1.Replace("ー", string.Empty)
+                      .Replace("ｰ", string.Empty)
+                      .Replace("-", string.Empty)
+                      .Replace("　", string.Empty)
+                      .Replace(" ", string.Empty) == tel2) ||
+            (!string.IsNullOrEmpty(item.Tel2) &&
+             tel2 != string.Empty &&
+             item.Tel2.Replace("ー", string.Empty)
+                      .Replace("ｰ", string.Empty)
+                      .Replace("-", string.Empty)
+                      .Replace("　", string.Empty)
+                      .Replace(" ", string.Empty) == tel2) ||
+            (!string.IsNullOrEmpty(item.HomeAddress) &&
+             item.HomeAddress.Replace("　", string.Empty)
+                             .Replace(" ", string.Empty) == homeAddress) ||
+            (!string.IsNullOrEmpty(item.HomeAddress) &&
+            item.HomeAddress.Replace("　", string.Empty)
+                            .Replace(" ", string.Empty) == fullSizeHomeAddress) ||
+            (!string.IsNullOrEmpty(item.HomeAddress) &&
+            item.HomeAddress.Replace("　", string.Empty)
+                            .Replace(" ", string.Empty) == halfSizeHomeAddress));
+
+        return query.Select(item => item.PtInf.PtId).ToList();
+    }
+
+    private List<long> GetPatientInfByInsurance(int hpId, long ptId, int sinDate)
+    {
+        int endDate = (sinDate / 100) * 100 + 1;
+
+        var ptHokenInfCollection = NoTrackingDataContext.PtHokenInfs
+            .Where(item =>
+                item.HpId == hpId &&
+                item.PtId == ptId &&
+                item.IsDeleted == 0 &&
+                item.StartDate <= sinDate &&
+                item.EndDate >= sinDate)
+            .ToList();
+
+        var predicate = CreateSameHokNoExpression(ptHokenInfCollection);
+        if (predicate == null)
+        {
+            return new();
+        }
+
+        var ptHokenInfRepos = NoTrackingDataContext.PtHokenInfs
+            .Where(item =>
+                item.HpId == hpId &&
+                item.IsDeleted == 0 &&
+                item.EndDate >= endDate &&
+                (item.HokenKbn == 1 || item.HokenKbn == 2));
+
+        var listPtHokenInf = ptHokenInfRepos.Where(predicate)
+            .Select(item => new { item.PtId, item.HokensyaNo, item.Kigo, item.Bango })
+            .Distinct()
+            .ToList();
+
+        var ptIdCollection = listPtHokenInf
+            .Select(item => item.PtId)
+            .Distinct()
+            .ToList();
+
+        var ptIdExpression = CreatePtIdExpression(ptIdCollection);
+        if (ptIdExpression == null)
+            return new();
+
+        var ptInfCollection =
+            NoTrackingDataContext.PtInfs.Where(item =>
+                item.HpId == Session.HospitalID && item.PtId != ptId && item.IsDelete == 0);
+
+        ptInfCollection = ptInfCollection.Where(ptIdExpression);
+
+        return ptInfCollection.Select(item => item.PtId).ToList();
+    }
+
+    private Expression<Func<PtHokenInf, bool>>? CreateSameHokNoExpression(List<PtHokenInf> ptHokenInfCollection)
+    {
+        if (ptHokenInfCollection == null || ptHokenInfCollection.Count <= 0) return null;
+
+        var param = Expression.Parameter(typeof(PtHokenInf));
+        Expression expression = null;
+
+        foreach (var ptHokenInf in ptHokenInfCollection)
+        {
+            if (ptHokenInf == null || !(ptHokenInf.HokenKbn == 1 || ptHokenInf.HokenKbn == 2))
+                continue;
+
+            if (string.IsNullOrEmpty(ptHokenInf.HokensyaNo) || string.IsNullOrEmpty(ptHokenInf.Bango)) continue;
+
+            var valHokensyaNo = Expression.Constant(ptHokenInf.HokensyaNo);
+            var memberHokensyaNo = Expression.Property(param, nameof(PtHokenInf.HokensyaNo));
+            Expression expressionHokensyaNo = Expression.Equal(valHokensyaNo, memberHokensyaNo);
+
+            var valKigo = Expression.Constant(ptHokenInf.Kigo);
+            var memberKigo = Expression.Property(param, nameof(PtHokenInf.Kigo));
+            Expression expressionKigo = Expression.Equal(valKigo, memberKigo);
+
+            var valBango = Expression.Constant(ptHokenInf.Bango);
+            var memberBango = Expression.Property(param, nameof(PtHokenInf.Bango));
+            Expression expressionBango = Expression.Equal(valBango, memberBango);
+
+            var expressionAnd = Expression.And(expressionHokensyaNo, expressionKigo);
+
+            expressionAnd = Expression.And(expressionAnd, expressionBango);
+
+            expression = expression == null ? expressionAnd : Expression.Or(expression, expressionAnd);
+        }
+
+        return expression != null
+            ? Expression.Lambda<Func<PtHokenInf, bool>>(body: expression, parameters: param)
+            : null;
+    }
+
+    private Expression<Func<PtInf, bool>>? CreatePtIdExpression(List<long> ptIdCollection)
+    {
+        if (ptIdCollection == null || ptIdCollection.Count <= 0) return null;
+
+        var param = Expression.Parameter(typeof(PtInf));
+        Expression expression = null;
+
+        foreach (var ptId in ptIdCollection)
+        {
+            var valPtId = Expression.Constant(ptId);
+            var memberPtId = Expression.Property(param, nameof(PtInf.PtId));
+            Expression expressionPtId = Expression.Equal(valPtId, memberPtId);
+
+            expression = expression == null ? expressionPtId : Expression.Or(expression, expressionPtId);
+        }
+
+        return expression != null
+            ? Expression.Lambda<Func<PtInf, bool>>(body: expression, parameters: param)
+            : null;
     }
     #endregion
 
