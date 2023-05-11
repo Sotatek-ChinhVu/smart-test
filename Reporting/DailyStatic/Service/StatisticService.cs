@@ -32,6 +32,8 @@ using Reporting.Statistics.Sta2020.Models;
 using Reporting.Statistics.Sta2020.Service;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3010.Models;
+using Reporting.Statistics.Sta3001.Models;
+using Reporting.Statistics.Sta3001.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -52,8 +54,9 @@ public class StatisticService : IStatisticService
     private readonly ISta3071CoReportService _sta3071CoReportService;
     private readonly ISta2020CoReportService _sta2020CoReportService;
     private readonly ISta3010CoReportService _sta3010CoReportService;
+    private readonly ISta3001CoReportService _sta3001CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService, ISta3001CoReportService sta3001CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -70,6 +73,7 @@ public class StatisticService : IStatisticService
         _sta3071CoReportService = sta3071CoReportService;
         _sta2020CoReportService = sta2020CoReportService;
         _sta3010CoReportService = sta3010CoReportService;
+        _sta3001CoReportService = sta3001CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false)
@@ -106,6 +110,8 @@ public class StatisticService : IStatisticService
                 return PrintSta2020(hpId, configDaily, timeFrom, timeTo);
             case StatisticReportType.Sta3010:
                 return PrintSta3010(hpId, configDaily, dateFrom, coFileType);
+            case StatisticReportType.Sta3001:
+                return PrintSta3001(hpId, configDaily, dateFrom);
         }
         return new();
     }
@@ -191,6 +197,13 @@ public class StatisticService : IStatisticService
     private CommonReportingRequestModel PrintSta3010(int hpId, ConfigStatisticModel configDaily, int dateFrom, CoFileType? coFileType)
     {
         return _sta3010CoReportService.GetSta3010ReportingData(CreateCoSta3010PrintConf(configDaily.ConfigStatistic3010, dateFrom), hpId, coFileType ?? CoFileType.Binary);
+    }
+
+    private CommonReportingRequestModel PrintSta3001(int hpId, ConfigStatisticModel configDaily, int dateFrom)
+    {
+        var printConf = CreateCoSta3001PrintConf(configDaily.ConfigStatistic3001, dateFrom);
+        return _sta3001CoReportService.GetSta3001ReportingData(printConf, hpId);
+
     }
     #endregion
 
@@ -1020,6 +1033,156 @@ public class StatisticService : IStatisticService
 
         // 検索ワードの検索オプション
         printConf.SearchOpt = configStatistic.SearchOpt;
+
+        return printConf;
+    }
+
+    private CoSta3001PrintConf CreateCoSta3001PrintConf(ConfigStatistic3001Model configStatistic, int stdDate)
+    {
+        CoSta3001PrintConf printConf = new CoSta3001PrintConf(configStatistic.MenuId);
+        printConf.StdDate = stdDate;
+        printConf.ReportName = configStatistic.ReportName;
+        printConf.FormFileName = configStatistic.FormReport;
+        printConf.PageBreak1 = configStatistic.BreakPage1;
+        printConf.SortOrder1 = configStatistic.SortOrder1;
+        printConf.SortOrder2 = configStatistic.SortOrder2;
+        printConf.SortOrder3 = configStatistic.SortOrder3;
+        printConf.SortOpt1 = configStatistic.OrderBy1;
+        printConf.SortOpt2 = configStatistic.OrderBy2;
+        printConf.SortOpt3 = configStatistic.OrderBy3;
+
+        if (configStatistic.StartDateFrom > 0)
+        {
+            printConf.StartDateFrom = configStatistic.StartDateFrom;
+        }
+        if (configStatistic.StartDateTo > 0)
+        {
+            printConf.StartDateTo = configStatistic.StartDateTo;
+        }
+
+        if (configStatistic.EndDateFrom > 0)
+        {
+            printConf.EndDateFrom = configStatistic.EndDateFrom;
+        }
+        if (configStatistic.EndDateTo > 0)
+        {
+            printConf.EndDateTo = configStatistic.EndDateTo;
+        }
+
+        printConf.IpnNameOpt = configStatistic.OptionCommonName;
+        printConf.ReceNameOpt = configStatistic.OptionReceiptName;
+        printConf.DrugKbns = new List<int>();
+
+        // 内用薬
+        if (configStatistic.DrugCategoryInternal == 1)
+        {
+            printConf.DrugKbns.Add(1);
+        }
+
+        // その他
+        if (configStatistic.DrugCategoryOther == 1)
+        {
+            printConf.DrugKbns.Add(3);
+        }
+
+        // 注射薬
+        if (configStatistic.DrugCategoryInjection == 1)
+        {
+            printConf.DrugKbns.Add(4);
+        }
+
+        // 外用薬
+        if (configStatistic.DrugCategoryTopical == 1)
+        {
+            printConf.DrugKbns.Add(6);
+        }
+
+        // 歯科用薬剤
+        if (configStatistic.DrugCategoryDental == 1)
+        {
+            printConf.DrugKbns.Add(8);
+        }
+
+        printConf.MadokuKbns = new List<int>();
+        //麻毒等以外
+        if (configStatistic.MalignantCategoryOtherThanNarcotic == 1)
+        {
+            printConf.MadokuKbns.Add(0);
+        }
+
+        //麻薬
+        if (configStatistic.MalignantCategoryNarcotic == 1)
+        {
+            printConf.MadokuKbns.Add(1);
+        }
+
+        //毒薬
+        if (configStatistic.MalignantCategorynPoisonousDrug == 1)
+        {
+            printConf.MadokuKbns.Add(2);
+        }
+
+        //覚せい剤
+        if (configStatistic.MalignantCategoryAntipsychotics == 1)
+        {
+            printConf.MadokuKbns.Add(3);
+        }
+
+        //向精神薬
+        if (configStatistic.MalignantCategoryPsychotropicDrug == 1)
+        {
+            printConf.MadokuKbns.Add(5);
+        }
+
+        printConf.KouseisinKbns = new List<int>();
+        //向精神薬以外
+        if (configStatistic.PsychotropicDrugCategoryOtherThanPsychotropicDrugs == 1)
+        {
+            printConf.KouseisinKbns.Add(0);
+        }
+
+        //抗不安薬
+        if (configStatistic.PsychotropicDrugCategoryAnxiolytics == 1)
+        {
+            printConf.KouseisinKbns.Add(1);
+        }
+
+        //睡眠薬
+        if (configStatistic.PsychotropicDrugCategorySleepingPills == 1)
+        {
+            printConf.KouseisinKbns.Add(2);
+        }
+
+        //抗うつ薬
+        if (configStatistic.PsychotropicDrugCategoryAntidepressants == 1)
+        {
+            printConf.KouseisinKbns.Add(3);
+        }
+
+        //抗精神病薬
+        if (configStatistic.PsychotropicDrugCategoryAntipsychoticDrugs == 1)
+        {
+            printConf.KouseisinKbns.Add(4);
+        }
+
+        printConf.KohatuKbns = new List<int>();
+        //先発品 （後発品なし）
+        if (configStatistic.GeneralFlagOriginalProductNoGeneric == 1)
+        {
+            printConf.KohatuKbns.Add(0);
+        }
+
+        //先発品（後発品あり）
+        if (configStatistic.GeneralFlagOriginalProductWithGeneric == 1)
+        {
+            printConf.KohatuKbns.Add(2);
+        }
+
+        //後発品
+        if (configStatistic.GeneralFlagGeneralProcduct == 1)
+        {
+            printConf.KohatuKbns.Add(1);
+        }
 
         return printConf;
     }
