@@ -32,7 +32,7 @@ namespace Interactor.DrugInfor
                     return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidSindate);
                 }
 
-                if (String.IsNullOrEmpty(inputData.ItemCd))
+                if (string.IsNullOrEmpty(inputData.ItemCd))
                 {
                     return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidItemCd);
                 }
