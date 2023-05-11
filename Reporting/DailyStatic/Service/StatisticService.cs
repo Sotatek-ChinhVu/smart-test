@@ -115,7 +115,7 @@ public class StatisticService : IStatisticService
             case StatisticReportType.Sta3010:
                 return PrintSta3010(hpId, configDaily, dateFrom, coFileType);
             case StatisticReportType.Sta3001:
-                return PrintSta3001(hpId, configDaily, dateFrom, coFileType);
+                return PrintSta3001(hpId, configDaily, dateFrom);
             case StatisticReportType.Sta3030:
                 return PrintSta3030(hpId, configDaily, dateFrom, dateTo, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, coFileType);
         }
@@ -197,6 +197,12 @@ public class StatisticService : IStatisticService
     {
         var printConf = CreateCoSta2020PrintConf(configDaily, timeFrom, timeTo);
         return _sta2020CoReportService.GetSta2020ReportingData(printConf, hpId);
+    }
+
+    private CommonReportingRequestModel PrintSta3001(int hpId, ConfigStatisticModel configDaily, int dateFrom)
+    {
+        var printConf = CreateCoSta3001PrintConf(configDaily.ConfigStatistic3001, dateFrom);
+        return _sta3001CoReportService.GetSta3001ReportingData(printConf, hpId);
     }
 
     private CommonReportingRequestModel PrintSta3010(int hpId, ConfigStatisticModel configDaily, int dateFrom, CoFileType? coFileType)
@@ -1040,6 +1046,155 @@ public class StatisticService : IStatisticService
         return printConf;
     }
 
+    private CoSta3001PrintConf CreateCoSta3001PrintConf(ConfigStatistic3001Model configStatistic, int stdDate)
+    {
+        CoSta3001PrintConf printConf = new CoSta3001PrintConf(configStatistic.MenuId);
+        printConf.StdDate = stdDate;
+        printConf.ReportName = configStatistic.ReportName;
+        printConf.FormFileName = configStatistic.FormReport;
+        printConf.PageBreak1 = configStatistic.BreakPage1;
+        printConf.SortOrder1 = configStatistic.SortOrder1;
+        printConf.SortOrder2 = configStatistic.SortOrder2;
+        printConf.SortOrder3 = configStatistic.SortOrder3;
+        printConf.SortOpt1 = configStatistic.OrderBy1;
+        printConf.SortOpt2 = configStatistic.OrderBy2;
+        printConf.SortOpt3 = configStatistic.OrderBy3;
+
+        if (configStatistic.StartDateFrom > 0)
+        {
+            printConf.StartDateFrom = configStatistic.StartDateFrom;
+        }
+        if (configStatistic.StartDateTo > 0)
+        {
+            printConf.StartDateTo = configStatistic.StartDateTo;
+        }
+
+        if (configStatistic.EndDateFrom > 0)
+        {
+            printConf.EndDateFrom = configStatistic.EndDateFrom;
+        }
+        if (configStatistic.EndDateTo > 0)
+        {
+            printConf.EndDateTo = configStatistic.EndDateTo;
+        }
+
+        printConf.IpnNameOpt = configStatistic.OptionCommonName;
+        printConf.ReceNameOpt = configStatistic.OptionReceiptName;
+        printConf.DrugKbns = new List<int>();
+
+        // 内用薬
+        if (configStatistic.DrugCategoryInternal == 1)
+        {
+            printConf.DrugKbns.Add(1);
+        }
+
+        // その他
+        if (configStatistic.DrugCategoryOther == 1)
+        {
+            printConf.DrugKbns.Add(3);
+        }
+
+        // 注射薬
+        if (configStatistic.DrugCategoryInjection == 1)
+        {
+            printConf.DrugKbns.Add(4);
+        }
+
+        // 外用薬
+        if (configStatistic.DrugCategoryTopical == 1)
+        {
+            printConf.DrugKbns.Add(6);
+        }
+
+        // 歯科用薬剤
+        if (configStatistic.DrugCategoryDental == 1)
+        {
+            printConf.DrugKbns.Add(8);
+        }
+
+        printConf.MadokuKbns = new List<int>();
+        //麻毒等以外
+        if (configStatistic.MalignantCategoryOtherThanNarcotic == 1)
+        {
+            printConf.MadokuKbns.Add(0);
+        }
+
+        //麻薬
+        if (configStatistic.MalignantCategoryNarcotic == 1)
+        {
+            printConf.MadokuKbns.Add(1);
+        }
+
+        //毒薬
+        if (configStatistic.MalignantCategorynPoisonousDrug == 1)
+        {
+            printConf.MadokuKbns.Add(2);
+        }
+
+        //覚せい剤
+        if (configStatistic.MalignantCategoryAntipsychotics == 1)
+        {
+            printConf.MadokuKbns.Add(3);
+        }
+
+        //向精神薬
+        if (configStatistic.MalignantCategoryPsychotropicDrug == 1)
+        {
+            printConf.MadokuKbns.Add(5);
+        }
+
+        printConf.KouseisinKbns = new List<int>();
+        //向精神薬以外
+        if (configStatistic.PsychotropicDrugCategoryOtherThanPsychotropicDrugs == 1)
+        {
+            printConf.KouseisinKbns.Add(0);
+        }
+
+        //抗不安薬
+        if (configStatistic.PsychotropicDrugCategoryAnxiolytics == 1)
+        {
+            printConf.KouseisinKbns.Add(1);
+        }
+
+        //睡眠薬
+        if (configStatistic.PsychotropicDrugCategorySleepingPills == 1)
+        {
+            printConf.KouseisinKbns.Add(2);
+        }
+
+        //抗うつ薬
+        if (configStatistic.PsychotropicDrugCategoryAntidepressants == 1)
+        {
+            printConf.KouseisinKbns.Add(3);
+        }
+
+        //抗精神病薬
+        if (configStatistic.PsychotropicDrugCategoryAntipsychoticDrugs == 1)
+        {
+            printConf.KouseisinKbns.Add(4);
+        }
+
+        printConf.KohatuKbns = new List<int>();
+        //先発品 （後発品なし）
+        if (configStatistic.GeneralFlagOriginalProductNoGeneric == 1)
+        {
+            printConf.KohatuKbns.Add(0);
+        }
+
+        //先発品（後発品あり）
+        if (configStatistic.GeneralFlagOriginalProductWithGeneric == 1)
+        {
+            printConf.KohatuKbns.Add(2);
+        }
+
+        //後発品
+        if (configStatistic.GeneralFlagGeneralProcduct == 1)
+        {
+            printConf.KohatuKbns.Add(1);
+        }
+
+        return printConf;
+    }
 
     private CoSta3071PrintConf CreateCoSta3071PrintConf(ConfigStatistic3071Model configStatistic, int timeFrom, int timeTo)
     {
