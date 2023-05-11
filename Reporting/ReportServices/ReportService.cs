@@ -8,6 +8,7 @@ using Reporting.DrugInfo.Model;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Mapper;
 using Reporting.Karte1.Service;
+using Reporting.Kensalrai.Service;
 using Reporting.Mappers.Common;
 using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
@@ -40,8 +41,9 @@ public class ReportService : IReportService
     private readonly IStatisticService _statisticService;
     private readonly IReceiptCoReportService _receiptCoReportService;
     private readonly IPatientManagementService _patientManagementService;
+    private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, IKensaIraiCoReportService kensaIraiCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -57,6 +59,7 @@ public class ReportService : IReportService
         _statisticService = statisticService;
         _receiptCoReportService = receiptCoReportService;
         _patientManagementService = patientManagementService;
+        _kensaIraiCoReportService = kensaIraiCoReportService;
     }
 
     //Byomei
@@ -218,5 +221,10 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId)
     {
         return _receiptCoReportService.GetReceiptData(hpId, ptId, seikyuYm, sinYm, hokenId);
+    }
+
+    public CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd)
+    {
+        return _kensaIraiCoReportService.GetKensalraiData(hpId, systemDate, fromDate, toDate, centerCd);
     }
 }

@@ -158,6 +158,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.Kensalrai)]
+    public async Task<IActionResult> Kensalrai([FromQuery] KensalraiRequest request)
+    {
+        var data = _reportService.GetKensalraiData(request.HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
