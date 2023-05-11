@@ -2,7 +2,7 @@
 {
     public class TimeZoneConfGroupModel
     {
-        public TimeZoneConfGroupModel(int youbiKbn, IEnumerable<TimeZoneConfDetailModel> details)
+        public TimeZoneConfGroupModel(int youbiKbn, IEnumerable<TimeZoneConfModel> details)
         {
             YoubiKbn = youbiKbn;
             Details = details.OrderBy(u => u.SortNo).ToList();
@@ -14,7 +14,7 @@
         /// </summary>
         public int YoubiKbn { get; private set; }
 
-        public List<TimeZoneConfDetailModel> Details { get; private set; }
+        public List<TimeZoneConfModel> Details { get; private set; }
 
         public bool IsSaturDay
         {
