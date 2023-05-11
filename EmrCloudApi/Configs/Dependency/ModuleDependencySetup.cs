@@ -509,6 +509,7 @@ using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3071.DB;
+using UseCase.Family.GetMaybeFamilyList;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3010.DB;
 
@@ -1081,6 +1082,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFamilyReverserListInputData, GetFamilyReverserListInteractor>();
             busBuilder.RegisterUseCase<GetListRaiinInfInputData, GetListRaiinInfInteractorOfReception>();
             busBuilder.RegisterUseCase<ValidateFamilyListInputData, ValidateFamilyListInteractor>();
+            busBuilder.RegisterUseCase<GetMaybeFamilyListInputData, GetMaybeFamilyListInteractor>();
 
             //Receipt
             busBuilder.RegisterUseCase<ReceiptListAdvancedSearchInputData, ReceiptListAdvancedSearchInteractor>();
