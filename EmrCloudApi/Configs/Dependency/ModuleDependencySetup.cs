@@ -512,6 +512,8 @@ using Reporting.Statistics.Sta3071.DB;
 using UseCase.Family.GetMaybeFamilyList;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3010.DB;
+using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3030.DB;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -611,6 +613,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
             services.AddTransient<ICoSta3010Finder, CoSta3010Finder>();
             services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
+            services.AddTransient<ICoSta3030Finder, CoSta3030Finder>();
+            services.AddTransient<ISta3030CoReportService, Sta3030CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
