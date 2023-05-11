@@ -519,6 +519,8 @@ using Reporting.Statistics.Sta3030.Service;
 using Reporting.Statistics.Sta3030.DB;
 using Reporting.Statistics.Sta3040.DB;
 using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -624,6 +626,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
             services.AddTransient<ICoSta3040Finder, CoSta3040Finder>();
             services.AddTransient<ISta3040CoReportService, Sta3040CoReportService>();
+            services.AddTransient<ICoSta3041Finder, CoSta3041Finder>();
+            services.AddTransient<ISta3041CoReportService, Sta3041CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
