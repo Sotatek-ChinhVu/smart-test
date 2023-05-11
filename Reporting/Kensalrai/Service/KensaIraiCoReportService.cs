@@ -259,12 +259,10 @@ namespace Reporting.Kensalrai.Service
                         if (i > 0)
                         {
                             // 行の四方位置を取得する
-                            //(long startX, long startY, long endX, long endY) = CoRep.GetListRowBounds("lsLine", i);
 
-                            //CoRep.DrawLine(startX, startY, endX, startY, 30);
-                            string rowNoKey = i + "_" + _currentPage;
+                            string rowNoKey = (i - 1) + "_" + _currentPage;
                             _extralData.Add("baseListName_" + rowNoKey, "lsLine");
-                            _extralData.Add("rowNo_" + rowNoKey, i.ToString());
+                            _extralData.Add("rowNo_" + rowNoKey, (i - 1).ToString());
                         }
                         #endregion
                     }
