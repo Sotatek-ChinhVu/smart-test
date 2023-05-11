@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -116,7 +117,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                             item.KanaName ?? string.Empty,
                                                             item.Sex,
                                                             item.Birthday,
-                                                            item.IsDead
+                                                            item.IsDead,
+                                                            int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"))
                                                         )).ToList();
     }
 
@@ -234,7 +236,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                             item.KanaName ?? string.Empty,
                                             item.Sex,
                                             item.Birthday,
-                                            item.IsDead
+                                            item.IsDead,
+                                            sinDate
                          )).ToList();
     }
 
