@@ -3,12 +3,6 @@ using Helper.Common;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.DrugInfor.Get;
 
 namespace Interactor.DrugInfor
@@ -17,12 +11,10 @@ namespace Interactor.DrugInfor
     {
         private readonly IDrugInforRepository _drugInforRepository;
         private readonly IAmazonS3Service _amazonS3Service;
-        private readonly IConfiguration _configuration;
 
-        public GetDrugInforInteractor(IDrugInforRepository drugInforRepository, IConfiguration configuration, IAmazonS3Service amazonS3Service)
+        public GetDrugInforInteractor(IDrugInforRepository drugInforRepository, IAmazonS3Service amazonS3Service)
         {
             _drugInforRepository = drugInforRepository;
-            _configuration = configuration;
             _amazonS3Service = amazonS3Service;
         }
 
@@ -111,7 +103,7 @@ namespace Interactor.DrugInfor
             else
             {
                 //Image default Empty
-                return _configuration["DefaultImageDrugEmpty"] ?? string.Empty;
+                return string.Empty;
             }
         }
     }
