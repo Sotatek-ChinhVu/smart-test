@@ -34,6 +34,8 @@ using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3010.Models;
 using Reporting.Statistics.Sta3030.Service;
 using Reporting.Statistics.Sta3030.Models;
+using Reporting.Statistics.Sta3001.Models;
+using Reporting.Statistics.Sta3001.Service;
 
 namespace Reporting.DailyStatic.Service;
 
@@ -55,8 +57,9 @@ public class StatisticService : IStatisticService
     private readonly ISta2020CoReportService _sta2020CoReportService;
     private readonly ISta3010CoReportService _sta3010CoReportService;
     private readonly ISta3030CoReportService _sta3030CoReportService;
+    private readonly ISta3001CoReportService _sta3001CoReportService;
 
-    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService, ISta3030CoReportService sta3030CoReportService)
+    public StatisticService(IDailyStatisticCommandFinder finder, ISta1002CoReportService sta1002CoReportService, ISta1010CoReportService sta1010CoReportService, ISta2001CoReportService sta2001CoReportService, ISta2003CoReportService sta2003CoReportService, ISta1001CoReportService sta1001CoReportService, ISta2002CoReportService sta2002CoReportService, ISta2010CoReportService sta2010CoReportService, ISta2011CoReportService sta2011CoReportService, ISta2021CoReportService sta2021CoReportService, ISta3020CoReportService sta3020CoReportService, ISta3080CoReportService sta3080CoReportService, ISta3071CoReportService sta3071CoReportService, ISta2020CoReportService sta2020CoReportService, ISta3010CoReportService sta3010CoReportService, ISta3030CoReportService sta3030CoReportService, ISta3001CoReportService sta3001CoReportService)
     {
         _finder = finder;
         _sta1002CoReportService = sta1002CoReportService;
@@ -74,6 +77,7 @@ public class StatisticService : IStatisticService
         _sta2020CoReportService = sta2020CoReportService;
         _sta3010CoReportService = sta3010CoReportService;
         _sta3030CoReportService = sta3030CoReportService;
+        _sta3001CoReportService = sta3001CoReportService;
     }
 
     public CommonReportingRequestModel PrintExecute(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1)
@@ -110,6 +114,8 @@ public class StatisticService : IStatisticService
                 return PrintSta2020(hpId, configDaily, timeFrom, timeTo);
             case StatisticReportType.Sta3010:
                 return PrintSta3010(hpId, configDaily, dateFrom, coFileType);
+            case StatisticReportType.Sta3001:
+                return PrintSta3001(hpId, configDaily, dateFrom, coFileType);
             case StatisticReportType.Sta3030:
                 return PrintSta3030(hpId, configDaily, dateFrom, dateTo, tenkiDateFrom ?? -1, tenkiDateTo ?? -1, enableRangeFrom ?? -1, enableRangeTo ?? -1, coFileType);
         }
@@ -1033,6 +1039,7 @@ public class StatisticService : IStatisticService
 
         return printConf;
     }
+
 
     private CoSta3071PrintConf CreateCoSta3071PrintConf(ConfigStatistic3071Model configStatistic, int timeFrom, int timeTo)
     {

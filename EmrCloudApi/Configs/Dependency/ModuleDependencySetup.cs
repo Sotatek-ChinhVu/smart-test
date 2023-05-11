@@ -505,6 +505,9 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
 using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3071.Service;
@@ -615,6 +618,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
             services.AddTransient<ICoSta3030Finder, CoSta3030Finder>();
             services.AddTransient<ISta3030CoReportService, Sta3030CoReportService>();
+            services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
+            services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
