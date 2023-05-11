@@ -66,10 +66,6 @@ namespace Reporting.SyojyoSyoki.Service
                     _hasNextPage = true;
                     _currentPage = 1;
 
-                    //// フォームのプロパティを取得
-                    //_syojyoSyokiCharCount = CoRep.GetFormat("lsSyojyoSyoki").Length;
-                    //_syojyoSyokiRowCount = CoRep.GetListRowCount("lsSyojyoSyoki");
-
                     // 症状詳記リスト
                     _syojyoSyokiList = new List<string>();
 
