@@ -1,9 +1,12 @@
 ﻿using Domain.Models.DrugInfor;
+using Helper.Common;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using UseCase.DrugInfor.Get;
@@ -46,18 +49,18 @@ namespace Interactor.DrugInfor
                 var listPicHou = new List<string>();
                 var listPicZai = new List<string>();
 
-                if (!String.IsNullOrEmpty(data.OtherPicZai))
+                if (!string.IsNullOrEmpty(data.OtherPicZai))
                 {
-                    data.PathPicZai = data.OtherPicZai;
+                    data.PathPicZai = _amazonS3Service.GetAccessBaseS3() + data.OtherPicZai;
                 }
                 else
                 {
                     data.PathPicZai = GetPathImagePic(data.YjCode, data.DefaultPathPicZai, data.CustomPathPicZai, listPicZai);
                 }
 
-                if (!String.IsNullOrEmpty(data.OtherPicHou))
+                if (!string.IsNullOrEmpty(data.OtherPicHou))
                 {
-                    data.PathPicHou = data.OtherPicHou;
+                    data.PathPicHou = _amazonS3Service.GetAccessBaseS3() + data.OtherPicHou;
                 }
                 else
                 {
@@ -76,66 +79,40 @@ namespace Interactor.DrugInfor
             }
         }
 
-        private string GetPathImagePic(string yjCode, string defaultPath, string customPath, List<string> listPic)
+        private string GetPathImagePic(string yjCode, string filePath, string customPath, List<string> listPic)
         {
-            var defaultImgPic = "";
-
-            var _picStr = " ABCDEFGHIJZ";
-            var pathServerS3 = _configuration["PathImageDrugServer"];
+            string _picStr = " ABCDEFGHIJZ";
             for (int i = 0; i < _picStr.Length - 1; i++)
             {
-                if (!String.IsNullOrEmpty(yjCode))
+                if (!string.IsNullOrEmpty(yjCode))
                 {
-                    var keyImage = "";
-                    if (defaultPath.Contains(pathServerS3 + "/"))
-                    {
-                        keyImage = (defaultPath.Replace(pathServerS3 + "/", "") + yjCode + _picStr[i]).Trim() + ".jpg";
-                    }
-                    else
-                    {
-                        keyImage = (defaultPath + yjCode + _picStr[i]).Trim() + ".jpg";
-                    }
+                    string imgFile = (filePath + yjCode + _picStr[i].AsString()).Trim() + ".jpg";
 
                     // check image
-                    var checkExistImage = _amazonS3Service.ObjectExistsAsync(keyImage);
+                    var checkExistImage = _amazonS3Service.S3FilePathIsExists(imgFile);
                     if (checkExistImage != null && checkExistImage.Result)
                     {
-                        listPic.Add(pathServerS3 + "/" + keyImage);
+                        listPic.Add(_amazonS3Service.GetAccessBaseS3() + imgFile);
                     }
                 }
             }
 
-            if (!String.IsNullOrEmpty(yjCode))
+            string customImage = customPath + yjCode + "Z.jpg";
+            if (_amazonS3Service.S3FilePathIsExists(customImage).Result)
             {
-                var keyImageCus = "";
-                if (defaultPath.Contains(pathServerS3 + "/"))
-                {
-                    keyImageCus = (customPath.Replace(pathServerS3 + "/", "") + yjCode).Trim() + "Z.jpg";
-                }
-                else
-                {
-                    keyImageCus = (customPath + yjCode).Trim() + "Z.jpg";
-                }
-                // check image
-                var checkExistImageCus = _amazonS3Service.ObjectExistsAsync(keyImageCus);
-                if (checkExistImageCus != null && checkExistImageCus.Result)
-                {
-                    listPic.Add(keyImageCus);
-                }
+                listPic.Add(_amazonS3Service.GetAccessBaseS3() + customImage);
             }
 
             if (listPic.Count > 0)
             {
                 // Image default 
-                defaultImgPic = listPic[0] ?? string.Empty;
+                return listPic[0] ?? string.Empty;
             }
             else
             {
                 //Image default Empty
-                defaultImgPic = _configuration["DefaultImageDrugEmpty"];
+                return _configuration["DefaultImageDrugEmpty"] ?? string.Empty;
             }
-
-            return defaultImgPic ?? string.Empty;
         }
     }
 }

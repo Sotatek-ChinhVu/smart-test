@@ -185,4 +185,23 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     }
 
     public string GetAccessBaseS3() => $"{_options.BaseAccessUrl}/";
+
+    public async Task<bool> S3FilePathIsExists(string locationFile)
+    {
+        var listS3Objects = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
+        {
+            BucketName = _options.BucketName,
+            Prefix = locationFile, // eg myfolder/myimage.jpg (no / at start)
+            MaxKeys = 1
+        });
+
+        if (listS3Objects.S3Objects.Any() == false)
+        {
+            // S3 object doesn't exist
+            return false;
+        }
+
+        // S3 object exists
+        return true;
+    }
 }
