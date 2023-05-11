@@ -316,5 +316,8 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+
+        //TimeZoneConf.
+        public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
     }
 }

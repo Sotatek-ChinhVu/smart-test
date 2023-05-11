@@ -4,7 +4,7 @@ namespace EmrCloudApi.Requests.Insurance
 {
     public class HokenKohiDto
     {
-        public HokenKohiDto(int hpId, long ptId, int hokenId, long seqNo, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, string jyukyusyaNo, int hokenSbtKbn, string houbetu, string tokusyuNo, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendoGaku, int isDeleted, List<ConfirmDateDto> confirmDates, bool isAddNew)
+        public HokenKohiDto(int hpId, long ptId, int hokenId, long seqNo, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, string jyukyusyaNo, int hokenSbtKbn, string houbetu, string tokusyuNo, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendoGaku, int isDeleted, List<ConfirmDateDto> confirmDates, bool isAddNew, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -27,6 +27,7 @@ namespace EmrCloudApi.Requests.Insurance
             IsDeleted = isDeleted;
             ConfirmDates = confirmDates;
             IsAddNew = isAddNew;
+            SinDate = sinDate;
         }
 
         public int HpId { get; private set; }
@@ -69,5 +70,7 @@ namespace EmrCloudApi.Requests.Insurance
         public List<ConfirmDateDto> ConfirmDates { get; private set; } = new List<ConfirmDateDto>();
 
         public bool IsAddNew { get; private set; }
+
+        public int SinDate { get; private set; }
     }
 }
