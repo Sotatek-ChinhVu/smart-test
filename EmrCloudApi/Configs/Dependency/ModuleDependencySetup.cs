@@ -522,6 +522,22 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
+using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3071.DB;
+using UseCase.Family.GetMaybeFamilyList;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.DB;
+using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3030.DB;
+using Reporting.Statistics.Sta3040.DB;
+using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -629,6 +645,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
             services.AddTransient<ICoSta3040Finder, CoSta3040Finder>();
             services.AddTransient<ISta3040CoReportService, Sta3040CoReportService>();
+            services.AddTransient<ICoSta3041Finder, CoSta3041Finder>();
+            services.AddTransient<ISta3041CoReportService, Sta3041CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
