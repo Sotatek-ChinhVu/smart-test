@@ -997,5 +997,6 @@
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
 
+        public static readonly string NoPermission = "No permission";
     }
 }

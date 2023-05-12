@@ -507,7 +507,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.MainMenu.SaveStatisticMenu;
 using Reporting.Statistics.Sta3001.Service;
 using Reporting.Statistics.Sta3001.DB;
 using Reporting.Statistics.Sta3080.Service;
@@ -517,6 +516,7 @@ using Reporting.Statistics.Sta3071.DB;
 using UseCase.Family.GetMaybeFamilyList;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3010.DB;
+using UseCase.TimeZoneConf.SaveTimeZoneConf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1160,8 +1160,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
-            //GetTimeZoneConfGroup
+            //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
+            busBuilder.RegisterUseCase<SaveTimeZoneConfInputData, SaveTimeZoneConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
