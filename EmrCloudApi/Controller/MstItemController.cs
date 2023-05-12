@@ -32,6 +32,7 @@ using UseCase.MstItem.UpdateAdoptedItemList;
 using Helper.Extension;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Controller
 {
@@ -304,6 +305,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListDrugImageResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckIsTenMstUsed)]
+        public ActionResult<Response<CheckIsTenMstUsedResponse>> CheckIsTenMstUsed([FromBody] CheckIsTenMstUsedRequest request)
+        {
+            var input = new CheckIsTenMstUsedInputData(HpId, request.ItemCd, request.StartDate, request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new CheckIsTenMstUsedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckIsTenMstUsedResponse>>(presenter.Result);
         }
     }
 }

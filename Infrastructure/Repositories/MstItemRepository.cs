@@ -13,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -4017,6 +4018,15 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
+        }
+        
+        public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
+        {
+            return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
+                x => x.HpId == hpId &&
+                     x.ItemCd == itemCd &&
+                     x.SinDate >= startDate &&
+                     x.SinDate <= endDate) != null;
         }
     }
 }
