@@ -1,6 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Entity.Tenant;
-using Helper.Common;
+﻿using Helper.Common;
 using Reporting.CommonMasters.Enums;
 using Reporting.Mappers.Common;
 using Reporting.ReadRseReportFile.Model;
