@@ -82,9 +82,38 @@ namespace Reporting.Receipt.Service
 
         private List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbns { get; set; } = new();
 
-        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId, bool isNoCreatingReceData = false)
+        public CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int sinYm, int hokenId, bool isNoCreatingReceData = false)
         {
-            var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, seikyuYm, sinYm, hokenId);
+            var receSeikyu = _coReceiptFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
+
+            var ReceFutanViewModel = new Reporting.Calculate.ReceFutan.ViewModels.ReceFutanViewModel();
+
+            if (receSeikyu == null)
+            {
+                SeikyuYm = sinYm;
+            }
+            else
+            {
+                if(receSeikyu.SeikyuYm != 999999)
+                {
+
+                    SeikyuYm = receSeikyu.SeikyuYm;
+                }
+                else
+                {
+                    List<Reporting.Calculate.ReceFutan.Models.ReceInfModel> ReceInfs = ReceFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> ReceFutanKbn = ReceFutanViewModel.ReceFutanKbns;
+                    var receInfCheck = ReceInfs.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
+
+                    if(receInfCheck != null)
+                    {
+                        SeikyuYm = sinYm;
+                        ReceFutanKbnModels = ReceFutanKbn;
+                    }
+                }
+            }
+
+            var receInf = _coReceiptFinder.GetReceInf(hpId, ptId, SeikyuYm, sinYm, hokenId);
 
             // TODO message or somthing process here
             var target = -1;
@@ -121,7 +150,7 @@ namespace Reporting.Receipt.Service
             {
                 InitParam(hpId, ReceInf, ReceFutanKbnModels, IncludeOutDrug);
                 _PrintOut();
-                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount,_tekiyoRowCount2).GetData();
+                return new ReceiptPreviewMapper(CoModel, ByomeiModels, TekiyoModels, TekiyoEnModels, CurrentPage, HpId, Target, _systemConfRepository, _coReceiptFinder, _tekiyoRowCount, _tekiyoEnRowCount, _tekiyoRowCount2).GetData();
             }
             else
             {
@@ -250,7 +279,6 @@ namespace Reporting.Receipt.Service
             Reporting.Calculate.ReceFutan.Models.ReceInfModel receInf, List<Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel> receFutanKbnModels, bool includeOutDrug)
         {
             HpId = hpId;
-            SeikyuYm = receInf.SeikyuYm;
             PtId = new List<long>();
             PtId.Add(receInf.PtId);
             SinYm = receInf.SinYm;
