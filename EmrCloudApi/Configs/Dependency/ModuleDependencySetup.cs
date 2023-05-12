@@ -207,6 +207,8 @@ using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
 using Reporting.Statistics.Sta3030.DB;
 using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3040.DB;
+using Reporting.Statistics.Sta3040.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;

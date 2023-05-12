@@ -34,7 +34,6 @@ public static class ReflectionExtensions
     {
         var memInf = GetMemberInfo(obj, memberName);
 
-
         if (memInf == null)
             throw new Exception("memberName");
 
