@@ -1161,12 +1161,12 @@ namespace Infrastructure.Repositories
             DisposeDataContext();
         }
 
-        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize)
+        public List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted)
         {
             List<ReceptionModel> result = new();
 
             var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId &&
-                                                                       x.PtId == ptId)
+                                                                       x.PtId == ptId && (x.IsDeleted == DeleteTypes.None || isDeleted == 1 || (x.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)))
                                                            .OrderByDescending(x => x.SinDate)
                                                            .Skip((pageIndex - 1) * pageSize)
                                                            .Take(pageSize)
