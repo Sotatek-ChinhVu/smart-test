@@ -1,9 +1,11 @@
-﻿using Domain.Models.TimeZone;
+﻿using Amazon.Auth.AccessControlPolicy;
+using Domain.Models.TimeZone;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 
 namespace Infrastructure.Repositories;
 
@@ -141,6 +143,49 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
             }
         }
         return result;
+    }
+
+    public bool SaveTimeZoneConf(int hpId, int userId, List<TimeZoneConfModel> timeZoneConfs)
+    {
+        List<TimeZoneConfModel> source = timeZoneConfs.Where(u => !u.CheckDefaultValue() && u.ModelModified).ToList();
+
+        List<TimeZoneConf> entities = new List<TimeZoneConf>();
+        foreach (var model in source)
+        {
+            if (!model.CheckDefaultValue() && model.ModelModified)
+            {
+                if (model.SeqNo == 0 && model.IsDelete == 0)
+                {
+                    TrackingDataContext.TimeZoneConfs.Add(new TimeZoneConf()
+                    {
+                        CreateDate = CIUtil.GetJapanDateTimeNow(),
+                        CreateId = userId,
+                        UpdateDate = CIUtil.GetJapanDateTimeNow(),
+                        UpdateId = userId,
+                        IsDelete = model.IsDelete,
+                        EndTime = model.EndTime,
+                        StartTime = model.StartTime,
+                        HpId = hpId,
+                        TimeKbn = model.TimeKbn,
+                        YoubiKbn = model.YoubiKbn
+                    });
+                }
+                else
+                {
+                    var update = TrackingDataContext.TimeZoneConfs.FirstOrDefault(x => x.HpId == hpId && x.YoubiKbn == model.YoubiKbn && x.SeqNo == model.SeqNo);
+                    if(update != null)
+                    {
+                        update.UpdateDate = CIUtil.GetJapanDateTimeNow();
+                        update.UpdateId = userId;
+                        update.EndTime = model.EndTime;
+                        update.StartTime = model.StartTime;
+                        update.IsDelete = model.IsDelete;
+                        update.TimeKbn = model.TimeKbn;
+                    }
+                }
+            }
+        }
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public void ReleaseResource()

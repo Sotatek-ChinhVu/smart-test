@@ -154,7 +154,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPreview)]
     public async Task<IActionResult> ReceiptPreview([FromQuery] ReceiptPreviewRequest request)
     {
-        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptData(request.HpId, request.PtId, request.SinYm, request.HokenId);
         return await RenderPdf(data, ReportType.Common);
     }
 
@@ -162,6 +162,13 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
     {
         var data = _reportService.GetSyojyoSyokiReportingData(request.HpId, request.PtId, request.SeiKyuYm, request.HokenId);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
+    [HttpGet(ApiPath.Kensalrai)]
+    public async Task<IActionResult> Kensalrai([FromQuery] KensalraiRequest request)
+    {
+        var data = _reportService.GetKensalraiData(request.HpId, request.SystemDate, request.FromDate, request.ToDate, request.CenterCd);
         return await RenderPdf(data, ReportType.Common);
     }
 

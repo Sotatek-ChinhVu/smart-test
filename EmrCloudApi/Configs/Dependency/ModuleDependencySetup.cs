@@ -160,6 +160,8 @@ using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Service;
+using Reporting.Kensalrai.DB;
+using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
 using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
@@ -209,6 +211,8 @@ using Reporting.Statistics.Sta3030.DB;
 using Reporting.Statistics.Sta3030.Service;
 using Reporting.Statistics.Sta3040.DB;
 using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -522,7 +526,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using UseCase.MainMenu.SaveStatisticMenu;
 using Reporting.Statistics.Sta3001.Service;
 using Reporting.Statistics.Sta3001.DB;
 using Reporting.Statistics.Sta3080.Service;
@@ -540,6 +543,7 @@ using Reporting.Statistics.Sta3041.DB;
 using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3050.Service;
 using Reporting.Statistics.Sta3050.DB;
+using UseCase.TimeZoneConf.SaveTimeZoneConf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -744,6 +748,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
             services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
+            services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
+            services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -1193,8 +1199,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
-            //GetTimeZoneConfGroup
+            //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
+            busBuilder.RegisterUseCase<SaveTimeZoneConfInputData, SaveTimeZoneConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
