@@ -55,40 +55,45 @@ namespace Infrastructure.Repositories
                 .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
             // PicZai
-            var defaultPicZai = "";
-            var otherPicZai = "";
-            var defaultPicHou = "";
-            var otherPicHou = "";
+            string defaultPicZai = "";
+            string otherPicZai = "";
+            string defaultPicHou = "";
+            string otherPicHou = "";
             if (pathConf != null)
             {
-                defaultPicZai = pathConf.Path + @"/zaikei/";
-                defaultPicHou = pathConf.Path + @"/housou/";
+                defaultPicZai = pathConf.Path + "zaikei/";
+                defaultPicHou = pathConf.Path + "housou/";
             }
             else
             {
 
-                defaultPicZai = pathServerDefault + @"/zaikei/";
-                defaultPicHou = pathServerDefault + @"/housou/";
+                defaultPicZai = pathServerDefault + "zaikei/";
+                defaultPicHou = pathServerDefault + "housou/";
             }
             var customPathPicZai = "";
             var customPathPicHou = "";
             var customPathConf = NoTrackingDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeCustomDefault);
             if (customPathConf != null)
             {
-                customPathPicZai = customPathConf.Path + @"/zaikei/";
-                customPathPicHou = customPathConf.Path + @"/housou/";
+                customPathPicZai = customPathConf.Path + "zaikei/";
+                customPathPicHou = customPathConf.Path + "housou/";
             }
             else
             {
-                customPathPicZai = pathServerDefault + @"/zaikei/";
-                customPathPicHou = pathServerDefault + @"/housou/";
+                customPathPicZai = pathServerDefault + "zaikei/";
+                customPathPicHou = pathServerDefault + "housou/";
             }
 
-            var otherImagePic = NoTrackingDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
-            if (otherImagePic != null)
+            var otherImagePicZai = NoTrackingDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
+            if (otherImagePicZai != null)
             {
-                otherPicZai = defaultPicZai + otherImagePic.FileName ?? string.Empty;
-                otherPicHou = defaultPicHou + otherImagePic.FileName ?? string.Empty;
+                otherPicZai = defaultPicZai + otherImagePicZai.FileName ?? string.Empty;
+            }
+
+            var otherImagePicHou = NoTrackingDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicHousou);
+            if (otherImagePicHou != null)
+            {
+                otherPicHou = defaultPicHou + otherImagePicHou.FileName ?? string.Empty;
             }
 
             var result = joinQuery.AsEnumerable().Select(d => new DrugInforModel(

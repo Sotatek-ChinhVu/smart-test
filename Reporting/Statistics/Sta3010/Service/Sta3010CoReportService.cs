@@ -7,7 +7,6 @@ using Reporting.Statistics.Sta3010.Models;
 using Helper.Common;
 using Reporting.Statistics.Enums;
 using Reporting.ReadRseReportFile.Model;
-using Reporting.Statistics.Sta3080.Mapper;
 using Reporting.Statistics.Sta3010.Mapper;
 
 namespace Reporting.Statistics.Sta3010.Service;
@@ -207,7 +206,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
             bool pbSetKbn = new int[] { printConf.PageBreak1 }.Contains(1);
 
             //ソート順
-            odrSets = odrSets.OrderBy(x => x.SetKbn)
+            odrSets = odrSets?.OrderBy(x => x.SetKbn)
                 .ThenBy(x => x.SetKbnEdaNo)
                 .ThenBy(x => x.Level1)
                 .ThenBy(x => x.Level2)
@@ -217,7 +216,7 @@ public class Sta3010CoReportService : ISta3010CoReportService
                 .ThenBy(x => x.RpNo)
                 .ThenBy(x => x.RpEdaNo)
                 .ThenBy(x => x.RowNo)
-                .ToList();
+                .ToList()??new();
 
 
             printDatas = new List<CoSta3010PrintData>();
@@ -228,7 +227,6 @@ public class Sta3010CoReportService : ISta3010CoReportService
             foreach (var odrSet in odrSets)
             {
                 CoSta3010PrintData printData = new CoSta3010PrintData();
-                CoSta3010PrintData prePrintData = printDatas.Count >= 1 ? printDatas.Last() : new CoSta3010PrintData();
 
                 //改ページ
                 if ((pbSetKbn && (preOdrSet?.SetKbn ?? -1) != odrSet.SetKbn && rowCnt > 0) || rowCnt >= maxRow)

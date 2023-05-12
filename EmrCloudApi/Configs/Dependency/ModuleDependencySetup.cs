@@ -137,6 +137,7 @@ using Interactor.SuperSetDetail;
 using Interactor.SwapHoken;
 using Interactor.SystemConf;
 using Interactor.SystemGenerationConf;
+using Interactor.TimeZoneConf;
 using Interactor.Todo;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
@@ -206,12 +207,22 @@ using Reporting.Statistics.Sta3010.DB;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3030.DB;
+using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3040.DB;
+using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3071.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
 using Reporting.Statistics.Sta3080.Service;
 using Reporting.Statistics.Sta9000.DB;
 using Reporting.Statistics.Sta9000.Service;
+using Reporting.SyojyoSyoki.DB;
+using Reporting.SyojyoSyoki.Service;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.Accounting.CheckAccountingStatus;
@@ -481,6 +492,7 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
+using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -516,6 +528,22 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
+using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3071.DB;
+using UseCase.Family.GetMaybeFamilyList;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.DB;
+using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3030.DB;
+using Reporting.Statistics.Sta3040.DB;
+using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -613,10 +641,18 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientManagementService, PatientManagementService>();
             services.AddTransient<ICoSta2020Finder, CoSta2020Finder>();
             services.AddTransient<ISta2020CoReportService, Sta2020CoReportService>();
+            services.AddTransient<ISyojyoSyokiCoReportService, SyojyoSyokiCoReportService>();
+            services.AddTransient<ICoSyojyoSyokiFinder, CoSyojyoSyokiFinder>();
             services.AddTransient<ICoSta3010Finder, CoSta3010Finder>();
             services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
+            services.AddTransient<ICoSta3030Finder, CoSta3030Finder>();
+            services.AddTransient<ISta3030CoReportService, Sta3030CoReportService>();
             services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
             services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
+            services.AddTransient<ICoSta3040Finder, CoSta3040Finder>();
+            services.AddTransient<ISta3040CoReportService, Sta3040CoReportService>();
+            services.AddTransient<ICoSta3041Finder, CoSta3041Finder>();
+            services.AddTransient<ISta3041CoReportService, Sta3041CoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1160,6 +1196,9 @@ namespace EmrCloudApi.Configs.Dependency
             // Statistic
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
+
+            //GetTimeZoneConfGroup
+            busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

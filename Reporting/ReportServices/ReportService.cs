@@ -22,6 +22,7 @@ using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.Model;
 using Reporting.ReceiptList.Service;
 using Reporting.Sijisen.Service;
+using Reporting.SyojyoSyoki.Service;
 
 namespace Reporting.ReportServices;
 
@@ -41,9 +42,10 @@ public class ReportService : IReportService
     private readonly IStatisticService _statisticService;
     private readonly IReceiptCoReportService _receiptCoReportService;
     private readonly IPatientManagementService _patientManagementService;
+    private readonly ISyojyoSyokiCoReportService _syojyoSyokiCoReportService;
     private readonly IKensaIraiCoReportService _kensaIraiCoReportService;
 
-    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, IKensaIraiCoReportService kensaIraiCoReportService)
+    public ReportService(IOrderLabelCoReportService orderLabelCoReportService, IDrugInfoCoReportService drugInfoCoReportService, ISijisenReportService sijisenReportService, IByomeiService byomeiService, IKarte1Service karte1Service, INameLabelService nameLabelService, IMedicalRecordWebIdReportService medicalRecordWebIdReportService, IReceiptCheckCoReportService receiptCheckCoReportService, IReceiptListCoReportService receiptListCoReportService, IOutDrugCoReportService outDrugCoReportService, IAccountingCoReportService accountingCoReportService, IStatisticService statisticService, IReceiptCoReportService receiptCoReportService, IPatientManagementService patientManagementService, ISyojyoSyokiCoReportService syojyoSyokiCoReportService, IKensaIraiCoReportService kensaIraiCoReportService)
     {
         _orderLabelCoReportService = orderLabelCoReportService;
         _drugInfoCoReportService = drugInfoCoReportService;
@@ -59,6 +61,7 @@ public class ReportService : IReportService
         _statisticService = statisticService;
         _receiptCoReportService = receiptCoReportService;
         _patientManagementService = patientManagementService;
+        _syojyoSyokiCoReportService = syojyoSyokiCoReportService;
         _kensaIraiCoReportService = kensaIraiCoReportService;
     }
 
@@ -114,6 +117,11 @@ public class ReportService : IReportService
     public CommonReportingRequestModel GetReceiptListReportingData(int hpId, int seikyuYm, List<ReceiptInputModel> receiptListModels)
     {
         return _receiptListCoReportService.GetReceiptListReportingData(hpId, seikyuYm, receiptListModels);
+    }
+
+    public CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId)
+    {
+        return _syojyoSyokiCoReportService.GetSyojyoSyokiReportingData(hpId, ptId, seikyuYm, hokenId);
     }
 
     /// <summary>
@@ -207,9 +215,9 @@ public class ReportService : IReportService
         return _accountingCoReportService.GetAccountingReportingData(hpId, ptId, printTypeInput, raiinNoList, raiinNoPayList, isCalculateProcess);
     }
 
-    public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false)
+    public CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1)
     {
-        return _statisticService.PrintExecute(hpId, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType, isPutTotalRow);
+        return _statisticService.PrintExecute(hpId, menuId, monthFrom, monthTo, dateFrom, dateTo, timeFrom, timeTo, coFileType, isPutTotalRow, tenkiDateFrom, tenkiDateTo, enableRangeFrom, enableRangeTo);
     }
 
     public CommonReportingRequestModel GetPatientManagement(int hpId, int menuId)

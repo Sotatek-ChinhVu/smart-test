@@ -91,6 +91,7 @@
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
+        public const string SyojyoSyoki = "SyojyoSyoki";
         public const string Kensalrai = "Kensalrai";
 
         //PatientInfor
@@ -317,5 +318,8 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+
+        //TimeZoneConf.
+        public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
     }
 }
