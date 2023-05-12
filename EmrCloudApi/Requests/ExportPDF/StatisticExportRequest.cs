@@ -23,4 +23,13 @@ public class StatisticExportRequest
     public CoFileType? CoFileType { get; set; } = null;
 
     public bool? IsPutTotalRow { get; set; } = false;
+
+    public int? TenkiDateFrom { get; set; } = -1;
+
+    public int? TenkiDateTo { get; set; } = -1;
+
+    public int? EnableRangeFrom { get; set; } = -1;
+
+    public int? EnableRangeTo { get; set; } = -1;
+
 }

@@ -1,12 +1,12 @@
 ﻿using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
-using Reporting.ReceiptList.Model;
 using Reporting.OutDrug.Model.Output;
-using Reporting.CommonMasters.Enums;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReportServices;
 
@@ -46,9 +46,13 @@ public interface IReportService
 
     AccountingResponse GetAccountingReportingData(int hpId, long ptId, int printTypeInput, List<long> raiinNoList, List<long> raiinNoPayList, bool isCalculateProcess = false);
 
-    CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false);
+    CommonReportingRequestModel GetStatisticReportingData(int hpId, int menuId, int monthFrom, int monthTo, int dateFrom, int dateTo, int timeFrom, int timeTo, CoFileType? coFileType = null, bool? isPutTotalRow = false, int? tenkiDateFrom = -1, int? tenkiDateTo = -1, int? enableRangeFrom = -1, int? enableRangeTo = -1);
 
     CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 
     CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
+
+    CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId);
+
+    CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd);
 }

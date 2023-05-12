@@ -91,6 +91,8 @@
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
+        public const string SyojyoSyoki = "SyojyoSyoki";
+        public const string Kensalrai = "Kensalrai";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -268,6 +270,7 @@
         public const string GetRaiinInfList = "GetRaiinInfList";
         public const string CheckAllowDeleteGroupMst = "CheckAllowDeleteGroupMst";
         public const string ValidateFamilyList = "ValidateFamilyList";
+        public const string GetMaybeFamilyList = "GetMaybeFamilyList";
 
         //TreeSet Byomei
         public const string GetSetByomeiTree = "GetSetByomeiTree";
@@ -315,5 +318,8 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+
+        //TimeZoneConf.
+        public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
     }
 }

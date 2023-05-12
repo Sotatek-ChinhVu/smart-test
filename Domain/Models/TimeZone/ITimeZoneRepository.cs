@@ -13,4 +13,6 @@ public interface ITimeZoneRepository : IRepositoryBase
     public TimeZoneDayInfModel GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime);
 
     public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime);
+
+    List<TimeZoneConfGroupModel> GetTimeZoneConfGroupModels(int hpId);
 }

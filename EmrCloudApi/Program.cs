@@ -17,7 +17,38 @@ builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddMemoryCache();
 
 #if DEBUG
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+        .AddStackExchangeRedis(o =>
+        {
+            o.ConnectionFactory = async writer =>
+            {
+                var config = new ConfigurationOptions
+                {
+                    AbortOnConnectFail = false
+                };
+
+                string redisHost = builder.Configuration["RedisHostLocal"];
+                string redisPort = builder.Configuration["RedisPort"];
+                config.EndPoints.Add(redisHost, int.Parse(redisPort));
+
+                var connection = await ConnectionMultiplexer.ConnectAsync(config, writer);
+                connection.ConnectionFailed += (_, e) =>
+                {
+                    Console.WriteLine("Connection to Redis failed.");
+                };
+
+                if (!connection.IsConnected)
+                {
+                    Console.WriteLine("Did not connect to Redis.");
+                }
+                else
+                {
+                    Console.WriteLine("Connected to Redis.");
+                }
+
+                return connection;
+            };
+        });
 #else
 // Setup signalR
 builder.Services.AddSignalR()
