@@ -4,10 +4,8 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Reporting.Statistics.DB;
 using Reporting.Statistics.Model;
-using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3050.Models;
 
 namespace Reporting.Statistics.Sta3050.DB;
@@ -33,17 +31,15 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
     public List<CoSinKouiModel> GetSinKouis(int hpId, CoSta3050PrintConf printConf)
     {
         List<CoSinKouiModel> sinData;
-        sinData = GetSinKouiDataKinds(hpId, printConf);
-        sinData = GetOdrInfs(hpId, printConf);
 
-        //if (printConf.DataKind == 0)
-        //{
-        //    sinData = GetSinKouiDataKinds(hpId, printConf);
-        //}
-        //else
-        //{
-        //    sinData = GetOdrInfs(hpId, printConf);
-        //}
+        if (printConf.DataKind == 0)
+        {
+            sinData = GetSinKouiDataKinds(hpId, printConf);
+        }
+        else
+        {
+            sinData = GetOdrInfs(hpId, printConf);
+        }
 
         return sinData;
     }
@@ -86,7 +82,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        var tenMsts = NoTrackingDataContext.TenMsts;
+        IQueryable<TenMst> tenMsts = NoTrackingDataContext.TenMsts;
 
         #region 項目コード変換
         if (printConf.ItemCds?.Count >= 1)
@@ -627,18 +623,32 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
 
     private List<CoSinKouiModel> GetOdrInfs(int hpId, CoSta3050PrintConf printConf)
     {
-        var odrInfs = NoTrackingDataContext.OdrInfs.Where(s => s.IsDeleted == DeleteStatus.None);
-        odrInfs = printConf.StartSinYm >= 0 ?
-            odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
-            odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
-
-        var odrDetails = NoTrackingDataContext.OdrInfDetails;
-        var tenMsts = NoTrackingDataContext.TenMsts;
-        var ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
+        IQueryable<PtInf> ptInfs = NoTrackingDataContext.PtInfs.Where(p => p.IsDelete == DeleteStatus.None);
         ptInfs = !printConf.IsTester ? ptInfs.Where(p => p.IsTester == 0) : ptInfs;
         ptInfs = printConf.StartPtNum > 0 ? ptInfs.Where(p => p.PtNum >= printConf.StartPtNum) : ptInfs;
         ptInfs = printConf.EndPtNum > 0 ? ptInfs.Where(p => p.PtNum <= printConf.EndPtNum) : ptInfs;
-        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(r => r.Status > 3);
+
+        var ptInfList = ptInfs.ToList();
+        var ptIdInfList = ptInfList.Select(item => item.PtId).Distinct().ToList();
+
+        IQueryable<OdrInf> odrInfs = NoTrackingDataContext.OdrInfs.Where(item => ptIdInfList.Contains(item.PtId) && item.IsDeleted == DeleteStatus.None);
+        odrInfs = printConf.StartSinYm >= 0 ?
+        odrInfs.Where(s => s.SinDate >= printConf.StartSinYm * 100 + 1 && s.SinDate <= printConf.EndSinYm * 100 + 31) :
+        odrInfs.Where(s => s.SinDate >= printConf.StartSinDate && s.SinDate <= printConf.EndSinDate);
+
+        var odrInfList = odrInfs.ToList();
+        var raiinNoList = odrInfList.Select(item => item.RaiinNo).Distinct().ToList();
+        var rpNoList = odrInfList.Select(item => item.RpNo).Distinct().ToList();
+        var rpEdaNoList = odrInfList.Select(item => item.RpEdaNo).Distinct().ToList();
+
+        var odrDetails = NoTrackingDataContext.OdrInfDetails.Where(item => raiinNoList.Contains(item.RaiinNo)
+                                                                           && rpNoList.Contains(item.RpNo)
+                                                                           && rpEdaNoList.Contains(item.RpEdaNo))
+                                                            .ToList();
+        var itemCdList = odrDetails.Select(item => item.ItemCd).Distinct().ToList();
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(item => itemCdList.Contains(item.ItemCd)).ToList();
+
+        var raiinInfs = NoTrackingDataContext.RaiinInfs.Where(item => item.Status > 3 && raiinNoList.Contains(item.RaiinNo));
         #region 条件指定
         //診療科
         if (printConf.KaIds?.Count >= 1)
@@ -691,11 +701,11 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        var kaMsts = NoTrackingDataContext.KaMsts;
-        var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
+        IQueryable<KaMst> kaMsts = NoTrackingDataContext.KaMsts;
+        IQueryable<UserMst> userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
 
         var joinOdrs = (
-            from odrInf in odrInfs
+            from odrInf in odrInfList
             join odrDetail in odrDetails on
                 new { odrInf.HpId, odrInf.RaiinNo, odrInf.RpNo, odrInf.RpEdaNo } equals
                 new { odrDetail.HpId, odrDetail.RaiinNo, odrDetail.RpNo, odrDetail.RpEdaNo }
@@ -744,7 +754,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 KohatuKbn = tenMsti == null ? 0 : tenMsti.KohatuKbn,
                 IsAdopted = tenMsti == null ? 0 : tenMsti.IsAdopted
             }
-        );
+        ).ToList();
 
         var joinQuery = (
             from joinOdr in joinOdrs
@@ -992,7 +1002,7 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
         }
         #endregion
 
-        List<string> zaiSuryos = new List<string>
+        List<string> zaiSuryos = new()
             {
                 ItemCdConst.ZaiOusin, ItemCdConst.ZaiOusinTokubetu,
                 ItemCdConst.ZaiHoumon1_1Dou, ItemCdConst.ZaiHoumon1_1DouIgai,
@@ -1000,7 +1010,9 @@ public class CoSta3050Finder : RepositoryBase, ICoSta3050Finder
                 ItemCdConst.ZaiHoumon2i, ItemCdConst.ZaiHoumon2ro
             };
 
-        var retData = joinQuery.AsEnumerable().Select(
+        var joinList = joinQuery.ToList();
+
+        var retData = joinList.Select(
             data =>
                 new CoSinKouiModel()
                 {
