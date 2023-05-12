@@ -91,6 +91,7 @@
         public const string PeriodReceiptReport = "PeriodReceiptReport";
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
+        public const string SyojyoSyoki = "SyojyoSyoki";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -316,5 +317,8 @@
         // MainMenu
         public const string GetStatisticMenuList = "GetStatisticMenuList";
         public const string SaveStatisticMenuList = "SaveStatisticMenuList";
+
+        //TimeZoneConf.
+        public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
     }
 }

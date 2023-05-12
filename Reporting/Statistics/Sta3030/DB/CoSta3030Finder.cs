@@ -133,17 +133,17 @@ public class CoSta3030Finder : RepositoryBase, ICoSta3030Finder
             }
 
             //検索項目
-            var ItemCds = new List<string>();
+            var itemCds = new List<string>();
             if (printConf.ItemCds?.Count >= 1)
             {
-                ItemCds.AddRange(printConf.ItemCds);
+                itemCds.AddRange(printConf.ItemCds);
             }
 
             var wrkItems = sinJoins;
 
-            for (int i = 0; i < ItemCds.Count; i++)
+            for (int i = 0; i < itemCds.Count; i++)
             {
-                string wrkCd = ItemCds[i];
+                string wrkCd = itemCds[i];
 
                 var curItems = sinJoins.Where(p => p.ItemCd == wrkCd);
 
