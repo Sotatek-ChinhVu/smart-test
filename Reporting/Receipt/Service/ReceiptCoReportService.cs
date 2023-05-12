@@ -19,6 +19,7 @@ using Reporting.Receipt.Models;
 using Reporting.Structs;
 using ReceFutanReceInfModel = Reporting.Calculate.ReceFutan.Models.ReceInfModel;
 using ReceFutanReceFutanKbnModel = Reporting.Calculate.ReceFutan.Models.ReceFutanKbnModel;
+using Reporting.Calculate.ReceFutan.ViewModels;
 
 namespace Reporting.Receipt.Service
 {
@@ -88,7 +89,7 @@ namespace Reporting.Receipt.Service
         {
             var receSeikyu = _coReceiptFinder.GetReceSeikyu(hpId, ptId, hokenId, sinYm);
 
-            var ReceFutanViewModel = new Reporting.Calculate.ReceFutan.ViewModels.ReceFutanViewModel();
+            var receFutanViewModel = new ReceFutanViewModel();
 
             if (receSeikyu == null)
             {
@@ -103,8 +104,8 @@ namespace Reporting.Receipt.Service
                 }
                 else
                 {
-                    List<ReceFutanReceInfModel> ReceInfs = ReceFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
-                    List<ReceFutanReceFutanKbnModel> ReceFutanKbn = ReceFutanViewModel.ReceFutanKbns;
+                    List<ReceFutanReceInfModel> ReceInfs = receFutanViewModel.KaikeiTotalCalculate(ptId, sinYm);
+                    List<ReceFutanReceFutanKbnModel> ReceFutanKbn = receFutanViewModel.ReceFutanKbns;
                     var receInfCheck = ReceInfs.First(p => p.HokenId == hokenId || p.HokenId2 == hokenId);
 
                     if (receInfCheck != null)
