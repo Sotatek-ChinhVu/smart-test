@@ -8,6 +8,43 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        public static string SDateToShowSDate3(int Ymd)
+        {
+            string WrkStr;
+            DateTime WrkDate;
+
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return "";
+            }
+
+            try
+            {
+                // Padding zero first
+                WrkStr = Ymd.ToString("D8");
+
+                // Then convert to date time
+                WrkDate = DateTime.ParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+                return WrkDate.ToString("yy/MM/dd");
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static double StrToDoubleDef(string str, double defaultVal)
+        {
+            double ret;
+
+            if (double.TryParse(str, out ret) == false)
+            {
+                ret = defaultVal;
+            }
+
+            return ret;
+        }
+
         public static string PadLeftB(string str, int len, char paddingChar = ' ')
         {
             string ret = str.TrimStart();

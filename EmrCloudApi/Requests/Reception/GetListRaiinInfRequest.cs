@@ -7,5 +7,7 @@
         public int PageIndex { get; set; }
 
         public int PageSize { get; set; }
+
+        public int IsDeleted { get; set; } = 1;
     }
 }

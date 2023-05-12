@@ -7,4 +7,5 @@ public enum CalculateTypeEnum : byte
     GetFormatLength = 2,
     GetFormatLendB = 3,
     GetListColCount = 4,
+    GetObjectVisible = 5,
 }
