@@ -92,6 +92,7 @@
         public const string StaticReport = "StaticReport";
         public const string PatientManagement = "PatientManagement";
         public const string SyojyoSyoki = "SyojyoSyoki";
+        public const string Kensalrai = "Kensalrai";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";

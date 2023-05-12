@@ -160,6 +160,8 @@ using Reporting.DailyStatic.Service;
 using Reporting.DrugInfo.DB;
 using Reporting.DrugInfo.Service;
 using Reporting.Karte1.Service;
+using Reporting.Kensalrai.DB;
+using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
 using Reporting.MedicalRecordWebId.Service;
 using Reporting.NameLabel.Service;
@@ -209,6 +211,8 @@ using Reporting.Statistics.Sta3030.DB;
 using Reporting.Statistics.Sta3030.Service;
 using Reporting.Statistics.Sta3040.DB;
 using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -740,6 +744,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
             services.AddTransient<ICoSta3020Finder, CoSta3020Finder>();
+            services.AddTransient<IKensaIraiCoReportService, KensaIraiCoReportService>();
+            services.AddTransient<ICoKensaIraiFinder, CoKensaIraiFinder>();
         }
 
         private void SetupUseCase(IServiceCollection services)
