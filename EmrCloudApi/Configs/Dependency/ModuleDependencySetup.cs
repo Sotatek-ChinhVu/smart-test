@@ -205,6 +205,8 @@ using Reporting.Statistics.Sta3010.DB;
 using Reporting.Statistics.Sta3010.Service;
 using Reporting.Statistics.Sta3020.DB;
 using Reporting.Statistics.Sta3020.Service;
+using Reporting.Statistics.Sta3030.DB;
+using Reporting.Statistics.Sta3030.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -482,8 +484,8 @@ using UseCase.SystemConf.SaveDrugCheckSetting;
 using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
-using UseCase.Todo.GetTodoGrp;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
+using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
 using UseCase.Todo.UpsertTodoInf;
@@ -619,6 +621,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoSyojyoSyokiFinder, CoSyojyoSyokiFinder>();
             services.AddTransient<ICoSta3010Finder, CoSta3010Finder>();
             services.AddTransient<ISta3010CoReportService, Sta3010CoReportService>();
+            services.AddTransient<ICoSta3030Finder, CoSta3030Finder>();
+            services.AddTransient<ISta3030CoReportService, Sta3030CoReportService>();
             services.AddTransient<ICoSta3001Finder, CoSta3001Finder>();
             services.AddTransient<ISta3001CoReportService, Sta3001CoReportService>();
 
