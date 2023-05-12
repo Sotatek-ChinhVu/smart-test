@@ -321,5 +321,6 @@
 
         //TimeZoneConf.
         public const string GetTimeZoneConfGroup = "GetTimeZoneConfGroup";
+        public const string SaveTimeZoneConf = "SaveTimeZoneConf";
     }
 }
