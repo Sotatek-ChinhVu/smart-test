@@ -21,14 +21,14 @@ namespace Reporting.Kensalrai.Service
         private List<string> _objectRseList;
         private List<CoKensaIraiPrintDataModel> printOutData;
         List<KensaIraiModel> KensaIrais;
-        string CenterCd;
-        string CenterName;
+        string centerCd;
+        string centerName;
         int IraiDate;
-        int StartDate;
-        int EndDate;
+        int startDate;
+        int endDate;
         int _currentPage;
         bool _hasNextPage;
-        bool PrintYoki = false;
+        bool printYoki = false;
         private int _dataColCount;
         private int _dataRowCount;
         private string _rowCountFieldName = "lsSinDate";
@@ -46,7 +46,7 @@ namespace Reporting.Kensalrai.Service
 
         private void GetKensaIrais()
         {
-            var listKensaIraiInf = _finder.GetKensaInfModelsPrint(HpId, StartDate, EndDate, CenterCd);
+            var listKensaIraiInf = _finder.GetKensaInfModelsPrint(HpId, startDate, endDate, centerCd);
             if (listKensaIraiInf != null && listKensaIraiInf.Count > 0)
             {
                 KensaIrais = _finder.GetKensaIraiModelsForPrint(HpId, listKensaIraiInf);
@@ -57,9 +57,9 @@ namespace Reporting.Kensalrai.Service
         {
             HpId = hpId;
             IraiDate = systemDate;
-            StartDate = fromDate;
-            EndDate = toDate;
-            CenterCd = centerCd;
+            startDate = fromDate;
+            endDate = toDate;
+            this.centerCd = centerCd;
             // get data to print
             GetFieldNameList();
             GetRowCount();
@@ -91,7 +91,7 @@ namespace Reporting.Kensalrai.Service
         private void GetData()
         {
             // センター名
-            CenterName = _finder.GetCenterName(HpId, CenterCd);
+            centerName = _finder.GetCenterName(HpId, centerCd);
 
             // 来院情報を取得
             List<CoRaiinInfModel> raiinInfs = _finder.GetRaiinInf(HpId, KensaIrais.Select(p => p.RaiinNo).ToList());
@@ -162,7 +162,7 @@ namespace Reporting.Kensalrai.Service
                 int dtlSeqNo = 0;
                 List<KensaIraiDetailModel> details = kensaIrai.Details;
 
-                if (PrintYoki)
+                if (printYoki)
                 {
                     // 容器名を印字する場合、容器名順にソートしておく
                     details =
@@ -213,13 +213,13 @@ namespace Reporting.Kensalrai.Service
                 SetFieldData("dfPage", _currentPage.ToString());
 
                 // 開始日
-                SetFieldData("dfStartDate", CIUtil.SDateToShowSDate3(StartDate));
+                SetFieldData("dfStartDate", CIUtil.SDateToShowSDate3(startDate));
 
                 // 終了日
-                SetFieldData("dfEndDate", CIUtil.SDateToShowSDate3(EndDate));
+                SetFieldData("dfEndDate", CIUtil.SDateToShowSDate3(endDate));
 
                 // センター名
-                SetFieldData("dfCenterName", CenterName);
+                SetFieldData("dfCenterName", centerName);
 
                 return 1;
             }
@@ -345,7 +345,7 @@ namespace Reporting.Kensalrai.Service
             CoCalculateRequestModel data = new CoCalculateRequestModel((int)CoReportType.KensaIrai, "fmKensaIraiList.rse", fieldInputList);
             var javaOutputData = _readRseReportFileService.ReadFileRse(data);
             _dataRowCount = javaOutputData.responses?.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetListRowCount)?.result ?? 0;
-            PrintYoki = javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetObjectVisible)?.result == 1;
+            printYoki = javaOutputData.responses.FirstOrDefault(item => item.typeInt == (int)CalculateTypeEnum.GetObjectVisible)?.result == 1;
         }
         #endregion
     }
