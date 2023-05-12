@@ -6,11 +6,11 @@ namespace Reporting.Statistics.Sta3030.Models;
 
 public class CoPtByomeiModel
 {
-    const int SyushokuCdCnt = 21;
-    const int SettogoFrom = 1;
-    const int SettogoTo = 7999;
-    const int SetubigoFrom = 8000;
-    const int SetubigoTo = 8999;
+    const int syushokuCdCnt = 21;
+    const int settogoFrom = 1;
+    const int settogoTo = 7999;
+    const int setubigoFrom = 8000;
+    const int setubigoTo = 8999;
 
     public PtInf PtInf { get; }
 
@@ -226,10 +226,10 @@ public class CoPtByomeiModel
             string ret = "";
             int SyushokuCd;
 
-            for (int i = 1; i <= SyushokuCdCnt; i++)
+            for (int i = 1; i <= syushokuCdCnt; i++)
             {
                 SyushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
-                if (SettogoFrom <= SyushokuCd && SyushokuCd <= SettogoTo)
+                if (settogoFrom <= SyushokuCd && SyushokuCd <= settogoTo)
                 {
                     ret += string.Format("{0}/", SyushokuCd);
                 }
@@ -250,10 +250,10 @@ public class CoPtByomeiModel
             string ret = "";
             int SyushokuCd;
 
-            for (int i = 1; i <= SyushokuCdCnt; i++)
+            for (int i = 1; i <= syushokuCdCnt; i++)
             {
                 SyushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
-                if (SetubigoFrom <= SyushokuCd && SyushokuCd <= SetubigoTo)
+                if (setubigoFrom <= SyushokuCd && SyushokuCd <= setubigoTo)
                 {
                     ret += string.Format("{0}/", SyushokuCd);
                 }

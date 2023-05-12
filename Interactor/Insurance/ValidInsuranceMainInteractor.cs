@@ -178,7 +178,7 @@ namespace Interactor.Insurance
             var checkMessageIsValidEmptyHoken = IsValidEmptyHoken(isSelectedHokenPattern, isAddNew, isEmptyHoken, isEmptyKohi1, isEmptyKohi2, isEmptyKohi3, isEmptyKohi4);
             if (!String.IsNullOrEmpty(checkMessageIsValidEmptyHoken))
             {
-                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidEmptyHoken, checkMessageIsValidEmptyHoken, TypeMessage.TypeMessageWarning));
+                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidEmptyHoken, checkMessageIsValidEmptyHoken, TypeMessage.TypeMessageError));
                 return;
             }
             // Validate HokenNashi only
