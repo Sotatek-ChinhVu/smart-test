@@ -462,7 +462,7 @@ public class SystemConfRepository : RepositoryBase, ISystemConfRepository
         {
             foreach (var model in addedSettingModels)
             {
-                TrackingDataContext.SystemConfs.Update(new SystemConf()
+                TrackingDataContext.SystemConfs.Add(new SystemConf()
                 {
                     HpId = hpId,
                     GrpCd = model.GrpCd,

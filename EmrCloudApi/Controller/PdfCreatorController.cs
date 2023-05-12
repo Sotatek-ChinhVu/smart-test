@@ -158,6 +158,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.SyojyoSyoki)]
+    public async Task<IActionResult> SyojyoSyoki([FromQuery] SyojyoSyokiRequest request)
+    {
+        var data = _reportService.GetSyojyoSyokiReportingData(request.HpId, request.PtId, request.SeiKyuYm, request.HokenId);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {
