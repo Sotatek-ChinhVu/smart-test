@@ -7,6 +7,11 @@ public class CoSta3060PrintConf
         MenuId = menuId;
     }
 
+    public CoSta3060PrintConf()
+    {
+        MenuId = 0;
+    }
+
     /// <summary>
     /// STA_MENU.MENU_ID
     /// </summary>
@@ -83,8 +88,8 @@ public class CoSta3060PrintConf
     /// </summary>
     public struct PtGrp
     {
-        public int GrpId;
-        public string GrpCode;
+        public int GrpId { get; set; }
+        public string GrpCode { get; set; }
 
         public PtGrp(int grpId, string grpCode)
         {
