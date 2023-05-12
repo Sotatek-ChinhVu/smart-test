@@ -49,7 +49,7 @@ namespace Domain.Models.Reception
 
         bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo);
 
-        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize);
+        List<ReceptionModel> GetListRaiinInf(int hpId, long ptId, int pageIndex, int pageSize, int isDeleted);
 
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 

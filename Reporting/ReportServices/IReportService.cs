@@ -53,4 +53,6 @@ public interface IReportService
     CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
 
     CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId);
+
+    CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd);
 }
