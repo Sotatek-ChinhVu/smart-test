@@ -526,8 +526,6 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
-using Reporting.Statistics.Sta3041.DB;
-using Reporting.Statistics.Sta3041.Service;
 using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Configs.Dependency
