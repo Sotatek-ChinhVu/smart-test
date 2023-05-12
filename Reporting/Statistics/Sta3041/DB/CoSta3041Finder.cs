@@ -32,8 +32,8 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
 
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
         //健保を抽出する
-        int[] Kenpos = new int[] { 1, 2 };
-        ptHokenPatterns = ptHokenPatterns.Where(x => Kenpos.Contains(x.HokenKbn));
+        int[] kenpos = new int[] { 1, 2 };
+        ptHokenPatterns = ptHokenPatterns.Where(x => kenpos.Contains(x.HokenKbn));
 
         var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None && x.SanteiKbn == 0);
         //処方を抽出する
@@ -46,8 +46,8 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
         var odrInfDetails = NoTrackingDataContext.OdrInfDetails;
 
         //向精神薬を抽出する
-        int[] KouseisinKbns = new int[] { 1, 2, 3, 4 };
-        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => KouseisinKbns.Contains(x.KouseisinKbn));
+        int[] kouseisinKbns = new int[] { 1, 2, 3, 4 };
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(x => kouseisinKbns.Contains(x.KouseisinKbn));
 
         var odrJoins = (
             from odrInf in odrInfs
@@ -68,7 +68,7 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
             join tenMst in tenMsts on
                 new { odrJoin.HpId, odrJoin.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd }
-            select new { ptInf, odrJoin, tenMst, YakkaCd7 = tenMst.YakkaCd.Substring(0, 7) }
+            select new { ptInf, odrJoin, tenMst, YakkaCd7 = tenMst.YakkaCd != null ? tenMst.YakkaCd.Substring(0, 7) : string.Empty }
                 ).ToList();
 
         //診療日が期間外の項目を除外する
@@ -87,7 +87,7 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
                              }
                            ;
 
-        var KouseisinInfs =
+        var kouseisinInfs =
             from joinQuery in joinQueries
             join grpJoinQuery in grpJoinQueries on
                 new { joinQuery.ptInf.PtNum, joinQuery.odrJoin.SinDate, joinQuery.tenMst.KouseisinKbn } equals
@@ -95,7 +95,7 @@ public class CoSta3041Finder : RepositoryBase, ICoSta3041Finder
             select new { joinQuery.ptInf, joinQuery.odrJoin.SinDate, joinQuery.tenMst, grpJoinQuery.DrugCount }
                 ;
 
-        var retData = KouseisinInfs.AsEnumerable().Select(data => new CoKouseisinInf(data.ptInf, data.SinDate, data.tenMst, data.DrugCount)).ToList();
+        var retData = kouseisinInfs.AsEnumerable().Select(data => new CoKouseisinInf(data.ptInf, data.SinDate, data.tenMst, data.DrugCount)).ToList();
 
         return retData;
     }

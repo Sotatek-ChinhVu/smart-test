@@ -106,6 +106,43 @@ public class TimeZoneRepository : RepositoryBase, ITimeZoneRepository
         }
     }
 
+    public List<TimeZoneConfGroupModel> GetTimeZoneConfGroupModels(int hpId)
+    {
+        var timeZoneConfEntities = NoTrackingDataContext.TimeZoneConfs.Where(x => x.HpId == hpId && x.IsDelete == 0).OrderBy(x => x.YoubiKbn);
+
+        var result = timeZoneConfEntities
+                    .GroupBy(x => x.YoubiKbn)
+                    .AsEnumerable()
+                    .Select(x => new TimeZoneConfGroupModel(
+                        x.Key,
+                        x.OrderBy((o) => o.StartTime).Select((detail, index) => new TimeZoneConfModel(detail.HpId,
+                                                                                                            index + 1,
+                                                                                                            detail.YoubiKbn,
+                                                                                                            detail.StartTime,
+                                                                                                            detail.EndTime,
+                                                                                                            detail.SeqNo,
+                                                                                                            detail.TimeKbn,
+                                                                                                            detail.IsDelete,
+                                                                                                            false))
+                    )).ToList();
+
+        List<int> dayOfWeek = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+
+        foreach (var day in dayOfWeek)
+        {
+            var group = result.Where(x => x.YoubiKbn == day).FirstOrDefault();
+            if (group == null)
+            {
+                result.Add(
+                    new TimeZoneConfGroupModel(
+                        day,
+                        new List<TimeZoneConfModel>() { new TimeZoneConfModel(hpId, 0, day, 0, 0, 0, 0, 0, false) }
+                ));
+            }
+        }
+        return result;
+    }
+
     public void ReleaseResource()
     {
         DisposeDataContext();

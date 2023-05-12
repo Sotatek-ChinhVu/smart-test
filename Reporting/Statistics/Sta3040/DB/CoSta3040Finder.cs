@@ -34,8 +34,8 @@ public class CoSta3040Finder : RepositoryBase, ICoSta3040Finder
 
         var ptHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None);
         //自費・労災・自賠を除く
-        int[] ExpHokKbns = new int[] { 0, 11, 12, 13, 14 };
-        ptHokenPatterns = ptHokenPatterns.Where(x => !ExpHokKbns.Contains(x.HokenKbn));
+        int[] expHokKbns = new int[] { 0, 11, 12, 13, 14 };
+        ptHokenPatterns = ptHokenPatterns.Where(x => !expHokKbns.Contains(x.HokenKbn));
 
         var odrInfs = NoTrackingDataContext.OdrInfs.Where(x => x.HpId == hpId && x.IsDeleted == DeleteStatus.None && x.SanteiKbn == 0);
         #region 条件

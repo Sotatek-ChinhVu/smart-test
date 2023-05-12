@@ -1,12 +1,12 @@
 ﻿using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
+using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
 using Reporting.Karte1.Mapper;
 using Reporting.Mappers.Common;
 using Reporting.OrderLabel.Model;
-using Reporting.ReceiptList.Model;
 using Reporting.OutDrug.Model.Output;
-using Reporting.CommonMasters.Enums;
+using Reporting.ReceiptList.Model;
 
 namespace Reporting.ReportServices;
 
@@ -51,4 +51,6 @@ public interface IReportService
     CommonReportingRequestModel GetReceiptData(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 
     CommonReportingRequestModel GetPatientManagement(int hpId, int menuId);
+
+    CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId);
 }
