@@ -29,4 +29,6 @@ public interface IAmazonS3Service
     string GetUniqueFileNameKey(string fileName);
 
     string GetAccessBaseS3();
+
+    Task<bool> S3FilePathIsExists(string locationFile);
 }

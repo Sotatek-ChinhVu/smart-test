@@ -7,6 +7,7 @@ using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -116,7 +117,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                             item.KanaName ?? string.Empty,
                                                             item.Sex,
                                                             item.Birthday,
-                                                            item.IsDead
+                                                            item.IsDead,
+                                                            int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"))
                                                         )).ToList();
     }
 
@@ -234,7 +236,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                             item.KanaName ?? string.Empty,
                                             item.Sex,
                                             item.Birthday,
-                                            item.IsDead
+                                            item.IsDead,
+                                            sinDate
                          )).ToList();
     }
 
@@ -458,26 +461,55 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
 
     private List<long> GetMaybeFamilyListByAddressOrPhone(int hpId, PtInf mainPtInf)
     {
-        string tel1 = mainPtInf.Tel1?.Replace("ー", string.Empty)
-                                     .Replace("ｰ", string.Empty)
-                                     .Replace("-", string.Empty)
-                                     .Replace("　", string.Empty)
-                                     .Replace(" ", string.Empty) ?? string.Empty;
+        string tel1 = string.Empty;
+        string tel2 = string.Empty;
+        string homeAddress = string.Empty;
+        string fullSizeHomeAddress = string.Empty;
+        string halfSizeHomeAddress = string.Empty;
 
-        string tel2 = mainPtInf.Tel2?.Replace("ー", string.Empty)
-                                     .Replace("ｰ", string.Empty)
-                                     .Replace("-", string.Empty)
-                                     .Replace("　", string.Empty)
-                                     .Replace(" ", string.Empty) ?? string.Empty;
+        var systemConfig = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 1002 && item.GrpEdaNo == 0)?.Val ?? 0;
+        if (systemConfig == 0)
+        {
+            return new();
+        }
+        else if (systemConfig == 1)
+        {
+            tel1 = mainPtInf.Tel1?.Replace("ー", string.Empty)
+                                    .Replace("ｰ", string.Empty)
+                                    .Replace("-", string.Empty)
+                                    .Replace("　", string.Empty)
+                                    .Replace(" ", string.Empty) ?? string.Empty;
 
-        var homeAddress = mainPtInf.HomeAddress1 + mainPtInf.HomeAddress2;
-        homeAddress = homeAddress?.Replace("　", string.Empty)
-                                  .Replace(" ", string.Empty) ?? string.Empty;
+            tel2 = mainPtInf.Tel2?.Replace("ー", string.Empty)
+                                        .Replace("ｰ", string.Empty)
+                                        .Replace("-", string.Empty)
+                                        .Replace("　", string.Empty)
+                                        .Replace(" ", string.Empty) ?? string.Empty;
 
-        var fullSizeHomeAddress = HenkanJ.Instance.ToFullsize(homeAddress);
-        var halfSizeHomeAddress = HenkanJ.Instance.ToHalfsize(homeAddress);
+            homeAddress = mainPtInf.HomeAddress1 + mainPtInf.HomeAddress2;
+            homeAddress = homeAddress?.Replace("　", string.Empty)
+                                      .Replace(" ", string.Empty) ?? string.Empty;
+
+            fullSizeHomeAddress = HenkanJ.Instance.ToFullsize(homeAddress);
+            halfSizeHomeAddress = HenkanJ.Instance.ToHalfsize(homeAddress);
+        }
+        else if (systemConfig == 2)
+        {
+            tel1 = mainPtInf.Tel1?.Replace("ー", string.Empty)
+                                    .Replace("ｰ", string.Empty)
+                                    .Replace("-", string.Empty)
+                                    .Replace("　", string.Empty)
+                                    .Replace(" ", string.Empty) ?? string.Empty;
+
+            tel2 = mainPtInf.Tel2?.Replace("ー", string.Empty)
+                                        .Replace("ｰ", string.Empty)
+                                        .Replace("-", string.Empty)
+                                        .Replace("　", string.Empty)
+                                        .Replace(" ", string.Empty) ?? string.Empty;
+        }
+
         var ptInfRepos = NoTrackingDataContext.PtInfs.Where(item => item.HpId == hpId &&
-                                                                    item.IsDelete == 0);
+                                                                        item.IsDelete == 0);
 
         var query = from ptInf in ptInfRepos
                     select new

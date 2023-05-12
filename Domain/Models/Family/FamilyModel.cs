@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Family;
+﻿using Helper.Common;
+
+namespace Domain.Models.Family;
 
 public class FamilyModel
 {
@@ -46,7 +48,7 @@ public class FamilyModel
         DiseaseName = string.Empty;
     }
 
-    public FamilyModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int isDead)
+    public FamilyModel(long ptId, long ptNum, string name, string kanaName, int sex, int birthday, int isDead, int sinDate)
     {
         FamilyId = 0;
         ZokugaraCd = string.Empty;
@@ -58,7 +60,7 @@ public class FamilyModel
         KanaName = kanaName;
         Sex = sex;
         Birthday = birthday;
-        Age = 0;
+        Age = CIUtil.SDateToAge(birthday, sinDate);
         IsDead = isDead;
         IsSeparated = 0;
         Biko = string.Empty;
