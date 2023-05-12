@@ -1,8 +1,8 @@
 ﻿using Reporting.Mappers.Common;
 
-namespace Reporting.Statistics.Sta3030.Mapper;
+namespace Reporting.Statistics.Sta3040.Mapper;
 
-public class Sta3030Mapper : CommonReportingRequest
+public class Sta3040Mapper : CommonReportingRequest
 {
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
@@ -10,7 +10,7 @@ public class Sta3030Mapper : CommonReportingRequest
     private readonly string _rowCountFieldName;
     private readonly string _formFileName;
 
-    public Sta3030Mapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName, string formFileName)
+    public Sta3040Mapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName, string formFileName)
     {
         _singleFieldData = singleFieldData;
         _tableFieldData = tableFieldData;
@@ -21,7 +21,7 @@ public class Sta3030Mapper : CommonReportingRequest
 
     public override int GetReportType()
     {
-        return (int)CoReportType.Sta3030;
+        return (int)CoReportType.Sta3040;
     }
 
     public override string GetRowCountFieldName()
@@ -46,9 +46,9 @@ public class Sta3030Mapper : CommonReportingRequest
     public override Dictionary<string, string> GetFileNamePageMap()
     {
         var fileName = new Dictionary<string, string>
-    {
-        { "1", _formFileName }
-    };
+                            {
+                                { "1", _formFileName }
+                            };
         return fileName;
     }
 
@@ -62,4 +62,3 @@ public class Sta3030Mapper : CommonReportingRequest
         return new();
     }
 }
-

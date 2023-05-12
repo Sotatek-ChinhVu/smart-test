@@ -224,14 +224,14 @@ public class CoPtByomeiModel
         get
         {
             string ret = "";
-            int SyushokuCd;
+            int syushokuCd;
 
             for (int i = 1; i <= syushokuCdCnt; i++)
             {
-                SyushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
-                if (settogoFrom <= SyushokuCd && SyushokuCd <= settogoTo)
+                syushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
+                if (settogoFrom <= syushokuCd && syushokuCd <= settogoTo)
                 {
-                    ret += string.Format("{0}/", SyushokuCd);
+                    ret += string.Format("{0}/", syushokuCd);
                 }
             }
 
@@ -248,14 +248,14 @@ public class CoPtByomeiModel
         get
         {
             string ret = "";
-            int SyushokuCd;
+            int syushokuCd;
 
             for (int i = 1; i <= syushokuCdCnt; i++)
             {
-                SyushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
-                if (setubigoFrom <= SyushokuCd && SyushokuCd <= setubigoTo)
+                syushokuCd = PtByomei.GetMemberValue(string.Format("SyusyokuCd{0}", i)).AsInteger();
+                if (setubigoFrom <= syushokuCd && syushokuCd <= setubigoTo)
                 {
-                    ret += string.Format("{0}/", SyushokuCd);
+                    ret += string.Format("{0}/", syushokuCd);
                 }
             }
 
