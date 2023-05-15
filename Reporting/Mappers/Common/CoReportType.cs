@@ -61,6 +61,7 @@
         SyojyoSyoki = 56,
         Yakutai = 57,
         YoyakuHyo = 58,
-        YoyakuList = 59
+        YoyakuList = 59,
+        P08KokhoSokatu = 60,
     }
 }

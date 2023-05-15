@@ -93,6 +93,7 @@
         public const string PatientManagement = "PatientManagement";
         public const string SyojyoSyoki = "SyojyoSyoki";
         public const string Kensalrai = "Kensalrai";
+        public const string ReceiptPrint = "ReceiptPrint";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
