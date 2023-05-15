@@ -4,6 +4,8 @@
     {
         public int HpId { get; set; }
 
+        public int PrefNo { get; set; }
+
         public int ReportId { get; set; }
 
         public int ReportEdaNo { get; set; }

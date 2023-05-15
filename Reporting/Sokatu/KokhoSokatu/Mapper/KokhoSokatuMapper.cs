@@ -11,12 +11,13 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
         private readonly int _reportType;
         private readonly string _rowCountFieldName;
 
-        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName)
+        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName, int reportType)
         {
             _singleFieldData = singleFieldData;
             _tableFieldData = tableFieldData;
             _extralData = extralData;
             _rowCountFieldName = rowCountFieldName;
+            _reportType = reportType;
         }
 
         public override int GetReportType()
