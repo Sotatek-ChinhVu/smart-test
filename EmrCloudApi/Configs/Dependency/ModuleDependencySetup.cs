@@ -213,6 +213,8 @@ using Reporting.Statistics.Sta3040.DB;
 using Reporting.Statistics.Sta3040.Service;
 using Reporting.Statistics.Sta3041.DB;
 using Reporting.Statistics.Sta3041.Service;
+using Reporting.Statistics.Sta3050.DB;
+using Reporting.Statistics.Sta3050.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -491,6 +493,7 @@ using UseCase.SystemConf.SaveSystemSetting;
 using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
+using UseCase.TimeZoneConf.SaveTimeZoneConf;
 using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -1207,8 +1210,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetStatisticMenuInputData, GetStatisticMenuInteractor>();
             busBuilder.RegisterUseCase<SaveStatisticMenuInputData, SaveStatisticMenuInteractor>();
 
-            //GetTimeZoneConfGroup
+            //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
+            busBuilder.RegisterUseCase<SaveTimeZoneConfInputData, SaveTimeZoneConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -1,18 +1,20 @@
-﻿using Reporting.Calculate.Constants;
-using Reporting.Calculate.Interface;
-using Reporting.Calculate.ReceFutan.DB.CommandHandler;
-using Reporting.Calculate.ReceFutan.DB.Finder;
-using Reporting.Calculate.ReceFutan.Models;
-using Entity.Tenant;
+﻿using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using Reporting.Calculate.Constants;
+using Reporting.Calculate.Interface;
+using Reporting.Calculate.ReceFutan.DB.CommandHandler;
+using Reporting.Calculate.ReceFutan.DB.Finder;
+using Reporting.Calculate.ReceFutan.Models;
 
 namespace Reporting.Calculate.ReceFutan.ViewModels
 {
     public class ReceFutanViewModel : IReceFutanViewModel
     {
+
+        public ReceFutanViewModel() { }
 #pragma warning disable CS8600
 #pragma warning disable CS8602
 #pragma warning disable CS8604

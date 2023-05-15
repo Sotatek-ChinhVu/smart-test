@@ -1631,7 +1631,17 @@ namespace Reporting.Receipt.DB
             var receInf = NoTrackingDataContext.ReceInfs.FirstOrDefault(
                 x => x.HpId == hpId && x.PtId == ptId && x.SeikyuYm == seikyuYm && x.SinYm == sinYm && x.HokenId == hokenId);
 
-            return new Reporting.Calculate.ReceFutan.Models.ReceInfModel(receInf ?? new());
+            return new Reporting.Calculate.ReceFutan.Models.ReceInfModel(receInf);
+        }
+
+        public ReceSeikyu GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm)
+        {
+            return NoTrackingDataContext.ReceSeikyus
+                                        .FirstOrDefault(item => item.HpId == hpId &&
+                                        item.PtId == ptId &&
+                                        item.HokenId == hokenId &&
+                                        item.SinYm == sinYm &&
+                                        item.IsDeleted == 0);
         }
 
         public List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo)
