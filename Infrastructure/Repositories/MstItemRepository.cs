@@ -13,6 +13,7 @@ using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Infrastructure.Repositories
@@ -4017,6 +4018,14 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
+        }
+
+        public RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId)
+        {
+            var renkei = NoTrackingDataContext.RenkeiMsts.FirstOrDefault(item => item.HpId == hpId && item.RenkeiId == renkeiId);
+            if (renkei != null)
+                return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
+            return ObjectExtension.CreateInstance<RenkeiMstModel>();
         }
     }
 }
