@@ -38,9 +38,9 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
-        private readonly Dictionary<string, string> _fileNamePageMap;
+        private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
         private readonly string _rowCountFieldName = string.Empty;
-        private readonly int _reportType = (int)CoReportType.P08KokhoSokatu;
+        private readonly int _reportType = (int)CoReportType.KokhoSokatu;
 
         /// <summary>
         /// Finder
@@ -56,11 +56,12 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         }
         #endregion
 
-        public CommonReportingRequestModel GetP28KokhoSokatuReportingData(int hpId, int seikyuYm)
+        public CommonReportingRequestModel GetP28KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
             _hpId = hpId;
             _seikyuYm = seikyuYm;
             _formYm = seikyuYm >= KaiseiDate.m202210 ? "_2210" : string.Empty;
+            _seikyuType = seikyuType;
             var getData = GetData();
 
             _hasNextPage = true;
@@ -74,7 +75,9 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _currentPage++;
             }
 
-            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, _reportType).GetData();
+            _extralData.Add("maxRow", "6");
+
+            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
 
         private bool GetData()
@@ -266,7 +269,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         private void AddFileNamePageMap()
         {
-            _fileNamePageMap.Add("1", string.Format("p28KokhoSokatu{0}.rse", _formYm));
+            _fileNamePageMap.Add("1", string.Concat("p28KokhoSokatu", _formYm + ".rse"));
         }
 
     }
