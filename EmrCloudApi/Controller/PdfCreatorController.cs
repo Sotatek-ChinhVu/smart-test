@@ -175,7 +175,7 @@ public class PdfCreatorController : ControllerBase
     [HttpGet(ApiPath.ReceiptPrint)]
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
-        var data = _reportService.GetReceiptPrint(request.HpId, request.ReportId, request.ReportEdaNo, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
         return await RenderPdf(data, ReportType.Common);
     }
 
