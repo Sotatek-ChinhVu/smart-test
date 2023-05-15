@@ -15,7 +15,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
     {
         #region Constructor and Init
 
-        private const int MyPrefNo = 8;
+        private const int MyPrefNo = 28;
         private int _hpId;
         private int _seikyuYm;
         private SeikyuType _seikyuType;
@@ -39,7 +39,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
-        private readonly string _rowCountFieldName = string.Empty;
+        private readonly string _rowCountFieldName = "kokhoHokensyaName";
         private readonly int _reportType = (int)CoReportType.KokhoSokatu;
 
         /// <summary>
@@ -74,8 +74,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 UpdateDrawForm();
                 _currentPage++;
             }
-
-            _extralData.Add("maxRow", "6");
 
             return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
@@ -131,8 +129,8 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(_seikyuYm * 100 + 1);
                 SetFieldData("seikyuGengo", wrkYmd.Gengo);
-                SetFieldData("seikyuYear", wrkYmd.Year.AsString());
-                SetFieldData("seikyuMonth", wrkYmd.Month.AsString());
+                SetFieldData("seikyuYear", wrkYmd.Year.ToString());
+                SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
 
                 return 1;
             }
@@ -167,10 +165,10 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         countData wrkData = new countData();
                         //件数
                         wrkData.Count = wrkReces.Count;
-                        AddListData(ref data, "count", wrkData.Count.AsString());
+                        AddListData(ref data, "count", wrkData.Count.ToString());
                         //点数
                         wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                        AddListData(ref data, "tensu", wrkData.Tensu.AsString());
+                        AddListData(ref data, "tensu", wrkData.Tensu.ToString());
 
                         //請求書枚数
                         if (_seikyuType.IsNormal && _seikyuType.IsDelay && !_seikyuType.IsHenrei && !_seikyuType.IsOnline && !_seikyuType.IsPaper)
@@ -180,7 +178,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         else
                         {
                             int seikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList().Count();
-                            AddListData(ref data, "seikyuCount", seikyuCount.AsString());
+                            AddListData(ref data, "seikyuCount", seikyuCount.ToString());
                         }
 
                         _tableFieldData.Add(data);

@@ -6,15 +6,15 @@ namespace Reporting.ReceiptPrint.Service
 {
     public class ReceiptPrintService : IReceiptPrintService
     {
-        #region init properties
+        #region properties
         private bool _isNormal { get; set; }
         private bool _isDelay { get; set; }
         private bool _isHenrei { get; set; }
         private bool _isPaper { get; set; }
         private bool _isOnline { get; set; }
 
-
         #endregion
+
         private readonly IP28KokhoSokatuCoReportService _p28KokhoSokatuCoReportService;
 
         public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService)
