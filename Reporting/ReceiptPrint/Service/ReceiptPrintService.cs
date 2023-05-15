@@ -17,7 +17,7 @@ namespace Reporting.ReceiptPrint.Service
             if (prefNo == 28 && reportId == 102 && reportEdaNo == 0)
             {
                 return _p08KokhoSokatuCoReportService.GetP08KokhoSokatuReportingData(hpId, seikyuYm);
-            }if()
+            }
 
             return new();
         }
