@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Reporting.Calculate.Constants;
 using Reporting.Mappers.Common;
@@ -10,7 +11,7 @@ using Reporting.Structs;
 
 namespace Reporting.Sokatu.KokhoSokatu.Service
 {
-    public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
+    public class P28KokhoSokatuCoReportService : IP28KokhoSokatuCoReportService
     {
         #region Constructor and Init
 
@@ -20,6 +21,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private SeikyuType _seikyuType;
         private bool _hasNextPage;
         private int _currentPage;
+        private string _formYm = string.Empty;
 
         /// <summary>
         /// CoReport Model
@@ -47,21 +49,24 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly IReadRseReportFileService _readRseReportFileService;
 
 
-        public P08KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
+        public P28KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
         {
             _kokhoFinder = kokhoFinder;
             _readRseReportFileService = readRseReportFileService;
         }
         #endregion
 
-        public CommonReportingRequestModel GetP08KokhoSokatuReportingData(int hpId, int seikyuYm)
+        public CommonReportingRequestModel GetP28KokhoSokatuReportingData(int hpId, int seikyuYm)
         {
             _hpId = hpId;
             _seikyuYm = seikyuYm;
+            _formYm = seikyuYm >= KaiseiDate.m202210 ? "_2210" : string.Empty;
             var getData = GetData();
 
             _hasNextPage = true;
             _currentPage = 1;
+
+            AddFileNamePageMap();
 
             while (getData && _hasNextPage)
             {
@@ -261,7 +266,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         private void AddFileNamePageMap()
         {
-            _fileNamePageMap.Add("1", "p08KokhoSokatu.rse");
+            _fileNamePageMap.Add("1", string.Format("p28KokhoSokatu{0}.rse", _formYm));
         }
 
     }
