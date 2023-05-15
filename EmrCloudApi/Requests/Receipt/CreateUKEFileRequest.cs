@@ -35,5 +35,7 @@ namespace EmrCloudApi.Requests.Receipt
         public bool SkipWarningDoctorId { get; set; }
 
         public bool ConfirmCreateUKEFile { get; set; }
+
+        public string? FileName { get; set; }
     }
 }
