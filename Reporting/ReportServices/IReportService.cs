@@ -1,4 +1,5 @@
-﻿using Reporting.Accounting.Model;
+﻿using Amazon.Runtime.Internal;
+using Reporting.Accounting.Model;
 using Reporting.Accounting.Model.Output;
 using Reporting.CommonMasters.Enums;
 using Reporting.DrugInfo.Model;
@@ -55,4 +56,6 @@ public interface IReportService
     CommonReportingRequestModel GetSyojyoSyokiReportingData(int hpId, long ptId, int seikyuYm, int hokenId);
 
     CommonReportingRequestModel GetKensalraiData(int hpId, int systemDate, int fromDate, int toDate, string centerCd);
+
+    CommonReportingRequestModel GetReceiptPrint(int hpId, int reportId, int reportEdaNo, int ptId, int seikyuYm, int sinYm, int hokenId);
 }
