@@ -308,7 +308,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.CheckIsTenMstUsed)]
-        public ActionResult<Response<CheckIsTenMstUsedResponse>> CheckIsTenMstUsed([FromBody] CheckIsTenMstUsedRequest request)
+        public ActionResult<Response<CheckIsTenMstUsedResponse>> CheckIsTenMstUsed([FromQuery] CheckIsTenMstUsedRequest request)
         {
             var input = new CheckIsTenMstUsedInputData(HpId, request.ItemCd, request.StartDate, request.EndDate);
             var output = _bus.Handle(input);
