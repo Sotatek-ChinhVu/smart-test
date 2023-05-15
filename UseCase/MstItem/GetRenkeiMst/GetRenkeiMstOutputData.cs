@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Models.MstItem;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.GetRenkeiMst
 {
-    internal class GetRenkeiMstOutputData
+    public class GetRenkeiMstOutputData : IOutputData
     {
+        public GetRenkeiMstOutputData(GetRenkeiMstStatus status, RenkeiMstModel renkeiMst)
+        {
+            Status = status;
+            RenkeiMst = renkeiMst;
+        }
+
+        public GetRenkeiMstStatus Status { get; private set; }
+
+        public RenkeiMstModel RenkeiMst { get; private set; }
     }
 }

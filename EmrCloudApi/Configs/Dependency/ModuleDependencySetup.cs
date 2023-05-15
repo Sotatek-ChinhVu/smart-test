@@ -549,6 +549,7 @@ using Reporting.Statistics.Sta3050.Service;
 using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
+using UseCase.MstItem.GetRenkeiMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1195,6 +1196,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiMstInputData, GetRenkeiMstInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

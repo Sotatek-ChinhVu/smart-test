@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.GetRenkeiMst
 {
-    internal class GetRenkeiMstInputData
+    public class GetRenkeiMstInputData : IInputData<GetRenkeiMstOutputData>
     {
+        public GetRenkeiMstInputData(int hpId, int renkeiId)
+        {
+            HpId = hpId;
+            RenkeiId = renkeiId;
+        }
+
+        public int HpId { get; private set; }
+
+        public int RenkeiId { get; private set; }
     }
 }
