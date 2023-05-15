@@ -277,7 +277,7 @@ public class CoSta3060Finder : RepositoryBase, ICoSta3060Finder
                                                        && hokenIdList.Contains(item.HokenId)
                                         ).ToList();
 
-        var kaIdList = kaMsts.Select(item => item.KaId).Distinct().ToList();
+        var kaIdList = raiinInfList.Select(item => item.KaId).Distinct().ToList();
         var kaMstList = kaMsts.Where(item => kaIdList.Contains(item.KaId)).ToList();
         var userMstList = userMsts.Where(item => tantoIdList.Contains(item.UserId)).ToList();
 

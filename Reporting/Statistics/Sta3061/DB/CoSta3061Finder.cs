@@ -72,7 +72,7 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.SinKouiKbn == 77);
 
         var sinKouiFilms = (
-            from sinDetail in sinKouiDetails
+            from sinDetail in sinKouiDetails.AsEnumerable()
             join tenMst in tenMsts on
                 new { sinDetail.HpId, sinDetail.ItemCd } equals
                 new { tenMst.HpId, tenMst.ItemCd } into tenMstj
@@ -259,74 +259,127 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         );
         ptKohiPatterns.Union(ptKohiPattern4);
 
+        var sinKouiCountList = sinKouiCounts.ToList();
+        var ptIdList = sinKouiCountList.Select(item => item.PtId).Distinct().ToList();
+        var sinYmList = sinKouiCountList.Select(item => item.SinYm).Distinct().ToList();
+        var rpNoList = sinKouiCountList.Select(item => item.RpNo).Distinct().ToList();
+        var seqNoList = sinKouiCountList.Select(item => item.SeqNo).Distinct().ToList();
+        var raiinNoList = sinKouiCountList.Select(item => item.RaiinNo).Distinct().ToList();
+        var sinDateList = sinKouiCountList.Select(item => item.SinDate).Distinct().ToList();
+
+        var sinKouiList = sinKouis.Where(item => ptIdList.Contains(item.PtId)
+                                                 && sinYmList.Contains(item.SinYm)
+                                                 && rpNoList.Contains(item.RpNo)
+                                                 && seqNoList.Contains(item.SeqNo)
+                                  ).ToList();
+
+        var hokenIdList = sinKouiList.Select(item => item.HokenId).Distinct().ToList();
+        var hokenPidList = sinKouiList.Select(item => item.HokenPid).Distinct().ToList();
+
+        var sinKouiRpInfList = sinKouiRpInfs.Where(item => ptIdList.Contains(item.PtId)
+                                                           && sinYmList.Contains(item.SinYm)
+                                                           && rpNoList.Contains(item.RpNo)
+                                            ).ToList();
+
+        var kaikeiInfList = kaikeiInfs.Where(item => ptIdList.Contains(item.PtId)
+                                                     && raiinNoList.Contains(item.RaiinNo)
+                                                     && sinDateList.Contains(item.SinDate)
+                                                     && hokenIdList.Contains(item.HokenId)
+                                      ).ToList();
+
+        var ptInfList = ptInfs.Where(item => ptIdList.Contains(item.PtId)).ToList();
+
+        var raiinInfList = raiinInfs.Where(item => raiinNoList.Contains(item.RaiinNo)).ToList();
+
+        var tantoIdList = raiinInfList.Select(item => item.TantoId).Distinct().ToList();
+        var kaIdList = raiinInfList.Select(item => item.KaId).Distinct().ToList();
+
+        var ptKohiPatternList = ptKohiPatterns.Where(item => ptIdList.Contains(item.PtId)
+                                                             && hokenPidList.Contains(item.HokenPid)
+                                              ).ToList();
+
+        var ptHokenInfList = ptHokenInfs.Where(item => ptIdList.Contains(item.PtId)
+                                                       && hokenIdList.Contains(item.HokenId)
+                                        ).ToList();
+
         var ptKohiJoins = (
-            from sinKoui in sinKouis
-            join ptKohiPattern in ptKohiPatterns on
-                new { sinKoui.HpId, sinKoui.PtId, sinKoui.HokenPid } equals
-                new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenPid }
-            join ptHokenInf in ptHokenInfs on
-                new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenId } equals
-                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
-            group
-                new { sinKoui, ptKohiPattern } by
-                new
-                {
-                    sinKoui.HpId,
-                    sinKoui.PtId,
-                    sinKoui.SinYm,
-                    sinKoui.HokenId,
-                    ptHokenInf.HonkeKbn,
-                    ptHokenInf.Houbetu,
-                    ptKohiPattern.HokenKbn,
-                    ptKohiPattern.HokenSbtCd1
-                } into kohiGroupj
-            select new
-            {
-                kohiGroupj.Key.HpId,
-                kohiGroupj.Key.PtId,
-                kohiGroupj.Key.SinYm,
-                kohiGroupj.Key.HokenId,
-                kohiGroupj.Key.HonkeKbn,
-                kohiGroupj.Key.Houbetu,
-                kohiGroupj.Key.HokenKbn,
-                kohiGroupj.Key.HokenSbtCd1,
-                kohiCount = kohiGroupj.Where(x => x.ptKohiPattern.KohiId != 0).Select(x => x.ptKohiPattern.KohiId).Distinct().Count()
-            }
-        );
+                 from sinKoui in sinKouiList
+                 join ptKohiPattern in ptKohiPatternList on
+                     new { sinKoui.HpId, sinKoui.PtId, sinKoui.HokenPid } equals
+                     new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenPid }
+                 join ptHokenInf in ptHokenInfList on
+                     new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenId } equals
+                     new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
+                 group
+                     new { sinKoui, ptKohiPattern } by
+                     new
+                     {
+                         sinKoui.HpId,
+                         sinKoui.PtId,
+                         sinKoui.SinYm,
+                         sinKoui.HokenId,
+                         ptHokenInf.HonkeKbn,
+                         ptHokenInf.Houbetu,
+                         ptKohiPattern.HokenKbn,
+                         ptKohiPattern.HokenSbtCd1
+                     } into kohiGroupj
+                 select new
+                 {
+                     kohiGroupj.Key.HpId,
+                     kohiGroupj.Key.PtId,
+                     kohiGroupj.Key.SinYm,
+                     kohiGroupj.Key.HokenId,
+                     kohiGroupj.Key.HonkeKbn,
+                     kohiGroupj.Key.Houbetu,
+                     kohiGroupj.Key.HokenKbn,
+                     kohiGroupj.Key.HokenSbtCd1,
+                     kohiCount = kohiGroupj.Where(x => x.ptKohiPattern.KohiId != 0).Select(x => x.ptKohiPattern.KohiId).Distinct().Count()
+                 }
+             );
         #endregion
 
         var kaMsts = NoTrackingDataContext.KaMsts;
         var userMsts = NoTrackingDataContext.UserMsts.Where(u => u.IsDeleted == DeleteStatus.None);
 
+        var ptKohiJoinList = ptKohiJoins.ToList();
+
+        var kaMstList = kaMsts.Where(item => kaIdList.Contains(item.KaId)).ToList();
+        var userMstList = userMsts.Where(item => tantoIdList.Contains(item.UserId)).ToList();
+
+        var sinKouiFilmList = sinKouiFilms.Where(item => ptIdList.Contains(item.PtId)
+                                                         && sinYmList.Contains(item.SinYm)
+                                                         && rpNoList.Contains(item.RpNo)
+                                                         && seqNoList.Contains(item.SeqNo)
+                                          ).ToList();
         var joinQuery = (
-            from sinCount in sinKouiCounts
-            join sinKoui in sinKouis on
+            from sinCount in sinKouiCountList
+            join sinKoui in sinKouiList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                 new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
-            join sinRp in sinKouiRpInfs on
+            join sinRp in sinKouiRpInfList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo } equals
                 new { sinRp.HpId, sinRp.PtId, sinRp.SinYm, sinRp.RpNo }
-            join kaikeiInf in kaikeiInfs on
+            join kaikeiInf in kaikeiInfList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinDate, sinCount.RaiinNo, sinKoui.HokenId } equals
                 new { kaikeiInf.HpId, kaikeiInf.PtId, kaikeiInf.SinDate, kaikeiInf.RaiinNo, kaikeiInf.HokenId }
-            join ptInf in ptInfs on
+            join ptInf in ptInfList on
                 new { sinCount.HpId, sinCount.PtId } equals
                 new { ptInf.HpId, ptInf.PtId }
-            join raiinInf in raiinInfs on
+            join raiinInf in raiinInfList on
                 new { sinCount.HpId, sinCount.RaiinNo } equals
                 new { raiinInf.HpId, raiinInf.RaiinNo }
-            join ptKohiJoin in ptKohiJoins on
+            join ptKohiJoin in ptKohiJoinList on
                 new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.HokenId } equals
                 new { ptKohiJoin.HpId, ptKohiJoin.PtId, ptKohiJoin.SinYm, ptKohiJoin.HokenId }
-            join kaMst in kaMsts on
+            join kaMst in kaMstList on
                 new { raiinInf.HpId, raiinInf.KaId } equals
                 new { kaMst.HpId, kaMst.KaId } into kaMstJoin
             from kaMstj in kaMstJoin.DefaultIfEmpty()
-            join userMst in userMsts on
+            join userMst in userMstList on
                 new { raiinInf.HpId, raiinInf.TantoId } equals
                 new { userMst.HpId, TantoId = userMst.UserId } into userMstJoin
             from tantoMst in userMstJoin.DefaultIfEmpty()
-            join sinFilm in sinKouiFilms on
+            join sinFilm in sinKouiFilmList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                 new { sinFilm.HpId, sinFilm.PtId, sinFilm.SinYm, sinFilm.RpNo, sinFilm.SeqNo } into sinFilmJoin
             from sinFilmj in sinFilmJoin.DefaultIfEmpty()
@@ -501,7 +554,9 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
             }
         );
 
-        var retDatas = joinQuery.AsEnumerable().Select(
+        var joinList = joinQuery.ToList();
+
+        var retDatas = joinList.Select(
             data =>
                 new CoKouiTensuModel()
                 {
@@ -612,17 +667,17 @@ public class CoSta3061Finder : RepositoryBase, ICoSta3061Finder
         );
 
         var jihiMeisai = (
-            from sinCount in sinKouiCounts
-            join sinKoui in sinKouis on
+            from sinCount in sinKouiCountList
+            join sinKoui in sinKouiList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo, sinCount.SeqNo } equals
                 new { sinKoui.HpId, sinKoui.PtId, sinKoui.SinYm, sinKoui.RpNo, sinKoui.SeqNo }
-            join sinRp in sinKouiRpInfs on
+            join sinRp in sinKouiRpInfList on
                 new { sinCount.HpId, sinCount.PtId, sinCount.SinYm, sinCount.RpNo } equals
                 new { sinRp.HpId, sinRp.PtId, sinRp.SinYm, sinRp.RpNo }
-            join ptKohiPattern in ptKohiPatterns on
+            join ptKohiPattern in ptKohiPatternList on
                 new { sinKoui.HpId, sinKoui.PtId, sinKoui.HokenPid } equals
                 new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenPid }
-            join ptHokenInf in ptHokenInfs on
+            join ptHokenInf in ptHokenInfList on
                 new { ptKohiPattern.HpId, ptKohiPattern.PtId, ptKohiPattern.HokenId } equals
                 new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
             where
