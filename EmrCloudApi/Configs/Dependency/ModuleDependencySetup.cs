@@ -365,6 +365,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
@@ -501,6 +502,7 @@ using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
+using UseCase.Todo.GetListTodoKbn;
 using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -781,6 +783,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ITodoKbnMstRepository, TodoKbnMstReporitory>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
@@ -1215,6 +1218,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
             busBuilder.RegisterUseCase<GetTodoGrpInputData, GetTodoGrpInteractor>();
+            busBuilder.RegisterUseCase<GetTodoKbnInputData, GetTodoKbnInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
@@ -1242,6 +1246,9 @@ namespace EmrCloudApi.Configs.Dependency
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
             busBuilder.RegisterUseCase<SaveTimeZoneConfInputData, SaveTimeZoneConfInteractor>();
+
+            //MstItem
+            busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
