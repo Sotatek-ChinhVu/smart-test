@@ -557,9 +557,9 @@ namespace Infrastructure.Repositories
                             o.OdrKouiKbn != 10 &&
                             raiinNoList.Contains(o.RaiinNo) &&
                             (
-                                (o.IsDeleted == DeleteTypes.None) ||
-                                (o.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
-                                (o.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
+                                o.IsDeleted == DeleteTypes.None ||
+                                isDeleted == 1 ||
+                                (o.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)
                             )
                       )
                 .ToList();
