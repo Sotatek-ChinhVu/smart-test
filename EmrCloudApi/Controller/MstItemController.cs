@@ -1,4 +1,6 @@
 ﻿using Domain.Models.MstItem;
+using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
@@ -6,6 +8,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -16,6 +19,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
@@ -32,6 +36,8 @@ using UseCase.MstItem.UpdateAdoptedItemList;
 using Helper.Extension;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using UseCase.MstItem.GetRenkeiMst;
+using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.GetTenMstListByItemType;
 
 namespace EmrCloudApi.Controller
@@ -239,13 +245,13 @@ namespace EmrCloudApi.Controller
             var input = new GetSetDataTenMstInputData(HpId,
                                                      request.SinDate,
                                                      request.ItemCd,
-                                                     request.JiCd,
-                                                     request.IpnNameCd,
-                                                     request.SanteiItemCd,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note);
+                                                     request.JiCd ?? string.Empty,
+                                                     request.IpnNameCd ?? string.Empty,
+                                                     request.SanteiItemCd ?? string.Empty,
+                                                     request.AgekasanCd1Note ?? string.Empty,
+                                                     request.AgekasanCd2Note ?? string.Empty,
+                                                     request.AgekasanCd3Note ?? string.Empty,
+                                                     request.AgekasanCd4Note ?? string.Empty);
             var output = _bus.Handle(input);
             var presenter = new GetSetDataTenMstPresenter();
             presenter.Complete(output);
@@ -305,6 +311,36 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListDrugImageResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRenkeiMst)]
+        public ActionResult<Response<GetRenkeiMstResponse>> GetRenkeiMst([FromQuery] int renkeiId)
+        {
+            var input = new GetRenkeiMstInputData(HpId, renkeiId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRenkeiMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRenkeiMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckIsTenMstUsed)]
+        public ActionResult<Response<CheckIsTenMstUsedResponse>> CheckIsTenMstUsed([FromQuery] CheckIsTenMstUsedRequest request)
+        {
+            var input = new CheckIsTenMstUsedInputData(HpId, request.ItemCd, request.StartDate, request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new CheckIsTenMstUsedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckIsTenMstUsedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetJihiMstList)]
+        public ActionResult<Response<GetJihiMstsResponse>> GetJihiMstList()
+        {
+            var input = new GetJihiSbtMstListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetJihiMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetJihiMstsResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetTenMstListByItemType)]

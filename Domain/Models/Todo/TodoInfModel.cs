@@ -30,7 +30,7 @@ public class TodoInfModel
         Sex = string.Empty;
     }
 
-    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, string sex)
+    public TodoInfModel(int hpId, long ptId, long ptNum, string patientName, int sinDate, string primaryDoctorName, string kaSname, string todoKbnName, string cmt1, DateTime createDate, string createrName, string tantoName, string cmt2, DateTime updateDate, string updaterName, string todoGrpName, int term, int hokenPid, string houbetu, int hokenKbn, string hokensyaNo, int hokenId, int tantoId, int todoNo, int todoEdaNo, long raiinNo, int todoKbnNo, int todoGrpNo, int isDone, int status, string sex, string groupColor)
     {
         HpId = hpId;
         PtId = ptId;
@@ -63,6 +63,7 @@ public class TodoInfModel
         IsDone = isDone;
         Status = status;
         Sex = sex;
+        GroupColor = groupColor;
     }
 
     public int HpId { get; private set; }
@@ -128,4 +129,6 @@ public class TodoInfModel
     public int Status { get; private set; }
 
     public string Sex { get; private set; }
+
+    public string GroupColor { get; private set; }
 }

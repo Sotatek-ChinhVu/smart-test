@@ -172,7 +172,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
     {
         var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                         && item.PtId == ptId
-                                                                        && item.IsDeleted != 1)
+                                                                        && item.IsDeleted != 1
+                                                                        && item.Status >= 3)
                                                           .ToList();
         var tantoIdList = raiinInfList.Select(item => item.TantoId).ToList();
         var kaIdList = raiinInfList.Select(item => item.KaId).ToList();

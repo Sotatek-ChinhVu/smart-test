@@ -1,4 +1,5 @@
-﻿using Domain.Models.Receipt;
+﻿using Domain.Models.Insurance;
+using Domain.Models.Receipt;
 using Helper.Common;
 using Helper.Constants;
 using UseCase.Receipt.GetInsuranceReceInfList;
@@ -8,19 +9,23 @@ namespace Interactor.Receipt;
 public class GetInsuranceReceInfListInteractor : IGetInsuranceReceInfListInputPort
 {
     private readonly IReceiptRepository _receiptRepository;
+    private readonly IInsuranceRepository _insuranceRepository;
 
-    public GetInsuranceReceInfListInteractor(IReceiptRepository receiptRepository)
+    public GetInsuranceReceInfListInteractor(IReceiptRepository receiptRepository, IInsuranceRepository insuranceRepository)
     {
         _receiptRepository = receiptRepository;
+        _insuranceRepository = insuranceRepository;
     }
 
     public GetInsuranceReceInfListOutputData Handle(GetInsuranceReceInfListInputData inputData)
     {
         try
         {
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, 0);
+            var hokenInfList = insuranceData.ListHokenInf;
             var result = _receiptRepository.GetInsuranceReceInfList(inputData.HpId, inputData.SeikyuYm, inputData.HokenId, inputData.SinYm, inputData.PtId);
             bool haveKohi = result.Kohi1Id > 0 || result.Kohi2Id > 0 || result.Kohi3Id > 0 || result.Kohi4Id > 0;
-            return new GetInsuranceReceInfListOutputData(result, GetInsuranceName(result.HokenKbn, result.ReceSbt, haveKohi), GetInsuranceReceInfListStatus.Successed);
+            return new GetInsuranceReceInfListOutputData(GetHokenName(inputData.HokenId, hokenInfList), inputData.SinYm, result, GetInsuranceName(result.HokenKbn, result.ReceSbt, haveKohi), GetInsuranceReceInfListStatus.Successed);
         }
         finally
         {
@@ -95,5 +100,10 @@ public class GetInsuranceReceInfListInteractor : IGetInsuranceReceInfListInputPo
         {
             return HenkanJ.Instance.ToFullsize(kohicount.ToString()) + "併";
         }
+    }
+
+    private string GetHokenName(int hokenId, List<HokenInfModel> hokenInfList)
+    {
+        return hokenInfList.FirstOrDefault(p => p.HokenId == hokenId)?.HokenSentaku ?? string.Empty;
     }
 }

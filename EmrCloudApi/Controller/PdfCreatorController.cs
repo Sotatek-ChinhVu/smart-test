@@ -172,6 +172,13 @@ public class PdfCreatorController : ControllerBase
         return await RenderPdf(data, ReportType.Common);
     }
 
+    [HttpGet(ApiPath.ReceiptPrint)]
+    public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
+    {
+        var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
+        return await RenderPdf(data, ReportType.Common);
+    }
+
     [HttpGet("ExportKarte2")]
     public async Task<IActionResult> GenerateKarte2Report([FromQuery] GetDataPrintKarte2Request request)
     {

@@ -39,6 +39,7 @@ using UseCase.Receipt.GetReceStatus;
 using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using Helper.Extension;
+using Helper.Common;
 
 namespace EmrCloudApi.Controller;
 
@@ -447,7 +448,7 @@ public class ReceiptController : AuthorizeControllerBase
                         }
                     }
                 }
-                return File(ms.ToArray(), "application/zip", "ReceiptCreations.zip");
+                return File(ms.ToArray(), "application/zip", GetFileUKECreateName(request.FileName ?? string.Empty));
             }
         }
         return Ok(presenter.Result);
@@ -601,6 +602,12 @@ public class ReceiptController : AuthorizeControllerBase
                    request.Tokki4Id.ToString(),
                    request.Tokki5Id.ToString()
             );
+    }
+
+    private string GetFileUKECreateName(string inputName)
+    {
+        if (!string.IsNullOrEmpty(inputName)) return $"{inputName}.zip";
+        return $"ReceiptCreation{CIUtil.DateTimeToInt(DateTime.Now)}.zip";
     }
     #endregion
 }

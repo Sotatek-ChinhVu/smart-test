@@ -178,9 +178,13 @@ using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.DB;
 using Reporting.ReceiptList.Service;
+using Reporting.ReceiptPrint.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
-using Reporting.Statistics.DB;
+using Reporting.Sokatu.Common.DB;
+using Reporting.Sokatu.KokhoSeikyu.DB;
+using Reporting.Sokatu.KokhoSokatu.DB;
+using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -215,6 +219,8 @@ using Reporting.Statistics.Sta3041.DB;
 using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3050.Service;
+using Reporting.Statistics.Sta3060.DB;
+using Reporting.Statistics.Sta3060.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -359,6 +365,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
@@ -445,6 +452,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetListRaiinInf;
+using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -494,6 +502,7 @@ using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
+using UseCase.Todo.GetListTodoKbn;
 using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -527,7 +536,7 @@ using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultS
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
 using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefaultSelectedTimeInteractor;
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
-using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
+using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetRaiinInfListInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using UseCase.MainMenu.SaveStatisticMenu;
 using Reporting.Statistics.Sta3001.Service;
@@ -549,6 +558,18 @@ using Reporting.Statistics.Sta3050.Service;
 using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
+using Reporting.Statistics.Sta3061.DB;
+using Reporting.Statistics.Sta3061.Service;
+using Reporting.Statistics.Sta3070.Service;
+using Reporting.Statistics.Sta3070.DB;
+using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
+using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
+using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
+using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.MstItem.GetRenkeiMst;
+using Reporting.Statistics.Sta3060.DB;
+using Reporting.Statistics.Sta3060.Service;
+using UseCase.MstItem.CheckIsTenMstUsed;
 using UseCase.MstItem.GetTenMstListByItemType;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -606,7 +627,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
-            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IStatisticCoHpInfFinder, StatisticCoHpInfFinder>();
             services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
             services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
             services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
@@ -663,6 +684,17 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3050CoReportService, Sta3050CoReportService>();
             services.AddTransient<ICoSta3060Finder, CoSta3060Finder>();
             services.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
+            services.AddTransient<ICoSta3061Finder, CoSta3061Finder>();
+            services.AddTransient<ISta3061CoReportService, Sta3061CoReportService>();
+            services.AddTransient<ICoSta3070Finder, CoSta3070Finder>();
+            services.AddTransient<ISta3070CoReportService, Sta3070CoReportService>();
+            services.AddTransient<ICoHokenMstFinder, CoHokenMstFinder>();
+            services.AddTransient<ICoHokensyaMstFinder, CoHokensyaMstFinder>();
+            services.AddTransient<ISokatuCoHpInfFinder, SokatuCoHpInfFinder>();
+            services.AddTransient<ICoKokhoSeikyuFinder, CoKokhoSeikyuFinder>();
+            services.AddTransient<ICoKokhoSokatuFinder, CoKokhoSokatuFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP08KokhoSokatuCoReportService, P08KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -752,6 +784,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ITodoKbnMstRepository, TodoKbnMstReporitory>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
@@ -807,6 +840,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -1185,6 +1219,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
             busBuilder.RegisterUseCase<GetTodoGrpInputData, GetTodoGrpInteractor>();
+            busBuilder.RegisterUseCase<GetTodoKbnInputData, GetTodoKbnInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
@@ -1196,6 +1231,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiMstInputData, GetRenkeiMstInteractor>();
+            busBuilder.RegisterUseCase<CheckIsTenMstUsedInputData, CheckIsTenMstUsedInteractor>();
             busBuilder.RegisterUseCase<GetTenMstListByItemTypeInputData, GetTenMstListByItemTypeInteractor>();
 
             //Lock
@@ -1211,6 +1248,9 @@ namespace EmrCloudApi.Configs.Dependency
             //TimeZoneConfGroup
             busBuilder.RegisterUseCase<GetTimeZoneConfGroupInputData, GetTimeZoneConfGroupInteractor>();
             busBuilder.RegisterUseCase<SaveTimeZoneConfInputData, SaveTimeZoneConfInteractor>();
+
+            //MstItem
+            busBuilder.RegisterUseCase<GetJihiSbtMstListInputData, GetJihiMstsInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

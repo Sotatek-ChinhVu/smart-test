@@ -4020,6 +4020,34 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
+        public RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId)
+        {
+            var renkei = NoTrackingDataContext.RenkeiMsts.FirstOrDefault(item => item.HpId == hpId && item.RenkeiId == renkeiId);
+            if (renkei != null)
+                return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
+            return ObjectExtension.CreateInstance<RenkeiMstModel>();
+        }
+        
+        public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
+        {
+            return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
+                x => x.HpId == hpId &&
+                     x.ItemCd == itemCd &&
+                     x.SinDate >= startDate &&
+                     x.SinDate <= endDate) != null;
+        }
+
+        public List<JihiSbtMstModel> GetJihiSbtMstList(int hpId)
+        {
+            List<JihiSbtMstModel> result = new();
+            result = NoTrackingDataContext.JihiSbtMsts
+                .Where(item => item.IsDeleted == 0
+                                                && item.HpId == hpId)
+                .OrderBy(i => i.SortNo)
+                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsDeleted)).ToList();
+            return result;
+        }
+
         public List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate)
         {
             string GetJibaiItemType(TenMst tenmst)

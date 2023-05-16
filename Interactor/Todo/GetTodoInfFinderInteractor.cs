@@ -71,7 +71,8 @@ public class GetTodoInfFinderInteractor : IGetTodoInfFinderInputPort
                                                                         x.TodoGrpNo,
                                                                         x.IsDone,
                                                                         x.Status,
-                                                                        x.Sex
+                                                                        x.Sex,
+                                                                        x.GroupColor
                                                                         )));
         return result;
     }

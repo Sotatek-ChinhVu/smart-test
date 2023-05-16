@@ -84,7 +84,7 @@ namespace Domain.Models.MstItem
 
         List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
 
-        TenMstOriginModel GetTenMstOriginModel(int hpId,string itemCd, int sinDate);
+        TenMstOriginModel GetTenMstOriginModel(int hpId, string itemCd, int sinDate);
 
         string GetTenMstName(int hpId, string santeiItemCd);
 
@@ -121,6 +121,12 @@ namespace Domain.Models.MstItem
         List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
 
         bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
+
+        RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId);
+
+        bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate);
+
+        List<JihiSbtMstModel> GetJihiSbtMstList(int hpId);
 
         List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate);
     }

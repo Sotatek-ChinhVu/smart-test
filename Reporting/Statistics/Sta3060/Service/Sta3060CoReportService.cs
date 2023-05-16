@@ -162,7 +162,6 @@ public class Sta3060CoReportService : ISta3060CoReportService
     private CoHpInfModel hpInf;
     #endregion
 
-
     private readonly Dictionary<string, string> _singleFieldData;
     private readonly Dictionary<string, string> _extralData;
     private readonly List<Dictionary<string, CellModel>> _tableFieldData;
@@ -188,6 +187,9 @@ public class Sta3060CoReportService : ISta3060CoReportService
         printConf = new();
         printDatas = new();
         rowCountFieldName = string.Empty;
+        headerL1 = new();
+        headerL2 = new();
+        kouiTensus = new();
     }
 
     public CommonReportingRequestModel GetSta3060ReportingData(CoSta3060PrintConf printConf, int hpId, CoFileType outputFileType)
