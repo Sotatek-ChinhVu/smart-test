@@ -3306,16 +3306,5 @@ namespace Infrastructure.Repositories
 
             return result;
         }
-
-        public List<JihiSbtMstModel> GetJihiSbtMstList(int hpId)
-        {
-            List<JihiSbtMstModel> result = new();
-            result = NoTrackingDataContext.JihiSbtMsts
-                .Where(item => item.IsDeleted == 0
-                                                && item.HpId == hpId)
-                .OrderBy(i => i.SortNo)
-                .AsEnumerable().Select(i => new JihiSbtMstModel(i.HpId, i.JihiSbt, i.SortNo, i.Name ?? string.Empty, i.IsDeleted)).ToList();
-            return result;
-        }
     }
 }
