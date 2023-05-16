@@ -315,30 +315,30 @@ public class Sta3070CoReportService : ISta3070CoReportService
             #endregion
 
             #region 集計
-            int[] SyosinKbns = { 1, 6 };
-            int[] SaisinKbns = { 3, 4, 7, 8 };
-            int[] JikangaiKbns = { 1, 2, 3, 6, 7 };
-            int[] YasouKbns = { 4, 5 };
-            int[] KyujituKbns = { 2, 6 };
-            int[] SinyaKbns = { 3, 7 };
+            int[] syosinKbns = { 1, 6 };
+            int[] saisinKbns = { 3, 4, 7, 8 };
+            int[] jikangaiKbns = { 1, 2, 3, 6, 7 };
+            int[] yasouKbns = { 4, 5 };
+            int[] kyujituKbns = { 2, 6 };
+            int[] sinyaKbns = { 3, 7 };
 
             //来院回数
-            printData.SyosinRaiinCnt = syukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn))
+            printData.SyosinRaiinCnt = syukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-            printData.SaisinRaiinCnt = syukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn))
+            printData.SaisinRaiinCnt = syukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
-            printData.SonotaRaiinCnt = syukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn))
+            printData.SonotaRaiinCnt = syukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.RaiinNo).Count().ToString("#,0");
 
             int raiinCnt = syukeiData.GroupBy(s => s.RaiinNo).Count();
             printData.RaiinCnt = raiinCnt.ToString("#,0");
 
             //実人数
-            printData.PtSyosinCnt = syukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSyosinCnt = syukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
-            printData.PtSaisinCnt = syukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSaisinCnt = syukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
-            printData.PtSonotaCnt = syukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn))
+            printData.PtSonotaCnt = syukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn))
                 .GroupBy(s => s.PtId).Count().ToString("#,0");
 
             int ptCnt = syukeiData.GroupBy(s => s.PtId).Count();
@@ -387,11 +387,11 @@ public class Sta3070CoReportService : ISta3070CoReportService
                     switch (i)
                     {
                         case 0:
-                            wrksyukeiData = wrksyukeiData.Where(s => SyosinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => syosinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         case 1:
-                            wrksyukeiData = wrksyukeiData.Where(s => SaisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => saisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         case 2:
-                            wrksyukeiData = wrksyukeiData.Where(s => !SyosinKbns.Contains(s.SyosaisinKbn) && !SaisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => !syosinKbns.Contains(s.SyosaisinKbn) && !saisinKbns.Contains(s.SyosaisinKbn)).ToList(); break;
                         default:
                             break;
                     }
@@ -406,13 +406,13 @@ public class Sta3070CoReportService : ISta3070CoReportService
                         case 3:
                             wrksyukeiData = wrksyukeiData.Where(s => s.JikanKbn == 1).ToList(); break;
                         case 4:
-                            wrksyukeiData = wrksyukeiData.Where(s => KyujituKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => kyujituKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 5:
-                            wrksyukeiData = wrksyukeiData.Where(s => SinyaKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => sinyaKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 6:
-                            wrksyukeiData = wrksyukeiData.Where(s => JikangaiKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => jikangaiKbns.Contains(s.JikanKbn)).ToList(); break;
                         case 7:
-                            wrksyukeiData = wrksyukeiData.Where(s => YasouKbns.Contains(s.JikanKbn)).ToList(); break;
+                            wrksyukeiData = wrksyukeiData.Where(s => yasouKbns.Contains(s.JikanKbn)).ToList(); break;
                         default:
                             break;
                     }
