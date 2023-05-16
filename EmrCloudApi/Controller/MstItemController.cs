@@ -239,7 +239,7 @@ namespace EmrCloudApi.Controller
             var input = new GetSetDataTenMstInputData(HpId,
                                                      request.SinDate,
                                                      request.ItemCd,
-                                                     request.JiCd,
+                                                     request.JiCd ?? string.Empty,
                                                      request.IpnNameCd ?? string.Empty,
                                                      request.SanteiItemCd ?? string.Empty,
                                                      request.AgekasanCd1Note ?? string.Empty,

@@ -9,7 +9,7 @@
 
         public string ItemCd { get; set; } = string.Empty;
 
-        public string JiCd { get; set; } = string.Empty;
+        public string? JiCd { get; set; }
 
         public string? IpnNameCd { get; set; }
 
