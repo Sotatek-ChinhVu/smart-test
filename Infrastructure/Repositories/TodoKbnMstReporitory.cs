@@ -16,7 +16,8 @@ namespace Infrastructure.Repositories
             List<TodoKbnMstModel> result = NoTrackingDataContext.TodoKbnMsts.Where(x => x.HpId == hpId)
                                                     .AsEnumerable()
                                                     .OrderBy(x => x.TodoKbnNo)
-                                                    .Select((x) => new TodoKbnMstModel(x.TodoKbnNo,
+                                                    .Select((x) => new TodoKbnMstModel(x.HpId,
+                                                                                       x.TodoKbnNo,
                                                                                        x.TodoKbnName ?? string.Empty,
                                                                                        x.ActCd))
                                                     .ToList();

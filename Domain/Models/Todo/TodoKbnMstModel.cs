@@ -2,12 +2,15 @@
 
 public class TodoKbnMstModel
 {
-    public TodoKbnMstModel(int todoKbnNo, string todoKbnName, int actCd)
+    public TodoKbnMstModel(int hpId, int todoKbnNo, string todoKbnName, int actCd)
     {
+        HpId = hpId;
         TodoKbnNo = todoKbnNo;
         TodoKbnName = todoKbnName;
         ActCd = actCd;
     }
+
+    public int HpId { get; private set; }
 
     public int TodoKbnNo { get; private set; }
 

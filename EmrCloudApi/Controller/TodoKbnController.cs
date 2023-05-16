@@ -20,9 +20,9 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-       
+
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetTodoKbnResponse>> GetList([FromQuery] GetTodoKbnRequest request)
+        public ActionResult<Response<GetTodoKbnResponse>> GetList()
         {
             var input = new GetTodoKbnInputData(HpId);
             var output = _bus.Handle(input);
