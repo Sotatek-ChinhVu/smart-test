@@ -217,8 +217,8 @@ namespace Infrastructure.Repositories
             else
             {
                 raiinNoList = raiinInfEnumerable.OrderByDescending(r => r.SinDate)
-                                                .ThenByDescending(r => r.RaiinNo)
                                                 .ThenByDescending(r => r.UketukeTime)
+                                                .ThenByDescending(r => r.RaiinNo)
                                                 .Take(currentIndex)
                                                 .Select(r => r.RaiinNo)
                                                 .ToList();
