@@ -579,10 +579,7 @@ namespace Infrastructure.Repositories
             }
             else if (ptId != CommonConstants.InvalidId && isGetFamily)
             {
-                var familyIdList = NoTrackingDataContext.PtFamilys.Where(item => item.PtId == ptId && item.IsDeleted == 0).Select(item => item.FamilyPtId).ToList();
-                familyIdList.Add(ptId);
-                familyIdList = familyIdList.Distinct().ToList();
-                filteredPtInfs = filteredPtInfs.Where(item => familyIdList.Contains(item.PtId));
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
 
             // 3. Perform the join operation
