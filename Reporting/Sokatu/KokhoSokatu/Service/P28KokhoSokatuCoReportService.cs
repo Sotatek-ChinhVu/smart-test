@@ -39,7 +39,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
         private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
-        private readonly string _rowCountFieldName = "kokhoHokensyaName";
+        private readonly string _rowCountFieldName = string.Empty;
         private readonly int _reportType = (int)CoReportType.KokhoSokatu;
 
         /// <summary>
@@ -75,6 +75,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _currentPage++;
             }
 
+            _extralData.Add("maxRow", "6");
             return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
 
