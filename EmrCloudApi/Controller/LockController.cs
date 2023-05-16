@@ -1,16 +1,15 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.Lock;
-using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.Lock;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Lock;
-using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Lock.Add;
 using UseCase.Lock.Check;
-using UseCase.Lock.ExtendTtl;
 using UseCase.Lock.Remove;
 
 namespace EmrCloudApi.Controller
@@ -20,16 +19,25 @@ namespace EmrCloudApi.Controller
     public class LockController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public LockController(UseCaseBus bus, IUserService userService) : base(userService)
+        private readonly IWebSocketService _webSocketService;
+
+        public LockController(UseCaseBus bus, IUserService userService, IWebSocketService webSocketService) : base(userService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.AddLock)]
-        public ActionResult<Response<LockResponse>> AddLock([FromQuery] LockRequest request)
+        public async Task<ActionResult<Response<LockResponse>>> AddLock([FromQuery] LockRequest request)
         {
             var input = new AddLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId);
             var output = _bus.Handle(input);
+
+            if (output.Status == AddLockStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.AddLockChanged,
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 1, FunctionCod = request.FunctionCod });
+            }
 
             var presenter = new AddLockPresenter();
             presenter.Complete(output);
@@ -50,10 +58,16 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.RemoveLock)]
-        public ActionResult<Response> RemoveLock([FromQuery] LockRequest request)
+        public async Task<ActionResult<Response>> RemoveLock([FromQuery] LockRequest request)
         {
             var input = new RemoveLockInputData(HpId, request.PtId, request.FunctionCod, request.SinDate, request.RaiinNo, UserId, false);
             var output = _bus.Handle(input);
+
+            if (output.Status == RemoveLockStatus.Successed)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.RemoveLockChanged,
+                    new LockMessage { SinDate = request.SinDate, RaiinNo = request.RaiinNo, PtId = request.PtId, Type = 2, FunctionCod = request.FunctionCod });
+            }
 
             var presenter = new RemoveLockPresenter();
             presenter.Complete(output);
