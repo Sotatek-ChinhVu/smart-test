@@ -1324,6 +1324,8 @@ namespace Infrastructure.Repositories
                         result = "国保";
                     }
                     break;
+                case 11:
+                case 12:
                 case 13:
                     result = "労災";
                     break;
