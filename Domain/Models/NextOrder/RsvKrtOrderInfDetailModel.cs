@@ -249,7 +249,7 @@ namespace Domain.Models.NextOrder
 
         public bool IsSpecialItem
         {
-            get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
+            get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu && ItemCd != ItemCdConst.Con_Refill;
         }
 
         public bool IsDrugUsage

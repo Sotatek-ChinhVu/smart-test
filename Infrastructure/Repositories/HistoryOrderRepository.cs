@@ -4,8 +4,6 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
-using Domain.Models.OrdInfDetail;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
@@ -210,6 +208,7 @@ namespace Infrastructure.Repositories
             if (isNext)
             {
                 raiinNoList = raiinInfEnumerable.OrderByDescending(r => r.SinDate)
+                                                .ThenByDescending(r => r.UketukeTime)
                                                 .ThenByDescending(r => r.RaiinNo)
                                                 .Skip(currentIndex + 1)
                                                 .Select(r => r.RaiinNo)
@@ -218,6 +217,7 @@ namespace Infrastructure.Repositories
             else
             {
                 raiinNoList = raiinInfEnumerable.OrderByDescending(r => r.SinDate)
+                                                .ThenByDescending(r => r.UketukeTime)
                                                 .ThenByDescending(r => r.RaiinNo)
                                                 .Take(currentIndex)
                                                 .Select(r => r.RaiinNo)
@@ -282,7 +282,7 @@ namespace Infrastructure.Repositories
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
             return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
         }
 
@@ -290,7 +290,7 @@ namespace Infrastructure.Repositories
         {
             IEnumerable<RaiinInf> raiinInfEnumerable = GenerateRaiinListQuery(hpId, ptId, startDate, endDate, isDeleted);
             int totalCount = raiinInfEnumerable.Count();
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).ToList();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).ToList();
             return GetList(hpId, ptId, sinDate, raiinInfList, totalCount, isDeleted, isShowApproval);
         }
 
@@ -343,7 +343,7 @@ namespace Infrastructure.Repositories
             IEnumerable<RaiinInf> raiinInfEnumerable = GetRaiinInfs(hpId, ptId, sinDate, odrKouiKbn, grpKouiKbn);
 
             int totalCount = raiinInfEnumerable.Count();
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).Skip(offset).Take(limit).ToList();
 
             if (!raiinInfList.Any())
             {
@@ -394,7 +394,7 @@ namespace Infrastructure.Repositories
 
             raiinInfEnumerable = raiinInfEnumerable.Where(x => x.OyaRaiinNo == oyaRaiinNo.OyaRaiinNo && (!(flag == 1) || x.RaiinNo == oyaRaiinNo.RaiinNo));
 
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.RaiinNo).ToList();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).ThenByDescending(r => r.UketukeTime).ThenByDescending(r => r.RaiinNo).ToList();
 
             if (!raiinInfList.Any())
             {
@@ -442,7 +442,9 @@ namespace Infrastructure.Repositories
 
         public long GetHistoryIndex(int hpId, long ptId, long raiinNo, int userId, int filterId, int isDeleted)
         {
-            var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted).OrderByDescending(r => r.SinDate)
+            var raiinInfs = GenerateRaiinListQuery(hpId, userId, ptId, filterId, isDeleted)
+                                                .OrderByDescending(r => r.SinDate)
+                                                .ThenByDescending(r => r.UketukeTime)
                                                 .ThenByDescending(r => r.RaiinNo).Select(r => r.RaiinNo).ToList();
             var index = raiinInfs.IndexOf(raiinNo);
             return index;
@@ -458,9 +460,9 @@ namespace Infrastructure.Repositories
                             k.Text.Contains(keyWord) &&
                             raiinNoList.Contains(k.RaiinNo) &&
                             (
-                                (k.IsDeleted == DeleteTypes.None) ||
-                                (k.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
-                                (k.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
+                                k.IsDeleted == DeleteTypes.None ||
+                                isDeleted == 1 ||
+                                (k.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)
                             )
                        ).AsEnumerable();
 
@@ -486,9 +488,9 @@ namespace Infrastructure.Repositories
                             o.OdrKouiKbn != 10 &&
                             raiinNoList.Contains(o.RaiinNo) &&
                             (
-                                (o.IsDeleted == DeleteTypes.None) ||
-                                (o.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
-                                (o.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
+                                o.IsDeleted == DeleteTypes.None ||
+                                isDeleted == 1 ||
+                                (o.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)
                             )
                       )
                 .ToList();
@@ -528,7 +530,7 @@ namespace Infrastructure.Repositories
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
             }
-            else if (isDeleted == 1)
+            else if (isDeleted == 2)
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
             }
@@ -559,9 +561,9 @@ namespace Infrastructure.Repositories
                             o.OdrKouiKbn != 10 &&
                             raiinNoList.Contains(o.RaiinNo) &&
                             (
-                                (o.IsDeleted == DeleteTypes.None) ||
-                                (o.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
-                                (o.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
+                                o.IsDeleted == DeleteTypes.None ||
+                                isDeleted == 1 ||
+                                (o.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)
                             )
                       )
                 .ToList();

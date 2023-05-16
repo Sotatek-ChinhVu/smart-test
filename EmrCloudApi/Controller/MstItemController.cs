@@ -1,4 +1,6 @@
 ﻿using Domain.Models.MstItem;
+using Domain.Models.OrdInf;
+using Domain.Models.TodayOdr;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MstItem;
 using EmrCloudApi.Requests.MstItem;
@@ -6,6 +8,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.MstItem;
 using EmrCloudApi.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Services;
+using Helper.Extension;
 using Helper.Mapping;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -16,6 +19,7 @@ using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetCmtCheckMstList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetJihiSbtMstList;
 using UseCase.MstItem.GetListDrugImage;
 using UseCase.MstItem.GetListTenMstOrigin;
 using UseCase.MstItem.GetSelectiveComment;
@@ -326,6 +330,16 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckIsTenMstUsedPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckIsTenMstUsedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetJihiMstList)]
+        public ActionResult<Response<GetJihiMstsResponse>> GetJihiMstList()
+        {
+            var input = new GetJihiSbtMstListInputData(HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetJihiMstsPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetJihiMstsResponse>>(presenter.Result);
         }
     }
 }

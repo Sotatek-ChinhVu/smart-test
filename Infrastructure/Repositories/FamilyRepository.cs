@@ -172,7 +172,8 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
     {
         var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId
                                                                         && item.PtId == ptId
-                                                                        && item.IsDeleted != 1)
+                                                                        && item.IsDeleted != 1
+                                                                        && item.Status >= 3)
                                                           .ToList();
         var tantoIdList = raiinInfList.Select(item => item.TantoId).ToList();
         var kaIdList = raiinInfList.Select(item => item.KaId).ToList();
@@ -186,7 +187,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
                                                                    && kaIdList.Contains(item.KaId))
                                                     .ToList();
         var hokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.IsDeleted != 1
-                                                                                && hokenPIdList.Contains(item.HokenPid))
+                                                                                   && hokenPIdList.Contains(item.HokenPid))
                                                                     .ToList();
         var kohiHokenIdList = hokenPatternList.Select(item => item.Kohi1Id).ToList();
         kohiHokenIdList.AddRange(hokenPatternList.Select(item => item.Kohi2Id).ToList());
@@ -196,7 +197,7 @@ public class FamilyRepository : RepositoryBase, IFamilyRepository
         var ptKohis = NoTrackingDataContext.PtKohis.Where(item => item.IsDeleted != 1
                                                                   && item.PtId == ptId
                                                                   && kohiHokenIdList.Contains(item.HokenId))
-                                                          .ToList();
+                                                   .ToList();
         return raiinInfList.Select(item => ConvertToRaiinInfModel(item, doctorList, kaMstList, hokenPatternList, ptKohis))
                            .OrderByDescending(item => item.SinDate)
                            .ToList();
