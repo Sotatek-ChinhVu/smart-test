@@ -535,7 +535,7 @@ using GetDefaultSelectedTimeInputDataOfReception = UseCase.Reception.GetDefaultS
 using GetDefaultSelectedTimeInteractorOfMedical = Interactor.MedicalExamination.GetDefaultSelectedTimeInteractor;
 using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefaultSelectedTimeInteractor;
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
-using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
+using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetRaiinInfListInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
 using UseCase.MainMenu.SaveStatisticMenu;
 using Reporting.Statistics.Sta3001.Service;
