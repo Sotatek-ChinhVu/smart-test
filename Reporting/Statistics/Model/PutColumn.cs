@@ -10,7 +10,7 @@ public struct PutColumn
 
     public string CsvColName { get; set; }
 
-    public PutColumn(string colName, string jpName, bool isTotal = true, string csvColName = "")
+    public PutColumn(string colName, string jpName, bool isTotal = true, string? csvColName = null)
     {
         ColName = colName;
         JpName = jpName;
