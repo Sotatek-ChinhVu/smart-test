@@ -557,6 +557,8 @@ using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
 using Reporting.Statistics.Sta3061.DB;
 using Reporting.Statistics.Sta3061.Service;
+using Reporting.Statistics.Sta3070.Service;
+using Reporting.Statistics.Sta3070.DB;
 using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
@@ -680,6 +682,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
             services.AddTransient<ICoSta3061Finder, CoSta3061Finder>();
             services.AddTransient<ISta3061CoReportService, Sta3061CoReportService>();
+            services.AddTransient<ICoSta3070Finder, CoSta3070Finder>();
+            services.AddTransient<ISta3070CoReportService, Sta3070CoReportService>();
             services.AddTransient<ICoHokenMstFinder, CoHokenMstFinder>();
             services.AddTransient<ICoHokensyaMstFinder, CoHokensyaMstFinder>();
             services.AddTransient<ISokatuCoHpInfFinder, SokatuCoHpInfFinder>();
