@@ -176,7 +176,6 @@ public class PdfCreatorController : ControllerBase
     public async Task<IActionResult> ReceiptPrint([FromQuery] ReceiptPrintRequest request)
     {
         var data = _reportService.GetReceiptPrint(request.HpId, request.PrefNo, request.ReportId, request.ReportEdaNo, request.DataKbn, request.PtId, request.SeikyuYm, request.SinYm, request.HokenId);
-        var json = JsonSerializer.Serialize(data);
         return await RenderPdf(data, ReportType.Common);
     }
 
