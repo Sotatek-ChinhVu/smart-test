@@ -4020,7 +4020,7 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
-        public List<TenMstMaintenanceModel> GetTenMstListByItemType(ItemTypeEnums itemType, string startWithstr, int sinDate)
+        public List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate)
         {
             string GetJibaiItemType(TenMst tenmst)
             {
@@ -4044,7 +4044,7 @@ namespace Infrastructure.Repositories
                                                                                 item.IsDeleted == DeleteTypes.None);
             if (itemType == ItemTypeEnums.JihiItem)
             {
-                var listJihiSbtMst = NoTrackingDataContext.JihiSbtMsts.Where(j => j.HpId == Session.HospitalID &&
+                var listJihiSbtMst = NoTrackingDataContext.JihiSbtMsts.Where(j => j.HpId == hpId &&
                                                                                    j.IsDeleted == DeleteStatus.None)
                                                                                    .Select(r => new
                                                                                    {
@@ -4101,7 +4101,7 @@ namespace Infrastructure.Repositories
                 // Check kikin_mst code for display CombinedContraindicationItem
                 if (string.IsNullOrEmpty(startWithstr) && itemType == ItemTypeEnums.CombinedContraindicationItem)
                 {
-                    IQueryable<KinkiMst> kinki = NoTrackingDataContext.KinkiMsts.Where(item => item.HpId == Session.HospitalID && item.IsDeleted == DeleteStatus.None);
+                    IQueryable<KinkiMst> kinki = NoTrackingDataContext.KinkiMsts.Where(item => item.HpId == hpId && item.IsDeleted == DeleteStatus.None);
                     listTenMst = listTenMst.Where(item => kinki.Any(k => k.ACd == item.ItemCd));
                     if (!listTenMst.Any())
                     {

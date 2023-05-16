@@ -122,6 +122,6 @@ namespace Domain.Models.MstItem
 
         bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
 
-        List<TenMstMaintenanceModel> GetTenMstListByItemType(ItemTypeEnums itemType, string startWithstr, int sinDate);
+        List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate);
     }
 }

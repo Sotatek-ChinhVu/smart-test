@@ -299,6 +299,7 @@
         public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
         public const string GetSetDataTenMst = "GetSetDataTenMst";
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
+        public const string GetTenMstListByItemType = "GetTenMstListByItemType";
 
         //Lock
         public const string AddLock = "AddLock";

@@ -4,6 +4,7 @@
     {
         Successful,
         NoData,
-        InvalidHpId
+        InvalidHpId,
+        InvalidSinDate
     }
 }
