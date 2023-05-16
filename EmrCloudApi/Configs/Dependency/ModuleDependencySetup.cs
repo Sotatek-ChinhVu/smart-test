@@ -178,9 +178,13 @@ using Reporting.ReceiptCheck.DB;
 using Reporting.ReceiptCheck.Service;
 using Reporting.ReceiptList.DB;
 using Reporting.ReceiptList.Service;
+using Reporting.ReceiptPrint.Service;
 using Reporting.ReportServices;
 using Reporting.Sijisen.Service;
-using Reporting.Statistics.DB;
+using Reporting.Sokatu.Common.DB;
+using Reporting.Sokatu.KokhoSeikyu.DB;
+using Reporting.Sokatu.KokhoSokatu.DB;
+using Reporting.Sokatu.KokhoSokatu.Service;
 using Reporting.Statistics.Sta1001.DB;
 using Reporting.Statistics.Sta1001.Service;
 using Reporting.Statistics.Sta1002.DB;
@@ -215,6 +219,8 @@ using Reporting.Statistics.Sta3041.DB;
 using Reporting.Statistics.Sta3041.Service;
 using Reporting.Statistics.Sta3050.DB;
 using Reporting.Statistics.Sta3050.Service;
+using Reporting.Statistics.Sta3060.DB;
+using Reporting.Statistics.Sta3060.Service;
 using Reporting.Statistics.Sta3071.DB;
 using Reporting.Statistics.Sta3071.Service;
 using Reporting.Statistics.Sta3080.DB;
@@ -529,6 +535,11 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
+using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
+using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
+using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.MstItem.GetRenkeiMst;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
 using UseCase.MstItem.CheckIsTenMstUsed;
@@ -588,7 +599,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IOutDrugCoReportService, OutDrugCoReportService>();
             services.AddTransient<ICoOutDrugFinder, CoOutDrugFinder>();
             services.AddTransient<IReadRseReportFileService, ReadRseReportFileService>();
-            services.AddTransient<ICoHpInfFinder, CoHpInfFinder>();
+            services.AddTransient<IStatisticCoHpInfFinder, StatisticCoHpInfFinder>();
             services.AddTransient<IReceiptCheckCoReportService, ReceiptCheckCoReportService>();
             services.AddTransient<ICoReceiptCheckFinder, CoReceiptCheckFinder>();
             services.AddTransient<IReceiptListCoReportService, ReceiptListCoReportService>();
@@ -645,6 +656,13 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3050CoReportService, Sta3050CoReportService>();
             services.AddTransient<ICoSta3060Finder, CoSta3060Finder>();
             services.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
+            services.AddTransient<ICoHokenMstFinder, CoHokenMstFinder>();
+            services.AddTransient<ICoHokensyaMstFinder, CoHokensyaMstFinder>();
+            services.AddTransient<ISokatuCoHpInfFinder, SokatuCoHpInfFinder>();
+            services.AddTransient<ICoKokhoSeikyuFinder, CoKokhoSeikyuFinder>();
+            services.AddTransient<ICoKokhoSokatuFinder, CoKokhoSokatuFinder>();
+            services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IP08KokhoSokatuCoReportService, P08KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
@@ -1178,6 +1196,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiMstInputData, GetRenkeiMstInteractor>();
             busBuilder.RegisterUseCase<CheckIsTenMstUsedInputData, CheckIsTenMstUsedInteractor>();
 
             //Lock

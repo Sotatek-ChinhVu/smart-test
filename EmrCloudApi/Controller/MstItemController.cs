@@ -32,6 +32,7 @@ using UseCase.MstItem.UpdateAdoptedItemList;
 using Helper.Extension;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
+using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Controller
@@ -239,13 +240,13 @@ namespace EmrCloudApi.Controller
             var input = new GetSetDataTenMstInputData(HpId,
                                                      request.SinDate,
                                                      request.ItemCd,
-                                                     request.JiCd,
-                                                     request.IpnNameCd,
-                                                     request.SanteiItemCd,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note,
-                                                     request.AgekasanCd1Note);
+                                                     request.JiCd ?? string.Empty,
+                                                     request.IpnNameCd ?? string.Empty,
+                                                     request.SanteiItemCd ?? string.Empty,
+                                                     request.AgekasanCd1Note ?? string.Empty,
+                                                     request.AgekasanCd2Note ?? string.Empty,
+                                                     request.AgekasanCd3Note ?? string.Empty,
+                                                     request.AgekasanCd4Note ?? string.Empty);
             var output = _bus.Handle(input);
             var presenter = new GetSetDataTenMstPresenter();
             presenter.Complete(output);
@@ -305,6 +306,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetListDrugImagePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetListDrugImageResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRenkeiMst)]
+        public ActionResult<Response<GetRenkeiMstResponse>> GetRenkeiMst([FromQuery] int renkeiId)
+        {
+            var input = new GetRenkeiMstInputData(HpId, renkeiId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRenkeiMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetRenkeiMstResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.CheckIsTenMstUsed)]

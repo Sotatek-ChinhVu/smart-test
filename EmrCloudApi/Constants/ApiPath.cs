@@ -93,6 +93,7 @@
         public const string PatientManagement = "PatientManagement";
         public const string SyojyoSyoki = "SyojyoSyoki";
         public const string Kensalrai = "Kensalrai";
+        public const string ReceiptPrint = "ReceiptPrint";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
@@ -299,6 +300,7 @@
         public const string DeleteOrRecoverTenMst = "DeleteOrRecoverTenMst";
         public const string GetSetDataTenMst = "GetSetDataTenMst";
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
+        public const string GetRenkeiMst = "GetRenkeiMst";
         public const string CheckIsTenMstUsed = "CheckIsTenMstUsed";
 
         //Lock
