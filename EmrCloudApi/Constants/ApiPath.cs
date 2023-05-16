@@ -36,6 +36,7 @@
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
+        public const string GetJihiMstList = "GetJihiMstList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
