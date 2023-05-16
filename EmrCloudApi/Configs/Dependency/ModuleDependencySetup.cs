@@ -451,6 +451,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetListRaiinInf;
+using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.InitDoctorCombo;
@@ -803,6 +804,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceInfInputData, GetInsuranceInfInteractor>();
             busBuilder.RegisterUseCase<GetMedicalDetailsInputData, GetMedicalDetailsInteractor>();
             busBuilder.RegisterUseCase<DeleteReceptionInputData, DeleteReceptionInteractor>();
+            busBuilder.RegisterUseCase<GetRaiinListWithKanInfInputData, GetRaiinListWithKanInfInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
