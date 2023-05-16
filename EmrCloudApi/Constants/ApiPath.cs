@@ -132,7 +132,6 @@
         public const string ShowKanjaMuke = "ShowKanjaMuke";
         public const string ShowMdbByomei = "ShowMdbByomei";
 
-
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
 
@@ -142,6 +141,7 @@
         public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
+        public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
