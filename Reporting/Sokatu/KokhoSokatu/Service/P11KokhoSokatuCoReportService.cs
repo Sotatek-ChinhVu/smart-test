@@ -85,6 +85,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             }
 
             _extralData.Add("maxRow", "17");
+            _extralData.Add("totalPage", (_currentPage - 1).ToString());
             return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
 
@@ -132,7 +133,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     rowNo = 2;
                 }
 
-                Dictionary<string, CellModel> celldata = new();
                 //集計
                 for (int kbnIndex = currentKbnIndex; kbnIndex < maxKbnIndex; kbnIndex++)
                 {
@@ -169,6 +169,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                     if (curReceInfs == null || (kbnIndex >= 2 && curReceInfs.Count == 0)) continue;
 
                     //
+
                     switch (kbnIndex)
                     {
                         #region 4:一般（県内）
@@ -176,6 +177,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                             //保険者ごとにまとめる
                             var hokensyaNos = curReceInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
 
+                            var rowNokey = string.Empty;
                             for (int hokIndex = currentHokIndex; hokIndex < hokensyaNos.Count; hokIndex++)
                             {
                                 currentHokIndex = hokIndex;
@@ -187,27 +189,25 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
                                 var wrkReces = curReceInfs.Where(r => r.HokensyaNo == hokensyaNos[hokIndex]).ToList();
 
-                                Dictionary<string, CellModel> data = new();
-
                                 //保険者名
                                 //CoRep.ListText("hokensyaName", 0, rowNo, hokensyaNames.Find(h => h.HokensyaNo == hokensyaNos[hokIndex])?.Name ?? hokensyaNos[hokIndex]);
-                                AddListData(ref data, "hokensyaName", hokensyaNos[hokIndex]);
+                                rowNokey = rowNo + "_" + _currentPage;
+
+                                _extralData.Add("hokensyaName_0_" + rowNokey, hokensyaNos[hokIndex]);
 
                                 countData wrkHokData = new countData();
                                 //件数
                                 wrkHokData.Count = wrkReces.Count;
-                                AddListData(ref data, "count", wrkHokData.Count.ToString());
+                                _extralData.Add("count_0_" + rowNokey, wrkHokData.Count.ToString());
                                 //日数
                                 wrkHokData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                                AddListData(ref data, "nissu", wrkHokData.Nissu.ToString());
+                                _extralData.Add("nissu_0_" + rowNokey, wrkHokData.Nissu.ToString());
                                 //点数
                                 wrkHokData.Tensu = wrkReces.Sum(r => r.Tensu);
-                                AddListData(ref data, "tensu", wrkHokData.Tensu.ToString());
+                                _extralData.Add("tensu_0_" + rowNokey, wrkHokData.Tensu.ToString());
                                 //請求額払の金額
                                 wrkHokData.Futan = wrkReces.Sum(r => r.Tensu * (100 - r.HokenRate) / 10);
-                                AddListData(ref data, "futan", wrkHokData.Futan.ToString());
-
-                                _tableFieldData.Add(data);
+                                _extralData.Add("futan_0_" + rowNokey, wrkHokData.Futan.ToString());
 
                                 rowNo++;
                             }
@@ -229,24 +229,22 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
                                 var wrkReces = curReceInfs.Where(r => r.PrefNo == prefNos[prefIndex]).ToList();
 
-                                Dictionary<string, CellModel> data = new();
                                 countData wrkPrefData = new countData();
+                                rowNokey = rowNo + "_" + _currentPage;
                                 //都道府県名
-                                AddListData(ref data, "hokensyaName", PrefCode.PrefName(prefNos[prefIndex]));
+                                _extralData.Add("hokensyaName_0_" + rowNokey, PrefCode.PrefName(prefNos[prefIndex]));
                                 //件数
                                 wrkPrefData.Count = wrkReces.Count;
-                                AddListData(ref data, "count", wrkPrefData.Count.ToString());
+                                _extralData.Add("count_0_" + rowNokey, wrkPrefData.Count.ToString());
                                 //日数
                                 wrkPrefData.Nissu = wrkReces.Sum(r => r.HokenNissu);
-                                AddListData(ref data, "nissu", wrkPrefData.Nissu.ToString());
+                                _extralData.Add("nissu_0_" + rowNokey, wrkPrefData.Nissu.ToString());
                                 //点数
                                 wrkPrefData.Tensu = wrkReces.Sum(r => r.Tensu);
-                                AddListData(ref data, "tensu", wrkPrefData.Tensu.ToString());
+                                _extralData.Add("tensu_0_" + rowNokey, wrkPrefData.Tensu.ToString());
                                 //請求額払の金額
                                 wrkPrefData.Futan = wrkReces.Sum(r => r.Tensu * (100 - r.HokenRate) / 10);
-                                AddListData(ref data, "futan", wrkPrefData.Futan.ToString());
-
-                                _tableFieldData.Add(data);
+                                _extralData.Add("futan_0_" + rowNokey, wrkPrefData.Futan.ToString());
 
                                 rowNo++;
                             }
@@ -269,23 +267,21 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                                 var wrkReces = curReceInfs.Where(r => r.IsKohi(kohiHoubetus[kohiIndex])).ToList();
 
                                 countData wrkKohiData = new countData();
-                                Dictionary<string, CellModel> data = new();
+                                rowNokey = rowNo + "_" + _currentPage;
                                 //法別番号
-                                AddListData(ref data, "hokensyaName", kohiHoubetus[kohiIndex]);
+                                _extralData.Add("hokensyaName_0_" + rowNokey, kohiHoubetus[kohiIndex]);
                                 //件数
                                 wrkKohiData.Count = wrkReces.Count;
-                                AddListData(ref data, "count", wrkKohiData.Count.ToString());
+                                _extralData.Add("count_0_" + rowNokey, wrkKohiData.Count.ToString());
                                 //日数
                                 wrkKohiData.Nissu = wrkReces.Sum(r => r.KohiReceNissu(kohiHoubetus[kohiIndex]));
-                                AddListData(ref data, "nissu", wrkKohiData.Nissu.ToString());
+                                _extralData.Add("nissu_0_" + rowNokey, wrkKohiData.Nissu.ToString());
                                 //点数
                                 wrkKohiData.Tensu = wrkReces.Sum(r => r.KohiReceTensu(kohiHoubetus[kohiIndex]));
-                                AddListData(ref data, "tensu", wrkKohiData.Tensu.ToString());
+                                _extralData.Add("tensu_0_" + rowNokey, wrkKohiData.Tensu.ToString());
                                 //請求額払の金額
                                 wrkKohiData.Futan = wrkReces.Sum(r => r.KohiFutan(kohiHoubetus[kohiIndex]));
-                                AddListData(ref data, "futan", wrkKohiData.Futan.ToString());
-
-                                _tableFieldData.Add(data);
+                                _extralData.Add("futan_0_" + rowNokey, wrkKohiData.Futan.ToString());
 
                                 kohiTotalData.AddValue(wrkKohiData);
 
@@ -296,36 +292,38 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         #endregion
                         #region 8:公費計
                         case 8:
-                            AddListData(ref celldata, "hokensyaName", "公費計");
+                            rowNokey = rowNo + "_" + _currentPage;
+                            _extralData.Add("hokensyaName_0_" + rowNokey, "公費計");
                             //件数
-                            AddListData(ref celldata, "count", kohiTotalData.Count.ToString());
+                            _extralData.Add("count_0_" + rowNokey, kohiTotalData.Count.ToString());
                             //日数
-                            AddListData(ref celldata, "nissu", kohiTotalData.Nissu.ToString());
+                            _extralData.Add("nissu_0_" + rowNokey, kohiTotalData.Nissu.ToString());
                             //点数
-                            AddListData(ref celldata, "tensu", kohiTotalData.Tensu.ToString());
+                            _extralData.Add("tensu_0_" + rowNokey, kohiTotalData.Tensu.ToString());
                             //請求額払の金額
-                            AddListData(ref celldata, "futan", kohiTotalData.Futan.ToString());
+                            _extralData.Add("futan_0_" + rowNokey, kohiTotalData.Futan.ToString());
 
                             break;
                         #endregion
                         #region その他
                         default:
                             countData wrkData = new countData();
-
                             //件数
+                            rowNokey = rowNo + "_" + _currentPage;
+
                             wrkData.Count = curReceInfs.Count;
-                            AddListData(ref celldata, "count", wrkData.Count.ToString());
+                            _extralData.Add("count_0_" + rowNokey, wrkData.Count.ToString());
                             //日数
                             wrkData.Nissu = curReceInfs.Sum(r => r.HokenNissu);
-                            AddListData(ref celldata, "nissu", wrkData.Nissu.ToString());
+                            _extralData.Add("nissu_0_" + rowNokey, wrkData.Nissu.ToString());
                             //点数
                             wrkData.Tensu = curReceInfs.Sum(r => r.Tensu);
-                            AddListData(ref celldata, "tensu", wrkData.Tensu.ToString());
+                            _extralData.Add("tensu_0_" + rowNokey, wrkData.Tensu.ToString());
                             //請求額払の金額
                             if (kbnIndex >= 4)
                             {
                                 wrkData.Futan = curReceInfs.Sum(r => r.Tensu * (100 - r.HokenRate) / 10);
-                                AddListData(ref celldata, "futan", wrkData.Futan.ToString());
+                                _extralData.Add("futan_0_" + rowNokey, wrkData.Futan.ToString());
                             }
 
                             if (new int[] { 0, 1, 6 }.Contains(kbnIndex))
@@ -336,22 +334,21 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                             switch (kbnIndex)
                             {
                                 case 2:
-                                    AddListData(ref celldata, "hokensyaName", "特別療養費");
+                                    _extralData.Add("hokensyaName_0_" + rowNokey, "特別療養費");
                                     break;
                                 case 3:
-                                    AddListData(ref celldata, "hokensyaName", "特別療養費(後期分)");
+                                    _extralData.Add("hokensyaName_0_" + rowNokey, "特別療養費(後期分)");
                                     break;
                                 case 6:
-                                    AddListData(ref celldata, "hokensyaName", "国保計");
+                                    _extralData.Add("hokensyaName_0_" + rowNokey, "国保計");
                                     break;
                             }
                             rowNo++;
 
                             break;
                             #endregion
-
                     }
-                    _tableFieldData.Add(celldata);
+
                     if (_hasNextPage)
                     {
                         break;
@@ -361,24 +358,23 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 //最終ページのみ記載する
                 if (!_hasNextPage)
                 {
-                    Dictionary<string, CellModel> data = new();
-
+                    var rowNokey = maxRow + "_" + _currentPage;
                     //合計 - 件数
-                    AddListData(ref data, "count", totalData.Count.ToString());
+                    _extralData.Add("count_0_" + rowNokey, totalData.Count.ToString());
                     //合計 - 日数
-                    AddListData(ref data, "nissu", totalData.Nissu.ToString());
+                    _extralData.Add("nissu_0_" + rowNokey, totalData.Nissu.ToString());
                     //合計 - 点数
-                    AddListData(ref data, "tensu", totalData.Tensu.ToString());
+                    _extralData.Add("tensu_0_" + rowNokey, totalData.Tensu.ToString());
                     //合計 - 請求額払の金額
-                    AddListData(ref data, "futan", (totalData.Futan + kohiTotalData.Futan).ToString());
+                    _extralData.Add("futan_0_" + rowNokey, (totalData.Futan + kohiTotalData.Futan).ToString());
 
-                    _tableFieldData.Add(data);
                     //平均点数
                     var avgTensu = CIUtil.RoundoffNum((double)totalData.Tensu / totalData.Count, 2);
-                    SetFieldData("avgTensu", avgTensu.ToString());
+
+                    _extralData.Add("avgTensu", avgTensu.ToString());
 
                     //国民健康保険及び公費請求額払票 - 請求額払の金額
-                    SetFieldData("totalFutan", string.Format("{0, 9}", totalData.Futan + kohiTotalData.Futan));
+                    _extralData.Add("totalFutan", string.Format("{0, 9}", totalData.Futan + kohiTotalData.Futan));
                 }
 
                 return 1;
