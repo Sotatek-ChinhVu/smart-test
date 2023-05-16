@@ -32,6 +32,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetListRaiinInf;
+using UseCase.Reception.GetRaiinListWithKanInf;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
@@ -253,6 +254,16 @@ namespace EmrCloudApi.Controller
             var input = new GetListRaiinInfInputData(HpId, req.PtId, req.PageIndex, req.PageSize, req.IsDeleted);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinInfPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetRaiinListWithKanInf)]
+        public ActionResult<Response<GetRaiinListWithKanInfResponse>> GetList([FromQuery] GetRaiinListWithKanInfRequest request)
+        {
+            var input = new GetRaiinListWithKanInfInputData(HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetRaiinListWithKanInfPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

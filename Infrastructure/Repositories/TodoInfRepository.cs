@@ -236,7 +236,8 @@ namespace Infrastructure.Repositories
                                 x.TodoGrpNo,
                                 x.TodoInf.IsDone,
                                 x.Status,
-                                x.Sex
+                                x.Sex,
+                                x.TodoGrpColor
                                 )).OrderByDescending(model => model.UpdateDate)
                                 .ThenBy(model => model.PtId)
                                 .ToList();
