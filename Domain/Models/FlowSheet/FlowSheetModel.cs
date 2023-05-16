@@ -19,16 +19,35 @@
             IsNotSaved = isNotSaved;
         }
 
-        public FlowSheetModel(int sinDate, long ptId, long raiinNo, int syosaisinKbn, int status)
+        public FlowSheetModel(int sinDate, long ptId, long raiinNo, string uketukeTime, int syosaisinKbn, int status)
         {
             SinDate = sinDate;
             RaiinNo = raiinNo;
+            UketukeTime = uketukeTime;
             PtId = ptId;
             SyosaisinKbn = syosaisinKbn;
             Status = status;
             FullLineOfKarte = string.Empty;
             Comment = string.Empty;
             RaiinListInfs = new List<RaiinListInfModel>();
+        }
+
+        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, string uketukeTime, int syosaisinKbn, string comment, int status, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, bool isNotSaved)
+        {
+            SinDate = sinDate;
+            TagNo = tagNo;
+            FullLineOfKarte = fullLineOfKarte;
+            RaiinNo = raiinNo;
+            UketukeTime = uketukeTime;
+            SyosaisinKbn = syosaisinKbn;
+            Comment = comment;
+            Status = status;
+            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4); ;
+            IsNextOrder = isNextOrder;
+            IsToDayOdr = isToDayOdr;
+            RaiinListInfs = raiinListInfs;
+            PtId = ptId;
+            IsNotSaved = isNotSaved;
         }
 
         public bool IsNext
@@ -44,6 +63,8 @@
         public int TagNo { get; private set; }
 
         public string FullLineOfKarte { get; private set; }
+
+        public string UketukeTime { get; private set; }
 
         public long RaiinNo { get; private set; }
 

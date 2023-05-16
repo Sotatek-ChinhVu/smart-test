@@ -14,7 +14,6 @@ using Helper.Enum;
 using Helper.Extension;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
@@ -595,12 +594,12 @@ namespace Infrastructure.Repositories
             rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
             foreach (var item in ordInfs)
             {
-                if (item.IsDeleted == DeleteTypes.Deleted)
+                if (item.IsDeleted == DeleteTypes.Deleted || item.IsDeleted == DeleteTypes.Confirm)
                 {
                     var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
-                        ordInfo.IsDeleted = DeleteTypes.Deleted;
+                        ordInfo.IsDeleted = item.IsDeleted;
                         ordInfo.UpdateId = userId;
                         ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }

@@ -32,4 +32,8 @@ public class StatisticExportRequest
 
     public int? EnableRangeTo { get; set; } = -1;
 
+    public long? PtNumFrom { get; set; } = 0;
+
+    public long? PtNumTo { get; set; } = 0;
+
 }

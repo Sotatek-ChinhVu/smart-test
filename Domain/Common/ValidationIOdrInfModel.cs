@@ -39,23 +39,29 @@ namespace Domain.Common
                 var checkOther = odrInf.OrdInfDetails.Any(o => o.SinKouiKbn == 20 && o.MasterSbt == "S" && o.DrugKbn == 0);
                 var checkDrugOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrug);
                 var checkUsageOfDetail = odrInf.OrdInfDetails.Any(o => o.IsDrugUsage);
+                var checkBunkatu = odrInf.OrdInfDetails.Any(o => o.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
                 if (checkRefill && !checkDrugOfDetail)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
                 }
-                if (checkOther && checkDrugOfDetail && !checkRefill)
+                if (checkOther && checkDrugOfDetail && !checkRefill && !checkBunkatu)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrug);
                 }
-                if (checkOther && checkUsageOfDetail && !checkRefill)
+                if (checkOther && checkUsageOfDetail && !checkRefill && !checkBunkatu)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsage);
                 }
-                if (!checkOther && checkDrugOfDetail && !checkRefill)
+                if (!checkOther && checkDrugOfDetail && !checkRefill && !checkBunkatu)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrugButNotUsage);
                 }
-                if (!checkOther && checkUsageOfDetail && !checkRefill)
+                if (!checkOther && checkUsageOfDetail && !checkRefill && !checkBunkatu)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotDrug);
+                }
+
+                if (!checkUsageOfDetail && checkBunkatu && !checkDrugOfDetail)
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotDrug);
                 }
@@ -350,7 +356,7 @@ namespace Domain.Common
 
             var countItems = odrInf.OrdInfDetails?.Where(item => (item.SinKouiKbn == 20 || item.SinKouiKbn == 30 || item.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || item.ItemCd == ItemCdConst.TouyakuChozaiGai) && !item.IsSpecialItem);
 
-            if (specialItems?.Any(x => x.ItemCd == ItemCdConst.ZanGigi || x.ItemCd == ItemCdConst.ZanTeiKyo) == true && countItems?.Any(x => x.ItemCd == ItemCdConst.Con_Refill) == true)
+            if (specialItems?.Any(x => x.ItemCd == ItemCdConst.ZanGigi || x.ItemCd == ItemCdConst.ZanTeiKyo) == true && countItems?.Any(x => x.ItemCd == ItemCdConst.Con_Refill) == true && countItems?.Any(x => x.ItemCd == ItemCdConst.Con_Refill) == true)
             {
                 countItems = odrInf.OrdInfDetails?.Where(item => (item.SinKouiKbn == 20 || item.SinKouiKbn == 30 || item.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || item.ItemCd == ItemCdConst.TouyakuChozaiGai) && !item.IsSpecialItem && item.ItemCd != ItemCdConst.Con_Refill);
             }

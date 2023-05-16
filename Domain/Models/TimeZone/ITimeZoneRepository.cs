@@ -15,4 +15,6 @@ public interface ITimeZoneRepository : IRepositoryBase
     public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime);
 
     List<TimeZoneConfGroupModel> GetTimeZoneConfGroupModels(int hpId);
+
+    bool SaveTimeZoneConf(int hpId, int userId, List<TimeZoneConfModel> timeZoneConfs);
 }

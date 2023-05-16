@@ -51,6 +51,7 @@
         public static readonly string InvalidOdrKouiKbn = "Invalid OdrKouiKbn";
         public static readonly string InvalidGrpKouiKbn = "Invalid GrpKouiKbn";
         public static readonly string InvalidDocCd = "Invalid DocCd";
+        public static readonly string InvalidRenkeiId = "Invalid RenkeiId";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -997,5 +998,6 @@
         public static readonly string InvalidReportId = "Invalid ReportId!";
         public static readonly string InvalidMenuName = "Invalid MenuName!";
 
+        public static readonly string NoPermission = "No permission";
     }
 }

@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
             // From History
             var allRaiinInfList = NoTrackingDataContext.RaiinInfs
                 .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status > 3 && r.IsDeleted == 0)
-                .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.SyosaisinKbn, r.Status))
+                .Select(r => new FlowSheetModel(r.SinDate, r.PtId, r.RaiinNo, r.UketukeTime ?? string.Empty, r.SyosaisinKbn, r.Status))
                 .ToList();
 
             Console.WriteLine("Get allRaiinInfList: " + stopwatch.ElapsedMilliseconds);
@@ -63,8 +63,8 @@ namespace Infrastructure.Repositories
                                     from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                     join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                      equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
-                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
-                                    select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, -1, 0)
+                                    group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo, rsvkrtOdrInf } into g
+                                    select new FlowSheetModel(g.Key.RsvDate, g.Key.PtId, g.Key.RsvkrtNo, string.Empty, -1, 0)
                                ).ToList();
 
             Console.WriteLine("Get groupNextOdr: " + stopwatch.ElapsedMilliseconds);
@@ -75,6 +75,7 @@ namespace Infrastructure.Repositories
             totalCount = allFlowSheetQueryable.Count();
             List<FlowSheetModel> flowSheetModelList =
                 allFlowSheetQueryable.OrderByDescending(r => r.SinDate)
+                                     .ThenByDescending(r => r.UketukeTime)
                                      .ThenByDescending(r => r.RaiinNo)
                                      .ToList();
 
@@ -155,6 +156,7 @@ namespace Infrastructure.Repositories
                         tagNoValue,
                         karteContent,
                         flowSheetModel.RaiinNo,
+                        flowSheetModel.UketukeTime,
                         flowSheetModel.SyosaisinKbn,
                         commentValue,
                         flowSheetModel.Status,

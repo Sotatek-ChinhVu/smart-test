@@ -66,5 +66,7 @@ namespace Reporting.Receipt.DB
         Reporting.Calculate.ReceFutan.Models.ReceInfModel GetReceInf(int hpId, long ptId, int seikyuYm, int sinYm, int hokenId);
 
         List<CoHokenMstModel> FindHokenMst(int hpId, int sinDate, int hokenNo, int hokenEdaNo, int prefNo);
+
+        ReceSeikyu GetReceSeikyu(int hpId, long ptId, int hokenId, int sinYm);
     }
 }
