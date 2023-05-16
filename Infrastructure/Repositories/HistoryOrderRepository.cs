@@ -456,9 +456,9 @@ namespace Infrastructure.Repositories
                             k.Text.Contains(keyWord) &&
                             raiinNoList.Contains(k.RaiinNo) &&
                             (
-                                (k.IsDeleted == DeleteTypes.None) ||
-                                (k.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
-                                (k.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
+                                k.IsDeleted == DeleteTypes.None ||
+                                isDeleted == 1 ||
+                                (k.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)
                             )
                        ).AsEnumerable();
 
@@ -526,7 +526,7 @@ namespace Infrastructure.Repositories
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
             }
-            else if (isDeleted == 1)
+            else if (isDeleted == 2)
             {
                 karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
             }
