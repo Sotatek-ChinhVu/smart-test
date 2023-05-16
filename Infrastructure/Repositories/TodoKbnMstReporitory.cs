@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
                                                     .AsEnumerable()
                                                     .OrderBy(x => x.TodoKbnNo)
                                                     .Select((x) => new TodoKbnMstModel(x.TodoKbnNo,
-                                                                                       x.TodoKbnName,
+                                                                                       x.TodoKbnName ?? string.Empty,
                                                                                        x.ActCd))
                                                     .ToList();
             return result;
