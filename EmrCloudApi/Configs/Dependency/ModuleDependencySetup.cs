@@ -501,6 +501,7 @@ using UseCase.SystemConf.SystemSetting;
 using UseCase.SystemGenerationConf;
 using UseCase.TimeZoneConf.GetTimeZoneConfGroup;
 using UseCase.TimeZoneConf.SaveTimeZoneConf;
+using UseCase.Todo.GetListTodoKbn;
 using UseCase.Todo.GetTodoGrp;
 using UseCase.Todo.GetTodoInfFinder;
 using UseCase.Todo.UpsertTodoGrpMst;
@@ -781,6 +782,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IValidateFamilyList, ValidateFamilyList>();
             services.AddTransient<ITodoGrpMstRepository, TodoGrpMstRepository>();
             services.AddTransient<ITodoInfRepository, TodoInfRepository>();
+            services.AddTransient<ITodoKbnMstRepository, TodoKbnMstReporitory>();
             services.AddTransient<ILockRepository, LockRepository>();
             services.AddTransient<IStatisticRepository, StatisticRepository>();
             services.AddTransient<ISta3020CoReportService, Sta3020CoReportService>();
@@ -1214,6 +1216,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodoInfInputData, UpsertTodoInfInteractor>();
             busBuilder.RegisterUseCase<GetTodoInfFinderInputData, GetTodoInfFinderInteractor>();
             busBuilder.RegisterUseCase<GetTodoGrpInputData, GetTodoGrpInteractor>();
+            busBuilder.RegisterUseCase<GetTodoKbnInputData, GetTodoKbnInteractor>();
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
