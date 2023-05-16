@@ -123,5 +123,7 @@ namespace Domain.Models.MstItem
         bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
 
         RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId);
+
+        bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate);
     }
 }

@@ -4027,5 +4027,14 @@ namespace Infrastructure.Repositories
                 return new RenkeiMstModel(renkei.HpId, renkei.RenkeiId, renkei.RenkeiName ?? string.Empty, renkei.RenkeiSbt, renkei.FunctionType, renkei.IsInvalid, renkei.SortNo);
             return ObjectExtension.CreateInstance<RenkeiMstModel>();
         }
+        
+        public bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate)
+        {
+            return NoTrackingDataContext.OdrInfDetails.FirstOrDefault(
+                x => x.HpId == hpId &&
+                     x.ItemCd == itemCd &&
+                     x.SinDate >= startDate &&
+                     x.SinDate <= endDate) != null;
+        }
     }
 }

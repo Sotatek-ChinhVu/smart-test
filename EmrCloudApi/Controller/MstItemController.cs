@@ -33,6 +33,7 @@ using Helper.Extension;
 using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using UseCase.MstItem.GetRenkeiMst;
+using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Controller
 {
@@ -315,6 +316,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetRenkeiMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetRenkeiMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.CheckIsTenMstUsed)]
+        public ActionResult<Response<CheckIsTenMstUsedResponse>> CheckIsTenMstUsed([FromQuery] CheckIsTenMstUsedRequest request)
+        {
+            var input = new CheckIsTenMstUsedInputData(HpId, request.ItemCd, request.StartDate, request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new CheckIsTenMstUsedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckIsTenMstUsedResponse>>(presenter.Result);
         }
     }
 }
