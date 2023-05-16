@@ -535,10 +535,36 @@ using GetDefaultSelectedTimeInteractorOfReception = Interactor.Reception.GetDefa
 using GetListRaiinInfInputDataOfFamily = UseCase.Family.GetRaiinInfList.GetRaiinInfListInputData;
 using GetListRaiinInfInteractorOfFamily = Interactor.Family.GetListRaiinInfInteractor;
 using GetListRaiinInfInteractorOfReception = Interactor.Reception.GetListRaiinInfInteractor;
+using UseCase.MainMenu.SaveStatisticMenu;
+using Reporting.Statistics.Sta3001.Service;
+using Reporting.Statistics.Sta3001.DB;
+using Reporting.Statistics.Sta3080.Service;
+using Reporting.Statistics.Sta3080.DB;
+using Reporting.Statistics.Sta3071.Service;
+using Reporting.Statistics.Sta3071.DB;
+using UseCase.Family.GetMaybeFamilyList;
+using Reporting.Statistics.Sta3010.Service;
+using Reporting.Statistics.Sta3010.DB;
+using Reporting.Statistics.Sta3030.Service;
+using Reporting.Statistics.Sta3030.DB;
+using Reporting.Statistics.Sta3040.DB;
+using Reporting.Statistics.Sta3040.Service;
+using Reporting.Statistics.Sta3041.DB;
+using Reporting.Statistics.Sta3041.Service;
+using Reporting.Statistics.Sta3050.Service;
+using Reporting.Statistics.Sta3050.DB;
+using Reporting.Statistics.Sta3060.DB;
+using Reporting.Statistics.Sta3060.Service;
+using Reporting.Statistics.Sta3061.DB;
+using Reporting.Statistics.Sta3061.Service;
 using ISokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.ICoHpInfFinder;
 using IStatisticCoHpInfFinder = Reporting.Statistics.DB.ICoHpInfFinder;
 using SokatuCoHpInfFinder = Reporting.Sokatu.Common.DB.CoHpInfFinder;
 using StatisticCoHpInfFinder = Reporting.Statistics.DB.CoHpInfFinder;
+using UseCase.MstItem.GetRenkeiMst;
+using Reporting.Statistics.Sta3060.DB;
+using Reporting.Statistics.Sta3060.Service;
+using UseCase.MstItem.CheckIsTenMstUsed;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -652,6 +678,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISta3050CoReportService, Sta3050CoReportService>();
             services.AddTransient<ICoSta3060Finder, CoSta3060Finder>();
             services.AddTransient<ISta3060CoReportService, Sta3060CoReportService>();
+            services.AddTransient<ICoSta3061Finder, CoSta3061Finder>();
+            services.AddTransient<ISta3061CoReportService, Sta3061CoReportService>();
             services.AddTransient<ICoHokenMstFinder, CoHokenMstFinder>();
             services.AddTransient<ICoHokensyaMstFinder, CoHokensyaMstFinder>();
             services.AddTransient<ISokatuCoHpInfFinder, SokatuCoHpInfFinder>();
@@ -1192,6 +1220,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetDataTenMstInputData, GetSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<SaveSetDataTenMstInputData, SaveSetDataTenMstInteractor>();
             busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
+            busBuilder.RegisterUseCase<GetRenkeiMstInputData, GetRenkeiMstInteractor>();
+            busBuilder.RegisterUseCase<CheckIsTenMstUsedInputData, CheckIsTenMstUsedInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

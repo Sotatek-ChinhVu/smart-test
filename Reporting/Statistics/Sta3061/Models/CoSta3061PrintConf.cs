@@ -7,6 +7,11 @@ public class CoSta3061PrintConf
         MenuId = menuId;
     }
 
+    public CoSta3061PrintConf()
+    {
+        MenuId = 0;
+    }
+
     /// <summary>
     /// STA_MENU.MENU_ID
     /// </summary>
@@ -115,8 +120,8 @@ public class CoSta3061PrintConf
     /// </summary>
     public struct PtGrp
     {
-        public int GrpId;
-        public string GrpCode;
+        public int GrpId { get; set; }
+        public string GrpCode { get; set; }
 
         public PtGrp(int grpId, string grpCode)
         {
@@ -128,5 +133,5 @@ public class CoSta3061PrintConf
     /// <summary>
     /// 患者分類
     /// </summary>
-    public List<PtGrp> PtGrps { get; set; }
+    public List<PtGrp> PtGrps { get; set; } = new();
 }

@@ -121,5 +121,9 @@ namespace Domain.Models.MstItem
         List<CombinedContraindicationModel> GetContraindicationModelList(int sinDate, string itemCd);
 
         bool SaveTenMstOriginSetData(IEnumerable<CategoryItemEnums> tabActs, string itemCd, List<TenMstOriginModel> tenMstGrigins, SetDataTenMstOriginModel setDataTen, int userId, int hpId);
+
+        RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId);
+
+        bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate);
     }
 }

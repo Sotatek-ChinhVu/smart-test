@@ -385,6 +385,51 @@ namespace Helper.Common
             }
         }
 
+        //四捨五入関数（小数点以下第何位で四捨五入するか）
+        public static double RoundoffNum(double X, int Num)
+        {
+            Double dRet;
+            bool bDiv;
+
+            double result = X;
+            if (Num == 0)
+            {
+                return result;
+            }
+
+            if (Num > 0)
+            {
+                bDiv = true;
+                Num = Num - 1;
+                X = X * (Math.Pow(10, Num));
+            }
+            else
+            {
+                bDiv = false;
+                Num = Num * (-1);
+                X = X / (Math.Pow(10, Num));
+            }
+
+            if (X >= 0)
+            {
+                dRet = Math.Truncate(X + 0.5);
+            }
+            else
+            {
+                dRet = Math.Truncate(X - 0.5);
+            }
+
+            if (bDiv)
+            {
+                result = dRet / (Math.Pow(10, Num));
+            }
+            else
+            {
+                result = dRet * (Math.Pow(10, Num));
+            }
+            return result;
+        }
+
         //西暦(yyyymmdd)から年齢を計算する
         //Calculate age from yyyymmdd format
         public static int SDateToAge(int Ymd, int ToYmd)
