@@ -1,4 +1,5 @@
 ﻿using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
 using Reporting.Calculate.Constants;
 using Reporting.Mappers.Common;
@@ -10,16 +11,17 @@ using Reporting.Structs;
 
 namespace Reporting.Sokatu.KokhoSokatu.Service
 {
-    public class P08KokhoSokatuCoReportService : IP08KokhoSokatuCoReportService
+    public class P28KokhoSokatuCoReportService : IP28KokhoSokatuCoReportService
     {
         #region Constructor and Init
 
-        private const int MyPrefNo = 8;
+        private const int MyPrefNo = 28;
         private int _hpId;
         private int _seikyuYm;
         private SeikyuType _seikyuType;
         private bool _hasNextPage;
         private int _currentPage;
+        private string _formYm = string.Empty;
 
         /// <summary>
         /// CoReport Model
@@ -36,9 +38,9 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
-        private readonly Dictionary<string, string> _fileNamePageMap;
+        private readonly Dictionary<string, string> _fileNamePageMap = new Dictionary<string, string>();
         private readonly string _rowCountFieldName = string.Empty;
-        private readonly int _reportType = (int)CoReportType.P08KokhoSokatu;
+        private readonly int _reportType = (int)CoReportType.KokhoSokatu;
 
         /// <summary>
         /// Finder
@@ -47,21 +49,25 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         private readonly IReadRseReportFileService _readRseReportFileService;
 
 
-        public P08KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
+        public P28KokhoSokatuCoReportService(ICoKokhoSokatuFinder kokhoFinder, IReadRseReportFileService readRseReportFileService)
         {
             _kokhoFinder = kokhoFinder;
             _readRseReportFileService = readRseReportFileService;
         }
         #endregion
 
-        public CommonReportingRequestModel GetP08KokhoSokatuReportingData(int hpId, int seikyuYm)
+        public CommonReportingRequestModel GetP28KokhoSokatuReportingData(int hpId, int seikyuYm, SeikyuType seikyuType)
         {
             _hpId = hpId;
             _seikyuYm = seikyuYm;
+            _formYm = seikyuYm >= KaiseiDate.m202210 ? "_2210" : string.Empty;
+            _seikyuType = seikyuType;
             var getData = GetData();
 
             _hasNextPage = true;
             _currentPage = 1;
+
+            AddFileNamePageMap();
 
             while (getData && _hasNextPage)
             {
@@ -69,7 +75,8 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 _currentPage++;
             }
 
-            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _rowCountFieldName, _reportType).GetData();
+            _extralData.Add("maxRow", "6");
+            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
 
         private bool GetData()
@@ -123,8 +130,8 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                 //請求年月
                 CIUtil.WarekiYmd wrkYmd = CIUtil.SDateToShowWDate3(_seikyuYm * 100 + 1);
                 SetFieldData("seikyuGengo", wrkYmd.Gengo);
-                SetFieldData("seikyuYear", wrkYmd.Year.AsString());
-                SetFieldData("seikyuMonth", wrkYmd.Month.AsString());
+                SetFieldData("seikyuYear", wrkYmd.Year.ToString());
+                SetFieldData("seikyuMonth", wrkYmd.Month.ToString());
 
                 return 1;
             }
@@ -159,10 +166,10 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         countData wrkData = new countData();
                         //件数
                         wrkData.Count = wrkReces.Count;
-                        AddListData(ref data, "count", wrkData.Count.AsString());
+                        AddListData(ref data, "count", wrkData.Count.ToString());
                         //点数
                         wrkData.Tensu = wrkReces.Sum(r => r.Tensu);
-                        AddListData(ref data, "tensu", wrkData.Tensu.AsString());
+                        AddListData(ref data, "tensu", wrkData.Tensu.ToString());
 
                         //請求書枚数
                         if (_seikyuType.IsNormal && _seikyuType.IsDelay && !_seikyuType.IsHenrei && !_seikyuType.IsOnline && !_seikyuType.IsPaper)
@@ -172,7 +179,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
                         else
                         {
                             int seikyuCount = wrkReces.GroupBy(r => r.HokensyaNo).Select(r => r.Key).ToList().Count();
-                            AddListData(ref data, "seikyuCount", seikyuCount.AsString());
+                            AddListData(ref data, "seikyuCount", seikyuCount.ToString());
                         }
 
                         _tableFieldData.Add(data);
@@ -261,7 +268,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
         private void AddFileNamePageMap()
         {
-            _fileNamePageMap.Add("1", "p08KokhoSokatu.rse");
+            _fileNamePageMap.Add("1", string.Concat("p28KokhoSokatu", _formYm + ".rse"));
         }
 
     }

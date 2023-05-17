@@ -10,6 +10,8 @@
 
         public int ReportEdaNo { get; set; }
 
+        public int DataKbn { get; set; }
+
         public int PtId { get; set; }
 
         public int SeikyuYm { get; set; }

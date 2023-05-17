@@ -10,12 +10,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
         private readonly Dictionary<string, string> _fileNamePageMap;
         private readonly int _reportType;
         private readonly string _rowCountFieldName;
+        private readonly string _formFileName;
 
-        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, string rowCountFieldName, int reportType)
+        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, Dictionary<string, string> fileNamePageMap, string rowCountFieldName, int reportType)
         {
             _singleFieldData = singleFieldData;
             _tableFieldData = tableFieldData;
             _extralData = extralData;
+            _fileNamePageMap = fileNamePageMap;
             _rowCountFieldName = rowCountFieldName;
             _reportType = reportType;
         }
