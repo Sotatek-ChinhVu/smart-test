@@ -1986,7 +1986,7 @@ namespace Infrastructure.Repositories
             return ordInfs;
         }
 
-        public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
+        public List<OrdInfModel> FromHistory(int hpId, int sinDate, long raiinNo, int sainteiKbn, int userId, long ptId, List<OrdInfModel> historyOdrInfModels)
         {
             List<OrdInfModel> ordInfModels = new();
             int autoSetKohatu = (int)_systemConf.GetSettingValue(2020, 2, hpId);
@@ -2258,7 +2258,7 @@ namespace Infrastructure.Repositories
                    historyOdrInfModel.InoutKbn,
                    historyOdrInfModel.SikyuKbn,
                    historyOdrInfModel.SyohoSbt,
-                   historyOdrInfModel.SanteiKbn,
+                   historyOdrInfModel.SanteiKbn == 1 ? 1 : sainteiKbn,
                    historyOdrInfModel.TosekiKbn,
                    historyOdrInfModel.DaysCnt,
                    historyOdrInfModel.SortNo,

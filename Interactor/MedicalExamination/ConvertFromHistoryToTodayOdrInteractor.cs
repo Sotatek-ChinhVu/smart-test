@@ -39,11 +39,16 @@ namespace Interactor.MedicalExamination
                 {
                     return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InvalidUserId, new());
                 }
+                if (inputData.SainteiKbn < 0 || inputData.SainteiKbn > 2)
+                {
+                    return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InvalidSanteiKbn, new());
+                }
                 if (inputData.HistoryOdrInfModels.Count <= 0)
                 {
                     return new ConvertFromHistoryTodayOrderOutputData(ConvertFromHistoryTodayOrderStatus.InputNoData, new());
                 }
-                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select(item =>
+
+                var result = _todayOdrRepository.FromHistory(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.SainteiKbn, inputData.UserId, inputData.PtId, inputData.HistoryOdrInfModels.Select(item =>
                         new OrdInfModel(
                         item.HpId,
                         item.RaiinNo,
