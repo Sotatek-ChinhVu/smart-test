@@ -570,6 +570,7 @@ using UseCase.MstItem.GetRenkeiMst;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.Receipt.ValidateCreateUKEFile;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1222,6 +1223,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //CreateUKEFile
             busBuilder.RegisterUseCase<CreateUKEFileInputData, CreateUKEFileInteractor>();
+            busBuilder.RegisterUseCase<ValidateCreateUKEFileInputData, ValidateCreateUKEFileInteractor>();
 
             //TenMstMaintenance
             busBuilder.RegisterUseCase<GetListTenMstOriginInputData, GetListTenMstOriginInteractor>();

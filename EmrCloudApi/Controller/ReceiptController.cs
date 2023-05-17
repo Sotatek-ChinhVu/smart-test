@@ -40,6 +40,7 @@ using UseCase.Receipt.SyobyoKeikaHistory;
 using UseCase.Receipt.SyoukiInfHistory;
 using Helper.Extension;
 using Helper.Common;
+using UseCase.Receipt.ValidateCreateUKEFile;
 
 namespace EmrCloudApi.Controller;
 
@@ -423,11 +424,6 @@ public class ReceiptController : AuthorizeControllerBase
                                                 request.KaId,
                                                 request.DoctorId,
                                                 request.Sort,
-                                                request.SkipWarningIncludeOutDrug,
-                                                request.SkipWarningIncludeTester,
-                                                request.SkipWarningKaId,
-                                                request.SkipWarningDoctorId,
-                                                request.ConfirmCreateUKEFile,
                                                 UserId);
         var output = _bus.Handle(input);
         var presenter = new CreateUKEFilePresenter();
@@ -452,6 +448,16 @@ public class ReceiptController : AuthorizeControllerBase
             }
         }
         return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.ValidateCreateUKEFile)]
+    public ActionResult<Response<ValidateCreateUKEFileResponse>> ValidateCreateUKEFile([FromQuery] ValidateCreateUKEFileRequest request)
+    {
+        var input = new ValidateCreateUKEFileInputData(HpId, request.SeikyuYm, request.ModeType);
+        var output = _bus.Handle(input);
+        var presenter = new ValidateCreateUKEFilePresenter();
+        presenter.Complete(output);
+        return new ActionResult<Response<ValidateCreateUKEFileResponse>>(presenter.Result);
     }
 
     #region Private function

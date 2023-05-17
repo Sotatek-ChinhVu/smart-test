@@ -253,6 +253,7 @@
         public const string SaveReceiptEdit = "SaveReceiptEdit";
         public const string SaveReceStatus = "SaveReceStatus";
         public const string GetReceStatus = "GetReceStatus";
+        public const string ValidateCreateUKEFile = "ValidateCreateUKEFile";
 
         //Accounting
         public const string PaymentMethod = "PaymentMethod";
