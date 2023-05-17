@@ -570,6 +570,7 @@ using UseCase.MstItem.GetRenkeiMst;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using Reporting.Memo.Service;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -694,6 +695,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKokhoSokatuFinder, CoKokhoSokatuFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP08KokhoSokatuCoReportService, P08KokhoSokatuCoReportService>();
+            services.AddTransient<IMemoMsgCoReportService, MemoMsgCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
