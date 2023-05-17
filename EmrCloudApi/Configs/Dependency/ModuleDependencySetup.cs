@@ -673,7 +673,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
             services.AddTransient<IP28KokhoSokatuCoReportService, P28KokhoSokatuCoReportService>();
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
-            services.AddTransient<IP12KokhoSokatuCoReportService, P12KokhoSokatuCoReportService>();
 
             //call Calculate API
             services.AddTransient<ICalculateService, CalculateService>();
