@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using Helper.Common;
+﻿using Helper.Common;
 using Reporting.Mappers.Common;
 using Reporting.Memo.Mapper;
 
@@ -7,8 +6,8 @@ namespace Reporting.Memo.Service;
 
 public class MemoMsgCoReportService : IMemoMsgCoReportService
 {
-    private const int Max_Length = 90;
-    private const int Max_Line = 66;
+    private const int maxLength = 90;
+    private const int maxLine = 66;
 
     private readonly Dictionary<string, string> _extralData;
 
@@ -43,7 +42,7 @@ public class MemoMsgCoReportService : IMemoMsgCoReportService
             {
                 while (!string.IsNullOrEmpty(strAdd))
                 {
-                    var strBuf = CIUtil.CiCopyStrWidth(strAdd, 1, Max_Length, 0);
+                    var strBuf = CIUtil.CiCopyStrWidth(strAdd, 1, maxLength, 0);
                     printOutData.Add(strBuf);
 
                     strAdd = CIUtil.Copy(strAdd, strBuf.Length, strAdd.Length - strBuf.Length);
@@ -81,7 +80,7 @@ public class MemoMsgCoReportService : IMemoMsgCoReportService
             {
                 while (!string.IsNullOrEmpty(strAdd))
                 {
-                    var strBuf = CIUtil.CiCopyStrWidth(strAdd, 1, Max_Length, 0);
+                    var strBuf = CIUtil.CiCopyStrWidth(strAdd, 1, maxLength, 0);
                     SetFieldData("Line" + linePrint, strBuf);
                     linePrint++;
 
@@ -107,7 +106,7 @@ public class MemoMsgCoReportService : IMemoMsgCoReportService
                     PrintText(reportName);
 
                     string str = "";
-                    PrintText(str.PadLeft(Max_Length, '-'));
+                    PrintText(str.PadLeft(maxLength, '-'));
                 }
 
                 if (!string.IsNullOrEmpty(title))
@@ -134,7 +133,7 @@ public class MemoMsgCoReportService : IMemoMsgCoReportService
                     break;
                 }
 
-                if (linePrint == Max_Line)
+                if (linePrint == maxLine)
                 {
                     return;
                 }

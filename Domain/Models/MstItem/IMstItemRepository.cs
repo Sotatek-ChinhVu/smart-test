@@ -127,5 +127,7 @@ namespace Domain.Models.MstItem
         bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate);
 
         List<JihiSbtMstModel> GetJihiSbtMstList(int hpId);
+
+        List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate);
     }
 }

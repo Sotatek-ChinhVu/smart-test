@@ -942,6 +942,7 @@
         public static readonly string DuplicateFamily = "既に登録されています";
         public static readonly string InvalidNameMaxLength = "氏名は100文字以内に入力してください。";
         public static readonly string InvalidKanaNameMaxLength = "氏名は100文字以内に入力してください。";
+        public static readonly string FamilyNotAllow = "患者番号が重複しています。";
 
         // Rece
         public static readonly string InvalidSinYm = "Invalid SinYm!";
