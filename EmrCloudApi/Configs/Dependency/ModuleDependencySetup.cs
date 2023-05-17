@@ -570,6 +570,7 @@ using UseCase.MstItem.GetRenkeiMst;
 using Reporting.Statistics.Sta3060.DB;
 using Reporting.Statistics.Sta3060.Service;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.GetTenMstListByItemType;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -1232,6 +1233,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListDrugImageInputData, GetListDrugImageInteractor>();
             busBuilder.RegisterUseCase<GetRenkeiMstInputData, GetRenkeiMstInteractor>();
             busBuilder.RegisterUseCase<CheckIsTenMstUsedInputData, CheckIsTenMstUsedInteractor>();
+            busBuilder.RegisterUseCase<GetTenMstListByItemTypeInputData, GetTenMstListByItemTypeInteractor>();
 
             //Lock
             busBuilder.RegisterUseCase<AddLockInputData, AddLockInteractor>();

@@ -303,6 +303,7 @@
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
         public const string GetRenkeiMst = "GetRenkeiMst";
         public const string CheckIsTenMstUsed = "CheckIsTenMstUsed";
+        public const string GetTenMstListByItemType = "GetTenMstListByItemType";
 
         //Lock
         public const string AddLock = "AddLock";
