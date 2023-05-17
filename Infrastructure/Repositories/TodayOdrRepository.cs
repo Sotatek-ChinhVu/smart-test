@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
         {
             if (odrInfs.Count > 0)
             {
-                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
+                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId, status);
             }
 
             SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId, status);
@@ -588,7 +588,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId)
+        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId, int status)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
             rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
@@ -599,7 +599,7 @@ namespace Infrastructure.Repositories
                     var ordInfo = TrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.Id == item.Id && o.RaiinNo == item.RaiinNo && o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo);
                     if (ordInfo != null)
                     {
-                        ordInfo.IsDeleted = item.IsDeleted;
+                        ordInfo.IsDeleted = status == RaiinState.Reservation ?   DeleteTypes.Confirm :  item.IsDeleted;
                         ordInfo.UpdateId = userId;
                         ordInfo.UpdateDate = CIUtil.GetJapanDateTimeNow();
                     }
