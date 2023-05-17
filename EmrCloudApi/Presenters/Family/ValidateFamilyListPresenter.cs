@@ -37,6 +37,7 @@ public class ValidateFamilyListPresenter : IValidateFamilyListOutputPort
         ValidateFamilyListStatus.DuplicateFamily => ResponseMessage.DuplicateFamily,
         ValidateFamilyListStatus.InvalidNameMaxLength => ResponseMessage.InvalidNameMaxLength,
         ValidateFamilyListStatus.InvalidKanaNameMaxLength => ResponseMessage.InvalidKanaNameMaxLength,
+        ValidateFamilyListStatus.FamilyNotAllow => ResponseMessage.FamilyNotAllow,
         _ => string.Empty
     };
 }
