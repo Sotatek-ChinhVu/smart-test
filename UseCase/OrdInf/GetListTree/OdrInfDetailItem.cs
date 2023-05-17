@@ -61,6 +61,69 @@ namespace UseCase.OrdInfs.GetListTrees
             CenterItemCd2 = centerItemCd2;
         }
 
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            RpNo = rpNo;
+            RpEdaNo = rpEdaNo;
+            RowNo = rowNo;
+            PtId = ptId;
+            SinDate = sinDate;
+            SinKouiKbn = sinKouiKbn;
+            ItemCd = itemCd;
+            ItemName = itemName;
+            Suryo = suryo;
+            UnitName = unitName;
+            UnitSbt = unitSbt;
+            TermVal = termVal;
+            KohatuKbn = kohatuKbn;
+            SyohoKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
+            DrugKbn = drugKbn;
+            YohoKbn = yohoKbn;
+            Kokuji1 = kokuji1;
+            Kokuji2 = kokuji2;
+            IsNodspRece = isNodspRece;
+            IpnCd = ipnCd;
+            IpnName = ipnName;
+            JissiKbn = jissiKbn;
+            JissiDate = jissiDate;
+            JissiId = jissiId;
+            JissiMachine = jissiMachine;
+            ReqCd = reqCd;
+            Bunkatu = bunkatu;
+            CmtName = cmtName;
+            CmtOpt = cmtOpt;
+            FontColor = fontColor;
+            CommentNewline = commentNewline;
+            Yakka = yakka;
+            IsGetPriceInYakka = isGetPriceInYakka;
+            Ten = ten;
+            BunkatuKoui = bunkatuKoui;
+            AlternationIndex = alternationIndex;
+            KensaGaichu = kensaGaichu;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
+            MasterSbt = masterSbt;
+            YohoSets = yohoSets;
+            Kasan1 = kasan1;
+            Kasan2 = kasan2;
+            CnvUnitName = cnvUnitName;
+            OdrUnitName = odrUnitName;
+            HasCmtName = hasCmtName;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+        }
+
         [JsonPropertyName("hpId")]
         public int HpId { get; private set; }
 
@@ -216,5 +279,26 @@ namespace UseCase.OrdInfs.GetListTrees
 
         [JsonPropertyName("centerItemCd2")]
         public string CenterItemCd2 { get; private set; }
+
+        [JsonPropertyName("cmtColKeta1")]
+        public int CmtColKeta1 { get; private set; }
+
+        [JsonPropertyName("cmtColKeta2")]
+        public int CmtColKeta2 { get; private set; }
+
+        [JsonPropertyName("cmtColKeta3")]
+        public int CmtColKeta3 { get; private set; }
+
+        [JsonPropertyName("cmtColKeta4")]
+        public int CmtColKeta4 { get; private set; }
+
+        [JsonPropertyName("cmtCol2")]
+        public int CmtCol2 { get; private set; }
+
+        [JsonPropertyName("cmtCol3")]
+        public int CmtCol3 { get; private set; }
+
+        [JsonPropertyName("cmtCol4")]
+        public int CmtCol4 { get; private set; }
     }
 }
