@@ -876,7 +876,7 @@ namespace Infrastructure.Repositories
                                          .ToList();
         }
 
-        public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)
+        public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting)
         {
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
@@ -886,6 +886,11 @@ namespace Infrastructure.Repositories
 
             for (long i = startIndex; i < endIndex; i++)
             {
+                if (isPtNumCheckDigit && !CIUtil.PtNumCheckDigits(i))
+                {
+                    continue;
+                }
+
                 var checkExistPtNum = existPtNum.FirstOrDefault(x => x.HpId == hpId && x.PtNum == i && x.IsDelete == 0);
                 if (checkExistPtNum == null)
                 {
