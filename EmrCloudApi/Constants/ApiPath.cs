@@ -95,6 +95,7 @@
         public const string SyojyoSyoki = "SyojyoSyoki";
         public const string Kensalrai = "Kensalrai";
         public const string ReceiptPrint = "ReceiptPrint";
+        public const string MemoMsgPrint = "MemoMsgPrint";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
