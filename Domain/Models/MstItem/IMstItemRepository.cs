@@ -84,7 +84,7 @@ namespace Domain.Models.MstItem
 
         List<CmtKbnMstModel> GetListCmtKbnMstModelByItemCd(int hpId, string itemCd);
 
-        TenMstOriginModel GetTenMstOriginModel(int hpId,string itemCd, int sinDate);
+        TenMstOriginModel GetTenMstOriginModel(int hpId, string itemCd, int sinDate);
 
         string GetTenMstName(int hpId, string santeiItemCd);
 
@@ -125,5 +125,9 @@ namespace Domain.Models.MstItem
         RenkeiMstModel GetRenkeiMst(int hpId, int renkeiId);
 
         bool IsTenMstUsed(int hpId, string itemCd, int startDate, int endDate);
+
+        List<JihiSbtMstModel> GetJihiSbtMstList(int hpId);
+
+        List<TenMstMaintenanceModel> GetTenMstListByItemType(int hpId, ItemTypeEnums itemType, string startWithstr, int sinDate);
     }
 }

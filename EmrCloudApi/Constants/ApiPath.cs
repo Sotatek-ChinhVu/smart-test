@@ -36,6 +36,7 @@
         public const string GetAdoptedItemList = "GetAdoptedItemList";
         public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
         public const string GetCmtCheckMstList = "GetCmtCheckMstList";
+        public const string GetJihiMstList = "GetJihiMstList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -131,7 +132,6 @@
         public const string ShowKanjaMuke = "ShowKanjaMuke";
         public const string ShowMdbByomei = "ShowMdbByomei";
 
-
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
 
@@ -141,6 +141,7 @@
         public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
         public const string InitDoctorCombo = "InitDoctorCombo";
+        public const string GetRaiinListWithKanInf = "GetRaiinListWithKanInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -302,6 +303,7 @@
         public const string SaveSetDataTenMst = "SaveSetDataTenMst";
         public const string GetRenkeiMst = "GetRenkeiMst";
         public const string CheckIsTenMstUsed = "CheckIsTenMstUsed";
+        public const string GetTenMstListByItemType = "GetTenMstListByItemType";
 
         //Lock
         public const string AddLock = "AddLock";

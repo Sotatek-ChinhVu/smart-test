@@ -3,11 +3,11 @@ using UseCase.Family.GetRaiinInfList;
 
 namespace Interactor.Family;
 
-public class GetListRaiinInfInteractor : IGetRaiinInfListInputPort
+public class GetRaiinInfListInteractor : IGetRaiinInfListInputPort
 {
     private readonly IFamilyRepository _familyRepository;
 
-    public GetListRaiinInfInteractor(IFamilyRepository familyRepository)
+    public GetRaiinInfListInteractor(IFamilyRepository familyRepository)
     {
         _familyRepository = familyRepository;
     }

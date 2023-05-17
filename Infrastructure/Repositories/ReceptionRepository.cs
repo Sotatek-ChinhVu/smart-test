@@ -5,6 +5,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Base;
 using Infrastructure.Interfaces;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -578,10 +579,7 @@ namespace Infrastructure.Repositories
             }
             else if (ptId != CommonConstants.InvalidId && isGetFamily)
             {
-                var familyIdList = NoTrackingDataContext.PtFamilys.Where(item => item.PtId == ptId && item.IsDeleted == 0).Select(item => item.FamilyPtId).ToList();
-                familyIdList.Add(ptId);
-                familyIdList = familyIdList.Distinct().ToList();
-                filteredPtInfs = filteredPtInfs.Where(item => familyIdList.Contains(item.PtId));
+                filteredRaiinInfs = filteredRaiinInfs.Where(item => item.Status >= 3);
             }
 
             // 3. Perform the join operation
@@ -1001,7 +999,7 @@ namespace Infrastructure.Repositories
         /// <returns></returns>
         /// Item1: SinDate
         /// Item2: RaiinNo
-        /// Item3: PtId
+        /// Item3: ptId
         public List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions)
         {
             if (flag)
@@ -1031,7 +1029,7 @@ namespace Infrastructure.Repositories
                     if (deletedItem.Item1 != 0 && deletedItem.Item2 != 0 && deletedItem.Item3 != 0)
                         result.Add(deletedItem);
                 }
-           
+
                 return result;
             }
         }
@@ -1218,6 +1216,120 @@ namespace Infrastructure.Repositories
                 result.Add(item);
             }
 
+            return result;
+        }
+
+        public List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId)
+        {
+            List<ReceptionModel> result = new();
+            var raiinInfList = NoTrackingDataContext.RaiinInfs.Where(item => item.HpId == hpId &&
+                                                                             item.IsDeleted == DeleteTypes.None &&
+                                                                             item.PtId == ptId
+                                                               ).OrderByDescending(p => p.SinDate)
+                                                               .ToList();
+
+            var kaIdList = raiinInfList.Select(item => item.KaId).Distinct().ToList();
+            var tantoIdList = raiinInfList.Select(item => item.TantoId).Distinct().ToList();
+            var hokenPIdList = raiinInfList.Select(item => item.HokenPid).Distinct().ToList();
+
+            var kaMstList = NoTrackingDataContext.KaMsts.Where(item => item.HpId == hpId &&
+                                                                       item.IsDeleted == 0 &&
+                                                                       kaIdList.Contains(item.KaId)
+                                                        ).ToList();
+
+            var userMstList = NoTrackingDataContext.UserMsts.Where(item => item.HpId == hpId &&
+                                                                           item.IsDeleted == 0 &&
+                                                                           tantoIdList.Contains(item.UserId)
+                                                            ).ToList();
+
+            var ptHokenPatternList = NoTrackingDataContext.PtHokenPatterns.Where(item => item.HpId == hpId &&
+                                                                                         item.IsDeleted == 0 &&
+                                                                                         item.PtId == ptId &&
+                                                                                         hokenPIdList.Contains(item.HokenPid)
+                                                                          ).ToList();
+
+            var hokenIdList = ptHokenPatternList.Select(item => item.HokenId).Distinct().ToList();
+
+            var ptHokenInfList = NoTrackingDataContext.PtHokenInfs.Where(item => item.HpId == hpId &&
+                                                                                 item.IsDeleted == 0 &&
+                                                                                 item.PtId == ptId &&
+                                                                                 hokenIdList.Contains(item.HokenId)
+                                                                  ).ToList();
+
+            foreach (var raiinInf in raiinInfList)
+            {
+                var kaSName = kaMstList.FirstOrDefault(item => item.KaId == raiinInf.KaId)?.KaSname ?? string.Empty;
+                var sName = userMstList.FirstOrDefault(item => item.UserId == raiinInf.TantoId)?.Sname ?? string.Empty;
+                var ptHokenPattern = ptHokenPatternList.FirstOrDefault(item => item.HokenPid == raiinInf.HokenPid);
+                var ptHokenInf = ptHokenInfList.FirstOrDefault(item => item.HokenId == ptHokenPattern?.HokenId);
+                var hokenKbnName = GetHokenKbnName(ptHokenPattern, ptHokenInf);
+                result.Add(new ReceptionModel(
+                               raiinInf.PtId,
+                               raiinInf.SinDate,
+                               raiinInf.RaiinNo,
+                               raiinInf.TantoId,
+                               raiinInf.KaId,
+                               sName,
+                               kaSName,
+                               hokenKbnName));
+            }
+            return result;
+        }
+
+        private string GetHokenKbnName(PtHokenPattern? ptHokenPattern, PtHokenInf? ptHokenInf)
+        {
+            string result = string.Empty;
+            if (ptHokenPattern == null || ptHokenPattern.PtId == 0 && ptHokenPattern.HokenPid == 0 && ptHokenPattern.HpId == 0)
+            {
+                return string.Empty;
+            }
+
+            if (ptHokenInf == null)
+            {
+                result = "公費";
+                return result;
+            }
+
+            if (ptHokenInf.Houbetu == HokenConstant.HOUBETU_NASHI)
+            {
+                result = "公費";
+                return result;
+            }
+
+            string hokensyaNo = ptHokenInf.HokensyaNo ?? string.Empty;
+            switch (ptHokenInf.HokenKbn)
+            {
+                case 0:
+                    result = "自費";
+                    break;
+                case 1:
+                    result = "社保";
+                    break;
+                case 2:
+                    if (hokensyaNo.Length == 8 &&
+                        hokensyaNo.StartsWith("39"))
+                    {
+                        result = "後期";
+                    }
+                    else if (hokensyaNo.Length == 8 &&
+                        hokensyaNo.StartsWith("67"))
+                    {
+                        result = "退職";
+                    }
+                    else
+                    {
+                        result = "国保";
+                    }
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                    result = "労災";
+                    break;
+                case 14:
+                    result = "自賠";
+                    break;
+            }
             return result;
         }
     }

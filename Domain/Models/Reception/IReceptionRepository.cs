@@ -54,5 +54,7 @@ namespace Domain.Models.Reception
         List<Tuple<int, long, long>> Delete(bool flag, int hpId, long ptId, int userId, int sinDate, List<Tuple<long, long, int>> receptions);
 
         bool CheckExistOfRaiinNos(List<long> raininNos);
+
+        List<ReceptionModel> GetRaiinListWithKanInf(int hpId, long ptId);
     }
 }

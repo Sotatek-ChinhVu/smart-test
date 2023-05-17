@@ -8,12 +8,12 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
-        public static string SDateToShowSDate3(int Ymd)
+        public static string SDateToShowSDate3(int ymd)
         {
             string WrkStr;
             DateTime WrkDate;
 
-            if (Ymd <= 0 || Ymd == 99999999)
+            if (ymd <= 0 || ymd == 99999999)
             {
                 return "";
             }
@@ -21,7 +21,7 @@ namespace Helper.Common
             try
             {
                 // Padding zero first
-                WrkStr = Ymd.ToString("D8");
+                WrkStr = ymd.ToString("D8");
 
                 // Then convert to date time
                 WrkDate = DateTime.ParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture);
@@ -386,55 +386,55 @@ namespace Helper.Common
         }
 
         //四捨五入関数（小数点以下第何位で四捨五入するか）
-        public static double RoundoffNum(double X, int Num)
+        public static double RoundoffNum(double x, int num)
         {
             Double dRet;
             bool bDiv;
 
-            double result = X;
-            if (Num == 0)
+            double result = x;
+            if (num == 0)
             {
                 return result;
             }
 
-            if (Num > 0)
+            if (num > 0)
             {
                 bDiv = true;
-                Num = Num - 1;
-                X = X * (Math.Pow(10, Num));
+                num = num - 1;
+                x = x * (Math.Pow(10, num));
             }
             else
             {
                 bDiv = false;
-                Num = Num * (-1);
-                X = X / (Math.Pow(10, Num));
+                num = num * (-1);
+                x = x / (Math.Pow(10, num));
             }
 
-            if (X >= 0)
+            if (x >= 0)
             {
-                dRet = Math.Truncate(X + 0.5);
+                dRet = Math.Truncate(x + 0.5);
             }
             else
             {
-                dRet = Math.Truncate(X - 0.5);
+                dRet = Math.Truncate(x - 0.5);
             }
 
             if (bDiv)
             {
-                result = dRet / (Math.Pow(10, Num));
+                result = dRet / (Math.Pow(10, num));
             }
             else
             {
-                result = dRet * (Math.Pow(10, Num));
+                result = dRet * (Math.Pow(10, num));
             }
             return result;
         }
 
         //西暦(yyyymmdd)から年齢を計算する
         //Calculate age from yyyymmdd format
-        public static int SDateToAge(int Ymd, int ToYmd)
+        public static int SDateToAge(int ymd, int toYmd)
         {
-            if (Ymd <= 0 || ToYmd <= 0)
+            if (ymd <= 0 || toYmd <= 0)
             {
                 return -1;
             }
@@ -443,10 +443,10 @@ namespace Helper.Common
 
             try
             {
-                WrkStr = Ymd.ToString("D8");
+                WrkStr = ymd.ToString("D8");
                 DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime BirthDate);
 
-                WrkStr = ToYmd.ToString("D8");
+                WrkStr = toYmd.ToString("D8");
                 DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ToDate);
 
                 Age = ToDate.Year - BirthDate.Year;
@@ -548,30 +548,30 @@ namespace Helper.Common
         }
 
         //表示用西暦(yyyy/mm/dd)を西暦に変換
-        public static int ShowSDateToSDate(string Ymd)
+        public static int ShowSDateToSDate(string ymd)
         {
             int Result = 0;
             // Get current year, month, day
             DateTime currentDate = DateTime.Now;
 
-            int numberOfSeparators = Ymd.Count(c => c == '/');
+            int numberOfSeparators = ymd.Count(c => c == '/');
             if (numberOfSeparators == 0)
             {
                 // parameter does not include / character
-                switch (Ymd.Length)
+                switch (ymd.Length)
                 {
                     case 1:
                     case 2:
-                        Ymd = Ymd.AsInteger().ToString("D2");
-                        Ymd = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + Ymd;
+                        ymd = ymd.AsInteger().ToString("D2");
+                        ymd = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + ymd;
                         break;
                     case 3:
                     case 4:
-                        Ymd = Ymd.AsInteger().ToString("D4");
-                        Ymd = currentDate.Year + "/" + Ymd.Substring(0, 2) + "/" + Ymd.Substring(2);
+                        ymd = ymd.AsInteger().ToString("D4");
+                        ymd = currentDate.Year + "/" + ymd.Substring(0, 2) + "/" + ymd.Substring(2);
                         break;
                     case 8:
-                        Ymd = Ymd.Substring(0, 4) + "/" + Ymd.Substring(4, 2) + "/" + Ymd.Substring(6);
+                        ymd = ymd.Substring(0, 4) + "/" + ymd.Substring(4, 2) + "/" + ymd.Substring(6);
                         break;
                     default:
                         break;
@@ -581,31 +581,31 @@ namespace Helper.Common
             if (numberOfSeparators == 1)
             {
                 string temp = DateTime.Now.Year.AsString() + "/";
-                int firstLocation = Ymd.IndexOf('/');
+                int firstLocation = ymd.IndexOf('/');
 
-                temp += Ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
-                temp += Ymd.Substring(firstLocation + 1).PadLeft(2, '0');
+                temp += ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
+                temp += ymd.Substring(firstLocation + 1).PadLeft(2, '0');
 
-                Ymd = temp;
+                ymd = temp;
             }
 
             if (numberOfSeparators == 2)
             {
-                int firstLocation = Ymd.IndexOf('/');
+                int firstLocation = ymd.IndexOf('/');
 
-                string temp = Ymd.Substring(0, firstLocation) + "/";
-                string remainTemp = Ymd.Substring(firstLocation + 1);
+                string temp = ymd.Substring(0, firstLocation) + "/";
+                string remainTemp = ymd.Substring(firstLocation + 1);
 
                 int secondLocation = remainTemp.IndexOf('/');
                 temp += remainTemp.Substring(0, secondLocation).PadLeft(2, '0') + "/";
                 temp += remainTemp.Substring(secondLocation + 1).PadLeft(2, '0');
 
-                Ymd = temp;
+                ymd = temp;
             }
 
 
 
-            bool parseResult = DateTime.TryParseExact(Ymd, "yyyy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult);
+            bool parseResult = DateTime.TryParseExact(ymd, "yyyy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult);
 
             if (!parseResult)
             {
