@@ -74,7 +74,7 @@ public class CommonReportingRequest : ICommonReportingRequest
         return string.Empty;
     }
 
-    public virtual List<ListTextObject> GetListTextData()
+    public virtual Dictionary<int, List<ListTextObject>> GetListTextData()
     {
         return new();
     }
