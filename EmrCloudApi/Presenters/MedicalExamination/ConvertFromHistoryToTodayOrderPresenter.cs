@@ -33,6 +33,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                 case ConvertFromHistoryTodayOrderStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
+                case ConvertFromHistoryTodayOrderStatus.InvalidSanteiKbn:
+                    Result.Message = ResponseMessage.TodayOrdInvalidSanteiKbn;
+                    break;
                 case ConvertFromHistoryTodayOrderStatus.InputNoData:
                     Result.Message = ResponseMessage.InputNoData;
                     break;
