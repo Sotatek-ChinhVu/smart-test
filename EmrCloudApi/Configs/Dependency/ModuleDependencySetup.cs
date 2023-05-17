@@ -164,6 +164,7 @@ using Reporting.Kensalrai.DB;
 using Reporting.Kensalrai.Service;
 using Reporting.MedicalRecordWebId.DB;
 using Reporting.MedicalRecordWebId.Service;
+using Reporting.Memo.Service;
 using Reporting.NameLabel.Service;
 using Reporting.OrderLabel.DB;
 using Reporting.OrderLabel.Service;
@@ -672,6 +673,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICoKokhoSeikyuFinder, CoKokhoSeikyuFinder>();
             services.AddTransient<ICoKokhoSokatuFinder, CoKokhoSokatuFinder>();
             services.AddTransient<IReceiptPrintService, ReceiptPrintService>();
+            services.AddTransient<IMemoMsgCoReportService, MemoMsgCoReportService>();
             services.AddTransient<IP28KokhoSokatuCoReportService, P28KokhoSokatuCoReportService>();
             services.AddTransient<IP11KokhoSokatuCoReportService, P11KokhoSokatuCoReportService>();
 
