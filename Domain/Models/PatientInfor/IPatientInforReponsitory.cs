@@ -30,7 +30,7 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
-        List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
+        List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize, bool isPtNumCheckDigit, int autoSetting);
 
         bool CheckExistIdList(List<long> ptIds);
 
