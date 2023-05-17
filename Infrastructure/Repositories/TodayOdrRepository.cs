@@ -3235,7 +3235,7 @@ namespace Infrastructure.Repositories
             int cmtColKeta2 = tenMst.CmtColKeta2;
             int cmtColKeta3 = tenMst.CmtColKeta3;
             int cmtColKeta4 = tenMst.CmtColKeta4;
-            var kensaMstModel = new KensaMst();
+            KensaMst? kensaMstModel = null;
             if ((sourceDetail.SinKouiKbn == 61 || sourceDetail.SinKouiKbn == 64)
                 && !string.IsNullOrEmpty(tenMst.KensaItemCd))
             {

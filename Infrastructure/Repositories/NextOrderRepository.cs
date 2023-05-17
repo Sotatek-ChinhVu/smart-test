@@ -372,7 +372,7 @@ namespace Infrastructure.Repositories
                     bunkatuKoui = usage?.SinKouiKbn ?? 0;
                 }
                 var alternationIndex = index % 2;
-                var kensaMst = tenMst == null ? new() : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo) ?? new();
+                var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo) ?? new();
                 int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst ?? new(), odrInf.InoutKbn, odrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
                 var yohoSet = GetListYohoSetMstModelByUserID(yohoSetMsts ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>());
                 var kasan = ipnKasanMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
@@ -520,7 +520,7 @@ namespace Infrastructure.Repositories
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
 
-        private static int GetKensaGaichu(RsvkrtOdrInfDetail odrInfDetail, TenMst tenMst, int inOutKbn, int odrKouiKbn, KensaMst kensaMst, int kensaIraiCondition, int kensaIrai)
+        private static int GetKensaGaichu(RsvkrtOdrInfDetail odrInfDetail, TenMst tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
         {
             if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
                    string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
