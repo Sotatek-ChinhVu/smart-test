@@ -273,6 +273,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                     case OrderInfConst.OrdInfValidationStatus.InvalidHasUsage:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.ErrorHasUsage, string.Empty));
                         break;
+                    case OrderInfConst.OrdInfValidationStatus.NoFillSuryo:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputData, ResponseMessage.TodayOdrSuryo));
+                        break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));
                         break;
