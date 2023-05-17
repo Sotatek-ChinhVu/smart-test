@@ -19,5 +19,9 @@ namespace Reporting.Mappers
         int GetReportType();
 
         Dictionary<string, string> GetFileNamePageMap();
+
+        string GetJobName();
+
+        List<ListTextObject> GetListTextData();
     }
 }
