@@ -38,6 +38,7 @@ using Domain.Models.OrdInf;
 using Domain.Models.TodayOdr;
 using UseCase.MstItem.GetRenkeiMst;
 using UseCase.MstItem.CheckIsTenMstUsed;
+using UseCase.MstItem.GetTenMstListByItemType;
 
 namespace EmrCloudApi.Controller
 {
@@ -340,6 +341,16 @@ namespace EmrCloudApi.Controller
             var presenter = new GetJihiMstsPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetJihiMstsResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetTenMstListByItemType)]
+        public ActionResult<Response<GetTenMstListByItemTypeResponse>> GetTenMstListByItemType([FromQuery] GetTenMstListByItemTypeRequest request)
+        {
+            var input = new GetTenMstListByItemTypeInputData(HpId, request.ItemType, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetTenMstListByItemTypePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetTenMstListByItemTypeResponse>>(presenter.Result);
         }
     }
 }
