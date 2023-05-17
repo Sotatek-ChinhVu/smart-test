@@ -18,18 +18,21 @@ namespace Reporting.ReceiptPrint.Service
         private readonly IP28KokhoSokatuCoReportService _p28KokhoSokatuCoReportService;
         private readonly IP11KokhoSokatuCoReportService _p11KokhoSokatuCoReportService;
         private readonly IP12KokhoSokatuCoReportService _p12KokhoSokatuCoReportService;
+        private readonly IP13KokhoSokatuCoReportService _p13KokhoSokatuCoReportService;
 
         public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService
             , IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService
             , IP12KokhoSokatuCoReportService p12KokhoSokatuCoReportService
+            , IP13KokhoSokatuCoReportService p13KokhoSokatuCoReportService
                                   )
         {
             _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
             _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
             _p12KokhoSokatuCoReportService = p12KokhoSokatuCoReportService;
+            _p13KokhoSokatuCoReportService = p13KokhoSokatuCoReportService;
         }
 
-        public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId)
+        public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId, int diskKind, int diskCnt)
         {
             var seikyuType = GetSeikyuType(dataKbn);
 
@@ -45,10 +48,15 @@ namespace Reporting.ReceiptPrint.Service
             {
                 return _p12KokhoSokatuCoReportService.GetP12KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
             }
+            else if (prefNo == 13 && reportId == 102 && reportEdaNo == 1)
+            {
+                return _p13KokhoSokatuCoReportService.GetP13KokhoSokatuReportingData(hpId, seikyuYm, seikyuType, diskKind, diskCnt);
+            }
 
             return new();
         }
 
+        #region Get SeiKyuType
         private SeikyuType GetSeikyuType(int dataKbn)
         {
             int targetReceiptVal = (dataKbn >= 0 && dataKbn <= 2) ? (dataKbn + 1) : 0;
@@ -86,5 +94,6 @@ namespace Reporting.ReceiptPrint.Service
 
             return new SeikyuType(_isNormal, _isPaper, _isDelay, _isHenrei, _isOnline);
         }
+        #endregion
     }
 }

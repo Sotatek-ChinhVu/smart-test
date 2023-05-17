@@ -50,4 +50,5 @@ public interface ISystemConfig
     string PlanetUserName();
     string PlanetPassword();
     int PlanetType();
+    int P13KokhoSokatuType();
 }

@@ -10,13 +10,14 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
         private readonly Dictionary<string, string> _fileNamePageMap;
         private readonly int _reportType;
         private readonly string _rowCountFieldName;
-        private readonly string _formFileName;
+        private readonly Dictionary<string, bool> _visibleFieldData;
 
-        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, Dictionary<string, string> fileNamePageMap, string rowCountFieldName, int reportType)
+        public KokhoSokatuMapper(Dictionary<string, string> singleFieldData, List<Dictionary<string, CellModel>> tableFieldData, Dictionary<string, string> extralData, Dictionary<string, bool> visibleFieldData, Dictionary<string, string> fileNamePageMap, string rowCountFieldName, int reportType)
         {
             _singleFieldData = singleFieldData;
             _tableFieldData = tableFieldData;
             _extralData = extralData;
+            _visibleFieldData = visibleFieldData;
             _fileNamePageMap = fileNamePageMap;
             _rowCountFieldName = rowCountFieldName;
             _reportType = reportType;
@@ -49,7 +50,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Mapper
 
         public override Dictionary<string, bool> GetVisibleFieldData()
         {
-            return new();
+            return _visibleFieldData;
         }
 
         public override Dictionary<string, bool> GetWrapFieldData()

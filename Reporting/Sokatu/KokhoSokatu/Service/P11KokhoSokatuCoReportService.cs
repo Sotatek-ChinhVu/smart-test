@@ -47,6 +47,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         /// <summary>
         /// OutPut Data
         /// </summary>
+        private readonly Dictionary<string, bool> _visibleFieldData = new Dictionary<string, bool>();
         private readonly Dictionary<string, string> _singleFieldData = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _extralData = new Dictionary<string, string>();
         private readonly List<Dictionary<string, CellModel>> _tableFieldData = new List<Dictionary<string, CellModel>>();
@@ -86,7 +87,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
 
             _extralData.Add("maxRow", "17");
             _extralData.Add("totalPage", (_currentPage - 1).ToString());
-            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
+            return new KokhoSokatuMapper(_singleFieldData, _tableFieldData, _extralData, _visibleFieldData, _fileNamePageMap, _rowCountFieldName, _reportType).GetData();
         }
 
         private bool UpdateDrawForm()
@@ -417,14 +418,6 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
             if (!string.IsNullOrEmpty(field) && !_singleFieldData.ContainsKey(field))
             {
                 _singleFieldData.Add(field, value);
-            }
-        }
-
-        private void AddListData(ref Dictionary<string, CellModel> dictionary, string field, string value)
-        {
-            if (!string.IsNullOrEmpty(field) && !dictionary.ContainsKey(field))
-            {
-                dictionary.Add(field, new CellModel(value));
             }
         }
 
