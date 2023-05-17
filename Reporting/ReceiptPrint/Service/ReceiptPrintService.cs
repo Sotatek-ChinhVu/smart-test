@@ -17,13 +17,16 @@ namespace Reporting.ReceiptPrint.Service
 
         private readonly IP28KokhoSokatuCoReportService _p28KokhoSokatuCoReportService;
         private readonly IP11KokhoSokatuCoReportService _p11KokhoSokatuCoReportService;
+        private readonly IP12KokhoSokatuCoReportService _p12KokhoSokatuCoReportService;
 
         public ReceiptPrintService(IP28KokhoSokatuCoReportService p28KokhoSokatuCoReportService
-                                 , IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService
+            , IP11KokhoSokatuCoReportService p11KokhoSokatuCoReportService
+            , IP12KokhoSokatuCoReportService p12KokhoSokatuCoReportService
                                   )
         {
             _p28KokhoSokatuCoReportService = p28KokhoSokatuCoReportService;
             _p11KokhoSokatuCoReportService = p11KokhoSokatuCoReportService;
+            _p12KokhoSokatuCoReportService = p12KokhoSokatuCoReportService;
         }
 
         public CommonReportingRequestModel GetReceiptPrint(int hpId, int prefNo, int reportId, int reportEdaNo, int dataKbn, int ptId, int seikyuYm, int sinYm, int hokenId)
@@ -37,6 +40,10 @@ namespace Reporting.ReceiptPrint.Service
             else if (prefNo == 11 && reportId == 102 && reportEdaNo == 0)
             {
                 return _p11KokhoSokatuCoReportService.GetP11KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
+            }
+            else if (prefNo == 12 && reportId == 102 && reportEdaNo == 0)
+            {
+                return _p12KokhoSokatuCoReportService.GetP12KokhoSokatuReportingData(hpId, seikyuYm, seikyuType);
             }
 
             return new();
