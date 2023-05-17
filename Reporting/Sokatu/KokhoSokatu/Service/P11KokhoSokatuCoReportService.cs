@@ -8,7 +8,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
     public class P11KokhoSokatuCoReportService : IP11KokhoSokatuCoReportService
     {
         #region Constant
-        private const int MyPrefNo = 11;
+        private const int myPrefNo = 11;
         #endregion
 
         #region Private properties
@@ -343,12 +343,12 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         {
             hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
             kaMsts = _kokhoFinder.GetKaMst(_hpId);
-            receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.All, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+            receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.All, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
             //保険者名を取得
             hokensyaNames = _kokhoFinder.GetHokensyaName(_hpId, receInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList());
 
             //特別療養費
-            tokuyohiReceInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Tokuyohi, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+            tokuyohiReceInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.Tokuyohi, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
 
             return (receInfs?.Count ?? 0) > 0;
         }

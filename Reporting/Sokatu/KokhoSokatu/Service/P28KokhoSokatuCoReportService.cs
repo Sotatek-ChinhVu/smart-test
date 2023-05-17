@@ -15,7 +15,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
     {
         #region Constructor and Init
 
-        private const int MyPrefNo = 28;
+        private const int myPrefNo = 28;
         private int _hpId;
         private int _seikyuYm;
         private SeikyuType _seikyuType;
@@ -83,7 +83,7 @@ namespace Reporting.Sokatu.KokhoSokatu.Service
         {
             hpInf = _kokhoFinder.GetHpInf(_hpId, _seikyuYm);
             kaMsts = _kokhoFinder.GetKaMst(_hpId);
-            receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.All, PrefKbn.PrefAll, MyPrefNo, HokensyaNoKbn.SumAll);
+            receInfs = _kokhoFinder.GetReceInf(_hpId, _seikyuYm, _seikyuType, KokhoKind.All, PrefKbn.PrefAll, myPrefNo, HokensyaNoKbn.SumAll);
             //保険者番号リストを取得
             hokensyaNos = receInfs.GroupBy(r => r.HokensyaNo).OrderBy(r => r.Key).Select(r => r.Key).ToList();
             //保険者名を取得
